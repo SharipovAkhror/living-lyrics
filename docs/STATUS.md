@@ -21,7 +21,7 @@ _Обновлено: 2026-10-16._
 
 - Облачная среда Claude Code не открывает YouTube, HuggingFace и большинство сайтов с текстами (WebFetch падает на DNS; WebSearch работает).
 - **Vercel Sandbox** (через MCP Vercel): полный интернет, 4 vCPU / 8 ГБ, жёсткий предел 45 минут на сессию. Вывод инструментов MCP обрезается до ~2 000 знаков на элемент — длинное печатайте `scripts/pipeline/sandbox/dump.py`. Страницы читайте `scripts/pipeline/sandbox/fetch_text.py <url>`. Именованные песочницы с `persistent: true` сохраняют состояние между сессиями.
-- **GitHub Actions** (в работе): `.github/workflows/pipeline.yml` — задание `jobs/<slug>.json` → разделение, выравнивание, проверка синхронизации → результат коммитом. Не зависит от среды агента. Нужен секрет репозитория `AUDIO_KEY` (добавляет владелец: Settings → Secrets and variables → Actions).
+- **GitHub Actions** — основной способ тяжёлых шагов. Секрет `AUDIO_KEY` добавлен (2026-10-16), проверка `.github/workflows/audio-check.yml` расшифровала все три записи на раннере (4 ядра, 15 ГБ) — `docs/analysis/actions-check.md`. Статус запусков читается без авторизации: `https://api.github.com/repos/SharipovAkhror/living-lyrics/actions/runs`. Рабочий конвейер `.github/workflows/pipeline.yml` (задание `jobs/<slug>.json` → разделение, выравнивание, проверка синхронизации → результат коммитом) — в работе.
 - Удалить ветку `ci/probe` на GitHub через прокси нельзя («remote end hung up») — её можно удалить в интерфейсе GitHub.
 
 ## Решения
