@@ -34,6 +34,22 @@ const CPS_WARN = 20;
 
 type Issue = { level: 'error' | 'warn'; where: string; msg: string };
 
+/**
+ * Letters only, for checking that a sung line occurs in canon.md: no harakat or other marks,
+ * Arabic and Persian letter variants unified, no spaces, punctuation or case.
+ */
+function letters(text: string) {
+  return text
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '')
+    .replace(/[يى]/g, 'ی')
+    .replace(/ك/g, 'ک')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ؤ/g, 'و')
+    .replace(/[^\p{L}\p{N}]+/gu, '')
+    .toLowerCase();
+}
+
 function check(slug: string): Issue[] {
   const issues: Issue[] = [];
   const err = (where: string, msg: string) => issues.push({ level: 'error', where, msg });
@@ -67,6 +83,9 @@ function check(slug: string): Issue[] {
 
   if (song.slug !== slug) err('song.json', `slug "${song.slug}" ≠ folder "${slug}"`);
   if (!existsSync(join(dir, 'sources.md'))) warn('sources.md', 'нет файла источников (sources.md)');
+  const canonPath = join(dir, 'canon.md');
+  const canon = existsSync(canonPath) ? letters(readFileSync(canonPath, 'utf8')) : null;
+  if (!canon) warn('canon.md', 'нет оригиналов текста (canon.md): строки не с чем сверить (docs/methodology/04-text.md)');
 
   // Audio
   if (song.audio.status === 'ready') {
@@ -114,6 +133,8 @@ function check(slug: string): Issue[] {
       if (arab && line.script !== 'Arab') warn(lw, `язык ${line.lang} обычно пишется арабской графикой, а script = ${line.script}`);
       if (line.script === 'Arab' && !line.translit) warn(lw, 'нет транскрипции (translit) для строки арабской графикой');
       if (!line.tr.ru.trim()) err(lw, 'пустой перевод');
+      if (canon && !canon.includes(letters(line.words.map((w) => w.w).join(' '))))
+        warn(lw, `строки нет в canon.md: «${line.words.map((w) => w.w).join(' ')}» — сверьте с оригиналом или объясните расхождение`);
 
       // Words: increasing, inside the section
       line.words.forEach((w, wi) => {
