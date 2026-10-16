@@ -25,7 +25,12 @@ npm run art [-- <key>]              # пересобрать гравюры ин
 npm run shots -- <url> <dir> <paths…>   # скриншоты iPhone/десктоп, светлая/тёмная
 ```
 
-Аудиоконвейер (Python, `scripts/pipeline/requirements.txt`): `fetch_audio.sh`, `process_audio.py`, `separate.py`, `sections.py`, `frames.py`, `transcribe.py`, `align.py`. Нужны `ffmpeg`, доступ к YouTube (или файл от пользователя) и к HuggingFace / download.pytorch.org для моделей.
+Аудиоконвейер (Python, `scripts/pipeline/requirements.txt`): `fetch_audio.sh`, `process_audio.py`, `separate.py`, `sections.py`, `frames.py`, `transcribe.py`, `align.py`. Нужны `ffmpeg` и сеть. Если агент работает в облачной среде Claude Code, в настройках среды (Network access → Allowed domains) должны быть разрешены:
+`youtube.com`, `*.youtube.com`, `*.googlevideo.com`, `youtubei.googleapis.com`, `i.ytimg.com` — запись;
+`huggingface.co`, `*.huggingface.co`, `*.hf.co` — модели Whisper;
+`download.pytorch.org` — выравниватель MMS и колёса torch; `dl.fbaipublicfiles.com` — модели Demucs;
+`ganjoor.net`, `*.wikisource.org`, `*.wikipedia.org`, `cantus.uwaterloo.ca`, `quran.com`, `sunnah.com` — тексты и справки.
+Без них аудио нужно передать файлом, а тексты сверять через веб-поиск.
 
 ## Устройство кода
 

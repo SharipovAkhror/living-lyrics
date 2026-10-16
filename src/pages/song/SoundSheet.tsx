@@ -1,10 +1,17 @@
-import { useRef, useState } from 'react';
-import { Group, Row, Segmented, Sheet, Slider, Switch } from '@/components/controls';
-import { Icon } from '@/icons/Icon';
-import { setSettings, type Settings } from '@/app/settings';
-import { EQ_FREQS, EQ_PRESETS, formatFreq, presetById } from '@/player/eq';
-import type { AudioEngine, EngineState } from '@/player/engine';
-import type { Song } from '@/data/schema';
+import { useRef, useState } from "react";
+import {
+  Group,
+  Row,
+  Segmented,
+  Sheet,
+  Slider,
+  Switch,
+} from "@/components/controls";
+import { Icon } from "@/icons/Icon";
+import { setSettings, type Settings } from "@/app/settings";
+import { EQ_FREQS, EQ_PRESETS, formatFreq, presetById } from "@/player/eq";
+import type { AudioEngine, EngineState } from "@/player/engine";
+import type { Song } from "@/data/schema";
 
 const RATES = [0.75, 0.85, 1, 1.15, 1.25];
 
@@ -25,33 +32,56 @@ export function SoundSheet({
 }) {
   const input = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
-  const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isIOS =
+    /iP(hone|ad|od)/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
-  const setEq = (patch: Partial<Pick<Settings, 'eqEnabled' | 'eqBands' | 'eqPreamp' | 'eqPreset'>>) => {
+  const setEq = (
+    patch: Partial<
+      Pick<Settings, "eqEnabled" | "eqBands" | "eqPreamp" | "eqPreset">
+    >,
+  ) => {
     const next = { ...settings, ...patch };
     setSettings(patch);
     engine.setEffects(next.eqEnabled, next.eqBands, next.eqPreamp);
   };
 
   const sourceLabel =
-    state.source === 'library' ? 'Запись из библиотеки' : state.source === 'local' ? state.localName ?? 'Свой файл' : 'Аудио не подключено';
+    state.source === "library"
+      ? "Запись из библиотеки"
+      : state.source === "local"
+        ? (state.localName ?? "Свой файл")
+        : "Аудио не подключено";
 
   return (
     <Sheet open={open} onClose={onClose} title="Звук" size="large">
       <Group
         header="Источник"
         footer={
-          state.source === 'silent'
-            ? 'Без файла «Сцена» идёт по тайм-кодам беззвучно. Подойдут m4a (AAC), mp3 и wav; файл сохранится на этом устройстве.'
-            : state.source === 'local'
-              ? 'Файл хранится только на этом устройстве.'
+          state.source === "silent"
+            ? "Без файла «Сцена» идёт по тайм-кодам беззвучно. Подойдут m4a (AAC), mp3 и wav; файл сохранится на этом устройстве."
+            : state.source === "local"
+              ? "Файл хранится только на этом устройстве."
               : undefined
         }
       >
-        <Row icon={<Icon name="music.note" size={20} />} title={sourceLabel} detail={state.error ?? undefined} />
-        <Row icon={<Icon name="square.and.arrow.down" size={20} />} title="Подключить свой файл…" onClick={() => input.current?.click()} chevron />
-        {state.source === 'local' && (
-          <Row icon={<Icon name="xmark" size={18} />} title="Убрать свой файл" onClick={() => void engine.detachFile()} />
+        <Row
+          icon={<Icon name="music.note" size={20} />}
+          title={sourceLabel}
+          detail={state.error ?? undefined}
+        />
+        <Row
+          icon={<Icon name="square.and.arrow.down" size={20} />}
+          title="Подключить свой файл…"
+          onClick={() => input.current?.click()}
+          chevron
+        />
+        {state.source === "local" && (
+          <Row
+            icon={<Icon name="xmark" size={18} />}
+            title="Убрать свой файл"
+            onClick={() => void engine.detachFile()}
+          />
         )}
         <input
           ref={input}
@@ -60,7 +90,7 @@ export function SoundSheet({
           hidden
           onChange={async (e) => {
             const f = e.target.files?.[0];
-            e.target.value = '';
+            e.target.value = "";
             if (!f) return;
             try {
               setError(null);
@@ -73,15 +103,18 @@ export function SoundSheet({
       </Group>
       {error && <p className="sheet-error t-footnote">{error}</p>}
 
-      {song.audio.status === 'ready' && song.audio.saver && (
-        <Group header="Качество" footer="«Экономия» — AAC 96 кбит/с для мобильной сети. Переключается без паузы.">
+      {song.audio.status === "ready" && song.audio.saver && (
+        <Group
+          header="Качество"
+          footer="«Экономия» — AAC 96 кбит/с для мобильной сети. Переключается без паузы."
+        >
           <div className="row row--control">
             <Segmented
               label="Качество"
               value={settings.quality}
               options={[
-                { value: 'high', label: 'Высокое' },
-                { value: 'saver', label: 'Экономия' },
+                { value: "high", label: "Высокое" },
+                { value: "saver", label: "Экономия" },
               ]}
               onChange={(q) => {
                 setSettings({ quality: q });
@@ -92,12 +125,18 @@ export function SoundSheet({
         </Group>
       )}
 
-      <Group header="Скорость" footer="Высота голоса сохраняется. Медленнее — удобно разбирать слова.">
+      <Group
+        header="Скорость"
+        footer="Высота голоса сохраняется. Медленнее — удобно разбирать слова."
+      >
         <div className="row row--control">
           <Segmented
             label="Скорость"
             value={String(settings.rate)}
-            options={RATES.map((r) => ({ value: String(r), label: `${String(r).replace('.', ',')}×` }))}
+            options={RATES.map((r) => ({
+              value: String(r),
+              label: `${String(r).replace(".", ",")}×`,
+            }))}
             onChange={(v) => {
               const r = parseFloat(v);
               setSettings({ rate: r });
@@ -107,22 +146,34 @@ export function SoundSheet({
         </div>
       </Group>
 
-      <Group header="Громкость">
-        <div className="row row--control row--slider">
-          <Icon name="speaker.wave.2" size={18} className="tertiary" />
-          <Slider
-            label="Громкость"
-            min={0}
-            max={1}
-            step={0.01}
-            value={settings.volume}
-            onChange={(v) => {
-              setSettings({ volume: v });
-              engine.setVolume(v);
-            }}
-          />
-        </div>
-        <Row title="Выравнивать громкость" detail="Все песни звучат одинаково громко (−14 LUFS)">
+      <Group
+        header="Громкость"
+        footer={
+          isIOS
+            ? "На iPhone громкость меняется кнопками телефона; выравнивание работает, когда включён эквалайзер."
+            : undefined
+        }
+      >
+        {!isIOS && (
+          <div className="row row--control row--slider">
+            <Icon name="speaker.wave.2" size={18} className="tertiary" />
+            <Slider
+              label="Громкость"
+              min={0}
+              max={1}
+              step={0.01}
+              value={settings.volume}
+              onChange={(v) => {
+                setSettings({ volume: v });
+                engine.setVolume(v);
+              }}
+            />
+          </div>
+        )}
+        <Row
+          title="Выравнивать громкость"
+          detail="Все песни звучат одинаково громко (−14 LUFS)"
+        >
           <Switch
             label="Выравнивать громкость"
             checked={settings.normalize}
@@ -138,12 +189,16 @@ export function SoundSheet({
         header="Эквалайзер"
         footer={
           isIOS && settings.eqEnabled
-            ? 'Пока эквалайзер включён, iPhone останавливает звук при блокировке экрана. Выключите его, чтобы слушать с заблокированным экраном.'
-            : 'Эквалайзер работает только с подключённым аудио.'
+            ? "Пока эквалайзер включён, iPhone останавливает звук при блокировке экрана. Выключите его, чтобы слушать с заблокированным экраном."
+            : "Эквалайзер работает только с подключённым аудио."
         }
       >
         <Row title="Эквалайзер">
-          <Switch label="Эквалайзер" checked={settings.eqEnabled} onChange={(v) => setEq({ eqEnabled: v })} />
+          <Switch
+            label="Эквалайзер"
+            checked={settings.eqEnabled}
+            onChange={(v) => setEq({ eqEnabled: v })}
+          />
         </Row>
         {settings.eqEnabled && (
           <>
@@ -151,8 +206,14 @@ export function SoundSheet({
               {EQ_PRESETS.map((p) => (
                 <button
                   key={p.id}
-                  className={`eq-preset${settings.eqPreset === p.id ? ' is-on' : ''}`}
-                  onClick={() => setEq({ eqPreset: p.id, eqBands: [...p.bands], eqPreamp: p.preamp })}
+                  className={`eq-preset${settings.eqPreset === p.id ? " is-on" : ""}`}
+                  onClick={() =>
+                    setEq({
+                      eqPreset: p.id,
+                      eqBands: [...p.bands],
+                      eqPreamp: p.preamp,
+                    })
+                  }
                 >
                   <span className="t-subhead">{p.name}</span>
                   <span className="t-caption1 secondary">{p.hint}</span>
@@ -162,7 +223,10 @@ export function SoundSheet({
             <div className="eq-bands" aria-label="Полосы эквалайзера">
               {EQ_FREQS.map((f, i) => (
                 <div key={f} className="eq-band">
-                  <span className="t-caption2 tabular secondary">{settings.eqBands[i] > 0 ? '+' : ''}{settings.eqBands[i].toFixed(0)}</span>
+                  <span className="t-caption2 tabular secondary">
+                    {settings.eqBands[i] > 0 ? "+" : ""}
+                    {settings.eqBands[i].toFixed(0)}
+                  </span>
                   <Slider
                     vertical
                     label={`${formatFreq(f)} Гц`}
@@ -174,15 +238,31 @@ export function SoundSheet({
                     onChange={(v) => {
                       const bands = [...settings.eqBands];
                       bands[i] = v;
-                      setEq({ eqBands: bands, eqPreset: 'custom' });
+                      setEq({ eqBands: bands, eqPreset: "custom" });
                     }}
                   />
                   <span className="t-caption2 tertiary">{formatFreq(f)}</span>
                 </div>
               ))}
             </div>
-            <Row title="Сбросить" detail={presetById(settings.eqPreset).id === settings.eqPreset ? presetById(settings.eqPreset).name : 'Своя настройка'}>
-              <button className="btn btn-capsule btn-sm btn-gray" onClick={() => setEq({ eqPreset: 'flat', eqBands: new Array(10).fill(0), eqPreamp: 0 })}>
+            <Row
+              title="Сбросить"
+              detail={
+                presetById(settings.eqPreset).id === settings.eqPreset
+                  ? presetById(settings.eqPreset).name
+                  : "Своя настройка"
+              }
+            >
+              <button
+                className="btn btn-capsule btn-sm btn-gray"
+                onClick={() =>
+                  setEq({
+                    eqPreset: "flat",
+                    eqBands: new Array(10).fill(0),
+                    eqPreamp: 0,
+                  })
+                }
+              >
                 Сбросить
               </button>
             </Row>
