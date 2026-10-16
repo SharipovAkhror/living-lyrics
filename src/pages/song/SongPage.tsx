@@ -10,6 +10,7 @@ import { Scrubber } from '@/player/Scrubber';
 import { Scene } from '@/scene/Scene';
 import { Icon } from '@/icons/Icon';
 import { RichText } from '@/components/RichText';
+import { preloadInstruments } from '@/instruments/catalog';
 import { SoundSheet } from './SoundSheet';
 import { DisplaySheet } from './DisplaySheet';
 import { TextSheet } from './TextSheet';
@@ -48,7 +49,11 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
     if (!song || !engine) return;
     let alive = true;
     loadLyrics(song.slug)
-      .then((l) => alive && setLyrics(l))
+      .then((l) => {
+        if (!alive) return;
+        setLyrics(l);
+        void preloadInstruments(l.sections.flatMap((s) => (s.kind === 'instrumental' ? s.instruments.slice(0, 2) : [])));
+      })
       .catch((e) => alive && setLoadError(String(e)));
     if (song.audio.peaks) void loadPeaks(song.audio.peaks).then((p) => alive && p && setPeaks(p));
     const s = settings;

@@ -1,7 +1,7 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { InstCue, Timeline } from '@/data/timeline';
 import { formatTime } from '@/data/library';
-import { instrument, instrumentSvg } from '@/instruments/catalog';
+import { instrument, instrumentSvg, loadInstrumentSvg } from '@/instruments/catalog';
 import type { MotionPref } from '@/app/settings';
 import { clamp01, easeInCubic, easeOutCubic } from './choreo';
 import type { Updater } from './LineView';
@@ -24,6 +24,16 @@ export function InstView({
   const keys = section.instruments.slice(0, 2);
   const names = section.instruments.map((k) => instrument(k)?.name ?? k);
   const nextVocal = timeline.cues.find((c) => c.kind === 'line' && c.start >= cue.end - 0.01);
+  const [svgs, setSvgs] = useState(() => keys.map((k) => instrumentSvg(k)));
+  useEffect(() => {
+    if (svgs.every(Boolean)) return;
+    let alive = true;
+    void Promise.all(keys.map(loadInstrumentSvg)).then((list) => alive && setSvgs(list));
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keys.join()]);
 
   useLayoutEffect(() => {
     const fn: Updater = (t, energy) => {
@@ -51,8 +61,8 @@ export function InstView({
   return (
     <div ref={root} className="inst" style={{ opacity: 0 }}>
       <div ref={art} className={`inst-art${keys.length > 1 ? ' inst-art--pair' : ''}`} aria-hidden>
-        {keys.map((k) => (
-          <div key={k} className="eng" dangerouslySetInnerHTML={{ __html: instrumentSvg(k) }} />
+        {keys.map((k, i) => (
+          <div key={k} className="eng" dangerouslySetInnerHTML={{ __html: svgs[i] }} />
         ))}
       </div>
       <div className="inst-text">
