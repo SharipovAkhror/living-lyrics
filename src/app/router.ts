@@ -4,6 +4,7 @@ export type Route =
   | { name: 'library' }
   | { name: 'song'; slug: string }
   | { name: 'method'; doc?: string }
+  | { name: 'instruments' }
   | { name: 'notfound' };
 
 export function parse(path: string): Route {
@@ -14,6 +15,7 @@ export function parse(path: string): Route {
   // The timing editor was removed: old links land on the song.
   m = p.match(/^\/song\/([a-z0-9-]+)\/edit$/);
   if (m) return { name: 'song', slug: m[1] };
+  if (p === '/instruments') return { name: 'instruments' };
   m = p.match(/^\/method(?:\/([a-z0-9-]+))?$/);
   if (m) return { name: 'method', doc: m[1] };
   return { name: 'notfound' };

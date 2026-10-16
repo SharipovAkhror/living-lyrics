@@ -1150,6 +1150,10 @@
 .lib-titlebar h1 {
   margin: 0;
 }
+.lib-actions {
+  display: flex;
+  gap: 10px;
+}
 .search {
   display: flex;
   align-items: center;

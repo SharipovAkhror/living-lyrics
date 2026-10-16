@@ -11,6 +11,7 @@ import '@fontsource-variable/inter/index.css';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/app.css';
+import './styles/instruments.css';
 import { App } from './app/App';
 
 createRoot(document.getElementById('root')!).render(

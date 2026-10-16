@@ -1,10 +1,11 @@
-import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { memo, useLayoutEffect, useRef, useState } from 'react';
 import type { InstCue, Timeline } from '@/data/timeline';
 import type { MotionPref } from '@/app/settings';
 import { formatTime } from '@/data/library';
-import { instrument, instrumentSvg, loadInstrumentSvg } from '@/instruments/catalog';
+import { instrument } from '@/instruments/catalog';
 import { blockState, clamp01, type Measure } from './flow';
 import type { BlockUpdater } from './LineBlock';
+import { InstrumentStage } from './InstrumentStage';
 
 interface Props {
   cue: InstCue;
@@ -15,7 +16,6 @@ interface Props {
   onPick: (idx: number) => void;
 }
 
-const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
 /**
  * An instrumental passage in the flow. Ahead of time it is a compact line ("Дальше — уд, канун"),
@@ -25,26 +25,19 @@ function InstBlockImpl({ cue, timeline, motion, stage, register, onPick }: Props
   const root = useRef<HTMLDivElement>(null);
   const compact = useRef<HTMLDivElement>(null);
   const full = useRef<HTMLDivElement>(null);
-  const art = useRef<HTMLDivElement>(null);
   const count = useRef<HTMLSpanElement>(null);
   const { section } = cue;
   const keys = section.instruments;
-  const shown = keys.slice(0, stage.w < 560 ? 3 : 4);
   const names = keys.map((k) => instrument(k)?.name ?? k);
   const nextVocal = timeline.cues.find((c) => c.kind === 'line' && c.start >= cue.end - 0.01);
-  const [svgs, setSvgs] = useState(() => shown.map((k) => instrumentSvg(k)));
+  // Draw-in, presence and loudness reach the stage through React state, quantised so it re-renders
+  // only while something visibly changes (a few dozen times per passage, not every frame).
+  const [anim, setAnim] = useState({ progress: 0, presence: 0, energy: 0 });
+  const animRef = useRef(anim);
 
-  useEffect(() => {
-    if (svgs.length === shown.length && svgs.every(Boolean)) return;
-    let alive = true;
-    void Promise.all(shown.map(loadInstrumentSvg)).then((list) => alive && setSvgs(list));
-    return () => {
-      alive = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shown.join()]);
-
-  const fullH = Math.round(Math.min(stage.h * 0.66, 520));
+  const fullH = Math.round(Math.min(stage.h * 0.72, 620));
+  const textH = section.note ? 96 : section.mode ? 64 : 44;
+  const stageSize = { w: Math.max(200, Math.min(stage.w - 24, 1040)), h: Math.max(160, fullH - textH) };
   const compactH = useRef(56);
 
   useLayoutEffect(() => {
@@ -70,10 +63,15 @@ function InstBlockImpl({ cue, timeline, motion, stage, register, onPick }: Props
       full.current.style.transform = `scale(${(0.94 + 0.06 * p).toFixed(4)})`;
     }
     // Draw-in is a function of time since the passage began, so seeking lands on the same drawing.
-    const draw = motion === 'off' ? 1 : clamp01((t - (cue.start - 0.3)) / 2.6);
-    art.current?.style.setProperty('--draw', easeOut(draw).toFixed(4));
-    art.current?.style.setProperty('--hatch', clamp01((t - cue.start - 0.9) / 1.6).toFixed(3));
-    art.current?.style.setProperty('--energy', motion === 'full' ? timeline.energyAt(t).toFixed(3) : '0');
+    const progress = motion === 'off' ? 1 : clamp01((t - (cue.start - 0.3)) / 2.6);
+    const energy = motion === 'full' && p > 0.5 ? Math.round(timeline.energyAt(t) * 10) / 10 : 0;
+    const q = (v: number) => Math.round(v * 50) / 50;
+    const next = { progress: q(progress), presence: q(p), energy };
+    const cur = animRef.current;
+    if (next.progress !== cur.progress || next.presence !== cur.presence || next.energy !== cur.energy) {
+      animRef.current = next;
+      setAnim(next);
+    }
     if (count.current && p > 0.01) {
       const left = (nextVocal?.start ?? cue.end) - t;
       const txt = nextVocal ? `Голос через ${formatTime(Math.max(0, left))}` : `До конца ${formatTime(Math.max(0, cue.end - t))}`;
@@ -89,20 +87,18 @@ function InstBlockImpl({ cue, timeline, motion, stage, register, onPick }: Props
         <span className="fb-inst-kicker">Инструменты</span> {names.join(' · ')}
       </div>
       <div ref={full} className="fb-inst-full" style={{ height: fullH }}>
-        <div ref={art} className={`fb-inst-art n${shown.length}`} aria-hidden>
-          {shown.map((k, i) => (
-            <div key={k} className="fb-inst-cell material">
-              <div className="eng" dangerouslySetInnerHTML={{ __html: svgs[i] ?? '' }} />
-              <div className="fb-inst-name t-footnote">
-                {instrument(k)?.name ?? k}
-                {instrument(k)?.native && <span className="fb-inst-native"> {instrument(k)!.native}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
+        {anim.presence > 0 && (
+          <InstrumentStage
+            keys={keys}
+            performers={section.performers}
+            mode={section.layout}
+            progress={anim.progress}
+            presence={anim.presence}
+            energy={anim.energy}
+            size={stageSize}
+          />
+        )}
         <div className="fb-inst-text">
-          {keys.length > shown.length && <div className="t-subhead">{names.join(' · ')}</div>}
-          {section.performers?.length ? <div className="t-subhead fb-inst-who">{section.performers.join(', ')}</div> : null}
           {section.mode && <div className="t-footnote fb-inst-mode">{section.mode}</div>}
           {section.note && <p className="t-callout fb-inst-note">{section.note}</p>}
           <span ref={count} className="fb-inst-count t-footnote tabular" />

@@ -29,9 +29,14 @@ export function LibraryPage() {
       <header className="lib-head">
         <div className="lib-titlebar">
           <h1 className="t-large-title">Песни</h1>
-          <a className="btn btn-circle glass" href="/method" onClick={linkHandler('/method')} aria-label="Методология">
-            <Icon name="book.pages" size={21} />
-          </a>
+          <div className="lib-actions">
+            <a className="btn btn-circle glass" href="/instruments" onClick={linkHandler('/instruments')} aria-label="Инструменты: галерея гравюр">
+              <Icon name="square.grid.2x2" size={20} />
+            </a>
+            <a className="btn btn-circle glass" href="/method" onClick={linkHandler('/method')} aria-label="Методология">
+              <Icon name="book.pages" size={21} />
+            </a>
+          </div>
         </div>
         <label className="search">
           <Icon name="magnifyingglass" size={17} weight={2} className="search-icon" />
