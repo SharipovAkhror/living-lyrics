@@ -1,0 +1,199 @@
+/*
+ * Design tokens. Values follow Apple HIG (iOS 26): system label/fill colours, Dynamic Type "Large" sizes,
+ * 44 pt minimum hit targets, Liquid Glass only for the functional layer (bars, controls, sheets).
+ * Per-song accent arrives at runtime as --song-accent / --song-accent-dark (see src/app/useSongTheme.ts).
+ */
+
+@font-face {
+  font-family: 'KFGQPC Hafs';
+  src: url('/fonts/KFGQPC-Uthmanic-Script-HAFS.otf') format('opentype');
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* Type families */
+  --font-ui: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter Variable', 'Inter', system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter Variable', 'Inter', system-ui, sans-serif;
+  --font-rounded: ui-rounded, 'SF Pro Rounded', -apple-system, 'Inter Variable', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace;
+  --font-serif: 'Cormorant Garamond', 'Iowan Old Style', 'Palatino', Georgia, serif;
+  --font-mushaf: 'KFGQPC Hafs', 'Amiri Quran', 'Scheherazade New', serif;
+  --font-nastaliq: 'Noto Nastaliq Urdu', 'KFGQPC Hafs', serif;
+
+  /* Dynamic Type, iOS "Large" (default) sizes in px = pt */
+  --t-large-title: 34px;
+  --t-title1: 28px;
+  --t-title2: 22px;
+  --t-title3: 20px;
+  --t-headline: 17px;
+  --t-body: 17px;
+  --t-callout: 16px;
+  --t-subhead: 15px;
+  --t-footnote: 13px;
+  --t-caption1: 12px;
+  --t-caption2: 11px;
+
+  /* Spacing (8-pt grid with 4-pt half steps) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --gutter: 16px;
+
+  /* Hit targets and control sizes */
+  --hit: 44px;
+  --btn-sm: 36px;
+  --btn-md: 44px;
+  --btn-lg: 56px;
+  --btn-xl: 64px;
+
+  /* Radii: concentric — inner radius = outer radius − inset */
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 28px;
+  --r-2xl: 34px;
+  --r-pill: 999px;
+
+  /* Motion. iOS default spring ≈ response 0.5, damping 0.825 → cubic approximation */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --dur-1: 120ms;
+  --dur-2: 220ms;
+  --dur-3: 360ms;
+  --dur-4: 520ms;
+
+  /* ===== Light appearance (iOS system colours) ===== */
+  --bg: #f2f2f7;
+  --bg-elevated: #ffffff;
+  --bg-grouped: #f2f2f7;
+  --label: #000000;
+  --label-2: rgba(60, 60, 67, 0.6);
+  --label-3: rgba(60, 60, 67, 0.3);
+  --label-4: rgba(60, 60, 67, 0.18);
+  --fill: rgba(120, 120, 128, 0.2);
+  --fill-2: rgba(120, 120, 128, 0.16);
+  --fill-3: rgba(118, 118, 128, 0.12);
+  --fill-4: rgba(116, 116, 128, 0.08);
+  --separator: rgba(60, 60, 67, 0.29);
+  --separator-opaque: #c6c6c8;
+  --system-red: #ff3b30;
+  --system-green: #34c759;
+  --system-orange: #ff9500;
+  --accent: var(--song-accent, #007aff);
+  --on-accent: #ffffff;
+
+  /* Stage text (lyrics) */
+  --ink: #111114;
+  --ink-sung: var(--ink);
+  --ink-unsung: rgba(17, 17, 20, 0.28);
+  --ink-ghost: rgba(17, 17, 20, 0.1);
+
+  /* Liquid Glass (regular) */
+  --glass-tint: rgba(255, 255, 255, 0.52);
+  --glass-tint-strong: rgba(255, 255, 255, 0.74);
+  --glass-blur: 22px;
+  --glass-saturate: 190%;
+  --glass-rim: rgba(255, 255, 255, 0.85);
+  --glass-rim-low: rgba(255, 255, 255, 0.25);
+  --glass-edge: rgba(0, 0, 0, 0.06);
+  --glass-shadow: 0 10px 30px -10px rgba(20, 20, 40, 0.22), 0 2px 8px -2px rgba(20, 20, 40, 0.08);
+  /* Standard material (content layer: sharh panel, lists) */
+  --material-thick: rgba(246, 246, 248, 0.82);
+  --material-regular: rgba(246, 246, 248, 0.68);
+  --material-thin: rgba(246, 246, 248, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #000000;
+    --bg-elevated: #1c1c1e;
+    --bg-grouped: #000000;
+    --label: #ffffff;
+    --label-2: rgba(235, 235, 245, 0.6);
+    --label-3: rgba(235, 235, 245, 0.3);
+    --label-4: rgba(235, 235, 245, 0.16);
+    --fill: rgba(120, 120, 128, 0.36);
+    --fill-2: rgba(120, 120, 128, 0.32);
+    --fill-3: rgba(118, 118, 128, 0.24);
+    --fill-4: rgba(118, 118, 128, 0.18);
+    --separator: rgba(84, 84, 88, 0.65);
+    --separator-opaque: #38383a;
+    --system-red: #ff453a;
+    --system-green: #30d158;
+    --system-orange: #ff9f0a;
+    --accent: var(--song-accent-dark, #0a84ff);
+    --on-accent: #0b0b0d;
+    --ink: #f5f5f7;
+    --ink-unsung: rgba(245, 245, 247, 0.3);
+    --ink-ghost: rgba(245, 245, 247, 0.1);
+    --glass-tint: rgba(40, 40, 46, 0.42);
+    --glass-tint-strong: rgba(44, 44, 50, 0.66);
+    --glass-rim: rgba(255, 255, 255, 0.28);
+    --glass-rim-low: rgba(255, 255, 255, 0.06);
+    --glass-edge: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 12px 34px -10px rgba(0, 0, 0, 0.6), 0 2px 8px -2px rgba(0, 0, 0, 0.4);
+    --material-thick: rgba(28, 28, 30, 0.82);
+    --material-regular: rgba(28, 28, 30, 0.66);
+    --material-thin: rgba(28, 28, 30, 0.48);
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #000000;
+  --bg-elevated: #1c1c1e;
+  --bg-grouped: #000000;
+  --label: #ffffff;
+  --label-2: rgba(235, 235, 245, 0.6);
+  --label-3: rgba(235, 235, 245, 0.3);
+  --label-4: rgba(235, 235, 245, 0.16);
+  --fill: rgba(120, 120, 128, 0.36);
+  --fill-2: rgba(120, 120, 128, 0.32);
+  --fill-3: rgba(118, 118, 128, 0.24);
+  --fill-4: rgba(118, 118, 128, 0.18);
+  --separator: rgba(84, 84, 88, 0.65);
+  --separator-opaque: #38383a;
+  --system-red: #ff453a;
+  --system-green: #30d158;
+  --system-orange: #ff9f0a;
+  --accent: var(--song-accent-dark, #0a84ff);
+  --on-accent: #0b0b0d;
+  --ink: #f5f5f7;
+  --ink-unsung: rgba(245, 245, 247, 0.3);
+  --ink-ghost: rgba(245, 245, 247, 0.1);
+  --glass-tint: rgba(40, 40, 46, 0.42);
+  --glass-tint-strong: rgba(44, 44, 50, 0.66);
+  --glass-rim: rgba(255, 255, 255, 0.28);
+  --glass-rim-low: rgba(255, 255, 255, 0.06);
+  --glass-edge: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 12px 34px -10px rgba(0, 0, 0, 0.6), 0 2px 8px -2px rgba(0, 0, 0, 0.4);
+  --material-thick: rgba(28, 28, 30, 0.82);
+  --material-regular: rgba(28, 28, 30, 0.66);
+  --material-thin: rgba(28, 28, 30, 0.48);
+}
+
+/* Accessibility: Reduce Transparency → frosted, nearly opaque surfaces. Increase Contrast → stronger edges. */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-tint: var(--bg-elevated);
+    --glass-tint-strong: var(--bg-elevated);
+    --material-thick: var(--bg-elevated);
+    --material-regular: var(--bg-elevated);
+    --material-thin: var(--bg-elevated);
+  }
+}
+@media (prefers-contrast: more) {
+  :root {
+    --glass-edge: var(--separator-opaque);
+    --ink-unsung: color-mix(in srgb, var(--ink) 55%, transparent);
+    --label-2: color-mix(in srgb, var(--label) 78%, transparent);
+  }
+}

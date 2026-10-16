@@ -1,0 +1,71 @@
+{
+  "$schema": "../../../docs/schema/song.schema.json",
+  "slug": "karitas",
+  "title": "Karitas",
+  "artist": "Sami Yusuf",
+  "featuring": [
+    "Cappella Amsterdam",
+    "Amsterdam Andalusian Orchestra"
+  ],
+  "release": {
+    "album": "When Paths Meet (Live at The Holland Festival)",
+    "year": 2023
+  },
+  "performance": {
+    "event": "Holland Festival",
+    "city": "Amsterdam",
+    "date": "2022-06"
+  },
+  "languages": [
+    "az",
+    "la",
+    "ar"
+  ],
+  "poets": [
+    {
+      "name": "Мухаммед Физули",
+      "lang": "az",
+      "era": "XVI в."
+    },
+    {
+      "name": "Хильдегарда Бингенская",
+      "lang": "la",
+      "era": "XII в."
+    },
+    {
+      "name": "Абу-ль-Хасан аш-Шуштари",
+      "lang": "ar",
+      "era": "XIII в."
+    },
+    {
+      "name": "Абд аль-Гани ан-Набулси",
+      "lang": "ar",
+      "era": "XVII–XVIII вв."
+    }
+  ],
+  "duration": 490,
+  "palette": {
+    "accent": "#9A6A12",
+    "accentDark": "#E7B654",
+    "field": [
+      "#F1C46A",
+      "#C8553D",
+      "#6B2D5C",
+      "#2F4B7C"
+    ]
+  },
+  "coverGlyph": "Karitas",
+  "audio": {
+    "status": "missing"
+  },
+  "timing": {
+    "status": "draft",
+    "method": "legacy-estimate",
+    "notes": "Тайм-коды строф перенесены из прототипа; время слов распределено по слогам. Нужна сверка по записи (docs/methodology/05-alignment.md)."
+  },
+  "review": [
+    "Получить аудио и сверить тайм-коды по словам.",
+    "Сверить оригинальные тексты с первоисточниками и с тем, что реально поётся.",
+    "Подтвердить имена исполнителей-инструменталистов."
+  ]
+}

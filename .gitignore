@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.vercel/
+.env*
+!.env.example
+# Pipeline working files: sources, stems, transcripts. Only delivery files under public/audio are committed.
+work/
+*.log
+.DS_Store
