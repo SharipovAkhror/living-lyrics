@@ -1,0 +1,431 @@
+{
+ "slug": "one",
+ "officialLyrics": {
+  "found": false,
+  "text": "",
+  "url": "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/"
+ },
+ "pieces": [
+  {
+   "id": "eckhart-ouge-yusuf",
+   "title": "Daz ouge, da inne ich got sihe (as quoted by Sami Yusuf)",
+   "author": "Meister Eckhart",
+   "era": "c. 1260–1328 (German sermon «Qui audit me»)",
+   "lang": "de",
+   "script": "Latn",
+   "text": "Daz ouge, da inne ich got sihe\nDaz ist daz selbe ouge, da inne mich got sihet\nMin ouge und gotes ouge daz ist ein ouge",
+   "textSourceUrl": "https://circle.samiyusuf.art/personality-of-the-month-meister-eckhart",
+   "otherSources": [
+    "https://archive.org/details/deutschemystiker02pfei/page/n328/mode/1up",
+    "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/"
+   ],
+   "confidence": "single-source",
+   "notes": "Middle High German (ISO 639-3 gmh), not modern German. In this artist article Sami Yusuf writes that these lines 'found their way, in their original Middle High German, into my composition ONE … recorded live at Amsterdam's Royal Concertgebouw'. The three lines are copied verbatim from the article, where they are three italic spans with no circumflexes. Their form ('Daz ouge…', 'sihet', 'und') follows the modern critical text (Quint, DW Pr. 12). Pfeiffer's 1857 edition (Predigt XCVI, p. 312) has the same words in a different form: '…dâ inne ich got sihe, daz ist daz selbe ouge, dâ inne mich got siht: mîn ouge unde gotes ouge daz ist ein ouge…'. The earlier draft's modern German ('Das Auge, darin ich Gott sehe, das ist dasselbe Auge, darin mich Gott sieht …') matches neither source and should be dropped. Official English translation (Holland Festival 2020 page): 'The eye through which I see God is the same eye through which God sees me; my eye and God's eye are one eye, one seeing, one knowing, one love.'"
+  },
+  {
+   "id": "eckhart-pfeiffer-xcvi",
+   "title": "Predigt XCVI «Qui audit me» (Pfeiffer 1857), sentence containing «ein gesiht … ein minnen»",
+   "author": "Meister Eckhart",
+   "era": "c. 1260–1328",
+   "lang": "de",
+   "script": "Latn",
+   "text": "daz dâ gesehen wirt mit dem ougen, dâ inne ich got sihe, daz ist daz selbe ouge, dâ inne mich got siht:\nmîn ouge unde gotes ouge daz ist ein ouge\nund ein gesiht und ein bekennen und ein minnen.",
+   "textSourceUrl": "https://archive.org/details/deutschemystiker02pfei/page/n328/mode/1up",
+   "otherSources": [
+    "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/",
+    "https://circle.samiyusuf.art/personality-of-the-month-meister-eckhart"
+   ],
+   "confidence": "single-source",
+   "notes": "Read from the page image of F. Pfeiffer, Deutsche Mystiker des 14. Jh., Bd. 2: Meister Eckhart (1857; 1906 reprint), Predigt XCVI, p. 312, lines 7–11. The original is prose; the line breaks here are mine. The internet archive OCR drops the circumflexes, so the text was checked against the scan. Only the last line ('und ein gesiht und ein bekennen und ein minnen') is used in the song sequence: the artist quote stops at 'ein ouge', but the official English translation of ONE ends '…are one eye, one seeing, one knowing, one love', so the continuation is probably sung. Its exact sung form (Pfeiffer's 'und ein gesiht…' or Quint's 'und éin gesiht…') and its position in the live arrangement are unverified. The earlier draft's 'Das ist ein Auge, und ein Gesicht, und ein Erkennen, und ein Minnen' mixes modern and old forms and has no source."
+  },
+  {
+   "id": "shushtari-kharajtu-lings",
+   "title": "خرجت في حين بعد الفنا (Lings, Sufi Poems, no. 58)",
+   "author": "Abu al-Hasan al-Shushtari",
+   "era": "13th c. (1212–1269)",
+   "lang": "ar",
+   "script": "Arab",
+   "text": "خرجت في حين بعد الفنا\nومن هنا بقيت بلا أنا\nومن أنا يا أنا إلا أنا",
+   "textSourceUrl": "https://sites.harvard.edu/sulaymanibnqiddees/2015/11/04/who-am-i/",
+   "otherSources": [
+    "https://archive.org/details/sufi-poems-a-mediaeval-anthology-martin-lings",
+    "https://www.aldiwan.net/poem69206.html",
+    "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/"
+   ],
+   "confidence": "two-sources-agree",
+   "notes": "The text is verbatim and unvocalized from the Harvard 'Sufi Poems' blog, which credits Martin Lings, Sufi Poems: A Mediaeval Anthology (no. 58). I checked it against the scan of Lings's book (archive.org, PDF page 100, Arabic facing p. 87): the consonantal text is the same. My reading of the printed vowel marks, some of them uncertain on أنا: «خَرَجْتُ في حِينٍ بَعْدَ الفَنَا / وَمِنْ هُنَا بَقِيتُ بِلاَ أنَا / وَمنْ أنا يا أنَا إلاَّ أنَا». Lings's English: 'After extinction I came out, and I / Eternal now am, though not as I. / And who am I, O I, but I?'. Variant: the muwashshah «كم درت في ذاتي» (aldiwan poem69206, from the diwan) has «ظَفِرْتُ بي حقا بعد الفنا / ومن هنا أبقى بِلا أنا / ومَنْ أنا يا أنا إِلا أنا». The official English translation of ONE has exactly three lines here ('Annihilated, I then emerged / Living on, but without I, / And who am I, O I, but I?'). That fits the Lings version ('emerged' = خرجت, 'living on' = بقيت). The earlier draft's «خَرَجْتُ فِيهِ بَعْدَ الْفَنَا» (فيه) matches no source. Its extra line «ظَفِرْتُ بِي حَقًّا بَعْدَ الْفَنَا» is absent from the official translation and probably not sung. Not verified by ear."
+  },
+  {
+   "id": "shushtari-suqitu-kas-al-hawa",
+   "title": "سقيت كأس الهوى قديما",
+   "author": "Abu al-Hasan al-Shushtari",
+   "era": "13th c. (1212–1269)",
+   "lang": "ar",
+   "script": "Arab",
+   "text": "سُقيتُ كأس الهَوَى قديماً\nمن غير أَرْضيِ ولاَ سمَائِي\nأصْبحتُ به فَريدَ عَصري\nبَينَ الْوَرى حاَمِلاً لِوائِي\nلِي مَذْهَبٌ مَذْهَبٌ عَجِيب\nفي الحُبِّ قَدْ فَاقَ يَا هَنائِي\nيَا مَنْ هُمُو لِلجْمِيل أهْلٌ\nإِنْ لم يَمنُّوا فَيَا شَقائِي\nحاشَاكُموا يَا أَُهَيْلَ نَجْدٍ\nأن تَقْطَعوُا مِنْكْمُو رجاَئِي",
+   "textSourceUrl": "https://www.aldiwan.net/poem69371.html",
+   "otherSources": [
+    "https://www.nawadiraat.org/poems/6733",
+    "https://archive.org/details/abu-al-hasan-al-shushtari-1",
+    "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/"
+   ],
+   "confidence": "two-sources-agree",
+   "notes": "Five bayts (mukhalla' al-basit). The text is verbatim from aldiwan.net, vowel marks as printed (including oddities such as «أَُهَيْلَ», «أَرْضيِ» and «تَقْطَعوُا»), split into hemistichs as on nawadiraat.org; nawadiraat is an identical copy. An independent check is the diwan edition on archive.org (abu-al-hasan-al-shushtari-1, OCR, poem 'سقيت كأس الهوى', citing Ibn al-Khatib, Rawdat al-ta'rif, p. 509). It has the same readings: «من غير أرضي ولا سمائي», «أصبحت به فريد عصري», «في الحب قد فاق يا هنائي», «إن لم يمنوا». The official English translation of ONE covers all five bayts in this order: 'I drank from the eternal cup of love, / that is neither of this world nor of heaven. / Thus I became peerless in my time / Carrying my banner among one and all. / Mine is a wondrous path, an unsurpassed path. / How great is its radiance and my delight therein. / O you, who are worthy of beauty / If you do not give me your favor freely, I am wretched. / O People of Najd, far be it from you / To cut the ties of hope that bind us.' The earlier draft has unsourced readings: «من غير أرض ولا سماء», «أصبحت فيه», «لي مذهب المذهب العجيب / بالحسن قد فاق», «إن لم تمنوا». Two of them may matter. Whisper heard «أصبحت فيه» at 571 s and 735 s. The translation's 'radiance' and 'If you do not' (second person) could point to a sung variant. Verify by ear before changing the edition text."
+  }
+ ],
+ "sequence": [
+  {
+   "t": 0,
+   "pieceId": "eckhart-ouge-yusuf",
+   "line": "Daz ouge, da inne ich got sihe",
+   "evidence": "Artist article says these MHG lines are sung in ONE. The official description says the piece opens with Cappella Amsterdam. Voice map: voice 0–250 s. Whisper at 0 s ('ترسل الهواء') is a hallucination. Exact onset not measured.",
+   "voice": "Cappella Amsterdam (choir)"
+  },
+  {
+   "t": -1,
+   "pieceId": "eckhart-ouge-yusuf",
+   "line": "Daz ist daz selbe ouge, da inne mich got sihet",
+   "evidence": "Artist article; order from the official translation. Time unknown (within 0–58 s?).",
+   "voice": "Cappella Amsterdam (choir)"
+  },
+  {
+   "t": -1,
+   "pieceId": "eckhart-ouge-yusuf",
+   "line": "Min ouge und gotes ouge daz ist ein ouge",
+   "evidence": "Artist article; time unknown.",
+   "voice": "Cappella Amsterdam (choir)"
+  },
+  {
+   "t": -1,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "und ein gesiht und ein bekennen und ein minnen.",
+   "evidence": "Official 2020 English translation ends 'one seeing, one knowing, one love'. Position in the live arrangement unknown: it may follow line 3 in the opening or belong to the finale (the earlier draft put it at ~730 s, with no evidence).",
+   "voice": "Cappella Amsterdam (choir)"
+  },
+  {
+   "t": 65.8,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "خرجت في حين بعد الفنا",
+   "evidence": "Whisper 'بعد الفناء' at 65.8 s (end of the line). The opening words (خرجت في حين / خرجت فيه / ظفرت بي حقا) were not heard.",
+   "voice": "solo, unconfirmed (Sami Yusuf per the earlier draft)"
+  },
+  {
+   "t": -1,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "ومن هنا بقيت بلا أنا",
+   "evidence": "Official translation 'Living on, but without I'. Sung between ~66 and ~78 s by order; not heard by Whisper.",
+   "voice": "solo, unconfirmed"
+  },
+  {
+   "t": 78,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "ومن أنا يا أنا إلا أنا",
+   "evidence": "Whisper 'إلى أنت' at 78 s, a plausible mishearing of 'إلا أنا'.",
+   "voice": "solo, unconfirmed"
+  },
+  {
+   "t": 303,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "سُقيتُ كأس الهَوَى قديماً",
+   "evidence": "Hypothesis only. Voice map: a vocal section 303–391 s follows the 250–303 s instrumental, and the official translation puts this poem after the first fragment. Not heard by Whisper here.",
+   "voice": "unconfirmed (Sami Yusuf or Amsterdam Andalusian Orchestra vocalists)"
+  },
+  {
+   "t": -1,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "من غير أَرْضيِ ولاَ سمَائِي",
+   "evidence": "Hypothesis (303–391 s block), order from the official translation.",
+   "voice": "unconfirmed"
+  },
+  {
+   "t": -1,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "أصْبحتُ به فَريدَ عَصري",
+   "evidence": "Hypothesis (303–391 s block). The edition reads 'به'; Whisper elsewhere heard 'فيه'.",
+   "voice": "unconfirmed"
+  },
+  {
+   "t": -1,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "بَينَ الْوَرى حاَمِلاً لِوائِي",
+   "evidence": "Hypothesis (303–391 s block).",
+   "voice": "unconfirmed"
+  },
+  {
+   "t": -1,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "لِي مَذْهَبٌ مَذْهَبٌ عَجِيب",
+   "evidence": "Hypothesis (303–391 s block); line present in the official translation.",
+   "voice": "unconfirmed"
+  },
+  {
+   "t": -1,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "في الحُبِّ قَدْ فَاقَ يَا هَنائِي",
+   "evidence": "Hypothesis (303–391 s block); line present in the official translation.",
+   "voice": "unconfirmed"
+  },
+  {
+   "t": 442,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "يَا مَنْ هُمُو لِلجْمِيل أهْلٌ",
+   "evidence": "Hypothesis. Voice map: vocal 442–466 and 474–500 s; Whisper 482–495 s heard 'أنت من' (unclear, possibly 'يا من'). The earlier draft also placed the Najd bayts here.",
+   "voice": "unconfirmed (earlier draft: choir)"
+  },
+  {
+   "t": -1,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "إِنْ لم يَمنُّوا فَيَا شَقائِي",
+   "evidence": "Hypothesis (442–500 s). The official translation uses the second person ('If you do not'), so the sung word may be تمنوا.",
+   "voice": "unconfirmed"
+  },
+  {
+   "t": -1,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "حاشَاكُموا يَا أَُهَيْلَ نَجْدٍ",
+   "evidence": "Hypothesis (442–500 s); line present in the official translation.",
+   "voice": "unconfirmed"
+  },
+  {
+   "t": -1,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "أن تَقْطَعوُا مِنْكْمُو رجاَئِي",
+   "evidence": "Hypothesis (442–500 s); line present in the official translation.",
+   "voice": "unconfirmed"
+  },
+  {
+   "t": 561,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "سُقيتُ كأس الهَوَى قديماً",
+   "evidence": "Whisper at 561 s: 'أسى الهواء' ≈ 'كأس الهوى' (reprise; voice map: vocal 559–585 s).",
+   "voice": "unconfirmed"
+  },
+  {
+   "t": -1,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "من غير أَرْضيِ ولاَ سمَائِي",
+   "evidence": "Whisper 561–574 s: 'إن غير / أره ولا' ≈ 'من غير أرضي ولا'.",
+   "voice": "unconfirmed"
+  },
+  {
+   "t": 571,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "أصْبحتُ به فَريدَ عَصري",
+   "evidence": "Whisper at 571 s: 'أصبحت فيه'. The edition reads 'به'; the sung word may be 'فيه'.",
+   "voice": "unconfirmed"
+  },
+  {
+   "t": 735,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "أصْبحتُ به فَريدَ عَصري",
+   "evidence": "Whisper 735–740 s: 'أصبحت فيه' ×5. The repeat count is unreliable (likely a Whisper loop). Voice map: vocal 730–786 s.",
+   "voice": "unconfirmed"
+  }
+ ],
+ "credits": [
+  {
+   "role": "Composed and arranged",
+   "name": "Sami Yusuf",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "German words",
+   "name": "Meister Eckhart",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Arabic words",
+   "name": "Abu al-Hasan al-Shushtari",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Key / mode",
+   "name": "E flat (with allusions to maqām Nahāwand)",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Vocal",
+   "name": "Sami Yusuf",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Choir: Cappella Amsterdam, sopranos",
+   "name": "Sanda Audere, Elisabeth Blom, Marijke van der Harst",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Choir: Cappella Amsterdam, altos",
+   "name": "Hebe de Champeaux, Irene Sorozabal, Inga Schneider",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Choir: Cappella Amsterdam, tenors",
+   "name": "Jon Etxabe Arzuaga, Jelle Leistra, Diederik Rooker",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Choir: Cappella Amsterdam, basses",
+   "name": "Jan Douwes, Angus van Grevenbroek, Johan Vermeer",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Production (listed under Cappella Amsterdam)",
+   "name": "Francesca Thompson",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Amsterdam Andalusian Orchestra: vocals",
+   "name": "Salah Mesbah",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Amsterdam Andalusian Orchestra: percussion, vocals",
+   "name": "Dwight Breinburg",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Amsterdam Andalusian Orchestra: rabab, vocals",
+   "name": "Mohamed Chairi",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Amsterdam Andalusian Orchestra: qanun, oud, vocals",
+   "name": "Ahmed el Maai",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Mixed and mastered",
+   "name": "Andante Studios",
+   "source": "https://play.samaanetwork.net/music/one/"
+  },
+  {
+   "role": "Recording",
+   "name": "Live at the Royal Concertgebouw, Amsterdam, Holland Festival, June 2022; released 2023 as a single and on ONE: When Paths Meet",
+   "source": "https://samiyusuf.art/music/one"
+  },
+  {
+   "role": "English translation from Arabic (official, 2020 version)",
+   "name": "Dr. Yousef Casewit & Saad Ansari",
+   "source": "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/"
+  },
+  {
+   "role": "English translation from German (official, 2020 version; the Holland Festival page credits Katherine O'Brien, the 2020 YouTube description credits Maurice O'C Walshe)",
+   "name": "Katherine O'Brien / Maurice O'C Walshe",
+   "source": "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/ ; https://www.youtube.com/watch?v=AAtA2RVF6LY"
+  },
+  {
+   "role": "Language consultants (2020 version): German / Arabic",
+   "name": "Marion Höchstötter / Elouafi Mohammed",
+   "source": "https://www.youtube.com/watch?v=AAtA2RVF6LY"
+  },
+  {
+   "role": "Idea and commission",
+   "name": "Holland Festival",
+   "source": "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/"
+  }
+ ],
+ "instruments": [
+  {
+   "name": "santur (santoor)",
+   "player": "Mahyar Toreihi",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "Official description: the piece culminates in 'a mesmerising santur and percussion performance by Sami Yusuf's ensemble'. Probably the long instrumental stretch of ~585–730 s (voice map); not verified."
+  },
+  {
+   "name": "daf",
+   "player": "Seyyed Mohammad Jaberi",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "Percussion of the closing santur/percussion section (description); timing unverified."
+  },
+  {
+   "name": "bendir",
+   "player": "Ömer Avci",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "Percussion; timing unverified."
+  },
+  {
+   "name": "percussion (Amsterdam Andalusian Orchestra)",
+   "player": "Ruven Ruppik, Khaili Ahmed, Dwight Breinburg",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "With the Andalusian section after the choral opening (description); timing unverified."
+  },
+  {
+   "name": "ney",
+   "player": "Eyüpcan Açikpazu (Sami Yusuf ensemble); Marianne Noordink (Amsterdam Andalusian Orchestra)",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "Named in the official description among the Amsterdam Andalusian Orchestra sounds after the choral opening."
+  },
+  {
+   "name": "violin",
+   "player": "Abderrahim Semlali, Jaafar Lougmani, Mohamed Al Mokhlis, Hannelore de Vuyst",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "Named in the official description (Andalusian section)."
+  },
+  {
+   "name": "viola",
+   "player": "Hessel Moeselaar",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "Credited; audibility not checked."
+  },
+  {
+   "name": "qanun",
+   "player": "Onur Cicin (Sami Yusuf ensemble); Ahmed el Maai (Amsterdam Andalusian Orchestra)",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "Named in the official description (Andalusian section)."
+  },
+  {
+   "name": "oud",
+   "player": "Hasan Hekimoglu (Sami Yusuf ensemble); Haytham Safia, Ahmed el Maai (Amsterdam Andalusian Orchestra)",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "Credited; audibility not checked."
+  },
+  {
+   "name": "rabab",
+   "player": "Mohamed Chairi",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "Credited; audibility not checked."
+  },
+  {
+   "name": "double bass",
+   "player": "Daniël van Huffelen",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "Credited; audibility not checked."
+  },
+  {
+   "name": "bağlama",
+   "player": "Huseyin Can Pala",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "Credited; possibly concert-wide credit, not checked in ONE."
+  },
+  {
+   "name": "erhu",
+   "player": "Guo Gan",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "Credited on the ONE page, but not named in ONE's description; may be a concert-wide credit."
+  },
+  {
+   "name": "guitar",
+   "player": "Jon Lawton",
+   "source": "https://play.samaanetwork.net/music/one/",
+   "when": "Credited; may be a concert-wide credit, not checked in ONE."
+  },
+  {
+   "name": "voices: mixed chamber choir",
+   "player": "Cappella Amsterdam (12 singers, see credits)",
+   "source": "https://samiyusuf.art/music/one",
+   "when": "Opens the piece ('hauntingly beautiful vocals'); voice map 0–250 s and the choir at 793–828 s."
+  }
+ ],
+ "openQuestions": [
+  "No original-language lyrics for the live recording (or the 2020 version) were found from the artist or label. The YouTube descriptions of BcSnZ-RuwyI and AAtA2RVF6LY, samiyusuf.art, play.samaanetwork.net and cappellaamsterdam.nl give only descriptions and credits. The only official texts are the English translation on the 2020 Holland Festival page (© Andante Records) and Sami Yusuf's own quote of the three MHG lines (circle.samiyusuf.art). hollandfestival.nl/en/one is behind a Cloudflare challenge and has no Wayback snapshot. YouTube captions could not be read (bot check).",
+  "Eckhart: the artist says the lines are sung 'in their original Middle High German', so the draft's modern German must be replaced. Still to confirm by ear: whether the choir follows the artist's Quint-type spelling ('sihet', 'und') or Pfeiffer's ('siht', 'unde'); whether 'und ein gesiht und ein bekennen und ein minnen' is sung (the official translation implies it) and where; how often each line repeats in 0–250 s; and what the choir sings at 793–828 s.",
+  "First Shushtari fragment: is it «خرجت في حين بعد الفنا» (Lings), «خرجت فيه بعد الفنا» (earlier draft, unsourced) or «ظفرت بي حقا بعد الفنا» (diwan muwashshah, aldiwan poem69206)? And «بقيت» or «أبقى»? The official translation has only three lines, so the draft's extra «ظَفِرْتُ بِي حَقًّا بَعْدَ الْفَنَا» line is probably not sung. Check around 58–85 s and in the 138–245 s section, which the draft calls counterpoint (unverified).",
+  "Second poem: the edition reads «أصبحت به», but Whisper heard «أصبحت فيه» twice (571 s, 735 s). Other points to check: «إن لم يمنوا» (edition) or «تمنوا» (the official translation's 'If you do not' and the earlier draft); «في الحب قد فاق» or «بالحسن قد فاق» (earlier draft; 'radiance' in the translation). The full bayt order is in the official translation, but which bayts are sung in 303–391 s and 442–500 s is a hypothesis with no transcript support.",
+  "Amen at ~740 s: no published text (translation, artist quote, poems) contains a prayer or Amen, and 'Amen' is a known Whisper hallucination over choral or instrumental passages. Treat it as unconfirmed and check by ear before adding anything. The 735–740 s '×5' repeat of «أصبحت فيه» may also be a Whisper loop.",
+  "Who sings the Arabic: Sami Yusuf (credited 'Vocal'), or the Amsterdam Andalusian Orchestra vocalists (Salah Mesbah, Mohamed Chairi, Ahmed el Maai, Dwight Breinburg), or both? The earlier draft assigned it to Sami Yusuf without a source.",
+  "Credits: the Samaa block attached to 'One (Live at the Holland Festival)' is identical on the album page and may be concert-wide. Guo Gan (erhu), Jon Lawton (guitar) and the bağlama may not play in ONE. The cappellaamsterdam.nl/en/sami-yusuf-one list (Selim Boyaci, Seyed Ali Jaberi tanbour, Seyyed Pourya Jaberi, Kutay Ozcan, 'vocals, piano & barrel bass') belongs to the 2020 remote premiere, not the 2022 live recording. The draft's 'Музыкальное руководство: Sami Yusuf, Abderrahim Semlali' also comes from 2020 credits, where Semlali is 'Musical leader AAO'.",
+  "The German-translation credit conflicts: the Holland Festival 2020 page names Katherine O'Brien, the 2020 YouTube description names Maurice O'C Walshe.",
+  "My reading of the vowel marks in the Lings print (from a 600 dpi scan), especially the fatha on أنا, is uncertain. The pieces therefore use the unvocalized blog text, which matches the print letter for letter.",
+  "Times in the sequence are approximate: Whisper fragment times or voice-map block starts, as stated in each entry's evidence. Entries with t=-1 are ordering hypotheses only and need forced alignment (stage 5) after the texts are confirmed by ear."
+ ]
+}
