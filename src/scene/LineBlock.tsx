@@ -13,6 +13,8 @@ export type BlockUpdater = (t: number, d: number, top: number, wait: number) => 
 
 interface Props {
   cue: LineCue;
+  /** Word-by-word fill only where the timing is measured and checked; otherwise the whole line lights up. */
+  wordSync: boolean;
   settings: Pick<Settings, 'persianStyle' | 'showTranslation' | 'showTranslit' | 'showAlt' | 'textScale'>;
   motion: MotionPref;
   stage: { w: number; h: number };
@@ -22,15 +24,38 @@ interface Props {
 
 /** Longest a word may take to fill; a held note keeps the word lit instead of crawling for seconds. */
 const FILL_MAX = 1.6;
+/** Extra room around each word for the text-clipped fill (Nastaliq and Naskh glyphs overflow their box). */
+const PAD_X = 0.21;
 
-function LineBlockImpl({ cue, settings, motion, stage, register, onPick }: Props) {
+/** Light markup in translations: **key word** (the counterpart of the accented original word), *nuance*. */
+export function TrText({ text }: { text: string }) {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).filter(Boolean);
+  return (
+    <>
+      {parts.map((p, i) =>
+        p.startsWith('**') ? (
+          <strong key={i} className="tr-em">
+            {p.slice(2, -2)}
+          </strong>
+        ) : p.startsWith('*') ? (
+          <em key={i}>{p.slice(1, -1)}</em>
+        ) : (
+          p
+        ),
+      )}
+    </>
+  );
+}
+
+function LineBlockImpl({ cue, wordSync, settings, motion, stage, register, onPick }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const main = useRef<HTMLDivElement>(null);
   const orig = useRef<HTMLDivElement>(null);
   const subs = useRef<HTMLDivElement>(null);
   const wait = useRef<HTMLSpanElement>(null);
-  const lits = useRef<(HTMLSpanElement | null)[]>([]);
   const words = useRef<(HTMLSpanElement | null)[]>([]);
+  const widths = useRef<number[]>([]);
+  const fontPx = useRef(40);
 
   const { line } = cue;
   const fClass = fontClass(line, settings);
@@ -61,6 +86,8 @@ function LineBlockImpl({ cue, settings, motion, stage, register, onPick }: Props
       else hi = mid;
     }
     el.style.fontSize = `${Math.floor(lo)}px`;
+    fontPx.current = Math.floor(lo);
+    widths.current = words.current.map((w) => w?.offsetWidth ?? 0);
     // The translation's share includes its top margin: total height minus the original's block.
     const mainH = main.current!.offsetHeight;
     const m: Measure = { main: mainH, sub: subs.current ? r.offsetHeight - mainH : 0 };
@@ -81,26 +108,48 @@ function LineBlockImpl({ cue, settings, motion, stage, register, onPick }: Props
     r.classList.toggle('is-current', Math.abs(d) < 0.5);
     if (subs.current) subs.current.style.opacity = s.sub.toFixed(3);
 
-    // Karaoke: every word is visible from the start (dim) and fills in reading direction as it is sung.
+    // Every word is visible from the start (dim). With measured timing, each word fills in reading
+    // direction as it is sung; otherwise the whole line lights up while it is current.
+    // One text layer per word, coloured through background-clip:text — no overlay, so letters that
+    // join (Arabic, Persian) are drawn once and never double at the joins.
+    const o = orig.current;
+    if (o) {
+      const lit = d <= 0 ? 1 : clamp01((0.5 - d) / 0.5);
+      o.style.setProperty('--lit', `${Math.round((wordSync ? (d < 0 ? 1 : 0) : lit) * 100)}%`);
+    }
     for (let i = 0; i < line.words.length; i++) {
-      const lit = lits.current[i];
-      if (!lit) continue;
-      const w = line.words[i];
-      const span = Math.min(FILL_MAX, Math.max(0.08, w.e - w.s));
-      const f = clamp01((t - w.s) / span);
-      if (f >= 1) lit.style.maskImage = lit.style.webkitMaskImage = 'none';
-      else if (f <= 0) lit.style.maskImage = lit.style.webkitMaskImage = 'linear-gradient(transparent, transparent)';
-      else {
-        // A soft edge 18 % wide travelling across the word.
-        const p = f * 118 - 9;
-        const m = `linear-gradient(${cue.rtl ? 270 : 90}deg, #000 ${(p - 9).toFixed(1)}%, transparent ${(p + 9).toFixed(1)}%)`;
-        lit.style.maskImage = lit.style.webkitMaskImage = m;
-      }
       const el = words.current[i];
-      if (el && motion === 'full') {
-        // The word being sung rises a hair, then settles.
-        const active = t >= w.s && t < w.e + 0.15 ? Math.sin(Math.PI * clamp01((t - w.s) / Math.max(0.25, w.e - w.s + 0.15))) : 0;
-        el.style.transform = active > 0.001 ? `translate3d(0, ${(-active * 0.05).toFixed(3)}em, 0)` : '';
+      if (!el) continue;
+      const w = line.words[i];
+      if (wordSync && d > -1) {
+        const span = Math.min(FILL_MAX, Math.max(0.08, w.e - w.s));
+        const f = clamp01((t - w.s) / span);
+        if (f <= 0 || f >= 1) {
+          if (el.dataset.f !== String(f)) {
+            el.dataset.f = String(f);
+            el.classList.remove('is-filling');
+            el.classList.toggle('is-sung', f >= 1);
+            el.style.backgroundImage = '';
+          }
+        } else {
+          el.dataset.f = 'x';
+          el.classList.add('is-filling');
+          const W = widths.current[i] || el.offsetWidth || 1;
+          const pad = PAD_X * fontPx.current;
+          const at = ((pad + f * (W - 2 * pad)) / W) * 100;
+          const soft = Math.max(2, ((0.12 * (W - 2 * pad)) / W) * 100);
+          el.style.backgroundImage = `linear-gradient(${cue.rtl ? 'to left' : 'to right'}, var(--w-lit) ${(at - soft).toFixed(1)}%, var(--w-dim) ${(at + soft).toFixed(1)}%)`;
+        }
+        if (motion === 'full') {
+          // The word being sung rises a hair, then settles.
+          const active = t >= w.s && t < w.e + 0.15 ? Math.sin(Math.PI * clamp01((t - w.s) / Math.max(0.25, w.e - w.s + 0.15))) : 0;
+          el.style.transform = active > 0.001 ? `translate3d(0, ${(-active * 0.05).toFixed(3)}em, 0)` : '';
+        }
+      } else if (el.dataset.f) {
+        delete el.dataset.f;
+        el.classList.remove('is-filling', 'is-sung');
+        el.style.backgroundImage = '';
+        el.style.transform = '';
       }
     }
 
@@ -146,16 +195,7 @@ function LineBlockImpl({ cue, settings, motion, stage, register, onPick }: Props
                 }}
                 className={`w${w.em ? ' w--em' : ''}`}
               >
-                <span className="w-base">{w.w}</span>
-                <span
-                  ref={(el) => {
-                    lits.current[i] = el;
-                  }}
-                  className="w-lit"
-                  aria-hidden
-                >
-                  {w.w}
-                </span>
+                {w.w}
               </span>
               {w.br && <span className="w-br" />}
             </span>
@@ -176,7 +216,7 @@ function LineBlockImpl({ cue, settings, motion, stage, register, onPick }: Props
           )}
           {showTr && (
             <p className="fb-tr" lang="ru">
-              {line.tr.ru}
+              <TrText text={line.tr.ru} />
             </p>
           )}
         </div>

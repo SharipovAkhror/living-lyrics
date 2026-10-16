@@ -200,14 +200,20 @@ a {
   opacity: 0.6;
 }
 
-/* Prominent: tinted glass with the song accent (one per view). */
+/* Prominent: a lit orb in the song colour with a white glyph (one per view). */
 .btn-prominent {
-  background: var(--accent);
-  color: var(--on-accent);
+  --deep: color-mix(in srgb, var(--accent) 62%, #000);
+  background:
+    radial-gradient(120% 120% at 30% 22%, color-mix(in srgb, var(--accent) 88%, #fff) 0%, var(--accent) 38%, var(--deep) 100%);
+  color: #fff;
   box-shadow:
-    0 10px 24px -8px color-mix(in srgb, var(--accent) 70%, transparent),
-    inset 0 1px 0.5px rgba(255, 255, 255, 0.45),
-    inset 0 -1px 1px rgba(0, 0, 0, 0.12);
+    0 12px 30px -10px color-mix(in srgb, var(--accent) 80%, transparent),
+    0 0 0 1px color-mix(in srgb, #fff 18%, transparent),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.18);
+}
+.btn-prominent svg {
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
 }
 .btn-prominent:active:not(:disabled) {
   transform: scale(1.06);

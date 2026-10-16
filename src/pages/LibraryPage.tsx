@@ -81,7 +81,7 @@ export function LibraryPage() {
       </ul>
       {list.length === 0 && <p className="lib-empty t-body secondary">Ничего не найдено.</p>}
       <footer className="lib-foot t-footnote tertiary">
-        Тексты, переводы и шарх — {songs.length} {plural(songs.length, 'песня', 'песни', 'песен')}. Как добавить новую — в разделе «Методология».
+        Тексты, переводы и пояснения — {songs.length} {plural(songs.length, 'песня', 'песни', 'песен')}. Как добавить новую — в разделе «Методология».
       </footer>
     </div>
   );

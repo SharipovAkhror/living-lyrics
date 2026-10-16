@@ -10,6 +10,8 @@ import { InstrumentStage } from './InstrumentStage';
 interface Props {
   cue: InstCue;
   timeline: Timeline;
+  /** Timing is measured: countdowns like «Голос через 0:12» can be trusted. */
+  timed: boolean;
   motion: MotionPref;
   stage: { w: number; h: number };
   register: (idx: number, fn: BlockUpdater | null, m?: Measure) => void;
@@ -21,7 +23,7 @@ interface Props {
  * An instrumental passage in the flow. Ahead of time it is a compact line ("Дальше — уд, канун"),
  * on stage it opens into the engravings on a material plate, with who plays and when the voice returns.
  */
-function InstBlockImpl({ cue, timeline, motion, stage, register, onPick }: Props) {
+function InstBlockImpl({ cue, timeline, timed, motion, stage, register, onPick }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const compact = useRef<HTMLDivElement>(null);
   const full = useRef<HTMLDivElement>(null);
@@ -72,7 +74,7 @@ function InstBlockImpl({ cue, timeline, motion, stage, register, onPick }: Props
       animRef.current = next;
       setAnim(next);
     }
-    if (count.current && p > 0.01) {
+    if (count.current && p > 0.01 && timed) {
       const left = (nextVocal?.start ?? cue.end) - t;
       const txt = nextVocal ? `Голос через ${formatTime(Math.max(0, left))}` : `До конца ${formatTime(Math.max(0, cue.end - t))}`;
       if (count.current.textContent !== txt) count.current.textContent = txt;
@@ -101,7 +103,7 @@ function InstBlockImpl({ cue, timeline, motion, stage, register, onPick }: Props
         <div className="fb-inst-text">
           {section.mode && <div className="t-footnote fb-inst-mode">{section.mode}</div>}
           {section.note && <p className="t-callout fb-inst-note">{section.note}</p>}
-          <span ref={count} className="fb-inst-count t-footnote tabular" />
+          {timed && <span ref={count} className="fb-inst-count t-footnote tabular" />}
         </div>
       </div>
     </div>

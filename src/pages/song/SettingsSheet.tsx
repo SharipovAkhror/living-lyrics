@@ -134,8 +134,8 @@ export function SettingsSheet({
             <Switch label="Историческое письмо" checked={settings.showAlt} onChange={(v) => setSettings({ showAlt: v })} />
           </Row>
         )}
-        <Row title="Шарх" detail="Комментарий под текстом: то, что не вошло в перевод">
-          <Switch label="Шарх" checked={settings.showSharh} onChange={(v) => setSettings({ showSharh: v })} />
+        <Row title="Пояснения" detail="Короткий комментарий под текстом: то, что не вошло в перевод">
+          <Switch label="Пояснения" checked={settings.showSharh} onChange={(v) => setSettings({ showSharh: v })} />
         </Row>
         <div className="row row--control row--slider">
           <span className="t-footnote secondary" aria-hidden>

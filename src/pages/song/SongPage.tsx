@@ -244,10 +244,10 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
       </header>
 
       {sharh && (
-        <aside className={`sharh material material--thick${settings.sharhOpen ? ' is-open' : ''}`} aria-label="Шарх">
+        <aside className={`sharh material material--thick${settings.sharhOpen ? ' is-open' : ''}`} aria-label="Пояснение">
           <button className="sharh-head" onClick={() => setSettings({ sharhOpen: !settings.sharhOpen })} aria-expanded={settings.sharhOpen}>
             <Icon name="book.closed" size={17} className="sharh-icon" />
-            <span className="sharh-kicker t-footnote">Шарх</span>
+            <span className="sharh-kicker t-footnote">Пояснение</span>
             <span className="sharh-preview t-footnote secondary">{settings.sharhOpen ? '' : sharh.text.replace(/\*+/g, '')}</span>
             <Icon name={settings.sharhOpen ? 'chevron.down' : 'chevron.up'} size={15} weight={2.2} className="sharh-chevron tertiary" />
           </button>
@@ -282,7 +282,7 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
           </button>
           <button className="util" aria-pressed={settings.showSharh} onClick={() => setSettings({ showSharh: !settings.showSharh })}>
             <Icon name="book.closed" size={21} />
-            <span>Шарх</span>
+            <span>Пояснение</span>
           </button>
           <button className="util" onClick={() => setSheet('text')}>
             <Icon name="list.bullet" size={22} />

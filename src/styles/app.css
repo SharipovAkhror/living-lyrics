@@ -162,24 +162,30 @@
   height: 0;
 }
 .w {
+  /* One text layer per word. Colour comes from --lit (0–100 %, set per line by the Scene):
+     dim → lit for the whole line, or a travelling gradient clipped to the glyphs while a word is
+     sung. The generous padding (cancelled by negative margins) keeps overflowing Nastaliq and
+     Naskh strokes inside the box, so the clipped fill never cuts them. */
+  --w-lit: var(--ink);
+  --w-dim: var(--ink-unsung);
   position: relative;
   display: inline-block;
   white-space: nowrap;
-  padding: 0.06em 0.03em;
+  padding: 0.36em 0.21em;
+  margin: -0.3em -0.18em;
+  color: color-mix(in srgb, var(--w-lit) var(--lit, 0%), var(--w-dim));
 }
-.w-base {
-  color: var(--ink-unsung);
+.w--em {
+  --w-lit: var(--accent);
 }
-.w-lit {
-  position: absolute;
-  inset: 0;
-  padding: inherit;
-  color: var(--ink);
-  -webkit-mask-image: linear-gradient(transparent, transparent);
-  mask-image: linear-gradient(transparent, transparent);
+.w.is-sung {
+  color: var(--w-lit);
 }
-.w--em .w-lit {
-  color: var(--accent);
+.w.is-filling {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 .fb-subs {
   margin-top: clamp(10px, 2vh, 18px);
@@ -189,6 +195,13 @@
   align-items: center;
   gap: 6px;
   padding-bottom: 2px;
+}
+.tr-em {
+  color: var(--accent);
+  font-weight: 600;
+}
+.fb-tr em {
+  font-style: italic;
 }
 .fb-tr {
   margin: 0;

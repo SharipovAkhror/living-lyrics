@@ -36,6 +36,9 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
   const ownerRef = useRef(-2);
   const energyRef = useRef(0);
   const motion = effectiveMotion(settings);
+  // Word-by-word fill only for measured and checked timing: a fill that runs ahead of or behind the
+  // voice is worse than none (docs/methodology/05-alignment.md).
+  const wordSync = song.timing.status !== 'draft';
   const plan = useMemo(() => planFlow(timeline, motion === 'off'), [timeline, motion]);
 
   const register = useCallback((idx: number, fn: BlockUpdater | null, m?: Measure) => {
@@ -98,7 +101,7 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
       const f = pos - a;
       const centerY = stage.h * 0.36;
       const waits = new Map<number, number>();
-      for (const k of list) waits.set(k, waitHint(timeline, k, t));
+      for (const k of list) waits.set(k, wordSync ? waitHint(timeline, k, t) : 0);
       const room = (k: number) => (waits.get(k) ?? 0) * WAIT_ROOM;
       const A = layoutAt(a, list, measures, centerY, 8, room);
       const B = layoutAt(a + 1, list, measures, centerY, 8, room);
@@ -139,7 +142,7 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [timeline, plan, clock, onOwnerChange, stage]);
+  }, [timeline, plan, clock, onOwnerChange, stage, wordSync]);
 
   const getEnergy = useCallback(() => energyRef.current, []);
   const poets = song.poets?.map((p) => p.name).join(' · ');
@@ -177,9 +180,18 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
           const c = timeline.cues[idx];
           if (!c) return null;
           return c.kind === 'line' ? (
-            <LineBlock key={`${idx}-${settings.persianStyle}`} cue={c} settings={textSettings} motion={motion} stage={stage} register={register} onPick={onPick} />
+            <LineBlock
+              key={`${idx}-${settings.persianStyle}`}
+              cue={c}
+              wordSync={wordSync && !c.line.flags?.includes('timing-draft')}
+              settings={textSettings}
+              motion={motion}
+              stage={stage}
+              register={register}
+              onPick={onPick}
+            />
           ) : (
-            <InstBlock key={idx} cue={c} timeline={timeline} motion={motion} stage={stage} register={register} onPick={onPick} />
+            <InstBlock key={idx} cue={c} timeline={timeline} timed={wordSync} motion={motion} stage={stage} register={register} onPick={onPick} />
           );
         })}
       </div>
