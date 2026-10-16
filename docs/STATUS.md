@@ -36,16 +36,15 @@ _Обновлено: 2026-10-16._
 
 - Гравюры есть у всех 25 ключей каталога (добавлены тар, кяманча, виолончель, контрабас, дудук, рик, томбак, гитара фламенко, арфа, рояль, хор, голос). Регламент — `docs/methodology/09-instruments.md`.
 - Несколько инструментов сразу: раскладка `src/instruments/layout.ts` (режимы `single`, `pair-sides`, `pair-diagonal`, `stack`, `fan`, `hero-insets`, `grid`, автоматический выбор, «+N»; проверка `npm run test:layout`), компонент `src/scene/InstrumentStage.tsx`, стили `src/styles/instruments.css`, необязательное поле `layout` у инструментальной секции.
-- Страница-галерея `src/pages/InstrumentsPage.tsx` (каталог и проба раскладок). Не подключено: маршрут `/instruments` в `src/app`, импорт `instruments.css` в `src/main.tsx`, замена двухгравюрного `InstView` на `InstrumentStage` в сцене.
+- Страница-галерея `/instruments` (`src/pages/InstrumentsPage.tsx`: каталог и проба раскладок), ссылка из библиотеки. В сцене инструментальные части рисует `InstrumentStage` внутри `src/scene/InstBlock.tsx`.
 
 ## В работе (параллельно, ветки агентов в `.claude/worktrees/`)
 
 1. Поиск дословных оригиналов, титров и инструментов для трёх песен с независимой перепроверкой → `canon.md`, пересборка `lyrics.json` (Karitas — под реальные 977 с), титры в `song.json`.
-2. Галерея гравюр (тар, кяманча, виолончель, дудук, фортепиано, хор, рик, томбак, гитара, контрабас, арфа) и раскладки для 1–8 инструментов (`src/instruments/layout.ts`, `src/scene/InstrumentStage.tsx`, страница `/instruments`).
-3. Инструмент синхронизации: `align.py` (построчное выравнивание MMS), `qa_sync.py` (отставание/спешка по каждой строке), раннеры для песочницы и GitHub Actions; тест на I Have Come Alive.
+2. Инструмент синхронизации: `align.py` (построчное выравнивание MMS), `qa_sync.py` (отставание/спешка по каждой строке), раннеры для песочницы и GitHub Actions; тест на I Have Come Alive.
 
 ## Дальше
 
-- Влить ветки агентов, подключить `InstrumentStage` в `InstBlock.tsx` и маршрут `/instruments`.
+- Влить ветку синхронизации, запустить конвейер в GitHub Actions.
 - Записать `canon.md`, пересобрать `lyrics.json` трёх песен, выровнять в песочнице или Actions, прогнать `qa_sync.py`, `timing.status = aligned`.
 - Удалить упоминание редактора из `docs/methodology/05-alignment.md` (после слияния ветки синхронизации).
