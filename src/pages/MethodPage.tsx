@@ -69,7 +69,7 @@ export function MethodPage({ doc }: { doc?: string }) {
                   aria-current={d === current ? 'page' : undefined}
                 >
                   <span className="method-num tabular">{i === 0 ? '·' : i}</span>
-                  {d.title}
+                  {d.title.replace(/^\d+\.\s*/, '')}
                 </a>
               </li>
             ))}
@@ -81,13 +81,13 @@ export function MethodPage({ doc }: { doc?: string }) {
         {idx > 0 && (
           <a className="pager-link glass" href={`/method/${docs[idx - 1].slug}`} onClick={linkHandler(`/method/${docs[idx - 1].slug}`)}>
             <span className="t-caption1 secondary">Назад</span>
-            <span className="t-subhead">{docs[idx - 1].title}</span>
+            <span className="t-subhead">{docs[idx - 1].title.replace(/^\d+\.\s*/, '')}</span>
           </a>
         )}
         {idx < docs.length - 1 && (
           <a className="pager-link pager-link--next glass" href={`/method/${docs[idx + 1].slug}`} onClick={linkHandler(`/method/${docs[idx + 1].slug}`)}>
             <span className="t-caption1 secondary">Дальше</span>
-            <span className="t-subhead">{docs[idx + 1].title}</span>
+            <span className="t-subhead">{docs[idx + 1].title.replace(/^\d+\.\s*/, '')}</span>
           </a>
         )}
       </nav>

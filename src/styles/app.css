@@ -1150,6 +1150,8 @@
 }
 .cover-glyph.f-mushaf {
   line-height: 1.6;
+  font-size: clamp(24px, 6vw, 38px);
+  white-space: nowrap;
 }
 .card-text {
   display: flex;
