@@ -8,6 +8,7 @@ const loaders = import.meta.glob('/src/instruments/svg/*.svg', { query: '?raw', 
 const cache = new Map<string, string>();
 
 import { INSTRUMENTS } from './list';
+import artMeta from './art.json';
 export { INSTRUMENTS, type InstrumentInfo } from './list';
 
 const byKey = new Map(INSTRUMENTS.map((i) => [i.key, i]));
@@ -42,4 +43,22 @@ export function preloadInstruments(keys: string[]) {
 
 export function hasArt(key: string) {
   return `/src/instruments/svg/${key}.svg` in loaders;
+}
+
+/**
+ * Width / height of an engraving's viewBox, known before the SVG loads (from src/instruments/art.json,
+ * written by `npm run art`). Unknown keys fall back to the ensemble drawing, like the loader.
+ */
+export function instrumentAspect(key: string): number {
+  const m = (artMeta as Record<string, { w: number; h: number }>)[hasArt(key) ? key : 'ensemble'];
+  return m && m.h > 0 ? m.w / m.h : 1;
+}
+
+/**
+ * Makes the ids inside an engraving unique for one copy on the page (clip paths and masks are referenced
+ * by id; two copies of the same drawing, one of them hidden, would otherwise break each other).
+ */
+export function scopeSvgIds(svg: string, suffix: string): string {
+  if (!svg || !suffix) return svg;
+  return svg.replace(/\bid="([^"]+)"/g, `id="$1-${suffix}"`).replace(/url\(#([^)]+)\)/g, `url(#$1-${suffix})`);
 }

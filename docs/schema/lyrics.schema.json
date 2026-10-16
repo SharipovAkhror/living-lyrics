@@ -280,6 +280,18 @@
               },
               "note": {
                 "type": "string"
+              },
+              "layout": {
+                "type": "string",
+                "enum": [
+                  "single",
+                  "pair-sides",
+                  "pair-diagonal",
+                  "stack",
+                  "fan",
+                  "hero-insets",
+                  "grid"
+                ]
               }
             },
             "required": [

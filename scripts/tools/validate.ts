@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 import { LyricsSchema, SongSchema, type Lyrics, type Song } from '../../src/data/schema.ts';
 import { INSTRUMENTS } from '../../src/instruments/list.ts';
+import { MODE_COUNTS, modeFit } from '../../src/instruments/layout.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const args = process.argv.slice(2);
@@ -101,6 +102,16 @@ function check(slug: string): Issue[] {
       for (const k of s.instruments) {
         if (!instrumentKeys.has(k)) err(where, `инструмент "${k}" не описан в src/instruments/list.ts`);
         else if (!existsSync(join(svgDir, `${k}.svg`))) warn(where, `для "${k}" нет гравюры (src/instruments/svg/${k}.svg) — будет показан ансамбль`);
+      }
+      if (new Set(s.instruments).size !== s.instruments.length) warn(where, 'инструмент повторяется в списке');
+      // Hand-set layout: does it suit the number of instruments? (rules: src/instruments/layout.ts)
+      if (s.layout) {
+        const n = s.instruments.length;
+        const fit = modeFit(s.layout, n);
+        const { min, max } = MODE_COUNTS[s.layout];
+        const range = max === Infinity ? `от ${min}` : min === max ? `${min}` : `${min}–${max}`;
+        if (fit === 'auto') warn(where, `layout "${s.layout}" рассчитан на ${range} инстр., а их ${n} — сцена выберет раскладку сама; уберите поле или смените режим`);
+        if (fit === 'chip') warn(where, `layout "${s.layout}" рассчитан на ${range} инстр., а их ${n} — лишние уйдут в «+${n - max}»`);
       }
       return;
     }

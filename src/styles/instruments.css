@@ -1,0 +1,503 @@
+/*
+ * Instruments: the stage of engravings on plates (src/scene/InstrumentStage.tsx, classes ist-…)
+ * and the gallery page (src/pages/InstrumentsPage.tsx, classes ig-…).
+ * Caption sizes mirror LABEL_METRICS in src/instruments/layout.ts — change both together.
+ */
+
+/* ---------- Stage ---------- */
+.ist {
+  position: relative;
+  /* Plates are content, so a standard material, not glass; dense enough that the engraving
+     keeps its contrast over any song background. */
+  --ist-plate: color-mix(in srgb, var(--bg-elevated) 86%, transparent);
+  --ist-plate-strong: color-mix(in srgb, var(--bg-elevated) 94%, transparent);
+  --ist-ink: color-mix(in srgb, var(--accent) 82%, var(--ink));
+  pointer-events: none;
+  contain: layout;
+}
+@media (prefers-reduced-transparency: reduce) {
+  .ist {
+    --ist-plate: var(--bg-elevated);
+    --ist-plate-strong: var(--bg-elevated);
+  }
+}
+@media (prefers-contrast: more) {
+  .ist {
+    --ist-plate: var(--bg-elevated);
+    --ist-ink: color-mix(in srgb, var(--accent) 60%, var(--ink));
+  }
+}
+
+.ist-plate {
+  position: absolute;
+  margin: 0;
+  border-radius: var(--r-xl);
+  background: var(--ist-plate);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  backdrop-filter: blur(30px) saturate(160%);
+  box-shadow:
+    0 12px 32px -14px rgba(20, 20, 40, 0.28),
+    0 2px 6px -2px rgba(20, 20, 40, 0.1),
+    inset 0 0 0 0.5px var(--glass-edge);
+  transform-origin: 50% 50%;
+  will-change: opacity, transform;
+}
+.ist-plate.ist-t-m {
+  border-radius: var(--r-lg);
+}
+.ist-plate.ist-t-s {
+  border-radius: var(--r-md);
+}
+/* The main plate of hero-insets is the frame for the whole group */
+.ist--hero-insets .ist-plate--main {
+  border-radius: var(--r-2xl);
+}
+.ist-plate--inset {
+  background: var(--ist-plate-strong);
+  box-shadow:
+    0 10px 26px -10px rgba(20, 20, 40, 0.32),
+    0 1px 3px rgba(20, 20, 40, 0.12),
+    inset 0 0 0 0.5px var(--glass-edge);
+}
+.ist-plate--card,
+.ist--fan .ist-plate--main {
+  background: var(--ist-plate-strong);
+}
+
+/* Engraving */
+.ist-art {
+  position: absolute;
+  color: var(--ist-ink);
+}
+.ist-art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.ist-art .d {
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--draw, 1));
+}
+.ist-art .h {
+  opacity: var(--hatch, 1);
+}
+.ist-art .fillin {
+  opacity: calc(var(--hatch, 1) * 0.12);
+}
+/* The faint medallion ring only on large plates; on small ones it is noise */
+.ist-art .frame {
+  opacity: calc(var(--hatch, 1) * 0.3);
+}
+.ist-t-m .ist-art .frame,
+.ist-t-s .ist-art .frame {
+  display: none;
+}
+/* Small plates: lines would thin out below a pixel; a hairline halo keeps them legible */
+.ist-t-s .ist-art svg {
+  filter: drop-shadow(0 0 0.35px currentColor);
+}
+/* Strings tremble only while there is sound (the stage adds ist--live when energy > 0) */
+.ist--live .ist-art .str {
+  --amp: calc(var(--energy, 0) * 0.9px);
+  animation: ist-string 70ms linear infinite alternate;
+}
+.ist--live .ist-art .str:nth-child(2n) {
+  animation-duration: 83ms;
+}
+.ist--live .ist-art .str:nth-child(3n) {
+  animation-duration: 97ms;
+}
+@keyframes ist-string {
+  from {
+    transform: translate(calc(var(--amp) * -0.4), calc(var(--amp) * -1));
+  }
+  to {
+    transform: translate(calc(var(--amp) * 0.4), var(--amp));
+  }
+}
+.ist-art .skin {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(calc(1 + var(--energy, 0) * 0.018));
+}
+.ist-art .breath-dot {
+  opacity: calc(var(--energy, 0) * 0.5);
+}
+
+/* Caption */
+.ist-label {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+}
+.ist-label--start {
+  align-items: flex-start;
+  text-align: start;
+}
+.ist-label--end {
+  align-items: flex-end;
+  text-align: end;
+}
+.ist-label > span {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ist-label--start {
+  justify-content: center;
+}
+.ist-name {
+  color: var(--label);
+  font-weight: 600;
+}
+.ist-native,
+.ist-perf {
+  color: var(--label-2);
+}
+.ist-native {
+  unicode-bidi: plaintext;
+}
+.ist-t-l .ist-name {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 25px;
+  letter-spacing: -0.45px;
+}
+.ist-t-l .ist-native,
+.ist-t-l .ist-perf {
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: -0.23px;
+}
+.ist-t-m .ist-name {
+  font-size: 17px;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+}
+.ist-t-m .ist-native,
+.ist-t-m .ist-perf {
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: -0.08px;
+}
+.ist-t-s .ist-name {
+  font-size: 13px;
+  line-height: 17px;
+  letter-spacing: -0.08px;
+}
+.ist-t-s .ist-native,
+.ist-t-s .ist-perf {
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.06px;
+}
+
+/* «+N» chip for instruments that did not fit */
+.ist-chip {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-pill);
+  background: var(--ist-plate-strong);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  backdrop-filter: blur(30px) saturate(160%);
+  box-shadow:
+    0 6px 16px -8px rgba(20, 20, 40, 0.3),
+    inset 0 0 0 0.5px var(--glass-edge);
+  color: var(--label);
+  font-size: var(--t-subhead);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ist--live .ist-art .str {
+    animation: none;
+  }
+}
+
+/* ---------- Gallery page ---------- */
+/* No song here, so no song accent: the engravings take the warm ink of the preview sheets. */
+.ig {
+  --ig-ink: #7a5512;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 var(--gutter) calc(env(safe-area-inset-bottom) + 48px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .ig {
+    --ig-ink: #e7b654;
+  }
+}
+:root[data-theme='dark'] .ig {
+  --ig-ink: #e7b654;
+}
+.ig .ist {
+  --ist-ink: var(--ig-ink);
+}
+.ig-top {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: calc(env(safe-area-inset-top) + 8px) 0 8px;
+  background: linear-gradient(var(--bg) 70%, transparent);
+}
+.ig-head {
+  margin: var(--sp-2) 4px var(--sp-6);
+}
+.ig-head h1 {
+  margin: 0 0 var(--sp-1);
+}
+.ig-head p {
+  margin: 0;
+  max-width: 40em;
+}
+.ig-section {
+  margin: var(--sp-8) 0 var(--sp-4);
+}
+.ig-section h2 {
+  margin: 0 4px var(--sp-1);
+}
+.ig-section > p {
+  margin: 0 4px var(--sp-4);
+  max-width: 40em;
+}
+.ig-family {
+  margin: var(--sp-6) 4px var(--sp-3);
+  color: var(--label-2);
+}
+
+/* Catalogue grid */
+.ig-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--sp-4);
+}
+.ig-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: var(--r-xl);
+  background: var(--bg-elevated);
+  box-shadow: inset 0 0 0 0.5px var(--separator);
+  overflow: hidden;
+}
+.ig-card-art {
+  position: relative;
+  aspect-ratio: 1;
+  margin: var(--sp-3) var(--sp-3) 0;
+  border-radius: var(--r-lg);
+  background: var(--fill-4);
+  color: var(--ig-ink);
+}
+.ig-card-art .ist-art {
+  inset: 6%;
+}
+.ig-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
+}
+.ig-card-name {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+.ig-native {
+  color: var(--label-2);
+  unicode-bidi: plaintext;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ig-meta {
+  color: var(--label-3);
+}
+.ig-desc {
+  margin: var(--sp-2) 0 0;
+  color: var(--label-2);
+}
+.ig-key {
+  margin-top: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-caption1);
+  color: var(--label-3);
+}
+.ig-noart {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: var(--sp-3);
+  color: var(--label-3);
+}
+
+/* Phones: a calm list — drawing on the left, text on the right */
+@media (max-width: 560px) {
+  .ig-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-2);
+  }
+  .ig-card {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .ig-card-art {
+    flex: none;
+    width: 112px;
+    margin: var(--sp-3) 0 var(--sp-3) var(--sp-3);
+    border-radius: var(--r-md);
+  }
+  .ig-card-art .ist-art {
+    inset: 2%;
+  }
+  .ig-card-art .frame {
+    display: none;
+  }
+  .ig-card-text {
+    min-width: 0;
+    padding: var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-3);
+  }
+  .ig-noart {
+    padding: var(--sp-2);
+    align-items: center;
+    text-align: center;
+    font-size: var(--t-caption2);
+  }
+}
+
+/* Layout playground */
+.ig-play {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-4);
+  border-radius: var(--r-xl);
+  background: var(--bg-elevated);
+  box-shadow: inset 0 0 0 0.5px var(--separator);
+}
+.ig-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.ig-row-title {
+  width: 100%;
+  color: var(--label-2);
+}
+.ig-pick {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 var(--sp-3);
+  border-radius: var(--r-pill);
+  background: var(--fill-3);
+  color: var(--label);
+  font: inherit;
+  font-size: var(--t-footnote);
+  font-weight: 500;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background-color var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out),
+    transform var(--dur-3) var(--ease-spring);
+}
+.ig-pick:active {
+  transform: scale(0.96);
+}
+.ig-pick[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.ig-pick:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.ig-pick-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: var(--t-caption2);
+  font-variant-numeric: tabular-nums;
+}
+.ig-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.ig-slider input {
+  flex: 1;
+  max-width: 320px;
+  accent-color: var(--accent);
+}
+.ig-screens {
+  display: grid;
+  grid-template-columns: minmax(0, 390px) minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .ig-screens {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.ig-screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.ig-screen-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  /* A busy, coloured field like a song's background, to check that plates keep the drawings legible */
+  background:
+    radial-gradient(60% 50% at 20% 25%, rgba(196, 140, 60, 0.55), transparent 70%),
+    radial-gradient(55% 45% at 80% 70%, rgba(70, 120, 180, 0.5), transparent 70%),
+    radial-gradient(40% 40% at 70% 15%, rgba(170, 70, 90, 0.4), transparent 70%),
+    var(--bg);
+  box-shadow: inset 0 0 0 0.5px var(--separator);
+}
+.ig-screen-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+.ig-screen-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  color: var(--label-2);
+}
