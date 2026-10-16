@@ -4,6 +4,7 @@
  * so any change here is a change to the methodology (docs/data-format.md).
  */
 import { z } from 'zod';
+import { LAYOUT_MODES } from '../instruments/layout';
 
 /** ISO 639-1/3 codes we expect. Extend when a new language appears. */
 export const LANG = z.enum(['ar', 'fa', 'az', 'tr', 'ota', 'en', 'la', 'de', 'es', 'ur', 'hi', 'ru', 'uz', 'fr', 'it', 'gmh']);
@@ -99,6 +100,11 @@ export const InstrumentalSectionSchema = SectionBase.extend({
   mode: z.string().optional(),
   /** One or two calm sentences shown under the illustration. */
   note: z.string().optional(),
+  /**
+   * How several instruments share the stage. Omit to let the engine choose by count and screen
+   * (src/instruments/layout.ts, docs/methodology/09-instruments.md); set it only to override that choice.
+   */
+  layout: z.enum(LAYOUT_MODES).optional(),
 });
 
 export const SectionSchema = z.discriminatedUnion('kind', [VocalSectionSchema, InstrumentalSectionSchema]);

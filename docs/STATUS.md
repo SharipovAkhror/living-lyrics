@@ -32,6 +32,12 @@ _Обновлено: 2026-10-16._
 - Тексты — от дословных оригиналов: `content/songs/<slug>/canon.md`, валидатор проверяет, что каждая строка в нём есть.
 - Палитры — из кадров официальных видео (k-means), `docs/analysis/<slug>.md`.
 
+## Инструменты
+
+- Гравюры есть у всех 25 ключей каталога (добавлены тар, кяманча, виолончель, контрабас, дудук, рик, томбак, гитара фламенко, арфа, рояль, хор, голос). Регламент — `docs/methodology/09-instruments.md`.
+- Несколько инструментов сразу: раскладка `src/instruments/layout.ts` (режимы `single`, `pair-sides`, `pair-diagonal`, `stack`, `fan`, `hero-insets`, `grid`, автоматический выбор, «+N»; проверка `npm run test:layout`), компонент `src/scene/InstrumentStage.tsx`, стили `src/styles/instruments.css`, необязательное поле `layout` у инструментальной секции.
+- Страница-галерея `src/pages/InstrumentsPage.tsx` (каталог и проба раскладок). Не подключено: маршрут `/instruments` в `src/app`, импорт `instruments.css` в `src/main.tsx`, замена двухгравюрного `InstView` на `InstrumentStage` в сцене.
+
 ## В работе (параллельно, ветки агентов в `.claude/worktrees/`)
 
 1. Поиск дословных оригиналов, титров и инструментов для трёх песен с независимой перепроверкой → `canon.md`, пересборка `lyrics.json` (Karitas — под реальные 977 с), титры в `song.json`.

@@ -1,6 +1,6 @@
 // Builds src/instruments/svg/*.svg from the generators in scripts/art/instruments/.
 // Usage: npm run art            → writes all SVGs and work/art/preview.html
-import { writeFileSync, mkdirSync, readdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -23,6 +23,19 @@ for (const file of files) {
   built.push({ key, svg });
   console.log(`${key}.svg  ${(svg.length / 1024).toFixed(1)} KB`);
 }
+
+// Manifest of every engraving's viewBox (all files, not only the ones just built), so the stage can lay
+// drawings out by their aspect before the SVGs themselves are loaded. Read by src/instruments/catalog.ts.
+const meta = {};
+for (const file of readdirSync(outDir).filter((f) => f.endsWith('.svg')).sort()) {
+  const svg = readFileSync(join(outDir, file), 'utf8');
+  const vb = svg.match(/viewBox="([^"]+)"/)?.[1].split(/[\s,]+/).map(Number) ?? [0, 0, 400, 400];
+  meta[file.replace(/\.svg$/, '')] = { w: vb[2], h: vb[3] };
+}
+writeFileSync(
+  join(root, 'src', 'instruments', 'art.json'),
+  `{\n${Object.entries(meta).map(([k, v]) => `  ${JSON.stringify(k)}: ${JSON.stringify(v)}`).join(',\n')}\n}\n`,
+);
 
 // Preview sheet: light and dark, so contrast can be checked by eye.
 const tiles = (theme) =>
