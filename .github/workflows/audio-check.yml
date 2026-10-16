@@ -1,0 +1,54 @@
+# One-off check that the repository secret AUDIO_KEY opens the encrypted recordings on GitHub's runners.
+# Writes docs/analysis/actions-check.md and commits it. Run again from the Actions tab if needed.
+name: audio-check
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/audio-check.yml']
+permissions:
+  contents: write
+concurrency: { group: audio-check, cancel-in-progress: false }
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Key present
+        env: { AUDIO_KEY: '${{ secrets.AUDIO_KEY }}' }
+        run: |
+          if [ -z "$AUDIO_KEY" ]; then echo "::error::Secret AUDIO_KEY is missing: Settings → Secrets and variables → Actions"; exit 1; fi
+          echo "key length: ${#AUDIO_KEY}"
+      - name: Decrypt and probe
+        env: { AUDIO_KEY: '${{ secrets.AUDIO_KEY }}' }
+        run: |
+          sudo apt-get install -y -qq ffmpeg > /dev/null
+          pip install -q cryptography
+          mkdir -p work
+          {
+            echo "# Проверка GitHub Actions"
+            echo
+            echo "Запуск: $(date -u +%Y-%m-%dT%H:%MZ), раннер: $(nproc) ядер, $(free -g | awk '/Mem/{print $2}') ГБ памяти."
+            echo
+            echo "| песня | расшифровка | длительность | кодек |"
+            echo "|---|---|---|---|"
+          } > docs/analysis/actions-check.md
+          for slug in $(ls content/audio-enc); do
+            if python3 scripts/pipeline/decrypt_audio.py "$slug" > /dev/null; then
+              d=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "work/$slug/source.m4a")
+              c=$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name,bit_rate -of csv=p=0 "work/$slug/source.m4a")
+              echo "| $slug | ок | ${d%.*} с | $c |" >> docs/analysis/actions-check.md
+            else
+              echo "| $slug | ошибка | | |" >> docs/analysis/actions-check.md
+              echo "::error::$slug: decrypt failed — AUDIO_KEY differs from the key used to encrypt"
+            fi
+          done
+          cat docs/analysis/actions-check.md
+      - name: Commit result
+        run: |
+          git config user.name "living-lyrics-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/analysis/actions-check.md
+          git commit -m "Actions: AUDIO_KEY check" || exit 0
+          git pull --rebase -q && git push -q
