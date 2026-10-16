@@ -1,0 +1,13 @@
+# Audio onboarding pipeline. Python 3.10+, ffmpeg on PATH.
+# Network: YouTube (yt-dlp), huggingface.co and download.pytorch.org (models).
+yt-dlp>=2025.1.1
+numpy>=1.26
+soundfile>=0.12
+# Vocal separation
+demucs>=4.0.1
+# Transcription draft
+faster-whisper>=1.1.0
+# Forced alignment (MMS_FA in torchaudio) and romanisation for non-Latin scripts
+torch>=2.3
+torchaudio>=2.3
+uroman>=1.3.1
