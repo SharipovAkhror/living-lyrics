@@ -43,7 +43,7 @@
       "era": "XVII–XVIII вв."
     }
   ],
-  "duration": 490,
+  "duration": 977.05,
   "palette": {
     "accent": "#9A6A12",
     "accentDark": "#E7B654",
@@ -56,7 +56,17 @@
   },
   "coverGlyph": "Karitas",
   "audio": {
-    "status": "missing"
+    "status": "ready",
+    "high": "/audio/karitas/high.m4a",
+    "peaks": "/audio/karitas/peaks.json",
+    "gainDb": -1.1,
+    "provenance": {
+      "kind": "file",
+      "ref": "Файл от пользователя (Telegram-бот); дорожка YouTube 140 официального видео https://www.youtube.com/watch?v=xWwMzfGVikA",
+      "retrieved": "2026-10-16",
+      "codec": "aac lc 128k 44.1kHz stereo",
+      "sha256": "ec056c74c5e1dbeb75409a0a13684030bb0bb07ae3ecf4820038bdf1170aa6f5"
+    }
   },
   "timing": {
     "status": "draft",

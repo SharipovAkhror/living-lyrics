@@ -69,7 +69,14 @@ def main(slug: str) -> None:
         run(['ffmpeg', '-y', '-hide_banner', '-loglevel', 'error', '-i', str(src), '-map', '0:a:0', '-c:a', 'copy', '-movflags', '+faststart', str(high)])
     else:
         run(['ffmpeg', '-y', '-hide_banner', '-loglevel', 'error', '-i', str(src), '-map', '0:a:0', '-c:a', 'aac', '-b:a', '256k', '-ar', '48000' if a.get('sample_rate') == '48000' else '44100', '-movflags', '+faststart', str(high)])
-    run(['ffmpeg', '-y', '-hide_banner', '-loglevel', 'error', '-i', str(src), '-map', '0:a:0', '-c:a', 'aac', '-b:a', '96k', '-ac', '2', '-movflags', '+faststart', str(saver)])
+    # A data-saver copy only pays off when the source is clearly heavier than 96 kbit/s AAC.
+    src_kbps = int(a.get('bit_rate') or info['format'].get('bit_rate') or 0) // 1000
+    make_saver = codec != 'aac' or src_kbps > 160
+    if make_saver:
+        run(['ffmpeg', '-y', '-hide_banner', '-loglevel', 'error', '-i', str(src), '-map', '0:a:0', '-c:a', 'aac', '-b:a', '96k', '-ac', '2', '-movflags', '+faststart', str(saver)])
+    else:
+        saver.unlink(missing_ok=True)
+        print(f'source is {codec} {src_kbps} kbit/s: no data-saver copy needed')
 
     lufs, tp = loudness(high)
     gain = round(TARGET_LUFS - lufs, 1)
@@ -88,13 +95,15 @@ def main(slug: str) -> None:
     song['audio'] = {
         'status': 'ready',
         'high': f'/audio/{slug}/high.m4a',
-        'saver': f'/audio/{slug}/saver.m4a',
+        **({'saver': f'/audio/{slug}/saver.m4a'} if make_saver else {}),
         'peaks': f'/audio/{slug}/peaks.json',
         'gainDb': gain,
         'provenance': {k: prov[k] for k in ('kind', 'ref', 'retrieved', 'codec', 'sha256') if k in prov},
     }
     save_json(song_path, song)
     for f in (high, saver, out / 'peaks.json'):
+        if not f.exists():
+            continue
         print(f'{f.relative_to(out.parents[2])}  {f.stat().st_size / 1024:.0f} KB')
 
 

@@ -7,3 +7,7 @@ dist/
 work/
 *.log
 .DS_Store
+# Recordings are committed only encrypted (content/audio-enc). Plain files are produced at build time.
+public/audio/**/*.m4a
+public/audio/**/*.mp3
+public/audio/**/*.flac

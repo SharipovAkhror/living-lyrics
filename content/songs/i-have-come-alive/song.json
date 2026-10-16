@@ -35,7 +35,7 @@
       "era": "XI в."
     }
   ],
-  "duration": 580,
+  "duration": 580.06,
   "palette": {
     "accent": "#B4410E",
     "accentDark": "#FF9F5A",
@@ -48,7 +48,17 @@
   },
   "coverGlyph": "زنده شدم",
   "audio": {
-    "status": "missing"
+    "status": "ready",
+    "high": "/audio/i-have-come-alive/high.m4a",
+    "peaks": "/audio/i-have-come-alive/peaks.json",
+    "gainDb": -3.6,
+    "provenance": {
+      "kind": "file",
+      "ref": "Файл от пользователя (Telegram-бот); дорожка YouTube 140 официального видео https://www.youtube.com/watch?v=M_8ano37jYo",
+      "retrieved": "2026-10-16",
+      "codec": "aac lc 128k 44.1kHz stereo",
+      "sha256": "c506e951909e37da8bf7b3033ed9d1ccc82da45ae418cf7e4d9d012a2c3bb8e3"
+    }
   },
   "timing": {
     "status": "draft",

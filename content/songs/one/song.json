@@ -32,7 +32,7 @@
       "era": "XIII в."
     }
   ],
-  "duration": 830,
+  "duration": 828.05,
   "palette": {
     "accent": "#2C5A9C",
     "accentDark": "#8DB6FF",
@@ -45,7 +45,17 @@
   },
   "coverGlyph": "ONE",
   "audio": {
-    "status": "missing"
+    "status": "ready",
+    "high": "/audio/one/high.m4a",
+    "peaks": "/audio/one/peaks.json",
+    "gainDb": -0.5,
+    "provenance": {
+      "kind": "file",
+      "ref": "Файл от пользователя (Telegram-бот); дорожка YouTube 140 официального видео https://www.youtube.com/watch?v=BcSnZ-RuwyI",
+      "retrieved": "2026-10-16",
+      "codec": "aac lc 128k 44.1kHz stereo",
+      "sha256": "c8d836c05dfa5cbf55b779e9a99dad576b84b306e1e5389bdd40c213ea6b3724"
+    }
   },
   "timing": {
     "status": "draft",

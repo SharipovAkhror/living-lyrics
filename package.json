@@ -6,14 +6,16 @@
   "description": "Kinetic lyrics stage with word-level sync, layered translation and commentary.",
   "scripts": {
     "dev": "vite",
-    "build": "npm run validate && tsc --noEmit -p . && vite build",
+    "build": "node scripts/tools/audio-crypt.mjs decrypt && npm run validate && tsc --noEmit -p . && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p .",
     "validate": "tsx scripts/tools/validate.ts",
     "draft-timing": "tsx scripts/tools/draft-timing.ts",
     "new-song": "tsx scripts/tools/new-song.ts",
     "art": "node scripts/art/build-instruments.mjs",
-    "shots": "node scripts/tools/screenshots.mjs"
+    "shots": "node scripts/tools/screenshots.mjs",
+    "predev": "node scripts/tools/audio-crypt.mjs decrypt",
+    "audio:encrypt": "node scripts/tools/audio-crypt.mjs encrypt"
   },
   "dependencies": {
     "@fontsource-variable/inter": "5.3.0",

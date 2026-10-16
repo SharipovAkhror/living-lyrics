@@ -73,7 +73,11 @@ function check(slug: string): Issue[] {
     if (!song.audio.high) err('song.json', 'audio.status = ready, но нет audio.high');
     for (const key of ['high', 'saver', 'peaks'] as const) {
       const p = song.audio[key];
-      if (p && !existsSync(join(root, 'public', p))) err('song.json', `audio.${key}: файл ${p} не найден в public/`);
+      if (p && !existsSync(join(root, 'public', p))) {
+        const encrypted = join(root, 'content/audio-enc', p.replace(/^\/audio\//, '') + '.enc');
+        if (existsSync(encrypted)) warn('song.json', `audio.${key}: ${p} есть только в зашифрованном виде — нужен AUDIO_KEY (npm run dev / build расшифруют)`);
+        else err('song.json', `audio.${key}: файл ${p} не найден в public/`);
+      }
     }
     if (!song.audio.provenance) warn('song.json', 'audio.provenance не заполнен (откуда запись)');
   }
