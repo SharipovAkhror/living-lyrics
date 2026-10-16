@@ -69,6 +69,8 @@ export default async function middleware(request: Request) {
   const password = process.env.SITE_PASSWORD;
   if (!password) return next();
   const url = new URL(request.url);
+  // Telegram's webhook cannot sign in; the function checks Telegram's own secret header instead.
+  if (url.pathname === '/api/telegram' && request.method === 'POST') return next();
   const secret = await secretOf(password);
 
   if (url.pathname === '/__auth' && request.method === 'POST') {

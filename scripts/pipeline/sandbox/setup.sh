@@ -6,8 +6,9 @@ cd /vercel/sandbox
 if [ ! -x "$HOME/bin/ffmpeg" ]; then
   mkdir -p "$HOME/bin" /tmp/ff && cd /tmp/ff
   curl -fsSL https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz -o ff.tar.xz
-  tar xf ff.tar.xz --strip-components=1
-  cp ffmpeg ffprobe "$HOME/bin/" && cd /vercel/sandbox
+  # The image has no xz binary; Python's tarfile reads .tar.xz on its own.
+  python3 -c "import tarfile; tarfile.open('ff.tar.xz').extractall('.')"
+  cp ./*/ffmpeg ./*/ffprobe "$HOME/bin/" && cd /vercel/sandbox
 fi
 export PATH="$HOME/bin:$PATH"
 python3 -m pip install -q --upgrade pip

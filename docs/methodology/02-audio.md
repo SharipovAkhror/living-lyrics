@@ -13,6 +13,22 @@
 
 > Записи защищены авторским правом. Сайт закрыт паролем и предназначен для личного использования. Скачивание с видеоплатформ может нарушать их правила — при возможности используйте купленный файл. В `song.json → audio.provenance` всегда указывайте, откуда файл.
 
+## Приёмная (Telegram)
+
+Пользователь присылает записи Telegram-боту сайта; бот кладёт их в репозиторий зашифрованными:
+`content/inbox/<дата>-<название>/source.<ext>.enc` и `info.json` (имя файла, подпись, ссылки, отчёт о качестве). Папка `…-link` без файла — заявка: есть только ссылка, запись нужно попросить. Как устроен бот и как его подключить — [docs/telegram-bot.md](../telegram-bot.md).
+
+Если в `content/inbox/` что-то есть — начните с этого:
+
+```bash
+AUDIO_KEY=… python3 scripts/pipeline/decrypt_audio.py <slug> --inbox content/inbox/<папка>   # → work/<slug>/source.<ext>
+python3 scripts/pipeline/process_audio.py <slug>
+npm run audio:encrypt -- <slug>
+git rm -r content/inbox/<папка>      # запись переехала в content/audio-enc/<slug>/
+```
+
+Подпись и ссылки из `info.json` — подсказка, какая это песня; опознание всё равно по [стадии 1](01-intake.md).
+
 ## Скачать
 
 ```bash

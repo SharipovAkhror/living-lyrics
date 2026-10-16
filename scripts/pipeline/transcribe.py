@@ -9,9 +9,22 @@ canonical text and by ear — Whisper misspells Arabic and Persian and invents w
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 
 from common import work_dir
+
+
+def load_16k(path) -> 'object':
+    """Mono 16 kHz float32 via ffmpeg. Passing an array avoids faster-whisper's PyAV decoder,
+    whose keyword arguments break with newer PyAV releases."""
+    import numpy as np
+
+    raw = subprocess.run(
+        ['ffmpeg', '-v', 'error', '-i', str(path), '-ac', '1', '-ar', '16000', '-f', 'f32le', '-'],
+        check=True, capture_output=True,
+    ).stdout
+    return np.frombuffer(raw, dtype=np.float32)
 
 
 def main(slug: str, model_name: str = 'large-v3') -> None:
@@ -20,7 +33,7 @@ def main(slug: str, model_name: str = 'large-v3') -> None:
     stem = work_dir(slug) / 'stems' / 'vocals.wav'
     model = WhisperModel(model_name, device='auto', compute_type='int8')
     segments, info = model.transcribe(
-        str(stem),
+        load_16k(stem),
         word_timestamps=True,
         vad_filter=True,
         multilingual=True,
