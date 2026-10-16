@@ -1,0 +1,282 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "titleOriginal": {
+      "type": "string"
+    },
+    "artist": {
+      "type": "string",
+      "minLength": 1
+    },
+    "featuring": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "release": {
+      "type": "object",
+      "properties": {
+        "album": {
+          "type": "string"
+        },
+        "year": {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "label": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "event": {
+          "type": "string"
+        },
+        "venue": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "languages": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "ar",
+          "fa",
+          "az",
+          "tr",
+          "ota",
+          "en",
+          "la",
+          "de",
+          "es",
+          "ur",
+          "hi",
+          "ru",
+          "uz",
+          "fr",
+          "it",
+          "gmh"
+        ]
+      }
+    },
+    "poets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "lang": {
+            "type": "string",
+            "enum": [
+              "ar",
+              "fa",
+              "az",
+              "tr",
+              "ota",
+              "en",
+              "la",
+              "de",
+              "es",
+              "ur",
+              "hi",
+              "ru",
+              "uz",
+              "fr",
+              "it",
+              "gmh"
+            ]
+          },
+          "era": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "duration": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "palette": {
+      "type": "object",
+      "properties": {
+        "accent": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "accentDark": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        },
+        "field": {
+          "minItems": 3,
+          "maxItems": 4,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$"
+          }
+        }
+      },
+      "required": [
+        "accent",
+        "accentDark",
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "coverGlyph": {
+      "type": "string"
+    },
+    "audio": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "missing",
+            "ready"
+          ]
+        },
+        "high": {
+          "type": "string"
+        },
+        "saver": {
+          "type": "string"
+        },
+        "peaks": {
+          "type": "string"
+        },
+        "gainDb": {
+          "type": "number"
+        },
+        "provenance": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "file",
+                "url",
+                "purchase"
+              ]
+            },
+            "ref": {
+              "type": "string"
+            },
+            "retrieved": {
+              "type": "string"
+            },
+            "codec": {
+              "type": "string"
+            },
+            "sha256": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "ref"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "timing": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "aligned",
+            "verified"
+          ]
+        },
+        "method": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "method"
+      ],
+      "additionalProperties": false
+    },
+    "credits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "name"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "review": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "slug",
+    "title",
+    "artist",
+    "languages",
+    "duration",
+    "palette",
+    "audio",
+    "timing"
+  ],
+  "additionalProperties": false
+}

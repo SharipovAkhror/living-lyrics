@@ -1,0 +1,303 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "sections": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]+$"
+              },
+              "start": {
+                "type": "number",
+                "minimum": 0
+              },
+              "end": {
+                "type": "number",
+                "minimum": 0
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sharh": {
+                "type": "string"
+              },
+              "flags": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "text-unverified",
+                    "timing-draft",
+                    "translation-draft",
+                    "sharh-draft",
+                    "attribution-unverified"
+                  ]
+                }
+              },
+              "kind": {
+                "type": "string",
+                "const": "vocal"
+              },
+              "voice": {
+                "type": "string"
+              },
+              "lines": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9-]+$"
+                    },
+                    "lang": {
+                      "type": "string",
+                      "enum": [
+                        "ar",
+                        "fa",
+                        "az",
+                        "tr",
+                        "ota",
+                        "en",
+                        "la",
+                        "de",
+                        "es",
+                        "ur",
+                        "hi",
+                        "ru",
+                        "uz",
+                        "fr",
+                        "it",
+                        "gmh"
+                      ]
+                    },
+                    "script": {
+                      "type": "string",
+                      "enum": [
+                        "Arab",
+                        "Latn",
+                        "Cyrl",
+                        "Deva"
+                      ]
+                    },
+                    "words": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "w": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "s": {
+                            "type": "number",
+                            "minimum": 0
+                          },
+                          "e": {
+                            "type": "number",
+                            "minimum": 0
+                          },
+                          "br": {
+                            "type": "boolean"
+                          },
+                          "em": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "w",
+                          "s",
+                          "e"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "alt": {
+                      "type": "object",
+                      "properties": {
+                        "script": {
+                          "type": "string",
+                          "enum": [
+                            "Arab",
+                            "Latn",
+                            "Cyrl",
+                            "Deva"
+                          ]
+                        },
+                        "text": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "script",
+                        "text"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "translit": {
+                      "type": "string"
+                    },
+                    "tr": {
+                      "type": "object",
+                      "properties": {
+                        "ru": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "ru"
+                      ],
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "sharh": {
+                      "type": "string"
+                    },
+                    "voice": {
+                      "type": "string"
+                    },
+                    "fx": {
+                      "type": "string",
+                      "enum": [
+                        "auto",
+                        "rise",
+                        "focus",
+                        "ink",
+                        "assemble",
+                        "drop",
+                        "bloom",
+                        "cascade",
+                        "spotlight",
+                        "stack",
+                        "whisper"
+                      ]
+                    },
+                    "flags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "text-unverified",
+                          "timing-draft",
+                          "translation-draft",
+                          "sharh-draft",
+                          "attribution-unverified"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "lang",
+                    "script",
+                    "words",
+                    "tr"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "id",
+              "start",
+              "end",
+              "label",
+              "kind",
+              "lines"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]+$"
+              },
+              "start": {
+                "type": "number",
+                "minimum": 0
+              },
+              "end": {
+                "type": "number",
+                "minimum": 0
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sharh": {
+                "type": "string"
+              },
+              "flags": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "text-unverified",
+                    "timing-draft",
+                    "translation-draft",
+                    "sharh-draft",
+                    "attribution-unverified"
+                  ]
+                }
+              },
+              "kind": {
+                "type": "string",
+                "const": "instrumental"
+              },
+              "instruments": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "performers": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "mode": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "start",
+              "end",
+              "label",
+              "kind",
+              "instruments"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    }
+  },
+  "required": [
+    "sections"
+  ],
+  "additionalProperties": false
+}
