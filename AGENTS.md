@@ -8,7 +8,7 @@
 
 ## Если вас попросили добавить песню
 
-Вам дают **только ссылку или аудиофайл** (или запись уже лежит в `content/inbox/` — её прислали Telegram-боту, см. `docs/telegram-bot.md`). Всё остальное вы находите и делаете сами по регламенту `docs/methodology/README.md`, стадии 1–12. В Claude Code то же самое ведёт навык `/add-song`.
+Вам дают **аудиофайл** (пользователь прикладывает его в чат; скачать с YouTube из облака нельзя) и, возможно, ссылку на официальное видео. Всё остальное вы находите и делаете сами по регламенту `docs/methodology/README.md`, стадии 1–12. В Claude Code то же самое ведёт навык `/add-song`.
 
 Главные правила:
 - ничего не выдумывать: текст — от дословного оригинала из источников (`canon.md`), непроверенное — флагом и в `review`;
@@ -45,14 +45,14 @@ npm run audio:encrypt -- <slug>     # зашифровать запись пер
 ## Устройство кода
 
 - `content/songs/<slug>/` — данные песни: `song.json`, `lyrics.json`, `canon.md` (оригиналы), `sources.md`. Схема — `src/data/schema.ts`, описание — `docs/data-format.md`.
-- `content/audio-enc/` — записи, зашифрованные AES-256-GCM (ключ `AUDIO_KEY`); `content/inbox/` — присланное Telegram-боту.
+- `content/audio-enc/` — записи, зашифрованные AES-256-GCM (ключ `AUDIO_KEY`).
 - `src/data/timeline.ts` — строки и инструментальные части по порядку, повторы, смена голоса.
 - `src/scene/` — сцена: `flow.ts` (поток строк как функция времени), `Scene.tsx`, `LineBlock.tsx`, `InstBlock.tsx`, `Field.tsx` (живой фон).
 - `src/player/engine.ts` — воспроизведение, эквалайзер (Web Audio подключается только когда включён: на iPhone он останавливает звук при блокировке экрана), Media Session.
 - `src/pages/` — библиотека, страница песни (`song/`: плеер, настройки, «О песне», весь текст), методология.
 - `src/instruments/` — каталог инструментов и гравюры (`scripts/art/` их рисует).
 - `src/styles/tokens.css` — дизайн-токены; правила — `docs/design/design-system.md`.
-- `api/telegram.ts` — Telegram-бот-приёмная; `middleware.ts` — пароль на сайт (Vercel: `SITE_PASSWORD`, `AUTH_SECRET`).
+- `middleware.ts` — пароль на сайт (Vercel: `SITE_PASSWORD`, `AUTH_SECRET`).
 
 ## Стиль кода
 

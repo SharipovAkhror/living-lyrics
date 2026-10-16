@@ -3,15 +3,9 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ':(exclude)content/inbox'",
-  "functions": {
-    "api/telegram.ts": {
-      "maxDuration": 60
-    }
-  },
   "rewrites": [
     {
-      "source": "/((?!assets/|fonts/|audio/|icons/|api/).*)",
+      "source": "/((?!assets/|fonts/|audio/|icons/).*)",
       "destination": "/index.html"
     }
   ],

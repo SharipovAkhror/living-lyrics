@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Vercel__run_session_command",
+      "mcp__Vercel__get_session_command_logs",
+      "mcp__Vercel__read_session_file",
+      "mcp__Vercel__write_session_files",
+      "mcp__Vercel__get_session",
+      "mcp__Vercel__list_sessions",
+      "mcp__Vercel__create_sandboxes_v2",
+      "mcp__Vercel__get_named_sandbox",
+      "mcp__Vercel__list_named_sandboxes",
+      "mcp__Vercel__list_deployments",
+      "mcp__Vercel__get_deployment",
+      "mcp__Vercel__list_deployment_events",
+      "mcp__Vercel__search_vercel_documentation",
+      "Bash(npm run *)",
+      "Bash(npm install*)",
+      "Bash(npx tsc *)",
+      "Bash(npx tsx *)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git fetch *)",
+      "Bash(git pull *)",
+      "Bash(python3 scripts/pipeline/*)",
+      "Bash(node scripts/tools/*)"
+    ]
+  }
+}

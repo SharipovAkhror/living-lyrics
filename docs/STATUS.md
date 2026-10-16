@@ -7,7 +7,7 @@ _Обновлено: 2026-10-16._
 ## Где что
 
 - Сайт: https://living-lyrics.vercel.app (пароль — в Vercel → Settings → Environment Variables → `SITE_PASSWORD`).
-- Репозиторий: `SharipovAkhror/living-lyrics`, ветка `main` деплоится автоматически (коммиты, меняющие только `content/inbox/`, сайт не пересобирают).
+- Репозиторий: `SharipovAkhror/living-lyrics`, ветка `main` деплоится автоматически.
 - Vercel: команда `team_vKwfBgyY5JNLfiqxgWSD6R8A`, проект `prj_qSpZgGNjg0KoGNHaT0Rw3RcBZ7kX`.
 - Правила для агентов — `AGENTS.md` (единые для любого ИИ; `CLAUDE.md` и `GEMINI.md` его подключают).
 
@@ -15,8 +15,7 @@ _Обновлено: 2026-10-16._
 
 - Записи трёх песен — от пользователя (Telegram-бот, дорожка YouTube 140: AAC 128 кбит/с, срез ~16 кГц). Длительности совпадают с официальными видео: Karitas 977 с (`xWwMzfGVikA`), ONE 828 с (`BcSnZ-RuwyI`), I Have Come Alive 580 с (`M_8ano37jYo`).
 - **Репозиторий публичный**, поэтому записи лежат только зашифрованными: `content/audio-enc/<slug>/high.m4a.enc` (AES-256-GCM). Ключ — `AUDIO_KEY` в Vercel; сборка и `npm run dev` расшифровывают в `public/audio/` (в git не попадает). Локально ключ — в `.env.local`.
-- **Приёмная**: Telegram-бот `api/telegram.ts` кладёт присланные записи в `content/inbox/` (см. `docs/telegram-bot.md`). Боту нужны `TELEGRAM_BOT_TOKEN` и `GITHUB_TOKEN` в Vercel — их может создать только владелец (BotFather и GitHub). Пока не заданы, бот не работает.
-- С YouTube облачные серверы не качают (проверка «вы не бот»): записи даёт пользователь.
+- С YouTube облачные серверы не качают (проверка «вы не бот»): пользователь скачивает запись сам (своим Telegram-ботом) и присылает файл в чат. Telegram-бот-приёмная был сделан и убран по решению владельца — чтобы не усложнять.
 
 ## Сеть и вычисления
 
