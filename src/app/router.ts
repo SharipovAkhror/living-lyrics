@@ -3,7 +3,6 @@ import { useSyncExternalStore } from 'react';
 export type Route =
   | { name: 'library' }
   | { name: 'song'; slug: string }
-  | { name: 'edit'; slug: string }
   | { name: 'method'; doc?: string }
   | { name: 'notfound' };
 
@@ -12,8 +11,9 @@ export function parse(path: string): Route {
   if (p === '/') return { name: 'library' };
   let m = p.match(/^\/song\/([a-z0-9-]+)$/);
   if (m) return { name: 'song', slug: m[1] };
+  // The timing editor was removed: old links land on the song.
   m = p.match(/^\/song\/([a-z0-9-]+)\/edit$/);
-  if (m) return { name: 'edit', slug: m[1] };
+  if (m) return { name: 'song', slug: m[1] };
   m = p.match(/^\/method(?:\/([a-z0-9-]+))?$/);
   if (m) return { name: 'method', doc: m[1] };
   return { name: 'notfound' };

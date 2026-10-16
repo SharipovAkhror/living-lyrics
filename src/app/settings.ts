@@ -3,7 +3,6 @@ import { useSyncExternalStore } from 'react';
 
 export type ThemePref = 'auto' | 'light' | 'dark';
 export type MotionPref = 'full' | 'calm' | 'off';
-export type FollowMode = 'auto' | 'manual';
 
 export interface Settings {
   theme: ThemePref;
@@ -17,8 +16,7 @@ export interface Settings {
   textScale: number;
   motion: MotionPref;
   persianStyle: 'nastaliq' | 'naskh';
-  follow: FollowMode;
-  /** Manual mode: stop at the end of each line. */
+  /** Stop at the end of every line (for learning a text line by line). */
   pauseAfterLine: boolean;
   quality: 'high' | 'saver';
   rate: number;
@@ -40,7 +38,6 @@ export const DEFAULTS: Settings = {
   textScale: 1,
   motion: 'full',
   persianStyle: 'nastaliq',
-  follow: 'auto',
   pauseAfterLine: false,
   quality: 'high',
   rate: 1,
@@ -52,13 +49,16 @@ export const DEFAULTS: Settings = {
   eqPreamp: 0,
 };
 
-const KEY = 'living-lyrics.settings.v1';
+const KEY = 'living-lyrics.settings.v2';
 
 function read(): Settings {
   try {
     const raw = localStorage.getItem(KEY);
-    if (!raw) return { ...DEFAULTS };
-    return { ...DEFAULTS, ...JSON.parse(raw) };
+    // v1 settings carry over; keys that no longer exist are dropped.
+    const saved = JSON.parse(raw ?? localStorage.getItem('living-lyrics.settings.v1') ?? '{}') as Partial<Settings>;
+    const out = { ...DEFAULTS };
+    for (const k of Object.keys(DEFAULTS) as (keyof Settings)[]) if (k in saved) (out as Record<string, unknown>)[k] = saved[k];
+    return out;
   } catch {
     return { ...DEFAULTS };
   }

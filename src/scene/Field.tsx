@@ -42,9 +42,8 @@ export function Field({
       const t = still ? 12 : now / 1000;
       smooth += (energy() - smooth) * 0.12;
       ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = dark ? '#050507' : '#faf9f7';
+      ctx.fillStyle = dark ? '#060608' : '#faf9f7';
       ctx.fillRect(0, 0, W, H);
-      if (dark) ctx.globalCompositeOperation = 'lighter';
       const paths = [
         [0.27, 0.031, 0.043, 0.0],
         [0.73, 0.023, 0.037, 1.7],
@@ -57,18 +56,18 @@ export function Field({
         const y = (0.5 + 0.36 * Math.sin(t * fy * 6.28 + ph * 1.3)) * H;
         const rad = (0.55 + 0.1 * Math.sin(t * 0.21 + i) + 0.14 * smooth) * Math.max(W, H);
         const grd = ctx.createRadialGradient(x, y, 0, x, y, rad);
-        // Dark: additive light. Light: translucent pastel washes over paper white.
-        const k = dark ? 0.42 + 0.25 * smooth : 0.3 + 0.12 * smooth;
-        grd.addColorStop(0, `rgba(${r},${g},${b},${k})`);
-        grd.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        // Dark: the colours deepened, like Apple Music's darkened artwork. Light: pastel washes over paper white.
+        const k = dark ? 0.62 + 0.18 * smooth : 0.3 + 0.12 * smooth;
+        const m = dark ? 0.6 : 1;
+        const c = `${Math.round(r * m)},${Math.round(g * m)},${Math.round(b * m)}`;
+        grd.addColorStop(0, `rgba(${c},${k})`);
+        grd.addColorStop(1, `rgba(${c},0)`);
         ctx.fillStyle = grd;
         ctx.fillRect(0, 0, W, H);
       });
-      if (!dark) {
-        // Lift the whole field toward white so text keeps AAA contrast.
-        ctx.fillStyle = 'rgba(255,255,255,0.28)';
-        ctx.fillRect(0, 0, W, H);
-      }
+      // Keep the field quiet behind text: lift toward white in light mode, toward black in dark mode.
+      ctx.fillStyle = dark ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.28)';
+      ctx.fillRect(0, 0, W, H);
     };
     raf = requestAnimationFrame(draw);
     const onVis = () => {

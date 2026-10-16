@@ -34,13 +34,13 @@
   ],
   "duration": 828.05,
   "palette": {
-    "accent": "#2C5A9C",
-    "accentDark": "#8DB6FF",
+    "accent": "#2F55C8",
+    "accentDark": "#8EA6FF",
     "field": [
-      "#1E3A8A",
-      "#0E7490",
-      "#6D28D9",
-      "#A5B4FC"
+      "#2C48B0",
+      "#6B4856",
+      "#3B192E",
+      "#DBB8B3"
     ]
   },
   "coverGlyph": "ONE",

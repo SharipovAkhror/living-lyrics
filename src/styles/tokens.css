@@ -94,7 +94,10 @@
   /* Stage text (lyrics) */
   --ink: #111114;
   --ink-sung: var(--ink);
-  --ink-unsung: rgba(17, 17, 20, 0.28);
+  /* Unsung words stay readable ahead of time (the reader must be able to read the whole line). */
+  --ink-unsung: rgba(17, 17, 20, 0.4);
+  /* Material plate behind the current line. */
+  --plate-tint: rgba(255, 255, 255, 0.5);
   --ink-ghost: rgba(17, 17, 20, 0.1);
 
   /* Liquid Glass (regular) */
@@ -133,7 +136,8 @@
     --accent: var(--song-accent-dark, #0a84ff);
     --on-accent: #0b0b0d;
     --ink: #f5f5f7;
-    --ink-unsung: rgba(245, 245, 247, 0.3);
+    --ink-unsung: rgba(245, 245, 247, 0.42);
+    --plate-tint: rgba(30, 30, 34, 0.4);
     --ink-ghost: rgba(245, 245, 247, 0.1);
     --glass-tint: rgba(40, 40, 46, 0.42);
     --glass-tint-strong: rgba(44, 44, 50, 0.66);
@@ -167,7 +171,8 @@
   --accent: var(--song-accent-dark, #0a84ff);
   --on-accent: #0b0b0d;
   --ink: #f5f5f7;
-  --ink-unsung: rgba(245, 245, 247, 0.3);
+  --ink-unsung: rgba(245, 245, 247, 0.42);
+  --plate-tint: rgba(30, 30, 34, 0.4);
   --ink-ghost: rgba(245, 245, 247, 0.1);
   --glass-tint: rgba(40, 40, 46, 0.42);
   --glass-tint-strong: rgba(44, 44, 50, 0.66);
@@ -188,6 +193,7 @@
     --material-thick: var(--bg-elevated);
     --material-regular: var(--bg-elevated);
     --material-thin: var(--bg-elevated);
+    --plate-tint: var(--bg-elevated);
   }
 }
 @media (prefers-contrast: more) {

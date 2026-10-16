@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { Song } from '@/data/schema';
-import type { Cue, Timeline } from '@/data/timeline';
+import type { Timeline } from '@/data/timeline';
 import { effectiveMotion, type Settings } from '@/app/settings';
-import { LineView, type Updater } from './LineView';
-import { InstView } from './InstView';
+import { LineBlock, type BlockUpdater } from './LineBlock';
+import { InstBlock } from './InstBlock';
 import { Field } from './Field';
-import { clamp01 } from './choreo';
+import { WAIT_ROOM, blockState, flowPosition, layoutAt, lerp, planFlow, waitHint, windowAround, type Measure } from './flow';
 
 interface Props {
   song: Song;
@@ -14,38 +14,33 @@ interface Props {
   dark: boolean;
   /** Current playback time. */
   clock: () => number;
-  /** In manual reading mode, show this cue fully sung and nothing else. */
-  frozen: number | null;
+  /** The cue nearest to the current position changed (top bar label, commentary). */
   onOwnerChange: (idx: number) => void;
-  onTap: () => void;
-  onSwipe: (dir: -1 | 1) => void;
+  /** The reader tapped a line or an instrumental block. */
+  onPick: (idx: number) => void;
 }
 
-/** Cues mounted at time t: visible ones plus the next one shortly before it appears (so it can measure itself). */
-function mountedAt(tl: Timeline, t: number): number[] {
-  const out: number[] = [];
-  const o = Math.max(0, tl.ownerAt(t + 2));
-  for (let i = Math.max(0, o - 3); i <= Math.min(tl.cues.length - 1, o + 2); i++) {
-    const c = tl.cues[i];
-    if (t >= c.show - 0.9 && t < c.hide + 0.05) out.push(i);
-  }
-  return out;
-}
+const INTRO = -1;
 
-export function Scene({ song, timeline, settings, dark, clock, frozen, onOwnerChange, onTap, onSwipe }: Props) {
+/**
+ * The stage. One clock read per frame computes the flow position, lays the mounted blocks out
+ * around it and hands each block its distance and top; blocks style themselves imperatively.
+ */
+export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, onPick }: Props) {
   const stageRef = useRef<HTMLDivElement>(null);
-  const [stage, setStage] = useState({ w: 0, h: 0 });
-  const [mounted, setMounted] = useState<number[]>([]);
-  const updaters = useRef(new Map<number, Updater>());
-  const breath = useRef<HTMLDivElement>(null);
+  const plate = useRef<HTMLDivElement>(null);
   const intro = useRef<HTMLDivElement>(null);
+  const [stage, setStage] = useState({ w: 0, h: 0 });
+  const [mounted, setMounted] = useState<number[]>([INTRO, 0, 1, 2]);
+  const blocks = useRef(new Map<number, { fn: BlockUpdater; m: Measure }>());
   const ownerRef = useRef(-2);
   const energyRef = useRef(0);
   const motion = effectiveMotion(settings);
+  const plan = useMemo(() => planFlow(timeline, motion === 'off'), [timeline, motion]);
 
-  const register = useCallback((idx: number, fn: Updater | null) => {
-    if (fn) updaters.current.set(idx, fn);
-    else updaters.current.delete(idx);
+  const register = useCallback((idx: number, fn: BlockUpdater | null, m?: Measure) => {
+    if (fn && m) blocks.current.set(idx, { fn, m });
+    else blocks.current.delete(idx);
   }, []);
 
   useLayoutEffect(() => {
@@ -55,7 +50,7 @@ export function Scene({ song, timeline, settings, dark, clock, frozen, onOwnerCh
     return () => ro.disconnect();
   }, []);
 
-  // Re-measure once web fonts have arrived (line widths change).
+  // Re-measure once web fonts have arrived (line heights change).
   useEffect(() => {
     let alive = true;
     document.fonts?.ready.then(() => alive && setStage((s) => ({ ...s })));
@@ -64,112 +59,130 @@ export function Scene({ song, timeline, settings, dark, clock, frozen, onOwnerCh
     };
   }, []);
 
-  // The frame loop: one clock read per frame drives every mounted view.
+  // The title card is block −1: measured like any other block.
+  useLayoutEffect(() => {
+    const el = intro.current;
+    if (!el) return;
+    const fn: BlockUpdater = (_t, d, top) => {
+      const s = blockState(d);
+      el.style.transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
+      el.style.opacity = (d < 0 ? s.opacity * Math.max(0, 1 + d * 1.4) : s.opacity).toFixed(3);
+      el.style.visibility = s.opacity < 0.01 ? 'hidden' : 'visible';
+    };
+    register(INTRO, fn, { main: el.offsetHeight, sub: 0, compact: el.offsetHeight, full: el.offsetHeight });
+  }, [register, stage]);
+
   useEffect(() => {
     let raf = 0;
     let lastKey = '';
     const loop = () => {
       raf = requestAnimationFrame(loop);
-      const frozenCue = frozen != null ? timeline.cues[frozen] : null;
-      const t = frozenCue ? (frozenCue.kind === 'line' ? frozenCue.end + 0.02 : frozenCue.start + 3) : clock();
-      const energy = timeline.energyAt(t);
-      energyRef.current = energy;
-
-      const list = frozenCue ? [frozenCue.idx] : mountedAt(timeline, t);
+      const t = clock();
+      energyRef.current = timeline.energyAt(t);
+      const pos = flowPosition(plan, t);
+      const list = windowAround(timeline, pos);
       const key = list.join(',');
       if (key !== lastKey) {
         lastKey = key;
         setMounted(list);
       }
-      for (const idx of list) {
-        const fn = updaters.current.get(idx);
-        if (!fn) continue;
-        const c = timeline.cues[idx];
-        // A frozen line is shown settled: entrance done, nothing leaving.
-        fn(frozenCue ? Math.min(t, c.hide - 0.7) : t, energy);
+      if (!stage.h) return;
+
+      // Positions for the two integer anchors around pos, blended: motion and scale stay continuous.
+      const measures = new Map<number, Measure>();
+      for (const k of list) {
+        const b = blocks.current.get(k);
+        if (b) measures.set(k, b.m);
+      }
+      const a = Math.floor(pos);
+      const f = pos - a;
+      const centerY = stage.h * 0.36;
+      const waits = new Map<number, number>();
+      for (const k of list) waits.set(k, waitHint(timeline, k, t));
+      const room = (k: number) => (waits.get(k) ?? 0) * WAIT_ROOM;
+      const A = layoutAt(a, list, measures, centerY, 8, room);
+      const B = layoutAt(a + 1, list, measures, centerY, 8, room);
+      for (const k of list) {
+        const b = blocks.current.get(k);
+        if (!b) continue;
+        b.fn(t, k - pos, lerp(A.get(k) ?? 0, B.get(k) ?? 0, f), waits.get(k) ?? 0);
       }
 
-      const owner = frozenCue ? frozenCue.idx : timeline.ownerAt(t);
+      // The material plate follows the current line (not the title card or an instrumental block,
+      // which carry their own plates).
+      const p = plate.current;
+      if (p) {
+        const box = (k: number) => {
+          const b = blocks.current.get(k);
+          const c = timeline.cues[k];
+          if (!b || !c || c.kind !== 'line') return null;
+          const s = blockState(k - pos);
+          const top = lerp(A.get(k) ?? 0, B.get(k) ?? 0, f);
+          return { top, h: (b.m.main + b.m.sub * s.subRoom) * s.scale };
+        };
+        const b0 = box(a);
+        const b1 = box(a + 1);
+        const o = (b0 ? 1 - f : 0) + (b1 ? f : 0);
+        const top = b0 && b1 ? lerp(b0.top, b1.top, f) : (b0 ?? b1)?.top ?? 0;
+        const h = b0 && b1 ? lerp(b0.h, b1.h, f) : (b0 ?? b1)?.h ?? 0;
+        p.style.opacity = o.toFixed(3);
+        p.style.visibility = o < 0.01 ? 'hidden' : 'visible';
+        p.style.transform = `translate3d(0, ${(top - 18).toFixed(1)}px, 0)`;
+        p.style.height = `${(h + 36).toFixed(1)}px`;
+      }
+
+      const owner = Math.max(-1, Math.min(timeline.cues.length - 1, Math.round(pos)));
       if (owner !== ownerRef.current) {
         ownerRef.current = owner;
         onOwnerChange(owner);
       }
-
-      // Breathing dots between distant lines (as in Apple Music), and the title card before the first cue.
-      const first = timeline.cues[0];
-      const introO = !frozenCue && first ? 1 - clamp01((t - (first.show - 0.6)) / 0.6) : 0;
-      if (intro.current) {
-        intro.current.style.opacity = String(introO);
-        intro.current.style.visibility = introO > 0.01 ? 'visible' : 'hidden';
-      }
-      if (breath.current) {
-        const cur = timeline.cues[owner] as Cue | undefined;
-        const next = timeline.cues[owner + 1] as Cue | undefined;
-        let b = 0;
-        let p = 0;
-        if (!frozenCue && cur && next && cur.kind === 'line' && t > cur.hide - 0.2 && next.show - cur.hide > 1.6) {
-          const span = next.show - cur.hide;
-          p = clamp01((t - cur.hide) / span);
-          b = clamp01((t - cur.hide + 0.2) / 0.5) * (1 - clamp01((t - (next.show - 0.4)) / 0.4));
-        }
-        breath.current.style.opacity = String(b);
-        breath.current.style.setProperty('--p', p.toFixed(3));
-      }
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [timeline, clock, frozen, onOwnerChange]);
-
-  // Gestures: tap toggles chrome, horizontal swipe moves between lines.
-  const down = useRef<{ x: number; y: number; t: number } | null>(null);
-  const onPointerDown = (e: React.PointerEvent) => {
-    down.current = { x: e.clientX, y: e.clientY, t: performance.now() };
-  };
-  const onPointerUp = (e: React.PointerEvent) => {
-    const d = down.current;
-    down.current = null;
-    if (!d) return;
-    const dx = e.clientX - d.x;
-    const dy = e.clientY - d.y;
-    if (Math.abs(dx) > 56 && Math.abs(dx) > Math.abs(dy) * 1.4) onSwipe(dx < 0 ? 1 : -1);
-    else if (Math.abs(dx) < 8 && Math.abs(dy) < 8 && performance.now() - d.t < 400) onTap();
-  };
+  }, [timeline, plan, clock, onOwnerChange, stage]);
 
   const getEnergy = useCallback(() => energyRef.current, []);
-  const first = song.poets?.map((p) => p.name).join(' · ');
+  const poets = song.poets?.map((p) => p.name).join(' · ');
+  const textSettings = useMemo(
+    () => ({
+      persianStyle: settings.persianStyle,
+      showTranslation: settings.showTranslation,
+      showTranslit: settings.showTranslit,
+      showAlt: settings.showAlt,
+      textScale: settings.textScale,
+    }),
+    [settings.persianStyle, settings.showTranslation, settings.showTranslit, settings.showAlt, settings.textScale],
+  );
 
   return (
     <div className="scene">
       <Field colors={song.palette.field} dark={dark} energy={getEnergy} still={motion !== 'full'} />
-      <div ref={stageRef} className="scene-stage" onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
-        <div ref={intro} className="intro">
+      <div ref={stageRef} className="scene-stage">
+        <div ref={plate} className="flow-plate" aria-hidden style={{ visibility: 'hidden' }} />
+        <div ref={intro} className="fb fb--intro" style={{ visibility: 'hidden' }}>
           <div className="intro-title">{song.title}</div>
           {song.titleOriginal && (
             <div className="intro-original f-mushaf" dir="rtl">
               {song.titleOriginal}
             </div>
           )}
-          <div className="intro-meta t-subhead secondary">
+          <div className="intro-meta t-subhead">
             {song.artist}
             {song.performance?.event ? ` · ${song.performance.event}` : ''}
           </div>
-          {first && <div className="intro-poets t-footnote tertiary">{first}</div>}
+          {poets && <div className="intro-poets t-footnote">{poets}</div>}
         </div>
         {mounted.map((idx) => {
+          if (idx === INTRO) return null;
           const c = timeline.cues[idx];
+          if (!c) return null;
           return c.kind === 'line' ? (
-            <LineView key={`${idx}-${settings.persianStyle}`} cue={c} settings={settings} motion={motion} stage={stage} register={register} />
+            <LineBlock key={`${idx}-${settings.persianStyle}`} cue={c} settings={textSettings} motion={motion} stage={stage} register={register} onPick={onPick} />
           ) : (
-            <InstView key={idx} cue={c} timeline={timeline} motion={motion} register={register} />
+            <InstBlock key={idx} cue={c} timeline={timeline} motion={motion} stage={stage} register={register} onPick={onPick} />
           );
         })}
-        <div ref={breath} className="breath" style={{ opacity: 0 }} aria-hidden>
-          <span />
-          <span />
-          <span />
-        </div>
       </div>
     </div>
   );
 }
-

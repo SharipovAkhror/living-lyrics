@@ -98,6 +98,34 @@ const glyphs: Record<string, Glyph> = {
       </>
     ),
   },
+  'list.bullet': {
+    body: (
+      <>
+        <path d="M9 6.5h11M9 12h11M9 17.5h11" {...S} />
+        <circle cx="4.6" cy="6.5" r="1.3" fill="currentColor" stroke="none" />
+        <circle cx="4.6" cy="12" r="1.3" fill="currentColor" stroke="none" />
+        <circle cx="4.6" cy="17.5" r="1.3" fill="currentColor" stroke="none" />
+      </>
+    ),
+  },
+  'character.bubble': {
+    body: (
+      <>
+        <path d="M12 3.8c4.8 0 8.6 3.1 8.6 7s-3.8 7-8.6 7c-.8 0-1.6-.1-2.3-.3L5.2 19.6l1-3.4C4.4 14.9 3.4 13 3.4 10.8c0-3.9 3.8-7 8.6-7Z" {...S} />
+        <path d="M8.6 13.8 11.2 7.4h.5l2.6 6.4M9.5 11.7h3.9" {...S} strokeWidth="1.6" />
+      </>
+    ),
+  },
+  'slider.horizontal.3': {
+    body: (
+      <>
+        <path d="M3.5 6h17M3.5 12h17M3.5 18h17" {...S} />
+        <rect x="13" y="4.4" width="3.2" height="3.2" rx="1.6" fill="var(--icon-knob, currentColor)" />
+        <rect x="6.6" y="10.4" width="3.2" height="3.2" rx="1.6" fill="var(--icon-knob, currentColor)" />
+        <rect x="10.6" y="16.4" width="3.2" height="3.2" rx="1.6" fill="var(--icon-knob, currentColor)" />
+      </>
+    ),
+  },
   ellipsis: {
     fill: true,
     body: (

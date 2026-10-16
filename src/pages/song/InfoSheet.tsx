@@ -1,0 +1,91 @@
+import { Group, Row, Sheet } from '@/components/controls';
+import { LANG_NAMES, formatTime } from '@/data/library';
+import { linkHandler } from '@/app/router';
+import type { Lyrics, Song } from '@/data/schema';
+import { instrument } from '@/instruments/catalog';
+
+const TIMING: Record<Song['timing']['status'], string> = {
+  draft: 'Черновые: время слов оценено, а не измерено по записи — возможны отставания',
+  aligned: 'Выровнены по записи автоматически',
+  verified: 'Выровнены и проверены',
+};
+
+/** "About this song": who sings, who plays, whose words, which recording, how exact the timing is. */
+export function InfoSheet({ open, onClose, song, lyrics }: { open: boolean; onClose: () => void; song: Song; lyrics: Lyrics | null }) {
+  const voices = new Set<string>();
+  const players = new Map<string, Set<string>>();
+  for (const s of lyrics?.sections ?? []) {
+    if (s.kind === 'vocal') {
+      if (s.voice) voices.add(s.voice);
+      for (const l of s.lines) if (l.voice) voices.add(l.voice);
+    } else {
+      for (const k of s.instruments) {
+        const name = instrument(k)?.name ?? k;
+        if (!players.has(name)) players.set(name, new Set());
+      }
+      s.performers?.forEach((p) => players.get(instrument(s.instruments[0])?.name ?? s.instruments[0])?.add(p));
+    }
+  }
+  const perf = song.performance;
+  const where = [perf?.event, perf?.venue, perf?.city, perf?.date].filter(Boolean).join(' · ');
+
+  return (
+    <Sheet open={open} onClose={onClose} title="О песне" size="large">
+      <div className="info-head">
+        <div className="t-title2">{song.title}</div>
+        {song.titleOriginal && (
+          <div className="info-original f-mushaf" dir="rtl">
+            {song.titleOriginal}
+          </div>
+        )}
+        <div className="t-subhead secondary">
+          {song.artist}
+          {song.featuring?.length ? ` · ${song.featuring.join(', ')}` : ''}
+        </div>
+      </div>
+
+      {(voices.size > 0 || song.credits?.length) && (
+        <Group header="Кто поёт и играет">
+          {[...voices].map((v) => (
+            <Row key={v} title={v} detail="Голос" />
+          ))}
+          {song.credits?.map((c) => (
+            <Row key={c.role + c.name} title={c.name} detail={c.role} />
+          ))}
+        </Group>
+      )}
+
+      {players.size > 0 && (
+        <Group header="Инструменты">
+          {[...players].map(([name, who]) => (
+            <Row key={name} title={name} detail={who.size ? [...who].join(', ') : undefined} />
+          ))}
+        </Group>
+      )}
+
+      {song.poets?.length ? (
+        <Group header="Чьи слова">
+          {song.poets.map((p) => (
+            <Row key={p.name} title={p.name} detail={[p.lang ? LANG_NAMES[p.lang] : null, p.era].filter(Boolean).join(', ')} />
+          ))}
+        </Group>
+      ) : null}
+
+      <Group header="Запись">
+        {where && <Row title={where} detail={song.release?.album} />}
+        <Row title="Длительность" detail={formatTime(song.duration)} />
+        <Row title="Языки" detail={song.languages.map((l) => LANG_NAMES[l] ?? l).join(', ')} />
+        <Row title="Тайм-коды" detail={TIMING[song.timing.status]} />
+      </Group>
+
+      <Group>
+        <a className="row row--button" href="/method" onClick={linkHandler('/method')}>
+          <span className="row-text">
+            <span className="row-title">Как сделана эта страница</span>
+            <span className="row-detail t-footnote">Методология: тексты, перевод, синхронизация</span>
+          </span>
+        </a>
+      </Group>
+    </Sheet>
+  );
+}

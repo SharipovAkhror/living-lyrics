@@ -6,7 +6,6 @@ import { LibraryPage } from '@/pages/LibraryPage';
 import { SongPage } from '@/pages/song/SongPage';
 
 const MethodPage = lazy(() => import('@/pages/MethodPage').then((m) => ({ default: m.MethodPage })));
-const EditorPage = lazy(() => import('@/pages/editor/EditorPage').then((m) => ({ default: m.EditorPage })));
 
 export function App() {
   const route = useRoute();
@@ -18,12 +17,6 @@ export function App() {
       return <LibraryPage />;
     case 'song':
       return <SongPage key={route.slug} slug={route.slug} dark={dark} />;
-    case 'edit':
-      return (
-        <Suspense fallback={null}>
-          <EditorPage slug={route.slug} />
-        </Suspense>
-      );
     case 'method':
       return (
         <Suspense fallback={null}>

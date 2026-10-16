@@ -45,13 +45,13 @@
   ],
   "duration": 977.05,
   "palette": {
-    "accent": "#9A6A12",
-    "accentDark": "#E7B654",
+    "accent": "#9C2F55",
+    "accentDark": "#E58DAE",
     "field": [
-      "#F1C46A",
-      "#C8553D",
-      "#6B2D5C",
-      "#2F4B7C"
+      "#B95876",
+      "#872A4B",
+      "#54182D",
+      "#E7B2C9"
     ]
   },
   "coverGlyph": "Karitas",

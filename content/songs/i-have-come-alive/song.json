@@ -37,13 +37,13 @@
   ],
   "duration": 580.06,
   "palette": {
-    "accent": "#B4410E",
-    "accentDark": "#FF9F5A",
+    "accent": "#5B3FC4",
+    "accentDark": "#B3A2FF",
     "field": [
-      "#FFB347",
-      "#E8505B",
-      "#7A2E8E",
-      "#F6D365"
+      "#3D38A5",
+      "#70356F",
+      "#AA6A90",
+      "#EBBAAF"
     ]
   },
   "coverGlyph": "زنده شدم",

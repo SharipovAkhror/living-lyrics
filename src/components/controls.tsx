@@ -10,12 +10,17 @@ export function Sheet({
   title,
   children,
   size = 'medium',
+  onBack,
+  backLabel,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   children: ReactNode;
   size?: 'medium' | 'large';
+  /** In-sheet navigation: shows a back button in the header. */
+  onBack?: () => void;
+  backLabel?: string;
 }) {
   const [render, setRender] = useState(open);
   const [shown, setShown] = useState(false);
@@ -82,10 +87,16 @@ export function Sheet({
       >
         <div className="sheet-head" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
           <div className="sheet-grabber" />
+          {onBack && (
+            <button className="btn btn-plain sheet-back" onClick={onBack} onPointerDown={(e) => e.stopPropagation()}>
+              <Icon name="chevron.left" size={18} weight={2.3} />
+              <span>{backLabel ?? 'Назад'}</span>
+            </button>
+          )}
           <h2 id={titleId} className="sheet-title t-headline">
             {title}
           </h2>
-          <button className="btn btn-circle btn-sm sheet-close btn-gray" onClick={onClose} aria-label="Закрыть">
+          <button className="btn btn-circle btn-sm sheet-close btn-gray" onClick={onClose} onPointerDown={(e) => e.stopPropagation()} aria-label="Закрыть">
             <Icon name="xmark" size={15} weight={2.3} />
           </button>
         </div>
