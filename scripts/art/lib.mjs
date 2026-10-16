@@ -170,7 +170,7 @@ export function medallion(cx = 200, cy = 200, r = 186) {
 }
 
 export function svgDoc(title, defs, body) {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="${title}"><defs>${defs}</defs>${body}</svg>\n`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="${title}"><defs stroke="none">${defs}</defs>${body}</svg>\n`;
 }
 
 /** Collects defs + body fragments. */
@@ -197,7 +197,121 @@ export class Art {
     this.parts.push(`<path class="fillin" d="${d}" fill="currentColor" stroke="none"/>`);
     return this;
   }
+  /** Start collecting parts that will be hidden under some shapes (see `hidden`). */
+  begin() {
+    (this.marks ??= []).push(this.parts.length);
+    return this;
+  }
+  /** Close the last `begin()`: everything added since is masked out where `shapes` cover it. */
+  hidden(shapes) {
+    const from = this.marks.pop();
+    const inner = this.parts.splice(from).join('');
+    const { defs, svg } = hideUnder(inner, shapes);
+    this.defs += defs;
+    this.parts.push(svg);
+    return this;
+  }
   done(title) {
     return svgDoc(title, this.defs, this.parts.join(''));
   }
+}
+
+/* ---------- Helpers added for the second set of engravings (tar, kamancheh, cello, …) ---------- */
+
+/** Right-half profile points (top → bottom) mirrored about x = cx into one closed outline. */
+export function mirrorOutline(right, cx = 200) {
+  const r = right.filter((p, i) => i === 0 || i === right.length - 1 || Math.abs(p.x - cx) > 0.01);
+  const left = right
+    .slice()
+    .reverse()
+    .filter((p) => Math.abs(p.x - cx) > 0.01)
+    .map((p) => P(2 * cx - p.x, p.y));
+  return [...r, ...left];
+}
+
+/**
+ * Smooth outline made of runs that meet at sharp corners (violin-family corners, guitar heads).
+ * Each run is a list of points; a run starts where the previous one ended. Returns one path.
+ */
+export function chainSmooth(runs, close = true, tension = 0.5) {
+  let d = '';
+  runs.forEach((run, i) => {
+    const seg = smooth(run, false, tension);
+    d += i === 0 ? seg : seg.replace(/^M[^C]*/, '');
+  });
+  return d + (close ? 'Z' : '');
+}
+
+/** Violin-family body: right-half runs (upper bout, C-bout, lower bout) mirrored into a closed outline with corners. */
+export function boutOutline({ upper, cbout, lower }, cx = 200) {
+  const m = (pts) => pts.map((p) => P(2 * cx - p.x, p.y));
+  const top = [...upper.slice().reverse(), ...m(upper).slice(1)]; // right corner → top centre → left corner
+  const bottom = [...m(lower), ...lower.slice().reverse().slice(1)]; // left corner → bottom centre → right corner
+  return chainSmooth([top, m(cbout), bottom, cbout.slice().reverse()], true);
+}
+
+/** Scaled copy of points about a centre (for inner purfling lines, inlays). */
+export const scalePts = (pts, c, kx, ky = kx) => pts.map((p) => P(c.x + (p.x - c.x) * kx, c.y + (p.y - c.y) * ky));
+
+/** Sunflower stipple inside an ellipse: skin and membrane texture. Returns path data. */
+export function stipple(cx, cy, rx, ry, n = 240, rotDeg = 0, fill = 0.92) {
+  let d = '';
+  for (let i = 0; i < n; i++) {
+    const ang = i * 2.39996;
+    const rr = Math.sqrt(i / n) * fill;
+    const p = rot(P(cx + rx * rr * Math.cos(ang), cy + ry * rr * Math.sin(ang)), P(cx, cy), rotDeg);
+    d += circle(p.x, p.y, 0.32 + (i % 4) * 0.07);
+  }
+  return d;
+}
+
+/** Point on an ellipse at angle t (radians), with the ellipse rotated by rotDeg. */
+export function onEllipse(cx, cy, rx, ry, t, rotDeg = 0) {
+  return rot(P(cx + rx * Math.cos(t), cy + ry * Math.sin(t)), P(cx, cy), rotDeg);
+}
+
+/** Open arc of an ellipse from angle t0 to t1 (radians), as a smooth path. */
+export function ellipseArc(cx, cy, rx, ry, t0, t1, rotDeg = 0, steps = 32) {
+  const pts = [];
+  for (let i = 0; i <= steps; i++) pts.push(onEllipse(cx, cy, rx, ry, t0 + ((t1 - t0) * i) / steps, rotDeg));
+  return smooth(pts, false, 0.5);
+}
+
+/** A turned tuning peg seen from the front: shaft from (x, y) outward, pear-shaped knob. dir = −1 left, +1 right. */
+export function peg(x, y, dir, len = 14, knob = 9, lift = -2) {
+  const tip = P(x + dir * len, y + lift);
+  return (
+    `M${f(x)} ${f(y - 1.1)}L${f(tip.x)} ${f(tip.y - 1.2)}` +
+    `C${f(tip.x + dir * knob * 0.22)} ${f(tip.y - 4)} ${f(tip.x + dir * knob)} ${f(tip.y - 3.6)} ${f(tip.x + dir * knob)} ${f(tip.y)}` +
+    `C${f(tip.x + dir * knob)} ${f(tip.y + 3.6)} ${f(tip.x + dir * knob * 0.22)} ${f(tip.y + 4)} ${f(tip.x)} ${f(tip.y + 1.2)}` +
+    `L${f(x)} ${f(y + 1.1)}`
+  );
+}
+
+/** Rectangle as a closed path (optionally with rounded corners). */
+export function rect(x, y, w, h, r = 0) {
+  if (!r) return `M${f(x)} ${f(y)}L${f(x + w)} ${f(y)}L${f(x + w)} ${f(y + h)}L${f(x)} ${f(y + h)}Z`;
+  return `M${f(x + r)} ${f(y)}L${f(x + w - r)} ${f(y)}Q${f(x + w)} ${f(y)} ${f(x + w)} ${f(y + r)}L${f(x + w)} ${f(y + h - r)}Q${f(x + w)} ${f(y + h)} ${f(x + w - r)} ${f(y + h)}L${f(x + r)} ${f(y + h)}Q${f(x)} ${f(y + h)} ${f(x)} ${f(y + h - r)}L${f(x)} ${f(y + r)}Q${f(x)} ${f(y)} ${f(x + r)} ${f(y)}Z`;
+}
+
+/** Positions along a string from the nut: `count` steps of `step` semitones, stopping at `stopAt`. */
+export function fretYs(nut, scaleLen, count, step = 1, stopAt = Infinity) {
+  const ys = [];
+  for (let i = 1; i <= count; i++) {
+    const y = nut + scaleLen * (1 - Math.pow(2, -(i * step) / 12));
+    if (y > stopAt) break;
+    ys.push(y);
+  }
+  return ys;
+}
+
+/**
+ * Occlusion for line art: wraps `svg` in a mask that hides it under the given shapes
+ * (e.g. strings behind a bow, the far rim behind a drum head). Returns { defs, svg }.
+ */
+export function hideUnder(svg, shapes, box = { x: -100, y: -100, w: 600, h: 600 }) {
+  const m = gid('occ');
+  const holes = (Array.isArray(shapes) ? shapes : [shapes]).map((d) => `<path d="${d}" fill="#000"/>`).join('');
+  const defs = `<mask id="${m}" maskUnits="userSpaceOnUse" x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}"><rect x="${box.x}" y="${box.y}" width="${box.w}" height="${box.h}" fill="#fff"/>${holes}</mask>`;
+  return { defs, svg: `<g mask="url(#${m})">${svg}</g>` };
 }
