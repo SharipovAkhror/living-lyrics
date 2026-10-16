@@ -11,3 +11,6 @@ work/
 public/audio/**/*.m4a
 public/audio/**/*.mp3
 public/audio/**/*.flac
+
+# Agent worktrees (Claude Code)
+.claude/worktrees/
