@@ -8,12 +8,32 @@
       "end": 10.6,
       "label": "Вступление",
       "instruments": [
+        "tanbur",
+        "ney",
+        "kamancheh",
+        "oud",
+        "qanun",
+        "erhu",
+        "daf",
+        "guitar",
+        "santur",
+        "baglama",
         "ensemble"
       ],
       "note": "Инструменты до первого голоса.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "performers": [
+        "Eyüpcan Açıkpazu (най)",
+        "Selim Boyaci (уд)",
+        "Onur Cicin (канун)",
+        "Guo Gan (эрху)",
+        "Mohammad Jaberi (даф)",
+        "Jon Lawton (гитара фламенко)",
+        "Farshad Mohammadi (сантур)",
+        "Kutay Ozcan (баглама)"
       ]
     },
     {
@@ -39,10 +59,26 @@
       "label": "Танбур",
       "instruments": [
         "tanbur",
+        "ney",
+        "kamancheh",
+        "oud",
+        "qanun",
+        "erhu",
+        "daf",
+        "guitar",
+        "santur",
+        "baglama",
         "ensemble"
       ],
       "performers": [
-        "Сейед Али Джабери (танбур)"
+        "Eyüpcan Açıkpazu (най)",
+        "Selim Boyaci (уд)",
+        "Onur Cicin (канун)",
+        "Guo Gan (эрху)",
+        "Mohammad Jaberi (даф)",
+        "Jon Lawton (гитара фламенко)",
+        "Farshad Mohammadi (сантур)",
+        "Kutay Ozcan (баглама)"
       ],
       "note": "Длинный проигрыш танбура перед первым куплетом.",
       "comment": "**Танбур** — длинногрифая лютня курдских и иранских суфиев (ахль-и хакк). Играют пальцами, без плектра, быстрыми ударами всей кистью.",
@@ -926,12 +962,32 @@
       "end": 172,
       "label": "Проигрыш",
       "instruments": [
+        "tanbur",
+        "ney",
+        "kamancheh",
+        "oud",
+        "qanun",
+        "erhu",
+        "daf",
+        "guitar",
+        "santur",
+        "baglama",
         "ensemble"
       ],
       "note": "Короткий проигрыш.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "performers": [
+        "Eyüpcan Açıkpazu (най)",
+        "Selim Boyaci (уд)",
+        "Onur Cicin (канун)",
+        "Guo Gan (эрху)",
+        "Mohammad Jaberi (даф)",
+        "Jon Lawton (гитара фламенко)",
+        "Farshad Mohammadi (сантур)",
+        "Kutay Ozcan (баглама)"
       ]
     },
     {
@@ -956,12 +1012,32 @@
       "end": 183.39,
       "label": "Проигрыш",
       "instruments": [
+        "tanbur",
+        "ney",
+        "kamancheh",
+        "oud",
+        "qanun",
+        "erhu",
+        "daf",
+        "guitar",
+        "santur",
+        "baglama",
         "ensemble"
       ],
       "note": "Инструменты до турецкого куплета.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "performers": [
+        "Eyüpcan Açıkpazu (най)",
+        "Selim Boyaci (уд)",
+        "Onur Cicin (канун)",
+        "Guo Gan (эрху)",
+        "Mohammad Jaberi (даф)",
+        "Jon Lawton (гитара фламенко)",
+        "Farshad Mohammadi (сантур)",
+        "Kutay Ozcan (баглама)"
       ]
     },
     {
@@ -1497,12 +1573,32 @@
       "end": 286.302,
       "label": "Проигрыш",
       "instruments": [
+        "tanbur",
+        "ney",
+        "kamancheh",
+        "oud",
+        "qanun",
+        "erhu",
+        "daf",
+        "guitar",
+        "santur",
+        "baglama",
         "ensemble"
       ],
       "note": "Инструменты между турецким и арабским.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "performers": [
+        "Eyüpcan Açıkpazu (най)",
+        "Selim Boyaci (уд)",
+        "Onur Cicin (канун)",
+        "Guo Gan (эрху)",
+        "Mohammad Jaberi (даф)",
+        "Jon Lawton (гитара фламенко)",
+        "Farshad Mohammadi (сантур)",
+        "Kutay Ozcan (баглама)"
       ]
     },
     {
@@ -2474,12 +2570,32 @@
       "end": 404.084,
       "label": "Проигрыш",
       "instruments": [
+        "tanbur",
+        "ney",
+        "kamancheh",
+        "oud",
+        "qanun",
+        "erhu",
+        "daf",
+        "guitar",
+        "santur",
+        "baglama",
         "ensemble"
       ],
       "note": "Инструменты перед маввалем.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "performers": [
+        "Eyüpcan Açıkpazu (най)",
+        "Selim Boyaci (уд)",
+        "Onur Cicin (канун)",
+        "Guo Gan (эрху)",
+        "Mohammad Jaberi (даф)",
+        "Jon Lawton (гитара фламенко)",
+        "Farshad Mohammadi (сантур)",
+        "Kutay Ozcan (баглама)"
       ]
     },
     {
@@ -4222,12 +4338,32 @@
       "end": 580.06,
       "label": "Окончание",
       "instruments": [
+        "tanbur",
+        "ney",
+        "kamancheh",
+        "oud",
+        "qanun",
+        "erhu",
+        "daf",
+        "guitar",
+        "santur",
+        "baglama",
         "ensemble"
       ],
       "note": "Инструменты после последнего голоса.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "performers": [
+        "Eyüpcan Açıkpazu (най)",
+        "Selim Boyaci (уд)",
+        "Onur Cicin (канун)",
+        "Guo Gan (эрху)",
+        "Mohammad Jaberi (даф)",
+        "Jon Lawton (гитара фламенко)",
+        "Farshad Mohammadi (сантур)",
+        "Kutay Ozcan (баглама)"
       ]
     }
   ]

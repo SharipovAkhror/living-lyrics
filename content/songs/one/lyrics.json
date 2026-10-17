@@ -1266,6 +1266,10 @@
       "end": 303.383,
       "label": "Проигрыш",
       "instruments": [
+        "ney",
+        "violin",
+        "qanun",
+        "santur",
         "ensemble"
       ],
       "note": "Инструментальный проигрыш.",
@@ -1787,6 +1791,10 @@
       "end": 442.276,
       "label": "Проигрыш",
       "instruments": [
+        "ney",
+        "violin",
+        "qanun",
+        "santur",
         "ensemble"
       ],
       "note": "Инструментальный проигрыш.",
@@ -1949,6 +1957,13 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 458.0,
+          "until": 464.0
+        }
       ]
     },
     {
@@ -1958,6 +1973,10 @@
       "end": 476.2,
       "label": "Проигрыш",
       "instruments": [
+        "ney",
+        "violin",
+        "qanun",
+        "santur",
         "ensemble"
       ],
       "note": "Короткий проигрыш между фразами.",
@@ -2129,6 +2148,10 @@
       "end": 560.667,
       "label": "Проигрыш",
       "instruments": [
+        "ney",
+        "violin",
+        "qanun",
+        "santur",
         "ensemble"
       ],
       "note": "Инструментальный проигрыш.",
@@ -2298,6 +2321,10 @@
       "end": 622,
       "label": "Проигрыш",
       "instruments": [
+        "ney",
+        "violin",
+        "qanun",
+        "santur",
         "ensemble"
       ],
       "note": "Инструментальный проигрыш.",
@@ -2326,6 +2353,10 @@
       "end": 671,
       "label": "Проигрыш",
       "instruments": [
+        "ney",
+        "violin",
+        "qanun",
+        "santur",
         "ensemble"
       ],
       "note": "Инструментальный проигрыш.",
@@ -2354,6 +2385,10 @@
       "end": 714,
       "label": "Проигрыш",
       "instruments": [
+        "ney",
+        "violin",
+        "qanun",
+        "santur",
         "ensemble"
       ],
       "note": "Инструментальный проигрыш.",
@@ -2382,6 +2417,10 @@
       "end": 729.384,
       "label": "Проигрыш",
       "instruments": [
+        "ney",
+        "violin",
+        "qanun",
+        "santur",
         "ensemble"
       ],
       "note": "Короткий проигрыш между фразами.",
@@ -2838,6 +2877,10 @@
       "end": 793,
       "label": "Проигрыш",
       "instruments": [
+        "ney",
+        "violin",
+        "qanun",
+        "santur",
         "ensemble"
       ],
       "note": "Короткий проигрыш между фразами.",
