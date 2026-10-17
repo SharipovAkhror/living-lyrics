@@ -51,6 +51,31 @@ function letters(text: string) {
     .toLowerCase();
 }
 
+/**
+ * Commentary used to be the field `sharh` (Arabic شرح) and the flag `sharh-draft`.
+ * Zod strips unknown keys, so a leftover name would vanish without this check.
+ */
+function rejectRetiredNames(raw: unknown, err: (where: string, msg: string) => void) {
+  if (!raw || typeof raw !== 'object') return;
+  const sections = (raw as { sections?: unknown }).sections;
+  if (!Array.isArray(sections)) return;
+  for (const section of sections) {
+    if (!section || typeof section !== 'object') continue;
+    const s = section as { id?: unknown; lines?: unknown; flags?: unknown };
+    const sid = typeof s.id === 'string' ? s.id : '?';
+    if ('sharh' in s) err(`section ${sid}`, 'поле sharh переименовано в comment');
+    if (Array.isArray(s.flags) && s.flags.includes('sharh-draft')) err(`section ${sid}`, 'флаг sharh-draft переименован в comment-draft');
+    if (!Array.isArray(s.lines)) continue;
+    for (const line of s.lines) {
+      if (!line || typeof line !== 'object') continue;
+      const l = line as { id?: unknown; flags?: unknown };
+      const where = `${sid} › ${typeof l.id === 'string' ? l.id : '?'}`;
+      if ('sharh' in l) err(where, 'поле sharh переименовано в comment');
+      if (Array.isArray(l.flags) && l.flags.includes('sharh-draft')) err(where, 'флаг sharh-draft переименован в comment-draft');
+    }
+  }
+}
+
 function check(slug: string): Issue[] {
   const issues: Issue[] = [];
   const err = (where: string, msg: string) => issues.push({ level: 'error', where, msg });
@@ -70,17 +95,20 @@ function check(slug: string): Issue[] {
     err('song.json', String(e));
     return issues;
   }
+  let rawLyrics: unknown;
   try {
-    const parsed = LyricsSchema.safeParse(JSON.parse(readFileSync(join(dir, 'lyrics.json'), 'utf8')));
-    if (!parsed.success) {
-      parsed.error.issues.forEach((i) => err('lyrics.json', `${i.path.join('.')}: ${i.message}`));
-      return issues;
-    }
-    lyrics = parsed.data;
+    rawLyrics = JSON.parse(readFileSync(join(dir, 'lyrics.json'), 'utf8'));
   } catch (e) {
     err('lyrics.json', String(e));
     return issues;
   }
+  rejectRetiredNames(rawLyrics, err);
+  const parsed = LyricsSchema.safeParse(rawLyrics);
+  if (!parsed.success) {
+    parsed.error.issues.forEach((i) => err('lyrics.json', `${i.path.join('.')}: ${i.message}`));
+    return issues;
+  }
+  lyrics = parsed.data;
 
   if (song.slug !== slug) err('song.json', `slug "${song.slug}" ≠ folder "${slug}"`);
   if (!existsSync(join(dir, 'sources.md'))) warn('sources.md', 'нет файла источников (sources.md)');

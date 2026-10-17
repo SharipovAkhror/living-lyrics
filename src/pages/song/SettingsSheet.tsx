@@ -135,7 +135,7 @@ export function SettingsSheet({
           </Row>
         )}
         <Row title="Пояснения" detail="Короткий комментарий под текстом: то, что не вошло в перевод">
-          <Switch label="Пояснения" checked={settings.showSharh} onChange={(v) => setSettings({ showSharh: v })} />
+          <Switch label="Пояснения" checked={settings.showComment} onChange={(v) => setSettings({ showComment: v })} />
         </Row>
         <div className="row row--control row--slider">
           <span className="t-footnote secondary" aria-hidden>

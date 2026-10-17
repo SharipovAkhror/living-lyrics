@@ -23,9 +23,15 @@ const docs: Doc[] = Object.entries(files)
   .map(({ slug, title, body }) => ({ slug, title, body }));
 
 export function MethodPage({ doc }: { doc?: string }) {
-  const current = docs.find((d) => d.slug === doc) ?? docs[0];
+  // The commentary stage used to live at /method/sharh (file 07-sharh.md).
+  const asked = doc === 'sharh' ? 'comment' : doc;
+  const current = docs.find((d) => d.slug === asked) ?? docs[0];
   const body = useRef<HTMLElement>(null);
   const html = useMemo(() => (current ? (marked.parse(current.body, { async: false }) as string) : ''), [current]);
+
+  useEffect(() => {
+    if (doc === 'sharh') navigate('/method/comment', { replace: true });
+  }, [doc]);
 
   // Links between methodology files ("05-alignment.md") open inside the app.
   useEffect(() => {

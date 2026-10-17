@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { getSong, loadLyrics, loadPeaks } from '@/data/library';
 import type { Lyrics, Peaks } from '@/data/schema';
-import { buildTimeline, sharhFor, type Cue } from '@/data/timeline';
+import { buildTimeline, commentFor, type Cue } from '@/data/timeline';
 import { useSettings, setSettings } from '@/app/settings';
 import { useSongAccent } from '@/app/theme';
 import { linkHandler } from '@/app/router';
@@ -197,13 +197,13 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
       else if (e.key === 'ArrowRight') (e.shiftKey ? engine?.skip(10) : nav(1));
       else if (e.key === 'ArrowLeft') (e.shiftKey ? engine?.skip(-10) : nav(-1));
       else if (e.key === 't' || e.key === 'е') setSettings({ showTranslation: !settings.showTranslation });
-      else if (e.key === 'k' || e.key === 'л') setSettings({ showSharh: !settings.showSharh });
+      else if (e.key === 'k' || e.key === 'л') setSettings({ showComment: !settings.showComment });
       else return;
       e.preventDefault();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [sheet, togglePlay, nav, engine, settings.showTranslation, settings.showSharh]);
+  }, [sheet, togglePlay, nav, engine, settings.showTranslation, settings.showComment]);
 
   const back = useHold(
     () => nav(-1),
@@ -218,12 +218,12 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
 
   const ownerCue = timeline && owner >= 0 ? timeline.cues[owner] : null;
   const sectionLabel = ownerCue ? ownerCue.section.label : song.artist;
-  const sharh = timeline && settings.showSharh && owner >= 0 ? sharhFor(timeline, owner) : null;
+  const comment = timeline && settings.showComment && owner >= 0 ? commentFor(timeline, owner) : null;
   const allLines = lyrics?.sections.flatMap((s) => (s.kind === 'vocal' ? s.lines : [])) ?? [];
   const has = { translit: allLines.some((l) => l.translit), alt: allLines.some((l) => l.alt), persian: allLines.some((l) => l.lang === 'fa') };
 
   return (
-    <div className={`song${sharh ? ' has-sharh' : ''}${settings.sharhOpen ? ' sharh-open' : ''}`}>
+    <div className={`song${comment ? ' has-comment' : ''}${settings.commentOpen ? ' comment-open' : ''}`}>
       {timeline ? (
         <Scene song={song} timeline={timeline} settings={settings} dark={dark} clock={clock} onOwnerChange={setOwner} onPick={pick} />
       ) : (
@@ -243,15 +243,15 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
         </button>
       </header>
 
-      {sharh && (
-        <aside className={`sharh material material--thick${settings.sharhOpen ? ' is-open' : ''}`} aria-label="Пояснение">
-          <button className="sharh-head" onClick={() => setSettings({ sharhOpen: !settings.sharhOpen })} aria-expanded={settings.sharhOpen}>
-            <Icon name="book.closed" size={17} className="sharh-icon" />
-            <span className="sharh-kicker t-footnote">Пояснение</span>
-            <span className="sharh-preview t-footnote secondary">{settings.sharhOpen ? '' : sharh.text.replace(/\*+/g, '')}</span>
-            <Icon name={settings.sharhOpen ? 'chevron.down' : 'chevron.up'} size={15} weight={2.2} className="sharh-chevron tertiary" />
+      {comment && (
+        <aside className={`comment material material--thick${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
+          <button className="comment-head" onClick={() => setSettings({ commentOpen: !settings.commentOpen })} aria-expanded={settings.commentOpen}>
+            <Icon name="book.closed" size={17} className="comment-icon" />
+            <span className="comment-kicker t-footnote">Пояснение</span>
+            <span className="comment-preview t-footnote secondary">{settings.commentOpen ? '' : comment.text.replace(/\*+/g, '')}</span>
+            <Icon name={settings.commentOpen ? 'chevron.down' : 'chevron.up'} size={15} weight={2.2} className="comment-chevron tertiary" />
           </button>
-          <RichText key={sharh.from.idx} text={sharh.text} className="sharh-body t-callout" />
+          <RichText key={comment.from.idx} text={comment.text} className="comment-body t-callout" />
         </aside>
       )}
 
@@ -280,7 +280,7 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
             <Icon name="character.bubble" size={22} />
             <span>Перевод</span>
           </button>
-          <button className="util" aria-pressed={settings.showSharh} onClick={() => setSettings({ showSharh: !settings.showSharh })}>
+          <button className="util" aria-pressed={settings.showComment} onClick={() => setSettings({ showComment: !settings.showComment })}>
             <Icon name="book.closed" size={21} />
             <span>Пояснение</span>
           </button>

@@ -70,7 +70,7 @@
   user-select: none;
   -webkit-user-select: none;
 }
-.song.has-sharh .scene-stage {
+.song.has-comment .scene-stage {
   bottom: calc(var(--player-bottom) + var(--player-h) + 64px);
 }
 
@@ -587,7 +587,7 @@
   color: var(--label-2);
 }
 
-.sharh {
+.comment {
   position: absolute;
   z-index: 4;
   left: 10px;
@@ -602,7 +602,7 @@
     opacity var(--dur-3) var(--ease-out),
     transform var(--dur-3) var(--ease-out);
 }
-.sharh-head {
+.comment-head {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -615,32 +615,32 @@
   cursor: pointer;
   color: var(--label);
 }
-.sharh-icon,
-.sharh-kicker {
+.comment-icon,
+.comment-kicker {
   color: var(--accent);
   flex: none;
 }
-.sharh-kicker {
+.comment-kicker {
   font-weight: 600;
 }
-.sharh-preview {
+.comment-preview {
   flex: 1;
   min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.sharh-body {
+.comment-body {
   max-height: 36dvh;
   overflow: auto;
   padding: 0 16px 14px;
   overscroll-behavior: contain;
   line-height: 1.5;
 }
-.sharh:not(.is-open) .sharh-body {
+.comment:not(.is-open) .comment-body {
   display: none;
 }
-.sharh-body p {
+.comment-body p {
   margin: 0 0 10px;
 }
 .rt-ar {
@@ -671,11 +671,11 @@
 
 /* Wide screens: commentary docks to the right as a column. */
 @media (min-width: 1100px) {
-  .song.has-sharh .scene-stage {
+  .song.has-comment .scene-stage {
     right: 392px;
     bottom: calc(var(--player-bottom) + var(--player-h) + 12px);
   }
-  .sharh {
+  .comment {
     left: auto;
     right: 16px;
     top: calc(var(--chrome-top) + 4px);
@@ -685,23 +685,23 @@
     display: flex;
     flex-direction: column;
   }
-  .sharh-head {
+  .comment-head {
     pointer-events: none;
   }
-  .sharh-preview,
-  .sharh-chevron {
+  .comment-preview,
+  .comment-chevron {
     display: none;
   }
-  .sharh:not(.is-open) .sharh-body,
-  .sharh-body {
+  .comment:not(.is-open) .comment-body,
+  .comment-body {
     display: block;
     max-height: none;
     flex: 1;
   }
-  .song.has-sharh .player {
+  .song.has-comment .player {
     right: 392px;
   }
-  .song.has-sharh .hint {
+  .song.has-comment .hint {
     left: calc((100% - 392px) / 2);
   }
 }
