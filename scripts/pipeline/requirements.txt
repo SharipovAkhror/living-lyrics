@@ -8,9 +8,8 @@ demucs>=4.0.1
 # Transcription draft
 faster-whisper>=1.1.0
 # Forced alignment (MMS_FA in torchaudio) and romanisation for non-Latin scripts.
-# Install torch/torchaudio from the CPU index first (see pipeline.yml); this file must not replace them.
-torch>=2.3
-torchaudio>=2.3
+# torch and torchaudio are not listed here: pip would replace the CPU wheels
+# (pipeline.yml and sandbox/setup.sh install them from the CPU index first).
 uroman>=1.3.1
 # Second aligner (WhisperX's wav2vec2 checkpoints and MMS-1b) and stem-cache encryption.
 transformers>=4.46,<5
