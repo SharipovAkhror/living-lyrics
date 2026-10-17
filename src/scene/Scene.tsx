@@ -1,18 +1,21 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { Song } from '@/data/schema';
 import type { Timeline } from '@/data/timeline';
+import type { AudioFeatures } from '@/instruments/animation';
 import { effectiveMotion, type Settings } from '@/app/settings';
 import { showHarakatText } from '@/data/harakat';
 import { LineBlock, type BlockUpdater } from './LineBlock';
 import { InstBlock } from './InstBlock';
 import { Field } from './Field';
-import { WAIT_ROOM, blockState, flowPosition, layoutAt, lerp, planFlow, waitHint, windowAround, type Measure } from './flow';
+import { WAIT_ROOM, blockHeight, blockState, compressStack, flowPosition, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
 
 interface Props {
   song: Song;
   timeline: Timeline;
   settings: Settings;
   dark: boolean;
+  /** Precomputed audio features for instrument motion. Null until loaded. */
+  features: AudioFeatures | null;
   /** Current playback time. */
   clock: () => number;
   /** The cue nearest to the current position changed (top bar label, commentary). */
@@ -27,7 +30,7 @@ const INTRO = -1;
  * The stage. One clock read per frame computes the flow position, lays the mounted blocks out
  * around it and hands each block its distance and top; blocks style themselves imperatively.
  */
-export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, onPick }: Props) {
+export function Scene({ song, timeline, settings, dark, features, clock, onOwnerChange, onPick }: Props) {
   const stageRef = useRef<HTMLDivElement>(null);
   const plate = useRef<HTMLDivElement>(null);
   const intro = useRef<HTMLDivElement>(null);
@@ -35,8 +38,8 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
   const [mounted, setMounted] = useState<number[]>([INTRO, 0, 1, 2]);
   const blocks = useRef(new Map<number, { fn: BlockUpdater; m: Measure }>());
   const ownerRef = useRef(-2);
-  const energyRef = useRef(0);
   const motion = effectiveMotion(settings);
+  const entrance = settings.lineEntrance;
   // Word-by-word fill only for measured and checked timing: a fill that runs ahead of or behind the
   // voice is worse than none (docs/methodology/05-alignment.md).
   const wordSync = song.timing.status !== 'draft';
@@ -82,9 +85,8 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
     const loop = () => {
       raf = requestAnimationFrame(loop);
       const t = clock();
-      energyRef.current = timeline.energyAt(t);
       const pos = flowPosition(plan, t);
-      const list = windowAround(timeline, pos);
+      const list = windowAround(timeline, pos, entrance);
       const key = list.join(',');
       if (key !== lastKey) {
         lastKey = key;
@@ -104,8 +106,15 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
       const waits = new Map<number, number>();
       for (const k of list) waits.set(k, wordSync ? waitHint(timeline, k, t) : 0);
       const room = (k: number) => (waits.get(k) ?? 0) * WAIT_ROOM;
-      const A = layoutAt(a, list, measures, centerY, 8, room);
-      const B = layoutAt(a + 1, list, measures, centerY, 8, room);
+      const compress = stackCompress(entrance);
+      const clampAnchor = (anchor: number) => (list.length ? Math.max(list[0], Math.min(list[list.length - 1], anchor)) : anchor);
+      const heightsAt = (anchor: number) => {
+        const h = new Map<number, number>();
+        for (const k of list) h.set(k, blockHeight(measures.get(k), k - anchor));
+        return h;
+      };
+      const A = compressStack(layoutAt(a, list, measures, centerY, 8, room), clampAnchor(a), compress, heightsAt(a));
+      const B = compressStack(layoutAt(a + 1, list, measures, centerY, 8, room), clampAnchor(a + 1), compress, heightsAt(a + 1));
       for (const k of list) {
         const b = blocks.current.get(k);
         if (!b) continue;
@@ -132,10 +141,13 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
         const o = (b0 ? 1 - f : 0) + (b1 ? f : 0);
         const top = b0 && b1 ? lerp(b0.top, b1.top, f) : (b0 ?? b1)?.top ?? 0;
         const h = b0 && b1 ? lerp(b0.h, b1.h, f) : (b0 ?? b1)?.h ?? 0;
-        p.style.opacity = o.toFixed(3);
+        const glow = Math.min(stage.h * 0.5, 380);
+        const shown = f < 0.5 ? timeline.cues[a] : timeline.cues[a + 1];
+        stageRef.current?.parentElement?.setAttribute('data-pool', shown?.kind === 'line' && shown.rtl ? 'rtl' : 'ltr');
+        p.style.opacity = (o * 0.95).toFixed(3);
         p.style.visibility = o < 0.01 ? 'hidden' : 'visible';
-        p.style.transform = `translate3d(0, ${(top - 18).toFixed(1)}px, 0)`;
-        p.style.height = `${(h + 36).toFixed(1)}px`;
+        p.style.transform = `translate3d(0, ${(top + h / 2 - glow / 2).toFixed(1)}px, 0)`;
+        p.style.height = `${glow.toFixed(1)}px`;
       }
 
       const owner = Math.max(-1, Math.min(timeline.cues.length - 1, Math.round(pos)));
@@ -146,9 +158,8 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [timeline, plan, clock, onOwnerChange, stage, wordSync]);
+  }, [timeline, plan, clock, onOwnerChange, stage, wordSync, entrance]);
 
-  const getEnergy = useCallback(() => energyRef.current, []);
   const poets = song.poets?.map((p) => p.name).join(' · ');
   const textSettings = useMemo(
     () => ({
@@ -163,8 +174,8 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
   );
 
   return (
-    <div className="scene">
-      <Field colors={song.palette.field} dark={dark} energy={getEnergy} still={motion !== 'full'} />
+    <div className="scene" data-align={settings.textAlign} data-enter={entrance}>
+      <Field colors={song.palette.field} dark={dark} clock={clock} />
       <div ref={stageRef} className="scene-stage">
         <div ref={plate} className="flow-plate" aria-hidden style={{ visibility: 'hidden' }} />
         <div ref={intro} className="fb fb--intro" style={{ visibility: 'hidden' }}>
@@ -190,13 +201,14 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
               cue={c}
               wordSync={wordSync && !c.line.flags?.includes('timing-draft')}
               settings={textSettings}
+              entrance={entrance}
               motion={motion}
               stage={stage}
               register={register}
               onPick={onPick}
             />
           ) : (
-            <InstBlock key={idx} cue={c} timeline={timeline} timed={wordSync} motion={motion} stage={stage} register={register} onPick={onPick} />
+            <InstBlock key={idx} cue={c} timeline={timeline} timed={wordSync} entrance={entrance} motion={motion} stage={stage} features={features} register={register} onPick={onPick} />
           );
         })}
       </div>

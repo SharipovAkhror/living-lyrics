@@ -13,6 +13,7 @@ import { LEAD } from '@/scene/flow';
 import { Icon } from '@/icons/Icon';
 import { RichText } from '@/components/RichText';
 import { stripHarakat } from '@/data/harakat';
+import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
 import { preloadInstruments } from '@/instruments/catalog';
 import { SettingsSheet } from './SettingsSheet';
 import { TextSheet } from './TextSheet';
@@ -59,6 +60,7 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
   const settings = useSettings();
   const [lyrics, setLyrics] = useState<Lyrics | null>(null);
   const [peaks, setPeaks] = useState<Peaks | null>(null);
+  const [features, setFeatures] = useState<AudioFeatures | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const engine = useMemo(
@@ -92,6 +94,25 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
       })
       .catch((e) => alive && setLoadError(String(e)));
     if (song.audio.peaks) void loadPeaks(song.audio.peaks).then((p) => alive && p && setPeaks(p));
+    // Features are large and only drive instrument motion, so they wait until the page has painted.
+    const ctrl = new AbortController();
+    const loadFeatures = () => {
+      fetch(`/audio/${song.slug}/features.json`, { signal: ctrl.signal })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((raw) => {
+          if (alive) setFeatures(parseAudioFeatures(raw));
+        })
+        .catch(() => {
+          /* aborted, or no file: the drawings stay still */
+        });
+    };
+    // Idle is missing on older WebKit. The typed Window always has the method, so the check goes through a widened view.
+    const host = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const idle = typeof host.requestIdleCallback === 'function' ? host.requestIdleCallback(loadFeatures, { timeout: 1200 }) : window.setTimeout(loadFeatures, 40);
+    const idleWasCallback = typeof host.requestIdleCallback === 'function';
     const s = settings;
     void engine.init({ quality: s.quality, rate: s.rate, volume: s.volume, normalize: s.normalize }).then(() => {
       if (s.eqEnabled) engine.setEffects(true, s.eqBands, s.eqPreamp);
@@ -101,6 +122,9 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
     });
     return () => {
       alive = false;
+      ctrl.abort();
+      if (idleWasCallback) host.cancelIdleCallback?.(idle);
+      else clearTimeout(idle);
       engine.destroy();
     };
     // Settings are read once at start; later changes go through the settings sheet.
@@ -257,79 +281,87 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
   return (
     <div className={`song${comment ? ' has-comment' : ''}${settings.commentOpen ? ' comment-open' : ''}`}>
       {timeline ? (
-        <Scene song={song} timeline={timeline} settings={settings} dark={dark} clock={clock} onOwnerChange={setOwner} onPick={pick} />
+        <Scene song={song} timeline={timeline} settings={settings} dark={dark} features={features} clock={clock} onOwnerChange={setOwner} onPick={pick} />
       ) : (
         <div className="scene scene--loading">{loadError ? <p className="t-body secondary">{loadError}</p> : null}</div>
       )}
 
       <header className="topbar">
-        <a className="btn btn-circle glass" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
+        <a className="btn btn-circle btn-quiet" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
           <Icon name="chevron.left" size={20} weight={2.2} />
         </a>
         <div className="topbar-title">
-          <div className="t-headline topbar-song">{song.title}</div>
-          <div className="t-footnote secondary topbar-section">{sectionLabel}</div>
+          <div className="topbar-song">{song.title}</div>
+          <div className="topbar-section">{sectionLabel}</div>
         </div>
-        <button className="btn btn-circle glass" onClick={() => setSheet('info')} aria-label="О песне: кто поёт и играет">
+        <button className="btn btn-circle btn-quiet" onClick={() => setSheet('info')} aria-label="О песне: кто поёт и играет">
           <Icon name="info.circle" size={21} />
         </button>
       </header>
 
       {comment && (
-        <aside className={`comment material material--thick${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
+        <aside className={`comment${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
           <button className="comment-head" onClick={() => setSettings({ commentOpen: !settings.commentOpen })} aria-expanded={settings.commentOpen}>
-            <Icon name="book.closed" size={17} className="comment-icon" />
-            <span className="comment-kicker t-footnote">Пояснение</span>
-            <span className="comment-preview t-footnote secondary">{settings.commentOpen ? '' : (settings.showHarakat ? comment.text : stripHarakat(comment.text)).replace(/\*+/g, '')}</span>
-            <Icon name={settings.commentOpen ? 'chevron.down' : 'chevron.up'} size={15} weight={2.2} className="comment-chevron tertiary" />
+            <span className="comment-kicker">Пояснение</span>
+            <span className="comment-preview">{settings.commentOpen ? '' : (settings.showHarakat ? comment.text : stripHarakat(comment.text)).replace(/\*+/g, '')}</span>
+            <Icon name={settings.commentOpen ? 'chevron.down' : 'chevron.up'} size={15} weight={2.2} className="comment-chevron" />
           </button>
-          <RichText key={comment.from.idx} text={comment.text} showHarakat={settings.showHarakat} className="comment-body t-callout" />
+          <RichText key={comment.from.idx} text={comment.text} showHarakat={settings.showHarakat} className="comment-body" />
         </aside>
       )}
 
       {state?.source === 'silent' && !playing && (
-        <button className="hint glass t-footnote" onClick={() => setSheet('settings')}>
+        <button className="hint" onClick={() => setSheet('settings')}>
           <Icon name="music.note" size={15} />
           Аудио не подключено — подключить
         </button>
       )}
 
-      <footer className="player glass">
-        {timeline && <Scrubber timeline={timeline} duration={duration} clock={clock} onSeek={(t) => engine.seek(t)} />}
+      <footer className="player">
+        {timeline && (
+          <Scrubber
+            timeline={timeline}
+            duration={duration}
+            clock={clock}
+            onSeek={(t) => engine.seek(t)}
+            accessory={
+              <div className="mark-bar">
+                {toast && (
+                  <div className="mark-toast" role="status">
+                    <span>Отмечено {formatTime(toast.t)}</span>
+                    <button type="button" className="mark-toast-undo" onClick={undoToast}>
+                      Отменить
+                    </button>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  className="mark-btn"
+                  onClick={placeMark}
+                  disabled={!timeline}
+                  aria-label="Не совпадает"
+                  aria-keyshortcuts="M"
+                >
+                  <span className="mark-btn-label" aria-hidden="true">
+                    Не совпадает
+                  </span>
+                  <kbd className="mark-kbd" aria-hidden="true">
+                    M
+                  </kbd>
+                </button>
+              </div>
+            }
+          />
+        )}
         <div className="transport">
           <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)">
-            <Icon name="backward" size={30} />
+            <Icon name="backward" size={26} />
           </button>
-          <button className="btn btn-circle btn-xl btn-prominent" onClick={togglePlay} aria-label={playing ? 'Пауза' : 'Воспроизвести'}>
-            <Icon name={playing ? 'pause' : 'play'} size={30} style={playing ? undefined : { marginLeft: 3 }} />
+          <button className="btn btn-circle btn-xl btn-ring" onClick={togglePlay} aria-label={playing ? 'Пауза' : 'Воспроизвести'}>
+            <Icon name={playing ? 'pause' : 'play'} size={26} style={playing ? undefined : { marginLeft: 3 }} />
           </button>
           <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)">
-            <Icon name="forward" size={30} />
-          </button>
-        </div>
-        <div className="mark-bar">
-          {toast && (
-            <div className="mark-toast" role="status">
-              <span>Отмечено {formatTime(toast.t)}</span>
-              <button type="button" className="mark-toast-undo" onClick={undoToast}>
-                Отменить
-              </button>
-            </div>
-          )}
-          <button
-            type="button"
-            className="mark-btn"
-            onClick={placeMark}
-            disabled={!timeline}
-            aria-label="Не совпадает"
-            aria-keyshortcuts="M"
-          >
-            <span className="mark-btn-label" aria-hidden="true">
-              Не совпадает
-            </span>
-            <kbd className="mark-kbd" aria-hidden="true">
-              M
-            </kbd>
+            <Icon name="forward" size={26} />
           </button>
         </div>
         <div className="utility">

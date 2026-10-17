@@ -1,8 +1,10 @@
 /**
- * Lyrics flow, in the manner of Apple Music: the current line large in the upper third, the next
- * lines below it (readable before they are sung), the previous line drifting up. Everything here is
- * a pure function of time, so a seek, a pause or a slow device always lands on a consistent frame.
+ * Lyrics flow. The position of every block is a pure function of playback time, so a seek, a pause
+ * or a slow device always lands on the same frame. Three entrances share that clock:
+ * `flow` travels down the stage, `script` also slides along the writing direction,
+ * `settle` keeps a short column and fades in place.
  */
+import type { LineEntrance } from '@/app/settings';
 import type { Timeline } from '@/data/timeline';
 
 /** A line becomes current this long before its first word, so the eye gets there first. */
@@ -130,9 +132,93 @@ export function waitHint(tl: Timeline, k: number, t: number) {
 }
 
 /** Cues worth mounting around the current position (−1 is the title card). */
-export function windowAround(tl: Timeline, pos: number): number[] {
+export function windowAround(tl: Timeline, pos: number, entrance: LineEntrance = 'flow'): number[] {
   const out: number[] = [];
   const base = Math.floor(pos);
-  for (let k = Math.max(-1, base - 1); k <= Math.min(tl.cues.length - 1, base + 5); k++) out.push(k);
+  // Flow previews the lines still coming. The other entrances keep a short column: previous, current, next.
+  const ahead = entrance === 'flow' ? 5 : 2;
+  for (let k = Math.max(-1, base - 1); k <= Math.min(tl.cues.length - 1, base + ahead); k++) out.push(k);
   return out;
+}
+
+/** How much of the full vertical travel an entrance keeps. 1 is the long flow down the stage. */
+export function stackCompress(entrance: LineEntrance): number {
+  if (entrance === 'flow') return 1;
+  if (entrance === 'script') return 0.72;
+  return 0.56;
+}
+
+/**
+ * Shorten the gaps around the anchor so a softer entrance does not march the whole way down the stage.
+ * The anchor block itself keeps its height: neighbours are pulled toward its edges, never into it.
+ * `compress` is 1 for the untouched stack. A missing anchor or missing heights leaves the stack alone.
+ */
+export function compressStack(tops: Map<number, number>, anchor: number, compress: number, heights?: Map<number, number>) {
+  if (compress >= 0.999) return tops;
+  const at = tops.get(anchor);
+  if (!heights || at == null || !heights.has(anchor)) return tops;
+  const anchorH = heights.get(anchor)!;
+  const keys = [...tops.keys()].sort((a, b) => a - b);
+  const out = new Map(tops);
+  // Walk outward so each gap shrinks against its neighbour, not through it.
+  let prevKey = anchor;
+  let prevBottom = at + anchorH;
+  for (const k of keys) {
+    if (k <= anchor) continue;
+    const prevTop = tops.get(prevKey)!;
+    const prevH = prevKey === anchor ? anchorH : (heights.get(prevKey) ?? 0);
+    const gap = tops.get(k)! - (prevTop + prevH);
+    const kept = gap > 0 ? Math.max(12, gap * compress) : 12;
+    const next = prevBottom + kept;
+    out.set(k, next);
+    prevBottom = next + (heights.get(k) ?? 0);
+    prevKey = k;
+  }
+  prevKey = anchor;
+  let prevTopEdge = at;
+  for (let i = keys.length - 1; i >= 0; i--) {
+    const k = keys[i];
+    if (k >= anchor) continue;
+    const h = heights.get(k) ?? 0;
+    const belowTop = tops.get(prevKey)!;
+    const gap = belowTop - (tops.get(k)! + h);
+    const kept = gap > 0 ? Math.max(12, gap * compress) : 12;
+    const next = prevTopEdge - h - kept;
+    out.set(k, next);
+    prevTopEdge = next;
+    prevKey = k;
+  }
+  return out;
+}
+
+/**
+ * Horizontal offset in CSS pixels. Positive is to the right.
+ * An upcoming line (d > 0) waits on the start side of the writing direction and reaches 0 when current.
+ * Latin and Cyrillic start on the left. Arabic script starts on the right.
+ * Reduced motion leaves the line where it is read. `d` comes from the flow position, so a seek matches.
+ */
+export function scriptShift(d: number, rtl: boolean, stageW: number, motionOff: boolean): number {
+  if (motionOff) return 0;
+  const travel = Math.min(240, Math.max(88, stageW * 0.38));
+  const clamped = Math.max(-1.35, Math.min(1.35, d));
+  return (rtl ? 1 : -1) * travel * clamped;
+}
+
+/**
+ * Opacity for the short column. Flow keeps the wider preview curve from `blockState`.
+ * Still a function of distance, which is a function of time.
+ */
+export function entranceOpacity(d: number, entrance: LineEntrance, flowOpacity: number): number {
+  if (entrance === 'flow') return flowOpacity;
+  const a = Math.abs(d);
+  // Settle: the current line is the light. Neighbours stay faint so they do not compete with it.
+  if (entrance === 'settle') {
+    if (a <= 0.35) return 1;
+    if (a <= 0.75) return lerp(1, 0.1, (a - 0.35) / 0.4);
+    return Math.max(0, 0.1 * (1 - (a - 0.75) / 0.65));
+  }
+  // Script: the line travelling in from the writing side stays readable until it arrives.
+  if (a <= 0.35) return 1;
+  if (a <= 1.05) return 0.5 + 0.5 * (1 - (a - 0.35) / 0.7);
+  return Math.max(0, 0.28 * (1 - (a - 1.05) / 0.9));
 }

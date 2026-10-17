@@ -1,8 +1,8 @@
 import { memo, useLayoutEffect, useRef } from 'react';
 import type { LineCue } from '@/data/timeline';
-import type { MotionPref, Settings } from '@/app/settings';
+import type { LineEntrance, MotionPref, Settings } from '@/app/settings';
 import { formatTime } from '@/data/library';
-import { blockState, clamp01, type Measure } from './flow';
+import { blockState, clamp01, entranceOpacity, scriptShift, type Measure } from './flow';
 import { showHarakatText } from '@/data/harakat';
 import { fontClass } from './fonts';
 
@@ -17,6 +17,7 @@ interface Props {
   /** Word-by-word fill only where the timing is measured and checked; otherwise the whole line lights up. */
   wordSync: boolean;
   settings: Pick<Settings, 'fontPersian' | 'showTranslation' | 'showTranslit' | 'showAlt' | 'showHarakat' | 'textScale'>;
+  entrance: LineEntrance;
   motion: MotionPref;
   stage: { w: number; h: number };
   register: (idx: number, fn: BlockUpdater | null, m?: Measure) => void;
@@ -48,7 +49,7 @@ export function TrText({ text }: { text: string }) {
   );
 }
 
-function LineBlockImpl({ cue, wordSync, settings, motion, stage, register, onPick }: Props) {
+function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, register, onPick }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const main = useRef<HTMLDivElement>(null);
   const orig = useRef<HTMLDivElement>(null);
@@ -102,9 +103,11 @@ function LineBlockImpl({ cue, wordSync, settings, motion, stage, register, onPic
     if (!r) return;
     const s = blockState(d);
     const still = motion === 'off';
-    r.style.transform = `translate3d(0, ${top.toFixed(1)}px, 0) scale(${s.scale.toFixed(4)})`;
-    r.style.opacity = s.opacity.toFixed(3);
-    r.style.filter = !still && motion === 'full' && s.blur > 0.05 ? `blur(${s.blur.toFixed(2)}px)` : '';
+    const x = entrance === 'script' ? scriptShift(d, cue.rtl, stage.w, still) : 0;
+    r.style.zIndex = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
+    r.style.transform = `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0) scale(${s.scale.toFixed(4)})`;
+    r.style.opacity = entranceOpacity(d, entrance, s.opacity).toFixed(3);
+    r.style.filter = entrance === 'flow' && !still && motion === 'full' && s.blur > 0.05 ? `blur(${s.blur.toFixed(2)}px)` : '';
     r.style.visibility = s.opacity < 0.01 ? 'hidden' : 'visible';
     r.classList.toggle('is-current', Math.abs(d) < 0.5);
     if (subs.current) subs.current.style.opacity = s.sub.toFixed(3);
@@ -170,7 +173,6 @@ function LineBlockImpl({ cue, wordSync, settings, motion, stage, register, onPic
     <div
       ref={root}
       className="fb fb--line"
-      dir={cue.rtl ? 'rtl' : 'ltr'}
       lang={line.lang}
       onClick={() => onPick(cue.idx)}
       style={{ visibility: 'hidden' }}
@@ -187,7 +189,7 @@ function LineBlockImpl({ cue, wordSync, settings, motion, stage, register, onPic
             {cue.repeat > 0 && <span className="fb-repeat">повтор</span>}
           </div>
         )}
-        <div ref={orig} className={`fb-orig ${fClass}`}>
+        <div ref={orig} className={`fb-orig ${fClass}`} dir={cue.rtl ? 'rtl' : 'ltr'}>
           {line.words.map((w, i) => (
             <span key={i} className="w-wrap">
               <span
@@ -198,7 +200,8 @@ function LineBlockImpl({ cue, wordSync, settings, motion, stage, register, onPic
               >
                 {showHarakatText(w.w, settings.showHarakat)}
               </span>
-              {w.br && <span className="w-br" />}
+              {/* A sized box, not a trailing space inside the word: RTL drops that space and the words glue. */}
+              {w.br ? <span className="w-br" /> : i < line.words.length - 1 ? <span className="w-sp" aria-hidden="true" /> : null}
             </span>
           ))}
         </div>

@@ -4,10 +4,22 @@ import { useSyncExternalStore } from 'react';
 export type ThemePref = 'auto' | 'light' | 'dark';
 export type MotionPref = 'full' | 'calm' | 'off';
 /**
- * Song-page instruments. `drawing` is the SVG engraving and the default.
- * `engraving` and `materials` are the volume model.
+ * Where a line sits. `center` keeps the line in the pool of light — the cosmos default.
+ * `edge` follows the writing direction: Arabic script to the right, Latin and Cyrillic to the left.
  */
-export type InstrumentStyle = 'drawing' | 'engraving' | 'materials';
+export type TextAlign = 'center' | 'edge';
+/**
+ * How a line arrives. All three are functions of playback time, so a seek paints the same frame.
+ * `flow` travels down the stage. `script` arrives along the writing direction.
+ * `settle` fades in place — the cosmos default, because the line is the light, not a ticker.
+ */
+export type LineEntrance = 'flow' | 'script' | 'settle';
+/**
+ * Song-page instruments. `drawing` is the SVG engraving and the default.
+ * `realistic` is the lit 3D model, for keys that have a GLB; the rest stay drawings.
+ * The hatch-shader look is not a reader choice.
+ */
+export type InstrumentStyle = 'drawing' | 'realistic';
 /** Persian verse. `naskh` here is Noto Naskh Arabic, not the Mushaf file. */
 export type FontPersian = 'amiri' | 'naskh' | 'scheherazade' | 'nastaliq';
 /** Latin and Cyrillic original. */
@@ -15,10 +27,12 @@ export type FontOriginal = 'source-serif' | 'cormorant' | 'eb-garamond' | 'liter
 /** Russian translation and transliteration. */
 export type FontTranslation = 'source-serif' | 'inter';
 
-const INSTRUMENT_STYLES: readonly InstrumentStyle[] = ['drawing', 'engraving', 'materials'];
+const INSTRUMENT_STYLES: readonly InstrumentStyle[] = ['drawing', 'realistic'];
 const FONT_PERSIAN: readonly FontPersian[] = ['amiri', 'naskh', 'scheherazade', 'nastaliq'];
 const FONT_ORIGINAL: readonly FontOriginal[] = ['source-serif', 'cormorant', 'eb-garamond', 'literata'];
 const FONT_TRANSLATION: readonly FontTranslation[] = ['source-serif', 'inter'];
+const TEXT_ALIGNS: readonly TextAlign[] = ['center', 'edge'];
+const LINE_ENTRANCES: readonly LineEntrance[] = ['flow', 'script', 'settle'];
 
 export interface Settings {
   theme: ThemePref;
@@ -27,6 +41,10 @@ export interface Settings {
   showAlt: boolean;
   /** Vowel signs on Arabic-script lines. On by default: the reader is not a native. */
   showHarakat: boolean;
+  /** Column alignment of the original and of the translation, each in its own writing direction. */
+  textAlign: TextAlign;
+  /** Arrival of a line on the stage. `settle` is the cosmos default. */
+  lineEntrance: LineEntrance;
   /** Commentary panel visible at all. */
   showComment: boolean;
   /** Commentary panel expanded (vs. one-line preview). */
@@ -56,6 +74,8 @@ export const DEFAULTS: Settings = {
   showTranslit: false,
   showAlt: false,
   showHarakat: true,
+  textAlign: 'center',
+  lineEntrance: 'settle',
   showComment: true,
   commentOpen: false,
   textScale: 1,
@@ -97,6 +117,18 @@ function migrateCommentKeys(saved: Record<string, unknown>): boolean {
 }
 
 /**
+ * The volume model used to offer two looks: `engraving` (a 3D hatch) and `materials`.
+ * Both become the one realistic look. The hatch shader stays in the renderer, unchosen.
+ */
+function migrateInstrumentStyle(saved: Record<string, unknown>): boolean {
+  if (saved.instrumentStyle === 'engraving' || saved.instrumentStyle === 'materials') {
+    saved.instrumentStyle = 'realistic';
+    return true;
+  }
+  return false;
+}
+
+/**
  * Persian used to be `persianStyle`: `nastaliq` or `naskh`.
  * Nastaliq stays nastaliq. The old naskh was the Mushaf file, which is no longer a Persian choice,
  * so a saved naskh becomes Amiri (the classical naskh). Arabic lines keep the Mushaf either way.
@@ -117,6 +149,8 @@ function sanitize(out: Settings): Settings {
   out.fontPersian = oneOf(out.fontPersian, FONT_PERSIAN, DEFAULTS.fontPersian);
   out.fontOriginal = oneOf(out.fontOriginal, FONT_ORIGINAL, DEFAULTS.fontOriginal);
   out.fontTranslation = oneOf(out.fontTranslation, FONT_TRANSLATION, DEFAULTS.fontTranslation);
+  out.textAlign = oneOf(out.textAlign, TEXT_ALIGNS, DEFAULTS.textAlign);
+  out.lineEntrance = oneOf(out.lineEntrance, LINE_ENTRANCES, DEFAULTS.lineEntrance);
   if (typeof out.showHarakat !== 'boolean') out.showHarakat = DEFAULTS.showHarakat;
   return out;
 }
@@ -131,11 +165,12 @@ function read(): Settings {
     const saved = parsed as Record<string, unknown>;
     const commentMoved = migrateCommentKeys(saved);
     const fontMoved = migrateFontKeys(saved);
+    const styleMoved = migrateInstrumentStyle(saved);
     const out = { ...DEFAULTS };
     for (const k of Object.keys(DEFAULTS) as (keyof Settings)[]) if (k in saved) (out as Record<string, unknown>)[k] = saved[k];
     const before = JSON.stringify(out);
     sanitize(out);
-    if (commentMoved || fontMoved || JSON.stringify(out) !== before) {
+    if (commentMoved || fontMoved || styleMoved || JSON.stringify(out) !== before) {
       try {
         localStorage.setItem(KEY, JSON.stringify(out));
       } catch {

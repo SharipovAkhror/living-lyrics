@@ -18,10 +18,12 @@
  * node scale, so the pattern uses the world position, not the raw attribute.
  */
 import type { InstrumentDrive, InstrumentRenderer } from '@/instruments/animation';
-import type { InstrumentStyle } from '@/app/settings';
 
-/** The two volume looks. The SVG drawing never reaches the renderer. */
-type VolumeStyle = Exclude<InstrumentStyle, 'drawing'>;
+/**
+ * Hatch shader versus lit materials. The reader never picks the hatch: settings offer
+ * "realistic", and the song stage always asks for materials. The hatch stays callable.
+ */
+export type VolumeLook = 'engraving' | 'materials';
 import { jingleShift, skinWeight, stringWeight, sway } from './pose';
 
 import './stage3d.css';
@@ -477,7 +479,7 @@ function dress(THREE: THREE, root: Group, uniforms: Uniforms) {
   return { strings, skin, jingles, pbr, owned };
 }
 
-function applyStyle(root: Group, style: VolumeStyle) {
+function applyStyle(root: Group, style: VolumeLook) {
   root.traverse((obj) => {
     const mesh = obj as Mesh;
     if (!mesh.isMesh || mesh.userData.pass) return;
@@ -564,7 +566,7 @@ export interface StageSession {
   setDriveOverride(drives: InstrumentDrive[] | null): void;
   setOrbit(yaw: number, pitch: number): void;
   setCamera(frame: CameraFrame | null): void;
-  setStyle(style: VolumeStyle): void;
+  setStyle(style: VolumeLook): void;
   draw(): void;
   pixels(): { width: number; height: number; data: Uint8ClampedArray };
   dispose(): void;
@@ -593,7 +595,7 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
   rim.position.set(0.35, 0.55, -1.25);
   scene.add(hemi, key, fill, rim);
 
-  let style: VolumeStyle = 'engraving';
+  let style: VolumeLook = 'materials';
   let slots: Slot[] = [];
   let time = 0;
   let override: InstrumentDrive[] | null = null;
@@ -929,13 +931,13 @@ const REST: InstrumentDrive = { draw: 1, hatch: 1, energy: 0, pulse: 0, sustain:
 /** One instrument, one canvas. Gallery cards use this; the stage uses `mountStage`. */
 export function createInstrumentRenderer(): InstrumentRenderer & {
   setOrbit(yaw: number, pitch: number): void;
-  setStyle(style: VolumeStyle): void;
+  setStyle(style: VolumeLook): void;
 } {
   let session: StageSession | null = null;
   let canvas: HTMLCanvasElement | null = null;
   let host: HTMLElement | null = null;
   let alive = true;
-  let style: VolumeStyle = 'engraving';
+  let style: VolumeLook = 'materials';
 
   return {
     kind: 'gltf',

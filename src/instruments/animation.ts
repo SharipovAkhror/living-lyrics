@@ -21,11 +21,16 @@ export type FeatureTrack =
   | 'vocals';
 
 export interface AudioFeatures {
-  /** Values per second in every track (20–50). */
+  /**
+   * Values per second in every track (20–50). The writer uses 20, the same rate as peaks.json,
+   * and stores each sample as a 0…1 number with two decimal places (one, if that is what keeps
+   * the file under about 900 KB). The file is compact JSON: seven tracks pretty-printed would
+   * be megabytes.
+   */
   rate: number;
   duration: number;
   tracks: Partial<Record<FeatureTrack, number[]>>;
-  /** Beat times in seconds, if a beat tracker found a pulse. */
+  /** Beat times in seconds. Absent when no steady pulse was found, including free rhythm. */
   beats?: number[];
 }
 
@@ -100,6 +105,44 @@ export function driveAt(f: AudioFeatures | null, family: InstrumentInfo['family'
     breath: map.breath ? featureAt(f, map.breath, t) : 0,
     beat: beatPhase(f?.beats, t),
   };
+}
+
+const FEATURE_TRACKS: readonly FeatureTrack[] = ['loud', 'onset', 'bright', 'drums', 'bass', 'other', 'vocals'];
+
+function trackArray(value: unknown): number[] | null {
+  if (!Array.isArray(value) || value.length < 2) return null;
+  const first = value[0];
+  const last = value[value.length - 1];
+  if (typeof first !== 'number' || typeof last !== 'number' || !Number.isFinite(first) || !Number.isFinite(last)) return null;
+  return value as number[];
+}
+
+/**
+ * Accept a `features.json` body. Returns null when the shape is not the contract, so a missing
+ * or half-written file leaves the drawings still instead of throwing on the song page.
+ * Samples the ends of each track; the file is produced by the pipeline and can be hundreds of kilobytes.
+ */
+export function parseAudioFeatures(raw: unknown): AudioFeatures | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const body = raw as Record<string, unknown>;
+  const rate = body.rate;
+  const duration = body.duration;
+  if (typeof rate !== 'number' || typeof duration !== 'number' || !(rate > 0) || !(duration > 0)) return null;
+  const tracksIn = body.tracks;
+  if (!tracksIn || typeof tracksIn !== 'object' || Array.isArray(tracksIn)) return null;
+  const tracks: AudioFeatures['tracks'] = {};
+  for (const name of FEATURE_TRACKS) {
+    const arr = trackArray((tracksIn as Record<string, unknown>)[name]);
+    if (arr) tracks[name] = arr;
+  }
+  if (!tracks.loud) return null;
+  let beats: number[] | undefined;
+  if (body.beats != null) {
+    const arr = trackArray(body.beats);
+    if (!arr) return null;
+    beats = arr;
+  }
+  return { rate, duration, tracks, beats };
 }
 
 /**

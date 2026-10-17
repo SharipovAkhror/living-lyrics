@@ -4,10 +4,12 @@
 # or Actions → pipeline → Run workflow. Result: one commit with the updated lyrics.json and song.json,
 # docs/analysis/<slug>-qa.md, docs/analysis/<slug>/ (sections, transcript, locator) and the job file removed.
 # work/ is not committed. Procedure for agents:
-# docs/methodology/05-alignment.md.
+# docs/methodology/05-alignment.md. Stages features and instruments add public/audio/<slug>/features.json
+# and docs/analysis/<slug>-instruments.json / .md (docs/methodology/09-instruments.md). They do not
+# edit lyrics.json; the agent copies confirmed entrances afterwards.
 #
-# Job file fields: "stages" (decrypt separate sections transcribe diagnose align qa), optional "align" and
-# "qa" — lists of extra options for align.py / qa_sync.py, e.g. {"qa": ["--fix"]}.
+# Job file fields: "stages" (decrypt separate sections transcribe diagnose align qa features instruments),
+# optional "align" and "qa" — lists of extra options for align.py / qa_sync.py, e.g. {"qa": ["--fix"]}.
 # Needs the repository secret AUDIO_KEY (Settings → Secrets and variables → Actions).
 name: pipeline
 
@@ -98,7 +100,7 @@ jobs:
           cache: pip
           cache-dependency-path: scripts/pipeline/requirements.txt
 
-      - name: Cache models (Demucs, MMS_FA, Whisper)
+      - name: Cache models (Demucs, MMS_FA, Whisper, CLAP, beat_this)
         if: steps.jobs.outputs.count != '0'
         uses: actions/cache@v4
         with:
@@ -146,7 +148,13 @@ jobs:
             if [ $rc -eq 2 ]; then
               echo "::error::$slug: стадия упала, см. лог шага"
               mkdir -p docs/analysis
-              { echo "# Конвейер: $slug — ошибка"; echo; echo "Запуск ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}, стадии: $*."; echo; echo '```'; tail -n 60 "work/$slug/run.log"; echo '```'; } > "docs/analysis/$slug-qa.md"
+              # A features/instruments failure must not overwrite an existing sync report.
+              err="docs/analysis/$slug-qa.md"
+              case " $* " in
+                *" qa "*) ;;
+                *) err="docs/analysis/$slug-pipeline.md" ;;
+              esac
+              { echo "# Конвейер: $slug — ошибка"; echo; echo "Запуск ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}, стадии: $*."; echo; echo '```'; tail -n 60 "work/$slug/run.log"; echo '```'; } > "$err"
             fi
             [ $rc -gt $worst ] && worst=$rc
           done < /tmp/jobs.txt
@@ -163,6 +171,10 @@ jobs:
           for slug in ${{ steps.jobs.outputs.slugs }}; do
             git add "content/songs/$slug/lyrics.json" "content/songs/$slug/song.json" 2>/dev/null || true
             [ -f "docs/analysis/$slug-qa.md" ] && git add "docs/analysis/$slug-qa.md"
+            [ -f "docs/analysis/$slug-pipeline.md" ] && git add "docs/analysis/$slug-pipeline.md"
+            [ -f "public/audio/$slug/features.json" ] && git add "public/audio/$slug/features.json"
+            [ -f "docs/analysis/$slug-instruments.json" ] && git add "docs/analysis/$slug-instruments.json"
+            [ -f "docs/analysis/$slug-instruments.md" ] && git add "docs/analysis/$slug-instruments.md"
             # sections.suggested.json, transcript.json, locate.md. Not work/.
             [ -d "docs/analysis/$slug" ] && git add "docs/analysis/$slug"
           done

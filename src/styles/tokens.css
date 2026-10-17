@@ -1,7 +1,8 @@
 /*
- * Design tokens. Values follow Apple HIG (iOS 26): system label/fill colours, Dynamic Type "Large" sizes,
- * 44 pt minimum hit targets, Liquid Glass only for the functional layer (bars, controls, sheets).
- * Per-song accent arrives at runtime as --song-accent / --song-accent-dark (see src/app/useSongTheme.ts).
+ * Design tokens. Cosmos: dawn paper in the light, a near-black sky in the dark.
+ * Type sizes follow a comfortable reading scale. Hit targets stay at 44 px.
+ * Surfaces are paper, not glass. The song accent arrives at runtime as
+ * --song-accent / --song-accent-dark (see src/app/theme.ts).
  */
 
 @font-face {
@@ -75,14 +76,14 @@
   --dur-3: 360ms;
   --dur-4: 520ms;
 
-  /* ===== Light appearance (iOS system colours) ===== */
-  --bg: #f2f2f7;
-  --bg-elevated: #ffffff;
-  --bg-grouped: #f2f2f7;
-  --label: #000000;
-  --label-2: rgba(60, 60, 67, 0.6);
-  --label-3: rgba(60, 60, 67, 0.3);
-  --label-4: rgba(60, 60, 67, 0.18);
+  /* ===== Light appearance: dawn paper ===== */
+  --bg: #efe6da;
+  --bg-elevated: #f7f1e8;
+  --bg-grouped: #efe6da;
+  --label: #1a140f;
+  --label-2: rgba(26, 20, 15, 0.64);
+  --label-3: rgba(26, 20, 15, 0.4);
+  --label-4: rgba(26, 20, 15, 0.18);
   --fill: rgba(120, 120, 128, 0.2);
   --fill-2: rgba(120, 120, 128, 0.16);
   --fill-3: rgba(118, 118, 128, 0.12);
@@ -96,99 +97,98 @@
   --on-accent: #ffffff;
 
   /* Stage text (lyrics) */
-  --ink: #111114;
+  --ink: #1a140f;
   --ink-sung: var(--ink);
   /* Unsung words stay readable ahead of time (the reader must be able to read the whole line). */
-  --ink-unsung: rgba(17, 17, 20, 0.4);
+  --ink-unsung: rgba(26, 20, 15, 0.42);
   /* Opacity of words not yet sung (and of lines ahead). */
   --dim-op: 0.42;
-  /* Material plate behind the current line. */
-  --plate-tint: rgba(255, 255, 255, 0.5);
-  --ink-ghost: rgba(17, 17, 20, 0.1);
+  /* The light behind the current line is a wash, not a plate. */
+  --plate-tint: transparent;
+  --ink-ghost: rgba(26, 20, 15, 0.1);
 
-  /* Liquid Glass (regular) */
-  --glass-tint: rgba(255, 255, 255, 0.52);
-  --glass-tint-strong: rgba(255, 255, 255, 0.74);
-  --glass-blur: 22px;
-  --glass-saturate: 190%;
-  --glass-rim: rgba(255, 255, 255, 0.85);
-  --glass-rim-low: rgba(255, 255, 255, 0.25);
-  --glass-edge: rgba(0, 0, 0, 0.06);
-  --glass-shadow: 0 10px 30px -10px rgba(20, 20, 40, 0.22), 0 2px 8px -2px rgba(20, 20, 40, 0.08);
-  /* Standard material (content layer: comment panel, lists) */
-  --material-thick: rgba(246, 246, 248, 0.82);
-  --material-regular: rgba(246, 246, 248, 0.68);
-  --material-thin: rgba(246, 246, 248, 0.5);
+  /* Quiet paper for sheets and the few remaining raised surfaces. */
+  --glass-tint: rgba(247, 241, 232, 0.94);
+  --glass-tint-strong: #f7f1e8;
+  --glass-blur: 14px;
+  --glass-saturate: 110%;
+  --glass-rim: transparent;
+  --glass-rim-low: transparent;
+  --glass-edge: rgba(26, 20, 15, 0.08);
+  --glass-shadow: 0 18px 40px -28px rgba(26, 20, 15, 0.45);
+  --material-thick: rgba(247, 241, 232, 0.94);
+  --material-regular: rgba(247, 241, 232, 0.88);
+  --material-thin: rgba(247, 241, 232, 0.72);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #000000;
-    --bg-elevated: #1c1c1e;
-    --bg-grouped: #000000;
-    --label: #ffffff;
-    --label-2: rgba(235, 235, 245, 0.6);
-    --label-3: rgba(235, 235, 245, 0.3);
-    --label-4: rgba(235, 235, 245, 0.16);
-    --fill: rgba(120, 120, 128, 0.36);
-    --fill-2: rgba(120, 120, 128, 0.32);
-    --fill-3: rgba(118, 118, 128, 0.24);
-    --fill-4: rgba(118, 118, 128, 0.18);
-    --separator: rgba(84, 84, 88, 0.65);
-    --separator-opaque: #38383a;
+    --bg: #07060c;
+    --bg-elevated: #14131a;
+    --bg-grouped: #07060c;
+    --label: #f6f0e6;
+    --label-2: rgba(246, 240, 230, 0.68);
+    --label-3: rgba(246, 240, 230, 0.4);
+    --label-4: rgba(246, 240, 230, 0.16);
+    --fill: rgba(246, 240, 230, 0.16);
+    --fill-2: rgba(246, 240, 230, 0.12);
+    --fill-3: rgba(246, 240, 230, 0.08);
+    --fill-4: rgba(246, 240, 230, 0.05);
+    --separator: rgba(246, 240, 230, 0.16);
+    --separator-opaque: #3a342c;
     --system-red: #ff453a;
     --system-green: #30d158;
     --system-orange: #ff9f0a;
-    --accent: var(--song-accent-dark, #0a84ff);
+    --accent: var(--song-accent-dark, #d7c4ff);
     --on-accent: #0b0b0d;
-    --ink: #f5f5f7;
-    --ink-unsung: rgba(245, 245, 247, 0.42);
-    --plate-tint: rgba(30, 30, 34, 0.4);
-    --ink-ghost: rgba(245, 245, 247, 0.1);
-    --glass-tint: rgba(40, 40, 46, 0.42);
-    --glass-tint-strong: rgba(44, 44, 50, 0.66);
-    --glass-rim: rgba(255, 255, 255, 0.28);
-    --glass-rim-low: rgba(255, 255, 255, 0.06);
-    --glass-edge: rgba(255, 255, 255, 0.08);
-    --glass-shadow: 0 12px 34px -10px rgba(0, 0, 0, 0.6), 0 2px 8px -2px rgba(0, 0, 0, 0.4);
-    --material-thick: rgba(28, 28, 30, 0.82);
-    --material-regular: rgba(28, 28, 30, 0.66);
-    --material-thin: rgba(28, 28, 30, 0.48);
+    --ink: #f6f0e6;
+    --ink-unsung: rgba(246, 240, 230, 0.42);
+    --plate-tint: transparent;
+    --ink-ghost: rgba(246, 240, 230, 0.1);
+    --glass-tint: rgba(16, 15, 22, 0.94);
+    --glass-tint-strong: #14131a;
+    --glass-rim: transparent;
+    --glass-rim-low: transparent;
+    --glass-edge: rgba(246, 240, 230, 0.1);
+    --glass-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.7);
+    --material-thick: rgba(16, 15, 22, 0.94);
+    --material-regular: rgba(16, 15, 22, 0.86);
+    --material-thin: rgba(16, 15, 22, 0.7);
   }
 }
 
 :root[data-theme='dark'] {
-  --bg: #000000;
-  --bg-elevated: #1c1c1e;
-  --bg-grouped: #000000;
-  --label: #ffffff;
-  --label-2: rgba(235, 235, 245, 0.6);
-  --label-3: rgba(235, 235, 245, 0.3);
-  --label-4: rgba(235, 235, 245, 0.16);
-  --fill: rgba(120, 120, 128, 0.36);
-  --fill-2: rgba(120, 120, 128, 0.32);
-  --fill-3: rgba(118, 118, 128, 0.24);
-  --fill-4: rgba(118, 118, 128, 0.18);
-  --separator: rgba(84, 84, 88, 0.65);
-  --separator-opaque: #38383a;
+  --bg: #07060c;
+  --bg-elevated: #14131a;
+  --bg-grouped: #07060c;
+  --label: #f6f0e6;
+  --label-2: rgba(246, 240, 230, 0.68);
+  --label-3: rgba(246, 240, 230, 0.4);
+  --label-4: rgba(246, 240, 230, 0.16);
+  --fill: rgba(246, 240, 230, 0.16);
+  --fill-2: rgba(246, 240, 230, 0.12);
+  --fill-3: rgba(246, 240, 230, 0.08);
+  --fill-4: rgba(246, 240, 230, 0.05);
+  --separator: rgba(246, 240, 230, 0.16);
+  --separator-opaque: #3a342c;
   --system-red: #ff453a;
   --system-green: #30d158;
   --system-orange: #ff9f0a;
-  --accent: var(--song-accent-dark, #0a84ff);
+  --accent: var(--song-accent-dark, #d7c4ff);
   --on-accent: #0b0b0d;
-  --ink: #f5f5f7;
-  --ink-unsung: rgba(245, 245, 247, 0.42);
-  --plate-tint: rgba(30, 30, 34, 0.4);
-  --ink-ghost: rgba(245, 245, 247, 0.1);
-  --glass-tint: rgba(40, 40, 46, 0.42);
-  --glass-tint-strong: rgba(44, 44, 50, 0.66);
-  --glass-rim: rgba(255, 255, 255, 0.28);
-  --glass-rim-low: rgba(255, 255, 255, 0.06);
-  --glass-edge: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 12px 34px -10px rgba(0, 0, 0, 0.6), 0 2px 8px -2px rgba(0, 0, 0, 0.4);
-  --material-thick: rgba(28, 28, 30, 0.82);
-  --material-regular: rgba(28, 28, 30, 0.66);
-  --material-thin: rgba(28, 28, 30, 0.48);
+  --ink: #f6f0e6;
+  --ink-unsung: rgba(246, 240, 230, 0.42);
+  --plate-tint: transparent;
+  --ink-ghost: rgba(246, 240, 230, 0.1);
+  --glass-tint: rgba(16, 15, 22, 0.94);
+  --glass-tint-strong: #14131a;
+  --glass-rim: transparent;
+  --glass-rim-low: transparent;
+  --glass-edge: rgba(246, 240, 230, 0.1);
+  --glass-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.7);
+  --material-thick: rgba(16, 15, 22, 0.94);
+  --material-regular: rgba(16, 15, 22, 0.86);
+  --material-thin: rgba(16, 15, 22, 0.7);
 }
 
 /* Accessibility: Reduce Transparency → frosted, nearly opaque surfaces. Increase Contrast → stronger edges. */
