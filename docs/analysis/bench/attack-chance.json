@@ -1,0 +1,1530 @@
+{
+ "limit": 0.15,
+ "shifts": [
+  0.15,
+  0.25,
+  0.4
+ ],
+ "songs": [
+  "i-have-come-alive",
+  "karitas",
+  "one"
+ ],
+ "placed_lines": 125,
+ "placed_words": 550,
+ "current_chance": 0.7523,
+ "chosen": {
+  "name": "tol-0.10-h0.7-second",
+  "tol": 0.1,
+  "choir_tol": 0.2,
+  "peak_height": 0.7,
+  "require_rise": false,
+  "require_second": true,
+  "shifts": {
+   "0.15": 0.0482,
+   "0.25": 0.01,
+   "0.40": 0.0064,
+   "shuffle": 0.0182
+  },
+  "chance": 0.0482,
+  "true_proved": 289,
+  "true_total": 550,
+  "true_rate": 0.5255,
+  "within_limit": true,
+  "why": "tightened"
+ },
+ "density": [
+  {
+   "song": "i-have-come-alive",
+   "lang": "*",
+   "peaks": 805,
+   "median_interval": 0.32,
+   "placed_words": 250,
+   "placed_lines": 67
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "ar",
+   "peaks": 89,
+   "median_interval": 0.27,
+   "placed_words": 50,
+   "placed_lines": 16
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "en",
+   "peaks": 46,
+   "median_interval": 0.27,
+   "placed_words": 44,
+   "placed_lines": 12
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "fa",
+   "peaks": 158,
+   "median_interval": 0.23,
+   "placed_words": 109,
+   "placed_lines": 25
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "tr",
+   "peaks": 72,
+   "median_interval": 0.305,
+   "placed_words": 47,
+   "placed_lines": 14
+  },
+  {
+   "song": "karitas",
+   "lang": "*",
+   "peaks": 1743,
+   "median_interval": 0.38,
+   "placed_words": 140,
+   "placed_lines": 28
+  },
+  {
+   "song": "karitas",
+   "lang": "ar",
+   "peaks": 124,
+   "median_interval": 0.29,
+   "placed_words": 32,
+   "placed_lines": 7
+  },
+  {
+   "song": "karitas",
+   "lang": "az",
+   "peaks": 213,
+   "median_interval": 0.22,
+   "placed_words": 71,
+   "placed_lines": 10
+  },
+  {
+   "song": "karitas",
+   "lang": "la",
+   "peaks": 67,
+   "median_interval": 0.475,
+   "placed_words": 37,
+   "placed_lines": 11
+  },
+  {
+   "song": "one",
+   "lang": "*",
+   "peaks": 1502,
+   "median_interval": 0.35,
+   "placed_words": 160,
+   "placed_lines": 30
+  },
+  {
+   "song": "one",
+   "lang": "ar",
+   "peaks": 310,
+   "median_interval": 0.3,
+   "placed_words": 84,
+   "placed_lines": 18
+  },
+  {
+   "song": "one",
+   "lang": "de",
+   "peaks": 131,
+   "median_interval": 0.26,
+   "placed_words": 76,
+   "placed_lines": 12
+  }
+ ],
+ "by_slice": [
+  {
+   "song": "i-have-come-alive",
+   "lang": "*",
+   "words": 250,
+   "rule": "tol-0.10-h0.5",
+   "rates": {
+    "0.15": 0.448,
+    "0.25": 0.412,
+    "0.40": 0.388,
+    "shuffle": 0.728,
+    "chance": 0.728
+   }
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "*",
+   "words": 250,
+   "rule": "tol-0.10-h0.7-second",
+   "rates": {
+    "0.15": 0.026,
+    "0.25": 0.0,
+    "0.40": 0.004,
+    "shuffle": 0.016,
+    "chance": 0.026
+   }
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "ar",
+   "words": 50,
+   "rule": "tol-0.10-h0.5",
+   "rates": {
+    "0.15": 0.38,
+    "0.25": 0.37,
+    "0.40": 0.44,
+    "shuffle": 0.74,
+    "chance": 0.74
+   }
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "ar",
+   "words": 50,
+   "rule": "tol-0.10-h0.7-second",
+   "rates": {
+    "0.15": 0.02,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0,
+    "chance": 0.02
+   }
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "en",
+   "words": 44,
+   "rule": "tol-0.10-h0.5",
+   "rates": {
+    "0.15": 0.5227,
+    "0.25": 0.5114,
+    "0.40": 0.375,
+    "shuffle": 0.7273,
+    "chance": 0.7273
+   }
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "en",
+   "words": 44,
+   "rule": "tol-0.10-h0.7-second",
+   "rates": {
+    "0.15": 0.0455,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0227,
+    "chance": 0.0455
+   }
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "fa",
+   "words": 109,
+   "rule": "tol-0.10-h0.5",
+   "rates": {
+    "0.15": 0.5092,
+    "0.25": 0.4954,
+    "0.40": 0.4358,
+    "shuffle": 0.7431,
+    "chance": 0.7431
+   }
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "fa",
+   "words": 109,
+   "rule": "tol-0.10-h0.7-second",
+   "rates": {
+    "0.15": 0.0275,
+    "0.25": 0.0,
+    "0.40": 0.0092,
+    "shuffle": 0.0275,
+    "chance": 0.0275
+   }
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "tr",
+   "words": 47,
+   "rule": "tol-0.10-h0.5",
+   "rates": {
+    "0.15": 0.3085,
+    "0.25": 0.1702,
+    "0.40": 0.234,
+    "shuffle": 0.6809,
+    "chance": 0.6809
+   }
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "tr",
+   "words": 47,
+   "rule": "tol-0.10-h0.7-second",
+   "rates": {
+    "0.15": 0.0106,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0,
+    "chance": 0.0106
+   }
+  },
+  {
+   "song": "karitas",
+   "lang": "*",
+   "words": 140,
+   "rule": "tol-0.10-h0.5",
+   "rates": {
+    "0.15": 0.4821,
+    "0.25": 0.4036,
+    "0.40": 0.475,
+    "shuffle": 0.7482,
+    "chance": 0.7482
+   }
+  },
+  {
+   "song": "karitas",
+   "lang": "*",
+   "words": 140,
+   "rule": "tol-0.10-h0.7-second",
+   "rates": {
+    "0.15": 0.0036,
+    "0.25": 0.0036,
+    "0.40": 0.0,
+    "shuffle": 0.0,
+    "chance": 0.0036
+   }
+  },
+  {
+   "song": "karitas",
+   "lang": "ar",
+   "words": 32,
+   "rule": "tol-0.10-h0.5",
+   "rates": {
+    "0.15": 0.5312,
+    "0.25": 0.5,
+    "0.40": 0.5,
+    "shuffle": 0.9032,
+    "chance": 0.9032
+   }
+  },
+  {
+   "song": "karitas",
+   "lang": "ar",
+   "words": 32,
+   "rule": "tol-0.10-h0.7-second",
+   "rates": {
+    "0.15": 0.0156,
+    "0.25": 0.0156,
+    "0.40": 0.0,
+    "shuffle": 0.0,
+    "chance": 0.0156
+   }
+  },
+  {
+   "song": "karitas",
+   "lang": "az",
+   "words": 71,
+   "rule": "tol-0.10-h0.5",
+   "rates": {
+    "0.15": 0.5282,
+    "0.25": 0.4577,
+    "0.40": 0.5775,
+    "shuffle": 0.831,
+    "chance": 0.831
+   }
+  },
+  {
+   "song": "karitas",
+   "lang": "az",
+   "words": 71,
+   "rule": "tol-0.10-h0.7-second",
+   "rates": {
+    "0.15": 0.0,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0,
+    "chance": 0.0
+   }
+  },
+  {
+   "song": "karitas",
+   "lang": "la",
+   "words": 37,
+   "rule": "tol-0.10-h0.5",
+   "rates": {
+    "0.15": 0.3514,
+    "0.25": 0.2162,
+    "0.40": 0.2568,
+    "shuffle": 0.4595,
+    "chance": 0.4595
+   }
+  },
+  {
+   "song": "karitas",
+   "lang": "la",
+   "words": 37,
+   "rule": "tol-0.10-h0.7-second",
+   "rates": {
+    "0.15": 0.0,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0,
+    "chance": 0.0
+   }
+  },
+  {
+   "song": "one",
+   "lang": "*",
+   "words": 160,
+   "rule": "tol-0.10-h0.5",
+   "rates": {
+    "0.15": 0.625,
+    "0.25": 0.5563,
+    "0.40": 0.5844,
+    "shuffle": 0.7937,
+    "chance": 0.7937
+   }
+  },
+  {
+   "song": "one",
+   "lang": "*",
+   "words": 160,
+   "rule": "tol-0.10-h0.7-second",
+   "rates": {
+    "0.15": 0.1219,
+    "0.25": 0.0312,
+    "0.40": 0.0156,
+    "shuffle": 0.0375,
+    "chance": 0.1219
+   }
+  },
+  {
+   "song": "one",
+   "lang": "ar",
+   "words": 84,
+   "rule": "tol-0.10-h0.5",
+   "rates": {
+    "0.15": 0.5119,
+    "0.25": 0.3869,
+    "0.40": 0.494,
+    "shuffle": 0.7857,
+    "chance": 0.7857
+   }
+  },
+  {
+   "song": "one",
+   "lang": "ar",
+   "words": 84,
+   "rule": "tol-0.10-h0.7-second",
+   "rates": {
+    "0.15": 0.1012,
+    "0.25": 0.0238,
+    "0.40": 0.0238,
+    "shuffle": 0.0357,
+    "chance": 0.1012
+   }
+  },
+  {
+   "song": "one",
+   "lang": "de",
+   "words": 76,
+   "rule": "tol-0.10-h0.5",
+   "rates": {
+    "0.15": 0.75,
+    "0.25": 0.7434,
+    "0.40": 0.6842,
+    "shuffle": 0.8026,
+    "chance": 0.8026
+   }
+  },
+  {
+   "song": "one",
+   "lang": "de",
+   "words": 76,
+   "rule": "tol-0.10-h0.7-second",
+   "rates": {
+    "0.15": 0.1447,
+    "0.25": 0.0395,
+    "0.40": 0.0066,
+    "shuffle": 0.0395,
+    "chance": 0.1447
+   }
+  }
+ ],
+ "candidates": [
+  {
+   "name": "tol-0.10-h0.5",
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 0.5,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.5082,
+    "0.25": 0.4518,
+    "0.40": 0.4673,
+    "shuffle": 0.7523
+   },
+   "chance": 0.7523,
+   "true_proved": 434,
+   "true_total": 550,
+   "true_rate": 0.7891
+  },
+  {
+   "name": "tol-0.10-h0.5-second",
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 0.5,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0691,
+    "0.25": 0.0245,
+    "0.40": 0.0173,
+    "shuffle": 0.02
+   },
+   "chance": 0.0691,
+   "true_proved": 285,
+   "true_total": 550,
+   "true_rate": 0.5182
+  },
+  {
+   "name": "tol-0.10-h0.5-rise",
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 0.5,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.2409,
+    "0.25": 0.1918,
+    "0.40": 0.2127,
+    "shuffle": 0.4117
+   },
+   "chance": 0.4117,
+   "true_proved": 334,
+   "true_total": 550,
+   "true_rate": 0.6073
+  },
+  {
+   "name": "tol-0.08-h0.5",
+   "tol": 0.08,
+   "choir_tol": 0.16,
+   "peak_height": 0.5,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.4018,
+    "0.25": 0.3991,
+    "0.40": 0.3936,
+    "shuffle": 0.7013
+   },
+   "chance": 0.7013,
+   "true_proved": 408,
+   "true_total": 550,
+   "true_rate": 0.7418
+  },
+  {
+   "name": "tol-0.08-h0.5-second",
+   "tol": 0.08,
+   "choir_tol": 0.16,
+   "peak_height": 0.5,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0564,
+    "0.25": 0.0218,
+    "0.40": 0.0164,
+    "shuffle": 0.02
+   },
+   "chance": 0.0564,
+   "true_proved": 270,
+   "true_total": 550,
+   "true_rate": 0.4909
+  },
+  {
+   "name": "tol-0.08-h0.5-rise",
+   "tol": 0.08,
+   "choir_tol": 0.16,
+   "peak_height": 0.5,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.1764,
+    "0.25": 0.1555,
+    "0.40": 0.1764,
+    "shuffle": 0.3752
+   },
+   "chance": 0.3752,
+   "true_proved": 312,
+   "true_total": 550,
+   "true_rate": 0.5673
+  },
+  {
+   "name": "tol-0.06-h0.5",
+   "tol": 0.06,
+   "choir_tol": 0.12,
+   "peak_height": 0.5,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.3009,
+    "0.25": 0.3327,
+    "0.40": 0.3273,
+    "shuffle": 0.6248
+   },
+   "chance": 0.6248,
+   "true_proved": 341,
+   "true_total": 550,
+   "true_rate": 0.62
+  },
+  {
+   "name": "tol-0.06-h0.5-second",
+   "tol": 0.06,
+   "choir_tol": 0.12,
+   "peak_height": 0.5,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0418,
+    "0.25": 0.02,
+    "0.40": 0.0127,
+    "shuffle": 0.0182
+   },
+   "chance": 0.0418,
+   "true_proved": 231,
+   "true_total": 550,
+   "true_rate": 0.42
+  },
+  {
+   "name": "tol-0.06-h0.5-rise",
+   "tol": 0.06,
+   "choir_tol": 0.12,
+   "peak_height": 0.5,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.1145,
+    "0.25": 0.1236,
+    "0.40": 0.1391,
+    "shuffle": 0.3024
+   },
+   "chance": 0.3024,
+   "true_proved": 256,
+   "true_total": 550,
+   "true_rate": 0.4655
+  },
+  {
+   "name": "tol-0.05-h0.5",
+   "tol": 0.05,
+   "choir_tol": 0.1,
+   "peak_height": 0.5,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.2536,
+    "0.25": 0.2827,
+    "0.40": 0.2791,
+    "shuffle": 0.5556
+   },
+   "chance": 0.5556,
+   "true_proved": 304,
+   "true_total": 550,
+   "true_rate": 0.5527
+  },
+  {
+   "name": "tol-0.05-h0.5-second",
+   "tol": 0.05,
+   "choir_tol": 0.1,
+   "peak_height": 0.5,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0391,
+    "0.25": 0.0145,
+    "0.40": 0.0091,
+    "shuffle": 0.0146
+   },
+   "chance": 0.0391,
+   "true_proved": 207,
+   "true_total": 550,
+   "true_rate": 0.3764
+  },
+  {
+   "name": "tol-0.05-h0.5-rise",
+   "tol": 0.05,
+   "choir_tol": 0.1,
+   "peak_height": 0.5,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0927,
+    "0.25": 0.1018,
+    "0.40": 0.1164,
+    "shuffle": 0.2532
+   },
+   "chance": 0.2532,
+   "true_proved": 235,
+   "true_total": 550,
+   "true_rate": 0.4273
+  },
+  {
+   "name": "tol-0.04-h0.5",
+   "tol": 0.04,
+   "choir_tol": 0.08,
+   "peak_height": 0.5,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.1982,
+    "0.25": 0.2364,
+    "0.40": 0.2355,
+    "shuffle": 0.4663
+   },
+   "chance": 0.4663,
+   "true_proved": 261,
+   "true_total": 550,
+   "true_rate": 0.4745
+  },
+  {
+   "name": "tol-0.04-h0.5-second",
+   "tol": 0.04,
+   "choir_tol": 0.08,
+   "peak_height": 0.5,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0273,
+    "0.25": 0.0127,
+    "0.40": 0.0073,
+    "shuffle": 0.0109
+   },
+   "chance": 0.0273,
+   "true_proved": 180,
+   "true_total": 550,
+   "true_rate": 0.3273
+  },
+  {
+   "name": "tol-0.04-h0.5-rise",
+   "tol": 0.04,
+   "choir_tol": 0.08,
+   "peak_height": 0.5,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0691,
+    "0.25": 0.0773,
+    "0.40": 0.0945,
+    "shuffle": 0.204
+   },
+   "chance": 0.204,
+   "true_proved": 210,
+   "true_total": 550,
+   "true_rate": 0.3818
+  },
+  {
+   "name": "tol-0.10-h0.7",
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 0.7,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.32,
+    "0.25": 0.2627,
+    "0.40": 0.2818,
+    "shuffle": 0.5701
+   },
+   "chance": 0.5701,
+   "true_proved": 385,
+   "true_total": 550,
+   "true_rate": 0.7
+  },
+  {
+   "name": "tol-0.10-h0.7-second",
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 0.7,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0482,
+    "0.25": 0.01,
+    "0.40": 0.0064,
+    "shuffle": 0.0182
+   },
+   "chance": 0.0482,
+   "true_proved": 289,
+   "true_total": 550,
+   "true_rate": 0.5255
+  },
+  {
+   "name": "tol-0.10-h0.7-rise",
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 0.7,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.17,
+    "0.25": 0.1145,
+    "0.40": 0.1373,
+    "shuffle": 0.3406
+   },
+   "chance": 0.3406,
+   "true_proved": 329,
+   "true_total": 550,
+   "true_rate": 0.5982
+  },
+  {
+   "name": "tol-0.08-h0.7",
+   "tol": 0.08,
+   "choir_tol": 0.16,
+   "peak_height": 0.7,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.23,
+    "0.25": 0.2227,
+    "0.40": 0.2264,
+    "shuffle": 0.5209
+   },
+   "chance": 0.5209,
+   "true_proved": 359,
+   "true_total": 550,
+   "true_rate": 0.6527
+  },
+  {
+   "name": "tol-0.08-h0.7-second",
+   "tol": 0.08,
+   "choir_tol": 0.16,
+   "peak_height": 0.7,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0364,
+    "0.25": 0.0091,
+    "0.40": 0.0064,
+    "shuffle": 0.0164
+   },
+   "chance": 0.0364,
+   "true_proved": 277,
+   "true_total": 550,
+   "true_rate": 0.5036
+  },
+  {
+   "name": "tol-0.08-h0.7-rise",
+   "tol": 0.08,
+   "choir_tol": 0.16,
+   "peak_height": 0.7,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.1182,
+    "0.25": 0.0909,
+    "0.40": 0.1118,
+    "shuffle": 0.3097
+   },
+   "chance": 0.3097,
+   "true_proved": 308,
+   "true_total": 550,
+   "true_rate": 0.56
+  },
+  {
+   "name": "tol-0.06-h0.7",
+   "tol": 0.06,
+   "choir_tol": 0.12,
+   "peak_height": 0.7,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.1618,
+    "0.25": 0.1764,
+    "0.40": 0.19,
+    "shuffle": 0.4517
+   },
+   "chance": 0.4517,
+   "true_proved": 302,
+   "true_total": 550,
+   "true_rate": 0.5491
+  },
+  {
+   "name": "tol-0.06-h0.7-second",
+   "tol": 0.06,
+   "choir_tol": 0.12,
+   "peak_height": 0.7,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0273,
+    "0.25": 0.0073,
+    "0.40": 0.0045,
+    "shuffle": 0.0146
+   },
+   "chance": 0.0273,
+   "true_proved": 240,
+   "true_total": 550,
+   "true_rate": 0.4364
+  },
+  {
+   "name": "tol-0.06-h0.7-rise",
+   "tol": 0.06,
+   "choir_tol": 0.12,
+   "peak_height": 0.7,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0718,
+    "0.25": 0.0691,
+    "0.40": 0.0891,
+    "shuffle": 0.2459
+   },
+   "chance": 0.2459,
+   "true_proved": 261,
+   "true_total": 550,
+   "true_rate": 0.4745
+  },
+  {
+   "name": "tol-0.05-h0.7",
+   "tol": 0.05,
+   "choir_tol": 0.1,
+   "peak_height": 0.7,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.1345,
+    "0.25": 0.1445,
+    "0.40": 0.1636,
+    "shuffle": 0.3898
+   },
+   "chance": 0.3898,
+   "true_proved": 269,
+   "true_total": 550,
+   "true_rate": 0.4891
+  },
+  {
+   "name": "tol-0.05-h0.7-second",
+   "tol": 0.05,
+   "choir_tol": 0.1,
+   "peak_height": 0.7,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0245,
+    "0.25": 0.0055,
+    "0.40": 0.0027,
+    "shuffle": 0.0091
+   },
+   "chance": 0.0245,
+   "true_proved": 219,
+   "true_total": 550,
+   "true_rate": 0.3982
+  },
+  {
+   "name": "tol-0.05-h0.7-rise",
+   "tol": 0.05,
+   "choir_tol": 0.1,
+   "peak_height": 0.7,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0555,
+    "0.25": 0.0555,
+    "0.40": 0.0745,
+    "shuffle": 0.204
+   },
+   "chance": 0.204,
+   "true_proved": 240,
+   "true_total": 550,
+   "true_rate": 0.4364
+  },
+  {
+   "name": "tol-0.04-h0.7",
+   "tol": 0.04,
+   "choir_tol": 0.08,
+   "peak_height": 0.7,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0991,
+    "0.25": 0.1145,
+    "0.40": 0.1355,
+    "shuffle": 0.3188
+   },
+   "chance": 0.3188,
+   "true_proved": 239,
+   "true_total": 550,
+   "true_rate": 0.4345
+  },
+  {
+   "name": "tol-0.04-h0.7-second",
+   "tol": 0.04,
+   "choir_tol": 0.08,
+   "peak_height": 0.7,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0145,
+    "0.25": 0.0036,
+    "0.40": 0.0018,
+    "shuffle": 0.0091
+   },
+   "chance": 0.0145,
+   "true_proved": 196,
+   "true_total": 550,
+   "true_rate": 0.3564
+  },
+  {
+   "name": "tol-0.04-h0.7-rise",
+   "tol": 0.04,
+   "choir_tol": 0.08,
+   "peak_height": 0.7,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0409,
+    "0.25": 0.0409,
+    "0.40": 0.0618,
+    "shuffle": 0.1585
+   },
+   "chance": 0.1585,
+   "true_proved": 222,
+   "true_total": 550,
+   "true_rate": 0.4036
+  },
+  {
+   "name": "tol-0.10-h0.9",
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 0.9,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.2064,
+    "0.25": 0.1627,
+    "0.40": 0.1873,
+    "shuffle": 0.4372
+   },
+   "chance": 0.4372,
+   "true_proved": 354,
+   "true_total": 550,
+   "true_rate": 0.6436
+  },
+  {
+   "name": "tol-0.10-h0.9-second",
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 0.9,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0264,
+    "0.25": 0.0036,
+    "0.40": 0.0055,
+    "shuffle": 0.0146
+   },
+   "chance": 0.0264,
+   "true_proved": 285,
+   "true_total": 550,
+   "true_rate": 0.5182
+  },
+  {
+   "name": "tol-0.10-h0.9-rise",
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 0.9,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.1273,
+    "0.25": 0.0782,
+    "0.40": 0.1091,
+    "shuffle": 0.286
+   },
+   "chance": 0.286,
+   "true_proved": 321,
+   "true_total": 550,
+   "true_rate": 0.5836
+  },
+  {
+   "name": "tol-0.08-h0.9",
+   "tol": 0.08,
+   "choir_tol": 0.16,
+   "peak_height": 0.9,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.1418,
+    "0.25": 0.1345,
+    "0.40": 0.1564,
+    "shuffle": 0.408
+   },
+   "chance": 0.408,
+   "true_proved": 331,
+   "true_total": 550,
+   "true_rate": 0.6018
+  },
+  {
+   "name": "tol-0.08-h0.9-second",
+   "tol": 0.08,
+   "choir_tol": 0.16,
+   "peak_height": 0.9,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0191,
+    "0.25": 0.0027,
+    "0.40": 0.0055,
+    "shuffle": 0.0128
+   },
+   "chance": 0.0191,
+   "true_proved": 273,
+   "true_total": 550,
+   "true_rate": 0.4964
+  },
+  {
+   "name": "tol-0.08-h0.9-rise",
+   "tol": 0.08,
+   "choir_tol": 0.16,
+   "peak_height": 0.9,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0855,
+    "0.25": 0.0609,
+    "0.40": 0.09,
+    "shuffle": 0.2623
+   },
+   "chance": 0.2623,
+   "true_proved": 302,
+   "true_total": 550,
+   "true_rate": 0.5491
+  },
+  {
+   "name": "tol-0.06-h0.9",
+   "tol": 0.06,
+   "choir_tol": 0.12,
+   "peak_height": 0.9,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0864,
+    "0.25": 0.1073,
+    "0.40": 0.1255,
+    "shuffle": 0.3461
+   },
+   "chance": 0.3461,
+   "true_proved": 286,
+   "true_total": 550,
+   "true_rate": 0.52
+  },
+  {
+   "name": "tol-0.06-h0.9-second",
+   "tol": 0.06,
+   "choir_tol": 0.12,
+   "peak_height": 0.9,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.01,
+    "0.25": 0.0018,
+    "0.40": 0.0036,
+    "shuffle": 0.0109
+   },
+   "chance": 0.0109,
+   "true_proved": 248,
+   "true_total": 550,
+   "true_rate": 0.4509
+  },
+  {
+   "name": "tol-0.06-h0.9-rise",
+   "tol": 0.06,
+   "choir_tol": 0.12,
+   "peak_height": 0.9,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0482,
+    "0.25": 0.0464,
+    "0.40": 0.0727,
+    "shuffle": 0.2113
+   },
+   "chance": 0.2113,
+   "true_proved": 263,
+   "true_total": 550,
+   "true_rate": 0.4782
+  },
+  {
+   "name": "tol-0.05-h0.9",
+   "tol": 0.05,
+   "choir_tol": 0.1,
+   "peak_height": 0.9,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0709,
+    "0.25": 0.0936,
+    "0.40": 0.1045,
+    "shuffle": 0.3024
+   },
+   "chance": 0.3024,
+   "true_proved": 261,
+   "true_total": 550,
+   "true_rate": 0.4745
+  },
+  {
+   "name": "tol-0.05-h0.9-second",
+   "tol": 0.05,
+   "choir_tol": 0.1,
+   "peak_height": 0.9,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0091,
+    "0.25": 0.0018,
+    "0.40": 0.0018,
+    "shuffle": 0.0036
+   },
+   "chance": 0.0091,
+   "true_proved": 230,
+   "true_total": 550,
+   "true_rate": 0.4182
+  },
+  {
+   "name": "tol-0.05-h0.9-rise",
+   "tol": 0.05,
+   "choir_tol": 0.1,
+   "peak_height": 0.9,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0364,
+    "0.25": 0.0382,
+    "0.40": 0.06,
+    "shuffle": 0.1749
+   },
+   "chance": 0.1749,
+   "true_proved": 245,
+   "true_total": 550,
+   "true_rate": 0.4455
+  },
+  {
+   "name": "tol-0.04-h0.9",
+   "tol": 0.04,
+   "choir_tol": 0.08,
+   "peak_height": 0.9,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0491,
+    "0.25": 0.07,
+    "0.40": 0.0855,
+    "shuffle": 0.2495
+   },
+   "chance": 0.2495,
+   "true_proved": 238,
+   "true_total": 550,
+   "true_rate": 0.4327
+  },
+  {
+   "name": "tol-0.04-h0.9-second",
+   "tol": 0.04,
+   "choir_tol": 0.08,
+   "peak_height": 0.9,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0036,
+    "0.25": 0.0,
+    "0.40": 0.0018,
+    "shuffle": 0.0036
+   },
+   "chance": 0.0036,
+   "true_proved": 211,
+   "true_total": 550,
+   "true_rate": 0.3836
+  },
+  {
+   "name": "tol-0.04-h0.9-rise",
+   "tol": 0.04,
+   "choir_tol": 0.08,
+   "peak_height": 0.9,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0255,
+    "0.25": 0.0273,
+    "0.40": 0.0491,
+    "shuffle": 0.1384
+   },
+   "chance": 0.1384,
+   "true_proved": 229,
+   "true_total": 550,
+   "true_rate": 0.4164
+  },
+  {
+   "name": "tol-0.10-h1.2",
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 1.2,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.1182,
+    "0.25": 0.0791,
+    "0.40": 0.0982,
+    "shuffle": 0.2714
+   },
+   "chance": 0.2714,
+   "true_proved": 321,
+   "true_total": 550,
+   "true_rate": 0.5836
+  },
+  {
+   "name": "tol-0.10-h1.2-second",
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 1.2,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0145,
+    "0.25": 0.0018,
+    "0.40": 0.0055,
+    "shuffle": 0.0055
+   },
+   "chance": 0.0145,
+   "true_proved": 281,
+   "true_total": 550,
+   "true_rate": 0.5109
+  },
+  {
+   "name": "tol-0.10-h1.2-rise",
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 1.2,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0755,
+    "0.25": 0.0418,
+    "0.40": 0.0645,
+    "shuffle": 0.1858
+   },
+   "chance": 0.1858,
+   "true_proved": 297,
+   "true_total": 550,
+   "true_rate": 0.54
+  },
+  {
+   "name": "tol-0.08-h1.2",
+   "tol": 0.08,
+   "choir_tol": 0.16,
+   "peak_height": 1.2,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0809,
+    "0.25": 0.0609,
+    "0.40": 0.0845,
+    "shuffle": 0.2568
+   },
+   "chance": 0.2568,
+   "true_proved": 309,
+   "true_total": 550,
+   "true_rate": 0.5618
+  },
+  {
+   "name": "tol-0.08-h1.2-second",
+   "tol": 0.08,
+   "choir_tol": 0.16,
+   "peak_height": 1.2,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.01,
+    "0.25": 0.0009,
+    "0.40": 0.0055,
+    "shuffle": 0.0055
+   },
+   "chance": 0.01,
+   "true_proved": 275,
+   "true_total": 550,
+   "true_rate": 0.5
+  },
+  {
+   "name": "tol-0.08-h1.2-rise",
+   "tol": 0.08,
+   "choir_tol": 0.16,
+   "peak_height": 1.2,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0527,
+    "0.25": 0.03,
+    "0.40": 0.0545,
+    "shuffle": 0.1749
+   },
+   "chance": 0.1749,
+   "true_proved": 288,
+   "true_total": 550,
+   "true_rate": 0.5236
+  },
+  {
+   "name": "tol-0.06-h1.2",
+   "tol": 0.06,
+   "choir_tol": 0.12,
+   "peak_height": 1.2,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0464,
+    "0.25": 0.0509,
+    "0.40": 0.0709,
+    "shuffle": 0.2186
+   },
+   "chance": 0.2186,
+   "true_proved": 282,
+   "true_total": 550,
+   "true_rate": 0.5127
+  },
+  {
+   "name": "tol-0.06-h1.2-second",
+   "tol": 0.06,
+   "choir_tol": 0.12,
+   "peak_height": 1.2,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0045,
+    "0.25": 0.0009,
+    "0.40": 0.0036,
+    "shuffle": 0.0036
+   },
+   "chance": 0.0045,
+   "true_proved": 258,
+   "true_total": 550,
+   "true_rate": 0.4691
+  },
+  {
+   "name": "tol-0.06-h1.2-rise",
+   "tol": 0.06,
+   "choir_tol": 0.12,
+   "peak_height": 1.2,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0309,
+    "0.25": 0.0236,
+    "0.40": 0.0455,
+    "shuffle": 0.1439
+   },
+   "chance": 0.1439,
+   "true_proved": 268,
+   "true_total": 550,
+   "true_rate": 0.4873
+  },
+  {
+   "name": "tol-0.05-h1.2",
+   "tol": 0.05,
+   "choir_tol": 0.1,
+   "peak_height": 1.2,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0345,
+    "0.25": 0.0455,
+    "0.40": 0.0555,
+    "shuffle": 0.1985
+   },
+   "chance": 0.1985,
+   "true_proved": 268,
+   "true_total": 550,
+   "true_rate": 0.4873
+  },
+  {
+   "name": "tol-0.05-h1.2-second",
+   "tol": 0.05,
+   "choir_tol": 0.1,
+   "peak_height": 1.2,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0036,
+    "0.25": 0.0009,
+    "0.40": 0.0018,
+    "shuffle": 0.0
+   },
+   "chance": 0.0036,
+   "true_proved": 246,
+   "true_total": 550,
+   "true_rate": 0.4473
+  },
+  {
+   "name": "tol-0.05-h1.2-rise",
+   "tol": 0.05,
+   "choir_tol": 0.1,
+   "peak_height": 1.2,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0227,
+    "0.25": 0.0191,
+    "0.40": 0.0382,
+    "shuffle": 0.133
+   },
+   "chance": 0.133,
+   "true_proved": 257,
+   "true_total": 550,
+   "true_rate": 0.4673
+  },
+  {
+   "name": "tol-0.04-h1.2",
+   "tol": 0.04,
+   "choir_tol": 0.08,
+   "peak_height": 1.2,
+   "require_rise": false,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0227,
+    "0.25": 0.0345,
+    "0.40": 0.0418,
+    "shuffle": 0.1639
+   },
+   "chance": 0.1639,
+   "true_proved": 253,
+   "true_total": 550,
+   "true_rate": 0.46
+  },
+  {
+   "name": "tol-0.04-h1.2-second",
+   "tol": 0.04,
+   "choir_tol": 0.08,
+   "peak_height": 1.2,
+   "require_rise": false,
+   "require_second": true,
+   "shifts": {
+    "0.15": 0.0018,
+    "0.25": 0.0,
+    "0.40": 0.0018,
+    "shuffle": 0.0
+   },
+   "chance": 0.0018,
+   "true_proved": 234,
+   "true_total": 550,
+   "true_rate": 0.4255
+  },
+  {
+   "name": "tol-0.04-h1.2-rise",
+   "tol": 0.04,
+   "choir_tol": 0.08,
+   "peak_height": 1.2,
+   "require_rise": true,
+   "require_second": false,
+   "shifts": {
+    "0.15": 0.0164,
+    "0.25": 0.0136,
+    "0.40": 0.03,
+    "shuffle": 0.1056
+   },
+   "chance": 0.1056,
+   "true_proved": 244,
+   "true_total": 550,
+   "true_rate": 0.4436
+  }
+ ]
+}
