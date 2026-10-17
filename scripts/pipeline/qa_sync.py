@@ -43,8 +43,9 @@ from common import ROOT, dump_json, load_audio, load_json, song_dir, vocal_stem,
 
 MAX_LAG = 2.0          # search ±2 s
 TOL = 0.25             # whole-line shift alarm only. Not the word proof, and not the song gate.
-WORD_TOL = 0.10        # proof: pre-snap aligner start vs the attack, and the two aligners vs each other
-SONG_SHARE = 0.80      # song is aligned only when at least this share of solo lines is proven
+WORD_TOL = 0.10        # solo: pre-snap aligner start vs the attack, and the two aligners vs each other
+CHOIR_TOL = 0.20       # choir group: the same two checks, wider because several voices share the stem
+SONG_SHARE = 0.80      # each group that exists (solo, choir) must be at least this share proved
 ONSET_SEARCH = 0.35    # look for an attack this far from the written start
 LEGATO_GAP = 0.20      # a word continuing the previous one, with no new attack, may have no onset
 PEAK_HEIGHT = 0.5      # onset curve units; 1 is the recording's 95th percentile
@@ -124,15 +125,23 @@ def nearest_attack(t: float, peaks: np.ndarray, owned: float | None) -> float | 
     return float(usable[int(np.argmin(np.abs(usable - t)))] - t)
 
 
-def song_proven(passed: int, solo: int) -> bool:
-    """True when solo lines exist and at least SONG_SHARE of them are proven.
+def song_proven(passed: int, n: int) -> bool:
+    """True when this group exists and at least SONG_SHARE of its lines are proven.
 
     Integer comparison, so 30/38 (78.9 %) fails and 31/38 (81.6 %) passes. A line whose text was
-    not found is solo and not passed, so it stays in the denominator.
+    not found stays in the denominator.
     """
-    if solo <= 0:
+    if n <= 0:
         return False
-    return passed * 1000 >= solo * int(round(SONG_SHARE * 1000))
+    return passed * 1000 >= n * int(round(SONG_SHARE * 1000))
+
+
+def song_ready(parts: list[tuple[int, int]]) -> bool:
+    """True when every group that has lines is song_proven. An empty group does not block."""
+    present = [(passed, n) for passed, n in parts if n > 0]
+    if not present:
+        return False
+    return all(song_proven(passed, n) for passed, n in present)
 
 
 REASON_RU = {
@@ -144,7 +153,7 @@ REASON_RU = {
     'aligners-disagree': 'выравниватели расходятся',
     'no-voice': 'нет голоса',
     'line-shift': 'строка сдвинута относительно голоса',
-    'onset': 'начало слова дальше 0,1 с от атаки',
+    'onset': 'начало слова дальше допуска группы от атаки',
     'text-changed': 'текст изменился после выравнивания',
     'no-report': 'нет отчёта выравнивания',
 }
@@ -198,21 +207,32 @@ def _lettered(align_words: list[dict] | None, n: int) -> list[dict]:
     return align_words
 
 
-def proof_line(solo: bool, ctc_status: str | None, text_same: bool, presnap: list[float | None], align_words: list[dict] | None, has_report: bool) -> dict:
+def _kind(group: str | bool) -> str:
+    if group is True or group == 'solo':
+        return 'solo'
+    if group == 'choir':
+        return 'choir'
+    return 'other'
+
+
+def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presnap: list[float | None], align_words: list[dict] | None, has_report: bool) -> dict:
     """Whether one line may lose timing-draft. The first failing reason wins.
 
     The two measurements that count are independent of the published time: the first aligner's
-    word start before any snap to an attack, and the second aligner's start. A word that merely
-    continues the previous one (legato) does not pass. The whole-line shift alarm is not a gate.
+    word start before any snap to an attack, and the second aligner's start. Solo uses WORD_TOL,
+    choir uses CHOIR_TOL. A duet or tutti is neither group. A word that merely continues the
+    previous one (legato) does not pass. The whole-line shift alarm is not a gate.
     """
+    kind = _kind(group)
+    tol = CHOIR_TOL if kind == 'choir' else WORD_TOL
     if not has_report:
         return {'pass': False, 'reason': 'no-report', 'detail': ''}
     if not text_same:
         return {'pass': False, 'reason': 'text-changed', 'detail': ''}
-    if not solo:
-        return {'pass': False, 'reason': 'not-solo', 'detail': 'смешанный или неназванный голос'}
+    if kind == 'other':
+        return {'pass': False, 'reason': 'not-solo', 'detail': 'дуэт, тутти или несколько голосов'}
     if ctc_status == 'draft':
-        return {'pass': False, 'reason': 'text-not-found', 'detail': 'MMS не нашёл эти слова в окне'}
+        return {'pass': False, 'reason': 'text-not-found', 'detail': 'MMS не нашёл эти слова в секции'}
     if ctc_status != 'good':
         return {'pass': False, 'reason': 'low-confidence', 'detail': ctc_status or 'нет оценки'}
     if not align_words:
@@ -238,9 +258,9 @@ def proof_line(solo: bool, ctc_status: str | None, text_same: bool, presnap: lis
     if len(numbers) != len(diffs):
         return {'pass': False, 'reason': 'aligners-disagree', 'detail': 'у слова нет второго времени'}
     worst = max(numbers)
-    if worst > WORD_TOL:
+    if worst > tol:
         return {'pass': False, 'reason': 'aligners-disagree', 'detail': f'максимум {worst:.3f} с'}
-    far = [d for d in ons if d is None or d > WORD_TOL]
+    far = [d for d in ons if d is None or d > tol]
     if far:
         known = [d for d in far if d is not None]
         if not known:
@@ -258,7 +278,8 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
     for (sec, line), _qa in zip(lines, qa_rows):
         rec = by_id.get(line['id'])
         words = line['words']
-        solo = T.is_solo(sec, line)
+        kind = T.group(sec, line)
+        tol = CHOIR_TOL if kind == 'choir' else WORD_TOL
         text_same = bool(rec) and rec.get('text') == T.line_text(line)
         align_words = _lettered(rec.get('words') if rec else None, len(words))
         presnap: list[float | None] = []
@@ -269,7 +290,7 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
                 presnap.append(None)
                 continue
             t = float(aw['ctc_s'])
-            owned = None if prev_ctc is None else prev_ctc + WORD_TOL
+            owned = None if prev_ctc is None else prev_ctc + tol
             dt = nearest_attack(t, peaks, owned)
             presnap.append(None if dt is None else dt)
             if dt is not None:
@@ -277,9 +298,9 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
             if aw.get('second_s') is not None:
                 agree.append(abs(float(aw['second_s']) - t))
             prev_ctc = t
-        decision = proof_line(solo, rec.get('status') if rec else None, text_same, presnap, align_words or None, align_report is not None)
+        decision = proof_line(kind, rec.get('status') if rec else None, text_same, presnap, align_words or None, align_report is not None)
         rows.append({
-            'id': line['id'], 'solo': solo, 'pass': decision['pass'], 'reason': decision['reason'],
+            'id': line['id'], 'solo': kind == 'solo', 'group': kind, 'pass': decision['pass'], 'reason': decision['reason'],
             'detail': decision['detail'], 'engine': (rec or {}).get('second'),
             'ctc': (rec or {}).get('status'), 'start': words[0]['s'],
             'window': (rec or {}).get('second_window'),
@@ -289,55 +310,106 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
             'presnap_max': round(max(abs_pre), 3) if abs_pre else None,
             'aligner_max': round(max(agree), 3) if agree else None,
         })
-    solo_rows = [r for r in rows if r['solo']]
+    solo_rows = [r for r in rows if r['group'] == 'solo']
+    choir_rows = [r for r in rows if r['group'] == 'choir']
     passed = [r for r in solo_rows if r['pass']]
-    onset = [a for r in passed for a in r['presnap_abs']]
-    agreed = [a for r in passed for a in r['agree_abs']]
-    aligned = song_proven(len(passed), len(solo_rows))
+    choir_passed = [r for r in choir_rows if r['pass']]
+    solo_onset, solo_agree, solo_med, solo_p90, solo_amed, solo_ap90 = _group_spread(passed)
+    choir_onset, choir_agree, choir_med, choir_p90, choir_amed, choir_ap90 = _group_spread(choir_passed)
+    # Headline numbers stay the solo group when it has proved words, so a report that only
+    # prints them does not mix the 0.10 s and 0.20 s gates. The text below names each group.
+    if solo_onset:
+        onset, agreed = solo_onset, solo_agree
+        onset_median, onset_p90, agree_median, agree_p90 = solo_med, solo_p90, solo_amed, solo_ap90
+    elif choir_onset:
+        onset, agreed = choir_onset, choir_agree
+        onset_median, onset_p90, agree_median, agree_p90 = choir_med, choir_p90, choir_amed, choir_ap90
+    else:
+        onset, agreed = [], []
+        onset_median = onset_p90 = agree_median = agree_p90 = None
+    aligned = song_ready([(len(passed), len(solo_rows)), (len(choir_passed), len(choir_rows))])
     reasons: dict[str, int] = {}
     for r in rows:
         if not r['pass']:
             reasons[r['reason']] = reasons.get(r['reason'], 0) + 1
     failed_solo = [r for r in solo_rows if not r['pass']]
-    worst = sorted(failed_solo, key=lambda r: (-(r['aligner_max'] or 0), -(r['presnap_max'] or 0), r['start']))[:15]
+    failed_choir = [r for r in choir_rows if not r['pass']]
+    worst = sorted(failed_solo + failed_choir, key=lambda r: (-(r['aligner_max'] or 0), -(r['presnap_max'] or 0), r['start']))[:15]
     missing = [r for r in rows if r['ctc'] == 'draft']
     return {
         'aligned': aligned, 'solo': len(solo_rows), 'passed': len(passed), 'failed_solo': len(failed_solo),
+        'choir': len(choir_rows), 'choir_passed': len(choir_passed), 'failed_choir': len(failed_choir),
         'lines_n': len(rows), 'reasons': reasons, 'lines': rows, 'worst': worst, 'missing': missing,
-        'word_tol': WORD_TOL, 'line_tol': TOL, 'song_share': SONG_SHARE,
-        'onset_median': round(float(np.median(onset)), 3) if onset else None,
-        'onset_p90': round(float(np.percentile(onset, 90)), 3) if onset else None,
-        'onset_words': len(onset),
-        'presnap_median': round(float(np.median(onset)), 3) if onset else None,
-        'presnap_p90': round(float(np.percentile(onset, 90)), 3) if onset else None,
-        'agree_median': round(float(np.median(agreed)), 3) if agreed else None,
-        'agree_p90': round(float(np.percentile(agreed, 90)), 3) if agreed else None,
+        'word_tol': WORD_TOL, 'choir_tol': CHOIR_TOL, 'line_tol': TOL, 'song_share': SONG_SHARE,
+        'onset_median': onset_median, 'onset_p90': onset_p90, 'onset_words': len(onset),
+        'presnap_median': onset_median, 'presnap_p90': onset_p90,
+        'agree_median': agree_median, 'agree_p90': agree_p90,
+        'solo_onset_median': solo_med, 'solo_onset_p90': solo_p90, 'solo_onset_words': len(solo_onset),
+        'solo_agree_median': solo_amed, 'solo_agree_p90': solo_ap90,
+        'choir_onset_median': choir_med, 'choir_onset_p90': choir_p90, 'choir_onset_words': len(choir_onset),
+        'choir_agree_median': choir_amed, 'choir_agree_p90': choir_ap90,
     }
 
 
-def _share_text(proof: dict) -> str:
-    if not proof['solo']:
+def _group_spread(passed: list[dict]) -> tuple[list[float], list[float], float | None, float | None, float | None, float | None]:
+    """Pre-snap onset and aligner distances for one group's proved lines, plus median and p90."""
+    onset = [a for r in passed for a in r['presnap_abs']]
+    agreed = [a for r in passed for a in r['agree_abs']]
+
+    def stat(vals: list[float]) -> tuple[float | None, float | None]:
+        if not vals:
+            return None, None
+        return round(float(np.median(vals)), 3), round(float(np.percentile(vals, 90)), 3)
+
+    omed, op90 = stat(onset)
+    amed, ap90 = stat(agreed)
+    return onset, agreed, omed, op90, amed, ap90
+
+
+def _share_text(passed: int, n: int) -> str:
+    if not n:
         return '—'
-    return f"{100.0 * proof['passed'] / proof['solo']:.1f}".replace('.', ',')
+    return f"{100.0 * passed / n:.1f}".replace('.', ',')
+
+
+def _groups_sentence(proof: dict) -> str:
+    """Counts per group. An empty group is left out so a solo-only song is not described as a choir."""
+    bits = []
+    solo_n = proof.get('solo') or 0
+    choir_n = proof.get('choir') or 0
+    if solo_n:
+        bits.append(f"соло {proof.get('passed', 0)} из {solo_n} ({_share_text(proof.get('passed', 0), solo_n)} %)")
+    if choir_n:
+        bits.append(f"хор {proof.get('choir_passed', 0)} из {choir_n} ({_share_text(proof.get('choir_passed', 0), choir_n)} %)")
+    if not bits:
+        bits.append(f"соло {proof.get('passed', 0)} из {solo_n}")
+    return '; '.join(bits)
+
+
+def _num(x: float | None) -> str:
+    return '—' if x is None else f"{x:.3f}".replace('.', ',')
 
 
 def timing_payload(slug: str, proof: dict, align_report: dict | None) -> dict:
-    """song.json timing after the check. `aligned` only when the song share is proven."""
+    """song.json timing after the check. `aligned` only when every existing group is proved."""
     engines_used = sorted({r['engine'] for r in proof['lines'] if r.get('engine')})
     method = 'mms-fa' + ''.join('+' + e for e in engines_used) if align_report else None
     reasons = ', '.join(f'{REASON_RU.get(k, k)} {v}' for k, v in sorted(proof['reasons'].items(), key=lambda kv: -kv[1]))
-    med = '—' if proof['onset_median'] is None else f"{proof['onset_median']:.3f}".replace('.', ',')
-    p90 = '—' if proof['onset_p90'] is None else f"{proof['onset_p90']:.3f}".replace('.', ',')
-    share = _share_text(proof)
+    groups = _groups_sentence(proof)
+    solo_med = proof.get('solo_onset_median', proof.get('onset_median'))
+    solo_p90 = proof.get('solo_onset_p90', proof.get('onset_p90'))
     if proof['aligned']:
-        notes = (f"qa_sync: сольных строк {proof['solo']}, доказано {proof['passed']} ({share} %, порог песни 80 %). "
-                 f"Расхождение начала слова у выравнивателя до притяжения к атаке: медиана {med} с, 90-й перцентиль {p90} с (порог слова 0,1 с). "
-                 f"Цифры посчитаны до притяжения; записанное время может стоять на атаке. "
-                 f"Остальные строки с флагом timing-draft. Отчёт: docs/analysis/{slug}-qa.md.")
+        notes = (f"qa_sync: {groups}, порог песни 80 % в каждой группе, где она есть. "
+                 f"Соло, до притяжения: медиана {_num(solo_med)} с, 90-й перцентиль {_num(solo_p90)} с (порог 0,1 с). ")
+        if proof.get('choir'):
+            notes += (f"Хор, до притяжения: медиана {_num(proof.get('choir_onset_median'))} с, "
+                      f"90-й перцентиль {_num(proof.get('choir_onset_p90'))} с (порог 0,2 с). ")
+        notes += ("Цифры посчитаны до притяжения; записанное время может стоять на атаке. "
+                  f"Остальные строки с флагом timing-draft. Отчёт: docs/analysis/{slug}-qa.md.")
         status = 'aligned'
     else:
         notes = (f"qa_sync: критерий не пройден, статус оставлен draft. "
-                 f"Доказано {proof['passed']} из {proof['solo']} сольных строк ({share} %), нужно не меньше 80 %. "
+                 f"{groups}, нужно не меньше 80 % в каждой группе, где она есть. "
                  f"Строка «текст не найден» в доказанные не входит. "
                  f"Причины: {reasons or 'нет данных'}. Отчёт: docs/analysis/{slug}-qa.md.")
         status = 'draft'
@@ -566,26 +638,36 @@ def _fmt_opt(x: float | None) -> str:
     return '—' if x is None else ru(x, 3)
 
 
+def _group_name(row: dict) -> str:
+    return {'solo': 'соло', 'choir': 'хор'}.get(row.get('group') or '', 'не соло')
+
+
 def proof_md(proof: dict) -> list[str]:
     L = []
-    share = _share_text(proof)
+    failed = proof['failed_solo'] + proof.get('failed_choir', 0)
     L.append(f"**{'Критерий песни пройден' if proof['aligned'] else 'Критерий песни не пройден'}.** "
-             f"Порог песни: доказано не меньше 80 % сольных строк (сейчас {proof['passed']} из {proof['solo']}, {share} %). "
+             f"Порог песни: не меньше 80 % в каждой группе, где она есть ({_groups_sentence(proof)}). "
              f"Строка, где текст не найден в голосе, в доказанные не входит. "
-             f"Не доказано: {proof['failed_solo']}; всего вокальных строк: {proof['lines_n']}.")
+             f"Не доказано в этих группах: {failed}; всего вокальных строк: {proof['lines_n']}.")
     L.append('')
     L.append('Pass/fail и цифры ниже считаются до притяжения начала слова к атаке. '
              'Притяжение (не дальше 0,1 с) может сдвинуть записанное время на пик, но в эти цифры не входит. '
-             'Окно второго выравнивателя — фраза, которую первый проход уже поставил на голос, плюс до 2 с, '
+             'Первый проход ставит текст всей вокальной секции сразу. Черновые s/e окном не служат. '
+             'Окно второго выравнивателя — фраза, которую этот проход уже поставил, плюс до 2 с, '
              'но не дальше соседней измеренной строки и не длиннее 12 с. '
              'Фразу, которая уже стоит вне своей секции, окно в секцию не затаскивает. '
-             'Черновые времена слов окном не служат. Якорь, вышедший из секции, поиск строки за собой не тянет '
-             'и проверкой согласия не считается.')
-    L.append(f"- Расхождение начала слова у первого выравнивателя (до притяжения) с ближайшей атакой голоса, "
-             f"только у доказанных сольных строк: медиана {_fmt_opt(proof['onset_median'])} с, "
-             f"90-й перцентиль {_fmt_opt(proof['onset_p90'])} с. Порог слова {ru(WORD_TOL)} с. Слов: {proof['onset_words']}.")
-    L.append(f"- Согласие двух выравнивателей (второе начало минус первое, до притяжения), у тех же строк: "
-             f"медиана {_fmt_opt(proof.get('agree_median'))} с, 90-й перцентиль {_fmt_opt(proof.get('agree_p90'))} с. Порог {ru(WORD_TOL)} с.")
+             'Соло и хор ниже посчитаны отдельно: пороги 0,1 с и 0,2 с в одну цифру не смешиваются.')
+    L.append(f"- Соло, только доказанные строки, до притяжения. Атака: медиана {_fmt_opt(proof.get('solo_onset_median', proof.get('onset_median')))} с, "
+             f"90-й перцентиль {_fmt_opt(proof.get('solo_onset_p90', proof.get('onset_p90')))} с, порог {ru(WORD_TOL)} с, "
+             f"слов {proof.get('solo_onset_words', proof.get('onset_words', 0))}. "
+             f"Два выравнивателя: медиана {_fmt_opt(proof.get('solo_agree_median', proof.get('agree_median')))} с, "
+             f"90-й перцентиль {_fmt_opt(proof.get('solo_agree_p90', proof.get('agree_p90')))} с.")
+    if proof.get('choir'):
+        L.append(f"- Хор, отдельно. Атака: медиана {_fmt_opt(proof.get('choir_onset_median'))} с, "
+                 f"90-й перцентиль {_fmt_opt(proof.get('choir_onset_p90'))} с, порог {ru(CHOIR_TOL)} с, "
+                 f"слов {proof.get('choir_onset_words', 0)}. "
+                 f"Два выравнивателя: медиана {_fmt_opt(proof.get('choir_agree_median'))} с, "
+                 f"90-й перцентиль {_fmt_opt(proof.get('choir_agree_p90'))} с.")
     L.append(f"- Сдвиг строки целиком — отдельная тревога с порогом {ru(TOL)} с. В pass/fail слова он не входит.")
     if proof['reasons']:
         bits = ', '.join(f"{REASON_RU.get(k, k)} — {v}" for k, v in sorted(proof['reasons'].items(), key=lambda kv: -kv[1]))
@@ -593,8 +675,8 @@ def proof_md(proof: dict) -> list[str]:
     L.append('')
     L.append('## Худшие места')
     L.append('')
-    L.append('Сольные строки, которые проверка не доказала. Время — начало строки в записи, чтобы его можно было прослушать. '
-             'Расхождения — до притяжения.')
+    L.append('Строки соло и хора, которые проверка не доказала. Дуэт и тутти в этот список не входят. '
+             'Время — начало строки в записи, чтобы его можно было прослушать. Расхождения — до притяжения.')
     L.append('')
     if proof['worst']:
         for r in proof['worst']:
@@ -608,9 +690,9 @@ def proof_md(proof: dict) -> list[str]:
                 w0, w1 = r['window']
                 bits.append(f"окно {ru(w0, 1)}–{ru(w1, 1)} с")
             more = f" ({'; '.join(bits)})" if bits else ''
-            L.append(f"- `{r['id']}` {fmt_t(r['start'])} — {REASON_RU.get(r['reason'], r['reason'])}{extra}{more}")
+            L.append(f"- `{r['id']}` ({_group_name(r)}) {fmt_t(r['start'])} — {REASON_RU.get(r['reason'], r['reason'])}{extra}{more}")
     else:
-        L.append('Нет сольных строк с отказом.')
+        L.append('Нет строк соло и хора с отказом.')
     L.append('')
     L.append('## Текст не найден в голосе')
     L.append('')
@@ -618,7 +700,7 @@ def proof_md(proof: dict) -> list[str]:
     L.append('')
     if proof['missing']:
         for r in proof['missing']:
-            L.append(f"- `{r['id']}` {fmt_t(r['start'])} ({'соло' if r['solo'] else 'не соло'})")
+            L.append(f"- `{r['id']}` {fmt_t(r['start'])} ({_group_name(r)})")
     else:
         L.append('Нет.')
     L.append('')
@@ -634,7 +716,7 @@ def render_md(meta: dict, summary: dict, results: list[dict], words: list[dict],
     L.append('')
     L.append(f"Проверка `qa_sync.py` от {meta['date']}. Аудио: `{meta['audio']}`{'' if meta['stem'] else ' (полный микс — вокального стема нет, точность ниже)'}. "
              f"Текст: `{meta['lyrics']}`. "
-             f"Порог доказательства слова: {ru(WORD_TOL)} с — расстояние от начала выравнивателя до притяжения до ближайшей атаки и расхождение двух выравнивателей. "
+             f"Порог доказательства слова: {ru(WORD_TOL)} с для соло и {ru(CHOIR_TOL)} с для хора — расстояние от начала выравнивателя до притяжения до ближайшей атаки и расхождение двух выравнивателей. "
              f"Порог сдвига строки целиком: {ru(TOL)} с — отдельная тревога, не порог доказательства.")
     L.append('')
     L.append('## Итог')
@@ -696,16 +778,16 @@ def render_md(meta: dict, summary: dict, results: list[dict], words: list[dict],
     L.append('')
     dec = {d['id']: d for d in proof['lines']} if proof else {}
     if dec:
-        L.append('| строка | начало | отрывок | соло | сдвиг строки, с | без голоса | вердикт сдвига | решение |')
+        L.append('| строка | начало | отрывок | группа | сдвиг строки, с | без голоса | вердикт сдвига | решение |')
         L.append('|---|---|---|---|---|---|---|---|')
     else:
         L.append('| строка | начало | текст | сдвиг, с | без голоса | вердикт |')
         L.append('|---|---|---|---|---|---|')
     for r in results:
         if dec:
-            d = dec.get(r['id']) or {'solo': False, 'reason': 'no-report'}
+            d = dec.get(r['id']) or {'group': 'other', 'reason': 'no-report'}
             excerpt = r['text'] if len(r['text']) <= 32 else r['text'][:30] + '…'
-            L.append(f"| `{r['id']}` | {fmt_t(r['start'])} | {excerpt} | {'да' if d['solo'] else 'нет'} | {r['offset']:+.2f} | "
+            L.append(f"| `{r['id']}` | {fmt_t(r['start'])} | {excerpt} | {_group_name(d)} | {r['offset']:+.2f} | "
                      f"{round(100 * r['silence'])} % | {verdict_text(r)} | {REASON_RU.get(d['reason'], d['reason'])} |")
         else:
             text = r['text'] if len(r['text']) <= 42 else r['text'][:40] + '…'
@@ -859,8 +941,11 @@ def main() -> int:
           f"нет голоса {s['no-voice']} · не определить {s['low']} · медиана |сдвига| {s['median_abs_offset']} с · "
           f"общий сдвиг {glob['offset']:+.2f} с")
     if proof:
-        print(f"критерий: {'пройден' if proof['aligned'] else 'не пройден'} · соло {proof['solo']} · "
-              f"доказано {proof['passed']} · до притяжения медиана {_fmt_opt(proof['onset_median'])} с · "
+        choir_bit = ''
+        if proof.get('choir'):
+            choir_bit = f" · хор {proof.get('choir_passed', 0)} из {proof['choir']}"
+        print(f"критерий: {'пройден' if proof['aligned'] else 'не пройден'} · соло {proof['passed']} из {proof['solo']}{choir_bit} · "
+              f"до притяжения медиана {_fmt_opt(proof['onset_median'])} с · "
               f"90-й перцентиль {_fmt_opt(proof['onset_p90'])} с")
     for r in results:
         if r['verdict'] != 'ok':
@@ -872,7 +957,7 @@ def main() -> int:
                   f"не определено {m['undetected']}")
     print(f'→ {wd / (stem + ".md")}')
     bad = s['off_lines'] + s['no-voice'] + (s['low'] if args.strict else 0)
-    if proof and (not proof['aligned'] or proof['failed_solo']):
+    if proof and (not proof['aligned'] or proof['failed_solo'] or proof.get('failed_choir')):
         bad += 1
     return 1 if bad else 0
 

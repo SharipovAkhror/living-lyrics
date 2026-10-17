@@ -1,0 +1,132 @@
+[
+  {
+    "kind": "instrumental",
+    "start": 0.0,
+    "end": 0.45
+  },
+  {
+    "kind": "vocal",
+    "start": 0.45,
+    "end": 249.45
+  },
+  {
+    "kind": "instrumental",
+    "start": 249.45,
+    "end": 296.2
+  },
+  {
+    "kind": "vocal",
+    "start": 296.2,
+    "end": 296.5
+  },
+  {
+    "kind": "instrumental",
+    "start": 296.5,
+    "end": 303.2
+  },
+  {
+    "kind": "vocal",
+    "start": 303.2,
+    "end": 391.35
+  },
+  {
+    "kind": "instrumental",
+    "start": 391.35,
+    "end": 442.1
+  },
+  {
+    "kind": "vocal",
+    "start": 442.1,
+    "end": 465.8
+  },
+  {
+    "kind": "instrumental",
+    "start": 465.8,
+    "end": 472.2
+  },
+  {
+    "kind": "vocal",
+    "start": 472.2,
+    "end": 499.75
+  },
+  {
+    "kind": "instrumental",
+    "start": 499.75,
+    "end": 559.35
+  },
+  {
+    "kind": "vocal",
+    "start": 559.35,
+    "end": 584.55
+  },
+  {
+    "kind": "instrumental",
+    "start": 584.55,
+    "end": 622.25
+  },
+  {
+    "kind": "vocal",
+    "start": 622.25,
+    "end": 631.75
+  },
+  {
+    "kind": "instrumental",
+    "start": 631.75,
+    "end": 636.55
+  },
+  {
+    "kind": "vocal",
+    "start": 636.55,
+    "end": 636.8
+  },
+  {
+    "kind": "instrumental",
+    "start": 636.8,
+    "end": 649.6
+  },
+  {
+    "kind": "vocal",
+    "start": 649.6,
+    "end": 649.7
+  },
+  {
+    "kind": "instrumental",
+    "start": 649.7,
+    "end": 670.75
+  },
+  {
+    "kind": "vocal",
+    "start": 670.75,
+    "end": 674.1
+  },
+  {
+    "kind": "instrumental",
+    "start": 674.1,
+    "end": 715.2
+  },
+  {
+    "kind": "vocal",
+    "start": 715.2,
+    "end": 719.85
+  },
+  {
+    "kind": "instrumental",
+    "start": 719.85,
+    "end": 729.5
+  },
+  {
+    "kind": "vocal",
+    "start": 729.5,
+    "end": 789.1
+  },
+  {
+    "kind": "instrumental",
+    "start": 789.1,
+    "end": 793.15
+  },
+  {
+    "kind": "vocal",
+    "start": 793.15,
+    "end": 828.0
+  }
+]

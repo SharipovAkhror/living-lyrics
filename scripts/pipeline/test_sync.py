@@ -91,17 +91,25 @@ def test_solo() -> None:
         'Все': False,
         'Cappella Amsterdam': False,
         'Cappella Amsterdam и оркестр': False,
-        '': False,
+        '': True,
     }
     for voice, want in samples.items():
         sec = {'voice': voice} if voice else {}
         got = T.is_solo(sec, {})
         check(f'solo {voice or "(пусто)"}', got is want, f'got {got}')
+    check('empty voice is solo', T.group({}, {}) == 'solo')
+    check('choir marker', T.group({'voice': 'Хор'}, {}) == 'choir')
+    check('cappella is choir', T.group({'voice': 'Cappella Amsterdam'}, {}) == 'choir')
+    check('choir wins over a duet mark', T.group({'voice': 'Сами Юсуф и хор'}, {}) == 'choir')
+    check('duet is neither group', T.group({'voice': 'Сами Юсуф и Набила Маан'}, {}) == 'other')
+    check('tutti is neither group', T.group({'voice': 'Все'}, {}) == 'other')
     root = Path(__file__).resolve().parents[2]
     lyrics = json.loads((root / 'content/songs/i-have-come-alive/lyrics.json').read_text(encoding='utf-8'))
-    n_solo = sum(T.is_solo(sec, line) for sec, line in T.vocal_lines(lyrics))
-    n = sum(1 for _ in T.vocal_lines(lyrics))
-    check('IHCA solo count', n_solo == 103 and n == 105, f'{n_solo} solo of {n}')
+    pairs = list(T.vocal_lines(lyrics))
+    n_solo = sum(T.is_solo(sec, line) for sec, line in pairs)
+    n_choir = sum(T.is_choir(sec, line) for sec, line in pairs)
+    n = len(pairs)
+    check('IHCA solo count', n_solo == 105 and n_choir == 0 and n == 105, f'{n_solo} solo, {n_choir} choir of {n}')
 
 
 def _bursts() -> tuple[np.ndarray, Q.Signals]:
@@ -157,7 +165,18 @@ def test_proof_decision() -> None:
     got = Q.proof_line(True, 'good', True, presnap, words, True)
     check('solo agreement passes', got['pass'], str(got))
     got = Q.proof_line(False, 'good', True, presnap, words, True)
-    check('choir does not pass', (not got['pass']) and got['reason'] == 'not-solo', str(got))
+    check('a duet is not a group', (not got['pass']) and got['reason'] == 'not-solo', str(got))
+    got = Q.proof_line('choir', 'good', True, [0.15, 0.04], words, True)
+    check('choir onset 0.15 s passes', got['pass'], str(got))
+    got = Q.proof_line('choir', 'good', True, [0.25, 0.04], words, True)
+    check('choir onset over 0.2 s fails', (not got['pass']) and got['reason'] == 'onset', str(got))
+    got = Q.proof_line(True, 'good', True, [0.15, 0.04], words, True)
+    check('solo onset 0.15 s fails', (not got['pass']) and got['reason'] == 'onset', str(got))
+    choir_words = [dict(words[0], second_s=1.15), words[1]]
+    got = Q.proof_line('choir', 'good', True, presnap, choir_words, True)
+    check('choir aligners 0.15 s apart pass', got['pass'], str(got))
+    got = Q.proof_line('solo', 'good', True, presnap, choir_words, True)
+    check('solo aligners 0.15 s apart fail', (not got['pass']) and got['reason'] == 'aligners-disagree', str(got))
     far = [dict(words[0], second_s=1.4), words[1]]
     got = Q.proof_line(True, 'good', True, presnap, far, True)
     check('aligners 0.4 s apart fail', (not got['pass']) and got['reason'] == 'aligners-disagree', str(got))
@@ -203,6 +222,10 @@ def test_song_status() -> None:
     check('30 of 38 is under 80%', not Q.song_proven(30, 38))
     check('31 of 38 clears 80%', Q.song_proven(31, 38))
     check('no solo lines is not a song', not Q.song_proven(0, 0))
+    check('a choir under 80% blocks the song', not Q.song_ready([(31, 38), (1, 10)]))
+    check('an empty choir does not block', Q.song_ready([(31, 38), (0, 0)]))
+    check('both groups clear 80%', Q.song_ready([(31, 38), (8, 10)]))
+    check('no groups is not a song', not Q.song_ready([]))
     # timing_payload follows the flag build_proof already computed.
     proof = {
         'aligned': True, 'solo': 38, 'passed': 31, 'failed_solo': 7, 'lines': [],
@@ -252,10 +275,43 @@ def test_build_proof_independent() -> None:
     check('one proven solo of two stays draft', (not proof['aligned']) and proof['passed'] == 1 and proof['solo'] == 2, f"{proof['passed']}/{proof['solo']}")
     med = proof['onset_median']
     check('passing median is the pre-snap error', med is not None and 0 < med <= 0.10, str(med))
+    choir_sec = {'id': 'c', 'kind': 'vocal', 'voice': 'Хор', 'start': 0.0, 'end': 4.0}
+    blocked = Q.build_proof(sig, [(choir_sec, line('sung')), (choir_sec, line('miss'))], qa * 2, {'lines': [
+        rec('sung', 'good', [1.02, 2.02, 3.02], [1.04, 2.03, 3.05]),
+        rec('miss', 'draft', [1.02, 2.02, 3.02], [1.04, 2.03, 3.05]),
+    ]})
+    check('one proved choir line of two blocks the song',
+          (not blocked['aligned']) and blocked['solo'] == 0
+          and blocked['choir_passed'] == 1 and blocked['choir'] == 2,
+          f"solo {blocked['passed']}/{blocked['solo']} choir {blocked['choir_passed']}/{blocked['choir']}")
+
+
+def test_star_absorbs_a_hold() -> None:
+    import diagnose_locate as D
+
+    class U:
+        def __init__(self, tok: int) -> None:
+            self.tokens = [tok]
+            self.word_of = [0]
+            self.roman = ['a']
+
+    lp = np.full((40, 3), -6.0, np.float32)
+    lp[:, 0] = -0.5
+    lp[10:26, 1] = -0.4
+    lp[10, 1] = -0.05
+    lp[30, 2] = -0.05
+    got = D.align_stars(lp, [U(1), U(2)])
+    check('star path exists', got is not None, str(got))
+    if got is None:
+        return
+    a, b = got[0]['words'][0], got[1]['words'][0]
+    check('a held letter stays on its spike', a is not None and a['f0'] == 10 and a['f1'] == 10, str(a))
+    check('the next line stays after the gap', b is not None and b['f0'] == 30, str(b))
 
 
 def main() -> int:
     test_viterbi()
+    test_star_absorbs_a_hold()
     test_engines()
     test_normalise()
     test_solo()

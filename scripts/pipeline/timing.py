@@ -17,21 +17,35 @@ def vocal_lines(lyrics: dict) -> list[tuple[dict, dict]]:
     return [(sec, line) for sec in lyrics['sections'] if sec['kind'] == 'vocal' for line in sec['lines']]
 
 
-# A line is solo only when one singer is named. Overlapping voices (choir, duet, tutti) do not
-# prove a word start: the stem mixes them and an onset may belong to someone else.
-_GROUP = ('хор', 'choir', 'chorus', 'cappella', 'ансамбль', 'ensemble', 'оркестр', 'orchestra', 'tutti')
+# Solo: one leading voice. The name may be missing. Choir is its own group (a looser tolerance,
+# still provable). A duet, tutti or orchestra is neither: the stem mixes them.
+_CHOIR = ('хор', 'choir', 'chorus', 'cappella')
+_OTHER = ('ансамбль', 'ensemble', 'оркестр', 'orchestra', 'tutti')
+
+
+def group(sec: dict, line: dict) -> str:
+    """'solo', 'choir' or 'other'. An empty voice is one unnamed lead, so it is solo."""
+    voice = (line.get('voice') or sec.get('voice') or '').strip()
+    low = voice.casefold().replace('ё', 'е')
+    if any(mark in low for mark in _CHOIR):
+        return 'choir'
+    if not voice:
+        return 'solo'
+    if low in ('все', 'all', 'все исполнители') or low.startswith('все ') or low.startswith('all '):
+        return 'other'
+    if ' и ' in f' {low} ':
+        return 'other'
+    if any(mark in low for mark in _OTHER):
+        return 'other'
+    return 'solo'
 
 
 def is_solo(sec: dict, line: dict) -> bool:
-    voice = (line.get('voice') or sec.get('voice') or '').strip()
-    if not voice:
-        return False
-    low = voice.casefold().replace('ё', 'е')
-    if low in ('все', 'all', 'все исполнители') or low.startswith('все ') or low.startswith('all '):
-        return False
-    if ' и ' in f' {low} ':
-        return False
-    return not any(mark in low for mark in _GROUP)
+    return group(sec, line) == 'solo'
+
+
+def is_choir(sec: dict, line: dict) -> bool:
+    return group(sec, line) == 'choir'
 
 
 def line_text(line: dict) -> str:

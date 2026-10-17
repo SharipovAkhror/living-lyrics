@@ -1,0 +1,1420 @@
+{
+  "rows": [
+    {
+      "id": "english-1",
+      "text": "I was dead",
+      "section": "english-verse-1",
+      "map": [
+        100.9,
+        107.75
+      ],
+      "window": [
+        85.9,
+        110.16
+      ],
+      "anchor": [
+        32.76,
+        72.96
+      ],
+      "anchor_outside": true,
+      "old": {
+        "score": 0.579,
+        "gap": 0.264,
+        "agree": 0.0,
+        "status": "good",
+        "raw_s": 101.0
+      },
+      "method": "line",
+      "whisper": {
+        "s": 100.06,
+        "e": 101.5,
+        "n": 3,
+        "of": 3
+      },
+      "window_covers_whisper": true,
+      "attack": 100.86,
+      "attack_dt": 0.8,
+      "mms_window": {
+        "s": 101.0,
+        "score": 0.579,
+        "gap": 0.264
+      },
+      "section_star": {
+        "s": 101.0,
+        "e": 101.76,
+        "score": 0.404,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-2",
+      "text": "I came alive",
+      "section": "english-verse-1",
+      "map": [
+        100.9,
+        107.75
+      ],
+      "window": [
+        101.78,
+        112.08
+      ],
+      "anchor": [
+        102.58,
+        104.16
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.856,
+        "gap": 0.021,
+        "agree": 0.0,
+        "status": "good",
+        "raw_s": 102.58
+      },
+      "method": "line",
+      "whisper": {
+        "s": 101.94,
+        "e": 103.62,
+        "n": 3,
+        "of": 3
+      },
+      "window_covers_whisper": true,
+      "attack": 101.43,
+      "attack_dt": -0.51,
+      "mms_window": {
+        "s": 102.58,
+        "score": 0.769,
+        "gap": 0.264
+      },
+      "section_star": {
+        "s": 102.58,
+        "e": 104.14,
+        "score": 0.817,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-3",
+      "text": "I once wept",
+      "section": "english-verse-1",
+      "map": [
+        100.9,
+        107.75
+      ],
+      "window": [
+        104.16,
+        114.14
+      ],
+      "anchor": [
+        104.84,
+        106.08
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.59,
+        "gap": 0.248,
+        "agree": 0.0,
+        "status": "good",
+        "raw_s": 104.84
+      },
+      "method": "line",
+      "whisper": {
+        "s": 103.62,
+        "e": 105.08,
+        "n": 2,
+        "of": 3
+      },
+      "window_covers_whisper": false,
+      "attack": 103.66,
+      "attack_dt": 0.04,
+      "mms_window": {
+        "s": 103.92,
+        "score": 0.579,
+        "gap": 0.431
+      },
+      "section_star": {
+        "s": 104.84,
+        "e": 106.06,
+        "score": 0.467,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-4",
+      "text": "Now I smile",
+      "section": "english-verse-1",
+      "map": [
+        100.9,
+        107.75
+      ],
+      "window": [
+        106.08,
+        116.24
+      ],
+      "anchor": [
+        106.36,
+        108.14
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.576,
+        "gap": 0.026,
+        "agree": 0.0,
+        "status": "good",
+        "raw_s": 106.36
+      },
+      "method": "line",
+      "whisper": {
+        "s": 105.88,
+        "e": 107.64,
+        "n": 3,
+        "of": 3
+      },
+      "window_covers_whisper": true,
+      "attack": 106.15,
+      "attack_dt": 0.27,
+      "mms_window": {
+        "s": 106.36,
+        "score": 0.549,
+        "gap": 0.114
+      },
+      "section_star": {
+        "s": 106.36,
+        "e": 107.7,
+        "score": 0.558,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-5",
+      "text": "You have lit the fire",
+      "section": "english-refrain-1",
+      "map": [
+        107.75,
+        115.81
+      ],
+      "window": [
+        108.14,
+        118.18
+      ],
+      "anchor": [
+        108.86,
+        110.24
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.763,
+        "gap": 0.375,
+        "agree": 0.0,
+        "status": "good",
+        "raw_s": 108.86
+      },
+      "method": "line",
+      "whisper": {
+        "s": 107.64,
+        "e": 109.92,
+        "n": 5,
+        "of": 5
+      },
+      "window_covers_whisper": false,
+      "attack": 107.59,
+      "attack_dt": -0.05,
+      "mms_window": {
+        "s": 108.86,
+        "score": 0.759,
+        "gap": 0.128
+      },
+      "section_star": {
+        "s": 108.86,
+        "e": 110.2,
+        "score": 0.802,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-6",
+      "text": "I have come alive",
+      "section": "english-refrain-1",
+      "map": [
+        107.75,
+        115.81
+      ],
+      "window": [
+        112.22,
+        120.28
+      ],
+      "anchor": [
+        110.9,
+        112.18
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.805,
+        "gap": 0.285,
+        "agree": 1.92,
+        "status": "weak",
+        "raw_s": 112.82
+      },
+      "method": "line",
+      "whisper": {
+        "s": 110.4,
+        "e": 111.72,
+        "n": 4,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 110.87,
+      "attack_dt": 0.47,
+      "mms_window": {
+        "s": 110.06,
+        "score": 0.896,
+        "gap": 0.175
+      },
+      "section_star": {
+        "s": 110.9,
+        "e": 112.16,
+        "score": 0.948,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-7",
+      "text": "Lift me ever higher",
+      "section": "english-refrain-1",
+      "map": [
+        107.75,
+        115.81
+      ],
+      "window": [
+        116.16,
+        122.16
+      ],
+      "anchor": [
+        112.76,
+        114.28
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.222,
+        "gap": 0.779,
+        "agree": 3.84,
+        "status": "draft",
+        "raw_s": 116.6
+      },
+      "method": "line",
+      "whisper": {
+        "s": 111.72,
+        "e": 113.98,
+        "n": 4,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 111.27,
+      "attack_dt": -0.45,
+      "mms_window": {
+        "s": 112.76,
+        "score": 0.677,
+        "gap": 0.227
+      },
+      "section_star": {
+        "s": 112.76,
+        "e": 114.26,
+        "score": 0.616,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-8",
+      "text": "I have come alive",
+      "section": "english-refrain-1",
+      "map": [
+        107.75,
+        115.81
+      ],
+      "window": [
+        118.52,
+        124.08
+      ],
+      "anchor": [
+        114.82,
+        116.16
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.277,
+        "gap": 0.555,
+        "agree": 3.7,
+        "status": "draft",
+        "raw_s": 118.52
+      },
+      "method": "line",
+      "whisper": {
+        "s": 114.34,
+        "e": 115.64,
+        "n": 4,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 114.75,
+      "attack_dt": 0.41,
+      "mms_window": {
+        "s": 114.82,
+        "score": 0.879,
+        "gap": 0.368
+      },
+      "section_star": {
+        "s": 114.82,
+        "e": 115.66,
+        "score": 0.767,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-9",
+      "text": "I was sane",
+      "section": "english-verse-2",
+      "map": [
+        115.81,
+        123.83
+      ],
+      "window": [
+        121.16,
+        125.88
+      ],
+      "anchor": [
+        116.7,
+        118.08
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.22,
+        "gap": 0.472,
+        "agree": 4.68,
+        "status": "draft",
+        "raw_s": 121.38
+      },
+      "method": "line",
+      "whisper": {
+        "s": 115.64,
+        "e": 117.32,
+        "n": 3,
+        "of": 3
+      },
+      "window_covers_whisper": false,
+      "attack": 115.25,
+      "attack_dt": -0.39,
+      "mms_window": {
+        "s": 115.84,
+        "score": 0.62,
+        "gap": 0.282
+      },
+      "section_star": {
+        "s": 115.84,
+        "e": 118.06,
+        "score": 0.593,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-10",
+      "text": "You drove me mad",
+      "section": "english-verse-2",
+      "map": [
+        115.81,
+        123.83
+      ],
+      "window": [
+        123.9,
+        129.86
+      ],
+      "anchor": [
+        118.24,
+        119.88
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.518,
+        "gap": 1.075,
+        "agree": 6.26,
+        "status": "draft",
+        "raw_s": 124.5
+      },
+      "method": "line",
+      "whisper": {
+        "s": 117.7,
+        "e": 119.46,
+        "n": 4,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 117.16,
+      "attack_dt": -0.54,
+      "mms_window": {
+        "s": 118.24,
+        "score": 0.679,
+        "gap": 0.074
+      },
+      "section_star": {
+        "s": 118.24,
+        "e": 119.7,
+        "score": 0.715,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-11",
+      "text": "You put chains On my hands",
+      "section": "english-verse-2",
+      "map": [
+        115.81,
+        123.83
+      ],
+      "window": [
+        125.48,
+        132.06
+      ],
+      "anchor": [
+        120.46,
+        123.86
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.255,
+        "gap": 1.572,
+        "agree": 5.1,
+        "status": "draft",
+        "raw_s": 125.56
+      },
+      "method": "line",
+      "whisper": {
+        "s": 119.46,
+        "e": 123.46,
+        "n": 6,
+        "of": 6
+      },
+      "window_covers_whisper": false,
+      "attack": 119.37,
+      "attack_dt": -0.09,
+      "mms_window": {
+        "s": 120.46,
+        "score": 0.692,
+        "gap": 0.131
+      },
+      "section_star": {
+        "s": 120.46,
+        "e": 123.72,
+        "score": 0.587,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-12",
+      "text": "You have lit the fire",
+      "section": "english-refrain-2",
+      "map": [
+        123.83,
+        127.59
+      ],
+      "window": [
+        127.32,
+        133.84
+      ],
+      "anchor": [
+        124.5,
+        126.06
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.305,
+        "gap": 0.576,
+        "agree": 2.86,
+        "status": "draft",
+        "raw_s": 127.36
+      },
+      "method": "line",
+      "whisper": {
+        "s": 123.46,
+        "e": 125.66,
+        "n": 5,
+        "of": 5
+      },
+      "window_covers_whisper": false,
+      "attack": 123.49,
+      "attack_dt": 0.03,
+      "mms_window": {
+        "s": 124.5,
+        "score": 0.676,
+        "gap": 0.128
+      },
+      "section_star": {
+        "s": 124.5,
+        "e": 126.04,
+        "score": 0.686,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-13",
+      "text": "I have come alive",
+      "section": "english-refrain-2",
+      "map": [
+        123.83,
+        127.59
+      ],
+      "window": [
+        129.76,
+        136.26
+      ],
+      "anchor": [
+        126.6,
+        127.84
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.412,
+        "gap": 0.191,
+        "agree": 3.32,
+        "status": "draft",
+        "raw_s": 129.92
+      },
+      "method": "line",
+      "whisper": {
+        "s": 125.92,
+        "e": 127.38,
+        "n": 4,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 125.56,
+      "attack_dt": -0.36,
+      "mms_window": {
+        "s": 126.6,
+        "score": 0.893,
+        "gap": 0.127
+      },
+      "section_star": {
+        "s": 126.62,
+        "e": 127.42,
+        "score": 0.773,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-14",
+      "text": "Lift me ever higher",
+      "section": "english-refrain-3",
+      "map": [
+        127.59,
+        132.0
+      ],
+      "window": [
+        131.88,
+        137.88
+      ],
+      "anchor": [
+        128.46,
+        130.26
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.003,
+        "gap": 0.961,
+        "agree": 3.78,
+        "status": "draft",
+        "raw_s": 132.24
+      },
+      "method": "line",
+      "whisper": {
+        "s": 127.38,
+        "e": 129.8,
+        "n": 4,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 127.33,
+      "attack_dt": -0.05,
+      "mms_window": {
+        "s": 128.46,
+        "score": 0.678,
+        "gap": 0.234
+      },
+      "section_star": {
+        "s": 128.46,
+        "e": 130.24,
+        "score": 0.604,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "english-15",
+      "text": "I have come alive",
+      "section": "english-refrain-3",
+      "map": [
+        127.59,
+        132.0
+      ],
+      "window": [
+        134.52,
+        142.26
+      ],
+      "anchor": [
+        130.66,
+        131.88
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.003,
+        "gap": 0.669,
+        "agree": 3.88,
+        "status": "draft",
+        "raw_s": 134.54
+      },
+      "method": "line",
+      "whisper": {
+        "s": 130.08,
+        "e": 131.48,
+        "n": 4,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 130.57,
+      "attack_dt": 0.49,
+      "mms_window": {
+        "s": 129.92,
+        "score": 0.412,
+        "gap": 0.191
+      },
+      "section_star": {
+        "s": 130.66,
+        "e": 131.86,
+        "score": 0.23,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-1",
+      "text": "Gözüm toktur benim",
+      "section": "turkish-verse",
+      "map": [
+        183.3,
+        211.59
+      ],
+      "window": [
+        185.7,
+        196.42
+      ],
+      "anchor": [
+        183.44,
+        186.6
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.349,
+        "gap": 0.237,
+        "agree": 2.26,
+        "status": "draft",
+        "raw_s": 185.7
+      },
+      "method": "line",
+      "whisper": {
+        "s": 182.3,
+        "e": 185.66,
+        "n": 3,
+        "of": 3
+      },
+      "window_covers_whisper": false,
+      "attack": 183.0,
+      "attack_dt": 0.7,
+      "mms_window": {
+        "s": 183.44,
+        "score": 0.412,
+        "gap": 0.132
+      },
+      "section_star": {
+        "s": 183.44,
+        "e": 186.58,
+        "score": 0.5,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-2",
+      "text": "Canım pektir benim",
+      "section": "turkish-verse",
+      "map": [
+        183.3,
+        211.59
+      ],
+      "window": [
+        190.42,
+        200.86
+      ],
+      "anchor": [
+        187.3,
+        190.42
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.271,
+        "gap": 0.383,
+        "agree": 4.18,
+        "status": "draft",
+        "raw_s": 191.48
+      },
+      "method": "line",
+      "whisper": {
+        "s": 186.54,
+        "e": 189.4,
+        "n": 2,
+        "of": 3
+      },
+      "window_covers_whisper": false,
+      "attack": 187.18,
+      "attack_dt": 0.64,
+      "mms_window": {
+        "s": 187.3,
+        "score": 0.532,
+        "gap": 0.183
+      },
+      "section_star": {
+        "s": 187.3,
+        "e": 190.4,
+        "score": 0.628,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-3",
+      "text": "Aslan gibi ödüm var",
+      "section": "turkish-verse",
+      "map": [
+        183.3,
+        211.59
+      ],
+      "window": [
+        195.28,
+        204.6
+      ],
+      "anchor": [
+        191.34,
+        194.86
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.351,
+        "gap": 0.149,
+        "agree": 4.1,
+        "status": "draft",
+        "raw_s": 195.44
+      },
+      "method": "line",
+      "whisper": {
+        "s": 190.46,
+        "e": 194.3,
+        "n": 4,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 189.69,
+      "attack_dt": -0.77,
+      "mms_window": {
+        "s": 191.34,
+        "score": 0.6,
+        "gap": 0.083
+      },
+      "section_star": {
+        "s": 191.34,
+        "e": 194.84,
+        "score": 0.612,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-4",
+      "text": "Parlayan Zühre'yim",
+      "section": "turkish-verse",
+      "map": [
+        183.3,
+        211.59
+      ],
+      "window": [
+        202.24,
+        208.34
+      ],
+      "anchor": [
+        195.26,
+        198.6
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.143,
+        "gap": 0.682,
+        "agree": 7.02,
+        "status": "draft",
+        "raw_s": 202.28
+      },
+      "method": "line",
+      "whisper": {
+        "s": 194.48,
+        "e": 196.36,
+        "n": 1,
+        "of": 2
+      },
+      "window_covers_whisper": false,
+      "attack": 194.18,
+      "attack_dt": -0.3,
+      "mms_window": {
+        "s": 195.26,
+        "score": 0.457,
+        "gap": 1.247
+      },
+      "section_star": {
+        "s": 195.26,
+        "e": 198.58,
+        "score": 0.617,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-5",
+      "text": "Dedi değilisin sen divane",
+      "section": "turkish-verse",
+      "map": [
+        183.3,
+        211.59
+      ],
+      "window": [
+        204.46,
+        211.98
+      ],
+      "anchor": [
+        199.14,
+        202.34
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.31,
+        "gap": 0.345,
+        "agree": 5.84,
+        "status": "draft",
+        "raw_s": 204.98
+      },
+      "method": "line",
+      "whisper": {
+        "s": 200.5,
+        "e": 202.32,
+        "n": 2,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 200.09,
+      "attack_dt": -0.41,
+      "mms_window": {
+        "s": 200.1,
+        "score": 0.216,
+        "gap": 0.892
+      },
+      "section_star": {
+        "s": 199.14,
+        "e": 202.32,
+        "score": 0.285,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-6",
+      "text": "Lâyık değilisin bu eve",
+      "section": "turkish-verse",
+      "map": [
+        183.3,
+        211.59
+      ],
+      "window": [
+        208.86,
+        216.02
+      ],
+      "anchor": [
+        203.08,
+        205.98
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.055,
+        "gap": 0.607,
+        "agree": 5.8,
+        "status": "draft",
+        "raw_s": 208.88
+      },
+      "method": "line",
+      "whisper": {
+        "s": 202.44,
+        "e": 205.64,
+        "n": 3,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 202.25,
+      "attack_dt": -0.19,
+      "mms_window": {
+        "s": 203.08,
+        "score": 0.463,
+        "gap": 0.152
+      },
+      "section_star": {
+        "s": 203.08,
+        "e": 205.96,
+        "score": 0.412,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-7",
+      "text": "Gittim divane oldum",
+      "section": "turkish-verse",
+      "map": [
+        183.3,
+        211.59
+      ],
+      "window": [
+        211.96,
+        220.28
+      ],
+      "anchor": [
+        206.98,
+        210.02
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.119,
+        "gap": 0.81,
+        "agree": 5.08,
+        "status": "draft",
+        "raw_s": 212.06
+      },
+      "method": "line",
+      "whisper": null,
+      "window_covers_whisper": null,
+      "attack": 211.73,
+      "attack_dt": -0.33,
+      "mms_window": {
+        "s": null,
+        "score": null,
+        "gap": null
+      },
+      "section_star": {
+        "s": 206.98,
+        "e": 210.0,
+        "score": 0.482,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-8",
+      "text": "bağlandım zincirlere",
+      "section": "turkish-chorus-1",
+      "map": [
+        211.59,
+        230.58
+      ],
+      "window": [
+        213.98,
+        224.6
+      ],
+      "anchor": [
+        210.94,
+        214.28
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.066,
+        "gap": 0.251,
+        "agree": 3.04,
+        "status": "draft",
+        "raw_s": 213.98
+      },
+      "method": "line",
+      "whisper": {
+        "s": 212.0,
+        "e": 214.14,
+        "n": 1,
+        "of": 2
+      },
+      "window_covers_whisper": false,
+      "attack": 211.73,
+      "attack_dt": -0.27,
+      "mms_window": {
+        "s": 211.6,
+        "score": 0.241,
+        "gap": 0.432
+      },
+      "section_star": {
+        "s": 211.6,
+        "e": 214.26,
+        "score": 0.239,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-9",
+      "text": "Bir ölüydüm canla doldum",
+      "section": "turkish-chorus-1",
+      "map": [
+        211.59,
+        230.58
+      ],
+      "window": [
+        218.6,
+        229.18
+      ],
+      "anchor": [
+        215.32,
+        218.6
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.047,
+        "gap": 0.502,
+        "agree": 3.94,
+        "status": "draft",
+        "raw_s": 219.26
+      },
+      "method": "line",
+      "whisper": {
+        "s": 214.68,
+        "e": 218.64,
+        "n": 3,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 215.35,
+      "attack_dt": 0.67,
+      "mms_window": {
+        "s": 215.32,
+        "score": 0.087,
+        "gap": 0.532
+      },
+      "section_star": {
+        "s": 215.32,
+        "e": 218.58,
+        "score": 0.066,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-10",
+      "text": "ağlar idim gülüş oldum",
+      "section": "turkish-chorus-1",
+      "map": [
+        211.59,
+        230.58
+      ],
+      "window": [
+        223.18,
+        232.98
+      ],
+      "anchor": [
+        219.34,
+        223.18
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.053,
+        "gap": 0.383,
+        "agree": 3.94,
+        "status": "draft",
+        "raw_s": 223.28
+      },
+      "method": "line",
+      "whisper": {
+        "s": 218.64,
+        "e": 222.7,
+        "n": 3,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 219.26,
+      "attack_dt": 0.62,
+      "mms_window": {
+        "s": 219.34,
+        "score": 0.026,
+        "gap": 0.446
+      },
+      "section_star": {
+        "s": 219.34,
+        "e": 223.16,
+        "score": 0.048,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-11",
+      "text": "Aşk devleti gelince ben",
+      "section": "turkish-chorus-1",
+      "map": [
+        211.59,
+        230.58
+      ],
+      "window": [
+        227.42,
+        236.4
+      ],
+      "anchor": [
+        223.28,
+        226.98
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.067,
+        "gap": 0.381,
+        "agree": 4.44,
+        "status": "draft",
+        "raw_s": 227.72
+      },
+      "method": "line",
+      "whisper": {
+        "s": 222.76,
+        "e": 226.26,
+        "n": 3,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 221.87,
+      "attack_dt": -0.89,
+      "mms_window": {
+        "s": 223.28,
+        "score": 0.127,
+        "gap": 0.38
+      },
+      "section_star": {
+        "s": 223.28,
+        "e": 226.96,
+        "score": 0.119,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-12",
+      "text": "sonsuzluk devleti buldum",
+      "section": "turkish-chorus-1",
+      "map": [
+        211.59,
+        230.58
+      ],
+      "window": [
+        231.62,
+        240.4
+      ],
+      "anchor": [
+        227.16,
+        230.4
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.037,
+        "gap": 0.635,
+        "agree": 4.48,
+        "status": "draft",
+        "raw_s": 231.64
+      },
+      "method": "line",
+      "whisper": null,
+      "window_covers_whisper": null,
+      "attack": 231.11,
+      "attack_dt": -0.53,
+      "mms_window": {
+        "s": null,
+        "score": null,
+        "gap": null
+      },
+      "section_star": {
+        "s": 227.16,
+        "e": 230.38,
+        "score": 0.091,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-13",
+      "text": "Bir ölüydüm canla doldum",
+      "section": "turkish-chorus-2",
+      "map": [
+        230.58,
+        251.8
+      ],
+      "window": [
+        234.4,
+        244.92
+      ],
+      "anchor": [
+        231.06,
+        234.4
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.083,
+        "gap": 0.383,
+        "agree": 3.92,
+        "status": "draft",
+        "raw_s": 234.98
+      },
+      "method": "line",
+      "whisper": {
+        "s": 230.4,
+        "e": 234.54,
+        "n": 3,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 231.11,
+      "attack_dt": 0.71,
+      "mms_window": {
+        "s": 231.06,
+        "score": 0.116,
+        "gap": 0.325
+      },
+      "section_star": {
+        "s": 231.06,
+        "e": 234.38,
+        "score": 0.106,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-14",
+      "text": "ağlar idim gülüş oldum",
+      "section": "turkish-chorus-2",
+      "map": [
+        230.58,
+        251.8
+      ],
+      "window": [
+        238.92,
+        248.06
+      ],
+      "anchor": [
+        235.06,
+        238.92
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.087,
+        "gap": 0.273,
+        "agree": 3.94,
+        "status": "draft",
+        "raw_s": 239.0
+      },
+      "method": "line",
+      "whisper": {
+        "s": 236.5,
+        "e": 238.48,
+        "n": 2,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 236.01,
+      "attack_dt": -0.49,
+      "mms_window": {
+        "s": 236.14,
+        "score": 0.04,
+        "gap": 0.78
+      },
+      "section_star": {
+        "s": 235.06,
+        "e": 238.9,
+        "score": 0.151,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-15",
+      "text": "Aşk devleti gelince ben",
+      "section": "turkish-chorus-2",
+      "map": [
+        230.58,
+        251.8
+      ],
+      "window": [
+        243.5,
+        254.0
+      ],
+      "anchor": [
+        239.0,
+        242.06
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.069,
+        "gap": 1.452,
+        "agree": 4.58,
+        "status": "draft",
+        "raw_s": 243.58
+      },
+      "method": "line",
+      "whisper": {
+        "s": 238.48,
+        "e": 241.98,
+        "n": 4,
+        "of": 4
+      },
+      "window_covers_whisper": false,
+      "attack": 239.89,
+      "attack_dt": 1.41,
+      "mms_window": {
+        "s": 239.0,
+        "score": 0.17,
+        "gap": 0.302
+      },
+      "section_star": {
+        "s": 239.0,
+        "e": 242.04,
+        "score": 0.162,
+        "pad": 0.0
+      }
+    },
+    {
+      "id": "turkish-16",
+      "text": "sonsuzluk devleti buldum",
+      "section": "turkish-chorus-2",
+      "map": [
+        230.58,
+        251.8
+      ],
+      "window": [
+        244.82,
+        294.06
+      ],
+      "anchor": [
+        242.88,
+        248.0
+      ],
+      "anchor_outside": false,
+      "old": {
+        "score": 0.253,
+        "gap": 0.053,
+        "agree": 1.94,
+        "status": "weak",
+        "raw_s": 244.82
+      },
+      "method": "line",
+      "whisper": {
+        "s": 241.98,
+        "e": 245.2,
+        "n": 2,
+        "of": 3
+      },
+      "window_covers_whisper": false,
+      "attack": 241.63,
+      "attack_dt": -0.35,
+      "mms_window": {
+        "s": 242.88,
+        "score": 0.115,
+        "gap": 0.501
+      },
+      "section_star": {
+        "s": 242.88,
+        "e": 245.94,
+        "score": 0.136,
+        "pad": 0.0
+      }
+    }
+  ]
+}
