@@ -1,0 +1,77 @@
+[
+  {
+    "kind": "instrumental",
+    "start": 0.0,
+    "end": 10.6
+  },
+  {
+    "kind": "vocal",
+    "start": 10.6,
+    "end": 10.95
+  },
+  {
+    "kind": "instrumental",
+    "start": 10.95,
+    "end": 15.5
+  },
+  {
+    "kind": "vocal",
+    "start": 15.5,
+    "end": 16.2
+  },
+  {
+    "kind": "instrumental",
+    "start": 16.2,
+    "end": 19.75
+  },
+  {
+    "kind": "vocal",
+    "start": 19.75,
+    "end": 29.75
+  },
+  {
+    "kind": "instrumental",
+    "start": 29.75,
+    "end": 100.9
+  },
+  {
+    "kind": "vocal",
+    "start": 100.9,
+    "end": 165.8
+  },
+  {
+    "kind": "instrumental",
+    "start": 165.8,
+    "end": 183.3
+  },
+  {
+    "kind": "vocal",
+    "start": 183.3,
+    "end": 251.75
+  },
+  {
+    "kind": "instrumental",
+    "start": 251.75,
+    "end": 286.4
+  },
+  {
+    "kind": "vocal",
+    "start": 286.4,
+    "end": 388.3
+  },
+  {
+    "kind": "instrumental",
+    "start": 388.3,
+    "end": 404.15
+  },
+  {
+    "kind": "vocal",
+    "start": 404.15,
+    "end": 566.1
+  },
+  {
+    "kind": "instrumental",
+    "start": 566.1,
+    "end": 580.05
+  }
+]
