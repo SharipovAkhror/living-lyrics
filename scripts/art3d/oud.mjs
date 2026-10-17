@@ -21,24 +21,32 @@
  * The project engraving already draws eleven strings (scripts/art/instruments/oud.mjs).
  *
  * Choices, flagged in the manifest:
- * - Speaking length 61 cm, inside the Hannabach range. Overall length therefore lands
- *   short of the Met catalogue’s 82 cm; the pegbox angle is not given there.
- * - Body length 50 cm is not stated by the Met (only the overall length is).
+ * - Speaking length 61 cm, inside the Hannabach range. Body 50 cm, neck 20 cm,
+ *   pegbox 18.6 cm plus a 0.9 cm finial (the head is about 20 cm along its axis),
+ *   bent back 58°. The straight distance from the tail to the finial is 82.7 cm,
+ *   near the Met catalogue’s 82 cm. The angle itself is not on that page; 58° is
+ *   inside the usual 45–60° bend of an Arabic pegbox.
  * - Bridge 9 cm from the tail. The Met text does not describe the bridge; this one is
  *   the fixed tied bridge of a sharqi oud, not a floating Bashir bridge.
  * - The small roses sit toward the neck, flanking the fingerboard. The project SVG
  *   draws that pair lower, toward the bridge.
  * - Fingerboard, purfling and roses are plain stand-ins. The 1977 oud’s abalone
- *   borders, plastic fretwork and fingerboard inlay are not copied.
- * - No pickguard. The Met description does not mention one; the SVG includes one as
- *   an engraving convention.
+ *   borders, plastic fretwork and fingerboard inlay are not copied. The roses are a
+ *   circular lattice only: the soundboard is cut on the circle, with no plate behind.
+ * - A risha guard sits on the treble side, below the large rose. A lesson that names
+ *   the parts of an Arabic oud puts “the risha guard” on the soundboard between the
+ *   bridge and the sound holes (Learn The Oud, “Oud Rundown”, the risha-guard
+ *   chapter: https://www.youtube.com/watch?v=afRYiI-gWmI). A luthier glues a wood
+ *   veneer 0.5–1 mm thick there so the risha does not cut the spruce (Mansour Oud,
+ *   “Oud Pick guard”: https://www.youtube.com/watch?v=n89kCR7uymQ). This one is a
+ *   plain oval veneer, not a copy of either instrument’s shape.
  * - Viewer-left is the bass string. That is a display convention, not a claim about
  *   the player’s left hand.
  * - String radius 0.045 cm. The engraving outline in the app is what makes a line of
  *   that thickness readable; the tube itself is not fattened.
  */
 
-import { add, box, geom, loft, mergeGeoms, quad, sphere, transformGeom, tube } from './lib.mjs';
+import { add, box, geom, loft, mergeGeoms, quad, sphere, transformGeom, tri, tube } from './lib.mjs';
 
 const BODY_L = 50;
 const Y_TAIL = -BODY_L / 2;
@@ -49,7 +57,9 @@ const BRIDGE_FROM_TAIL = 9;
 const Y_BRIDGE = Y_TAIL + BRIDGE_FROM_TAIL;
 const HALF_W = 19.35;
 const DEPTH = 21;
-const PEG_ANG = (55 * Math.PI) / 180;
+const PEG_LEN = 18.6;
+const FINIAL_R = 0.9;
+const PEG_ANG = (58 * Math.PI) / 180;
 const ALONG = [0, Math.cos(PEG_ANG), -Math.sin(PEG_ANG)];
 const RIGHT = [1, 0, 0];
 
@@ -152,32 +162,54 @@ const HOLES = [
   { x: 6.1, y: 8.2, r: 2.5 },
 ];
 
-function inHole(x, y, shrink = 0) {
-  return HOLES.some((h) => (x - h.x) ** 2 + (y - h.y) ** 2 < (h.r - shrink) ** 2);
+/** Pull a point that falls inside a rose out to the circle, so the cut is round. */
+function onBoard(x, y) {
+  let px = x;
+  let py = y;
+  let inside = false;
+  for (const h of HOLES) {
+    const dx = px - h.x;
+    const dy = py - h.y;
+    const d = Math.hypot(dx, dy);
+    if (d < h.r && d > 1e-4) {
+      const k = (h.r + 0.04) / d;
+      px = h.x + dx * k;
+      py = h.y + dy * k;
+      inside = true;
+    }
+  }
+  return { x: px, y: py, inside };
 }
 
 function soundboard() {
   const g = geom();
-  const ny = 40;
-  const nx = 24;
+  const ny = 64;
+  const nx = 48;
   const z = 0.16;
   const ids = [];
+  const raw = [];
   for (let i = 0; i <= ny; i++) {
     const row = [];
+    const xy = [];
     const t = i / ny;
     const y = Y_TAIL + t * BODY_L;
     const w = halfWidth(t);
     for (let j = 0; j <= nx; j++) {
       const x = (j / nx * 2 - 1) * w;
-      row.push(inHole(x, y, 0.15) ? -1 : add(g, x, y, z));
+      const p = onBoard(x, y);
+      xy.push({ x, y, inside: p.inside });
+      row.push(add(g, p.x, p.y, z));
     }
     ids.push(row);
+    raw.push(xy);
   }
   for (let i = 0; i < ny; i++) {
     for (let j = 0; j < nx; j++) {
-      const a = ids[i][j], b = ids[i][j + 1], c = ids[i + 1][j + 1], d = ids[i + 1][j];
-      if (a < 0 || b < 0 || c < 0 || d < 0) continue;
-      quad(g, a, b, c, d, 0, 0, 1);
+      const corners = [raw[i][j], raw[i][j + 1], raw[i + 1][j + 1], raw[i + 1][j]];
+      // A cell that sits wholly in a rose is the opening. A cell that only crosses
+      // the circle keeps its outside corners and has the inside ones on the rim.
+      if (corners.every((p) => p.inside)) continue;
+      quad(g, ids[i][j], ids[i][j + 1], ids[i + 1][j + 1], ids[i + 1][j], 0, 0, 1);
     }
   }
   return g;
@@ -243,32 +275,64 @@ function holeWall(h) {
   return g;
 }
 
+/** Circular fretwork only. Nothing is filled behind it: the soundboard is already cut. */
 function roseLattice(h) {
-  const parts = [circleStrip(h.x, h.y, h.r * 0.42, h.r * 0.5, 0.22, 24, 1), circleStrip(h.x, h.y, h.r * 0.78, h.r * 0.86, 0.22, 28, 1)];
-  for (let i = 0; i < 12; i++) {
-    const ang = (i / 12) * Math.PI * 2;
+  const z = 0.22;
+  const parts = [
+    circleStrip(h.x, h.y, h.r * 0.1, h.r * 0.16, z, 16, 1),
+    circleStrip(h.x, h.y, h.r * 0.4, h.r * 0.46, z, 24, 1),
+    circleStrip(h.x, h.y, h.r * 0.68, h.r * 0.74, z, 28, 1),
+    circleStrip(h.x, h.y, h.r * 0.9, h.r * 0.97, z, 32, 1),
+  ];
+  const spokes = 18;
+  for (let i = 0; i < spokes; i++) {
+    const ang = (i / spokes) * Math.PI * 2;
     const dir = [Math.cos(ang), Math.sin(ang), 0];
     const side = [-Math.sin(ang), Math.cos(ang), 0];
-    const inner = [h.x + dir[0] * h.r * 0.28, h.y + dir[1] * h.r * 0.28, 0.22];
-    const outer = [h.x + dir[0] * h.r * 0.9, h.y + dir[1] * h.r * 0.9, 0.22];
-    const w = Math.max(0.06, h.r * 0.035);
+    const inner = [h.x + dir[0] * h.r * 0.16, h.y + dir[1] * h.r * 0.16, z];
+    const outer = [h.x + dir[0] * h.r * 0.9, h.y + dir[1] * h.r * 0.9, z];
+    const w = Math.max(0.045, h.r * 0.022);
     const g = geom();
-    const quadPts = [-1, 1].flatMap((s) => {
-      const a = vadd(inner, vmul(side, s * w));
-      const b = vadd(outer, vmul(side, s * w));
-      return [a, b];
-    });
-    // four corners: inner-left, outer-left, outer-right, inner-right
     const il = add(g, ...vadd(inner, vmul(side, -w)));
     const ol = add(g, ...vadd(outer, vmul(side, -w)));
     const orr = add(g, ...vadd(outer, vmul(side, w)));
     const ir = add(g, ...vadd(inner, vmul(side, w)));
     quad(g, il, ol, orr, ir, 0, 0, 1);
-    void quadPts;
     parts.push(g);
   }
-  parts.push(circleStrip(h.x, h.y, h.r * 0.98, h.r * 1.08, 0.2, 32, 1));
   return mergeGeoms(parts);
+}
+
+/** Thin veneer where the risha strikes, treble side, below the large rose. */
+function pickguard() {
+  const g = geom();
+  const cx = 5.6;
+  const cy = -11.4;
+  const rx = 4.2;
+  const ry = 2.7;
+  const z0 = 0.18;
+  const z1 = 0.26;
+  const seg = 32;
+  const ring = [];
+  for (let i = 0; i < seg; i++) {
+    const a = (i / seg) * Math.PI * 2;
+    const x = cx + Math.cos(a) * rx;
+    const y = cy + Math.sin(a) * ry;
+    ring.push([x, y]);
+  }
+  const c0 = add(g, cx, cy, z0);
+  const c1 = add(g, cx, cy, z1);
+  const bot = ring.map((p) => add(g, p[0], p[1], z0));
+  const top = ring.map((p) => add(g, p[0], p[1], z1));
+  for (let i = 0; i < seg; i++) {
+    const i2 = (i + 1) % seg;
+    tri(g, c1, top[i], top[i2], 0, 0, 1);
+    tri(g, c0, bot[i2], bot[i], 0, 0, -1);
+    const ox = ring[i][0] - cx;
+    const oy = ring[i][1] - cy;
+    quad(g, bot[i], bot[i2], top[i2], top[i], ox, oy, 0);
+  }
+  return g;
 }
 
 function purfling() {
@@ -349,7 +413,7 @@ function neck() {
 }
 
 function pegbox() {
-  const length = 13.5;
+  const length = PEG_LEN;
   const nut = [0, Y_NUT, 0.85];
   const rings = [];
   for (let i = 0; i <= 8; i++) {
@@ -442,12 +506,12 @@ export function buildOud() {
   const pegs = pegbox();
   const pegMeshes = [];
   for (let i = 0; i < 11; i++) {
-    const dist = 1.8 + i * 0.88;
+    const dist = 1.3 + i * ((PEG_LEN - 2.6) / 10);
     const origin = vadd(pegs.nut, vmul(ALONG, dist));
     const side = i % 2 === 0 ? -1 : 1;
     pegMeshes.push(pegAt(origin, side));
   }
-  const tip = vadd(pegs.nut, vmul(ALONG, 0.4 + pegs.length));
+  const tip = vadd(pegs.nut, vmul(ALONG, 0.35 + pegs.length + FINIAL_R));
   const played = strings();
   const lattices = mergeGeoms(HOLES.map(roseLattice));
   const walls = mergeGeoms(HOLES.map(holeWall));
@@ -460,11 +524,12 @@ export function buildOud() {
       { name: 'seams', material: 'seam', geom: seams() },
       { name: 'soundboard', material: 'spruce', geom: mergeGeoms([soundboard(), edgeWall(), walls]) },
       { name: 'purfling', material: 'seam', geom: purfling() },
-      { name: 'rosettes', material: 'ebony', geom: lattices },
+      { name: 'rosettes', material: 'spruce', geom: lattices },
+      { name: 'pickguard', material: 'guard', geom: pickguard() },
       { name: 'fingerboard', material: 'ebony', geom: bar(Y_JOIN - 6.5, Y_NUT, 3.6, 2.85, 0.16, 0.42) },
       { name: 'neck', material: 'wood', geom: neck() },
       { name: 'pegbox', material: 'ebony', geom: pegs.mesh },
-      { name: 'finial', material: 'ebony', geom: transformGeom(sphere(0.85, 8, 6), tip, RIGHT, ALONG, THICK) },
+      { name: 'finial', material: 'ebony', geom: transformGeom(sphere(FINIAL_R, 10, 8), tip, RIGHT, ALONG, THICK) },
       { name: 'pegs', material: 'ebony', geom: mergeGeoms(pegMeshes) },
       { name: 'bridge', material: 'ebony', geom: box(0, Y_BRIDGE, 0.16 + 0.28, 6.4, 0.55, 0.58) },
       { name: 'tail', material: 'ebony', geom: box(0, Y_TAIL + 2.2, 0.16 + 0.18, 2.4, 1.1, 0.36) },
@@ -477,6 +542,14 @@ export function buildOud() {
       scaleCm: Y_NUT - Y_BRIDGE,
       widthCm: HALF_W * 2,
       depthCm: DEPTH,
+      pegboxCm: Number((PEG_LEN + FINIAL_R * 2).toFixed(1)),
+      pegAngleDeg: Math.round((PEG_ANG * 180) / Math.PI),
+      overallCm: Number((() => {
+        const along = 0.35 + PEG_LEN + FINIAL_R * 2;
+        const tipY = Y_NUT + along * Math.cos(PEG_ANG);
+        const tipZ = 0.85 - along * Math.sin(PEG_ANG);
+        return Math.hypot(tipY - Y_TAIL, tipZ);
+      })().toFixed(1)),
       bodyCm: BODY_L,
       ribs: 15,
       courses: '5 double + 1 single bass',

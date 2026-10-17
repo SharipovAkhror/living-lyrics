@@ -50,7 +50,7 @@ export type DriveKey = (typeof DRIVE_KEYS)[number];
 
 export const DRIVE_LABELS: Record<DriveKey, string> = {
   pulse: 'Удар',
-  sustain: 'Тянуть',
+  sustain: 'Звучание',
   breath: 'Дыхание',
   energy: 'Громкость',
   beat: 'Доля',

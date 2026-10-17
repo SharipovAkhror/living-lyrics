@@ -13,6 +13,7 @@ declare module 'three' {
 
   export class Color {
     constructor(color?: string | number);
+    set(color: string | number): this;
     setStyle(style: string): this;
     copy(color: Color): this;
   }
@@ -25,8 +26,20 @@ declare module 'three' {
     set(x: number, y: number, z: number): this;
     copy(v: Vector3): this;
     clone(): Vector3;
+    sub(v: Vector3): this;
     normalize(): this;
+    length(): number;
+    lengthSq(): number;
     addScaledVector(v: Vector3, scale: number): this;
+  }
+
+  export class Matrix3 {
+    constructor();
+    set(n11: number, n12: number, n13: number, n21: number, n22: number, n23: number, n31: number, n32: number, n33: number): this;
+  }
+
+  export class Matrix4 {
+    elements: number[];
   }
 
   export class Euler {
@@ -37,11 +50,14 @@ declare module 'three' {
   }
 
   export class Sphere {
+    center: Vector3;
     radius: number;
     constructor(center?: Vector3, radius?: number);
   }
 
   export class Box3 {
+    min: Vector3;
+    max: Vector3;
     setFromObject(object: Object3D): this;
     getBoundingSphere(target: Sphere): Sphere;
   }
@@ -62,7 +78,9 @@ declare module 'three' {
     frustumCulled: boolean;
     renderOrder: number;
     parent: Object3D | null;
+    matrix: Matrix4;
     traverse(callback: (object: Object3D) => void): void;
+    updateMatrix(): void;
     add(...objects: Object3D[]): this;
     removeFromParent(): this;
     getObjectByName(name: string): Object3D | undefined;
@@ -70,6 +88,7 @@ declare module 'three' {
   }
 
   export class Material {
+    name: string;
     transparent: boolean;
     opacity: number;
     side: number;
@@ -87,6 +106,23 @@ declare module 'three' {
     color: Color;
   }
 
+  export class MeshStandardMaterial extends Material {
+    constructor(parameters?: Record<string, unknown>);
+    color: Color;
+    roughness: number;
+    metalness: number;
+  }
+
+  export class ShaderMaterial extends Material {
+    constructor(parameters?: Record<string, unknown>);
+    uniforms: Record<string, { value: unknown }>;
+  }
+
+  export class CircleGeometry {
+    constructor(radius?: number, segments?: number);
+    dispose(): void;
+  }
+
   export class Mesh extends Object3D {
     isMesh: boolean;
     geometry: unknown;
@@ -100,6 +136,7 @@ declare module 'three' {
   export class Scene extends Object3D {}
 
   export class PerspectiveCamera extends Object3D {
+    fov: number;
     aspect: number;
     constructor(fov?: number, aspect?: number, near?: number, far?: number);
     lookAt(x: number, y: number, z: number): void;

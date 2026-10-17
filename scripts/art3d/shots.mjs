@@ -5,7 +5,7 @@
  *   node scripts/art3d/shots.mjs
  */
 import { spawn } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { chromium, webkit } from 'playwright';
 import { setTimeout as delay } from 'node:timers/promises';
 
@@ -104,6 +104,31 @@ function watch(page) {
   });
 }
 
+async function shootSvg(page, key) {
+  const art = page.locator(`[data-instrument="${key}"]`).first();
+  await art.scrollIntoViewIfNeeded();
+  await page.waitForSelector(`[data-instrument="${key}"] svg`, { timeout: 15000 });
+  await page.waitForTimeout(300);
+  return page.locator(`article.ig-card:has([data-instrument="${key}"])`);
+}
+
+async function pair(browser, theme, leftPath, rightPath, file) {
+  const context = await browser.newContext({ viewport: { width: 1480, height: 900 }, deviceScaleFactor: 1, colorScheme: theme });
+  const page = await context.newPage();
+  const left = readFileSync(leftPath).toString('base64');
+  const right = readFileSync(rightPath).toString('base64');
+  const paper = theme === 'dark' ? '#1a1814' : '#f4efe6';
+  const ink = theme === 'dark' ? '#e7d7b0' : '#3a2a14';
+  await page.setContent(`<!doctype html><meta charset="utf-8"><body style="margin:0;background:${paper};color:${ink};font:15px/1.3 sans-serif">
+    <div style="display:flex;gap:16px;padding:16px;align-items:flex-start">
+      <figure style="margin:0;flex:1"><figcaption style="margin:0 0 8px">Векторная гравюра</figcaption><img style="width:100%;height:auto" src="data:image/png;base64,${left}"></figure>
+      <figure style="margin:0;flex:1"><figcaption style="margin:0 0 8px">Объём, стиль гравюра</figcaption><img style="width:100%;height:auto" src="data:image/png;base64,${right}"></figure>
+    </div></body>`);
+  await page.waitForTimeout(200);
+  await page.screenshot({ path: file, fullPage: true });
+  await context.close();
+}
+
 async function shootCard(page, key) {
   const art = page.locator(`[data-instrument="${key}"]`).first();
   await art.scrollIntoViewIfNeeded();
@@ -146,6 +171,39 @@ try {
           await context.close();
         }
       }
+    }
+  }
+
+  for (const theme of themes) {
+    for (const key of instruments) {
+      const contexts = [
+        ['iphone-webkit', webkitBrowser, iphone],
+        ['desktop-chromium', chromiumBrowser, desktop],
+      ];
+      for (const [label, browser, device] of contexts) {
+        const context = await browser.newContext({ ...device, colorScheme: theme });
+        await applySettings(context, theme, 'engraving', 'off');
+        const page = await context.newPage();
+        watch(page);
+        await page.goto(`${base}/instruments`, { waitUntil: 'networkidle' });
+        await page.evaluate(() => document.fonts.ready);
+        const card = await shootSvg(page, key);
+        const ready = await page.locator(`[data-instrument="${key}"][data-ready="1"]`).count();
+        const file = `${out}/svg-${label}-${theme}-${key}.png`;
+        await card.screenshot({ path: file });
+        console.log(file, { ready });
+        await context.close();
+      }
+    }
+  }
+
+  for (const theme of themes) {
+    for (const key of instruments) {
+      const left = `${out}/svg-desktop-chromium-${theme}-${key}.png`;
+      const right = `${out}/desktop-chromium-${theme}-engraving-${key}.png`;
+      const file = `${out}/compare-desktop-${theme}-${key}.png`;
+      await pair(chromiumBrowser, theme, left, right, file);
+      console.log(file);
     }
   }
 

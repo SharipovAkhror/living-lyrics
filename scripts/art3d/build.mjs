@@ -31,8 +31,10 @@ const BUILDERS = {
         triangles: report.tris,
         bytes: report.bytes,
         cameras: {
-          hero: { position: [0, 0.02, 1.85], target: [0, 0, 0], fov: 28 },
-          close: { position: [0.05, -0.05, 0.85], target: [0, -0.05, 0], fov: 30 },
+          // Direction from the target. The renderer fits the distance so the whole
+          // instrument stays in frame. This one looks down into the hoop.
+          hero: { position: [0.58, 0.5, 0.64], target: [0, 0, 0], fov: 36 },
+          close: { position: [0.72, 0.28, 0.5], target: [0, -0.02, 0], fov: 32 },
         },
         materials: { wood: '#6b3e22', skin: '#d6c29e', metal: '#c7a159', leather: '#734728' },
         author: 'Living Lyrics',
@@ -62,10 +64,11 @@ const BUILDERS = {
         triangles: report.tris,
         bytes: report.bytes,
         cameras: {
-          hero: { position: [0, 0.02, 1.9], target: [0, 0, 0], fov: 28 },
-          close: { position: [0.02, -0.05, 0.72], target: [0, -0.02, 0.02], fov: 28 },
+          // Three-quarter: bowl ribs on the side, pegbox bending back. Distance is fitted.
+          hero: { position: [0.62, 0.3, 0.72], target: [0, 0, 0], fov: 38 },
+          close: { position: [0.78, 0.16, 0.48], target: [0, -0.08, 0], fov: 32 },
         },
-        materials: { wood: '#6b3e22', spruce: '#e6d2a8', ebony: '#2a211c', string: '#f2efe6', metal: '#c7a159' },
+        materials: { wood: '#6b3e22', spruce: '#e6d2a8', ebony: '#2a211c', string: '#f2efe6', metal: '#c7a159', guard: '#8a4b22' },
         author: 'Living Lyrics',
         license: 'project',
         proportions: notes,
@@ -73,6 +76,8 @@ const BUILDERS = {
           'https://www.metmuseum.org/art/collection/search/503203',
           'https://www.metmuseum.org/art/collection/search/776535',
           'https://www.thomann.co.uk/hannabach_2511_arabic_oud_11_strings_set.htm',
+          'https://www.youtube.com/watch?v=afRYiI-gWmI',
+          'https://www.youtube.com/watch?v=n89kCR7uymQ',
         ],
       };
     },

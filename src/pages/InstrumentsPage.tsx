@@ -12,6 +12,7 @@ import { DRIVE_KEYS, DRIVE_LABELS, exampleDrive, type DriveKey } from '@/instrum
 import { canTry3d } from '@/instruments/render/support';
 import { InstrumentStage, type InstrumentStageHandle } from '@/scene/InstrumentStage';
 import { linkHandler } from '@/app/router';
+import { Slider } from '@/components/controls';
 import { Icon } from '@/icons/Icon';
 
 import '@/instruments/render/stage3d.css';
@@ -43,7 +44,7 @@ function Catalogue() {
       <div className="ig-head">
         <h1 className="t-large-title">Инструменты</h1>
         <p className="t-body secondary">
-          Гравюры, которые сцена показывает в инструментальных частях песен: {drawn} из {INSTRUMENTS.length} в каталоге. У дафа и уда уже есть объёмная модель: её можно повернуть пальцем и подать удар, тянущуюся ноту и долю. Стиль — гравюра или материалы — выбирается в настройках песни. Если модели ещё нет или устройство не тянет объём, остаётся гравюра. Если играют несколько инструментов сразу, сцена раскладывает их сама — это можно попробовать внизу страницы.
+          Гравюры, которые сцена показывает в инструментальных частях песен: {drawn} из {INSTRUMENTS.length} в каталоге. У дафа и уда уже есть объёмная модель: её можно повернуть пальцем и подать удар, звучание, дыхание, громкость и долю. Стиль — гравюра или материалы — выбирается в настройках песни. Если модели ещё нет или устройство не тянет объём, остаётся гравюра. Если играют несколько инструментов сразу, сцена раскладывает их сама — это можно попробовать внизу страницы.
         </p>
       </div>
 
@@ -153,8 +154,7 @@ function Card({ info }: { info: InstrumentInfo }) {
               if (rendererRef.current === renderer) rendererRef.current = null;
               return;
             }
-            // Drag right lowers rotation.y: the model's right side (+X) comes toward the camera on +Z.
-            // Drag up raises rotation.x: the top (+Y) comes toward the camera.
+            // Drag right lowers rotation.y. The camera stays on the hero direction.
             renderer.setOrbit(yawRef.current, pitchRef.current);
             renderer.update(driveRef.current, timeRef.current);
             el.classList.add('is-3d');
@@ -193,12 +193,18 @@ function Card({ info }: { info: InstrumentInfo }) {
       timeRef.current = t;
       const next = exampleDrive(t);
       driveRef.current = next;
+      // A slow turn while the example plays. Zero at t = 0, so a still at rest stays on the hero view.
+      const sway = Math.sin(t * 0.45) * 0.22;
+      rendererRef.current?.setOrbit(yawRef.current + sway, pitchRef.current);
       rendererRef.current?.update(next, t);
       setDrive(next);
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      rendererRef.current?.setOrbit(yawRef.current, pitchRef.current);
+    };
   }, [playing]);
 
   const setDriveKey = (key: DriveKey, value: number) => {
@@ -254,16 +260,7 @@ function Card({ info }: { info: InstrumentInfo }) {
           {DRIVE_KEYS.map((key) => (
             <label key={key}>
               <span>{DRIVE_LABELS[key]}</span>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.01}
-                value={drive[key]}
-                data-drive={key}
-                aria-label={DRIVE_LABELS[key]}
-                onChange={(e) => setDriveKey(key, Number(e.target.value))}
-              />
+              <Slider min={0} max={1} step={0.01} value={drive[key]} label={DRIVE_LABELS[key]} onChange={(v) => setDriveKey(key, v)} />
               <span className="tabular">{drive[key].toFixed(2)}</span>
             </label>
           ))}
@@ -339,7 +336,7 @@ function Playground() {
         <div className="ig-row">
           <label className="ig-slider t-footnote">
             <span>Прорисовка</span>
-            <input type="range" min={0} max={1} step={0.01} value={draw} onChange={(e) => setDraw(+e.target.value)} aria-label="Прорисовка" />
+            <Slider min={0} max={1} step={0.01} value={draw} label="Прорисовка" onChange={setDraw} />
             <span className="tabular">{Math.round(draw * 100)} %</span>
           </label>
           <button type="button" className="ig-pick" aria-pressed={withPerformers} onClick={() => setWithPerformers((v) => !v)}>
@@ -443,8 +440,6 @@ function Frame({ instrument }: { instrument: 'daf' | 'oud' }) {
   useEffect(() => {
     const pose = (time: number, level: number) => {
       stageRef.current?.sync(time, [levelDrive(level)]);
-      // Strings move a few millimetres. Crop the oud so that travel is visible; the daf stays wider.
-      stageRef.current?.setCamera(instrument === 'oud' ? { scale: 0.42, targetY: -0.06 } : { scale: 0.72, targetY: 0 });
       stageRef.current?.draw();
     };
     window.__t6 = { pose };

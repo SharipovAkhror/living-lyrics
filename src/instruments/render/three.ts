@@ -5,10 +5,15 @@
  * path with a single view, because a card is its own element. Playback time is an argument:
  * the idle clip is not played, and nothing is integrated from the previous frame.
  *
- * Frame: models face +Z. The camera sits on +Z and looks at the origin (down its own −Z).
- * Dragging right decreases rotation.y so the model's right side comes toward the camera.
- * CSS rotate is clockwise; rotation.z uses the opposite sign. Jingle nodes carry a quantization
- * scale, so a world-space shift is divided by that scale.
+ * Frame: models face +Z, Y up, X to the right. `cameras.hero.position` in the manifest is a
+ * direction from the target to the camera, not a placed point. The distance is fitted so the
+ * bounding sphere stays inside the view. Dragging right decreases rotation.y; the camera does
+ * not orbit. CSS rotate is clockwise, so rotation.z uses the opposite sign. Jingle nodes carry
+ * a quantization scale, so a world-space shift is divided by that scale.
+ *
+ * Hatch lines are computed in instrument space (the root spin removed) so they stick to the
+ * wood. The studio light stays in world space. Meshopt stores a normalized position plus a
+ * node scale, so the pattern uses the world position, not the raw attribute.
  */
 import type { InstrumentDrive, InstrumentRenderer } from '@/instruments/animation';
 import type { InstrumentStyle } from '@/app/settings';
@@ -65,6 +70,78 @@ interface Uniforms {
   uOpacity: { value: number };
   /** Scissor height in device pixels. The outline is a fixed number of those pixels. */
   uViewportH: { value: number };
+  /** Root rotation. Removing it puts hatch coordinates back on the wood. */
+  uRoot: { value: import('three').Matrix3 };
+}
+
+/** Same vector as the key light's position. Both sides normalize it. */
+const KEY = 'vec3(-0.25, 0.48, 0.84)';
+
+type Role = 'spruce' | 'bowl' | 'wood' | 'wood-inner' | 'skin' | 'metal' | 'string' | 'guard' | 'seam' | 'ebony' | 'leather';
+
+function roleOf(meshName: string, matName: string): Role {
+  if (meshName === 'bowl') return 'bowl';
+  if (meshName === 'bowl-inner') return 'wood-inner';
+  if (meshName === 'soundboard' || meshName === 'rosettes' || matName === 'spruce') return 'spruce';
+  if (meshName === 'part-skin' || matName === 'skin') return 'skin';
+  if (meshName.startsWith('rings-') || meshName === 'hooks' || meshName === 'tacks' || matName === 'metal') return 'metal';
+  if (meshName.startsWith('part-string') || meshName === 'string-tails' || matName === 'string') return 'string';
+  if (meshName === 'pickguard' || matName === 'guard') return 'guard';
+  if (meshName === 'seams' || meshName === 'purfling' || matName === 'seam') return 'seam';
+  if (meshName === 'band' || matName === 'leather') return 'leather';
+  if (matName === 'ebony' || meshName === 'fingerboard' || meshName === 'pegbox' || meshName === 'finial' || meshName === 'pegs' || meshName === 'bridge' || meshName === 'tail') return 'ebony';
+  return 'wood';
+}
+
+function contourOnly(name: string) {
+  return name.startsWith('part-string-')
+    || name === 'string-tails'
+    || name.startsWith('rings-')
+    || name === 'hooks'
+    || name === 'tacks'
+    || name === 'pegs'
+    || name === 'purfling'
+    || name === 'seams'
+    || name === 'rosettes';
+}
+
+function hullPx(name: string) {
+  if (name.startsWith('part-string-') || name === 'string-tails') return 0.9;
+  if (contourOnly(name)) return 1.15;
+  return 1.55;
+}
+
+interface HeroView {
+  dir: import('three').Vector3;
+  target: import('three').Vector3;
+  fov: number;
+}
+
+async function loadHero(THREE: THREE, key: string): Promise<HeroView> {
+  const dir = new THREE.Vector3(0.58, 0.34, 0.74).normalize();
+  const target = new THREE.Vector3();
+  try {
+    const res = await fetch(`/instruments/3d/${key}.json`);
+    if (!res.ok) return { dir, target, fov: 36 };
+    const json = (await res.json()) as { cameras?: { hero?: { position?: number[]; target?: number[]; fov?: number } } };
+    const hero = json.cameras?.hero;
+    const p = hero?.position;
+    if (!p || p.length !== 3) return { dir, target, fov: 36 };
+    const look = new THREE.Vector3(p[0], p[1], p[2]);
+    if (look.lengthSq() < 1e-8) return { dir, target, fov: 36 };
+    look.normalize();
+    const t = hero?.target;
+    const fov = typeof hero?.fov === 'number' && hero.fov > 8 && hero.fov < 80 ? hero.fov : 36;
+    return { dir: look, target: t && t.length === 3 ? new THREE.Vector3(t[0], t[1], t[2]) : target, fov };
+  } catch {
+    return { dir, target, fov: 36 };
+  }
+}
+
+function copySpin(root: Object3D, target: import('three').Matrix3) {
+  root.updateMatrix();
+  const e = root.matrix.elements;
+  target.set(e[0], e[4], e[8], e[1], e[5], e[9], e[2], e[6], e[10]);
 }
 
 interface Jingle {
@@ -88,7 +165,11 @@ interface ViewModel {
   strings: MorphRef[];
   skin: MorphRef | null;
   jingles: Jingle[];
-  radius: number;
+  /** Distance from the origin to the farthest point of the rest pose. */
+  reach: number;
+  hero: HeroView;
+  shadow: Mesh;
+  shadowAlpha: { value: number };
   pbr: Material[];
   owned: Material[];
   turn: number;
@@ -98,50 +179,219 @@ interface ViewModel {
   presence: number;
 }
 
-function passMaterial(THREE: THREE, uniforms: Uniforms, thickness: number | null): import('three').MeshBasicMaterial {
+type PassMode = 'hatch' | 'line' | number;
+
+function passMaterial(THREE: THREE, uniforms: Uniforms, mode: PassMode): import('three').MeshBasicMaterial {
+  const hull = typeof mode === 'number';
   const mat = new THREE.MeshBasicMaterial({
     color: 0xffffff,
-    side: thickness === null ? THREE.FrontSide : THREE.BackSide,
+    side: hull ? THREE.BackSide : THREE.FrontSide,
     transparent: true,
-    depthWrite: thickness === null,
+    depthWrite: mode === 'hatch',
     depthTest: true,
     toneMapped: false,
   });
-  // `thickness` is the outline width in device pixels. Null is the hatch pass.
-  // Body and string hulls bake different widths, so the cache key includes the number.
-  mat.customProgramCacheKey = () => (thickness === null ? 'll-hatch' : `ll-hull-${thickness}`);
+  mat.customProgramCacheKey = () => (hull ? `ll-hull-${mode}` : `ll-${mode}`);
   mat.onBeforeCompile = (shader) => {
     shader.uniforms.uInk = uniforms.uInk;
     shader.uniforms.uDraw = uniforms.uDraw;
     shader.uniforms.uHatch = uniforms.uHatch;
     shader.uniforms.uOpacity = uniforms.uOpacity;
     shader.uniforms.uViewportH = uniforms.uViewportH;
+    shader.uniforms.uRoot = uniforms.uRoot;
     // MeshBasic does not compute normals unless the material uses an env map.
     const normals = '#include <beginnormal_vertex>\n#include <morphnormal_vertex>\n';
-    // Push the hull out in screen space so a small card keeps a readable line. World-space
-    // extrusion shrinks to a broken pixel when the plate is a couple of hundred pixels tall.
-    const outline = thickness === null
-      ? ''
-      : `vec3 viewN = normalize(mat3(modelViewMatrix) * objectNormal);
-         vec2 clipN = (projectionMatrix * vec4(viewN, 0.0)).xy;
+    const stick = `vWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;
+         vStick = vec3(dot(uRoot[0], vWorld), dot(uRoot[1], vWorld), dot(uRoot[2], vWorld));
+         {
+           vec3 viewNn = normalize(normalMatrix * objectNormal);
+           mat3 camR = mat3(viewMatrix);
+           vWorldN = vec3(dot(camR[0], viewNn), dot(camR[1], viewNn), dot(camR[2], viewNn));
+         }
+         vStickN = vec3(dot(uRoot[0], vWorldN), dot(uRoot[1], vWorldN), dot(uRoot[2], vWorldN));`;
+    // Screen-space hull: a world-space extrusion becomes a broken pixel on a small card.
+    const outline = typeof mode === 'number'
+      ? `vec3 clipViewN = normalize(mat3(modelViewMatrix) * objectNormal);
+         vec2 clipN = (projectionMatrix * vec4(clipViewN, 0.0)).xy;
          float clipLen = max(length(clipN), 0.0001);
-         gl_Position.xy += (clipN / clipLen) * (${thickness.toFixed(2)} / max(uViewportH, 1.0)) * 2.0 * gl_Position.w;`;
-    shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nuniform float uViewportH;\nvarying vec3 vObj;\nvarying vec3 vObjN;')
-      .replace('#include <project_vertex>', `${normals}vObj = transformed;\nvObjN = objectNormal;\n#include <project_vertex>\n${outline}`);
-    const hatch = thickness === null
-      ? `vec3 nrm = normalize(vObjN);
-         float ndotl = clamp(dot(nrm, normalize(vec3(-0.45, 0.72, 0.55))), 0.0, 1.0);
-         float stripes = fract(vObj.x * 42.0 + vObj.y * 26.0);
-         float onLine = step(0.72, stripes);
-         float shadow = 1.0 - smoothstep(0.2, 0.95, ndotl);
-         if (onLine * shadow * uHatch < 0.22) discard;`
+         gl_Position.xy += (clipN / clipLen) * (${mode.toFixed(2)} / max(uViewportH, 1.0)) * 2.0 * gl_Position.w;`
       : '';
+    const decl = 'uniform float uViewportH;\nuniform mat3 uRoot;\nvarying vec3 vWorld;\nvarying vec3 vWorldN;\nvarying vec3 vStick;\nvarying vec3 vStickN;';
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', `#include <common>\n${decl}`)
+      .replace('#include <project_vertex>', `${normals}${stick}\n#include <project_vertex>\n${outline}`);
+    // Form hatch: strokes run along the surface (projected +Y), a hairline on the lit
+    // side and a wider, doubled stroke in shadow. Width is in pixels via fwidth, so a
+    // low duty does not collapse into a stipple. Line parts discard; only their hull remains.
+    // smoothstep edges stay in ascending order.
+    const hatch = mode === 'hatch'
+      ? `vec3 nrm = normalize(vStickN);
+         vec3 nrmW = normalize(vWorldN);
+         float ndotl = clamp(dot(nrmW, normalize(${KEY})), 0.0, 1.0);
+         float shadow = 1.0 - smoothstep(0.2, 0.78, ndotl);
+         vec3 axis = vec3(0.0, 1.0, 0.0);
+         vec3 tng = axis - nrm * dot(nrm, axis);
+         float tlen = length(tng);
+         vec3 along = tlen > 0.2 ? tng / tlen : vec3(1.0, 0.0, 0.0);
+         vec3 across = normalize(cross(nrm, along));
+         float u = dot(vStick, across);
+         float v = dot(vStick, along);
+         float face = smoothstep(0.45, 0.82, abs(nrm.z));
+         float freq = mix(14.0, 20.0, face);
+         float fw = max(fwidth(u), 0.0004);
+         float aa = fw * 0.75;
+         float dist = min(fract(u * freq), 1.0 - fract(u * freq)) / freq;
+         float width = fw * mix(0.5, 1.75, shadow);
+         float line = 1.0 - smoothstep(width, width + aa, dist);
+         // Lit paper stays a faint grain; the shadow side carries the full stroke.
+         float grain = line * mix(0.18, 1.0, shadow);
+         float freq2 = freq * 2.0;
+         float dist2 = min(fract(u * freq2), 1.0 - fract(u * freq2)) / freq2;
+         float cover = smoothstep(0.18, 0.62, shadow);
+         float width2 = fw * 1.15 * cover;
+         float extra = cover * (1.0 - smoothstep(width2, width2 + aa, dist2));
+         float vfw = max(fwidth(v), 0.0004);
+         float vdist = min(fract(v * 12.0), 1.0 - fract(v * 12.0)) / 12.0;
+         float crossCover = smoothstep(0.72, 0.95, shadow);
+         float crossW = vfw * 1.05 * crossCover;
+         float crossh = crossCover * (1.0 - smoothstep(crossW, crossW + vfw * 0.7, vdist));
+         float hatchInk = max(grain, max(extra, crossh));
+         if (hatchInk * uHatch < 0.04) discard;`
+      : '';
+    // A bare discard strips gl_FragColor and the draw is invalid. The uniform test keeps an output.
+    const lineDiscard = mode === 'line' ? 'if (uDraw > -1.0) discard;' : '';
+    const alpha = mode === 'hatch'
+      ? 'diffuseColor.a = uDraw * uOpacity * hatchInk;'
+      : 'diffuseColor.a = uDraw * uOpacity;';
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform vec3 uInk;\nuniform float uDraw;\nuniform float uHatch;\nuniform float uOpacity;\nvarying vec3 vObj;\nvarying vec3 vObjN;')
-      .replace('#include <color_fragment>', `#include <color_fragment>\n${hatch}\ndiffuseColor.rgb = uInk;\ndiffuseColor.a = uDraw * uOpacity;`);
+      .replace('#include <common>', `#include <common>\nuniform vec3 uInk;\nuniform float uDraw;\nuniform float uHatch;\nuniform float uOpacity;\n${decl}`)
+      .replace('#include <color_fragment>', `#include <color_fragment>\n${hatch}\ndiffuseColor.rgb = uInk;\n${alpha}\n${lineDiscard}`);
   };
   return mat;
+}
+
+function pbrFragment(role: Role): { color: string; light: string } {
+  const glint = `float spec = pow(clamp(dot(normalize(vWorldN), normalize(${KEY})), 0.0, 1.0), `;
+  if (role === 'spruce') {
+    return {
+      color: `float fiber = sin(vStick.x * 220.0 + sin(vStick.y * 8.0) * 1.4);
+         float hair = sin(vStick.x * 540.0 + vStick.y * 3.0);
+         float late = smoothstep(0.82, 0.98, fract(sin(floor(vStick.x * 46.0) * 19.13) * 43758.5453));
+         float g = 0.9 + 0.08 * fiber + 0.04 * hair;
+         diffuseColor.rgb *= g * mix(1.0, 0.8, late);`,
+      light: '',
+    };
+  }
+  if (role === 'bowl') {
+    return {
+      color: `float az = atan(vStick.x, -vStick.z);
+         float rib = floor(az / 3.14159265 * 15.0);
+         float h = fract(sin(rib * 12.9898) * 43758.5453);
+         float band = step(0.34, h) + step(0.67, h);
+         vec3 tone = band < 0.5 ? vec3(1.22, 1.08, 0.9) : (band < 1.5 ? vec3(0.9, 0.78, 0.66) : vec3(0.58, 0.46, 0.36));
+         float grain = 0.94 + 0.06 * sin(az * 28.0 + rib);
+         diffuseColor.rgb *= tone * grain;`,
+      light: '',
+    };
+  }
+  if (role === 'wood-inner') return { color: 'diffuseColor.rgb *= vec3(0.38, 0.3, 0.26);', light: '' };
+  if (role === 'skin') {
+    return {
+      color: `float n = sin(vStick.x * 6.5 + sin(vStick.y * 2.4) * 1.3);
+         float n2 = sin(vStick.y * 4.2 - vStick.x * 1.8 + sin(vStick.x * 2.1) * 1.6);
+         diffuseColor.rgb *= 0.975 + 0.02 * n + 0.015 * n2;
+         diffuseColor.a *= 0.9 + 0.02 * n;`,
+      light: '',
+    };
+  }
+  if (role === 'metal') {
+    return {
+      color: 'diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.86, 0.7, 0.4), 0.25);',
+      light: `${glint}26.0);\ngl_FragColor.rgb += vec3(0.55, 0.46, 0.28) * spec;`,
+    };
+  }
+  if (role === 'string') {
+    return { color: '', light: `${glint}18.0);\ngl_FragColor.rgb += vec3(0.5, 0.48, 0.42) * spec;` };
+  }
+  if (role === 'guard') {
+    return {
+      color: `float blot = fract(sin(dot(floor(vStick.xy * 26.0), vec2(12.9898, 78.233))) * 43758.5453);
+         diffuseColor.rgb *= mix(0.7, 1.08, blot);`,
+      light: '',
+    };
+  }
+  if (role === 'ebony') {
+    return { color: '', light: `${glint}12.0);\ngl_FragColor.rgb += vec3(0.08, 0.07, 0.06) * spec;` };
+  }
+  if (role === 'leather') {
+    return {
+      color: `float n = sin(vStick.x * 80.0) * sin(vStick.y * 60.0);
+         diffuseColor.rgb *= 0.92 + 0.1 * n;`,
+      light: '',
+    };
+  }
+  if (role === 'seam') return { color: 'diffuseColor.rgb *= 0.94;', light: '' };
+  return {
+    color: `float g = 0.92 + 0.06 * sin(vStick.y * 90.0 + vStick.x * 14.0) + 0.04 * sin(vStick.x * 70.0 + vStick.z * 40.0);
+       diffuseColor.rgb *= g;`,
+    light: '',
+  };
+}
+
+function tune(mat: Material, role: Role) {
+  const std = mat as import('three').MeshStandardMaterial;
+  if (typeof std.roughness !== 'number' || !std.color) return;
+  if (role === 'metal') {
+    std.color.set('#e0c27a');
+    std.roughness = 0.24;
+    std.metalness = 0.94;
+  } else if (role === 'string') {
+    std.roughness = 0.2;
+    std.metalness = 0.55;
+  } else if (role === 'wood-inner') {
+    std.color.set('#24160f');
+    std.roughness = 0.9;
+    std.metalness = 0.02;
+  } else if (role === 'guard') {
+    std.color.set('#6e3d1c');
+    std.roughness = 0.46;
+    std.metalness = 0.04;
+  } else if (role === 'skin') {
+    std.color.set('#efe2c4');
+    std.roughness = 0.72;
+    std.metalness = 0;
+    std.depthWrite = false;
+  } else if (role === 'ebony') {
+    std.roughness = 0.34;
+    std.metalness = 0.08;
+  } else if (role === 'spruce') {
+    std.roughness = 0.58;
+    std.metalness = 0;
+  }
+}
+
+function patchPbr(mat: Material, uniforms: Uniforms, role: Role) {
+  const extra = pbrFragment(role);
+  mat.customProgramCacheKey = () => `ll-pbr-${role}`;
+  mat.onBeforeCompile = (shader) => {
+    shader.uniforms.uRoot = uniforms.uRoot;
+    const decl = 'uniform mat3 uRoot;\nvarying vec3 vWorld;\nvarying vec3 vWorldN;\nvarying vec3 vStick;\nvarying vec3 vStickN;';
+    const stick = `vWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;
+         vStick = vec3(dot(uRoot[0], vWorld), dot(uRoot[1], vWorld), dot(uRoot[2], vWorld));
+         {
+           vec3 viewNn = normalize(normalMatrix * objectNormal);
+           mat3 camR = mat3(viewMatrix);
+           vWorldN = vec3(dot(camR[0], viewNn), dot(camR[1], viewNn), dot(camR[2], viewNn));
+         }
+         vStickN = vec3(dot(uRoot[0], vWorldN), dot(uRoot[1], vWorldN), dot(uRoot[2], vWorldN));`;
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', `#include <common>\n${decl}`)
+      .replace('#include <project_vertex>', `${stick}\n#include <project_vertex>`);
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', `#include <common>\n${decl}`)
+      .replace('#include <color_fragment>', `#include <color_fragment>\n${extra.color}`)
+      .replace('#include <opaque_fragment>', `#include <opaque_fragment>\n${extra.light}`);
+  };
 }
 
 function dress(THREE: THREE, root: Group, uniforms: Uniforms) {
@@ -155,24 +405,30 @@ function dress(THREE: THREE, root: Group, uniforms: Uniforms) {
     const mesh = obj as Mesh;
     if (mesh.isMesh) meshes.push(mesh);
   });
-  const bodyHatch = passMaterial(THREE, uniforms, null);
-  const stringHatch = passMaterial(THREE, uniforms, null);
-  const bodyHull = passMaterial(THREE, uniforms, 1.7);
-  const stringHull = passMaterial(THREE, uniforms, 0.85);
+  const bodyHatch = passMaterial(THREE, uniforms, 'hatch');
+  const lineHatch = passMaterial(THREE, uniforms, 'line');
+  const bodyHull = passMaterial(THREE, uniforms, hullPx('bowl'));
+  const lineHull = passMaterial(THREE, uniforms, hullPx('rosettes'));
+  const stringHull = passMaterial(THREE, uniforms, hullPx('part-string-1'));
   // Opaque depth prepass so the hull's back faces only survive at the silhouette.
   // An opacity of 0 would be skipped, and the outline would fill the whole instrument.
   const depthMat = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: true, depthTest: true });
-  owned.push(bodyHatch, stringHatch, bodyHull, stringHull, depthMat);
+  owned.push(bodyHatch, lineHatch, bodyHull, lineHull, stringHull, depthMat);
   for (const mesh of meshes) {
     mesh.frustumCulled = false;
-    const cloned = (mesh.material as Material).clone();
+    const source = mesh.material as Material;
+    const role = roleOf(mesh.name, source.name);
+    const cloned = source.clone();
     cloned.transparent = true;
+    tune(cloned, role);
+    patchPbr(cloned, uniforms, role);
     mesh.userData.pbr = cloned;
     pbr.push(cloned);
     owned.push(cloned);
     const isString = mesh.name.startsWith('part-string-');
+    const line = contourOnly(mesh.name);
     const depth = new THREE.Mesh(mesh.geometry, depthMat);
-    const hull = new THREE.Mesh(mesh.geometry, isString ? stringHull : bodyHull);
+    const hull = new THREE.Mesh(mesh.geometry, isString ? stringHull : line ? lineHull : bodyHull);
     for (const pass of [depth, hull]) {
       pass.frustumCulled = false;
       pass.morphTargetInfluences = mesh.morphTargetInfluences;
@@ -183,7 +439,7 @@ function dress(THREE: THREE, root: Group, uniforms: Uniforms) {
     mesh.renderOrder = 2;
     mesh.add(depth);
     mesh.add(hull);
-    mesh.userData.hatch = isString ? stringHatch : bodyHatch;
+    mesh.userData.hatch = line ? lineHatch : bodyHatch;
     mesh.userData.hull = hull;
     mesh.userData.depth = depth;
     mesh.material = mesh.userData.hatch as Material;
@@ -315,13 +571,15 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.autoClear = false;
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(28, 1, 0.02, 40);
-  const hemi = new THREE.HemisphereLight(0xfff6ea, 0x2c261f, 0.9);
-  const key = new THREE.DirectionalLight(0xfff8f0, 1.2);
-  key.position.set(-0.7, 1.2, 0.9);
-  const fill = new THREE.DirectionalLight(0xd5e4ff, 0.38);
-  fill.position.set(0.9, 0.15, 0.5);
-  scene.add(hemi, key, fill);
+  const camera = new THREE.PerspectiveCamera(36, 1, 0.02, 40);
+  const hemi = new THREE.HemisphereLight(0xfff4e8, 0x3a342c, 0.55);
+  const key = new THREE.DirectionalLight(0xfff6ee, 1.35);
+  key.position.set(-0.25, 0.48, 0.84);
+  const fill = new THREE.DirectionalLight(0xd7e6ff, 0.34);
+  fill.position.set(1.15, 0.25, 0.7);
+  const rim = new THREE.DirectionalLight(0xffe0b0, 0.72);
+  rim.position.set(0.35, 0.55, -1.25);
+  scene.add(hemi, key, fill, rim);
 
   let style: InstrumentStyle = 'engraving';
   let slots: Slot[] = [];
@@ -340,13 +598,25 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
       renderer.toneMappingExposure = 1;
     } else {
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = isDark() ? 0.82 : 1.05;
+      renderer.toneMappingExposure = isDark() ? 0.9 : 1.02;
     }
   };
 
-  const fit = (radius: number, aspect: number) => {
-    const fov = (28 * Math.PI) / 180;
-    return radius / 0.84 / Math.tan(fov / 2) / Math.min(1, aspect);
+  const placeCamera = (model: ViewModel, aspect: number) => {
+    const hero = model.hero;
+    camera.fov = hero.fov;
+    camera.aspect = aspect;
+    const vFov = (camera.fov * Math.PI) / 180;
+    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
+    const half = Math.min(vFov, hFov) / 2;
+    // sin, not tan: the sphere should be tangent to the frustum, then padded so the head is not cut.
+    const dist = (model.reach / Math.sin(half)) * 1.36 * camScale;
+    const tx = hero.target.x;
+    const ty = hero.target.y + camTargetY;
+    const tz = hero.target.z;
+    camera.position.set(tx + hero.dir.x * dist, ty + hero.dir.y * dist, tz + hero.dir.z * dist);
+    camera.lookAt(tx, ty, tz);
+    camera.updateProjectionMatrix();
   };
 
   function draw() {
@@ -376,14 +646,17 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
       renderer.setViewport(Math.round(x * dpr), Math.round(y * dpr), Math.max(1, Math.round(w * dpr)), Math.max(1, Math.round(h * dpr)));
       renderer.setScissor(Math.round(x * dpr), Math.round(y * dpr), Math.max(1, Math.round(w * dpr)), Math.max(1, Math.round(h * dpr)));
       renderer.clear(true, true, false);
-      for (const other of slots) other.model.root.visible = other === slot;
+      for (const other of slots) {
+        const on = other === slot;
+        other.model.root.visible = on;
+        other.model.shadow.visible = on && style === 'materials';
+      }
+      slot.model.shadowAlpha.value = isDark() ? 0.34 : 0.2;
       const drive = override?.[slots.indexOf(slot)] ?? slot.drive;
       slot.model.uniforms.uViewportH.value = Math.max(1, Math.round(h * dpr));
       applyPose(THREE, slot.model, drive, time);
-      camera.aspect = w / Math.max(1, h);
-      camera.position.set(0, camTargetY + 0.01 * camScale, fit(slot.model.radius, camera.aspect) * camScale);
-      camera.lookAt(0, camTargetY, 0);
-      camera.updateProjectionMatrix();
+      copySpin(slot.model.root, slot.model.uniforms.uRoot.value);
+      placeCamera(slot.model, w / Math.max(1, h));
       renderer.render(scene, camera);
     }
   }
@@ -397,7 +670,7 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
   };
 
   async function createInstance(key: string): Promise<ViewModel> {
-    const template = await templateFor(key);
+    const [template, hero] = await Promise.all([templateFor(key), loadHero(THREE, key)]);
     const root = template.clone(true);
     const uniforms: Uniforms = {
       uInk: { value: new THREE.Color('#6b4a12') },
@@ -405,11 +678,31 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
       uHatch: { value: 1 },
       uOpacity: { value: 1 },
       uViewportH: { value: 800 },
+      uRoot: { value: new THREE.Matrix3() },
     };
     const parts = dress(THREE, root, uniforms);
     scene.add(root);
     const box = new THREE.Box3().setFromObject(root);
     const sphere = box.getBoundingSphere(new THREE.Sphere());
+    const reach = Math.max(0.25, sphere.center.length() + sphere.radius);
+    const shadowAlpha = { value: 0.2 };
+    const shadowMat = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      toneMapped: false,
+      uniforms: { uAlpha: shadowAlpha },
+      vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: 'uniform float uAlpha; varying vec2 vUv; void main() { float r = length((vUv - vec2(0.5)) * 2.0); float a = smoothstep(1.0, 0.35, r) * uAlpha; if (a < 0.004) discard; gl_FragColor = vec4(0.10, 0.07, 0.04, a); }',
+    });
+    const shadow = new THREE.Mesh(new THREE.CircleGeometry(1, 48), shadowMat);
+    shadow.rotation.x = -Math.PI / 2;
+    shadow.position.y = box.min.y - 0.02;
+    shadow.scale.set(Math.max(0.2, box.max.x - box.min.x) * 0.58, Math.max(0.2, box.max.z - box.min.z) * 0.5, 1);
+    shadow.renderOrder = -2;
+    shadow.frustumCulled = false;
+    shadow.visible = false;
+    scene.add(shadow);
+    parts.owned.push(shadowMat);
     const model: ViewModel = {
       key,
       root,
@@ -417,7 +710,10 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
       strings: parts.strings,
       skin: parts.skin,
       jingles: parts.jingles,
-      radius: Math.max(0.25, sphere.radius),
+      reach,
+      hero,
+      shadow,
+      shadowAlpha,
       pbr: parts.pbr,
       owned: parts.owned,
       turn: 0,
@@ -445,6 +741,8 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
 
   const dropModel = (model: ViewModel) => {
     model.root.removeFromParent();
+    model.shadow.removeFromParent();
+    (model.shadow.geometry as { dispose(): void }).dispose();
     for (const mat of model.owned) mat.dispose();
   };
 
@@ -543,7 +841,7 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
       scheme.removeEventListener('change', onScheme);
       seen.disconnect();
       resized.disconnect();
-      for (const slot of slots) for (const mat of slot.model.owned) mat.dispose();
+      for (const slot of slots) dropModel(slot.model);
       slots = [];
       renderer.dispose();
       renderer.forceContextLoss();

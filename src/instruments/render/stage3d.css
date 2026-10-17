@@ -38,26 +38,44 @@
   visibility: hidden;
 }
 
+.ig .ig-card-art {
+  order: 0;
+}
+
+.ig .ig-card-text {
+  order: 1;
+}
+
+.ig-drive,
+.ig-slider {
+  --accent: var(--ig-ink);
+}
+
 .ig-drive {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  order: 2;
   margin-top: var(--sp-2);
 }
 
 .ig-drive label {
   display: grid;
-  grid-template-columns: 4.8em minmax(0, 1fr) 2.2em;
+  grid-template-columns: 7.2em minmax(0, 1fr) 2.4em;
   align-items: center;
   gap: 6px;
   color: var(--label-2);
   font-size: var(--t-caption1);
 }
 
-.ig-drive input[type='range'] {
+.ig-drive label > span:first-child {
+  white-space: nowrap;
+}
+
+.ig-drive .slider,
+.ig-slider .slider {
   width: 100%;
-  margin: 0;
-  accent-color: var(--accent);
+  min-width: 0;
 }
 
 .ig-drive-play {
@@ -65,15 +83,27 @@
   align-self: flex-start;
 }
 
+/* A 3D instrument is the card, not a thumbnail in the corner. SVG-only cards stay a row. */
 @media (max-width: 560px) {
-  .ig-card {
-    flex-wrap: wrap;
+  .ig .ig-card:has([data-instrument='daf']),
+  .ig .ig-card:has([data-instrument='oud']) {
+    flex-direction: column;
+    align-items: stretch;
   }
-  .ig-drive {
-    flex: 1 1 100%;
-    order: 3;
+  .ig .ig-card:has([data-instrument='daf']) .ig-card-art,
+  .ig .ig-card:has([data-instrument='oud']) .ig-card-art {
+    width: auto;
+    align-self: stretch;
+    flex: none;
+    aspect-ratio: 1;
+    margin: var(--sp-3) var(--sp-3) 0;
+    border-radius: var(--r-lg);
+  }
+  .ig .ig-drive {
+    flex: none;
+    width: auto;
     margin: 0;
-    padding: 0 var(--sp-3) var(--sp-3);
+    padding: 0 var(--sp-3) var(--sp-4);
   }
 }
 
