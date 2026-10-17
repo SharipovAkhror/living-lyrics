@@ -1,0 +1,54 @@
+# Listen to the three songs on a runner, where AUDIO_KEY exists.
+# The eye stage is not here: Antigravity is only on the owner's machine.
+# Demucs is not here either: four stems of these lengths do not fit the job.
+# The workflow commits the prediction JSON only, never the decrypted audio.
+name: instrument-id
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: { group: instrument-id, cancel-in-progress: false }
+jobs:
+  songs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Key present
+        env: { AUDIO_KEY: "${{ secrets.AUDIO_KEY }}" }
+        run: |
+          if [ -z "$AUDIO_KEY" ]; then echo "::error::Secret AUDIO_KEY is missing"; exit 1; fi
+          echo "key is set"
+      - name: Install
+        run: |
+          sudo apt-get install -y -qq ffmpeg > /dev/null
+          pip install -q torch torchaudio torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -q -r scripts/instrument_id/requirements.txt cryptography
+      - name: Decrypt and predict
+        env: { AUDIO_KEY: "${{ secrets.AUDIO_KEY }}" }
+        run: |
+          mkdir -p work
+          for slug in i-have-come-alive karitas one; do
+            python3 scripts/pipeline/decrypt_audio.py "$slug"
+          done
+          python3 scripts/instrument_id/run.py songs
+      - name: Commit predictions
+        run: |
+          git config user.name "living-lyrics-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add \
+            docs/analysis/instrument-id-eval.md \
+            docs/analysis/i-have-come-alive/instrument-id.json \
+            docs/analysis/i-have-come-alive/fusion.json \
+            docs/analysis/i-have-come-alive/instruments.md \
+            docs/analysis/karitas/instrument-id.json \
+            docs/analysis/karitas/fusion.json \
+            docs/analysis/karitas/instruments.md \
+            docs/analysis/one/instrument-id.json \
+            docs/analysis/one/fusion.json \
+            docs/analysis/one/instruments.md
+          git commit -m "Record instrument predictions for the three songs" || exit 0
+          git pull --rebase -q && git push -q
