@@ -179,10 +179,21 @@ def test_proof_decision() -> None:
 def test_second_span() -> None:
     t0, t1 = align.second_span(108.87, 112.78, 100.0, 140.0, 580.0)
     check('phrase window is the line plus 2 s', abs(t0 - 106.87) < 1e-6 and abs(t1 - 114.78) < 1e-6, f'{t0:.2f}–{t1:.2f}')
+    t0, t1 = align.second_span(108.87, 112.78, 100.0, 140.0, 580.0, prev_end=108.86, next_start=112.79)
+    check('back-to-back lines are not inside the window', 108.8 <= t0 <= 108.87 and 112.78 <= t1 <= 112.85, f'{t0:.2f}–{t1:.2f}')
+    t0, t1 = align.second_span(108.87, 112.78, 100.0, 140.0, 580.0, prev_end=100.0, next_start=120.0)
+    check('a real gap still keeps the 2 s pad', abs(t0 - 106.87) < 1e-6 and abs(t1 - 114.78) < 1e-6, f'{t0:.2f}–{t1:.2f}')
     t0, t1 = align.second_span(32.8, 104.2, 20.0, 160.0, 580.0)
     check('a smeared phrase is capped at 12 s', abs((t1 - t0) - 12.0) < 1e-6 and t1 < 50, f'{t0:.2f}–{t1:.2f}')
     t0, t1 = align.second_span(10.0, 14.0, 12.0, 20.0, 580.0)
-    check('window stays inside the section pad', 10.0 <= t0 and t1 <= 22.0, f'{t0:.2f}–{t1:.2f}')
+    check('window stays inside the section fence', t0 >= 11.5 and t1 <= 20.5, f'{t0:.2f}–{t1:.2f}')
+
+
+def test_anchor_fence() -> None:
+    check('a span inside the section stays', align.anchor_in_section(108.0, 112.0, 100.0, 116.0))
+    check('one second of slack stays', align.anchor_in_section(99.0, 117.0, 100.0, 116.0))
+    check('a vocalise 70 s earlier is outside', not align.anchor_in_section(32.0, 104.0, 100.0, 116.0))
+    check('a span that runs into the next chorus is outside', not align.anchor_in_section(108.0, 130.0, 100.0, 116.0))
 
 
 def test_song_status() -> None:
@@ -252,6 +263,7 @@ def main() -> int:
     test_song_status()
     test_build_proof_independent()
     test_second_span()
+    test_anchor_fence()
     print('FAIL' if PASS else 'all checks passed')
     return PASS
 

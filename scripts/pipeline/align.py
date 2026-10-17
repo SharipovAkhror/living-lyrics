@@ -12,8 +12,10 @@ How it works:
 1. Letter posteriors for the whole vocal stem (50 frames per second) are computed once, in 30 s
    chunks with 3 s of context on each side, and cached in work/<slug>/align-emission.npy.
 2. Anchor pass — roughly where is each line? By default one Viterbi pass of the whole text over the
-   whole song: it needs no draft times at all. `--anchors sections` aligns each vocal section in its
-   own window (section bounds ± 15 s) instead; `--anchors draft` trusts the times in lyrics.json.
+   whole song: it needs no draft times at all. If that path leaves a line's section (more than 2 s
+   outside the section map), it is discarded and each section is aligned in its own window
+   (section bounds ± 15 s). `--anchors sections` does that directly; `--anchors draft` trusts the
+   times in lyrics.json.
 3. Line pass, in lyrics.json order. Line i is searched in a window that starts where line i-1 ended
    (or `margin` s before its anchor, whichever is later) and ends `margin` s after the anchor end of
    line i+1. Line i+1 is aligned together with it as look-ahead and then discarded, so line i cannot
@@ -59,7 +61,8 @@ ISO3 = {'ar': 'ara', 'fa': 'fas', 'az': 'aze', 'tr': 'tur', 'ota': 'ota', 'en': 
         'es': 'spa', 'ur': 'urd', 'hi': 'hin', 'ru': 'rus', 'uz': 'uzb', 'fr': 'fra', 'it': 'ita'}
 FPS = 50                 # MMS_FA: one frame per 320 samples at 16 kHz
 CHUNK_S, CTX_S = 30.0, 3.0
-SECTION_PAD = 15.0       # --anchors sections: search this far around the drafted section
+SECTION_PAD = 15.0       # --anchors sections: search this far around the section map
+ANCHOR_SLACK = 2.0       # a global-pass span this far outside its section is a different occurrence
 MAX_EXTEND = 4.0         # a word end may follow the voice this far
 MAX_TOKEN = 0.5          # longest stretch one letter may hold in the CTC path
 MAX_WORD_SPAN = 2.5      # longest span from a word's first to its last letter
@@ -223,6 +226,15 @@ def align_window(lp: np.ndarray, t0: int, t1: int, units: list[Unit]) -> list[di
 
 # ---------------------------------------------------------------- passes
 
+def anchor_in_section(a0: float, a1: float, sec_start: float, sec_end: float, slack: float = ANCHOR_SLACK) -> bool:
+    """True when a global-pass span sits in the section map, slack included.
+
+    Draft word times are not the fence. A span that starts in an earlier vocalise or runs into
+    the next chorus is rejected, and the caller aligns that song by sections instead.
+    """
+    return sec_start - slack <= a0 <= sec_end + slack and sec_start - slack <= a1 <= sec_end + slack and a1 > a0
+
+
 def anchor_pass(lp: np.ndarray, units: list[Unit], mode: str) -> dict[int, tuple[float, float]]:
     """Expected (start, end) seconds per unit index."""
     if mode == 'global':
@@ -232,10 +244,16 @@ def anchor_pass(lp: np.ndarray, units: list[Unit], mode: str) -> dict[int, tuple
             mode = 'sections'
         else:
             res = align_window(lp, 0, len(lp), units)
-            if res is not None:
-                return {u.idx: (r['f0'] / FPS, r['f1'] / FPS) for u, r in zip(units, res)}
-            print('anchors: global pass failed, using sections')
-            mode = 'sections'
+            if res is None:
+                print('anchors: global pass failed, using sections')
+                mode = 'sections'
+            else:
+                raw = {u.idx: (r['f0'] / FPS, r['f1'] / FPS) for u, r in zip(units, res)}
+                outside = [u.id for u in units if not anchor_in_section(*raw[u.idx], float(u.sec['start']), float(u.sec['end']))]
+                if not outside:
+                    return raw
+                print(f'anchors: global pass left the section map ({", ".join(outside[:6])}), using sections')
+                mode = 'sections'
     if mode == 'sections':
         out: dict[int, tuple[float, float]] = {}
         prev_end = 0
@@ -292,20 +310,29 @@ def line_pass(lp: np.ndarray, units: list[Unit], anchors: dict, margin: float) -
 
 
 def second_span(phrase_start: float, phrase_end: float, sec_start: float, sec_end: float, duration: float,
-                pad: float = 2.0, max_win: float = 12.0) -> tuple[float, float]:
+                prev_end: float | None = None, next_start: float | None = None,
+                pad: float = 2.0, max_win: float = 12.0, sec_pad: float = 0.5) -> tuple[float, float]:
     """Search window for the second aligner.
 
     The phrase is the line pass (measured on the vocal stem, before any snap). Pad it by `pad`
-    seconds. A global-CTC anchor can stretch one line across the next chorus, so the window is
-    never longer than `max_win` and never taken from draft word times. It is also clipped to the
-    section map with the same pad.
+    seconds, but stop at a neighbouring measured line: a 2 s pad on back-to-back lines feeds the
+    next lyric to WhisperX, which then disagrees by that same 1–2 s. A smeared phrase is capped
+    at `max_win`. The section map is a fence of `sec_pad`, not of `pad`. Draft word times are
+    not a window and not a neighbour.
     """
+    phrase_end = max(phrase_end, phrase_start)
     t0 = max(0.0, phrase_start - pad)
-    t1 = min(duration, max(phrase_end, phrase_start) + pad)
+    t1 = min(duration, phrase_end + pad)
+    if prev_end is not None:
+        t0 = max(t0, min(phrase_start, float(prev_end)))
+    if next_start is not None:
+        t1 = min(t1, max(phrase_end, float(next_start)))
+    if t1 < t0 + 0.4:
+        t1 = min(duration, t0 + 0.4)
     if t1 - t0 > max_win:
         t1 = min(duration, t0 + max_win)
-    sec0 = max(0.0, sec_start - pad)
-    sec1 = min(duration, sec_end + pad)
+    sec0 = max(0.0, sec_start - sec_pad)
+    sec1 = min(duration, sec_end + sec_pad)
     if sec1 - sec0 >= 0.4:
         t0 = min(max(t0, sec0), sec1 - 0.4)
         t1 = max(min(t1, sec1), t0 + 0.4)
@@ -477,14 +504,18 @@ def main() -> None:
         w[1] = max(w[1], min(e, limit))
 
     # Second opinion on solo lines the main aligner placed confidently. The window is the measured
-    # phrase plus 2 s, capped at 12 s (see second_span): a wide anchor swallows the next chorus.
-    # Draft word times are not used. Choir is not run.
+    # phrase, padded, but cut at the neighbouring measured line (see second_span). Draft word
+    # times are not used. Choir is not run.
     jobs = []
     second_window: dict[str, tuple[float, float]] = {}
-    for u, c, span in zip(units, conf, phrase):
+    measured = [span if c['status'] != 'draft' else None for span, c in zip(phrase, conf)]
+    for i, (u, c, span) in enumerate(zip(units, conf, phrase)):
         if c['status'] != 'good' or not T.is_solo(u.sec, u.line):
             continue
-        t0, t1 = second_span(span[0], span[1], float(u.sec['start']), float(u.sec['end']), duration)
+        prev_end = next((measured[j][1] for j in range(i - 1, -1, -1) if measured[j] is not None), None)
+        next_start = next((measured[j][0] for j in range(i + 1, len(measured)) if measured[j] is not None), None)
+        t0, t1 = second_span(span[0], span[1], float(u.sec['start']), float(u.sec['end']), duration,
+                             prev_end, next_start)
         second_window[u.id] = (t0, t1)
         jobs.append({'id': u.id, 'lang': u.line['lang'], 'script': u.line['script'],
                      'words': [w['w'] for w in u.line['words']], 't0': t0, 't1': t1})
