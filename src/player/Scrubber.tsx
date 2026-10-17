@@ -1,8 +1,8 @@
 /**
- * Timeline scrubber in the Apple Music manner: a thin track that thickens under the finger,
- * no visible thumb. Instrumental stretches are drawn as quieter segments so the shape of the song is visible.
+ * Timeline scrubber: a thin track that thickens under the finger, tap or drag to seek.
+ * Instrumental stretches are marked on the rail. Time sits above the rail, beside an optional control.
  */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Timeline } from '@/data/timeline';
 import { formatTime } from '@/data/library';
 
@@ -11,11 +11,14 @@ export function Scrubber({
   duration,
   clock,
   onSeek,
+  accessory,
 }: {
   timeline: Timeline;
   duration: number;
   clock: () => number;
   onSeek: (t: number) => void;
+  /** Sits on the time row, opposite the current time. The mismatch key lives here. */
+  accessory?: ReactNode;
 }) {
   const track = useRef<HTMLDivElement>(null);
   const fill = useRef<HTMLDivElement>(null);
@@ -52,6 +55,12 @@ export function Scrubber({
 
   return (
     <div className={`scrub${dragging ? ' is-dragging' : ''}`}>
+      <div className="scrub-top">
+        <span ref={cur} className="scrub-now tabular">
+          0:00
+        </span>
+        {accessory}
+      </div>
       <div
         ref={track}
         className="scrub-track"
@@ -98,9 +107,10 @@ export function Scrubber({
           <div ref={fill} className="scrub-fill" />
         </div>
       </div>
-      <div className="scrub-times t-caption1 tabular">
-        <span ref={cur}>0:00</span>
-        <span ref={rem}>−0:00</span>
+      <div className="scrub-meta">
+        <span ref={rem} className="scrub-remain tabular">
+          −0:00
+        </span>
       </div>
     </div>
   );

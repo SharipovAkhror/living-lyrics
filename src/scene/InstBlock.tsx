@@ -1,9 +1,9 @@
 import { memo, useLayoutEffect, useRef, useState } from 'react';
 import type { InstCue, Timeline } from '@/data/timeline';
-import type { MotionPref } from '@/app/settings';
+import type { LineEntrance, MotionPref } from '@/app/settings';
 import { formatTime } from '@/data/library';
 import { instrument } from '@/instruments/catalog';
-import { blockState, clamp01, type Measure } from './flow';
+import { blockState, clamp01, entranceOpacity, type Measure } from './flow';
 import type { BlockUpdater } from './LineBlock';
 import { InstrumentStage } from './InstrumentStage';
 
@@ -12,6 +12,7 @@ interface Props {
   timeline: Timeline;
   /** Timing is measured: countdowns like «Голос через 0:12» can be trusted. */
   timed: boolean;
+  entrance: LineEntrance;
   motion: MotionPref;
   stage: { w: number; h: number };
   register: (idx: number, fn: BlockUpdater | null, m?: Measure) => void;
@@ -23,7 +24,7 @@ interface Props {
  * An instrumental passage in the flow. Ahead of time it is a compact line ("Дальше — уд, канун"),
  * on stage it opens into the engravings on a material plate, with who plays and when the voice returns.
  */
-function InstBlockImpl({ cue, timeline, timed, motion, stage, register, onPick }: Props) {
+function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, register, onPick }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const compact = useRef<HTMLDivElement>(null);
   const full = useRef<HTMLDivElement>(null);
@@ -55,8 +56,9 @@ function InstBlockImpl({ cue, timeline, timed, motion, stage, register, onPick }
     if (!r) return;
     const s = blockState(d);
     const p = s.presence;
+    r.style.zIndex = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
     r.style.transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
-    r.style.opacity = s.opacity.toFixed(3);
+    r.style.opacity = entranceOpacity(d, entrance, s.opacity).toFixed(3);
     r.style.visibility = s.opacity < 0.01 ? 'hidden' : 'visible';
     r.style.height = `${(compactH.current + (fullH - compactH.current) * p).toFixed(1)}px`;
     if (compact.current) compact.current.style.opacity = (1 - clamp01(p * 2.5)).toFixed(3);
