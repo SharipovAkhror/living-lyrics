@@ -19,10 +19,11 @@ src/instruments/list.ts except `ensemble` has an English prompt. A second, gener
 PANNs weights are not loaded: the code repository has no LICENSE file and the Zenodo record
 only says Open.
 
-Windows are 1–3 s. A label is active only when it is one of the two closest prompts, ahead of
-silence, and above a probability floor that scales with the number of prompts. Thresholds are
-constants of the method, not of a song. The agent confirms the proposal against the credits
-before anything is written into lyrics.json.
+Windows are 1–3 s. A label is active only when its cosine is the closest, ahead of silence
+and ahead of the runner-up, for at least two windows in a row. Softmax is reported but not
+used as a gate: with many prompts it sits near 1/N. Thresholds are constants of the method,
+not of a song. The agent confirms the proposal against the credits before anything is written
+into lyrics.json.
 """
 from __future__ import annotations
 
@@ -50,12 +51,11 @@ MIX_HOP_S = float(os.environ.get('CLAP_MIX_HOP', '3.0'))
 ENERGY_FLOOR = 0.15
 # Above this vocal-stem level the mix is the singer, so melodic labels on the mix are ignored.
 VOCAL_MASK = 0.35
-# Probability must beat this floor and a multiple of the uniform prior 1/N.
-ON_FLOOR = 0.15
-ON_FACTOR = 2.0
-OFF_FLOOR = 0.08
-OFF_FACTOR = 1.3
-MIN_MARGIN = 0.0
+# Softmax over dozens of prompts is almost uniform when cosines differ by ~0.01, so the
+# gate is the cosine itself: the winner must beat silence and the runner-up, and it must
+# hold for two windows. These are method constants, not per-song knobs.
+COSINE_EPS = 1e-4
+MIN_WINDOWS = 2
 BRIDGE_S = 2.0
 BRIDGE_DRUM_S = 1.0
 MIN_REGION_S = 1.5
@@ -249,15 +249,6 @@ def smooth(values: np.ndarray, width: int = 3) -> np.ndarray:
     return np.convolve(np.asarray(values, dtype=np.float64), kernel, mode='same')
 
 
-def hysteresis(values: np.ndarray, on: float, off: float) -> np.ndarray:
-    state = False
-    out = np.zeros(len(values), dtype=bool)
-    for i, value in enumerate(values):
-        state = value >= (off if state else on)
-        out[i] = state
-    return out
-
-
 def centers_of(duration: float, hop: float) -> np.ndarray:
     if duration <= 0.05:
         return np.zeros(0)
@@ -332,6 +323,11 @@ class Tagger:
             emb = _as_tensor(self.model.get_text_features(**payload))
         emb = self.torch.nn.functional.normalize(emb, dim=-1).cpu().numpy()
         self._text[key] = emb
+        if len(emb) > 1:
+            pair = emb @ emb.T
+            off = pair[~np.eye(len(emb), dtype=bool)]
+            print(f'  текст: попарный косинус медиана {float(np.median(off)):.4f} '
+                  f'мин {float(off.min()):.4f} макс {float(off.max()):.4f}', flush=True)
         return emb
 
     def score(self, clips: list[np.ndarray], prompts: list[str]) -> tuple[np.ndarray, np.ndarray]:
@@ -345,9 +341,9 @@ class Tagger:
         for start in range(0, len(clips), batch):
             piece = clips[start:start + batch]
             try:
-                inputs = self.processor(audios=piece, sampling_rate=CLAP_SR, return_tensors='pt', padding=True)
-            except TypeError:
                 inputs = self.processor(audio=piece, sampling_rate=CLAP_SR, return_tensors='pt', padding=True)
+            except TypeError:
+                inputs = self.processor(audios=piece, sampling_rate=CLAP_SR, return_tensors='pt', padding=True)
             allowed = self._tensors(inputs, ('input_features', 'is_longer'))
             with self.torch.inference_mode():
                 try:
@@ -369,24 +365,24 @@ class Tagger:
 def activation(probs: np.ndarray, sims: np.ndarray, column: int) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Boolean mask, smoothed probability and smoothed margin for one prompt column.
 
-    The background prompt is the last column. A label must be among the two closest
-    non-silence prompts, beat silence by MIN_MARGIN, and clear the probability floor.
+    The background prompt is the last column. A label is on only when it is the closest
+    prompt, ahead of silence and ahead of the runner-up. Probability is kept for the
+    report; with many prompts it sits near 1/N even when the cosine has a winner.
     """
-    n_labels = probs.shape[1]
-    bg = n_labels - 1
+    bg = probs.shape[1] - 1
     prob = smooth(probs[:, column])
     margin = smooth(sims[:, column] - sims[:, bg])
-    on = max(ON_FLOOR, ON_FACTOR / max(n_labels, 1))
-    off = min(on * 0.75, max(OFF_FLOOR, OFF_FACTOR / max(n_labels, 1)))
-    state = hysteresis(prob, on, off)
-    others = np.delete(probs, bg, axis=1)
+    others = np.delete(sims, bg, axis=1)
     rank = column if column < bg else column - 1
     if others.shape[1] <= 1:
-        in_top = np.ones(len(probs), dtype=bool)
+        best = np.ones(len(sims), dtype=bool)
+        ahead = np.ones(len(sims), dtype=bool)
     else:
-        top2 = np.argsort(others, axis=1)[:, -2:]
-        in_top = np.any(top2 == rank, axis=1)
-    return state & (margin >= MIN_MARGIN) & in_top, prob, margin
+        order = np.argsort(others, axis=1)
+        best = order[:, -1] == rank
+        runner_up = others[np.arange(len(others)), order[:, -2]]
+        ahead = others[:, rank] >= runner_up + COSINE_EPS
+    return best & ahead & (margin >= COSINE_EPS), prob, margin
 
 
 def regions_from_mask(times: np.ndarray, mask: np.ndarray, hop: float, prob: np.ndarray,
@@ -406,7 +402,8 @@ def regions_from_mask(times: np.ndarray, mask: np.ndarray, hop: float, prob: np.
     for group in groups:
         t0 = float(times[group[0]] - hop / 2.0)
         t1 = float(times[group[-1]] + hop / 2.0)
-        if t1 - t0 < min_len:
+        # One window is a coin flip when cosines are close. Two agreeing windows are a region.
+        if len(group) < MIN_WINDOWS or t1 - t0 < min_len:
             continue
         out.append(Region(
             start=max(0.0, t0), end=t1,
@@ -503,16 +500,21 @@ def diagnose(probs: np.ndarray, sims: np.ndarray, scored: np.ndarray) -> dict:
     rows = np.arange(len(labels))
     margin = sim[rows, top_i] - bg
     top = labels.max(axis=1)
+    part = np.partition(sim, -2, axis=1) if sim.shape[1] > 1 else np.repeat(sim, 2, axis=1)
+    gap = part[:, -1] - part[:, -2]
 
     def pct(values, q):
-        return round(float(np.percentile(values, q)), 3)
+        return round(float(np.percentile(values, q)), 4)
 
     return {
         'windows': int(len(probs)),
         'scored': int(np.count_nonzero(scored)),
         'margin_p50': pct(margin, 50),
         'margin_p90': pct(margin, 90),
-        'margin_max': round(float(np.max(margin)), 3),
+        'margin_max': round(float(np.max(margin)), 4),
+        'gap_p50': pct(gap, 50),
+        'gap_p90': pct(gap, 90),
+        'sim_std': round(float(np.std(sim)), 4),
         'top_prob_p50': pct(top, 50),
         'top_prob_p90': pct(top, 90),
     }
@@ -545,6 +547,12 @@ def score_stem(tagger: Tagger, samples: np.ndarray, sr: int, duration: float, en
     sims = np.zeros((len(grid), len(prompts)))
     if clips:
         got_p, got_s = tagger.score(clips, prompts)
+        print(f'  косинусы {stem}: std {float(got_s.std()):.4f} '
+              f'min {float(got_s.min()):.4f} max {float(got_s.max()):.4f}', flush=True)
+        show = int(np.argmax(got_s[:, :-1].max(axis=1) - got_s[:, -1]))
+        order = np.argsort(got_s[show, :-1])[::-1][:5]
+        named = ', '.join(f'{keys[int(col)]} {got_s[show, int(col)]:.4f}' for col in order)
+        print(f'  окно с наибольшим отрывом, тишина {got_s[show, -1]:.4f}: {named}', flush=True)
         for row, i in enumerate(scored_i):
             probs[i] = got_p[row]
             sims[i] = got_s[row]
@@ -702,7 +710,7 @@ def render_md(slug: str, title: str, duration: float, line: list[dict], sections
 
     diag_rows = ''.join(
         f"| {name} | {pack.get('scored', 0)}/{pack.get('windows', 0)} | {pack.get('margin_p50', '—')} "
-        f"| {pack.get('margin_p90', '—')} | {pack.get('top_prob_p90', '—')} |\n"
+        f"| {pack.get('margin_p90', '—')} | {pack.get('gap_p90', '—')} | {pack.get('top_prob_p90', '—')} |\n"
         for name, pack in diag.items()
     )
     parts = [
@@ -743,8 +751,8 @@ def render_md(slug: str, title: str, duration: float, line: list[dict], sections
             parts.append('Голос на этом отрезке (в гравюры сопровождения не ставится):\n')
             parts.append(table(section['voice']))
     parts.append('## Насколько модель вообще различает подсказки\n')
-    parts.append('| стем | окон с громкостью / всех | отрыв от тишины, медиана | отрыв, 90 % | вероятность лидера, 90 % |\n')
-    parts.append('|---|---|---|---|---|\n')
+    parts.append('| стем | окон с громкостью / всех | отрыв от тишины, медиана | отрыв, 90 % | отрыв от второго, 90 % | вероятность лидера, 90 % |\n')
+    parts.append('|---|---|---|---|---|---|\n')
     parts.append(diag_rows or '| — | — | — | — | — |\n')
     parts.append('\nОтрыв — насколько ближайшая подсказка ближе тишины. Если медиана около нуля, '
                  'модель на этой записи почти не предпочитает ни один инструмент.\n')
@@ -815,7 +823,7 @@ def analyze(slug: str) -> None:
         'hop_s': {'drums': DRUM_HOP_S, 'bass': HOP_S, 'other': HOP_S, 'mix': MIX_HOP_S},
         'thresholds': {
             'energy_floor': ENERGY_FLOOR, 'vocal_mask': VOCAL_MASK,
-            'on_floor': ON_FLOOR, 'on_factor': ON_FACTOR, 'min_margin': MIN_MARGIN,
+            'cosine_eps': COSINE_EPS, 'min_windows': MIN_WINDOWS,
             'bridge_s': BRIDGE_S, 'bridge_drum_s': BRIDGE_DRUM_S,
             'min_region_s': MIN_REGION_S, 'min_drum_region_s': MIN_DRUM_REGION_S,
         },
@@ -858,7 +866,7 @@ def _self_test() -> None:
     mask = np.array([True, False, False, True])
     prob = np.array([0.4, 0.0, 0.0, 0.5])
     got = regions_from_mask(times, mask, 2.0, prob, prob, prob, 'other', 1.5, 2.0)
-    assert len(got) == 2, got  # gap of 4 s is not bridged by 2 s
+    assert len(got) == 0, got  # a single window is not a region, and the 4 s gap does not bridge
     mask2 = np.array([False, True, True, False])
     got2 = regions_from_mask(times, mask2, 2.0, np.full(4, 0.3), np.full(4, 0.1), np.full(4, 0.2), 'drums', 1.0, 1.0)
     assert len(got2) == 1 and got2[0].start == 2.0 and got2[0].end == 6.0, got2
