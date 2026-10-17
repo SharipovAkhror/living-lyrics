@@ -8,6 +8,7 @@ import { SongPage } from '@/pages/song/SongPage';
 
 const MethodPage = lazy(() => import('@/pages/MethodPage').then((m) => ({ default: m.MethodPage })));
 const InstrumentsPage = lazy(() => import('@/pages/InstrumentsPage'));
+const LabPage = lazy(() => import('@/lab/design/LabPage').then((m) => ({ default: m.LabPage })));
 
 export function App() {
   const route = useRoute();
@@ -33,6 +34,13 @@ export function App() {
       page = (
         <Suspense fallback={null}>
           <MethodPage doc={route.doc} />
+        </Suspense>
+      );
+      break;
+    case 'lab':
+      page = (
+        <Suspense fallback={null}>
+          <LabPage dir={route.dir} />
         </Suspense>
       );
       break;
