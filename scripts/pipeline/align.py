@@ -29,8 +29,9 @@ How it works:
      draft — the text was not found (wrong words, a verse that is not sung): the draft times stay,
              fitted between the measured neighbours.
    align.py does not decide the flag. It marks every line `timing-draft` and leaves
-   `timing.status` at `draft`. qa_sync.py --apply clears the flag only where the two aligners and
-   the vocal attacks agree within 0.1 s, and only then may set `timing.status` to `aligned`.
+   `timing.status` at `draft`. qa_sync.py --apply clears the flag only where the pre-snap start
+   and a WhisperX start agree with each other and with a vocal attack within 0.1 s. The song
+   becomes `aligned` only when at least 80 % of its solo lines are proved that way.
 
 Writes lyrics.json (word s/e and the timing-draft flag; section bounds only with --move-sections),
 song.json timing (status stays draft), work/<slug>/align-report.json and work/<slug>/timing.json.
@@ -250,8 +251,12 @@ def anchor_pass(lp: np.ndarray, units: list[Unit], mode: str) -> dict[int, tuple
             t1 = int((sec['end'] + SECTION_PAD) * FPS)
             res = align_window(lp, t0, t1, g)
             if res is None:
+                # Draft word times are the estimate being replaced, so they are not a search window.
+                # The section map is. line_pass then pads it by `margin`.
+                lo, hi = float(sec['start']), float(sec['end'])
                 for u in g:
-                    out[u.idx] = u.draft
+                    out[u.idx] = (lo, hi)
+                prev_end = int(hi * FPS)
                 continue
             for u, r in zip(g, res):
                 out[u.idx] = (r['f0'] / FPS, r['f1'] / FPS)
@@ -289,9 +294,10 @@ def line_pass(lp: np.ndarray, units: list[Unit], anchors: dict, margin: float) -
 def snap_onsets(sig, times: list[list], units: list[Unit], measured: list[bool]) -> list[list[float | None]]:
     """Move a measured word start onto a clear vocal attack within SNAP_WIN.
 
-    The attack list is the same one qa_sync measures against, so a snapped word then sits on the
-    attack (distance 0) and an attack further than SNAP_WIN is left for the check to reject.
-    Returns the shift per word, None where no attack was close enough."""
+    This changes the published time only. A snapped word then sits on the attack, so the distance
+    from the published start to that attack is 0 and is not a measurement. qa_sync scores the
+    start from before this move (`ctc_s`). Returns the shift per word, None where no attack was
+    close enough."""
     peaks = Q.onset_peak_times(sig, min_height=Q.PEAK_HEIGHT)
     out: list[list[float | None]] = []
     prev = None  # previous word of the song, [s, e]
@@ -359,7 +365,7 @@ def main() -> None:
     ap.add_argument('--move-sections', action='store_true', help='move section bounds to the measured words (off by default)')
     ap.add_argument('--dry-run', action='store_true', help='write only work/<slug>/align-report.json and timing.json')
     ap.add_argument('--force', action='store_true', help='overwrite even when song.json timing is "verified"')
-    ap.add_argument('--second', default='auto', help='second aligner: auto | whisperx | mms1b | none (default auto)')
+    ap.add_argument('--second', default='auto', help='second aligner: auto | whisperx | none (default auto)')
     ap.add_argument('--proof', choices=['agree', 'strict'], default='agree',
                     help='agree: two aligners within 100 ms + line on the voice; strict: also a clear onset at every word')
     args = ap.parse_args()
@@ -447,11 +453,27 @@ def main() -> None:
             e += F.HOP
         w[1] = max(w[1], min(e, limit))
 
-    # Second opinion on solo lines the main aligner placed confidently. Choir and duet lines are
-    # never proven, so the heavy model is not run for them.
-    jobs = [{'id': u.id, 'lang': u.line['lang'], 'script': u.line['script'], 'words': [w['w'] for w in u.line['words']],
-             't0': ws[0][0] - 1.0, 't1': ws[-1][1] + 1.0}
-            for u, ws, c in zip(units, times, conf) if c['status'] == 'good' and T.is_solo(u.sec, u.line)]
+    # Second opinion on solo lines the main aligner placed confidently. The window is the anchor
+    # (global CTC, or the section bounds when that pass failed) plus the same margin — never the
+    # draft word times, and never ±1 s around the already snapped starts. Choir is not run.
+    jobs = []
+    second_window: dict[str, tuple[float, float]] = {}
+    for u, c in zip(units, conf):
+        if c['status'] != 'good' or not T.is_solo(u.sec, u.line):
+            continue
+        if args.anchors == 'draft':
+            t0 = max(0.0, float(u.sec['start']) - SECTION_PAD)
+            t1 = min(duration, float(u.sec['end']) + SECTION_PAD)
+        else:
+            a0, a1 = anchors[u.idx]
+            t0 = max(0.0, float(a0) - margin)
+            t1 = min(duration, float(a1) + margin)
+        if t1 - t0 < 0.4:
+            t0 = max(0.0, float(u.sec['start']) - SECTION_PAD)
+            t1 = min(duration, float(u.sec['end']) + SECTION_PAD)
+        second_window[u.id] = (t0, t1)
+        jobs.append({'id': u.id, 'lang': u.line['lang'], 'script': u.line['script'],
+                     'words': [w['w'] for w in u.line['words']], 't0': t0, 't1': t1})
     second_starts, second_name = engines.align_jobs(args.second, x, jobs)
 
     # The sync check on the final times, line by line.
@@ -496,6 +518,8 @@ def main() -> None:
             'status': status, 'level': level, 'conf': round(proven_n / letters_n, 2) if letters_n else 0.0,
             'qa': q['verdict'], 'qa_offset': q['offset'], 'method': p['method'],
             'window': [round(p['window'][0], 2), round(p['window'][1], 2)],
+            'second_window': ([round(second_window[u.id][0], 2), round(second_window[u.id][1], 2)]
+                              if u.id in second_window else None),
             'start': round(ws[0][0], 2), 'end': round(ws[-1][1], 2),
             'draft_start': u.draft[0], 'shift': round(ws[0][0] - u.draft[0], 2),
             'anchor_start': round(anchors[u.idx][0], 2), 'agree': round(agree, 2),

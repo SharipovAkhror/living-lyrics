@@ -5,7 +5,7 @@
 ## Отделить голос
 
 ```bash
-python3 scripts/pipeline/separate.py <slug>        # Demucs htdemucs → work/<slug>/stems/vocals.wav, no_vocals.wav
+python3 scripts/pipeline/separate.py <slug>        # Demucs htdemucs → vocals, drums, bass, other (четыре стема, без --two-stems)
 python3 scripts/pipeline/sections.py <slug>        # предложит границы секций по энергии вокального стема
 ```
 

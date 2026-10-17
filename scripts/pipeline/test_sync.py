@@ -49,10 +49,16 @@ def test_viterbi() -> None:
 
 def test_engines() -> None:
     check('english uses whisperx only', engines.preferred('en') == ['whisperx'])
+    check('german uses whisperx only', engines.preferred('de') == ['whisperx'])
+    check('spanish uses whisperx only', engines.preferred('es') == ['whisperx'])
+    check('arabic uses whisperx only', engines.preferred('ar') == ['whisperx'])
     check('persian uses whisperx only', engines.preferred('fa') == ['whisperx'])
-    check('azerbaijani uses mms-1b only', engines.preferred('az') == ['mms1b'])
-    check('latin uses mms-1b only', engines.preferred('la') == ['mms1b'])
+    check('turkish uses whisperx only', engines.preferred('tr') == ['whisperx'])
+    check('azerbaijani has no second model', engines.preferred('az') == [])
+    check('latin has no second model', engines.preferred('la') == [])
     check('medieval german has no second model', engines.preferred('gmh') == [])
+    check('ottoman turkish has no second model', engines.preferred('ota') == [])
+    check('mms-1b is not a second aligner', 'mms1b' not in engines.ENGINES)
     vocab = {'-': 0, '|': 1, 'a': 2, 'b': 3}
     tokens, owner = engines.line_tokens(['ab', 'ba'], vocab, {0, 1}, blank=0)
     check('word boundary between words', tokens == [2, 3, 1, 3, 2] and owner == [0, 0, -1, 1, 1], str(list(zip(tokens, owner))))
@@ -143,42 +149,84 @@ def test_word_gate() -> None:
 
 
 def test_proof_decision() -> None:
-    qa_ok = {'verdict': 'ok', 'offset': 0.0}
-    meas = [{'ok': True, 'abs': 0.02, 'kind': 'onset'}, {'ok': True, 'abs': 0.04, 'kind': 'onset'}]
+    presnap = [0.02, 0.04]
     words = [
         {'roman': 'aa', 'ctc_s': 1.0, 'second_s': 1.04},
         {'roman': 'bb', 'ctc_s': 2.0, 'second_s': 2.05},
     ]
-    got = Q.proof_line(True, 'good', True, meas, words, qa_ok, True)
+    got = Q.proof_line(True, 'good', True, presnap, words, True)
     check('solo agreement passes', got['pass'], str(got))
-    got = Q.proof_line(False, 'good', True, meas, words, qa_ok, True)
+    got = Q.proof_line(False, 'good', True, presnap, words, True)
     check('choir does not pass', (not got['pass']) and got['reason'] == 'not-solo', str(got))
     far = [dict(words[0], second_s=1.4), words[1]]
-    got = Q.proof_line(True, 'good', True, meas, far, qa_ok, True)
+    got = Q.proof_line(True, 'good', True, presnap, far, True)
     check('aligners 0.4 s apart fail', (not got['pass']) and got['reason'] == 'aligners-disagree', str(got))
-    got = Q.proof_line(True, 'draft', True, meas, words, qa_ok, True)
+    got = Q.proof_line(True, 'draft', True, presnap, words, True)
     check('text not found fails', got['reason'] == 'text-not-found', str(got))
-    onset = [{'ok': False, 'abs': 0.3, 'kind': 'onset-far'}, meas[1]]
-    got = Q.proof_line(True, 'good', True, onset, words, qa_ok, True)
-    check('onset 0.3 s fails', got['reason'] == 'onset', str(got))
-    got = Q.proof_line(True, 'good', True, meas, words, qa_ok, False)
+    # Published time is irrelevant: the gate reads this pre-snap distance.
+    got = Q.proof_line(True, 'good', True, [0.30, 0.04], words, True)
+    check('pre-snap onset 0.3 s fails', (not got['pass']) and got['reason'] == 'onset', str(got))
+    got = Q.proof_line(True, 'good', True, presnap, words, False)
     check('no align report fails closed', got['reason'] == 'no-report', str(got))
+    # A missing attack is not legato and does not pass.
+    got = Q.proof_line(True, 'good', True, [None, 0.04], words, True)
+    check('no attack near the pre-snap start fails', (not got['pass']) and got['reason'] == 'onset', str(got))
 
 
 def test_song_status() -> None:
-    # One proved solo line, onset errors under 0.1 → aligned.
+    check('one of 38 solos is not a song', not Q.song_proven(1, 38))
+    check('30 of 38 is under 80%', not Q.song_proven(30, 38))
+    check('31 of 38 clears 80%', Q.song_proven(31, 38))
+    check('no solo lines is not a song', not Q.song_proven(0, 0))
+    # timing_payload follows the flag build_proof already computed.
     proof = {
-        'aligned': True, 'solo': 2, 'passed': 1, 'failed_solo': 1, 'lines': [],
-        'reasons': {'onset': 1},
-        'onset_median': 0.02, 'onset_p90': 0.04,
+        'aligned': True, 'solo': 38, 'passed': 31, 'failed_solo': 7, 'lines': [],
+        'reasons': {'onset': 7},
+        'onset_median': 0.04, 'onset_p90': 0.08,
     }
-    # timing_payload reads the dict as build_proof returns it; call it directly.
     payload = Q.timing_payload('i-have-come-alive', proof, {'lines': []})
-    check('proved song is aligned', payload['status'] == 'aligned', payload['notes'][:80])
+    check('proved song is aligned', payload['status'] == 'aligned' and '80' in payload['notes'], payload['notes'][:120])
     proof['aligned'] = False
-    proof['passed'] = 0
+    proof['passed'] = 1
     payload = Q.timing_payload('i-have-come-alive', proof, {'lines': []})
-    check('unproved song stays draft', payload['status'] == 'draft' and 'draft' in payload['notes'], payload['status'])
+    check('unproved song stays draft', payload['status'] == 'draft' and '80' in payload['notes'], payload['notes'][:160])
+
+
+def test_build_proof_independent() -> None:
+    """A word snapped onto the attack must still be scored by the aligner's earlier start."""
+    _, sig = _bursts()
+    sec = {'id': 's', 'kind': 'vocal', 'voice': 'Сами Юсуф', 'start': 0.0, 'end': 4.0}
+
+    def line(lid: str) -> dict:
+        return {'id': lid, 'lang': 'en', 'words': [{'w': 'a', 's': t, 'e': t + 0.1} for t in (1.0, 2.0, 3.0)]}
+
+    def rec(lid: str, status: str, ctc: list[float], second: list[float]) -> dict:
+        return {
+            'id': lid, 'status': status, 'text': 'a a a', 'second': 'whisperx',
+            'second_window': [0.0, 4.0],
+            'words': [
+                {'w': 'a', 'roman': 'a', 'ctc_s': c, 'second_s': s2, 's': p, 'onset_dt': round(p - c, 3)}
+                for c, s2, p in zip(ctc, second, (1.0, 2.0, 3.0))
+            ],
+        }
+
+    qa = [{'verdict': 'ok', 'offset': 0.0}]
+    # Published s is the attack. CTC was 0.30 s early. Must not pass with error 0.
+    snap = Q.build_proof(sig, [(sec, line('snapped'))], qa, {'lines': [
+        rec('snapped', 'good', [0.70, 1.70, 2.70], [0.72, 1.72, 2.72]),
+    ]})
+    check('snapped line does not prove itself', (not snap['lines'][0]['pass']) and snap['lines'][0]['reason'] == 'onset', str(snap['lines'][0]))
+    # A fair line and a text-not-found line. One proven solo of two is under 80 %.
+    proof = Q.build_proof(sig, [(sec, line('fair')), (sec, line('missing'))], qa * 2, {'lines': [
+        rec('fair', 'good', [1.02, 2.02, 3.02], [1.04, 2.03, 3.05]),
+        rec('missing', 'draft', [1.02, 2.02, 3.02], [1.04, 2.03, 3.05]),
+    ]})
+    by = {r['id']: r for r in proof['lines']}
+    check('pre-snap agreement can pass', by['fair']['pass'], str(by['fair']))
+    check('text not found is not a proven solo', (not by['missing']['pass']) and by['missing']['reason'] == 'text-not-found', str(by['missing']))
+    check('one proven solo of two stays draft', (not proof['aligned']) and proof['passed'] == 1 and proof['solo'] == 2, f"{proof['passed']}/{proof['solo']}")
+    med = proof['onset_median']
+    check('passing median is the pre-snap error', med is not None and 0 < med <= 0.10, str(med))
 
 
 def main() -> int:
@@ -190,6 +238,7 @@ def main() -> int:
     test_word_gate()
     test_proof_decision()
     test_song_status()
+    test_build_proof_independent()
     print('FAIL' if PASS else 'all checks passed')
     return PASS
 

@@ -7,7 +7,7 @@
 #
 # Stages (run in this order whatever order you give them):
 #   decrypt     content/audio-enc/<slug>/high.m4a.enc → work/<slug>/source.m4a   (needs AUDIO_KEY)
-#   separate    Demucs vocal stem → work/<slug>/stems/vocals.wav
+#   separate    Demucs htdemucs, four stems → work/<slug>/stems/{vocals,drums,bass,other}.wav
 #   sections    voice / instrument map → work/<slug>/sections.suggested.json
 #   transcribe  Whisper draft → work/<slug>/transcript.json
 #   align       word times into lyrics.json (align.py), report → work/<slug>/align-report.json
@@ -61,10 +61,14 @@ decrypt() {
   step decrypt python3 decrypt_audio.py "$slug"
 }
 separate() {
-  local want="${SEPARATOR_MODEL:-htdemucs}" have=""
+  local want="${SEPARATOR_MODEL:-htdemucs}" have="" stem complete=1
   [ -f "$w/stems/model.txt" ] && have="$(cat "$w/stems/model.txt")"
-  if [ -f "$w/stems/vocals.wav" ] && [ -z "${FORCE:-}" ] && { [ -z "$have" ] || [ "$have" = "$want" ]; }; then
-    echo "вокальный стем уже есть (${have:-модель не записана})"; return 0
+  case "$want" in
+    *.ckpt|*.onnx|*.pth|*.yaml) complete=0; [ -f "$w/stems/vocals.wav" ] && complete=1 ;;
+    *) for stem in vocals drums bass other; do [ -f "$w/stems/$stem.wav" ] || complete=0; done ;;
+  esac
+  if [ "$complete" = 1 ] && [ -z "${FORCE:-}" ] && { [ -z "$have" ] || [ "$have" = "$want" ]; }; then
+    echo "стемы уже есть (${have:-модель не записана})"; return 0
   fi
   decrypt || return $?
   step separate python3 separate.py "$slug" --model "$want"

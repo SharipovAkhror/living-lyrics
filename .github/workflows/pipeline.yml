@@ -107,13 +107,14 @@ jobs:
           key: models-v1-${{ hashFiles('scripts/pipeline/requirements.txt') }}
           restore-keys: models-v1-
 
-      - name: Cache vocal stems (encrypted)
+      - name: Cache Demucs stems (encrypted, four stems)
         if: steps.jobs.outputs.count != '0'
         uses: actions/cache@v4
         with:
           path: work/stem-cache
-          key: stems-htdemucs-v1-${{ github.run_id }}
-          restore-keys: stems-htdemucs-v1-
+          # v1 held vocals only. Do not restore it: a partial cache must not skip four-stem Demucs.
+          key: stems-htdemucs4-v1-${{ github.run_id }}
+          restore-keys: stems-htdemucs4-v1-
 
       - name: Install ffmpeg and Python packages
         if: steps.jobs.outputs.count != '0'

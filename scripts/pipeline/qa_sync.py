@@ -42,8 +42,9 @@ import timing as T
 from common import ROOT, dump_json, load_audio, load_json, song_dir, vocal_stem, work_dir
 
 MAX_LAG = 2.0          # search ±2 s
-TOL = 0.25             # a line is "off" beyond this (the lag alarm; the proof gate is stricter)
-WORD_TOL = 0.10        # a proven word start is at most this far from the vocal attack
+TOL = 0.25             # whole-line shift alarm only. Not the word proof, and not the song gate.
+WORD_TOL = 0.10        # proof: pre-snap aligner start vs the attack, and the two aligners vs each other
+SONG_SHARE = 0.80      # song is aligned only when at least this share of solo lines is proven
 ONSET_SEARCH = 0.35    # look for an attack this far from the written start
 LEGATO_GAP = 0.20      # a word continuing the previous one, with no new attack, may have no onset
 PEAK_HEIGHT = 0.5      # onset curve units; 1 is the recording's 95th percentile
@@ -106,6 +107,32 @@ def onset_peak_times(sig: Signals, min_height: float = PEAK_HEIGHT, nms_s: float
         taken[max(0, i - radius):min(n, i + radius + 1)] = True
     keep.sort()
     return np.asarray(keep, dtype=float) * F.HOP
+
+
+def nearest_attack(t: float, peaks: np.ndarray, owned: float | None) -> float | None:
+    """Signed seconds from a pre-snap word start to the nearest attack not claimed by the previous word.
+
+    `owned` is the previous word's pre-snap start plus WORD_TOL. A peak at or before that belongs
+    to the previous word and is not evidence about this one. No distance cap: the number in the
+    report is the real gap, and the proof fails when it is over WORD_TOL.
+    """
+    usable = peaks
+    if owned is not None and len(peaks):
+        usable = peaks[peaks > owned]
+    if len(usable) == 0:
+        return None
+    return float(usable[int(np.argmin(np.abs(usable - t)))] - t)
+
+
+def song_proven(passed: int, solo: int) -> bool:
+    """True when solo lines exist and at least SONG_SHARE of them are proven.
+
+    Integer comparison, so 30/38 (78.9 %) fails and 31/38 (81.6 %) passes. A line whose text was
+    not found is solo and not passed, so it stays in the denominator.
+    """
+    if solo <= 0:
+        return False
+    return passed * 1000 >= solo * int(round(SONG_SHARE * 1000))
 
 
 REASON_RU = {
@@ -171,8 +198,13 @@ def _lettered(align_words: list[dict] | None, n: int) -> list[dict]:
     return align_words
 
 
-def proof_line(solo: bool, ctc_status: str | None, text_same: bool, meas: list[dict], align_words: list[dict] | None, qa: dict, has_report: bool) -> dict:
-    """Whether one line may lose timing-draft. The first failing reason wins."""
+def proof_line(solo: bool, ctc_status: str | None, text_same: bool, presnap: list[float | None], align_words: list[dict] | None, has_report: bool) -> dict:
+    """Whether one line may lose timing-draft. The first failing reason wins.
+
+    The two measurements that count are independent of the published time: the first aligner's
+    word start before any snap to an attack, and the second aligner's start. A word that merely
+    continues the previous one (legato) does not pass. The whole-line shift alarm is not a gate.
+    """
     if not has_report:
         return {'pass': False, 'reason': 'no-report', 'detail': ''}
     if not text_same:
@@ -185,106 +217,121 @@ def proof_line(solo: bool, ctc_status: str | None, text_same: bool, meas: list[d
         return {'pass': False, 'reason': 'low-confidence', 'detail': ctc_status or 'нет оценки'}
     if not align_words:
         return {'pass': False, 'reason': 'no-second-aligner', 'detail': ''}
+    if len(presnap) != len(align_words):
+        return {'pass': False, 'reason': 'no-report', 'detail': 'нет допритяжного времени'}
     diffs = []
-    for a in align_words:
+    ons: list[float | None] = []
+    for a, dt in zip(align_words, presnap):
         if not a.get('roman'):
             continue
         if a.get('second_s') is None or a.get('ctc_s') is None:
             return {'pass': False, 'reason': 'aligners-disagree', 'detail': 'у слова нет второго времени'}
         diffs.append(abs(float(a['second_s']) - float(a['ctc_s'])))
+        ons.append(None if dt is None else abs(float(dt)))
     if not diffs:
         return {'pass': False, 'reason': 'no-second-aligner', 'detail': 'в строке не осталось букв для сверки'}
     worst = max(diffs)
     if worst > WORD_TOL:
         return {'pass': False, 'reason': 'aligners-disagree', 'detail': f'максимум {worst:.3f} с'}
-    if qa.get('verdict') == 'no-voice':
-        return {'pass': False, 'reason': 'no-voice', 'detail': ''}
-    if qa.get('verdict') in ('early', 'late'):
-        return {'pass': False, 'reason': 'line-shift', 'detail': f"сдвиг строки {qa.get('offset'):+.2f} с"}
-    bad = []
-    for m, a in zip(meas, align_words):
-        if a.get('roman') and not m['ok']:
-            bad.append(m['abs'] if m['abs'] is not None else ONSET_SEARCH)
-    if bad:
-        return {'pass': False, 'reason': 'onset', 'detail': f'дальше всего {max(bad):.3f} с'}
+    far = [d for d in ons if d is None or d > WORD_TOL]
+    if far:
+        known = [d for d in far if d is not None]
+        if not known:
+            return {'pass': False, 'reason': 'onset', 'detail': 'атаки рядом с началом выравнивателя нет'}
+        return {'pass': False, 'reason': 'onset', 'detail': f'до притяжения дальше всего {max(known):.3f} с'}
     return {'pass': True, 'reason': 'pass', 'detail': ''}
 
 
 def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict], align_report: dict | None) -> dict:
-    """Per-line pass/fail and the song-level numbers the acceptance criterion asks for."""
+    """Per-line pass/fail. Headline numbers are pre-snap only; published times may already be snapped."""
     by_id = {r['id']: r for r in align_report.get('lines', [])} if align_report else {}
     peaks = onset_peak_times(sig)
     rows = []
-    prev_end = None
-    for (sec, line), qa in zip(lines, qa_rows):
+    prev_ctc: float | None = None
+    for (sec, line), _qa in zip(lines, qa_rows):
         rec = by_id.get(line['id'])
         words = line['words']
-        meas = measure_word_voices(sig, words, peaks, prev_end)
         solo = T.is_solo(sec, line)
         text_same = bool(rec) and rec.get('text') == T.line_text(line)
         align_words = _lettered(rec.get('words') if rec else None, len(words))
-        decision = proof_line(solo, rec.get('status') if rec else None, text_same, meas, align_words or None, qa, align_report is not None)
-        lettered = []
-        presnap = []
-        for i, (m, w) in enumerate(zip(meas, words)):
-            aw = align_words[i] if align_words else None
-            if not aw or not aw.get('roman'):
+        presnap: list[float | None] = []
+        abs_pre: list[float] = []
+        agree: list[float] = []
+        for aw in align_words:
+            if not aw.get('roman') or aw.get('ctc_s') is None:
+                presnap.append(None)
                 continue
-            if m['kind'] == 'onset' and m['abs'] is not None:
-                lettered.append(m['abs'])
-            if aw.get('onset_dt') is not None:
-                presnap.append(abs(float(aw['onset_dt'])))
-            elif m['abs'] is not None:
-                presnap.append(m['abs'])
+            t = float(aw['ctc_s'])
+            owned = None if prev_ctc is None else prev_ctc + WORD_TOL
+            dt = nearest_attack(t, peaks, owned)
+            presnap.append(None if dt is None else dt)
+            if dt is not None:
+                abs_pre.append(abs(dt))
+            if aw.get('second_s') is not None:
+                agree.append(abs(float(aw['second_s']) - t))
+            prev_ctc = t
+        decision = proof_line(solo, rec.get('status') if rec else None, text_same, presnap, align_words or None, align_report is not None)
         rows.append({
             'id': line['id'], 'solo': solo, 'pass': decision['pass'], 'reason': decision['reason'],
             'detail': decision['detail'], 'engine': (rec or {}).get('second'),
             'ctc': (rec or {}).get('status'), 'start': words[0]['s'],
-            'onset_abs': lettered if decision['pass'] else [],
-            'presnap_abs': presnap if decision['pass'] else [],
-            'max_abs': max((m['abs'] or 0) for m in meas) if meas else 0,
-            'legato': sum(1 for m, aw in zip(meas, align_words or [None] * len(meas)) if aw and aw.get('roman') and m['kind'] == 'legato'),
+            'window': (rec or {}).get('second_window'),
+            'onset_abs': [round(a, 3) for a in abs_pre] if decision['pass'] else [],
+            'presnap_abs': [round(a, 3) for a in abs_pre] if decision['pass'] else [],
+            'agree_abs': [round(a, 3) for a in agree] if decision['pass'] else [],
+            'presnap_max': round(max(abs_pre), 3) if abs_pre else None,
+            'aligner_max': round(max(agree), 3) if agree else None,
         })
-        prev_end = words[-1]['e']
     solo_rows = [r for r in rows if r['solo']]
     passed = [r for r in solo_rows if r['pass']]
-    onset = [a for r in passed for a in r['onset_abs']]
-    pre = [a for r in passed for a in r['presnap_abs']]
-    p90 = round(float(np.percentile(onset, 90)), 3) if onset else None
-    # Every onset word on a passing line is already within WORD_TOL, so p90 is too.
-    aligned = bool(passed) and (p90 is None or p90 <= WORD_TOL + 1e-9)
+    onset = [a for r in passed for a in r['presnap_abs']]
+    agreed = [a for r in passed for a in r['agree_abs']]
+    aligned = song_proven(len(passed), len(solo_rows))
     reasons: dict[str, int] = {}
     for r in rows:
         if not r['pass']:
             reasons[r['reason']] = reasons.get(r['reason'], 0) + 1
     failed_solo = [r for r in solo_rows if not r['pass']]
-    worst = sorted(failed_solo, key=lambda r: (-(r['max_abs'] or 0), r['start']))[:15]
+    worst = sorted(failed_solo, key=lambda r: (-(r['aligner_max'] or 0), -(r['presnap_max'] or 0), r['start']))[:15]
     missing = [r for r in rows if r['ctc'] == 'draft']
     return {
         'aligned': aligned, 'solo': len(solo_rows), 'passed': len(passed), 'failed_solo': len(failed_solo),
         'lines_n': len(rows), 'reasons': reasons, 'lines': rows, 'worst': worst, 'missing': missing,
+        'word_tol': WORD_TOL, 'line_tol': TOL, 'song_share': SONG_SHARE,
         'onset_median': round(float(np.median(onset)), 3) if onset else None,
-        'onset_p90': p90, 'onset_words': len(onset),
-        'legato_words': sum(r['legato'] for r in passed),
-        'presnap_median': round(float(np.median(pre)), 3) if pre else None,
-        'presnap_p90': round(float(np.percentile(pre, 90)), 3) if pre else None,
+        'onset_p90': round(float(np.percentile(onset, 90)), 3) if onset else None,
+        'onset_words': len(onset),
+        'presnap_median': round(float(np.median(onset)), 3) if onset else None,
+        'presnap_p90': round(float(np.percentile(onset, 90)), 3) if onset else None,
+        'agree_median': round(float(np.median(agreed)), 3) if agreed else None,
+        'agree_p90': round(float(np.percentile(agreed, 90)), 3) if agreed else None,
     }
 
 
+def _share_text(proof: dict) -> str:
+    if not proof['solo']:
+        return '—'
+    return f"{100.0 * proof['passed'] / proof['solo']:.1f}".replace('.', ',')
+
+
 def timing_payload(slug: str, proof: dict, align_report: dict | None) -> dict:
-    """song.json timing after the check. `aligned` only when a solo line was actually proved."""
+    """song.json timing after the check. `aligned` only when the song share is proven."""
     engines_used = sorted({r['engine'] for r in proof['lines'] if r.get('engine')})
     method = 'mms-fa' + ''.join('+' + e for e in engines_used) if align_report else None
     reasons = ', '.join(f'{REASON_RU.get(k, k)} {v}' for k, v in sorted(proof['reasons'].items(), key=lambda kv: -kv[1]))
     med = '—' if proof['onset_median'] is None else f"{proof['onset_median']:.3f}".replace('.', ',')
     p90 = '—' if proof['onset_p90'] is None else f"{proof['onset_p90']:.3f}".replace('.', ',')
+    share = _share_text(proof)
     if proof['aligned']:
-        notes = (f"qa_sync: сольных строк {proof['solo']}, доказано {proof['passed']}, не доказано {proof['failed_solo']}. "
-                 f"У доказанных расхождение начала слова с атакой голоса: медиана {med} с, 90-й перцентиль {p90} с (порог 0,1 с). "
+        notes = (f"qa_sync: сольных строк {proof['solo']}, доказано {proof['passed']} ({share} %, порог песни 80 %). "
+                 f"Расхождение начала слова у выравнивателя до притяжения к атаке: медиана {med} с, 90-й перцентиль {p90} с (порог слова 0,1 с). "
+                 f"Цифры посчитаны до притяжения; записанное время может стоять на атаке. "
                  f"Остальные строки с флагом timing-draft. Отчёт: docs/analysis/{slug}-qa.md.")
         status = 'aligned'
     else:
-        notes = (f"qa_sync: критерий не пройден, статус оставлен draft. Сольных строк {proof['solo']}, доказано {proof['passed']}. "
+        notes = (f"qa_sync: критерий не пройден, статус оставлен draft. "
+                 f"Доказано {proof['passed']} из {proof['solo']} сольных строк ({share} %), нужно не меньше 80 %. "
+                 f"Строка «текст не найден» в доказанные не входит. "
                  f"Причины: {reasons or 'нет данных'}. Отчёт: docs/analysis/{slug}-qa.md.")
         status = 'draft'
     out = {'status': status, 'notes': notes}
@@ -514,26 +561,44 @@ def _fmt_opt(x: float | None) -> str:
 
 def proof_md(proof: dict) -> list[str]:
     L = []
+    share = _share_text(proof)
     L.append(f"**{'Критерий песни пройден' if proof['aligned'] else 'Критерий песни не пройден'}.** "
-             f"Сольных строк: {proof['solo']}; доказано (пословная заливка): {proof['passed']}; "
-             f"не доказано: {proof['failed_solo']}; всего вокальных строк: {proof['lines_n']}.")
+             f"Порог песни: доказано не меньше 80 % сольных строк (сейчас {proof['passed']} из {proof['solo']}, {share} %). "
+             f"Строка, где текст не найден в голосе, в доказанные не входит. "
+             f"Не доказано: {proof['failed_solo']}; всего вокальных строк: {proof['lines_n']}.")
     L.append('')
-    L.append(f"- У доказанных сольных строк расхождение начала слова с атакой голоса: медиана {_fmt_opt(proof['onset_median'])} с, "
-             f"90-й перцентиль {_fmt_opt(proof['onset_p90'])} с. Порог 0,1 с. Слов с атакой: {proof['onset_words']}; легато (атаки нет, голос уже звучит): {proof['legato_words']}.")
-    L.append(f"- То же расхождение до притяжения начала к атаке (насколько сам выравниватель попал в голос): "
-             f"медиана {_fmt_opt(proof['presnap_median'])} с, 90-й перцентиль {_fmt_opt(proof['presnap_p90'])} с.")
+    L.append('Pass/fail и цифры ниже считаются до притяжения начала слова к атаке. '
+             'Притяжение (не дальше 0,1 с) может сдвинуть записанное время на пик, но в эти цифры не входит. '
+             'Окно второго выравнивателя берётся из якоря строки — общий проход или границы секции — с запасом, '
+             'а не из черновых времён слов и не из уже притянутых времён первого выравнивателя.')
+    L.append(f"- Расхождение начала слова у первого выравнивателя (до притяжения) с ближайшей атакой голоса, "
+             f"только у доказанных сольных строк: медиана {_fmt_opt(proof['onset_median'])} с, "
+             f"90-й перцентиль {_fmt_opt(proof['onset_p90'])} с. Порог слова {ru(WORD_TOL)} с. Слов: {proof['onset_words']}.")
+    L.append(f"- Согласие двух выравнивателей (второе начало минус первое, до притяжения), у тех же строк: "
+             f"медиана {_fmt_opt(proof.get('agree_median'))} с, 90-й перцентиль {_fmt_opt(proof.get('agree_p90'))} с. Порог {ru(WORD_TOL)} с.")
+    L.append(f"- Сдвиг строки целиком — отдельная тревога с порогом {ru(TOL)} с. В pass/fail слова он не входит.")
     if proof['reasons']:
         bits = ', '.join(f"{REASON_RU.get(k, k)} — {v}" for k, v in sorted(proof['reasons'].items(), key=lambda kv: -kv[1]))
         L.append(f"- Почему строки не доказаны: {bits}.")
     L.append('')
     L.append('## Худшие места')
     L.append('')
-    L.append('Сольные строки, которые проверка не доказала. Время — начало строки в записи, чтобы его можно было прослушать.')
+    L.append('Сольные строки, которые проверка не доказала. Время — начало строки в записи, чтобы его можно было прослушать. '
+             'Расхождения — до притяжения.')
     L.append('')
     if proof['worst']:
         for r in proof['worst']:
             extra = f", {r['detail']}" if r['detail'] else ''
-            L.append(f"- `{r['id']}` {fmt_t(r['start'])} — {REASON_RU.get(r['reason'], r['reason'])}{extra}")
+            bits = []
+            if r.get('aligner_max') is not None:
+                bits.append(f"выравниватели до {ru(r['aligner_max'], 3)} с")
+            if r.get('presnap_max') is not None:
+                bits.append(f"атака до притяжения до {ru(r['presnap_max'], 3)} с")
+            if r.get('window'):
+                w0, w1 = r['window']
+                bits.append(f"окно {ru(w0, 1)}–{ru(w1, 1)} с")
+            more = f" ({'; '.join(bits)})" if bits else ''
+            L.append(f"- `{r['id']}` {fmt_t(r['start'])} — {REASON_RU.get(r['reason'], r['reason'])}{extra}{more}")
     else:
         L.append('Нет сольных строк с отказом.')
     L.append('')
@@ -558,7 +623,9 @@ def render_md(meta: dict, summary: dict, results: list[dict], words: list[dict],
     L.append(f"# Синхронизация текста: {title}")
     L.append('')
     L.append(f"Проверка `qa_sync.py` от {meta['date']}. Аудио: `{meta['audio']}`{'' if meta['stem'] else ' (полный микс — вокального стема нет, точность ниже)'}. "
-             f"Текст: `{meta['lyrics']}`. Порог: {ru(TOL)} с.")
+             f"Текст: `{meta['lyrics']}`. "
+             f"Порог доказательства слова: {ru(WORD_TOL)} с — расстояние от начала выравнивателя до притяжения до ближайшей атаки и расхождение двух выравнивателей. "
+             f"Порог сдвига строки целиком: {ru(TOL)} с — отдельная тревога, не порог доказательства.")
     L.append('')
     L.append('## Итог')
     L.append('')
@@ -783,7 +850,7 @@ def main() -> int:
           f"общий сдвиг {glob['offset']:+.2f} с")
     if proof:
         print(f"критерий: {'пройден' if proof['aligned'] else 'не пройден'} · соло {proof['solo']} · "
-              f"доказано {proof['passed']} · медиана атаки {_fmt_opt(proof['onset_median'])} с · "
+              f"доказано {proof['passed']} · до притяжения медиана {_fmt_opt(proof['onset_median'])} с · "
               f"90-й перцентиль {_fmt_opt(proof['onset_p90'])} с")
     for r in results:
         if r['verdict'] != 'ok':

@@ -17,13 +17,10 @@ English, French, German, Spanish and Italian come from torchaudio; Arabic, Persi
 the other languages in WHISPERX_HF come from the same Hugging Face wav2vec2 checkpoints WhisperX
 selects. Different weights from MMS_FA, so the mistakes are largely independent.
 
-mms1b — facebook/mms-1b-all (1 B parameters, one adapter per language) for languages WhisperX
-does not cover but MMS has an adapter for (Azerbaijani, Latin). It reads the native script, not
-uroman. About 3.9 GB. Not used for a language WhisperX already measured.
-
-ctc-forced-aligner's default checkpoint is a conversion of the same MMS_FA weights the primary
-aligner uses, so it is not a second opinion and is not called.
-Medieval German and Ottoman Turkish have no aligner of their own here; those lines stay unproven.
+A second MMS (mms-1b-all, or ctc-forced-aligner's copy of the MMS_FA weights) is not an independent
+opinion and is not called. Azerbaijani, Latin, medieval German and Ottoman Turkish have no
+WhisperX checkpoint here; those lines stay unproven. A language tagged `de` uses the modern German
+model and is not relabelled as medieval German.
 """
 from __future__ import annotations
 
@@ -69,13 +66,6 @@ WHISPERX_HF = {
     'cs': 'comodoro/wav2vec2-xls-r-300m-cs-250',
 }
 
-# MMS-1b adapter codes. Only languages whose adapter matches the language: no substitution
-# of modern German for medieval German, or Turkish for Ottoman.
-MMS_LANG = {
-    'en': 'eng', 'tr': 'tur', 'ar': 'ara', 'fa': 'fas', 'az': 'azj-script_latin', 'de': 'deu',
-    'es': 'spa', 'la': 'lat', 'ru': 'rus', 'uz': 'uzb-script_latin', 'ur': 'urd-script_arabic',
-    'hi': 'hin', 'fr': 'fra', 'it': 'ita',
-}
 TWINS = {
     'ی': 'ي', 'ي': 'ی', 'ک': 'ك', 'ك': 'ک', 'ى': 'ي', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا', 'ٱ': 'ا',
     'ة': 'ه', 'ۀ': 'ه', 'ؤ': 'و', 'ئ': 'ي', 'ı': 'i', 'İ': 'i',
@@ -83,16 +73,13 @@ TWINS = {
 
 
 def preferred(lang: str) -> list[str]:
-    """The one independent engine for this language. Empty when none exists.
+    """WhisperX where alignment.py has a checkpoint, otherwise nothing.
 
-    WhisperX where it has a checkpoint. MMS-1b only where WhisperX has nothing (Azerbaijani,
-    Latin). Not both: a line WhisperX could not place stays unproven, and the 1 B model is not
-    loaded as a fallback on the same runner.
+    Empty for Azerbaijani, Latin, medieval German and Ottoman Turkish: there is no second
+    aligner, and a modern-language model is not substituted for them.
     """
     if lang in WHISPERX_TORCH or lang in WHISPERX_HF:
         return ['whisperx']
-    if lang in MMS_LANG:
-        return ['mms1b']
     return []
 
 
@@ -194,49 +181,6 @@ def align_window(lp: np.ndarray, tokens: list[int], owner: list[int], n_words: i
     first, _ = token_spans(path, len(tokens))
     starts: list[float | None] = [None] * n_words
     return _place(first, owner, starts, t0, lp.shape[0], span)
-
-
-class Mms1b:
-    name = 'mms-1b-all'
-    model_id = 'facebook/mms-1b-all'
-
-    def __init__(self) -> None:
-        import torch
-        from transformers import AutoProcessor, Wav2Vec2ForCTC
-
-        _threads()
-        self.torch = torch
-        self.proc = AutoProcessor.from_pretrained(self.model_id)
-        self.model = Wav2Vec2ForCTC.from_pretrained(self.model_id).eval()
-
-    def close(self) -> None:
-        self.model = None
-        self.proc = None
-        gc.collect()
-
-    def word_starts(self, x: np.ndarray, jobs: list[dict]) -> dict[str, list[float | None]]:
-        out: dict[str, list[float | None]] = {}
-        by_lang: dict[str, list[dict]] = {}
-        for j in jobs:
-            code = MMS_LANG.get(j['lang'])
-            if code:
-                by_lang.setdefault(code, []).append(j)
-        for code, js in by_lang.items():
-            try:
-                self.proc.tokenizer.set_target_lang(code)
-                self.model.load_adapter(code)
-            except Exception as e:
-                print(f'{self.name}: нет адаптера {code} ({e.__class__.__name__}: {e})')
-                continue
-            vocab = self.proc.tokenizer.get_vocab()
-            blank = int(self.proc.tokenizer.pad_token_id)
-            skip = {blank}
-            for j in js:
-                placed = _one_line(self.torch, self.model, self.proc, x, j, vocab, blank, skip, hf=True)
-                if placed is not None:
-                    out[j['id']] = placed
-            print(f'{self.name}: {code} — {len(js)} строк', flush=True)
-        return out
 
 
 class WhisperX:
@@ -347,7 +291,7 @@ def _one_line(torch, model, proc, x: np.ndarray, job: dict, vocab: dict[str, int
     return align_window(lp, tokens, owner, len(job['words']), blank, a / SR, (b - a) / SR)
 
 
-ENGINES = {'mms1b': Mms1b, 'whisperx': WhisperX}
+ENGINES = {'whisperx': WhisperX}
 
 
 def run_engine(name: str, x: np.ndarray, jobs: list[dict]) -> dict[str, list[float | None]]:
@@ -363,9 +307,8 @@ def run_engine(name: str, x: np.ndarray, jobs: list[dict]) -> dict[str, list[flo
 def align_jobs(which: str, x: np.ndarray, jobs: list[dict]) -> tuple[dict[str, list[float | None]], dict[str, str]]:
     """Word starts and the engine name that produced them, per line id.
 
-    `which` is `auto` (WhisperX where the language has a model, otherwise MMS-1b), a single
-    engine name, or `none`. A failing engine is skipped; the line then has no second opinion
-    and cannot be proven.
+    `which` is `auto` (WhisperX where the language has a model), `whisperx`, or `none`.
+    A failing engine is skipped; the line then has no second opinion and cannot be proven.
     """
     if which in ('', 'none') or not jobs:
         return {}, {}
@@ -373,7 +316,7 @@ def align_jobs(which: str, x: np.ndarray, jobs: list[dict]) -> tuple[dict[str, l
         raise SystemExit(f'неизвестный второй выравниватель: {which} (есть: auto, {", ".join(ENGINES)}, none)')
     starts: dict[str, list[float | None]] = {}
     names: dict[str, str] = {}
-    order = [which] if which != 'auto' else ['whisperx', 'mms1b']
+    order = [which] if which != 'auto' else ['whisperx']
     for name in order:
         if which == 'auto':
             batch = [j for j in jobs if j['id'] not in starts and name in preferred(j['lang'])]
@@ -393,7 +336,7 @@ def align_jobs(which: str, x: np.ndarray, jobs: list[dict]) -> tuple[dict[str, l
             if not any(s is not None for s in got):
                 continue
             starts[j['id']] = got
-            names[j['id']] = ENGINES[name].name if name == 'mms1b' else name
+            names[j['id']] = ENGINES[name].name
     missed = [j['id'] for j in jobs if j['id'] not in starts]
     if missed:
         print(f'без второго мнения: {len(missed)} строк ({", ".join(missed[:8])}{"…" if len(missed) > 8 else ""})')

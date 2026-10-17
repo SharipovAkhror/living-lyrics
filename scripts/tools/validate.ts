@@ -51,6 +51,16 @@ function letters(text: string) {
     .toLowerCase();
 }
 
+/** Same rule as scripts/pipeline/timing.py is_solo: one named singer, not a choir or a duet. */
+function isSoloVoice(sectionVoice: string | undefined, lineVoice: string | undefined): boolean {
+  const voice = (lineVoice || sectionVoice || '').trim();
+  if (!voice) return false;
+  const low = voice.toLowerCase().replace(/ё/g, 'е');
+  if (low === 'все' || low === 'all' || low === 'все исполнители' || low.startsWith('все ') || low.startsWith('all ')) return false;
+  if (` ${low} `.includes(' и ')) return false;
+  return !['хор', 'choir', 'chorus', 'cappella', 'ансамбль', 'ensemble', 'оркестр', 'orchestra', 'tutti'].some((m) => low.includes(m));
+}
+
 function check(slug: string): Issue[] {
   const issues: Issue[] = [];
   const err = (where: string, msg: string) => issues.push({ level: 'error', where, msg });
@@ -180,9 +190,14 @@ function check(slug: string): Issue[] {
   });
 
   if (song.timing.status === 'aligned') {
-    const vocalLines = lyrics.sections.flatMap((s) => (s.kind === 'vocal' ? s.lines : []));
+    const vocalSections = lyrics.sections.filter((s) => s.kind === 'vocal');
+    const vocalLines = vocalSections.flatMap((s) => s.lines);
     if (vocalLines.length > 0 && vocalLines.every((l) => l.flags?.includes('timing-draft')))
       err('song.json', 'timing.status = aligned, но у каждой вокальной строки флаг timing-draft: пословная заливка нигде не включена, статус должен остаться draft');
+    const solo = vocalSections.flatMap((s) => s.lines.filter((l) => isSoloVoice(s.voice, l.voice)));
+    const proven = solo.filter((l) => !l.flags?.includes('timing-draft'));
+    if (solo.length === 0 || proven.length * 5 < solo.length * 4)
+      err('song.json', `timing.status = aligned, но доказано ${proven.length} из ${solo.length} сольных строк: нужно не меньше 80 %, иначе статус draft`);
   }
 
   for (const l of song.languages) if (!langsSeen.has(l)) warn('song.json', `язык ${l} указан в languages, но строк на нём нет`);

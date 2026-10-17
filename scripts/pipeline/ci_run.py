@@ -114,8 +114,9 @@ def main(req_path: str) -> int:
             log('audio files not committed (public repository); duration, loudness and peaks kept')
 
     def separate():
-        if (work_dir(slug) / 'stems' / 'vocals.wav').exists():
-            log('stems restored from cache')
+        stems = work_dir(slug) / 'stems'
+        if all((stems / f'{name}.wav').exists() for name in ('vocals', 'drums', 'bass', 'other')):
+            log('four stems restored from cache')
             return
         import separate as sep
 
