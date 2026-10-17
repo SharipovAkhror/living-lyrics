@@ -109,6 +109,10 @@ export function driveAt(f: AudioFeatures | null, family: InstrumentInfo['family'
 export interface InstrumentRenderer {
   readonly kind: 'svg' | 'lottie' | 'rive' | 'gltf';
   mount(container: HTMLElement, key: string): Promise<void> | void;
-  update(drive: InstrumentDrive): void;
+  /**
+   * `time` is seconds of playback. Pose is a pure function of `(drive, time)`, so a seek to the
+   * same second is the same frame. Omit it only when the drawing has no clock of its own.
+   */
+  update(drive: InstrumentDrive, time?: number): void;
   dispose(): void;
 }

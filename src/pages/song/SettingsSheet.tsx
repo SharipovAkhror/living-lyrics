@@ -229,7 +229,7 @@ export function SettingsSheet({
         </Row>
       </Group>
 
-      <Group header="Оформление" footer="При системной настройке «Уменьшение движения» анимация отключается сама.">
+      <Group header="Оформление" footer="На странице песни по умолчанию рисунок. Объём включает модель дафа и уда. При системной настройке «Уменьшение движения», без WebGL или на слабом устройстве остаётся рисунок. В галерее инструментов даф и уд показываются объёмом.">
         <div className="row row--control">
           <Segmented
             label="Тема"
@@ -252,6 +252,19 @@ export function SettingsSheet({
               { value: 'off', label: 'Без анимации' },
             ]}
             onChange={(v) => setSettings({ motion: v })}
+          />
+        </div>
+        <div className="row row--control">
+          <Segmented
+            className="seg--lines"
+            label="Инструменты"
+            value={settings.instrumentStyle}
+            options={[
+              { value: 'drawing', label: 'рисунок' },
+              { value: 'engraving', label: 'объём · гравюра' },
+              { value: 'materials', label: 'объём · материалы' },
+            ]}
+            onChange={(v) => setSettings({ instrumentStyle: v })}
           />
         </div>
       </Group>
