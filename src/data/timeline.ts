@@ -135,14 +135,14 @@ export function buildTimeline(lyrics: Lyrics, duration: number, peaks: Peaks | n
 }
 
 /** The commentary that applies at a cue: its own, else the latest earlier line in the same section, else the section's. */
-export function sharhFor(timeline: Timeline, cueIdx: number): { text: string; from: Cue } | null {
+export function commentFor(timeline: Timeline, cueIdx: number): { text: string; from: Cue } | null {
   const cue = timeline.cues[cueIdx];
   if (!cue) return null;
-  if (cue.kind === 'inst') return cue.section.sharh ? { text: cue.section.sharh, from: cue } : null;
+  if (cue.kind === 'inst') return cue.section.comment ? { text: cue.section.comment, from: cue } : null;
   for (let i = cueIdx; i >= 0; i--) {
     const c = timeline.cues[i];
     if (c.kind !== 'line' || c.section.id !== cue.section.id) break;
-    if (c.line.sharh) return { text: c.line.sharh, from: c };
+    if (c.line.comment) return { text: c.line.comment, from: c };
   }
-  return cue.section.sharh ? { text: cue.section.sharh, from: cue } : null;
+  return cue.section.comment ? { text: cue.section.comment, from: cue } : null;
 }

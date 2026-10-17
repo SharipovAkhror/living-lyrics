@@ -10,9 +10,9 @@ export interface Settings {
   showTranslit: boolean;
   showAlt: boolean;
   /** Commentary panel visible at all. */
-  showSharh: boolean;
+  showComment: boolean;
   /** Commentary panel expanded (vs. one-line preview). */
-  sharhOpen: boolean;
+  commentOpen: boolean;
   textScale: number;
   motion: MotionPref;
   persianStyle: 'nastaliq' | 'naskh';
@@ -33,8 +33,8 @@ export const DEFAULTS: Settings = {
   showTranslation: true,
   showTranslit: false,
   showAlt: false,
-  showSharh: true,
-  sharhOpen: false,
+  showComment: true,
+  commentOpen: false,
   textScale: 1,
   motion: 'full',
   persianStyle: 'nastaliq',
@@ -51,13 +51,43 @@ export const DEFAULTS: Settings = {
 
 const KEY = 'living-lyrics.settings.v2';
 
+/**
+ * Commentary used to be stored as `showSharh` / `sharhOpen` (Arabic sharh, شرح).
+ * Copy a saved choice onto the current names. Returns true when the stored object changed.
+ */
+function migrateCommentKeys(saved: Record<string, unknown>): boolean {
+  let changed = false;
+  if ('showSharh' in saved) {
+    if (!('showComment' in saved)) saved.showComment = saved.showSharh;
+    delete saved.showSharh;
+    changed = true;
+  }
+  if ('sharhOpen' in saved) {
+    if (!('commentOpen' in saved)) saved.commentOpen = saved.sharhOpen;
+    delete saved.sharhOpen;
+    changed = true;
+  }
+  return changed;
+}
+
 function read(): Settings {
   try {
     const raw = localStorage.getItem(KEY);
     // v1 settings carry over; keys that no longer exist are dropped.
-    const saved = JSON.parse(raw ?? localStorage.getItem('living-lyrics.settings.v1') ?? '{}') as Partial<Settings>;
+    const legacyRaw = raw ?? localStorage.getItem('living-lyrics.settings.v1');
+    const parsed: unknown = JSON.parse(legacyRaw ?? '{}');
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return { ...DEFAULTS };
+    const saved = parsed as Record<string, unknown>;
+    const migrated = migrateCommentKeys(saved);
     const out = { ...DEFAULTS };
     for (const k of Object.keys(DEFAULTS) as (keyof Settings)[]) if (k in saved) (out as Record<string, unknown>)[k] = saved[k];
+    if (migrated) {
+      try {
+        localStorage.setItem(KEY, JSON.stringify(out));
+      } catch {
+        /* private mode: keep the migrated choice in memory */
+      }
+    }
     return out;
   } catch {
     return { ...DEFAULTS };

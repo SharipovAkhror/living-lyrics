@@ -111,7 +111,7 @@
   --glass-rim-low: rgba(255, 255, 255, 0.25);
   --glass-edge: rgba(0, 0, 0, 0.06);
   --glass-shadow: 0 10px 30px -10px rgba(20, 20, 40, 0.22), 0 2px 8px -2px rgba(20, 20, 40, 0.08);
-  /* Standard material (content layer: sharh panel, lists) */
+  /* Standard material (content layer: comment panel, lists) */
   --material-thick: rgba(246, 246, 248, 0.82);
   --material-regular: rgba(246, 246, 248, 0.68);
   --material-thin: rgba(246, 246, 248, 0.5);

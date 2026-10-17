@@ -48,7 +48,7 @@ export const FLAG = z.enum([
   'text-unverified',
   'timing-draft',
   'translation-draft',
-  'sharh-draft',
+  'comment-draft',
   'attribution-unverified',
 ]);
 export type Flag = z.infer<typeof FLAG>;
@@ -66,7 +66,7 @@ export const LineSchema = z.object({
   /** Translations keyed by language. `ru` is required for every vocal line. */
   tr: z.object({ ru: z.string().min(1) }).catchall(z.string()),
   /** What the translation could not carry. Light markdown: *italic*, **bold**. Arabic-script runs are auto-styled. */
-  sharh: z.string().optional(),
+  comment: z.string().optional(),
   /** Who sings this line, when it differs from the section voice. */
   voice: z.string().optional(),
   fx: FX.optional(),
@@ -80,7 +80,7 @@ const SectionBase = z.object({
   end: seconds,
   /** Short human label, sentence case: «Газель Физули, бейт 1». */
   label: z.string().min(1),
-  sharh: z.string().optional(),
+  comment: z.string().optional(),
   flags: z.array(FLAG).optional(),
 });
 
