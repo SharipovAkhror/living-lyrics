@@ -68,14 +68,37 @@ jobs:
           if not slugs:
               slugs = ["i-have-come-alive", "karitas", "one"]
           Path("work").mkdir(exist_ok=True)
-          Path("jobs-slugs.txt").write_text("\n".join(dict.fromkeys(slugs)), encoding="utf-8")
+          # A trailing newline is required: `read` skips a final line that has none,
+          # and that dropped the last slug (ONE) on the first run.
+          Path("jobs-slugs.txt").write_text("\n".join(dict.fromkeys(slugs)) + "\n", encoding="utf-8")
           print("slugs", slugs)
           PY
-          while IFS= read -r slug; do
+          while IFS= read -r slug || [ -n "$slug" ]; do
+            [ -z "$slug" ] && continue
             python3 scripts/pipeline/decrypt_audio.py "$slug"
           done < jobs-slugs.txt
           python3 scripts/instrument_id/run.py songs
           python3 scripts/instrument_id/run.py stems || echo "stem comparison failed"
+          choice=mix
+          if [ -f docs/analysis/instrument-id-stems.json ]; then
+            choice=$(python3 -c "import json; print(json.load(open('docs/analysis/instrument-id-stems.json', encoding='utf-8')).get('choice') or 'mix')")
+          fi
+          echo "stem choice: $choice"
+          if [ "$choice" = "stem" ]; then
+            failed=0
+            while IFS= read -r slug || [ -n "$slug" ]; do
+              [ -z "$slug" ] && continue
+              if [ ! -f "work/$slug/source.m4a" ]; then
+                echo "no audio for $slug; mix decisions stay"
+                failed=1
+                break
+              fi
+              python3 scripts/pipeline/separate.py "$slug" || { echo "separate failed for $slug; mix decisions stay"; failed=1; break; }
+            done < jobs-slugs.txt
+            if [ "$failed" -eq 0 ]; then
+              python3 scripts/instrument_id/run.py songs --primary stem
+            fi
+          fi
           python3 scripts/instrument_id/run.py report
       - name: Commit analysis
         run: |

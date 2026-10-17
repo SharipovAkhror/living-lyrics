@@ -29,7 +29,8 @@ def main(argv: list[str] | None = None) -> None:
     sub.add_parser("embed")
     sub.add_parser("train")
     sub.add_parser("eval")
-    sub.add_parser("songs")
+    songs_cmd = sub.add_parser("songs")
+    songs_cmd.add_argument("--primary", default="mix", choices=("mix", "stem"))
     watch = sub.add_parser("watch")
     watch.add_argument("slug")
     watch.add_argument("--backend", default="agy", choices=("agy", "gemini-api"))
@@ -67,10 +68,15 @@ def main(argv: list[str] | None = None) -> None:
         from predict import predict_songs
         from fuse import write_fusion
         from report import write_report
-        missing = predict_songs()
+        missing = predict_songs(args.primary)
         for slug in ("i-have-come-alive", "karitas", "one"):
             if slug not in missing:
                 write_fusion(slug)
+        if args.primary == "stem" and not missing:
+            from stems import mark_published
+            mark_published("stem")
+        elif args.primary == "stem" and missing:
+            print("stem publish incomplete:", ", ".join(missing))
         from anchors import write_anchors
         write_anchors()
         write_report()

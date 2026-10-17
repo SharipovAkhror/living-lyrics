@@ -141,18 +141,44 @@ def compare() -> dict:
         row["better"] = "stem" if errors["stem"] < errors["mix"] else "mix"
         songs.append(row)
     counted = [song for song in songs if song.get("wrongAnchors")]
-    if counted and all(song["better"] == "stem" for song in counted):
-        choice = "stem"
-    elif counted:
-        choice = "mix"
+    missing = [song["slug"] for song in songs if song.get("status") != "ok"]
+    # A tie on one song does not block a stem that is nowhere worse and better in total.
+    # A song with no audio blocks promotion: the check is unfinished.
+    if missing or not counted:
+        choice = "mix" if missing else "not-run"
+        extra = ""
+        if missing:
+            extra = " Стем не становится основным: нет сравнения у " + ", ".join(missing) + "."
     else:
-        choice = "not-run"
+        worse = any(song["wrongAnchors"]["stem"] > song["wrongAnchors"]["mix"] for song in counted)
+        total_stem = sum(song["wrongAnchors"]["stem"] for song in counted)
+        total_mix = sum(song["wrongAnchors"]["mix"] for song in counted)
+        if not worse and total_stem < total_mix:
+            choice = "stem"
+            extra = (
+                " Стем ни на одной песне не хуже и в сумме называет чужой класс реже. "
+                "Задание тогда разделяет песню целиком и в решение идут стемы."
+            )
+        else:
+            choice = "mix"
+            extra = " Смесь остаётся основной: стем не лучше в сумме или хуже хотя бы на одной песне."
     payload = {
         "choice": choice,
         "songs": songs,
-        "note": "Сравнение только на вырезанных якорях, не дольше 20 с. Полные песни этим шагом не разделялись.",
+        "note": "Сравнение только на вырезанных якорях, не дольше 20 с." + extra,
     }
     path = ROOT / "docs" / "analysis" / "instrument-id-stems.json"
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"choice": choice, "songs": [{k: s.get(k) for k in ("slug", "status", "better", "wrongAnchors")} for s in songs]}, ensure_ascii=False))
     return payload
+
+
+def mark_published(primary: str) -> None:
+    """Record which listen the decision files were rewritten from."""
+    path = ROOT / "docs" / "analysis" / "instrument-id-stems.json"
+    if not path.is_file():
+        return
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["published"] = primary
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"published {primary}")

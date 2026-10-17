@@ -50,6 +50,38 @@ def _overlap(a0: float, a1: float, b0: float, b1: float) -> float:
     return max(0.0, min(a1, b1) - max(a0, b0))
 
 
+def _stem_name(anchor: dict, data: dict) -> str:
+    """Same routing as the stem comparison: voice, percussion, otherwise melodic."""
+    item = data["by_id"].get(anchor.get("id") or "")
+    if not item:
+        return "other"
+    family = item["family"]
+    if family == "voice":
+        return "vocals"
+    if family in data.get("percussionFamilies", []):
+        return "drums"
+    return "other"
+
+
+def labels_on_anchor(audio: dict | None, anchor: dict, data: dict) -> list[str]:
+    """Labels the published listen gave this span. A stem listen ignores the mix."""
+    if not audio:
+        return []
+    primary = audio.get("audioPrimary") or "mix"
+    wanted = _stem_name(anchor, data) if primary == "stem" else "mix"
+    said = []
+    for source in audio.get("sources", {}).values():
+        if (source.get("stem") or "mix") != wanted:
+            continue
+        for segment in source.get("segments", []):
+            if segment.get("kind") != "instrument" or not segment.get("id"):
+                continue
+            hit = _overlap(anchor["start"], anchor["end"], float(segment["start"]), float(segment["end"]))
+            if hit >= 1.0:
+                said.append(segment["id"])
+    return sorted(set(said))
+
+
 def score_slug(slug: str, data: dict | None = None) -> dict:
     data = data or load()
     audio_path = ROOT / "docs" / "analysis" / slug / "instrument-id.json"
@@ -59,17 +91,7 @@ def score_slug(slug: str, data: dict | None = None) -> dict:
     rows = []
     failures = 0
     for anchor in anchors_for(slug, data):
-        said = []
-        if audio:
-            for source in audio.get("sources", {}).values():
-                if source.get("stem") not in (None, "mix"):
-                    continue
-                for segment in source.get("segments", []):
-                    if segment.get("kind") != "instrument" or not segment.get("id"):
-                        continue
-                    hit = _overlap(anchor["start"], anchor["end"], float(segment["start"]), float(segment["end"]))
-                    if hit >= 1.0:
-                        said.append(segment["id"])
+        said = labels_on_anchor(audio, anchor, data)
         accepted_wrong = []
         accepted_right = []
         if fusion:

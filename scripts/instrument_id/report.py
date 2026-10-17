@@ -209,7 +209,10 @@ def _stems_block() -> list[str]:
         lines.append("")
         return lines
     payload = json.loads(path.read_text(encoding="utf-8"))
-    lines.append(f"Выбор: `{payload.get('choice')}`. {payload.get('note') or ''}")
+    published = payload.get("published") or "mix"
+    lines.append(
+        f"Выбор сравнения: `{payload.get('choice')}`. В решение пошло: `{published}`. {payload.get('note') or ''}"
+    )
     lines.append("")
     lines.append("| песня | статус | лучше | чужих якорей, смесь | чужих якорей, стем |")
     lines.append("|---|---|---|---|---|")

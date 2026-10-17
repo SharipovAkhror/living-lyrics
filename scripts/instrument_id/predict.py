@@ -262,12 +262,16 @@ def _stem_paths(slug: str) -> dict[str, Path]:
     return found
 
 
-def predict_slug(slug: str) -> Path | None:
+def predict_slug(slug: str, primary: str = "mix") -> Path | None:
+    """Write one listen. `stem` keeps the four Demucs stems and drops the mix."""
     mix = _mix_path(slug)
     stems = _stem_paths(slug)
     out = ROOT / "docs" / "analysis" / slug / "instrument-id.json"
-    if mix is None and not stems:
-        print(f"{slug}: нет work/{slug}/source.m4a и нет стемов — предсказание не пишу")
+    if primary == "stem" and not stems:
+        print(f"{slug}: нет work/{slug}/stems — предсказание стема не пишу")
+        return None
+    if primary != "stem" and mix is None:
+        print(f"{slug}: нет work/{slug}/source.m4a — предсказание смеси не пишу")
         return None
     meta, pack = load_probe()
     payload = {
@@ -276,24 +280,26 @@ def predict_slug(slug: str) -> Path | None:
         "noncommercial": meta["noncommercial"],
         "noncommercialReason": meta["noncommercialReason"],
         "creditsUsed": False,
+        "audioPrimary": primary,
         "threshold": meta["threshold"],
         "threshold95": meta["threshold95"],
         "thresholdReached": meta["thresholdReached"],
         "sources": {},
     }
-    if mix is not None:
+    if primary == "stem":
+        for name, path in stems.items():
+            payload["sources"][name] = recognize_file(path, name, meta, pack)
+    else:
         payload["sources"]["mix"] = recognize_file(mix, "mix", meta, pack)
-    for name, path in stems.items():
-        payload["sources"][name] = recognize_file(path, name, meta, pack)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"{slug}: {out}")
     return out
 
 
-def predict_songs() -> list[str]:
+def predict_songs(primary: str = "mix") -> list[str]:
     missing = []
     for slug in SONGS:
-        if predict_slug(slug) is None:
+        if predict_slug(slug, primary) is None:
             missing.append(slug)
     return missing

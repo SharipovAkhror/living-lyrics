@@ -6,6 +6,7 @@ import json
 
 import numpy as np
 
+from anchors import labels_on_anchor
 from fuse import fuse_payload
 from paths import ROOT, SONGS
 from predict import smooth
@@ -157,12 +158,34 @@ def test_job_glob() -> None:
     check(matches("jobs/instrument-id/*.json", "jobs/instrument-id/alive.json"), "глоб задания узнаёт свой файл")
 
 
+def test_anchor_listen() -> None:
+    data = load()
+    anchor = {"start": 23.7, "end": 100.8, "id": "tanbur", "catalogKey": "tanbur"}
+    audio = {
+        "audioPrimary": "stem",
+        "sources": {
+            "mix": {"stem": "mix", "segments": [{
+                "kind": "instrument", "id": "flute", "start": 23.7, "end": 40.0, "confidence": 0.99,
+            }]},
+            "other": {"stem": "other", "segments": [{
+                "kind": "instrument", "id": "guitar-acoustic", "start": 23.7, "end": 40.0, "confidence": 0.7,
+            }]},
+        },
+    }
+    said = labels_on_anchor(audio, anchor, data)
+    check(said == ["guitar-acoustic"], f"якорь стема читает other, не смесь: {said}")
+    audio["audioPrimary"] = "mix"
+    said = labels_on_anchor(audio, anchor, data)
+    check(said == ["flute"], f"якорь смеси читает смесь: {said}")
+
+
 def main() -> None:
     test_taxonomy()
     test_credits()
     test_smooth_and_threshold()
     test_fusion()
     test_job_glob()
+    test_anchor_listen()
     if FAILURES:
         raise SystemExit(f"проверок не прошло: {len(FAILURES)}")
     print("selftest ok")
