@@ -19,6 +19,8 @@ export interface Settings {
   showTranslation: boolean;
   showTranslit: boolean;
   showAlt: boolean;
+  /** Vowel signs on Arabic-script lines. On by default: the reader is not a native. */
+  showHarakat: boolean;
   /** Commentary panel visible at all. */
   showComment: boolean;
   /** Commentary panel expanded (vs. one-line preview). */
@@ -45,6 +47,7 @@ export const DEFAULTS: Settings = {
   showTranslation: true,
   showTranslit: false,
   showAlt: false,
+  showHarakat: true,
   showComment: true,
   commentOpen: false,
   textScale: 1,
@@ -116,10 +119,12 @@ function read(): Settings {
     const fontPersian = oneOf(out.fontPersian, FONT_PERSIAN, DEFAULTS.fontPersian);
     const fontOriginal = oneOf(out.fontOriginal, FONT_ORIGINAL, DEFAULTS.fontOriginal);
     const fontTranslation = oneOf(out.fontTranslation, FONT_TRANSLATION, DEFAULTS.fontTranslation);
-    const sanitized = fontPersian !== out.fontPersian || fontOriginal !== out.fontOriginal || fontTranslation !== out.fontTranslation;
+    const harakatBad = typeof out.showHarakat !== 'boolean';
+    const sanitized = fontPersian !== out.fontPersian || fontOriginal !== out.fontOriginal || fontTranslation !== out.fontTranslation || harakatBad;
     out.fontPersian = fontPersian;
     out.fontOriginal = fontOriginal;
     out.fontTranslation = fontTranslation;
+    if (harakatBad) out.showHarakat = DEFAULTS.showHarakat;
     if (migrated || sanitized) {
       try {
         localStorage.setItem(KEY, JSON.stringify(out));

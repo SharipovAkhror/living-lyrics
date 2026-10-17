@@ -1,4 +1,5 @@
 import { Fragment, type ReactNode } from 'react';
+import { stripHarakat } from '@/data/harakat';
 
 const ARABIC_RUN = /([؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿][؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿\s‌‏،؛]*[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿])/g;
 
@@ -16,8 +17,9 @@ function arabic(text: string, key: string): ReactNode[] {
 }
 
 /** Minimal inline markup for commentary: **bold**, *italic*, paragraphs separated by blank lines. */
-export function RichText({ text, className }: { text: string; className?: string }) {
-  const paras = text.split(/\n{2,}/);
+export function RichText({ text, className, showHarakat = true }: { text: string; className?: string; showHarakat?: boolean }) {
+  const body = showHarakat ? text : stripHarakat(text);
+  const paras = body.split(/\n{2,}/);
   return (
     <div className={className}>
       {paras.map((p, pi) => (
