@@ -35,6 +35,11 @@ def main(argv: list[str] | None = None) -> None:
     watch.add_argument("--backend", default="agy", choices=("agy", "gemini-api"))
     fuse = sub.add_parser("fuse")
     fuse.add_argument("slug")
+    sub.add_parser("openset")
+    sub.add_parser("anchors")
+    sub.add_parser("stems")
+    sub.add_parser("loso")
+    sub.add_parser("report")
     sub.add_parser("selftest")
     eyes = sub.add_parser("vision-selftest")
     eyes.add_argument("--backend", default="agy", choices=("agy", "gemini-api"))
@@ -66,6 +71,8 @@ def main(argv: list[str] | None = None) -> None:
         for slug in ("i-have-come-alive", "karitas", "one"):
             if slug not in missing:
                 write_fusion(slug)
+        from anchors import write_anchors
+        write_anchors()
         write_report()
     elif args.cmd == "watch":
         from watch import watch_slug
@@ -75,6 +82,21 @@ def main(argv: list[str] | None = None) -> None:
     elif args.cmd == "fuse":
         from fuse import write_fusion
         write_fusion(args.slug)
+    elif args.cmd == "openset":
+        from openset import evaluate
+        evaluate()
+    elif args.cmd == "anchors":
+        from anchors import write_anchors
+        write_anchors()
+    elif args.cmd == "stems":
+        from stems import compare
+        compare()
+    elif args.cmd == "loso":
+        from loso import evaluate
+        evaluate()
+    elif args.cmd == "report":
+        from report import write_report
+        write_report()
     elif args.cmd == "selftest":
         from selftest import main as selftest_main
         selftest_main()

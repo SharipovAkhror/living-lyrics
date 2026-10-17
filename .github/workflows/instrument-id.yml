@@ -1,24 +1,29 @@
-# Listen to the three songs on a runner, where AUDIO_KEY exists.
-# The eye stage is not here: Antigravity is only on the owner's machine.
-# Demucs is not here either: four stems of these lengths do not fit the job.
-# The workflow commits the prediction JSON only, never the decrypted audio.
-# workflow_dispatch is invisible until this file is on the default branch.
-# A push of the weights or of this file on grok/t7b-recognizer starts the job.
+# Listen to songs on a runner, where AUDIO_KEY exists.
+# Start the same way as pipeline.yml: push jobs/instrument-id/<slug>.json
+# or run the workflow by hand. jobs/*.json does not match this subfolder
+# (* does not cross a slash), so the main pipeline stays idle.
+# The result commit is JSON and Markdown under docs/analysis/ only.
+# Eyes are not here. pipeline.yml is not modified.
 name: instrument-id
 on:
   workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Песня или all'
+        required: false
+        default: all
   push:
-    branches: [grok/t7b-recognizer]
     paths:
-      - ".github/workflows/instrument-id.yml"
-      - "scripts/instrument_id/weights/**"
+      - 'jobs/instrument-id/*.json'
 permissions:
   contents: write
-concurrency: { group: instrument-id, cancel-in-progress: false }
+concurrency:
+  group: instrument-id-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   songs:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -33,29 +38,51 @@ jobs:
         run: |
           sudo apt-get install -y -qq ffmpeg > /dev/null
           pip install -q torch torchaudio torchvision --index-url https://download.pytorch.org/whl/cpu
-          pip install -q -r scripts/instrument_id/requirements.txt cryptography
-      - name: Decrypt and predict
-        env: { AUDIO_KEY: "${{ secrets.AUDIO_KEY }}" }
+          pip install -q -r scripts/instrument_id/requirements.txt cryptography demucs
+      - name: Decrypt, listen, compare stems
+        env:
+          AUDIO_KEY: ${{ secrets.AUDIO_KEY }}
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_SLUG: ${{ github.event.inputs.slug }}
         run: |
-          mkdir -p work
-          for slug in i-have-come-alive karitas one; do
+          shopt -s nullglob
+          files=(jobs/instrument-id/*.json)
+          if [ ${#files[@]} -eq 0 ] && [ "$EVENT_NAME" != "workflow_dispatch" ]; then
+            echo "no job file on this push; the result commit deleted it"
+            exit 0
+          fi
+          python3 - << 'PY'
+          import json, os
+          from pathlib import Path
+          slugs = []
+          for path in sorted(Path("jobs/instrument-id").glob("*.json")):
+              payload = json.loads(path.read_text(encoding="utf-8"))
+              if isinstance(payload, dict) and payload.get("slugs"):
+                  slugs.extend(payload["slugs"])
+              elif isinstance(payload, dict) and payload.get("slug"):
+                  slugs.append(payload["slug"])
+              else:
+                  slugs.append(path.stem)
+          if not slugs and os.environ.get("INPUT_SLUG"):
+              slugs.append(os.environ["INPUT_SLUG"])
+          if not slugs:
+              slugs = ["i-have-come-alive", "karitas", "one"]
+          Path("work").mkdir(exist_ok=True)
+          Path("jobs-slugs.txt").write_text("\n".join(dict.fromkeys(slugs)), encoding="utf-8")
+          print("slugs", slugs)
+          PY
+          while IFS= read -r slug; do
             python3 scripts/pipeline/decrypt_audio.py "$slug"
-          done
+          done < jobs-slugs.txt
           python3 scripts/instrument_id/run.py songs
-      - name: Commit predictions
+          python3 scripts/instrument_id/run.py stems || echo "stem comparison failed"
+          python3 scripts/instrument_id/run.py report
+      - name: Commit analysis
         run: |
           git config user.name "living-lyrics-actions"
           git config user.email "actions@users.noreply.github.com"
-          git add \
-            docs/analysis/instrument-id-eval.md \
-            docs/analysis/i-have-come-alive/instrument-id.json \
-            docs/analysis/i-have-come-alive/fusion.json \
-            docs/analysis/i-have-come-alive/instruments.md \
-            docs/analysis/karitas/instrument-id.json \
-            docs/analysis/karitas/fusion.json \
-            docs/analysis/karitas/instruments.md \
-            docs/analysis/one/instrument-id.json \
-            docs/analysis/one/fusion.json \
-            docs/analysis/one/instruments.md
-          git commit -m "Record instrument predictions for the three songs" || exit 0
+          git add docs/analysis
+          git rm -q --ignore-unmatch jobs/instrument-id/*.json || true
+          git diff --cached --name-only | grep -E '^(docs/analysis/|jobs/instrument-id/)' || true
+          git commit -m "Record instrument decisions for the requested songs" || exit 0
           git pull --rebase -q && git push -q

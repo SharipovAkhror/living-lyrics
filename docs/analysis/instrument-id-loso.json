@@ -1,0 +1,14 @@
+{
+  "status": "not-run",
+  "reason": "Нужны сразу эмбеддинги публичного набора (work/instrument_id/embeddings.npz) и расшифрованная запись хотя бы одной песни с подтверждёнными двумя источниками отрезками. Локально есть эмбеддинги и нет ключа записи. На раннере есть запись и нет эмбеддингов. Число не подставлено.",
+  "embeddings": true,
+  "audio": [],
+  "confirmedSongs": [
+    "i-have-come-alive"
+  ],
+  "confirmedCounts": {
+    "i-have-come-alive": 4,
+    "karitas": 0,
+    "one": 0
+  }
+}

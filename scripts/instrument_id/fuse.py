@@ -1,9 +1,10 @@
 """Fuse audio segments, vision frames and song-level credits.
 
 An interval needs a time from audio or from a frame. Credits never invent a time.
-Accept when two of the three sources agree, or one timed source is very confident
-and the other timed source does not name a different instrument.
-Credits do not contradict by silence: a missing credit line is not a veto.
+Audio alone never introduces an instrument. A decision is an accept only when
+credits name the instrument and audio or vision times it, or when audio and vision
+agree. Agreement without a credit is accepted with review «нет в титрах».
+One timed source goes to the check list and is not a decision.
 """
 
 from __future__ import annotations
@@ -114,11 +115,10 @@ def decide(interval: dict, audio: list[dict], vision: list[dict], credits: list[
     instrument = interval["id"]
     audio_here = [p for p in audio if p["id"] == instrument and _overlap(interval["start"], interval["end"], p["start"], p["end"])]
     vision_here = [p for p in vision if p["id"] == instrument and _overlap(interval["start"], interval["end"], p["start"], p["end"])]
-    audio_other = [p for p in audio if p["id"] != instrument and _overlap(interval["start"], interval["end"], p["start"], p["end"])]
-    vision_other = [p for p in vision if p["id"] != instrument and _overlap(interval["start"], interval["end"], p["start"], p["end"])]
     audio_conf = max((p["confidence"] for p in audio_here), default=0.0)
     vision_conf = max((p["confidence"] for p in vision_here), default=0.0)
-    credit_hit = _credit_covers(instrument, credits, data)
+    # Exact credit id only. A family or a group (orchestra, percussion) does not license a guessed instrument.
+    credit_hit = any(hit.get("id") == instrument for hit in credits)
     sources = []
     if audio_here:
         sources.append("audio")
@@ -126,49 +126,32 @@ def decide(interval: dict, audio: list[dict], vision: list[dict], credits: list[
         sources.append("vision")
     if credit_hit:
         sources.append("credits")
-    disagrees = []
-    if vision_other and not vision_here:
-        disagrees.append("vision")
-    if audio_other and not audio_here:
-        disagrees.append("audio")
-    high_audio = meta.get("threshold95")
-    high_is_95 = high_audio is not None
-    if high_audio is None:
-        high_audio = meta.get("threshold", 0.9)
-
-    def _others_not_credited(others: list[dict]) -> bool:
-        return not any(_credit_covers(piece["id"], credits, data) for piece in others)
-
-    if disagrees:
-        # Credits break a tie only when they name this side and not the other.
-        if credit_hit and disagrees == ["vision"] and audio_here and _others_not_credited(vision_other):
-            decision = "accept"
-        elif credit_hit and disagrees == ["audio"] and vision_here and _others_not_credited(audio_other):
-            decision = "accept"
-        else:
-            decision = "conflict"
-    elif len(sources) >= 2:
+    review = ""
+    if audio_here and vision_here:
         decision = "accept"
-    elif sources == ["audio"] and audio_conf >= float(high_audio):
-        decision = "accept-single"
-    elif sources == ["vision"] and vision_conf >= VISION_HIGH:
-        decision = "accept-single"
+        if not credit_hit:
+            review = "нет в титрах"
+    elif credit_hit and (audio_here or vision_here):
+        decision = "accept"
+    elif audio_here or vision_here:
+        # One timed source. Credits alone do not reach this branch.
+        decision = "check"
     else:
         decision = "reject"
     who = next((p["who"] for p in vision_here if p.get("who")), "")
     return {
         "id": instrument,
         "name": data["by_id"][instrument]["name"],
+        "catalogKey": data["by_id"][instrument].get("catalogKey"),
         "start": round(interval["start"], 3),
         "end": round(interval["end"], 3),
         "decision": decision,
+        "review": review,
         "sources": sources,
         "audioConfidence": round(audio_conf, 4),
         "visionConfidence": round(vision_conf, 4),
         "who": who,
-        "conflict": decision == "conflict",
-        "visionHighUncalibrated": VISION_HIGH,
-        "audioHighIs95": high_is_95,
+        "audioAlone": sources == ["audio"],
     }
 
 
@@ -178,11 +161,14 @@ def fuse_payload(audio_payload: dict | None, vision: dict | None, credits: list[
     frames = _vision_pieces(vision, data)
     intervals = _gather(audio + frames)
     decisions = [decide(item, audio, frames, credits, meta, data) for item in intervals]
+    accepted = [item for item in decisions if item["decision"] == "accept"]
     return {
         "intervals": decisions,
-        "accepted": [item for item in decisions if item["decision"].startswith("accept")],
+        "accepted": accepted,
+        "check": [item for item in decisions if item["decision"] == "check"],
         "visionHigh": VISION_HIGH,
         "visionCalibrated": False,
+        "audioAloneAccepted": [item for item in accepted if item.get("audioAlone")],
     }
 
 
@@ -246,20 +232,26 @@ def write_fusion(slug: str) -> Path | None:
         f"# Сведение источников: {slug}",
         "",
         "Интервал берётся из звука или из кадра. Строка титров сама по себе время не создаёт.",
-        "Принято, если сходятся два источника из трёх, либо один источник с очень высокой уверенностью и без противоречия.",
-        f"Порог очень высокой уверенности кадра — {VISION_HIGH}, он не калиброван на концертах этого сайта.",
+        "Принято: титры называют этот инструмент, и звук или кадр ставит время; либо звук и кадр согласны.",
+        "Согласие звука и кадра без титров помечается «нет в титрах». Один источник — только «проверить».",
+        "Одним звуком инструмент не принимается, даже если уверенность высокая.",
         "",
-        "| с | по | инструмент | решение | источники | звук | кадр | кто |",
-        "|---|---|---|---|---|---|---|---|",
+        "| с | по | инструмент | решение | пометка | источники | звук | кадр | кто |",
+        "|---|---|---|---|---|---|---|---|---|",
     ]
     for item in fused["intervals"]:
         lines.append(
-            f"| {item['start']} | {item['end']} | {item['name']} | {item['decision']} | "
+            f"| {item['start']} | {item['end']} | {item['name']} | {item['decision']} | {item.get('review') or '—'} | "
             f"{', '.join(item['sources'])} | {item['audioConfidence']} | {item['visionConfidence']} | {item['who']} |"
         )
     if not fused["intervals"]:
         lines += ["", "Совпавших по времени отрезков нет."]
-    lines += ["", f"Принято отрезков: {len(fused['accepted'])}.", ""]
+    lines += [
+        "",
+        f"Принято отрезков: {len(fused['accepted'])}. Проверить: {len(fused['check'])}.",
+        f"Принятых одним звуком: {len(fused['audioAloneAccepted'])}.",
+        "",
+    ]
     report = ROOT / "docs" / "analysis" / slug / "instruments.md"
     existing = report.read_text(encoding="utf-8") if report.is_file() else ""
     if "# Сведение источников" in existing:
@@ -270,4 +262,42 @@ def write_fusion(slug: str) -> Path | None:
     else:
         report.write_text(block, encoding="utf-8")
     print(f"{slug}: {out}")
+    _write_confirmed(slug, fused)
+    _write_entries(slug, fused)
     return out
+
+
+def _write_confirmed(slug: str, fused: dict) -> None:
+    """Two-source accepts. Later training may use other songs' rows; this song's rows stay a test."""
+    segments = []
+    for item in fused["accepted"]:
+        segments.append({
+            "id": item["id"],
+            "start": item["start"],
+            "end": item["end"],
+            "sources": item["sources"],
+            "review": item.get("review") or "",
+        })
+    path = ROOT / "docs" / "analysis" / slug / "confirmed.json"
+    path.write_text(json.dumps({"slug": slug, "segments": segments}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _write_entries(slug: str, fused: dict) -> None:
+    """Proposal only. Nothing here is written into content/."""
+    if not fused["accepted"]:
+        path = ROOT / "docs" / "analysis" / slug / "entries-proposal.json"
+        if path.is_file():
+            path.unlink()
+        return
+    entries = []
+    skipped = []
+    for item in fused["accepted"]:
+        key = item.get("catalogKey")
+        if not key:
+            skipped.append(item["id"])
+            continue
+        entries.append({"key": key, "at": item["start"], "until": item["end"]})
+    entries.sort(key=lambda row: (row["at"], row["key"]))
+    payload = {"slug": slug, "entries": entries, "skippedNoCatalogKey": sorted(set(skipped))}
+    path = ROOT / "docs" / "analysis" / slug / "entries-proposal.json"
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

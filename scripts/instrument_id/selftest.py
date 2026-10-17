@@ -107,16 +107,22 @@ def test_fusion() -> None:
     meta = {"threshold": 0.90, "threshold95": 0.97}
     both = fuse_payload(_seg("violin", 0.96), _vision("скрипка", 0.9), [{"id": "violin"}], meta, data)
     check(both["accepted"] and both["accepted"][0]["decision"] == "accept", "звук и кадр и титры")
-    alone = fuse_payload(_seg("violin", 0.93), None, [], meta, data)
-    check(alone["intervals"] and alone["intervals"][0]["decision"] == "reject", "один источник ниже 0,97")
+    loud = fuse_payload(_seg("flute", 0.99), None, [], meta, data)
+    check(loud["accepted"] == [] and loud["check"] and loud["check"][0]["decision"] == "check", "один звук даже при 0,99 не принят")
+    credited = fuse_payload(_seg("violin", 0.4), None, [{"id": "violin"}], meta, data)
+    check(credited["accepted"] and credited["accepted"][0]["sources"] == ["audio", "credits"], "титры и звук дают время")
+    unseen = fuse_payload(_seg("violin", 0.99), _vision("скрипка", 0.9), [], meta, data)
+    check(unseen["accepted"] and unseen["accepted"][0]["review"] == "нет в титрах", "звук и кадр без титров")
     conflict = fuse_payload(_seg("violin", 0.99), _vision("най", 0.9), [], meta, data)
     kinds = {item["decision"] for item in conflict["intervals"]}
-    check(kinds == {"conflict"}, f"скрипка против ная: {kinds}")
+    check(kinds == {"check"} and conflict["accepted"] == [], f"скрипка против ная не принимается: {kinds}")
     tied = fuse_payload(_seg("violin", 0.99), _vision("най", 0.9), [{"id": "violin"}], meta, data)
     by_id = {item["id"]: item["decision"] for item in tied["intervals"]}
-    check(by_id.get("violin") == "accept" and by_id.get("ney") == "conflict", f"титры разнимают {by_id}")
+    check(by_id.get("violin") == "accept" and by_id.get("ney") == "check", f"титры берут скрипку, най только проверить: {by_id}")
     seen = fuse_payload(None, _vision("най", 0.9), [{"id": "ney"}], meta, data)
     check(seen["accepted"] and seen["accepted"][0]["sources"] == ["vision", "credits"], "кадр и титры")
+    family = fuse_payload(_seg("flute", 0.99), None, [{"id": "orchestra", "family": "ensemble"}], meta, data)
+    check(family["accepted"] == [], "семья оркестра не принимает флейту")
     drawing = fuse_payload(None, _vision("уд", 0.95, playing=False), [{"id": "oud"}], meta, data)
     check(drawing["intervals"] == [], "гравюра без игры не даёт интервал")
     times = choose_times(977.0, [0.0, 34.55, 269.15])
@@ -124,11 +130,39 @@ def test_fusion() -> None:
     check(34.55 in times and 269.15 in times, "границы секций сохранены")
 
 
+def test_job_glob() -> None:
+    """GitHub path filter: * does not match a slash, so the main pipeline ignores this folder."""
+    import re
+
+    def matches(pattern: str, path: str) -> bool:
+        regex = ""
+        i = 0
+        while i < len(pattern):
+            if pattern.startswith("**", i):
+                regex += ".*"
+                i += 2
+            elif pattern[i] == "*":
+                regex += "[^/]*"
+                i += 1
+            elif pattern[i] == "?":
+                regex += "[^/]"
+                i += 1
+            else:
+                regex += re.escape(pattern[i])
+                i += 1
+        return re.fullmatch(regex, path) is not None
+
+    check(matches("jobs/*.json", "jobs/alive.json"), "основной глоб ловит jobs/<slug>.json")
+    check(not matches("jobs/*.json", "jobs/instrument-id/alive.json"), "основной глоб не ловит подпапку")
+    check(matches("jobs/instrument-id/*.json", "jobs/instrument-id/alive.json"), "глоб задания узнаёт свой файл")
+
+
 def main() -> None:
     test_taxonomy()
     test_credits()
     test_smooth_and_threshold()
     test_fusion()
+    test_job_glob()
     if FAILURES:
         raise SystemExit(f"проверок не прошло: {len(FAILURES)}")
     print("selftest ok")

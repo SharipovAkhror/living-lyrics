@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 
 import numpy as np
+from sklearn.neighbors import NearestNeighbors
 
 from audio import load_mono, window
 from paths import ROOT, SONGS, WEIGHTS
@@ -95,6 +96,33 @@ def smooth(labels: list[str | None], confidences: list[float], hop: float, windo
     return segments
 
 
+def _in_distribution(feats: np.ndarray, prob: np.ndarray, meta: dict, pack: dict) -> np.ndarray:
+    """True when the window is close to a trained class. Missing score means no extra gate."""
+    spec = meta.get("openSet")
+    if not spec or "os_mu" not in pack:
+        return np.ones(len(feats), dtype=bool)
+    z = (feats.astype(np.float64) - np.asarray(pack["os_mu"], dtype=np.float64)) / np.asarray(pack["os_sd"], dtype=np.float64)
+    method = spec["method"]
+    if method == "softmax":
+        score = prob.max(axis=1)
+    elif method == "knn":
+        train = np.asarray(pack["os_train"], dtype=np.float64)
+        if train.shape[0] < 2:
+            return np.ones(len(feats), dtype=bool)
+        nn = NearestNeighbors(n_neighbors=min(int(spec.get("knnK", 5)), len(train)))
+        nn.fit(train)
+        dist, _ = nn.kneighbors(z, return_distance=True)
+        score = dist[:, -1]
+    else:
+        diff = z[:, None, :] - np.asarray(pack["os_mean"], dtype=np.float64)[None, :, :]
+        var = np.asarray(pack["os_var"], dtype=np.float64)
+        score = ((diff ** 2) / var).sum(axis=2).min(axis=1)
+    tau = float(spec["threshold"])
+    if spec.get("higherIsIn"):
+        return score >= tau
+    return score <= tau
+
+
 def _embed_windows(audio: np.ndarray, starts: list[float], sample_rate: int, window_sec: float, batch_size: int = 16) -> np.ndarray:
     from embed import _embed_batch, load_encoder
 
@@ -121,6 +149,7 @@ def recognize_array(audio: np.ndarray, stem: str, meta: dict | None = None, pack
     feats = _embed_windows(audio, starts, sample_rate, window_sec)
     xn = (feats.astype(np.float64) - pack["mu"]) / pack["sd"]
     prob = _softmax(xn @ pack["W"].T + pack["b"], float(meta["temperature"]))
+    known = _in_distribution(feats, prob, meta, pack)
     fam_prob = _softmax(xn @ pack["Wf"].T + pack["bf"], 1.0)
     classes = meta["classes"]
     families = meta["families"]
@@ -129,10 +158,15 @@ def recognize_array(audio: np.ndarray, stem: str, meta: dict | None = None, pack
     labels: list[str | None] = []
     kinds: list[str | None] = []
     confidences: list[float] = []
-    for row, fam_row in zip(prob, fam_prob):
+    for row, fam_row, is_known in zip(prob, fam_prob, known):
         guess = int(row.argmax())
         instrument = classes[guess]
         confidence = float(row[guess])
+        if not is_known:
+            labels.append(None)
+            kinds.append(None)
+            confidences.append(confidence)
+            continue
         if confidence >= tau and _allowed(instrument, stem, data):
             labels.append(instrument)
             kinds.append("instrument")

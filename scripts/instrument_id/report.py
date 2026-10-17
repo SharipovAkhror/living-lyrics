@@ -29,14 +29,23 @@ def _song_block(slug: str) -> list[str]:
     table = song_sets(slug, payload)
     lines.append(f"Модель: `{payload.get('model')}`. Некоммерческие веса: {'да' if payload.get('noncommercial') else 'нет'}. Титры в модель не подавались.")
     lines.append("")
-    lines.append("| стем | отрезки инструментов |")
+    lines.append("| стем | что сказал звук |")
     lines.append("|---|---|")
     for name, source in payload.get("sources", {}).items():
         named = [seg["name"] for seg in source.get("segments", []) if seg.get("kind") == "instrument"]
-        brief = ", ".join(named) if named else "принятых инструментов нет"
+        brief = ", ".join(named) if named else "инструмент не назван"
         lines.append(f"| {name} | {brief} |")
     lines.append("")
-    lines.append(f"В титрах найдено: {', '.join(table['found']) or '—'}.")
+    fusion_path = ROOT / "docs" / "analysis" / slug / "fusion.json"
+    if fusion_path.is_file():
+        fused = json.loads(fusion_path.read_text(encoding="utf-8"))
+        accepted = [f"{item['name']} {item['start']}–{item['end']}" + (f" ({item['review']})" if item.get("review") else "") for item in fused.get("accepted", [])]
+        check = sorted({item["name"] for item in fused.get("check", [])})
+        lines.append("Принято (не одним звуком): " + (", ".join(accepted) if accepted else "ничего") + ".")
+        lines.append("Проверить, в решения не входит: " + (", ".join(check) if check else "ничего") + ".")
+        lines.append(f"Принятых одним звуком: {len(fused.get('audioAloneAccepted') or [])}.")
+        lines.append("")
+    lines.append(f"В титрах найдено по словам модели, ещё до сведения: {', '.join(table['found']) or '—'}.")
     lines.append(f"В титрах не найдено: {', '.join(table['missed']) or '—'}.")
     if table["foundGroups"] or table["missedGroups"]:
         lines.append(f"Группы титров найдены: {', '.join(table['foundGroups']) or '—'}; не найдены: {', '.join(table['missedGroups']) or '—'}.")
@@ -102,6 +111,138 @@ def _vision_block() -> list[str]:
     return lines
 
 
+def _openset_block() -> list[str]:
+    path = ROOT / "docs" / "analysis" / "instrument-id-openset.json"
+    if not path.is_file():
+        return ["## Открытое множество", "", "Leave-class-out ещё не считался.", ""]
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    lines = [
+        "## Открытое множество",
+        "",
+        "Класс убирается из обучения целиком. Порог выбирается на проверке и замораживается на отложенных группах этого класса.",
+        "Цель: отвергнуть не меньше 90 % чужих клипов и оставить не меньше 80 % покрытия на своих.",
+        f"Выбранный по среднему отвержению способ: `{payload.get('chosen') or '—'}`. "
+        "Таблица — заново обученная голова на каждом выкинутом классе. "
+        + (
+            "Ни один способ не дал порог, на котором цель держится."
+            if not any(row.get("goalMet") for row in payload.get("summary", {}).values())
+            else "Способ с наибольшим числом классов, где цель взята, записан в веса."
+        ),
+        "",
+        "| способ | классов, где цель взята | среднее отвержение чужих | среднее покрытие своих |",
+        "|---|---|---|---|",
+    ]
+    for name, row in payload.get("summary", {}).items():
+        lines.append(
+            f"| {name} | {row['goalMet']} / {row['classes']} | {_pct(row['meanOodRejection'])} | {_pct(row['meanIdCoverage'])} |"
+        )
+    lines += [
+        "",
+        "| класс | softmax: отвергнут, покрытие своих | махаланобис | knn |",
+        "|---|---|---|---|",
+    ]
+    for row in payload.get("perClass", []):
+        def cell(method: str, row=row) -> str:
+            point = row.get(method) or {}
+            return f"{_pct(point.get('oodRejection'))}, {_pct(point.get('idCoverage'))}"
+        lines.append(f"| {row['name']} | {cell('softmax')} | {cell('mahalanobis')} | {cell('knn')} |")
+    lines.append("")
+    lines.append(payload.get("note") or "")
+    lines.append("")
+    return lines
+
+
+def _anchor_block() -> list[str]:
+    path = ROOT / "docs" / "analysis" / "instrument-id-anchors.json"
+    if not path.is_file():
+        return ["## Якоря", "", "Якоря ещё не собраны.", ""]
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    lines = [
+        "## Якоря",
+        "",
+        "Отрезок берётся из инструментальной секции `lyrics.json`, где назван ключ каталога, кроме голого ансамбля. Это тест, не обучение.",
+        "Провал — только чужой класс в принятых решениях. Отказ и список «проверить» провалом не считаются.",
+        "",
+    ]
+    for song in payload.get("songs", []):
+        lines.append(f"### {song['slug']}")
+        lines.append("")
+        lines.append(f"Чужих принятых: {song['failures']}.")
+        lines.append("")
+        lines.append("| с | по | якорь | вердикт | что сказал звук |")
+        lines.append("|---|---|---|---|---|")
+        for row in song.get("anchors", []):
+            said = ", ".join(row.get("said") or []) or "—"
+            lines.append(
+                f"| {row['start']} | {row['end']} | {row['catalogKey']} | {row['verdict']} | {said} |"
+            )
+        lines.append("")
+    return lines
+
+
+def _sources_block() -> list[str]:
+    path = ROOT / "docs" / "analysis" / "instrument-id-sources.json"
+    lines = ["## Наши инструменты", ""]
+    if not path.is_file():
+        lines.append("Манифест источников ещё не собран.")
+        lines.append("")
+        return lines
+    rows = json.loads(path.read_text(encoding="utf-8"))
+    lines.append("Цель на класс: не меньше 15 клипов из 3 разных записей. Чего не набралось, в голову не входит.")
+    lines.append("")
+    lines.append("| класс | клипов | записей | в голове |")
+    lines.append("|---|---|---|---|")
+    for row in rows:
+        lines.append(
+            f"| {row['id']} | {row.get('clips', '—')} | {row.get('recordings', '—')} | "
+            f"{'да' if row.get('enough') else 'нет'} |"
+        )
+    lines.append("")
+    return lines
+
+
+def _stems_block() -> list[str]:
+    path = ROOT / "docs" / "analysis" / "instrument-id-stems.json"
+    lines = ["## Стем или смесь", ""]
+    if not path.is_file():
+        lines.append("Сравнение на якорях ещё не запускалось.")
+        lines.append("")
+        return lines
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    lines.append(f"Выбор: `{payload.get('choice')}`. {payload.get('note') or ''}")
+    lines.append("")
+    lines.append("| песня | статус | лучше | чужих якорей, смесь | чужих якорей, стем |")
+    lines.append("|---|---|---|---|---|")
+    for song in payload.get("songs", []):
+        wrong = song.get("wrongAnchors") or {}
+        lines.append(
+            f"| {song.get('slug')} | {song.get('status')} | {song.get('better') or '—'} | "
+            f"{wrong.get('mix', '—')} | {wrong.get('stem', '—')} |"
+        )
+    lines.append("")
+    return lines
+
+
+def _loso_block() -> list[str]:
+    path = ROOT / "docs" / "analysis" / "instrument-id-loso.json"
+    lines = ["## Leave-one-song-out", ""]
+    if not path.is_file():
+        lines.append("Прогон не записан.")
+        lines.append("")
+        return lines
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("status") != "ok":
+        lines.append(payload.get("reason") or "Не считалось.")
+        lines.append("")
+        return lines
+    lines.append(payload.get("note") or "")
+    lines.append("")
+    for song in payload.get("songs", []):
+        lines.append(f"- {song['slug']}: {song.get('status')}, клипов {song.get('n')}, верно {song.get('correct', '—')}.")
+    lines.append("")
+    return lines
+
+
 def write_report() -> None:
     existing = EVAL_PATH.read_text(encoding="utf-8") if EVAL_PATH.is_file() else ""
     lines = [
@@ -126,6 +267,8 @@ def write_report() -> None:
             "",
             f"Веса некоммерческие: да. {meta['noncommercialReason']}",
             "Записи датасетов в git не входят. В репозитории только линейная голова `scripts/instrument_id/weights/probe.npz`.",
+            "Голова без IRMAS основной не стала: голос, фортепиано и гитара взяты только из IRMAS. "
+            "Без них якорь голоса нельзя закрыть верным классом. Условие NC-SA записано в `scripts/instrument_id/weights/LICENSE.md`.",
             "",
             "## Порог отказа",
             "",
@@ -194,11 +337,17 @@ def write_report() -> None:
     else:
         kept = _kept_vision(existing)
         lines.extend(kept if kept is not None else _vision_block())
+    lines.extend(_openset_block())
+    lines.extend(_anchor_block())
+    lines.extend(_sources_block())
+    lines.extend(_stems_block())
+    lines.extend(_loso_block())
     lines += [
         "## Чего модель по звуку не знает",
         "",
-        "Уд, най, даф, канун, танбур, кяманча и остальные классы без примеров в голове не появляются. "
-        "Путаница скрипки с кяманчой возможна и будет лишней относительно титров, а не доказательством класса. "
+        "Класс без 15 клипов из 3 записей в голову не входит. "
+        "Чужой звук закрытая голова может уверенно назвать ближайшим знакомым классом: порог softmax это не лечит. "
+        "Такой ответ не становится решением, если его не подтвердил второй источник. "
         "Кадр концерта — второй источник, и только если владелец положил файл видео.",
         "",
     ]

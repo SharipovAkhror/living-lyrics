@@ -1,0 +1,45 @@
+{
+  "slug": "i-have-come-alive",
+  "segments": [
+    {
+      "id": "voice",
+      "start": 100.0,
+      "end": 165.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "voice",
+      "start": 182.0,
+      "end": 251.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "voice",
+      "start": 285.0,
+      "end": 387.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "voice",
+      "start": 403.0,
+      "end": 569.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
+    }
+  ]
+}

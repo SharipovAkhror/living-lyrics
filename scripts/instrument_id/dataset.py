@@ -292,27 +292,45 @@ def _cap_irmas(rows: list[dict], cap: int, seed: int) -> list[dict]:
 
 
 def _extra_rows(data: dict) -> list[dict]:
+    """Clips from the manifest. A class with fewer than 15 clips or 3 recordings stays out."""
     root = WORK / "extra"
     if not root.is_dir():
         return []
     known = set(data["by_id"])
     rows = []
+    manifest_root = Path(__file__).resolve().parent / "sources"
     for folder in sorted(p for p in root.iterdir() if p.is_dir()):
         if folder.name not in known:
             raise SystemExit(f"extra/{folder.name} нет в labels.json")
-        license_file = folder / "license.txt"
-        license_name = license_file.read_text(encoding="utf-8").strip() if license_file.is_file() else "не записана"
-        for wav in sorted(folder.rglob("*.wav")):
-            rows.append({
+        meta_by_name = {}
+        csv_path = manifest_root / f"{folder.name}.csv"
+        if csv_path.is_file():
+            with csv_path.open(encoding="utf-8", newline="") as handle:
+                for record in csv.DictReader(handle):
+                    name = f"{record['recording']}-{float(record['start']):.1f}.wav"
+                    meta_by_name[name] = record
+        pending = []
+        recordings = set()
+        for wav in sorted(folder.glob("*.wav")):
+            meta = meta_by_name.get(wav.name, {})
+            recording = meta.get("recording") or wav.stem
+            license_name = meta.get("license") or "не записана"
+            group = f"extra:{folder.name}:{recording}"
+            recordings.add(recording)
+            pending.append({
                 "path": str(wav),
                 "id": folder.name,
-                "group": f"extra:{folder.name}:{wav.stem}",
-                "split": _hash_split(f"extra:{folder.name}:{wav.stem}", int(data["seed"])),
-                "source": "extra",
+                "group": group,
+                "split": _hash_split(group, int(data["seed"])),
+                "source": meta.get("source") or "commons",
                 "license": license_name,
                 "optimistic": False,
-                "note": "пример владельца",
+                "note": "клип из манифеста; группа — запись, не окно",
             })
+        if len(pending) < int(data["minExamples"]) or len(recordings) < 3:
+            print(f"extra {folder.name}: клипов {len(pending)}, записей {len(recordings)} — в голову не берём")
+            continue
+        rows.extend(pending)
     return rows
 
 

@@ -1,0 +1,487 @@
+{
+  "songs": [
+    {
+      "slug": "i-have-come-alive",
+      "failures": 0,
+      "anchors": [
+        {
+          "section": "voice-open",
+          "start": 10.6,
+          "end": 23.7,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/i-have-come-alive/lyrics.json",
+          "said": [
+            "flute"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "inst-tanbur",
+          "start": 23.7,
+          "end": 100.814,
+          "catalogKey": "tanbur",
+          "id": "tanbur",
+          "label": "Танбур",
+          "note": "Длинный проигрыш танбура перед первым куплетом.",
+          "source": "content/songs/i-have-come-alive/lyrics.json",
+          "said": [
+            "flute",
+            "piano"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-bridge",
+          "start": 172.0,
+          "end": 174.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/i-have-come-alive/lyrics.json",
+          "said": [
+            "flute"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        }
+      ]
+    },
+    {
+      "slug": "karitas",
+      "failures": 0,
+      "anchors": [
+        {
+          "section": "voice-1",
+          "start": 2.0,
+          "end": 37.39,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "flute",
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-2",
+          "start": 180.26,
+          "end": 195.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "flute",
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-3",
+          "start": 281.0,
+          "end": 291.12,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-4",
+          "start": 305.0,
+          "end": 319.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "flute",
+            "guitar-acoustic",
+            "piano"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-5",
+          "start": 319.0,
+          "end": 328.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "flute",
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-6",
+          "start": 328.0,
+          "end": 355.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "flute",
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-7",
+          "start": 355.0,
+          "end": 363.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "flute"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-8",
+          "start": 403.0,
+          "end": 405.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "flute"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-9",
+          "start": 550.27,
+          "end": 632.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "flute",
+            "guitar-acoustic",
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-10",
+          "start": 687.0,
+          "end": 705.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "flute",
+            "guitar-acoustic",
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-11",
+          "start": 714.0,
+          "end": 721.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "flute",
+            "guitar-acoustic"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-12",
+          "start": 733.0,
+          "end": 750.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "flute"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-13",
+          "start": 760.0,
+          "end": 813.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "flute",
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-14",
+          "start": 835.0,
+          "end": 861.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "clarinet",
+            "flute"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-15",
+          "start": 872.0,
+          "end": 879.04,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "flute"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-16",
+          "start": 942.13,
+          "end": 953.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-17",
+          "start": 961.0,
+          "end": 977.05,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/karitas/lyrics.json",
+          "said": [
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        }
+      ]
+    },
+    {
+      "slug": "one",
+      "failures": 0,
+      "anchors": [
+        {
+          "section": "voice-1",
+          "start": 246.4,
+          "end": 250.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/one/lyrics.json",
+          "said": [
+            "guitar-acoustic"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-2",
+          "start": 326.6,
+          "end": 332.165,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/one/lyrics.json",
+          "said": [
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-3",
+          "start": 355.0,
+          "end": 367.051,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/one/lyrics.json",
+          "said": [
+            "flute",
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-4",
+          "start": 622.0,
+          "end": 632.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/one/lyrics.json",
+          "said": [
+            "saxophone",
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-5",
+          "start": 671.0,
+          "end": 674.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/one/lyrics.json",
+          "said": [
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-6",
+          "start": 714.0,
+          "end": 721.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/one/lyrics.json",
+          "said": [
+            "flute"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-7",
+          "start": 764.339,
+          "end": 786.0,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/one/lyrics.json",
+          "said": [
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        },
+        {
+          "section": "voice-8",
+          "start": 793.0,
+          "end": 828.05,
+          "catalogKey": "voice",
+          "id": "voice",
+          "label": "Голос",
+          "note": "",
+          "source": "content/songs/one/lyrics.json",
+          "said": [
+            "voice"
+          ],
+          "acceptedRight": [],
+          "acceptedWrong": [],
+          "verdict": "abstain"
+        }
+      ]
+    }
+  ],
+  "note": "Окно 23,7–62 с в I Have Come Alive, названное соло танбура, лежит внутри секции inst-tanbur 23,7–100,814 с. Отдельной границы 62 с в lyrics.json нет, поэтому якорь — вся секция."
+}
