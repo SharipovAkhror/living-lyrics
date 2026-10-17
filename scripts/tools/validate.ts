@@ -150,6 +150,7 @@ function check(slug: string): Issue[] {
       // Words: increasing, inside the section
       line.words.forEach((w, wi) => {
         if (w.e <= w.s) err(lw, `слово «${w.w}»: e ≤ s`);
+        if (w.e > song.duration + 0.5) err(lw, `слово «${w.w}» кончается (${w.e}) позже конца записи (${song.duration})`);
         if (w.s < lastWordEnd - 0.02 && !(li === 0 && wi === 0 && si > 0 && w.s >= s.start)) err(lw, `слово «${w.w}» начинается (${w.s}) раньше конца предыдущего (${lastWordEnd})`);
         if (w.s < s.start - 0.05 || w.e > s.end + 0.05) warn(lw, `слово «${w.w}» выходит за границы секции`);
         if (/\s/.test(w.w)) err(lw, `слово «${w.w}» содержит пробел — разбейте на два`);
@@ -177,6 +178,12 @@ function check(slug: string): Issue[] {
       if (line.tr.ru.length > 90) warn(lw, `перевод длиннее 90 знаков (${line.tr.ru.length}) — в караоке он не успеет прочитаться`);
     });
   });
+
+  if (song.timing.status === 'aligned') {
+    const vocalLines = lyrics.sections.flatMap((s) => (s.kind === 'vocal' ? s.lines : []));
+    if (vocalLines.length > 0 && vocalLines.every((l) => l.flags?.includes('timing-draft')))
+      err('song.json', 'timing.status = aligned, но у каждой вокальной строки флаг timing-draft: пословная заливка нигде не включена, статус должен остаться draft');
+  }
 
   for (const l of song.languages) if (!langsSeen.has(l)) warn('song.json', `язык ${l} указан в languages, но строк на нём нет`);
   for (const l of langsSeen) if (!song.languages.includes(l as never)) warn('song.json', `строки на языке ${l} есть, но он не указан в languages`);
