@@ -30,7 +30,7 @@ def load_json(path: Path):
 
 
 def save_json(path: Path, data) -> None:
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    path.write_text(dump_json(data), encoding='utf-8')
 
 
 def run(cmd: list[str], **kw) -> subprocess.CompletedProcess:
@@ -52,6 +52,33 @@ def sha256(path: Path) -> str:
         for chunk in iter(lambda: f.read(1 << 20), b''):
             h.update(chunk)
     return h.hexdigest()
+
+
+def load_audio(path: Path, sr: int = 16000):
+    """Mono float32 samples at `sr` Hz, decoded by ffmpeg (any container or codec)."""
+    import numpy as np
+
+    raw = subprocess.run(
+        ['ffmpeg', '-v', 'error', '-i', str(path), '-ac', '1', '-ar', str(sr), '-f', 'f32le', '-'],
+        check=True, capture_output=True,
+    ).stdout
+    return np.frombuffer(raw, dtype=np.float32).copy()
+
+
+def vocal_stem(slug: str, explicit: str | None = None) -> tuple[Path, bool]:
+    """The vocal stem (preferred) or, failing that, the full mix. Returns (path, is_stem)."""
+    if explicit:
+        return Path(explicit), 'vocals' in Path(explicit).name
+    stem = work_dir(slug) / 'stems' / 'vocals.wav'
+    if stem.exists():
+        return stem, True
+    return find_source(slug), False
+
+
+def dump_json(data) -> str:
+    """The repository's JSON style: 2-space indent, UTF-8 as is, trailing newline.
+    Content files round-trip byte for byte through json.loads → dump_json."""
+    return json.dumps(data, ensure_ascii=False, indent=2) + '\n'
 
 
 def find_source(slug: str) -> Path:
