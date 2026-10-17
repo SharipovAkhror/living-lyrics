@@ -10,6 +10,8 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 
 const args = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const zoomOnly = process.argv.includes('--zoom-only');
+const onlyArg = process.argv.find((a) => a.startsWith('--only='));
+const only = onlyArg ? onlyArg.slice('--only='.length).split(',') : null;
 const [base = 'http://localhost:5173', out = 'work/shots/t4'] = args;
 
 const scenes = [
@@ -66,7 +68,10 @@ async function prepare(context) {
   await context.route('**/*.{m4a,mp3,flac,aac}', (route) => route.abort());
 }
 
-async function seek(page, t, duration) {
+async function seek(page, t) {
+  // The page already seeks from ?t=. Setting the element clock again covers a
+  // lost seek when the file never loads. Do not also click the scrubber:
+  // on iPhone that click landed early and pulled Hildegard back into Fuzuli.
   await page.evaluate((time) => {
     for (const el of document.querySelectorAll('audio')) {
       try {
@@ -76,17 +81,7 @@ async function seek(page, t, duration) {
       }
     }
   }, t);
-  const track = page.locator('.scrub-track');
-  await track.waitFor({ timeout: 20000 });
-  const box = await track.boundingBox();
-  if (!box) throw new Error('scrubber has no box');
-  const ratio = Math.min(0.98, Math.max(0.01, t / duration));
-  const x = box.x + box.width * ratio;
-  const y = box.y + box.height / 2;
-  await page.mouse.move(x, y);
-  await page.mouse.down();
-  await page.mouse.up();
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(400);
 }
 
 async function readStage(page) {
@@ -167,7 +162,7 @@ async function openScene(page, scene, query) {
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.waitForSelector('.fb-orig', { timeout: 20000 });
   await page.evaluate(() => document.fonts.ready);
-  await seek(page, scene.t, scene.duration);
+  await seek(page, scene.t);
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(600);
 }
@@ -181,7 +176,7 @@ async function runDevice(name, browserType, device) {
       const page = await context.newPage();
       page.on('pageerror', (e) => console.error('pageerror', e.message));
 
-      if (!zoomOnly && scheme === 'light') {
+      if (!zoomOnly && !only && scheme === 'light') {
         await openScene(page, scenes[0], '');
         const file = `${out}/${name}-${scheme}-default-rumi.png`;
         await page.screenshot({ path: file });
@@ -192,6 +187,7 @@ async function runDevice(name, browserType, device) {
 
       for (const set of sets) {
         for (const scene of scenes) {
+          if (only && !only.includes(scene.id)) continue;
           if (zoomOnly && !scene.pale) continue;
           await openScene(page, scene, `fonts=${set}`);
           const file = `${out}/${name}-${scheme}-${set}-${scene.id}.png`;
@@ -213,7 +209,7 @@ async function runDevice(name, browserType, device) {
       await context.close();
 
       // Transliteration is the only italic line in the scene today. One light pass per device.
-      if (!zoomOnly && scheme === 'light') {
+      if (!zoomOnly && !only && scheme === 'light') {
         const context2 = await browser.newContext({ ...device, colorScheme: 'light' });
         await prepare(context2);
         await context2.addInitScript(() => {
@@ -242,7 +238,7 @@ await runDevice('desktop', chromium, {
   deviceScaleFactor: 1,
 });
 
-if (!zoomOnly) {
+if (!zoomOnly && !only) {
   writeFileSync(`${out}/notes.json`, JSON.stringify(notes, null, 2));
   console.log('notes', `${out}/notes.json`);
 }
