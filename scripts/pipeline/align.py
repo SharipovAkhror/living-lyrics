@@ -430,7 +430,7 @@ def main() -> None:
     lyr_path, song_path = song_dir(slug) / 'lyrics.json', song_dir(slug) / 'song.json'
     lyrics, song = load_json(lyr_path), load_json(song_path)
     if song['timing']['status'] == 'verified' and not args.force and not args.dry_run:
-        raise SystemExit('song.json: timing.status = verified — время проверено человеком. Перезапись: --force')
+        raise SystemExit('song.json: timing.status = verified — владелец уже принял время после прослушивания. Перезапись: --force')
     only = {x for x in args.lines.split(',') if x}
 
     audio, is_stem = vocal_stem(slug, args.audio)

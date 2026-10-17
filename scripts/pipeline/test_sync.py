@@ -254,8 +254,32 @@ def test_build_proof_independent() -> None:
     check('passing median is the pre-snap error', med is not None and 0 < med <= 0.10, str(med))
 
 
+def test_star_absorbs_a_hold() -> None:
+    import diagnose_locate as D
+
+    class U:
+        def __init__(self, tok: int) -> None:
+            self.tokens = [tok]
+            self.word_of = [0]
+            self.roman = ['a']
+
+    lp = np.full((40, 3), -6.0, np.float32)
+    lp[:, 0] = -0.5
+    lp[10:26, 1] = -0.4
+    lp[10, 1] = -0.05
+    lp[30, 2] = -0.05
+    got = D.align_stars(lp, [U(1), U(2)])
+    check('star path exists', got is not None, str(got))
+    if got is None:
+        return
+    a, b = got[0]['words'][0], got[1]['words'][0]
+    check('a held letter stays on its spike', a is not None and a['f0'] == 10 and a['f1'] == 10, str(a))
+    check('the next line stays after the gap', b is not None and b['f0'] == 30, str(b))
+
+
 def main() -> int:
     test_viterbi()
+    test_star_absorbs_a_hold()
     test_engines()
     test_normalise()
     test_solo()

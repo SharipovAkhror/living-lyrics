@@ -9,7 +9,8 @@
 #   decrypt     content/audio-enc/<slug>/high.m4a.enc → work/<slug>/source.m4a   (needs AUDIO_KEY)
 #   separate    Demucs htdemucs, four stems → work/<slug>/stems/{vocals,drums,bass,other}.wav
 #   sections    voice / instrument map → work/<slug>/sections.suggested.json
-#   transcribe  Whisper draft → work/<slug>/transcript.json
+#   transcribe  Whisper draft → work/<slug>/transcript.json, copied to docs/analysis/<slug>/transcript.json
+#   diagnose    read-only locator table → docs/analysis/<slug>/locate.md (does not write lyrics)
 #   align       word times into lyrics.json (align.py), report → work/<slug>/align-report.json
 #   qa          sync check (qa_sync.py) → work/<slug>/qa-sync.md, copied to docs/analysis/<slug>-qa.md
 # Stages that need the vocal stem decrypt and separate first when it is missing.
@@ -30,7 +31,7 @@ if [ -z "$slug" ] || [ $# -eq 0 ]; then
   exit 2
 fi
 for s in "$@"; do
-  case "$s" in decrypt|separate|sections|transcribe|align|qa) ;; *) echo "неизвестная стадия: $s"; exit 2 ;; esac
+  case "$s" in decrypt|separate|sections|transcribe|diagnose|align|qa) ;; *) echo "неизвестная стадия: $s"; exit 2 ;; esac
 done
 want=" $* "
 has() { [[ "$want" == *" $1 "* ]]; }
@@ -77,11 +78,29 @@ need_stem() { [ -f "$w/stems/vocals.wav" ] || separate; }
 
 if has decrypt; then decrypt || fail decrypt; fi
 if has separate; then separate || fail separate; fi
+publish() {  # publish <src> <name>: copy a small analysis file, never work/ itself
+  if [ -f "$1" ]; then
+    mkdir -p "$root/docs/analysis/$slug"
+    cp "$1" "$root/docs/analysis/$slug/$2"
+    echo "→ docs/analysis/$slug/$2"
+  fi
+}
 if has sections && [ $status -lt 2 ]; then
-  { need_stem && step sections python3 sections.py "$slug" --gap 3; } || fail sections
+  if need_stem && step sections python3 sections.py "$slug" --gap 3; then
+    publish "$w/sections.suggested.json" sections.suggested.json
+  else
+    fail sections
+  fi
 fi
 if has transcribe && [ $status -lt 2 ]; then
-  { need_stem && step transcribe python3 transcribe.py "$slug" --model "${WHISPER_MODEL:-large-v3-turbo}"; } || fail transcribe
+  if need_stem && step transcribe python3 transcribe.py "$slug" --model "${WHISPER_MODEL:-large-v3-turbo}"; then
+    publish "$w/transcript.json" transcript.json
+  else
+    fail transcribe
+  fi
+fi
+if has diagnose && [ $status -lt 2 ]; then
+  { need_stem && step diagnose python3 diagnose_locate.py "$slug"; } || fail diagnose
 fi
 aligned=""
 if has align && [ $status -lt 2 ]; then
