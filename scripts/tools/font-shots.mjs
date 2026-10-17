@@ -1,6 +1,6 @@
 // Photographs the font fitting sets on classical lines.
 // iPhone shots use Playwright WebKit. Desktop shots use Chromium.
-// Usage: node scripts/tools/font-shots.mjs [baseUrl] [outDir]
+// Usage: node scripts/tools/font-shots.mjs [baseUrl] [outDir] [--zoom-only]
 //
 // Audio is not required. A failed or missing file does not move the scene,
 // so this script keeps a seekable clock on the media element and then
@@ -8,7 +8,9 @@
 import { chromium, webkit, devices } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 
-const [base = 'http://localhost:5173', out = 'work/shots/t4'] = process.argv.slice(2);
+const args = process.argv.slice(2).filter((a) => !a.startsWith('--'));
+const zoomOnly = process.argv.includes('--zoom-only');
+const [base = 'http://localhost:5173', out = 'work/shots/t4'] = args;
 
 const scenes = [
   { id: 'rumi', path: '/song/i-have-come-alive', t: 134, duration: 580.06, label: 'Руми, первый бейт', pale: 'fa' },
@@ -124,26 +126,39 @@ async function readStage(page) {
 }
 
 async function shootPale(page, lang, file) {
-  const handle = await page.evaluateHandle((code) => {
+  // Hide the chrome, scale the pale line, then clip the page. A zoomed element
+  // screenshot was clipping Nastaliq swashes and including the comment bar.
+  const clip = await page.evaluate((code) => {
     const block = [...document.querySelectorAll(`.fb[lang="${code}"]`)].find((n) => {
       if (n.classList.contains('is-current')) return false;
       const s = getComputedStyle(n);
       return s.visibility !== 'hidden' && parseFloat(s.opacity) > 0.2;
     });
-    return block?.querySelector('.fb-orig') ?? null;
+    const orig = block?.querySelector('.fb-orig');
+    if (!(orig instanceof HTMLElement)) return null;
+    for (const el of document.querySelectorAll('.comment, .player, .font-fit, .hint, .topbar')) {
+      if (el instanceof HTMLElement) el.style.visibility = 'hidden';
+    }
+    orig.style.transform = 'scale(2.4)';
+    orig.style.transformOrigin = 'center center';
+    const r = orig.getBoundingClientRect();
+    const pad = 16;
+    return { x: r.x - pad, y: r.y - pad, width: r.width + pad * 2, height: r.height + pad * 2 };
   }, lang);
-  const el = handle.asElement();
-  if (!el) {
+  if (!clip) {
     console.error('no pale line', lang, file);
-    await handle.dispose();
     return false;
   }
-  await el.evaluate((node) => {
-    node.style.zoom = '2.2';
-  });
-  await page.waitForTimeout(150);
-  await el.screenshot({ path: file });
-  await handle.dispose();
+  const viewport = page.viewportSize() ?? { width: clip.width, height: clip.height };
+  const x = Math.max(0, clip.x);
+  const y = Math.max(0, clip.y);
+  const width = Math.min(clip.width - (x - clip.x), viewport.width - x);
+  const height = Math.min(clip.height - (y - clip.y), viewport.height - y);
+  if (width < 40 || height < 40) {
+    console.error('pale clip too small', lang, file, clip);
+    return false;
+  }
+  await page.screenshot({ path: file, clip: { x, y, width, height } });
   return true;
 }
 
@@ -166,7 +181,7 @@ async function runDevice(name, browserType, device) {
       const page = await context.newPage();
       page.on('pageerror', (e) => console.error('pageerror', e.message));
 
-      if (scheme === 'light') {
+      if (!zoomOnly && scheme === 'light') {
         await openScene(page, scenes[0], '');
         const file = `${out}/${name}-${scheme}-default-rumi.png`;
         await page.screenshot({ path: file });
@@ -177,13 +192,16 @@ async function runDevice(name, browserType, device) {
 
       for (const set of sets) {
         for (const scene of scenes) {
+          if (zoomOnly && !scene.pale) continue;
           await openScene(page, scene, `fonts=${set}`);
           const file = `${out}/${name}-${scheme}-${set}-${scene.id}.png`;
-          await page.screenshot({ path: file });
-          const info = await readStage(page);
-          notes.push({ file, info });
-          console.log(file, info.section, info.orig?.family);
-          if (info.section !== scene.label) console.error('  wrong section, wanted', scene.label);
+          if (!zoomOnly) {
+            await page.screenshot({ path: file });
+            const info = await readStage(page);
+            notes.push({ file, info });
+            console.log(file, info.section, info.orig?.family);
+            if (info.section !== scene.label) console.error('  wrong section, wanted', scene.label);
+          }
           if (scene.pale) {
             const zoom = `${out}/zoom-${name}-${scheme}-${set}-${scene.id}.png`;
             const ok = await shootPale(page, scene.pale, zoom);
@@ -195,7 +213,7 @@ async function runDevice(name, browserType, device) {
       await context.close();
 
       // Transliteration is the only italic line in the scene today. One light pass per device.
-      if (scheme === 'light') {
+      if (!zoomOnly && scheme === 'light') {
         const context2 = await browser.newContext({ ...device, colorScheme: 'light' });
         await prepare(context2);
         await context2.addInitScript(() => {
@@ -224,5 +242,7 @@ await runDevice('desktop', chromium, {
   deviceScaleFactor: 1,
 });
 
-writeFileSync(`${out}/notes.json`, JSON.stringify(notes, null, 2));
-console.log('notes', `${out}/notes.json`);
+if (!zoomOnly) {
+  writeFileSync(`${out}/notes.json`, JSON.stringify(notes, null, 2));
+  console.log('notes', `${out}/notes.json`);
+}

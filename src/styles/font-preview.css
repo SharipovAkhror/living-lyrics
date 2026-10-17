@@ -72,7 +72,8 @@ html[data-font-preview='c'] .fb-translit {
   text-align: center;
 }
 
-.font-fit--song {
+/* Both classes: otherwise .font-fit.glass keeps bottom set and the plaque stretches over the verse. */
+.font-fit.glass.font-fit--song {
   bottom: auto;
   top: calc(env(safe-area-inset-top) + 68px);
 }
