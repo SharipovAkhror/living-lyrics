@@ -1,0 +1,153 @@
+{
+  "key": "oud",
+  "name": "Уд",
+  "native": "عود",
+  "kind": "arabic-concert",
+  "parts": [
+    {
+      "node": "part-string-1",
+      "morph": "vibrate",
+      "drive": [
+        "sustain",
+        "pulse"
+      ]
+    },
+    {
+      "node": "part-string-2",
+      "morph": "vibrate",
+      "drive": [
+        "sustain",
+        "pulse"
+      ]
+    },
+    {
+      "node": "part-string-3",
+      "morph": "vibrate",
+      "drive": [
+        "sustain",
+        "pulse"
+      ]
+    },
+    {
+      "node": "part-string-4",
+      "morph": "vibrate",
+      "drive": [
+        "sustain",
+        "pulse"
+      ]
+    },
+    {
+      "node": "part-string-5",
+      "morph": "vibrate",
+      "drive": [
+        "sustain",
+        "pulse"
+      ]
+    },
+    {
+      "node": "part-string-6",
+      "morph": "vibrate",
+      "drive": [
+        "sustain",
+        "pulse"
+      ]
+    },
+    {
+      "node": "part-string-7",
+      "morph": "vibrate",
+      "drive": [
+        "sustain",
+        "pulse"
+      ]
+    },
+    {
+      "node": "part-string-8",
+      "morph": "vibrate",
+      "drive": [
+        "sustain",
+        "pulse"
+      ]
+    },
+    {
+      "node": "part-string-9",
+      "morph": "vibrate",
+      "drive": [
+        "sustain",
+        "pulse"
+      ]
+    },
+    {
+      "node": "part-string-10",
+      "morph": "vibrate",
+      "drive": [
+        "sustain",
+        "pulse"
+      ]
+    },
+    {
+      "node": "part-string-11",
+      "morph": "vibrate",
+      "drive": [
+        "sustain",
+        "pulse"
+      ]
+    }
+  ],
+  "clips": [
+    "idle"
+  ],
+  "triangles": 10010,
+  "bytes": 94548,
+  "cameras": {
+    "hero": {
+      "position": [
+        0,
+        0.02,
+        1.9
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "fov": 28
+    },
+    "close": {
+      "position": [
+        0.02,
+        -0.05,
+        0.72
+      ],
+      "target": [
+        0,
+        -0.02,
+        0.02
+      ],
+      "fov": 28
+    }
+  },
+  "materials": {
+    "wood": "#6b3e22",
+    "spruce": "#e6d2a8",
+    "ebony": "#2a211c",
+    "string": "#f2efe6",
+    "metal": "#c7a159"
+  },
+  "author": "Living Lyrics",
+  "license": "project",
+  "proportions": {
+    "strings": 11,
+    "minGapCm": 0.182,
+    "scaleCm": 61,
+    "widthCm": 38.7,
+    "depthCm": 21,
+    "bodyCm": 50,
+    "ribs": 15,
+    "courses": "5 double + 1 single bass"
+  },
+  "sources": [
+    "https://www.metmuseum.org/art/collection/search/503203",
+    "https://www.metmuseum.org/art/collection/search/776535",
+    "https://www.thomann.co.uk/hannabach_2511_arabic_oud_11_strings_set.htm"
+  ]
+}
