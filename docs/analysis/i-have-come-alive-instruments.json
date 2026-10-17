@@ -3,10 +3,10 @@
   "title": "I Have Come Alive",
   "duration": 580.058,
   "models": {
-    "tagger": "laion/larger_clap_music",
+    "tagger": "laion/clap-htsat-unfused",
     "tagger_license": "Apache-2.0",
-    "tagger_card": "https://huggingface.co/laion/larger_clap_music",
-    "tagger_note": "Music checkpoint corresponding to music_audioset_epoch_15_esc_90.14.pt. PANNs weights were not loaded: the code repository has no LICENSE file and the Zenodo record only says Open.",
+    "tagger_card": "https://huggingface.co/laion/clap-htsat-unfused",
+    "tagger_note": "HTS-AT unfused, LAION-Audio-630K. laion/larger_clap_music was not loaded: its text projection is near zero and every prompt collapses to one vector. PANNs weights were not loaded: the code repository has no LICENSE file and the Zenodo record only says Open.",
     "stems": "htdemucs",
     "stems_license": "MIT",
     "envelopes": "librosa",
@@ -78,318 +78,1838 @@
     "background": "silence, room tone, or no distinct musical instrument"
   },
   "diagnostics": {
-    "drums": {
-      "windows": 387,
-      "scored": 317,
-      "margin_p50": 0.0006,
-      "margin_p90": 0.0006,
-      "margin_max": 0.0007,
-      "gap_p50": 0.0008,
-      "gap_p90": 0.0008,
-      "sim_std": 0.0008,
-      "top_prob_p50": 0.0715,
-      "top_prob_p90": 0.0715
+    "text_pairs": {
+      "median": 0.258,
+      "min": -0.2877,
+      "max": 0.9604,
+      "n": 46
     },
-    "bass": {
-      "windows": 290,
-      "scored": 129,
-      "margin_p50": 0.0,
-      "margin_p90": 0.0001,
-      "margin_max": 0.0001,
-      "gap_p50": 0.0001,
-      "gap_p90": 0.0002,
-      "sim_std": 0.0007,
-      "top_prob_p50": 0.2001,
-      "top_prob_p90": 0.2001
-    },
-    "other": {
-      "windows": 290,
-      "scored": 272,
-      "margin_p50": 0.0004,
-      "margin_p90": 0.0004,
-      "margin_max": 0.0005,
-      "gap_p50": 0.0004,
-      "gap_p90": 0.0004,
-      "sim_std": 0.002,
-      "top_prob_p50": 0.0303,
-      "top_prob_p90": 0.0303
-    },
-    "mix": {
-      "windows": 193,
-      "scored": 191,
-      "margin_p50": 0.0005,
-      "margin_p90": 0.0006,
-      "margin_max": 0.0007,
-      "gap_p50": 0.0003,
-      "gap_p90": 0.0003,
-      "sim_std": 0.0024,
-      "top_prob_p50": 0.0218,
-      "top_prob_p90": 0.0218
+    "stems": {
+      "drums": {
+        "windows": 387,
+        "scored": 317,
+        "margin_p50": 0.3832,
+        "margin_p90": 0.523,
+        "margin_max": 0.6902,
+        "gap_p50": 0.0341,
+        "gap_p90": 0.0783,
+        "sim_std": 0.1023,
+        "top_prob_p50": 0.388,
+        "top_prob_p90": 0.6384
+      },
+      "bass": {
+        "windows": 290,
+        "scored": 129,
+        "margin_p50": 0.2189,
+        "margin_p90": 0.3641,
+        "margin_max": 0.5102,
+        "gap_p50": 0.0586,
+        "gap_p90": 0.1502,
+        "sim_std": 0.1106,
+        "top_prob_p50": 0.6544,
+        "top_prob_p90": 0.9035
+      },
+      "other": {
+        "windows": 290,
+        "scored": 272,
+        "margin_p50": 0.3962,
+        "margin_p90": 0.5058,
+        "margin_max": 0.6339,
+        "gap_p50": 0.0205,
+        "gap_p90": 0.0723,
+        "sim_std": 0.1141,
+        "top_prob_p50": 0.2615,
+        "top_prob_p90": 0.4779
+      },
+      "mix": {
+        "windows": 193,
+        "scored": 191,
+        "margin_p50": 0.3903,
+        "margin_p90": 0.5288,
+        "margin_max": 0.6469,
+        "gap_p50": 0.0657,
+        "gap_p90": 0.1373,
+        "sim_std": 0.1143,
+        "top_prob_p50": 0.4766,
+        "top_prob_p90": 0.7684
+      }
     }
   },
   "timeline": [
     {
-      "key": "darbuka",
-      "name": "Дарбука",
+      "key": "tabla",
+      "name": "табла",
       "at": 0.0,
-      "until": 97.5,
-      "confidence": 0.071,
-      "similarity": 0.008,
-      "margin": 0.001,
+      "until": 6.0,
+      "confidence": 0.291,
+      "similarity": 0.378,
+      "margin": 0.402,
       "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "accordion",
+      "name": "аккордеон",
+      "at": 0.0,
+      "until": 34.0,
+      "confidence": 0.281,
+      "similarity": 0.444,
+      "margin": 0.4,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "cello",
+      "name": "Виолончель",
+      "at": 4.0,
+      "until": 12.0,
+      "confidence": 0.537,
+      "similarity": 0.36,
+      "margin": 0.144,
+      "stem": "bass",
       "in_catalog": true,
       "family_voice": false
     },
     {
-      "key": "santur",
-      "name": "Сантур",
-      "at": 0.0,
-      "until": 112.0,
-      "confidence": 0.03,
-      "similarity": 0.007,
-      "margin": 0.0,
+      "key": "snare-drum",
+      "name": "малый барабан",
+      "at": 6.0,
+      "until": 9.0,
+      "confidence": 0.268,
+      "similarity": 0.352,
+      "margin": 0.415,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "string-section",
+      "name": "группа смычковых",
+      "at": 6.0,
+      "until": 12.0,
+      "confidence": 0.159,
+      "similarity": 0.417,
+      "margin": 0.412,
+      "stem": "mix",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 10.5,
+      "until": 16.5,
+      "confidence": 0.336,
+      "similarity": 0.402,
+      "margin": 0.485,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "cello",
+      "name": "Виолончель",
+      "at": 18.0,
+      "until": 24.0,
+      "confidence": 0.521,
+      "similarity": 0.315,
+      "margin": 0.127,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 18.0,
+      "until": 24.0,
+      "confidence": 0.29,
+      "similarity": 0.397,
+      "margin": 0.474,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 25.5,
+      "until": 33.0,
+      "confidence": 0.411,
+      "similarity": 0.418,
+      "margin": 0.505,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "string-section",
+      "name": "группа смычковых",
+      "at": 33.0,
+      "until": 48.0,
+      "confidence": 0.569,
+      "similarity": 0.537,
+      "margin": 0.533,
+      "stem": "mix+other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "cello",
+      "name": "Виолончель",
+      "at": 34.0,
+      "until": 46.0,
+      "confidence": 0.411,
+      "similarity": 0.287,
+      "margin": 0.076,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 34.5,
+      "until": 51.0,
+      "confidence": 0.387,
+      "similarity": 0.403,
+      "margin": 0.483,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "accordion",
+      "name": "аккордеон",
+      "at": 48.0,
+      "until": 80.0,
+      "confidence": 0.343,
+      "similarity": 0.431,
+      "margin": 0.414,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 52.5,
+      "until": 55.5,
+      "confidence": 0.236,
+      "similarity": 0.375,
+      "margin": 0.442,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "timpani",
+      "name": "литавры",
+      "at": 55.5,
+      "until": 58.5,
+      "confidence": 0.186,
+      "similarity": 0.419,
+      "margin": 0.434,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "dholak",
+      "name": "дхолак",
+      "at": 58.5,
+      "until": 64.5,
+      "confidence": 0.282,
+      "similarity": 0.427,
+      "margin": 0.481,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 66.0,
+      "until": 69.0,
+      "confidence": 0.258,
+      "similarity": 0.422,
+      "margin": 0.457,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "dholak",
+      "name": "дхолак",
+      "at": 69.0,
+      "until": 79.5,
+      "confidence": 0.345,
+      "similarity": 0.451,
+      "margin": 0.51,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "string-section",
+      "name": "группа смычковых",
+      "at": 75.0,
+      "until": 99.0,
+      "confidence": 0.667,
+      "similarity": 0.579,
+      "margin": 0.54,
+      "stem": "other+mix",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 85.5,
+      "until": 96.0,
+      "confidence": 0.289,
+      "similarity": 0.327,
+      "margin": 0.331,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 94.0,
+      "until": 98.0,
+      "confidence": 0.607,
+      "similarity": 0.487,
+      "margin": 0.253,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "kamancheh",
+      "name": "Кяманча",
+      "at": 98.0,
+      "until": 102.0,
+      "confidence": 0.124,
+      "similarity": 0.453,
+      "margin": 0.364,
       "stem": "other",
       "in_catalog": true,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
+      "key": "voice",
+      "name": "Голос",
+      "at": 99.0,
+      "until": 129.0,
+      "confidence": 0.517,
+      "similarity": 0.33,
+      "margin": 0.275,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
       "at": 102.0,
       "until": 105.0,
-      "confidence": 0.048,
-      "similarity": 0.008,
-      "margin": 0.0,
+      "confidence": 0.397,
+      "similarity": 0.399,
+      "margin": 0.234,
       "stem": "drums",
-      "in_catalog": true,
+      "in_catalog": false,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
+      "key": "tabla",
+      "name": "табла",
       "at": 106.5,
-      "until": 111.0,
-      "confidence": 0.056,
-      "similarity": 0.008,
-      "margin": 0.0,
+      "until": 109.5,
+      "confidence": 0.329,
+      "similarity": 0.435,
+      "margin": 0.262,
       "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 112.0,
+      "until": 118.0,
+      "confidence": 0.211,
+      "similarity": 0.311,
+      "margin": 0.096,
+      "stem": "bass",
       "in_catalog": true,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
+      "key": "bass-drum",
+      "name": "большой барабан",
       "at": 115.5,
-      "until": 124.5,
-      "confidence": 0.064,
-      "similarity": 0.008,
-      "margin": 0.001,
+      "until": 118.5,
+      "confidence": 0.404,
+      "similarity": 0.266,
+      "margin": 0.123,
       "stem": "drums",
-      "in_catalog": true,
+      "in_catalog": false,
       "family_voice": false
     },
     {
-      "key": "santur",
-      "name": "Сантур",
-      "at": 116.0,
-      "until": 194.0,
-      "confidence": 0.03,
-      "similarity": 0.008,
-      "margin": 0.0,
+      "key": "viola",
+      "name": "альт",
+      "at": 118.0,
+      "until": 126.0,
+      "confidence": 0.224,
+      "similarity": 0.483,
+      "margin": 0.383,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "bass-drum",
+      "name": "большой барабан",
+      "at": 120.0,
+      "until": 123.0,
+      "confidence": 0.217,
+      "similarity": 0.332,
+      "margin": 0.223,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "violin",
+      "name": "Скрипка",
+      "at": 130.0,
+      "until": 134.0,
+      "confidence": 0.216,
+      "similarity": 0.462,
+      "margin": 0.429,
       "stem": "other",
       "in_catalog": true,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
-      "at": 129.0,
-      "until": 180.0,
-      "confidence": 0.07,
-      "similarity": 0.008,
-      "margin": 0.001,
+      "key": "choir",
+      "name": "Хор",
+      "at": 132.0,
+      "until": 165.0,
+      "confidence": 0.604,
+      "similarity": 0.396,
+      "margin": 0.443,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 132.0,
+      "until": 156.0,
+      "confidence": 0.482,
+      "similarity": 0.371,
+      "margin": 0.429,
       "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "cello",
+      "name": "Виолончель",
+      "at": 134.0,
+      "until": 140.0,
+      "confidence": 0.436,
+      "similarity": 0.249,
+      "margin": 0.152,
+      "stem": "bass",
       "in_catalog": true,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
+      "key": "accordion",
+      "name": "аккордеон",
+      "at": 136.0,
+      "until": 144.0,
+      "confidence": 0.241,
+      "similarity": 0.464,
+      "margin": 0.395,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 140.0,
+      "until": 154.0,
+      "confidence": 0.485,
+      "similarity": 0.26,
+      "margin": 0.171,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "violin",
+      "name": "Скрипка",
+      "at": 144.0,
+      "until": 148.0,
+      "confidence": 0.189,
+      "similarity": 0.455,
+      "margin": 0.372,
+      "stem": "other",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "string-section",
+      "name": "группа смычковых",
+      "at": 148.0,
+      "until": 154.0,
+      "confidence": 0.214,
+      "similarity": 0.472,
+      "margin": 0.355,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "accordion",
+      "name": "аккордеон",
+      "at": 150.0,
+      "until": 158.0,
+      "confidence": 0.246,
+      "similarity": 0.427,
+      "margin": 0.379,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 157.5,
+      "until": 163.5,
+      "confidence": 0.387,
+      "similarity": 0.347,
+      "margin": 0.337,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "violin",
+      "name": "Скрипка",
+      "at": 158.0,
+      "until": 162.0,
+      "confidence": 0.142,
+      "similarity": 0.403,
+      "margin": 0.372,
+      "stem": "other",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 162.0,
+      "until": 176.0,
+      "confidence": 0.694,
+      "similarity": 0.36,
+      "margin": 0.233,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "bass-drum",
+      "name": "большой барабан",
+      "at": 163.5,
+      "until": 169.5,
+      "confidence": 0.402,
+      "similarity": 0.324,
+      "margin": 0.297,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "string-section",
+      "name": "группа смычковых",
+      "at": 164.0,
+      "until": 180.0,
+      "confidence": 0.617,
+      "similarity": 0.574,
+      "margin": 0.441,
+      "stem": "mix+other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 169.5,
+      "until": 172.5,
+      "confidence": 0.253,
+      "similarity": 0.318,
+      "margin": 0.355,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 174.0,
+      "until": 180.0,
+      "confidence": 0.45,
+      "similarity": 0.367,
+      "margin": 0.371,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "accordion",
+      "name": "аккордеон",
+      "at": 180.0,
+      "until": 188.0,
+      "confidence": 0.176,
+      "similarity": 0.478,
+      "margin": 0.375,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "voice",
+      "name": "Голос",
+      "at": 183.0,
+      "until": 198.0,
+      "confidence": 0.56,
+      "similarity": 0.354,
+      "margin": 0.318,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "viola",
+      "name": "альт",
+      "at": 184.0,
+      "until": 190.0,
+      "confidence": 0.125,
+      "similarity": 0.458,
+      "margin": 0.343,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 186.0,
+      "until": 192.0,
+      "confidence": 0.636,
+      "similarity": 0.344,
+      "margin": 0.322,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "choir",
+      "name": "Хор",
+      "at": 198.0,
+      "until": 207.0,
+      "confidence": 0.383,
+      "similarity": 0.352,
+      "margin": 0.262,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
       "at": 198.0,
       "until": 202.5,
-      "confidence": 0.056,
-      "similarity": 0.008,
-      "margin": 0.0,
+      "confidence": 0.34,
+      "similarity": 0.424,
+      "margin": 0.394,
       "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "string-section",
+      "name": "группа смычковых",
+      "at": 198.0,
+      "until": 202.0,
+      "confidence": 0.215,
+      "similarity": 0.463,
+      "margin": 0.297,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 204.0,
+      "until": 207.0,
+      "confidence": 0.248,
+      "similarity": 0.287,
+      "margin": 0.224,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "voice",
+      "name": "Голос",
+      "at": 207.0,
+      "until": 216.0,
+      "confidence": 0.499,
+      "similarity": 0.377,
+      "margin": 0.293,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 208.5,
+      "until": 222.0,
+      "confidence": 0.425,
+      "similarity": 0.373,
+      "margin": 0.363,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "accordion",
+      "name": "аккордеон",
+      "at": 212.0,
+      "until": 232.0,
+      "confidence": 0.145,
+      "similarity": 0.407,
+      "margin": 0.359,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 216.0,
+      "until": 248.0,
+      "confidence": 0.831,
+      "similarity": 0.42,
+      "margin": 0.339,
+      "stem": "bass",
       "in_catalog": true,
       "family_voice": false
     },
     {
-      "key": "santur",
-      "name": "Сантур",
-      "at": 198.0,
-      "until": 442.0,
-      "confidence": 0.03,
-      "similarity": 0.007,
-      "margin": 0.0,
+      "key": "choir",
+      "name": "Хор",
+      "at": 216.0,
+      "until": 249.0,
+      "confidence": 0.471,
+      "similarity": 0.369,
+      "margin": 0.404,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "bass-drum",
+      "name": "большой барабан",
+      "at": 222.0,
+      "until": 225.0,
+      "confidence": 0.307,
+      "similarity": 0.288,
+      "margin": 0.215,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 225.0,
+      "until": 231.0,
+      "confidence": 0.342,
+      "similarity": 0.329,
+      "margin": 0.272,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "qanun",
+      "name": "Канун",
+      "at": 232.0,
+      "until": 238.0,
+      "confidence": 0.099,
+      "similarity": 0.399,
+      "margin": 0.361,
       "stem": "other",
       "in_catalog": true,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
-      "at": 204.0,
+      "key": "tabla",
+      "name": "табла",
+      "at": 232.5,
+      "until": 240.0,
+      "confidence": 0.427,
+      "similarity": 0.346,
+      "margin": 0.299,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tar",
+      "name": "Тар",
+      "at": 234.0,
+      "until": 240.0,
+      "confidence": 0.089,
+      "similarity": 0.376,
+      "margin": 0.366,
+      "stem": "other",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "bass-drum",
+      "name": "большой барабан",
+      "at": 240.0,
+      "until": 249.0,
+      "confidence": 0.377,
+      "similarity": 0.312,
+      "margin": 0.254,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "accordion",
+      "name": "аккордеон",
+      "at": 248.0,
+      "until": 274.0,
+      "confidence": 0.375,
+      "similarity": 0.454,
+      "margin": 0.387,
+      "stem": "other+mix",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 249.0,
+      "until": 252.0,
+      "confidence": 0.237,
+      "similarity": 0.365,
+      "margin": 0.414,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "timpani",
+      "name": "литавры",
+      "at": 253.5,
+      "until": 256.5,
+      "confidence": 0.271,
+      "similarity": 0.415,
+      "margin": 0.479,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "dholak",
+      "name": "дхолак",
+      "at": 258.0,
+      "until": 261.0,
+      "confidence": 0.189,
+      "similarity": 0.365,
+      "margin": 0.462,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "cello",
+      "name": "Виолончель",
+      "at": 260.0,
+      "until": 268.0,
+      "confidence": 0.273,
+      "similarity": 0.265,
+      "margin": 0.077,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "organ",
+      "name": "орган",
+      "at": 262.0,
+      "until": 266.0,
+      "confidence": 0.232,
+      "similarity": 0.436,
+      "margin": 0.331,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "string-section",
+      "name": "группа смычковых",
+      "at": 270.0,
+      "until": 285.0,
+      "confidence": 0.58,
+      "similarity": 0.558,
+      "margin": 0.435,
+      "stem": "mix+other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "cello",
+      "name": "Виолончель",
+      "at": 274.0,
+      "until": 280.0,
+      "confidence": 0.172,
+      "similarity": 0.202,
+      "margin": 0.069,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 276.0,
+      "until": 280.5,
+      "confidence": 0.294,
+      "similarity": 0.362,
+      "margin": 0.332,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 280.0,
+      "until": 286.0,
+      "confidence": 0.57,
+      "similarity": 0.415,
+      "margin": 0.246,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "bass-drum",
+      "name": "большой барабан",
+      "at": 283.5,
       "until": 292.5,
-      "confidence": 0.071,
-      "similarity": 0.008,
-      "margin": 0.001,
+      "confidence": 0.496,
+      "similarity": 0.326,
+      "margin": 0.244,
       "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "violin",
+      "name": "Скрипка",
+      "at": 284.0,
+      "until": 288.0,
+      "confidence": 0.188,
+      "similarity": 0.441,
+      "margin": 0.432,
+      "stem": "other",
       "in_catalog": true,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
-      "at": 300.0,
+      "key": "voice",
+      "name": "Голос",
+      "at": 285.0,
       "until": 303.0,
-      "confidence": 0.048,
-      "similarity": 0.008,
-      "margin": 0.0,
-      "stem": "drums",
+      "confidence": 0.411,
+      "similarity": 0.337,
+      "margin": 0.31,
+      "stem": "mix",
       "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "sitar",
+      "name": "ситар",
+      "at": 294.0,
+      "until": 302.0,
+      "confidence": 0.364,
+      "similarity": 0.516,
+      "margin": 0.436,
+      "stem": "other",
+      "in_catalog": false,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
+      "key": "viola",
+      "name": "альт",
+      "at": 304.0,
+      "until": 318.0,
+      "confidence": 0.211,
+      "similarity": 0.459,
+      "margin": 0.348,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "voice",
+      "name": "Голос",
+      "at": 306.0,
+      "until": 318.0,
+      "confidence": 0.398,
+      "similarity": 0.322,
+      "margin": 0.314,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "bass-drum",
+      "name": "большой барабан",
       "at": 316.5,
       "until": 319.5,
-      "confidence": 0.048,
-      "similarity": 0.008,
-      "margin": 0.0,
+      "confidence": 0.403,
+      "similarity": 0.34,
+      "margin": 0.151,
       "stem": "drums",
-      "in_catalog": true,
+      "in_catalog": false,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
-      "at": 322.5,
-      "until": 327.0,
-      "confidence": 0.056,
-      "similarity": 0.008,
-      "margin": 0.0,
-      "stem": "drums",
+      "key": "voice",
+      "name": "Голос",
+      "at": 321.0,
+      "until": 348.0,
+      "confidence": 0.541,
+      "similarity": 0.344,
+      "margin": 0.311,
+      "stem": "mix",
       "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "viola",
+      "name": "альт",
+      "at": 328.0,
+      "until": 342.0,
+      "confidence": 0.281,
+      "similarity": 0.506,
+      "margin": 0.388,
+      "stem": "other",
+      "in_catalog": false,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
-      "at": 345.0,
-      "until": 402.0,
-      "confidence": 0.07,
-      "similarity": 0.008,
-      "margin": 0.001,
-      "stem": "drums",
-      "in_catalog": true,
-      "family_voice": false
-    },
-    {
-      "key": "darbuka",
-      "name": "Дарбука",
-      "at": 408.0,
-      "until": 436.5,
-      "confidence": 0.069,
-      "similarity": 0.008,
-      "margin": 0.001,
-      "stem": "drums",
-      "in_catalog": true,
-      "family_voice": false
-    },
-    {
-      "key": "darbuka",
-      "name": "Дарбука",
-      "at": 445.5,
-      "until": 448.5,
-      "confidence": 0.048,
-      "similarity": 0.008,
-      "margin": 0.0,
-      "stem": "drums",
-      "in_catalog": true,
-      "family_voice": false
-    },
-    {
-      "key": "santur",
-      "name": "Сантур",
-      "at": 450.0,
-      "until": 570.0,
-      "confidence": 0.03,
-      "similarity": 0.008,
-      "margin": 0.0,
+      "key": "violin",
+      "name": "Скрипка",
+      "at": 344.0,
+      "until": 354.0,
+      "confidence": 0.123,
+      "similarity": 0.383,
+      "margin": 0.346,
       "stem": "other",
       "in_catalog": true,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
+      "key": "tabla",
+      "name": "табла",
+      "at": 345.0,
+      "until": 355.5,
+      "confidence": 0.507,
+      "similarity": 0.39,
+      "margin": 0.434,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 346.0,
+      "until": 362.0,
+      "confidence": 0.794,
+      "similarity": 0.409,
+      "margin": 0.312,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "choir",
+      "name": "Хор",
+      "at": 348.0,
+      "until": 357.0,
+      "confidence": 0.443,
+      "similarity": 0.356,
+      "margin": 0.4,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 357.0,
+      "until": 364.5,
+      "confidence": 0.353,
+      "similarity": 0.372,
+      "margin": 0.355,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "voice",
+      "name": "Голос",
+      "at": 357.0,
+      "until": 378.0,
+      "confidence": 0.272,
+      "similarity": 0.296,
+      "margin": 0.306,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "kamancheh",
+      "name": "Кяманча",
+      "at": 360.0,
+      "until": 364.0,
+      "confidence": 0.167,
+      "similarity": 0.449,
+      "margin": 0.489,
+      "stem": "other",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 366.0,
+      "until": 370.5,
+      "confidence": 0.365,
+      "similarity": 0.332,
+      "margin": 0.323,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 372.0,
+      "until": 379.5,
+      "confidence": 0.34,
+      "similarity": 0.323,
+      "margin": 0.327,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "electric-bass",
+      "name": "бас-гитара",
+      "at": 374.0,
+      "until": 378.0,
+      "confidence": 0.118,
+      "similarity": 0.373,
+      "margin": 0.31,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "choir",
+      "name": "Хор",
+      "at": 378.0,
+      "until": 387.0,
+      "confidence": 0.418,
+      "similarity": 0.378,
+      "margin": 0.357,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "violin",
+      "name": "Скрипка",
+      "at": 380.0,
+      "until": 388.0,
+      "confidence": 0.193,
+      "similarity": 0.433,
+      "margin": 0.398,
+      "stem": "other",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "bass-drum",
+      "name": "большой барабан",
+      "at": 385.5,
+      "until": 390.0,
+      "confidence": 0.35,
+      "similarity": 0.346,
+      "margin": 0.263,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 386.0,
+      "until": 398.0,
+      "confidence": 0.599,
+      "similarity": 0.305,
+      "margin": 0.191,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "string-section",
+      "name": "группа смычковых",
+      "at": 387.0,
+      "until": 400.0,
+      "confidence": 0.492,
+      "similarity": 0.533,
+      "margin": 0.34,
+      "stem": "mix+other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 390.0,
+      "until": 396.0,
+      "confidence": 0.304,
+      "similarity": 0.343,
+      "margin": 0.305,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "violin",
+      "name": "Скрипка",
+      "at": 396.0,
+      "until": 402.0,
+      "confidence": 0.166,
+      "similarity": 0.441,
+      "margin": 0.424,
+      "stem": "other",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "bass-drum",
+      "name": "большой барабан",
+      "at": 397.5,
+      "until": 402.0,
+      "confidence": 0.308,
+      "similarity": 0.313,
+      "margin": 0.246,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "rabab",
+      "name": "рабаб",
+      "at": 404.0,
+      "until": 408.0,
+      "confidence": 0.107,
+      "similarity": 0.479,
+      "margin": 0.396,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "voice",
+      "name": "Голос",
+      "at": 405.0,
+      "until": 414.0,
+      "confidence": 0.198,
+      "similarity": 0.349,
+      "margin": 0.354,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "accordion",
+      "name": "аккордеон",
+      "at": 408.0,
+      "until": 416.0,
+      "confidence": 0.259,
+      "similarity": 0.411,
+      "margin": 0.287,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "snare-drum",
+      "name": "малый барабан",
+      "at": 409.5,
+      "until": 412.5,
+      "confidence": 0.2,
+      "similarity": 0.381,
+      "margin": 0.389,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "choir",
+      "name": "Хор",
+      "at": 414.0,
+      "until": 420.0,
+      "confidence": 0.133,
+      "similarity": 0.276,
+      "margin": 0.362,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "timpani",
+      "name": "литавры",
+      "at": 415.5,
+      "until": 418.5,
+      "confidence": 0.195,
+      "similarity": 0.402,
+      "margin": 0.465,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "snare-drum",
+      "name": "малый барабан",
+      "at": 418.5,
+      "until": 421.5,
+      "confidence": 0.313,
+      "similarity": 0.377,
+      "margin": 0.436,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "voice",
+      "name": "Голос",
+      "at": 420.0,
+      "until": 429.0,
+      "confidence": 0.26,
+      "similarity": 0.348,
+      "margin": 0.37,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 424.0,
+      "until": 428.0,
+      "confidence": 0.408,
+      "similarity": 0.356,
+      "margin": 0.184,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "accordion",
+      "name": "аккордеон",
+      "at": 424.0,
+      "until": 428.0,
+      "confidence": 0.266,
+      "similarity": 0.452,
+      "margin": 0.28,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 424.5,
+      "until": 427.5,
+      "confidence": 0.286,
+      "similarity": 0.442,
+      "margin": 0.532,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 429.0,
+      "until": 435.0,
+      "confidence": 0.307,
+      "similarity": 0.423,
+      "margin": 0.455,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "choir",
+      "name": "Хор",
+      "at": 429.0,
+      "until": 435.0,
+      "confidence": 0.119,
+      "similarity": 0.289,
+      "margin": 0.355,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "violin",
+      "name": "Скрипка",
+      "at": 432.0,
+      "until": 436.0,
+      "confidence": 0.185,
+      "similarity": 0.425,
+      "margin": 0.363,
+      "stem": "other",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "voice",
+      "name": "Голос",
+      "at": 435.0,
+      "until": 471.0,
+      "confidence": 0.409,
+      "similarity": 0.316,
+      "margin": 0.351,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "viola",
+      "name": "альт",
+      "at": 436.0,
+      "until": 442.0,
+      "confidence": 0.105,
+      "similarity": 0.435,
+      "margin": 0.221,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "bass-drum",
+      "name": "большой барабан",
       "at": 451.5,
-      "until": 460.5,
-      "confidence": 0.064,
-      "similarity": 0.008,
-      "margin": 0.001,
+      "until": 457.5,
+      "confidence": 0.523,
+      "similarity": 0.343,
+      "margin": 0.294,
       "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "violin",
+      "name": "Скрипка",
+      "at": 454.0,
+      "until": 458.0,
+      "confidence": 0.212,
+      "similarity": 0.461,
+      "margin": 0.412,
+      "stem": "other",
       "in_catalog": true,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
-      "at": 462.0,
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 458.0,
+      "until": 462.0,
+      "confidence": 0.367,
+      "similarity": 0.346,
+      "margin": 0.136,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "qanun",
+      "name": "Канун",
+      "at": 458.0,
+      "until": 462.0,
+      "confidence": 0.213,
+      "similarity": 0.466,
+      "margin": 0.469,
+      "stem": "other",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 463.5,
+      "until": 468.0,
+      "confidence": 0.433,
+      "similarity": 0.352,
+      "margin": 0.444,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "viola",
+      "name": "альт",
+      "at": 468.0,
+      "until": 480.0,
+      "confidence": 0.203,
+      "similarity": 0.434,
+      "margin": 0.433,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "snare-drum",
+      "name": "малый барабан",
+      "at": 472.5,
+      "until": 475.5,
+      "confidence": 0.245,
+      "similarity": 0.311,
+      "margin": 0.303,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "voice",
+      "name": "Голос",
+      "at": 474.0,
+      "until": 480.0,
+      "confidence": 0.39,
+      "similarity": 0.339,
+      "margin": 0.306,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "cello",
+      "name": "Виолончель",
+      "at": 476.0,
+      "until": 482.0,
+      "confidence": 0.434,
+      "similarity": 0.268,
+      "margin": 0.098,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "snare-drum",
+      "name": "малый барабан",
+      "at": 477.0,
+      "until": 481.5,
+      "confidence": 0.332,
+      "similarity": 0.339,
+      "margin": 0.416,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "string-section",
+      "name": "группа смычковых",
+      "at": 480.0,
+      "until": 484.0,
+      "confidence": 0.289,
+      "similarity": 0.483,
+      "margin": 0.432,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "choir",
+      "name": "Хор",
+      "at": 480.0,
+      "until": 486.0,
+      "confidence": 0.195,
+      "similarity": 0.247,
+      "margin": 0.279,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
+      "at": 481.5,
+      "until": 484.5,
+      "confidence": 0.196,
+      "similarity": 0.374,
+      "margin": 0.427,
+      "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "accordion",
+      "name": "аккордеон",
+      "at": 484.0,
+      "until": 502.0,
+      "confidence": 0.276,
+      "similarity": 0.43,
+      "margin": 0.339,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "bass-drum",
+      "name": "большой барабан",
+      "at": 486.0,
       "until": 489.0,
-      "confidence": 0.069,
-      "similarity": 0.008,
-      "margin": 0.001,
+      "confidence": 0.508,
+      "similarity": 0.375,
+      "margin": 0.281,
       "stem": "drums",
-      "in_catalog": true,
+      "in_catalog": false,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
+      "key": "voice",
+      "name": "Голос",
+      "at": 486.0,
+      "until": 507.0,
+      "confidence": 0.382,
+      "similarity": 0.287,
+      "margin": 0.296,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "bass-drum",
+      "name": "большой барабан",
       "at": 492.0,
       "until": 495.0,
-      "confidence": 0.048,
-      "similarity": 0.008,
-      "margin": 0.0,
+      "confidence": 0.531,
+      "similarity": 0.399,
+      "margin": 0.23,
       "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "viola",
+      "name": "альт",
+      "at": 502.0,
+      "until": 506.0,
+      "confidence": 0.187,
+      "similarity": 0.447,
+      "margin": 0.362,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 506.0,
+      "until": 532.0,
+      "confidence": 0.637,
+      "similarity": 0.333,
+      "margin": 0.217,
+      "stem": "bass",
       "in_catalog": true,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
+      "key": "choir",
+      "name": "Хор",
+      "at": 507.0,
+      "until": 567.0,
+      "confidence": 0.582,
+      "similarity": 0.384,
+      "margin": 0.411,
+      "stem": "mix",
+      "in_catalog": true,
+      "family_voice": true
+    },
+    {
+      "key": "tabla",
+      "name": "табла",
       "at": 508.5,
-      "until": 565.5,
-      "confidence": 0.07,
-      "similarity": 0.008,
-      "margin": 0.001,
+      "until": 564.0,
+      "confidence": 0.484,
+      "similarity": 0.372,
+      "margin": 0.416,
       "stem": "drums",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "violin",
+      "name": "Скрипка",
+      "at": 510.0,
+      "until": 524.0,
+      "confidence": 0.162,
+      "similarity": 0.365,
+      "margin": 0.329,
+      "stem": "other",
       "in_catalog": true,
       "family_voice": false
     },
     {
-      "key": "darbuka",
-      "name": "Дарбука",
+      "key": "cello",
+      "name": "Виолончель",
+      "at": 532.0,
+      "until": 538.0,
+      "confidence": 0.377,
+      "similarity": 0.264,
+      "margin": 0.08,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "violin",
+      "name": "Скрипка",
+      "at": 532.0,
+      "until": 536.0,
+      "confidence": 0.181,
+      "similarity": 0.425,
+      "margin": 0.333,
+      "stem": "other",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 538.0,
+      "until": 554.0,
+      "confidence": 0.599,
+      "similarity": 0.306,
+      "margin": 0.192,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "string-section",
+      "name": "группа смычковых",
+      "at": 538.0,
+      "until": 544.0,
+      "confidence": 0.163,
+      "similarity": 0.465,
+      "margin": 0.287,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "accordion",
+      "name": "аккордеон",
+      "at": 546.0,
+      "until": 562.0,
+      "confidence": 0.212,
+      "similarity": 0.387,
+      "margin": 0.311,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "electric-bass",
+      "name": "бас-гитара",
+      "at": 556.0,
+      "until": 560.0,
+      "confidence": 0.346,
+      "similarity": 0.323,
+      "margin": 0.122,
+      "stem": "bass",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "double-bass",
+      "name": "Контрабас",
+      "at": 560.0,
+      "until": 564.0,
+      "confidence": 0.614,
+      "similarity": 0.365,
+      "margin": 0.243,
+      "stem": "bass",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "viola",
+      "name": "альт",
+      "at": 562.0,
+      "until": 566.0,
+      "confidence": 0.23,
+      "similarity": 0.418,
+      "margin": 0.308,
+      "stem": "other",
+      "in_catalog": false,
+      "family_voice": false
+    },
+    {
+      "key": "cymbals",
+      "name": "тарелки",
       "at": 567.0,
       "until": 573.0,
-      "confidence": 0.06,
-      "similarity": 0.008,
-      "margin": 0.001,
+      "confidence": 0.784,
+      "similarity": 0.358,
+      "margin": 0.266,
       "stem": "drums",
-      "in_catalog": true,
+      "in_catalog": false,
       "family_voice": false
     }
   ],
@@ -402,31 +1922,68 @@
       "end": 10.6,
       "entries": [
         {
-          "at": 0.0,
+          "at": 4.0,
           "until": 10.6,
           "holds_to_section_end": true,
-          "confidence": 0.071,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "confidence": 0.537,
+          "similarity": 0.36,
+          "margin": 0.144,
+          "stem": "bass",
+          "key": "cello",
+          "name": "Виолончель",
           "in_catalog": true
+        }
+      ],
+      "uncatalogued": [
+        {
+          "at": 0.0,
+          "until": 6.0,
+          "holds_to_section_end": false,
+          "confidence": 0.291,
+          "similarity": 0.378,
+          "margin": 0.402,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
         },
         {
           "at": 0.0,
           "until": 10.6,
           "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.007,
-          "margin": 0.0,
+          "confidence": 0.281,
+          "similarity": 0.444,
+          "margin": 0.4,
           "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
-          "in_catalog": true
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 6.0,
+          "until": 9.0,
+          "holds_to_section_end": false,
+          "confidence": 0.268,
+          "similarity": 0.352,
+          "margin": 0.415,
+          "stem": "drums",
+          "key": "snare-drum",
+          "name": "малый барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 6.0,
+          "until": 10.6,
+          "holds_to_section_end": true,
+          "confidence": 0.159,
+          "similarity": 0.417,
+          "margin": 0.412,
+          "stem": "mix",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
         }
       ],
-      "uncatalogued": [],
       "voice": []
     },
     {
@@ -438,30 +1995,79 @@
       "entries": [
         {
           "at": 10.6,
+          "until": 12.0,
+          "holds_to_section_end": false,
+          "confidence": 0.537,
+          "similarity": 0.36,
+          "margin": 0.144,
+          "stem": "bass",
+          "key": "cello",
+          "name": "Виолончель",
+          "in_catalog": true
+        },
+        {
+          "at": 18.0,
           "until": 23.7,
           "holds_to_section_end": true,
-          "confidence": 0.071,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "confidence": 0.521,
+          "similarity": 0.315,
+          "margin": 0.127,
+          "stem": "bass",
+          "key": "cello",
+          "name": "Виолончель",
           "in_catalog": true
+        }
+      ],
+      "uncatalogued": [
+        {
+          "at": 10.6,
+          "until": 16.5,
+          "holds_to_section_end": false,
+          "confidence": 0.336,
+          "similarity": 0.402,
+          "margin": 0.485,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
         },
         {
           "at": 10.6,
           "until": 23.7,
           "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.007,
-          "margin": 0.0,
+          "confidence": 0.281,
+          "similarity": 0.444,
+          "margin": 0.4,
           "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
-          "in_catalog": true
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 10.6,
+          "until": 12.0,
+          "holds_to_section_end": false,
+          "confidence": 0.159,
+          "similarity": 0.417,
+          "margin": 0.412,
+          "stem": "mix",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        },
+        {
+          "at": 18.0,
+          "until": 23.7,
+          "holds_to_section_end": true,
+          "confidence": 0.29,
+          "similarity": 0.397,
+          "margin": 0.474,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
         }
       ],
-      "uncatalogued": [],
       "voice": []
     },
     {
@@ -472,32 +2078,202 @@
       "end": 100.9,
       "entries": [
         {
-          "at": 23.7,
-          "until": 97.5,
+          "at": 34.0,
+          "until": 46.0,
           "holds_to_section_end": false,
-          "confidence": 0.071,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "confidence": 0.411,
+          "similarity": 0.287,
+          "margin": 0.076,
+          "stem": "bass",
+          "key": "cello",
+          "name": "Виолончель",
           "in_catalog": true
         },
         {
-          "at": 23.7,
+          "at": 94.0,
+          "until": 98.0,
+          "holds_to_section_end": false,
+          "confidence": 0.607,
+          "similarity": 0.487,
+          "margin": 0.253,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
+          "in_catalog": true
+        },
+        {
+          "at": 98.0,
           "until": 100.9,
           "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.007,
-          "margin": 0.0,
+          "confidence": 0.124,
+          "similarity": 0.453,
+          "margin": 0.364,
           "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "key": "kamancheh",
+          "name": "Кяманча",
           "in_catalog": true
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "uncatalogued": [
+        {
+          "at": 23.7,
+          "until": 34.0,
+          "holds_to_section_end": false,
+          "confidence": 0.281,
+          "similarity": 0.444,
+          "margin": 0.4,
+          "stem": "other",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 25.5,
+          "until": 33.0,
+          "holds_to_section_end": false,
+          "confidence": 0.411,
+          "similarity": 0.418,
+          "margin": 0.505,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 33.0,
+          "until": 48.0,
+          "holds_to_section_end": false,
+          "confidence": 0.569,
+          "similarity": 0.537,
+          "margin": 0.533,
+          "stem": "mix+other",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        },
+        {
+          "at": 34.5,
+          "until": 51.0,
+          "holds_to_section_end": false,
+          "confidence": 0.387,
+          "similarity": 0.403,
+          "margin": 0.483,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 48.0,
+          "until": 80.0,
+          "holds_to_section_end": false,
+          "confidence": 0.343,
+          "similarity": 0.431,
+          "margin": 0.414,
+          "stem": "other",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 52.5,
+          "until": 55.5,
+          "holds_to_section_end": false,
+          "confidence": 0.236,
+          "similarity": 0.375,
+          "margin": 0.442,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 55.5,
+          "until": 58.5,
+          "holds_to_section_end": false,
+          "confidence": 0.186,
+          "similarity": 0.419,
+          "margin": 0.434,
+          "stem": "drums",
+          "key": "timpani",
+          "name": "литавры",
+          "in_catalog": false
+        },
+        {
+          "at": 58.5,
+          "until": 64.5,
+          "holds_to_section_end": false,
+          "confidence": 0.282,
+          "similarity": 0.427,
+          "margin": 0.481,
+          "stem": "drums",
+          "key": "dholak",
+          "name": "дхолак",
+          "in_catalog": false
+        },
+        {
+          "at": 66.0,
+          "until": 69.0,
+          "holds_to_section_end": false,
+          "confidence": 0.258,
+          "similarity": 0.422,
+          "margin": 0.457,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 69.0,
+          "until": 79.5,
+          "holds_to_section_end": false,
+          "confidence": 0.345,
+          "similarity": 0.451,
+          "margin": 0.51,
+          "stem": "drums",
+          "key": "dholak",
+          "name": "дхолак",
+          "in_catalog": false
+        },
+        {
+          "at": 75.0,
+          "until": 99.0,
+          "holds_to_section_end": false,
+          "confidence": 0.667,
+          "similarity": 0.579,
+          "margin": 0.54,
+          "stem": "other+mix",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        },
+        {
+          "at": 85.5,
+          "until": 96.0,
+          "holds_to_section_end": false,
+          "confidence": 0.289,
+          "similarity": 0.327,
+          "margin": 0.331,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        }
+      ],
+      "voice": [
+        {
+          "at": 99.0,
+          "until": 100.9,
+          "holds_to_section_end": true,
+          "confidence": 0.517,
+          "similarity": 0.33,
+          "margin": 0.275,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "english-verse-1",
@@ -508,43 +2284,57 @@
       "entries": [
         {
           "at": 100.9,
-          "until": 107.75,
-          "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.007,
-          "margin": 0.0,
+          "until": 102.0,
+          "holds_to_section_end": false,
+          "confidence": 0.124,
+          "similarity": 0.453,
+          "margin": 0.364,
           "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "key": "kamancheh",
+          "name": "Кяманча",
           "in_catalog": true
-        },
+        }
+      ],
+      "uncatalogued": [
         {
           "at": 102.0,
           "until": 105.0,
           "holds_to_section_end": false,
-          "confidence": 0.048,
-          "similarity": 0.008,
-          "margin": 0.0,
+          "confidence": 0.397,
+          "similarity": 0.399,
+          "margin": 0.234,
           "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
         },
         {
           "at": 106.5,
           "until": 107.75,
           "holds_to_section_end": true,
-          "confidence": 0.056,
-          "similarity": 0.008,
-          "margin": 0.0,
+          "confidence": 0.329,
+          "similarity": 0.435,
+          "margin": 0.262,
           "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "voice": [
+        {
+          "at": 100.9,
+          "until": 107.75,
+          "holds_to_section_end": true,
+          "confidence": 0.517,
+          "similarity": 0.33,
+          "margin": 0.275,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "english-refrain-1",
@@ -554,32 +2344,46 @@
       "end": 115.81,
       "entries": [
         {
-          "at": 107.75,
-          "until": 111.0,
-          "holds_to_section_end": false,
-          "confidence": 0.056,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
-        },
-        {
-          "at": 107.75,
-          "until": 112.0,
-          "holds_to_section_end": false,
-          "confidence": 0.03,
-          "similarity": 0.007,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "at": 112.0,
+          "until": 115.81,
+          "holds_to_section_end": true,
+          "confidence": 0.211,
+          "similarity": 0.311,
+          "margin": 0.096,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "uncatalogued": [
+        {
+          "at": 107.75,
+          "until": 109.5,
+          "holds_to_section_end": false,
+          "confidence": 0.329,
+          "similarity": 0.435,
+          "margin": 0.262,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        }
+      ],
+      "voice": [
+        {
+          "at": 107.75,
+          "until": 115.81,
+          "holds_to_section_end": true,
+          "confidence": 0.517,
+          "similarity": 0.33,
+          "margin": 0.275,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "english-verse-2",
@@ -590,31 +2394,69 @@
       "entries": [
         {
           "at": 115.81,
-          "until": 123.83,
-          "holds_to_section_end": true,
-          "confidence": 0.064,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
-        },
-        {
-          "at": 116.0,
-          "until": 123.83,
-          "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "until": 118.0,
+          "holds_to_section_end": false,
+          "confidence": 0.211,
+          "similarity": 0.311,
+          "margin": 0.096,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "uncatalogued": [
+        {
+          "at": 115.81,
+          "until": 118.5,
+          "holds_to_section_end": false,
+          "confidence": 0.404,
+          "similarity": 0.266,
+          "margin": 0.123,
+          "stem": "drums",
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 118.0,
+          "until": 123.83,
+          "holds_to_section_end": true,
+          "confidence": 0.224,
+          "similarity": 0.483,
+          "margin": 0.383,
+          "stem": "other",
+          "key": "viola",
+          "name": "альт",
+          "in_catalog": false
+        },
+        {
+          "at": 120.0,
+          "until": 123.0,
+          "holds_to_section_end": false,
+          "confidence": 0.217,
+          "similarity": 0.332,
+          "margin": 0.223,
+          "stem": "drums",
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        }
+      ],
+      "voice": [
+        {
+          "at": 115.81,
+          "until": 123.83,
+          "holds_to_section_end": true,
+          "confidence": 0.517,
+          "similarity": 0.33,
+          "margin": 0.275,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "english-refrain-2",
@@ -622,22 +2464,35 @@
       "label": "Английский припев, повтор",
       "start": 123.83,
       "end": 127.59,
-      "entries": [
+      "entries": [],
+      "uncatalogued": [
+        {
+          "at": 123.83,
+          "until": 126.0,
+          "holds_to_section_end": false,
+          "confidence": 0.224,
+          "similarity": 0.483,
+          "margin": 0.383,
+          "stem": "other",
+          "key": "viola",
+          "name": "альт",
+          "in_catalog": false
+        }
+      ],
+      "voice": [
         {
           "at": 123.83,
           "until": 127.59,
           "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "confidence": 0.517,
+          "similarity": 0.33,
+          "margin": 0.275,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
           "in_catalog": true
         }
-      ],
-      "uncatalogued": [],
-      "voice": []
+      ]
     },
     {
       "id": "english-refrain-3",
@@ -647,32 +2502,33 @@
       "end": 132.0,
       "entries": [
         {
-          "at": 127.59,
+          "at": 130.0,
           "until": 132.0,
           "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.008,
-          "margin": 0.0,
+          "confidence": 0.216,
+          "similarity": 0.462,
+          "margin": 0.429,
           "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
-          "in_catalog": true
-        },
-        {
-          "at": 129.0,
-          "until": 132.0,
-          "holds_to_section_end": true,
-          "confidence": 0.07,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "key": "violin",
+          "name": "Скрипка",
           "in_catalog": true
         }
       ],
       "uncatalogued": [],
-      "voice": []
+      "voice": [
+        {
+          "at": 127.59,
+          "until": 129.0,
+          "holds_to_section_end": false,
+          "confidence": 0.517,
+          "similarity": 0.33,
+          "margin": 0.275,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "rumi-beyt-1",
@@ -683,31 +2539,177 @@
       "entries": [
         {
           "at": 132.0,
-          "until": 165.8,
-          "holds_to_section_end": true,
-          "confidence": 0.07,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "until": 134.0,
+          "holds_to_section_end": false,
+          "confidence": 0.216,
+          "similarity": 0.462,
+          "margin": 0.429,
+          "stem": "other",
+          "key": "violin",
+          "name": "Скрипка",
           "in_catalog": true
         },
         {
-          "at": 132.0,
+          "at": 134.0,
+          "until": 140.0,
+          "holds_to_section_end": false,
+          "confidence": 0.436,
+          "similarity": 0.249,
+          "margin": 0.152,
+          "stem": "bass",
+          "key": "cello",
+          "name": "Виолончель",
+          "in_catalog": true
+        },
+        {
+          "at": 140.0,
+          "until": 154.0,
+          "holds_to_section_end": false,
+          "confidence": 0.485,
+          "similarity": 0.26,
+          "margin": 0.171,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
+          "in_catalog": true
+        },
+        {
+          "at": 144.0,
+          "until": 148.0,
+          "holds_to_section_end": false,
+          "confidence": 0.189,
+          "similarity": 0.455,
+          "margin": 0.372,
+          "stem": "other",
+          "key": "violin",
+          "name": "Скрипка",
+          "in_catalog": true
+        },
+        {
+          "at": 158.0,
+          "until": 162.0,
+          "holds_to_section_end": false,
+          "confidence": 0.142,
+          "similarity": 0.403,
+          "margin": 0.372,
+          "stem": "other",
+          "key": "violin",
+          "name": "Скрипка",
+          "in_catalog": true
+        },
+        {
+          "at": 162.0,
           "until": 165.8,
           "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "confidence": 0.694,
+          "similarity": 0.36,
+          "margin": 0.233,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "uncatalogued": [
+        {
+          "at": 132.0,
+          "until": 156.0,
+          "holds_to_section_end": false,
+          "confidence": 0.482,
+          "similarity": 0.371,
+          "margin": 0.429,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 136.0,
+          "until": 144.0,
+          "holds_to_section_end": false,
+          "confidence": 0.241,
+          "similarity": 0.464,
+          "margin": 0.395,
+          "stem": "other",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 148.0,
+          "until": 154.0,
+          "holds_to_section_end": false,
+          "confidence": 0.214,
+          "similarity": 0.472,
+          "margin": 0.355,
+          "stem": "other",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        },
+        {
+          "at": 150.0,
+          "until": 158.0,
+          "holds_to_section_end": false,
+          "confidence": 0.246,
+          "similarity": 0.427,
+          "margin": 0.379,
+          "stem": "other",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 157.5,
+          "until": 163.5,
+          "holds_to_section_end": false,
+          "confidence": 0.387,
+          "similarity": 0.347,
+          "margin": 0.337,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 163.5,
+          "until": 165.8,
+          "holds_to_section_end": true,
+          "confidence": 0.402,
+          "similarity": 0.324,
+          "margin": 0.297,
+          "stem": "drums",
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 164.0,
+          "until": 165.8,
+          "holds_to_section_end": true,
+          "confidence": 0.617,
+          "similarity": 0.574,
+          "margin": 0.441,
+          "stem": "mix+other",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        }
+      ],
+      "voice": [
+        {
+          "at": 132.0,
+          "until": 165.0,
+          "holds_to_section_end": false,
+          "confidence": 0.604,
+          "similarity": 0.396,
+          "margin": 0.443,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "inst-bridge-a",
@@ -720,28 +2722,53 @@
           "at": 165.8,
           "until": 172.0,
           "holds_to_section_end": true,
-          "confidence": 0.07,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "confidence": 0.694,
+          "similarity": 0.36,
+          "margin": 0.233,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
-        },
+        }
+      ],
+      "uncatalogued": [
         {
           "at": 165.8,
           "until": 172.0,
           "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
-          "in_catalog": true
+          "confidence": 0.617,
+          "similarity": 0.574,
+          "margin": 0.441,
+          "stem": "mix+other",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        },
+        {
+          "at": 165.8,
+          "until": 169.5,
+          "holds_to_section_end": false,
+          "confidence": 0.402,
+          "similarity": 0.324,
+          "margin": 0.297,
+          "stem": "drums",
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 169.5,
+          "until": 172.0,
+          "holds_to_section_end": true,
+          "confidence": 0.253,
+          "similarity": 0.318,
+          "margin": 0.355,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
         }
       ],
-      "uncatalogued": [],
       "voice": []
     },
     {
@@ -755,28 +2782,41 @@
           "at": 172.0,
           "until": 174.0,
           "holds_to_section_end": true,
-          "confidence": 0.07,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "confidence": 0.694,
+          "similarity": 0.36,
+          "margin": 0.233,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
-        },
+        }
+      ],
+      "uncatalogued": [
         {
           "at": 172.0,
           "until": 174.0,
           "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
-          "in_catalog": true
+          "confidence": 0.617,
+          "similarity": 0.574,
+          "margin": 0.441,
+          "stem": "mix+other",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        },
+        {
+          "at": 172.0,
+          "until": 172.5,
+          "holds_to_section_end": false,
+          "confidence": 0.253,
+          "similarity": 0.318,
+          "margin": 0.355,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
         }
       ],
-      "uncatalogued": [],
       "voice": []
     },
     {
@@ -788,30 +2828,55 @@
       "entries": [
         {
           "at": 174.0,
-          "until": 180.0,
+          "until": 176.0,
           "holds_to_section_end": false,
-          "confidence": 0.07,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
-        },
-        {
-          "at": 174.0,
-          "until": 183.3,
-          "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "confidence": 0.694,
+          "similarity": 0.36,
+          "margin": 0.233,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
         }
       ],
-      "uncatalogued": [],
+      "uncatalogued": [
+        {
+          "at": 174.0,
+          "until": 180.0,
+          "holds_to_section_end": false,
+          "confidence": 0.617,
+          "similarity": 0.574,
+          "margin": 0.441,
+          "stem": "mix+other",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        },
+        {
+          "at": 174.0,
+          "until": 180.0,
+          "holds_to_section_end": false,
+          "confidence": 0.45,
+          "similarity": 0.367,
+          "margin": 0.371,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 180.0,
+          "until": 183.3,
+          "holds_to_section_end": true,
+          "confidence": 0.176,
+          "similarity": 0.478,
+          "margin": 0.375,
+          "stem": "other",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        }
+      ],
       "voice": []
     },
     {
@@ -822,56 +2887,130 @@
       "end": 211.59,
       "entries": [
         {
-          "at": 183.3,
-          "until": 194.0,
+          "at": 186.0,
+          "until": 192.0,
           "holds_to_section_end": false,
-          "confidence": 0.03,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "confidence": 0.636,
+          "similarity": 0.344,
+          "margin": 0.322,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
+        }
+      ],
+      "uncatalogued": [
+        {
+          "at": 183.3,
+          "until": 188.0,
+          "holds_to_section_end": false,
+          "confidence": 0.176,
+          "similarity": 0.478,
+          "margin": 0.375,
+          "stem": "other",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 184.0,
+          "until": 190.0,
+          "holds_to_section_end": false,
+          "confidence": 0.125,
+          "similarity": 0.458,
+          "margin": 0.343,
+          "stem": "other",
+          "key": "viola",
+          "name": "альт",
+          "in_catalog": false
         },
         {
           "at": 198.0,
           "until": 202.5,
           "holds_to_section_end": false,
-          "confidence": 0.056,
-          "similarity": 0.008,
-          "margin": 0.0,
+          "confidence": 0.34,
+          "similarity": 0.424,
+          "margin": 0.394,
           "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 198.0,
+          "until": 202.0,
+          "holds_to_section_end": false,
+          "confidence": 0.215,
+          "similarity": 0.463,
+          "margin": 0.297,
+          "stem": "other",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        },
+        {
+          "at": 204.0,
+          "until": 207.0,
+          "holds_to_section_end": false,
+          "confidence": 0.248,
+          "similarity": 0.287,
+          "margin": 0.224,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 208.5,
+          "until": 211.59,
+          "holds_to_section_end": true,
+          "confidence": 0.425,
+          "similarity": 0.373,
+          "margin": 0.363,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        }
+      ],
+      "voice": [
+        {
+          "at": 183.3,
+          "until": 198.0,
+          "holds_to_section_end": false,
+          "confidence": 0.56,
+          "similarity": 0.354,
+          "margin": 0.318,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
           "in_catalog": true
         },
         {
           "at": 198.0,
-          "until": 211.59,
-          "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.007,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "until": 207.0,
+          "holds_to_section_end": false,
+          "confidence": 0.383,
+          "similarity": 0.352,
+          "margin": 0.262,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
           "in_catalog": true
         },
         {
-          "at": 204.0,
+          "at": 207.0,
           "until": 211.59,
           "holds_to_section_end": true,
-          "confidence": 0.071,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "confidence": 0.499,
+          "similarity": 0.377,
+          "margin": 0.293,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
           "in_catalog": true
         }
-      ],
-      "uncatalogued": [],
-      "voice": []
+      ]
     },
     {
       "id": "turkish-chorus-1",
@@ -881,32 +3020,94 @@
       "end": 230.58,
       "entries": [
         {
-          "at": 211.59,
+          "at": 216.0,
           "until": 230.58,
           "holds_to_section_end": true,
-          "confidence": 0.071,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
-        },
-        {
-          "at": 211.59,
-          "until": 230.58,
-          "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.007,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "confidence": 0.831,
+          "similarity": 0.42,
+          "margin": 0.339,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "uncatalogued": [
+        {
+          "at": 211.59,
+          "until": 222.0,
+          "holds_to_section_end": false,
+          "confidence": 0.425,
+          "similarity": 0.373,
+          "margin": 0.363,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 212.0,
+          "until": 230.58,
+          "holds_to_section_end": true,
+          "confidence": 0.145,
+          "similarity": 0.407,
+          "margin": 0.359,
+          "stem": "other",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 222.0,
+          "until": 225.0,
+          "holds_to_section_end": false,
+          "confidence": 0.307,
+          "similarity": 0.288,
+          "margin": 0.215,
+          "stem": "drums",
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 225.0,
+          "until": 230.58,
+          "holds_to_section_end": true,
+          "confidence": 0.342,
+          "similarity": 0.329,
+          "margin": 0.272,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        }
+      ],
+      "voice": [
+        {
+          "at": 211.59,
+          "until": 216.0,
+          "holds_to_section_end": false,
+          "confidence": 0.499,
+          "similarity": 0.377,
+          "margin": 0.293,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        },
+        {
+          "at": 216.0,
+          "until": 230.58,
+          "holds_to_section_end": true,
+          "confidence": 0.471,
+          "similarity": 0.369,
+          "margin": 0.404,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "turkish-chorus-2",
@@ -917,31 +3118,117 @@
       "entries": [
         {
           "at": 230.58,
-          "until": 251.8,
-          "holds_to_section_end": true,
-          "confidence": 0.071,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "until": 248.0,
+          "holds_to_section_end": false,
+          "confidence": 0.831,
+          "similarity": 0.42,
+          "margin": 0.339,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
         },
         {
-          "at": 230.58,
-          "until": 251.8,
-          "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.007,
-          "margin": 0.0,
+          "at": 232.0,
+          "until": 238.0,
+          "holds_to_section_end": false,
+          "confidence": 0.099,
+          "similarity": 0.399,
+          "margin": 0.361,
           "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "key": "qanun",
+          "name": "Канун",
+          "in_catalog": true
+        },
+        {
+          "at": 234.0,
+          "until": 240.0,
+          "holds_to_section_end": false,
+          "confidence": 0.089,
+          "similarity": 0.376,
+          "margin": 0.366,
+          "stem": "other",
+          "key": "tar",
+          "name": "Тар",
           "in_catalog": true
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "uncatalogued": [
+        {
+          "at": 230.58,
+          "until": 232.0,
+          "holds_to_section_end": false,
+          "confidence": 0.145,
+          "similarity": 0.407,
+          "margin": 0.359,
+          "stem": "other",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 232.5,
+          "until": 240.0,
+          "holds_to_section_end": false,
+          "confidence": 0.427,
+          "similarity": 0.346,
+          "margin": 0.299,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 240.0,
+          "until": 249.0,
+          "holds_to_section_end": false,
+          "confidence": 0.377,
+          "similarity": 0.312,
+          "margin": 0.254,
+          "stem": "drums",
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 248.0,
+          "until": 251.8,
+          "holds_to_section_end": true,
+          "confidence": 0.375,
+          "similarity": 0.454,
+          "margin": 0.387,
+          "stem": "other+mix",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 249.0,
+          "until": 251.8,
+          "holds_to_section_end": true,
+          "confidence": 0.237,
+          "similarity": 0.365,
+          "margin": 0.414,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        }
+      ],
+      "voice": [
+        {
+          "at": 230.58,
+          "until": 249.0,
+          "holds_to_section_end": false,
+          "confidence": 0.471,
+          "similarity": 0.369,
+          "margin": 0.404,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "inst-mid",
@@ -951,32 +3238,154 @@
       "end": 286.4,
       "entries": [
         {
-          "at": 251.8,
-          "until": 286.4,
-          "holds_to_section_end": true,
-          "confidence": 0.071,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "at": 260.0,
+          "until": 268.0,
+          "holds_to_section_end": false,
+          "confidence": 0.273,
+          "similarity": 0.265,
+          "margin": 0.077,
+          "stem": "bass",
+          "key": "cello",
+          "name": "Виолончель",
           "in_catalog": true
         },
         {
-          "at": 251.8,
+          "at": 274.0,
+          "until": 280.0,
+          "holds_to_section_end": false,
+          "confidence": 0.172,
+          "similarity": 0.202,
+          "margin": 0.069,
+          "stem": "bass",
+          "key": "cello",
+          "name": "Виолончель",
+          "in_catalog": true
+        },
+        {
+          "at": 280.0,
+          "until": 286.0,
+          "holds_to_section_end": false,
+          "confidence": 0.57,
+          "similarity": 0.415,
+          "margin": 0.246,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
+          "in_catalog": true
+        },
+        {
+          "at": 284.0,
           "until": 286.4,
           "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.007,
-          "margin": 0.0,
+          "confidence": 0.188,
+          "similarity": 0.441,
+          "margin": 0.432,
           "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "key": "violin",
+          "name": "Скрипка",
           "in_catalog": true
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "uncatalogued": [
+        {
+          "at": 251.8,
+          "until": 274.0,
+          "holds_to_section_end": false,
+          "confidence": 0.375,
+          "similarity": 0.454,
+          "margin": 0.387,
+          "stem": "other+mix",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 253.5,
+          "until": 256.5,
+          "holds_to_section_end": false,
+          "confidence": 0.271,
+          "similarity": 0.415,
+          "margin": 0.479,
+          "stem": "drums",
+          "key": "timpani",
+          "name": "литавры",
+          "in_catalog": false
+        },
+        {
+          "at": 258.0,
+          "until": 261.0,
+          "holds_to_section_end": false,
+          "confidence": 0.189,
+          "similarity": 0.365,
+          "margin": 0.462,
+          "stem": "drums",
+          "key": "dholak",
+          "name": "дхолак",
+          "in_catalog": false
+        },
+        {
+          "at": 262.0,
+          "until": 266.0,
+          "holds_to_section_end": false,
+          "confidence": 0.232,
+          "similarity": 0.436,
+          "margin": 0.331,
+          "stem": "other",
+          "key": "organ",
+          "name": "орган",
+          "in_catalog": false
+        },
+        {
+          "at": 270.0,
+          "until": 285.0,
+          "holds_to_section_end": false,
+          "confidence": 0.58,
+          "similarity": 0.558,
+          "margin": 0.435,
+          "stem": "mix+other",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        },
+        {
+          "at": 276.0,
+          "until": 280.5,
+          "holds_to_section_end": false,
+          "confidence": 0.294,
+          "similarity": 0.362,
+          "margin": 0.332,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 283.5,
+          "until": 286.4,
+          "holds_to_section_end": true,
+          "confidence": 0.496,
+          "similarity": 0.326,
+          "margin": 0.244,
+          "stem": "drums",
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        }
+      ],
+      "voice": [
+        {
+          "at": 285.0,
+          "until": 286.4,
+          "holds_to_section_end": true,
+          "confidence": 0.411,
+          "similarity": 0.337,
+          "margin": 0.31,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "arabic-verse",
@@ -987,31 +3396,45 @@
       "entries": [
         {
           "at": 286.4,
+          "until": 288.0,
+          "holds_to_section_end": false,
+          "confidence": 0.188,
+          "similarity": 0.441,
+          "margin": 0.432,
+          "stem": "other",
+          "key": "violin",
+          "name": "Скрипка",
+          "in_catalog": true
+        }
+      ],
+      "uncatalogued": [
+        {
+          "at": 286.4,
           "until": 292.5,
           "holds_to_section_end": false,
-          "confidence": 0.071,
-          "similarity": 0.008,
-          "margin": 0.001,
+          "confidence": 0.496,
+          "similarity": 0.326,
+          "margin": 0.244,
           "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
-        },
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        }
+      ],
+      "voice": [
         {
           "at": 286.4,
           "until": 293.48,
           "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.007,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "confidence": 0.411,
+          "similarity": 0.337,
+          "margin": 0.31,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
           "in_catalog": true
         }
-      ],
-      "uncatalogued": [],
-      "voice": []
+      ]
     },
     {
       "id": "arabic-main",
@@ -1021,68 +3444,274 @@
       "end": 388.4,
       "entries": [
         {
-          "at": 293.48,
-          "until": 388.4,
-          "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.007,
-          "margin": 0.0,
+          "at": 344.0,
+          "until": 354.0,
+          "holds_to_section_end": false,
+          "confidence": 0.123,
+          "similarity": 0.383,
+          "margin": 0.346,
           "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "key": "violin",
+          "name": "Скрипка",
           "in_catalog": true
         },
         {
-          "at": 300.0,
-          "until": 303.0,
+          "at": 346.0,
+          "until": 362.0,
           "holds_to_section_end": false,
-          "confidence": 0.048,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "confidence": 0.794,
+          "similarity": 0.409,
+          "margin": 0.312,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
+        },
+        {
+          "at": 360.0,
+          "until": 364.0,
+          "holds_to_section_end": false,
+          "confidence": 0.167,
+          "similarity": 0.449,
+          "margin": 0.489,
+          "stem": "other",
+          "key": "kamancheh",
+          "name": "Кяманча",
+          "in_catalog": true
+        },
+        {
+          "at": 380.0,
+          "until": 388.0,
+          "holds_to_section_end": false,
+          "confidence": 0.193,
+          "similarity": 0.433,
+          "margin": 0.398,
+          "stem": "other",
+          "key": "violin",
+          "name": "Скрипка",
+          "in_catalog": true
+        },
+        {
+          "at": 386.0,
+          "until": 388.4,
+          "holds_to_section_end": true,
+          "confidence": 0.599,
+          "similarity": 0.305,
+          "margin": 0.191,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
+          "in_catalog": true
+        }
+      ],
+      "uncatalogued": [
+        {
+          "at": 294.0,
+          "until": 302.0,
+          "holds_to_section_end": false,
+          "confidence": 0.364,
+          "similarity": 0.516,
+          "margin": 0.436,
+          "stem": "other",
+          "key": "sitar",
+          "name": "ситар",
+          "in_catalog": false
+        },
+        {
+          "at": 304.0,
+          "until": 318.0,
+          "holds_to_section_end": false,
+          "confidence": 0.211,
+          "similarity": 0.459,
+          "margin": 0.348,
+          "stem": "other",
+          "key": "viola",
+          "name": "альт",
+          "in_catalog": false
         },
         {
           "at": 316.5,
           "until": 319.5,
           "holds_to_section_end": false,
-          "confidence": 0.048,
-          "similarity": 0.008,
-          "margin": 0.0,
+          "confidence": 0.403,
+          "similarity": 0.34,
+          "margin": 0.151,
           "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
         },
         {
-          "at": 322.5,
-          "until": 327.0,
+          "at": 328.0,
+          "until": 342.0,
           "holds_to_section_end": false,
-          "confidence": 0.056,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
+          "confidence": 0.281,
+          "similarity": 0.506,
+          "margin": 0.388,
+          "stem": "other",
+          "key": "viola",
+          "name": "альт",
+          "in_catalog": false
         },
         {
           "at": 345.0,
+          "until": 355.5,
+          "holds_to_section_end": false,
+          "confidence": 0.507,
+          "similarity": 0.39,
+          "margin": 0.434,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 357.0,
+          "until": 364.5,
+          "holds_to_section_end": false,
+          "confidence": 0.353,
+          "similarity": 0.372,
+          "margin": 0.355,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 366.0,
+          "until": 370.5,
+          "holds_to_section_end": false,
+          "confidence": 0.365,
+          "similarity": 0.332,
+          "margin": 0.323,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 372.0,
+          "until": 379.5,
+          "holds_to_section_end": false,
+          "confidence": 0.34,
+          "similarity": 0.323,
+          "margin": 0.327,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 374.0,
+          "until": 378.0,
+          "holds_to_section_end": false,
+          "confidence": 0.118,
+          "similarity": 0.373,
+          "margin": 0.31,
+          "stem": "other",
+          "key": "electric-bass",
+          "name": "бас-гитара",
+          "in_catalog": false
+        },
+        {
+          "at": 385.5,
           "until": 388.4,
           "holds_to_section_end": true,
-          "confidence": 0.07,
-          "similarity": 0.008,
-          "margin": 0.001,
+          "confidence": 0.35,
+          "similarity": 0.346,
+          "margin": 0.263,
           "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 387.0,
+          "until": 388.4,
+          "holds_to_section_end": true,
+          "confidence": 0.492,
+          "similarity": 0.533,
+          "margin": 0.34,
+          "stem": "mix+other",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "voice": [
+        {
+          "at": 293.48,
+          "until": 303.0,
+          "holds_to_section_end": false,
+          "confidence": 0.411,
+          "similarity": 0.337,
+          "margin": 0.31,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        },
+        {
+          "at": 306.0,
+          "until": 318.0,
+          "holds_to_section_end": false,
+          "confidence": 0.398,
+          "similarity": 0.322,
+          "margin": 0.314,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        },
+        {
+          "at": 321.0,
+          "until": 348.0,
+          "holds_to_section_end": false,
+          "confidence": 0.541,
+          "similarity": 0.344,
+          "margin": 0.311,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        },
+        {
+          "at": 348.0,
+          "until": 357.0,
+          "holds_to_section_end": false,
+          "confidence": 0.443,
+          "similarity": 0.356,
+          "margin": 0.4,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        },
+        {
+          "at": 357.0,
+          "until": 378.0,
+          "holds_to_section_end": false,
+          "confidence": 0.272,
+          "similarity": 0.296,
+          "margin": 0.306,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        },
+        {
+          "at": 378.0,
+          "until": 387.0,
+          "holds_to_section_end": false,
+          "confidence": 0.418,
+          "similarity": 0.378,
+          "margin": 0.357,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "inst-before-mawwal",
@@ -1093,30 +3722,79 @@
       "entries": [
         {
           "at": 388.4,
-          "until": 402.0,
+          "until": 398.0,
           "holds_to_section_end": false,
-          "confidence": 0.07,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "confidence": 0.599,
+          "similarity": 0.305,
+          "margin": 0.191,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
         },
         {
-          "at": 388.4,
-          "until": 404.2,
-          "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.007,
-          "margin": 0.0,
+          "at": 396.0,
+          "until": 402.0,
+          "holds_to_section_end": false,
+          "confidence": 0.166,
+          "similarity": 0.441,
+          "margin": 0.424,
           "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "key": "violin",
+          "name": "Скрипка",
           "in_catalog": true
         }
       ],
-      "uncatalogued": [],
+      "uncatalogued": [
+        {
+          "at": 388.4,
+          "until": 400.0,
+          "holds_to_section_end": false,
+          "confidence": 0.492,
+          "similarity": 0.533,
+          "margin": 0.34,
+          "stem": "mix+other",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        },
+        {
+          "at": 388.4,
+          "until": 390.0,
+          "holds_to_section_end": false,
+          "confidence": 0.35,
+          "similarity": 0.346,
+          "margin": 0.263,
+          "stem": "drums",
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 390.0,
+          "until": 396.0,
+          "holds_to_section_end": false,
+          "confidence": 0.304,
+          "similarity": 0.343,
+          "margin": 0.305,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 397.5,
+          "until": 402.0,
+          "holds_to_section_end": false,
+          "confidence": 0.308,
+          "similarity": 0.313,
+          "margin": 0.246,
+          "stem": "drums",
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        }
+      ],
       "voice": []
     },
     {
@@ -1127,32 +3805,202 @@
       "end": 443.0,
       "entries": [
         {
-          "at": 404.2,
-          "until": 442.0,
+          "at": 424.0,
+          "until": 428.0,
           "holds_to_section_end": false,
-          "confidence": 0.03,
-          "similarity": 0.007,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "confidence": 0.408,
+          "similarity": 0.356,
+          "margin": 0.184,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
         },
         {
-          "at": 408.0,
-          "until": 436.5,
+          "at": 432.0,
+          "until": 436.0,
           "holds_to_section_end": false,
-          "confidence": 0.069,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "confidence": 0.185,
+          "similarity": 0.425,
+          "margin": 0.363,
+          "stem": "other",
+          "key": "violin",
+          "name": "Скрипка",
           "in_catalog": true
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "uncatalogued": [
+        {
+          "at": 404.2,
+          "until": 408.0,
+          "holds_to_section_end": false,
+          "confidence": 0.107,
+          "similarity": 0.479,
+          "margin": 0.396,
+          "stem": "other",
+          "key": "rabab",
+          "name": "рабаб",
+          "in_catalog": false
+        },
+        {
+          "at": 408.0,
+          "until": 416.0,
+          "holds_to_section_end": false,
+          "confidence": 0.259,
+          "similarity": 0.411,
+          "margin": 0.287,
+          "stem": "other",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 409.5,
+          "until": 412.5,
+          "holds_to_section_end": false,
+          "confidence": 0.2,
+          "similarity": 0.381,
+          "margin": 0.389,
+          "stem": "drums",
+          "key": "snare-drum",
+          "name": "малый барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 415.5,
+          "until": 418.5,
+          "holds_to_section_end": false,
+          "confidence": 0.195,
+          "similarity": 0.402,
+          "margin": 0.465,
+          "stem": "drums",
+          "key": "timpani",
+          "name": "литавры",
+          "in_catalog": false
+        },
+        {
+          "at": 418.5,
+          "until": 421.5,
+          "holds_to_section_end": false,
+          "confidence": 0.313,
+          "similarity": 0.377,
+          "margin": 0.436,
+          "stem": "drums",
+          "key": "snare-drum",
+          "name": "малый барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 424.0,
+          "until": 428.0,
+          "holds_to_section_end": false,
+          "confidence": 0.266,
+          "similarity": 0.452,
+          "margin": 0.28,
+          "stem": "other",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 424.5,
+          "until": 427.5,
+          "holds_to_section_end": false,
+          "confidence": 0.286,
+          "similarity": 0.442,
+          "margin": 0.532,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 429.0,
+          "until": 435.0,
+          "holds_to_section_end": false,
+          "confidence": 0.307,
+          "similarity": 0.423,
+          "margin": 0.455,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 436.0,
+          "until": 442.0,
+          "holds_to_section_end": false,
+          "confidence": 0.105,
+          "similarity": 0.435,
+          "margin": 0.221,
+          "stem": "other",
+          "key": "viola",
+          "name": "альт",
+          "in_catalog": false
+        }
+      ],
+      "voice": [
+        {
+          "at": 405.0,
+          "until": 414.0,
+          "holds_to_section_end": false,
+          "confidence": 0.198,
+          "similarity": 0.349,
+          "margin": 0.354,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        },
+        {
+          "at": 414.0,
+          "until": 420.0,
+          "holds_to_section_end": false,
+          "confidence": 0.133,
+          "similarity": 0.276,
+          "margin": 0.362,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        },
+        {
+          "at": 420.0,
+          "until": 429.0,
+          "holds_to_section_end": false,
+          "confidence": 0.26,
+          "similarity": 0.348,
+          "margin": 0.37,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        },
+        {
+          "at": 429.0,
+          "until": 435.0,
+          "holds_to_section_end": false,
+          "confidence": 0.119,
+          "similarity": 0.289,
+          "margin": 0.355,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        },
+        {
+          "at": 435.0,
+          "until": 443.0,
+          "holds_to_section_end": true,
+          "confidence": 0.409,
+          "similarity": 0.316,
+          "margin": 0.351,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "rumi-beyts-15",
@@ -1162,68 +4010,238 @@
       "end": 506.35,
       "entries": [
         {
-          "at": 445.5,
-          "until": 448.5,
+          "at": 454.0,
+          "until": 458.0,
           "holds_to_section_end": false,
-          "confidence": 0.048,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "confidence": 0.212,
+          "similarity": 0.461,
+          "margin": 0.412,
+          "stem": "other",
+          "key": "violin",
+          "name": "Скрипка",
           "in_catalog": true
         },
         {
-          "at": 450.0,
-          "until": 506.35,
-          "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "at": 458.0,
+          "until": 462.0,
+          "holds_to_section_end": false,
+          "confidence": 0.367,
+          "similarity": 0.346,
+          "margin": 0.136,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
         },
+        {
+          "at": 458.0,
+          "until": 462.0,
+          "holds_to_section_end": false,
+          "confidence": 0.213,
+          "similarity": 0.466,
+          "margin": 0.469,
+          "stem": "other",
+          "key": "qanun",
+          "name": "Канун",
+          "in_catalog": true
+        },
+        {
+          "at": 476.0,
+          "until": 482.0,
+          "holds_to_section_end": false,
+          "confidence": 0.434,
+          "similarity": 0.268,
+          "margin": 0.098,
+          "stem": "bass",
+          "key": "cello",
+          "name": "Виолончель",
+          "in_catalog": true
+        }
+      ],
+      "uncatalogued": [
         {
           "at": 451.5,
-          "until": 460.5,
+          "until": 457.5,
           "holds_to_section_end": false,
-          "confidence": 0.064,
-          "similarity": 0.008,
-          "margin": 0.001,
+          "confidence": 0.523,
+          "similarity": 0.343,
+          "margin": 0.294,
           "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
         },
         {
-          "at": 462.0,
+          "at": 463.5,
+          "until": 468.0,
+          "holds_to_section_end": false,
+          "confidence": 0.433,
+          "similarity": 0.352,
+          "margin": 0.444,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 468.0,
+          "until": 480.0,
+          "holds_to_section_end": false,
+          "confidence": 0.203,
+          "similarity": 0.434,
+          "margin": 0.433,
+          "stem": "other",
+          "key": "viola",
+          "name": "альт",
+          "in_catalog": false
+        },
+        {
+          "at": 472.5,
+          "until": 475.5,
+          "holds_to_section_end": false,
+          "confidence": 0.245,
+          "similarity": 0.311,
+          "margin": 0.303,
+          "stem": "drums",
+          "key": "snare-drum",
+          "name": "малый барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 477.0,
+          "until": 481.5,
+          "holds_to_section_end": false,
+          "confidence": 0.332,
+          "similarity": 0.339,
+          "margin": 0.416,
+          "stem": "drums",
+          "key": "snare-drum",
+          "name": "малый барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 480.0,
+          "until": 484.0,
+          "holds_to_section_end": false,
+          "confidence": 0.289,
+          "similarity": 0.483,
+          "margin": 0.432,
+          "stem": "other",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        },
+        {
+          "at": 481.5,
+          "until": 484.5,
+          "holds_to_section_end": false,
+          "confidence": 0.196,
+          "similarity": 0.374,
+          "margin": 0.427,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 484.0,
+          "until": 502.0,
+          "holds_to_section_end": false,
+          "confidence": 0.276,
+          "similarity": 0.43,
+          "margin": 0.339,
+          "stem": "other",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 486.0,
           "until": 489.0,
           "holds_to_section_end": false,
-          "confidence": 0.069,
-          "similarity": 0.008,
-          "margin": 0.001,
+          "confidence": 0.508,
+          "similarity": 0.375,
+          "margin": 0.281,
           "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
         },
         {
           "at": 492.0,
           "until": 495.0,
           "holds_to_section_end": false,
-          "confidence": 0.048,
-          "similarity": 0.008,
-          "margin": 0.0,
+          "confidence": 0.531,
+          "similarity": 0.399,
+          "margin": 0.23,
           "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 502.0,
+          "until": 506.0,
+          "holds_to_section_end": false,
+          "confidence": 0.187,
+          "similarity": 0.447,
+          "margin": 0.362,
+          "stem": "other",
+          "key": "viola",
+          "name": "альт",
+          "in_catalog": false
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "voice": [
+        {
+          "at": 443.0,
+          "until": 471.0,
+          "holds_to_section_end": false,
+          "confidence": 0.409,
+          "similarity": 0.316,
+          "margin": 0.351,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        },
+        {
+          "at": 474.0,
+          "until": 480.0,
+          "holds_to_section_end": false,
+          "confidence": 0.39,
+          "similarity": 0.339,
+          "margin": 0.306,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        },
+        {
+          "at": 480.0,
+          "until": 486.0,
+          "holds_to_section_end": false,
+          "confidence": 0.195,
+          "similarity": 0.247,
+          "margin": 0.279,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        },
+        {
+          "at": 486.0,
+          "until": 506.35,
+          "holds_to_section_end": true,
+          "confidence": 0.382,
+          "similarity": 0.287,
+          "margin": 0.296,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "coda-arabic",
@@ -1234,31 +4252,57 @@
       "entries": [
         {
           "at": 506.35,
-          "until": 532.53,
-          "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "until": 532.0,
+          "holds_to_section_end": false,
+          "confidence": 0.637,
+          "similarity": 0.333,
+          "margin": 0.217,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
         },
+        {
+          "at": 510.0,
+          "until": 524.0,
+          "holds_to_section_end": false,
+          "confidence": 0.162,
+          "similarity": 0.365,
+          "margin": 0.329,
+          "stem": "other",
+          "key": "violin",
+          "name": "Скрипка",
+          "in_catalog": true
+        }
+      ],
+      "uncatalogued": [
         {
           "at": 508.5,
           "until": 532.53,
           "holds_to_section_end": true,
-          "confidence": 0.07,
-          "similarity": 0.008,
-          "margin": 0.001,
+          "confidence": 0.484,
+          "similarity": 0.372,
+          "margin": 0.416,
           "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "voice": [
+        {
+          "at": 507.0,
+          "until": 532.53,
+          "holds_to_section_end": true,
+          "confidence": 0.582,
+          "similarity": 0.384,
+          "margin": 0.411,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "coda-persian",
@@ -1269,31 +4313,93 @@
       "entries": [
         {
           "at": 532.53,
-          "until": 552.89,
-          "holds_to_section_end": true,
-          "confidence": 0.07,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "until": 538.0,
+          "holds_to_section_end": false,
+          "confidence": 0.377,
+          "similarity": 0.264,
+          "margin": 0.08,
+          "stem": "bass",
+          "key": "cello",
+          "name": "Виолончель",
           "in_catalog": true
         },
         {
           "at": 532.53,
+          "until": 536.0,
+          "holds_to_section_end": false,
+          "confidence": 0.181,
+          "similarity": 0.425,
+          "margin": 0.333,
+          "stem": "other",
+          "key": "violin",
+          "name": "Скрипка",
+          "in_catalog": true
+        },
+        {
+          "at": 538.0,
           "until": 552.89,
           "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "confidence": 0.599,
+          "similarity": 0.306,
+          "margin": 0.192,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "uncatalogued": [
+        {
+          "at": 532.53,
+          "until": 552.89,
+          "holds_to_section_end": true,
+          "confidence": 0.484,
+          "similarity": 0.372,
+          "margin": 0.416,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 538.0,
+          "until": 544.0,
+          "holds_to_section_end": false,
+          "confidence": 0.163,
+          "similarity": 0.465,
+          "margin": 0.287,
+          "stem": "other",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        },
+        {
+          "at": 546.0,
+          "until": 552.89,
+          "holds_to_section_end": true,
+          "confidence": 0.212,
+          "similarity": 0.387,
+          "margin": 0.311,
+          "stem": "other",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        }
+      ],
+      "voice": [
+        {
+          "at": 532.53,
+          "until": 552.89,
+          "holds_to_section_end": true,
+          "confidence": 0.582,
+          "similarity": 0.384,
+          "margin": 0.411,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "voice-tail",
@@ -1304,31 +4410,93 @@
       "entries": [
         {
           "at": 552.89,
-          "until": 565.5,
+          "until": 554.0,
           "holds_to_section_end": false,
-          "confidence": 0.07,
-          "similarity": 0.008,
-          "margin": 0.001,
-          "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
+          "confidence": 0.599,
+          "similarity": 0.306,
+          "margin": 0.192,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
           "in_catalog": true
         },
+        {
+          "at": 560.0,
+          "until": 564.0,
+          "holds_to_section_end": false,
+          "confidence": 0.614,
+          "similarity": 0.365,
+          "margin": 0.243,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
+          "in_catalog": true
+        }
+      ],
+      "uncatalogued": [
+        {
+          "at": 552.89,
+          "until": 564.0,
+          "holds_to_section_end": false,
+          "confidence": 0.484,
+          "similarity": 0.372,
+          "margin": 0.416,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
+          "in_catalog": false
+        },
+        {
+          "at": 552.89,
+          "until": 562.0,
+          "holds_to_section_end": false,
+          "confidence": 0.212,
+          "similarity": 0.387,
+          "margin": 0.311,
+          "stem": "other",
+          "key": "accordion",
+          "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 556.0,
+          "until": 560.0,
+          "holds_to_section_end": false,
+          "confidence": 0.346,
+          "similarity": 0.323,
+          "margin": 0.122,
+          "stem": "bass",
+          "key": "electric-bass",
+          "name": "бас-гитара",
+          "in_catalog": false
+        },
+        {
+          "at": 562.0,
+          "until": 566.0,
+          "holds_to_section_end": true,
+          "confidence": 0.23,
+          "similarity": 0.418,
+          "margin": 0.308,
+          "stem": "other",
+          "key": "viola",
+          "name": "альт",
+          "in_catalog": false
+        }
+      ],
+      "voice": [
         {
           "at": 552.89,
           "until": 566.1,
           "holds_to_section_end": true,
-          "confidence": 0.03,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
+          "confidence": 0.582,
+          "similarity": 0.384,
+          "margin": 0.411,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
           "in_catalog": true
         }
-      ],
-      "uncatalogued": [],
-      "voice": []
+      ]
     },
     {
       "id": "inst-end",
@@ -1336,34 +4504,35 @@
       "label": "Окончание",
       "start": 566.1,
       "end": 580.06,
-      "entries": [
-        {
-          "at": 566.1,
-          "until": 570.0,
-          "holds_to_section_end": false,
-          "confidence": 0.03,
-          "similarity": 0.008,
-          "margin": 0.0,
-          "stem": "other",
-          "key": "santur",
-          "name": "Сантур",
-          "in_catalog": true
-        },
+      "entries": [],
+      "uncatalogued": [
         {
           "at": 567.0,
           "until": 573.0,
           "holds_to_section_end": false,
-          "confidence": 0.06,
-          "similarity": 0.008,
-          "margin": 0.001,
+          "confidence": 0.784,
+          "similarity": 0.358,
+          "margin": 0.266,
           "stem": "drums",
-          "key": "darbuka",
-          "name": "Дарбука",
-          "in_catalog": true
+          "key": "cymbals",
+          "name": "тарелки",
+          "in_catalog": false
         }
       ],
-      "uncatalogued": [],
-      "voice": []
+      "voice": [
+        {
+          "at": 566.1,
+          "until": 567.0,
+          "holds_to_section_end": false,
+          "confidence": 0.582,
+          "similarity": 0.384,
+          "margin": 0.411,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        }
+      ]
     }
   ],
   "drums": {
@@ -1963,12 +5132,20 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "tabla",
+            "name": "табла",
             "at": 0.0,
-            "until": 10.6,
-            "confidence": 0.071,
-            "in_catalog": true
+            "until": 6.0,
+            "confidence": 0.291,
+            "in_catalog": false
+          },
+          {
+            "key": "snare-drum",
+            "name": "малый барабан",
+            "at": 6.0,
+            "until": 9.0,
+            "confidence": 0.268,
+            "in_catalog": false
           }
         ]
       },
@@ -1983,12 +5160,20 @@
         "regular": true,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "tabla",
+            "name": "табла",
             "at": 10.6,
+            "until": 16.5,
+            "confidence": 0.336,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 18.0,
             "until": 23.7,
-            "confidence": 0.071,
-            "in_catalog": true
+            "confidence": 0.29,
+            "in_catalog": false
           }
         ]
       },
@@ -2003,12 +5188,68 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
-            "at": 23.7,
-            "until": 97.5,
-            "confidence": 0.071,
-            "in_catalog": true
+            "key": "tabla",
+            "name": "табла",
+            "at": 25.5,
+            "until": 33.0,
+            "confidence": 0.411,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 34.5,
+            "until": 51.0,
+            "confidence": 0.387,
+            "in_catalog": false
+          },
+          {
+            "key": "dholak",
+            "name": "дхолак",
+            "at": 69.0,
+            "until": 79.5,
+            "confidence": 0.345,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 85.5,
+            "until": 96.0,
+            "confidence": 0.289,
+            "in_catalog": false
+          },
+          {
+            "key": "dholak",
+            "name": "дхолак",
+            "at": 58.5,
+            "until": 64.5,
+            "confidence": 0.282,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 66.0,
+            "until": 69.0,
+            "confidence": 0.258,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 52.5,
+            "until": 55.5,
+            "confidence": 0.236,
+            "in_catalog": false
+          },
+          {
+            "key": "timpani",
+            "name": "литавры",
+            "at": 55.5,
+            "until": 58.5,
+            "confidence": 0.186,
+            "in_catalog": false
           }
         ]
       },
@@ -2023,20 +5264,20 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
-            "at": 106.5,
-            "until": 107.75,
-            "confidence": 0.056,
-            "in_catalog": true
-          },
-          {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "tabla",
+            "name": "табла",
             "at": 102.0,
             "until": 105.0,
-            "confidence": 0.048,
-            "in_catalog": true
+            "confidence": 0.397,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 106.5,
+            "until": 107.75,
+            "confidence": 0.329,
+            "in_catalog": false
           }
         ]
       },
@@ -2051,12 +5292,12 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "tabla",
+            "name": "табла",
             "at": 107.75,
-            "until": 111.0,
-            "confidence": 0.056,
-            "in_catalog": true
+            "until": 109.5,
+            "confidence": 0.329,
+            "in_catalog": false
           }
         ]
       },
@@ -2071,12 +5312,20 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "bass-drum",
+            "name": "большой барабан",
             "at": 115.81,
-            "until": 123.83,
-            "confidence": 0.064,
-            "in_catalog": true
+            "until": 118.5,
+            "confidence": 0.404,
+            "in_catalog": false
+          },
+          {
+            "key": "bass-drum",
+            "name": "большой барабан",
+            "at": 120.0,
+            "until": 123.0,
+            "confidence": 0.217,
+            "in_catalog": false
           }
         ]
       },
@@ -2100,16 +5349,7 @@
         "density": "плотно",
         "mean_level": 0.394,
         "regular": false,
-        "labels": [
-          {
-            "key": "darbuka",
-            "name": "Дарбука",
-            "at": 129.0,
-            "until": 132.0,
-            "confidence": 0.07,
-            "in_catalog": true
-          }
-        ]
+        "labels": []
       },
       {
         "id": "rumi-beyt-1",
@@ -2122,12 +5362,28 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "tabla",
+            "name": "табла",
             "at": 132.0,
+            "until": 156.0,
+            "confidence": 0.482,
+            "in_catalog": false
+          },
+          {
+            "key": "bass-drum",
+            "name": "большой барабан",
+            "at": 163.5,
             "until": 165.8,
-            "confidence": 0.07,
-            "in_catalog": true
+            "confidence": 0.402,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 157.5,
+            "until": 163.5,
+            "confidence": 0.387,
+            "in_catalog": false
           }
         ]
       },
@@ -2142,12 +5398,20 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "bass-drum",
+            "name": "большой барабан",
             "at": 165.8,
+            "until": 169.5,
+            "confidence": 0.402,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 169.5,
             "until": 172.0,
-            "confidence": 0.07,
-            "in_catalog": true
+            "confidence": 0.253,
+            "in_catalog": false
           }
         ]
       },
@@ -2162,12 +5426,12 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "tabla",
+            "name": "табла",
             "at": 172.0,
-            "until": 174.0,
-            "confidence": 0.07,
-            "in_catalog": true
+            "until": 172.5,
+            "confidence": 0.253,
+            "in_catalog": false
           }
         ]
       },
@@ -2182,12 +5446,12 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "tabla",
+            "name": "табла",
             "at": 174.0,
             "until": 180.0,
-            "confidence": 0.07,
-            "in_catalog": true
+            "confidence": 0.45,
+            "in_catalog": false
           }
         ]
       },
@@ -2202,20 +5466,28 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
-            "at": 204.0,
+            "key": "tabla",
+            "name": "табла",
+            "at": 208.5,
             "until": 211.59,
-            "confidence": 0.071,
-            "in_catalog": true
+            "confidence": 0.425,
+            "in_catalog": false
           },
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "tabla",
+            "name": "табла",
             "at": 198.0,
             "until": 202.5,
-            "confidence": 0.056,
-            "in_catalog": true
+            "confidence": 0.34,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 204.0,
+            "until": 207.0,
+            "confidence": 0.248,
+            "in_catalog": false
           }
         ]
       },
@@ -2230,12 +5502,28 @@
         "regular": true,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "tabla",
+            "name": "табла",
             "at": 211.59,
+            "until": 222.0,
+            "confidence": 0.425,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 225.0,
             "until": 230.58,
-            "confidence": 0.071,
-            "in_catalog": true
+            "confidence": 0.342,
+            "in_catalog": false
+          },
+          {
+            "key": "bass-drum",
+            "name": "большой барабан",
+            "at": 222.0,
+            "until": 225.0,
+            "confidence": 0.307,
+            "in_catalog": false
           }
         ]
       },
@@ -2250,12 +5538,28 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
-            "at": 230.58,
+            "key": "tabla",
+            "name": "табла",
+            "at": 232.5,
+            "until": 240.0,
+            "confidence": 0.427,
+            "in_catalog": false
+          },
+          {
+            "key": "bass-drum",
+            "name": "большой барабан",
+            "at": 240.0,
+            "until": 249.0,
+            "confidence": 0.377,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 249.0,
             "until": 251.8,
-            "confidence": 0.071,
-            "in_catalog": true
+            "confidence": 0.237,
+            "in_catalog": false
           }
         ]
       },
@@ -2270,12 +5574,36 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
-            "at": 251.8,
+            "key": "bass-drum",
+            "name": "большой барабан",
+            "at": 283.5,
             "until": 286.4,
-            "confidence": 0.071,
-            "in_catalog": true
+            "confidence": 0.496,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 276.0,
+            "until": 280.5,
+            "confidence": 0.294,
+            "in_catalog": false
+          },
+          {
+            "key": "timpani",
+            "name": "литавры",
+            "at": 253.5,
+            "until": 256.5,
+            "confidence": 0.271,
+            "in_catalog": false
+          },
+          {
+            "key": "dholak",
+            "name": "дхолак",
+            "at": 258.0,
+            "until": 261.0,
+            "confidence": 0.189,
+            "in_catalog": false
           }
         ]
       },
@@ -2290,12 +5618,12 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "bass-drum",
+            "name": "большой барабан",
             "at": 286.4,
             "until": 292.5,
-            "confidence": 0.071,
-            "in_catalog": true
+            "confidence": 0.496,
+            "in_catalog": false
           }
         ]
       },
@@ -2310,36 +5638,52 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "tabla",
+            "name": "табла",
             "at": 345.0,
-            "until": 388.4,
-            "confidence": 0.07,
-            "in_catalog": true
+            "until": 355.5,
+            "confidence": 0.507,
+            "in_catalog": false
           },
           {
-            "key": "darbuka",
-            "name": "Дарбука",
-            "at": 322.5,
-            "until": 327.0,
-            "confidence": 0.056,
-            "in_catalog": true
-          },
-          {
-            "key": "darbuka",
-            "name": "Дарбука",
-            "at": 300.0,
-            "until": 303.0,
-            "confidence": 0.048,
-            "in_catalog": true
-          },
-          {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "bass-drum",
+            "name": "большой барабан",
             "at": 316.5,
             "until": 319.5,
-            "confidence": 0.048,
-            "in_catalog": true
+            "confidence": 0.403,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 366.0,
+            "until": 370.5,
+            "confidence": 0.365,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 357.0,
+            "until": 364.5,
+            "confidence": 0.353,
+            "in_catalog": false
+          },
+          {
+            "key": "bass-drum",
+            "name": "большой барабан",
+            "at": 385.5,
+            "until": 388.4,
+            "confidence": 0.35,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 372.0,
+            "until": 379.5,
+            "confidence": 0.34,
+            "in_catalog": false
           }
         ]
       },
@@ -2354,12 +5698,28 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "bass-drum",
+            "name": "большой барабан",
             "at": 388.4,
+            "until": 390.0,
+            "confidence": 0.35,
+            "in_catalog": false
+          },
+          {
+            "key": "bass-drum",
+            "name": "большой барабан",
+            "at": 397.5,
             "until": 402.0,
-            "confidence": 0.07,
-            "in_catalog": true
+            "confidence": 0.308,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 390.0,
+            "until": 396.0,
+            "confidence": 0.304,
+            "in_catalog": false
           }
         ]
       },
@@ -2374,12 +5734,44 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
-            "at": 408.0,
-            "until": 436.5,
-            "confidence": 0.069,
-            "in_catalog": true
+            "key": "snare-drum",
+            "name": "малый барабан",
+            "at": 418.5,
+            "until": 421.5,
+            "confidence": 0.313,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 429.0,
+            "until": 435.0,
+            "confidence": 0.307,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 424.5,
+            "until": 427.5,
+            "confidence": 0.286,
+            "in_catalog": false
+          },
+          {
+            "key": "snare-drum",
+            "name": "малый барабан",
+            "at": 409.5,
+            "until": 412.5,
+            "confidence": 0.2,
+            "in_catalog": false
+          },
+          {
+            "key": "timpani",
+            "name": "литавры",
+            "at": 415.5,
+            "until": 418.5,
+            "confidence": 0.195,
+            "in_catalog": false
           }
         ]
       },
@@ -2394,36 +5786,60 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
-            "at": 462.0,
-            "until": 489.0,
-            "confidence": 0.069,
-            "in_catalog": true
-          },
-          {
-            "key": "darbuka",
-            "name": "Дарбука",
-            "at": 451.5,
-            "until": 460.5,
-            "confidence": 0.064,
-            "in_catalog": true
-          },
-          {
-            "key": "darbuka",
-            "name": "Дарбука",
-            "at": 445.5,
-            "until": 448.5,
-            "confidence": 0.048,
-            "in_catalog": true
-          },
-          {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "bass-drum",
+            "name": "большой барабан",
             "at": 492.0,
             "until": 495.0,
-            "confidence": 0.048,
-            "in_catalog": true
+            "confidence": 0.531,
+            "in_catalog": false
+          },
+          {
+            "key": "bass-drum",
+            "name": "большой барабан",
+            "at": 451.5,
+            "until": 457.5,
+            "confidence": 0.523,
+            "in_catalog": false
+          },
+          {
+            "key": "bass-drum",
+            "name": "большой барабан",
+            "at": 486.0,
+            "until": 489.0,
+            "confidence": 0.508,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 463.5,
+            "until": 468.0,
+            "confidence": 0.433,
+            "in_catalog": false
+          },
+          {
+            "key": "snare-drum",
+            "name": "малый барабан",
+            "at": 477.0,
+            "until": 481.5,
+            "confidence": 0.332,
+            "in_catalog": false
+          },
+          {
+            "key": "snare-drum",
+            "name": "малый барабан",
+            "at": 472.5,
+            "until": 475.5,
+            "confidence": 0.245,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 481.5,
+            "until": 484.5,
+            "confidence": 0.196,
+            "in_catalog": false
           }
         ]
       },
@@ -2438,12 +5854,12 @@
         "regular": true,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "tabla",
+            "name": "табла",
             "at": 508.5,
             "until": 532.53,
-            "confidence": 0.07,
-            "in_catalog": true
+            "confidence": 0.484,
+            "in_catalog": false
           }
         ]
       },
@@ -2458,12 +5874,12 @@
         "regular": true,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "tabla",
+            "name": "табла",
             "at": 532.53,
             "until": 552.89,
-            "confidence": 0.07,
-            "in_catalog": true
+            "confidence": 0.484,
+            "in_catalog": false
           }
         ]
       },
@@ -2478,12 +5894,12 @@
         "regular": false,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "tabla",
+            "name": "табла",
             "at": 552.89,
-            "until": 565.5,
-            "confidence": 0.07,
-            "in_catalog": true
+            "until": 564.0,
+            "confidence": 0.484,
+            "in_catalog": false
           }
         ]
       },
@@ -2498,12 +5914,12 @@
         "regular": null,
         "labels": [
           {
-            "key": "darbuka",
-            "name": "Дарбука",
+            "key": "cymbals",
+            "name": "тарелки",
             "at": 567.0,
             "until": 573.0,
-            "confidence": 0.06,
-            "in_catalog": true
+            "confidence": 0.784,
+            "in_catalog": false
           }
         ]
       }
