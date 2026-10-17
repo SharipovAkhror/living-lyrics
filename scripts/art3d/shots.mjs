@@ -13,7 +13,7 @@ const out = 'work/shots/t6';
 const port = 4179;
 const base = `http://127.0.0.1:${port}`;
 const instruments = ['daf', 'oud'];
-const styles = ['engraving', 'materials'];
+const styles = ['realistic'];
 const themes = ['light', 'dark'];
 
 mkdirSync(out, { recursive: true });
@@ -182,7 +182,7 @@ try {
       ];
       for (const [label, browser, device] of contexts) {
         const context = await browser.newContext({ ...device, colorScheme: theme });
-        await applySettings(context, theme, 'engraving', 'off');
+        await applySettings(context, theme, 'realistic', 'off');
         const page = await context.newPage();
         watch(page);
         await page.goto(`${base}/instruments`, { waitUntil: 'networkidle' });
@@ -200,7 +200,7 @@ try {
   for (const theme of themes) {
     for (const key of instruments) {
       const left = `${out}/svg-desktop-chromium-${theme}-${key}.png`;
-      const right = `${out}/desktop-chromium-${theme}-engraving-${key}.png`;
+      const right = `${out}/desktop-chromium-${theme}-realistic-${key}.png`;
       const file = `${out}/compare-desktop-${theme}-${key}.png`;
       await pair(chromiumBrowser, theme, left, right, file);
       console.log(file);
@@ -208,7 +208,7 @@ try {
   }
 
   const fallbackContext = await chromiumBrowser.newContext({ ...desktop, colorScheme: 'light' });
-  await applySettings(fallbackContext, 'light', 'engraving', 'off');
+  await applySettings(fallbackContext, 'light', 'realistic', 'off');
   const fallbackPage = await fallbackContext.newPage();
   watch(fallbackPage);
   await fallbackPage.goto(`${base}/instruments`, { waitUntil: 'networkidle' });
@@ -217,7 +217,7 @@ try {
   await fallbackPage.waitForTimeout(800);
   const fallbackReady = await fallbackPage.locator('[data-instrument="daf"][data-ready="1"]').count();
   const fallbackSvg = await fallbackArt.locator('svg').count();
-  const fallbackFile = `${out}/desktop-chromium-light-engraving-daf-motion-off.png`;
+  const fallbackFile = `${out}/desktop-chromium-light-realistic-daf-motion-off.png`;
   await fallbackPage.locator('article.ig-card:has([data-instrument="daf"])').screenshot({ path: fallbackFile });
   console.log(fallbackFile, { ready: fallbackReady, svg: fallbackSvg });
   await fallbackContext.close();
@@ -248,7 +248,7 @@ try {
     hasTouch: true,
     colorScheme: 'light',
   });
-  await applySettings(benchContext, 'light', 'engraving', 'full');
+  await applySettings(benchContext, 'light', 'realistic', 'full');
   const benchPage = await benchContext.newPage();
   watch(benchPage);
   await benchPage.goto(`${base}/instruments?t6bench=1`, { waitUntil: 'networkidle' });

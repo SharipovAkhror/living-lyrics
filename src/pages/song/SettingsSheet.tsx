@@ -27,8 +27,7 @@ const THEME_NAME: Record<ThemePref, string> = { auto: 'Как в системе'
 const MOTION_NAME: Record<MotionPref, string> = { full: 'Полная', calm: 'Спокойная', off: 'Без анимации' };
 const STYLE_NAME: Record<InstrumentStyle, string> = {
   drawing: 'Рисунок',
-  engraving: 'Объём · гравюра',
-  materials: 'Объём · материалы',
+  realistic: 'Реалистичный',
 };
 const ALIGN_NAME: Record<TextAlign, string> = { center: 'По центру', edge: 'По краю' };
 const ENTER_NAME: Record<LineEntrance, string> = { flow: 'Потоком', script: 'По письму', settle: 'На месте' };
@@ -226,16 +225,15 @@ export function SettingsSheet({
       )}
 
       {page === 'instruments' && (
-        <Group footer="На странице песни по умолчанию рисунок. Объём включает модель дафа и уда. При уменьшении движения, без WebGL или на слабом устройстве остаётся рисунок. В галерее даф и уд показываются объёмом.">
-          <Choice label="Стиль" hint="Рисунок — гравюра линией. Объём — та же сцена, другой вид.">
+        <Group footer="На странице песни по умолчанию рисунок. Реалистичный вид — объём дафа и уда со светом и материалами; у остальных инструментов остаётся рисунок, пока для них нет модели. При уменьшении движения, без WebGL или на слабом устройстве остаётся рисунок.">
+          <Choice label="Стиль" hint="Рисунок — гравюра линией. Реалистичный — та же сцена, объём со светом.">
             <Segmented
               className="seg--lines"
               label="Инструменты"
               value={settings.instrumentStyle}
               options={[
                 { value: 'drawing', label: 'рисунок' },
-                { value: 'engraving', label: 'объём · гравюра' },
-                { value: 'materials', label: 'объём · материалы' },
+                { value: 'realistic', label: 'реалистичный' },
               ]}
               onChange={(v) => setSettings({ instrumentStyle: v })}
             />
