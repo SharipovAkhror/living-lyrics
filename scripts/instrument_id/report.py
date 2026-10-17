@@ -59,6 +59,17 @@ def _song_block(slug: str) -> list[str]:
     return lines
 
 
+def _kept_vision(existing: str) -> list[str] | None:
+    """The runner has no local contact sheet. Keep the self-test already written into the report."""
+    marker = "## Глаза"
+    if marker not in existing:
+        return None
+    rest = existing.split(marker, 1)[1]
+    next_heading = rest.find("\n## ")
+    body = rest if next_heading < 0 else rest[:next_heading]
+    return [marker + body.rstrip(), ""]
+
+
 def _vision_block() -> list[str]:
     score_path = WORK / "vision-selftest" / "score.json"
     lines = ["## Глаза", ""]
@@ -92,6 +103,7 @@ def _vision_block() -> list[str]:
 
 
 def write_report() -> None:
+    existing = EVAL_PATH.read_text(encoding="utf-8") if EVAL_PATH.is_file() else ""
     lines = [
         "# Своё распознавание инструментов",
         "",
@@ -177,7 +189,11 @@ def write_report() -> None:
     lines.append("")
     for slug in SONGS:
         lines.extend(_song_block(slug))
-    lines.extend(_vision_block())
+    if (WORK / "vision-selftest" / "score.json").is_file():
+        lines.extend(_vision_block())
+    else:
+        kept = _kept_vision(existing)
+        lines.extend(kept if kept is not None else _vision_block())
     lines += [
         "## Чего модель по звуку не знает",
         "",

@@ -2,9 +2,16 @@
 # The eye stage is not here: Antigravity is only on the owner's machine.
 # Demucs is not here either: four stems of these lengths do not fit the job.
 # The workflow commits the prediction JSON only, never the decrypted audio.
+# workflow_dispatch is invisible until this file is on the default branch.
+# A push of the weights or of this file on grok/t7b-recognizer starts the job.
 name: instrument-id
 on:
   workflow_dispatch:
+  push:
+    branches: [grok/t7b-recognizer]
+    paths:
+      - ".github/workflows/instrument-id.yml"
+      - "scripts/instrument_id/weights/**"
 permissions:
   contents: write
 concurrency: { group: instrument-id, cancel-in-progress: false }
