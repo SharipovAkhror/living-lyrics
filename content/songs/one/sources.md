@@ -25,6 +25,16 @@
 
 Страница https://play.samaanetwork.net/music/one/ в этой сверке не открывалась. Прежний поимённый список в `docs/analysis/research/one.json`, опиравшийся на неё, снят с утверждения.
 
+## Закрытый набор этой записи
+
+Скрипт распознавания читает отсюда только ключи каталога этой записи и роли `song.json`. Состав 2020 года ниже в набор не входит. Ударные в описании названы без имени барабана — `ensemble`.
+
+- ney
+- violin
+- qanun
+- santur
+- ensemble
+
 ## Запись 2020, другой состав
 
 Удалённая премьера: 29 музыкантов в разных студиях. Страница: https://samiyusuf.art/music/one-2. Полные титры, страница Holland Festival от 4 июля 2020: https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/

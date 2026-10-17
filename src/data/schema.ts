@@ -60,6 +60,18 @@ export type Script = z.infer<typeof SCRIPT>;
 
 const seconds = z.number().min(0);
 
+/**
+ * One instrument entering during a section. `at` and `until` are seconds from the start of the
+ * recording, and both fall inside the section. Order in the array is the order of appearance.
+ * Omit `until` when the instrument keeps playing until the section ends.
+ */
+export const InstrumentEntrySchema = z.object({
+  key: z.string().min(1),
+  at: seconds,
+  until: seconds.optional(),
+});
+export type InstrumentEntry = z.infer<typeof InstrumentEntrySchema>;
+
 /** A sung word. `s`/`e` are seconds from the start of the audio file. */
 export const WordSchema = z.object({
   w: z.string().min(1),
@@ -126,6 +138,12 @@ const SectionBase = z.object({
   label: z.string().min(1),
   comment: z.string().optional(),
   flags: z.array(FLAG).optional(),
+  /**
+   * Who starts playing when, inside this section. On an instrumental section this is the entrance
+   * order (the small screen reveals drawings in this order). On a vocal section it is accompaniment,
+   * not the singer — the singer stays in `voice`. Keys come from the instrument catalogue.
+   */
+  entries: z.array(InstrumentEntrySchema).optional(),
 });
 
 export const VocalSectionSchema = SectionBase.extend({
