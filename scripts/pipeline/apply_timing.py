@@ -11,8 +11,9 @@ Copy it out of a sandbox with `python3 scripts/pipeline/sandbox/dump.py work/<sl
 
 A line is updated only when its words are still the ones that were aligned (same fingerprint and
 word count); otherwise it is skipped and listed, because another edit changed the text since.
-Only word s/e, line flags (timing-draft), section start/end/flags and song.json timing change;
-the rest of the files stays byte for byte.
+Only word s/e, line flags (timing-draft) and song.json timing change. Section bounds are left
+alone unless --sections is passed (another task owns the structure). The rest of the files stays
+byte for byte. align.py keeps every line timing-draft; clearing that flag is qa_sync.py --apply.
 """
 from __future__ import annotations
 
@@ -23,7 +24,7 @@ import timing as T
 from common import dump_json, load_json, song_dir
 
 
-def main(slug: str, path: str, dry: bool) -> int:
+def main(slug: str, path: str, dry: bool, sections: bool) -> int:
     data = json.loads(open(path, encoding='utf-8').read())
     if data.get('slug') != slug:
         raise SystemExit(f'{path}: slug {data.get("slug")} ≠ {slug}')
@@ -43,11 +44,14 @@ def main(slug: str, path: str, dry: bool) -> int:
             w['s'], w['e'] = s, e
         T.set_flag(line, 'timing-draft', bool(rec['draft']))
         applied.append(lid)
-    secs = {s['id']: s for s in lyrics['sections']}
-    for sid, (start, end, draft) in data.get('sections', {}).items():
-        if sid in secs:
-            secs[sid]['start'], secs[sid]['end'] = start, end
-            T.set_flag(secs[sid], 'timing-draft', bool(draft) if 'timing-draft' in secs[sid].get('flags', []) else False)
+    if sections:
+        secs = {s['id']: s for s in lyrics['sections']}
+        for sid, rec in data.get('sections', {}).items():
+            start, end, draft = rec[0], rec[1], rec[2] if len(rec) > 2 else False
+            if sid in secs:
+                secs[sid]['start'], secs[sid]['end'] = start, end
+                if 'timing-draft' in secs[sid].get('flags', []) or draft:
+                    T.set_flag(secs[sid], 'timing-draft', bool(draft))
     fixes = T.enforce_order(lyrics)
     if song['timing'].get('status') != 'verified' and data.get('timing'):
         song['timing'] = data['timing']
@@ -66,4 +70,4 @@ if __name__ == '__main__':
     a = [x for x in sys.argv[1:] if not x.startswith('--')]
     if len(a) != 2:
         raise SystemExit(__doc__)
-    sys.exit(main(a[0], a[1], '--dry-run' in sys.argv))
+    sys.exit(main(a[0], a[1], '--dry-run' in sys.argv, '--sections' in sys.argv))

@@ -37,8 +37,14 @@ jobs:
       AUDIO_KEY: ${{ secrets.AUDIO_KEY }}
       PIP_DISABLE_PIP_VERSION_CHECK: '1'
       PYTHONUNBUFFERED: '1'
+      OMP_NUM_THREADS: '4'
+      MKL_NUM_THREADS: '4'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_TELEMETRY: '1'
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
 
       - name: Check the AUDIO_KEY secret
         run: |
@@ -115,6 +121,7 @@ jobs:
           sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
           python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           python -m pip install -r scripts/pipeline/requirements.txt
+          python -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available())"
 
       - name: Run stages
         id: run

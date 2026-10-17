@@ -1,7 +1,7 @@
 """Stage 5: measure word times by forced alignment of the known text on the vocal stem.
 
     python3 scripts/pipeline/align.py <slug> [--anchors global|sections|draft] [--margin 6]
-                                       [--lines id,id…] [--audio PATH] [--keep-sections]
+                                       [--lines id,id…] [--audio PATH] [--move-sections]
                                        [--dry-run] [--force]
 
 Engine: torchaudio MMS_FA (wav2vec2 CTC aligner trained on 1100+ languages). Its alphabet is Latin
@@ -23,16 +23,17 @@ How it works:
    into the next word; a line's first word may move back to the onset of the phrase (≤ 0.25 s).
 5. Confidence per line: `score` (mean posterior of its letters), `gap` (log-likelihood per frame
    between the best unconstrained path and the forced one over the line: near 0 when the text is
-   what is sung) and `agree` (distance to the anchor pass). Three outcomes:
-     good  — written, `timing-draft` removed;
-     weak  — measured and plausible (score ≥ 0.2, passes within 2 s): written, flag kept;
-     draft — the text was not found (wrong words, a verse that is not sung, a choir the model does
-             not hear): the position would be arbitrary, so the draft times stay, moved or squeezed
-             between the measured neighbours. Fix the text and run again.
+   what is sung) and `agree` (distance to the anchor pass). Three outcomes, recorded in the report:
+     good  — the text was found; a second aligner is run for solo lines;
+     weak  — measured and plausible, but not sure enough to prove;
+     draft — the text was not found (wrong words, a verse that is not sung): the draft times stay,
+             fitted between the measured neighbours.
+   align.py does not decide the flag. It marks every line `timing-draft` and leaves
+   `timing.status` at `draft`. qa_sync.py --apply clears the flag only where the two aligners and
+   the vocal attacks agree within 0.1 s, and only then may set `timing.status` to `aligned`.
 
-Writes lyrics.json (word s/e, line flags, section bounds unless --keep-sections), song.json timing,
-work/<slug>/align-report.json (per word: romanisation, times, score) and work/<slug>/timing.json —
-a compact copy of the result for apply_timing.py when the run happens on another machine.
+Writes lyrics.json (word s/e and the timing-draft flag; section bounds only with --move-sections),
+song.json timing (status stays draft), work/<slug>/align-report.json and work/<slug>/timing.json.
 `--dry-run` writes only the two work files.
 """
 from __future__ import annotations
@@ -61,10 +62,9 @@ SECTION_PAD = 15.0       # --anchors sections: search this far around the drafte
 MAX_EXTEND = 4.0         # a word end may follow the voice this far
 MAX_TOKEN = 0.5          # longest stretch one letter may hold in the CTC path
 MAX_WORD_SPAN = 2.5      # longest span from a word's first to its last letter
-SNAP_WIN = 0.08          # a word start moves to a clear vocal onset at most this far …
-SNAP_MIN = 0.5           # … if the onset is at least this strong (1.0 = 95th percentile of the song)
+SNAP_WIN = 0.10          # a word start moves to a clear vocal onset at most this far (the proof gate)
 ENGINE_AGREE = 0.10      # the second aligner must put the word start this close to the first
-# A line is "good" when all three hold. Calibrated on i-have-come-alive (see docs/methodology/05-alignment.md).
+# A line is "good" when all three hold. These are gates, not a fit to one recording.
 GOOD_SCORE = 0.30
 GOOD_GAP = 1.2
 GOOD_AGREE = 0.5
@@ -77,11 +77,11 @@ KEEP_AGREE = 2.0
 # ---------------------------------------------------------------- text → letters
 
 def normalise(text: str) -> str:
-    """Latin letters and apostrophe only, lower case: the MMS_FA alphabet."""
-    text = text.lower().replace('ı', 'i').replace('ə', 'e').replace('ß', 'ss').replace('æ', 'ae').replace('ø', 'o')
+    """Latin letters only, lower case. MMS_FA has no apostrophe, so «I've» becomes «ive»."""
+    text = text.lower().replace('ı', 'i').replace('ə', 'e').replace('ß', 'ss').replace('æ', 'ae').replace('ø', 'o').replace('œ', 'oe')
     text = unicodedata.normalize('NFKD', text)
     text = ''.join(c for c in text if not unicodedata.combining(c))
-    return re.sub(r"[^a-z']", '', text).strip("'")
+    return re.sub(r'[^a-z]', '', text)
 
 
 class Romaniser:
@@ -110,7 +110,10 @@ class Unit:
         self.word_of: list[int] = []      # word index of each token
         for wi, r in enumerate(roman):
             for ch in r:
-                self.tokens.append(vocab[ch])
+                idx = vocab.get(ch)
+                if idx is None:
+                    continue
+                self.tokens.append(idx)
                 self.word_of.append(wi)
         ws = line['words']
         self.draft = (ws[0]['s'], ws[-1]['e'])
@@ -199,7 +202,7 @@ def align_window(lp: np.ndarray, t0: int, t1: int, units: list[Unit]) -> list[di
         words = []
         for wi in range(len(u.roman)):
             ks = [base + j for j, w in enumerate(u.word_of) if w == wi]
-            if not ks:
+            if not ks or int(first[ks[0]]) < 0:
                 words.append(None)
                 continue
             frames = np.flatnonzero(np.isin(tok_of_frame, ks))
@@ -207,8 +210,8 @@ def align_window(lp: np.ndarray, t0: int, t1: int, units: list[Unit]) -> list[di
             # over audio that belongs to nothing in the text. Keep its head; a real melisma comes
             # back through the voice-activity extension.
             f1 = min(int(last[ks[-1]]) + 1, int(first[ks[0]]) + int(MAX_WORD_SPAN * FPS))
-            words.append({'f0': t0 + int(first[ks[0]]), 'f1': t0 + f1,
-                          'score': float(np.exp(on[frames]).mean())})
+            score = float(np.exp(on[frames]).mean()) if len(frames) else 0.0
+            words.append({'f0': t0 + int(first[ks[0]]), 'f1': t0 + f1, 'score': score})
         lo = first[base]
         hi = max([w['f1'] - t0 for w in words if w] or [last[base + len(u.tokens) - 1] + 1])
         gap = float((best[lo:hi] - on[lo:hi]).mean()) if hi > lo else 99.0
@@ -284,32 +287,28 @@ def line_pass(lp: np.ndarray, units: list[Unit], anchors: dict, margin: float) -
 
 
 def snap_onsets(sig, times: list[list], units: list[Unit], measured: list[bool]) -> list[list[float | None]]:
-    """Move every measured word start to the strongest vocal onset within ± SNAP_WIN, when that onset
-    is clear: a local maximum of the onset curve (qa_sync's mix of level rise and spectral flux) of at
-    least SNAP_MIN (1.0 = the recording's 95th percentile). Returns the shift per word, None where
-    no clear onset was found — such a word is not confirmed by the audio and cannot be "proven"."""
-    comb = sum(Q.ONSET_W[k] * sig.curves[k] for k in Q.ONSET_W) / sum(Q.ONSET_W.values())
-    n = len(comb)
-    win = int(round(SNAP_WIN / F.HOP))
+    """Move a measured word start onto a clear vocal attack within SNAP_WIN.
+
+    The attack list is the same one qa_sync measures against, so a snapped word then sits on the
+    attack (distance 0) and an attack further than SNAP_WIN is left for the check to reject.
+    Returns the shift per word, None where no attack was close enough."""
+    peaks = Q.onset_peak_times(sig, min_height=Q.PEAK_HEIGHT)
     out: list[list[float | None]] = []
     prev = None  # previous word of the song, [s, e]
     for ui, (u, ws) in enumerate(zip(units, times)):
         dts: list[float | None] = [None] * len(ws)
         for wi, w in enumerate(ws):
-            if measured[ui] and u.roman[wi]:
-                c = int(round(w[0] / F.HOP))
-                lo, hi = max(1, c - win), min(n - 1, c + win + 1)
-                if hi > lo:
-                    k = lo + int(np.argmax(comb[lo:hi]))
-                    t = k * F.HOP
-                    clear = comb[k] >= SNAP_MIN and comb[k] >= comb[k - 1] and comb[k] >= comb[k + 1]
-                    if clear and t > (prev[0] + 0.05 if prev else 0.0):
-                        dts[wi] = t - w[0]
-                        w[0] = t
-                        if w[1] < t + 0.04:
-                            w[1] = t + 0.04
-                        if prev and prev[1] > t:
-                            prev[1] = max(prev[0] + 0.02, t)
+            if measured[ui] and u.roman[wi] and len(peaks):
+                dist = peaks - w[0]
+                k = int(np.argmin(np.abs(dist)))
+                t = float(peaks[k])
+                if abs(t - w[0]) <= SNAP_WIN and t > (prev[0] + 0.05 if prev else 0.0):
+                    dts[wi] = t - w[0]
+                    w[0] = t
+                    if w[1] < t + 0.04:
+                        w[1] = t + 0.04
+                    if prev and prev[1] > t:
+                        prev[1] = max(prev[0] + 0.02, t)
             prev = w
         out.append(dts)
     return out
@@ -357,10 +356,10 @@ def main() -> None:
     ap.add_argument('--margin', type=float, default=None, help='search margin, s (default 6; 10 with --anchors draft)')
     ap.add_argument('--lines', default='', help='comma-separated line ids to rewrite (default: all)')
     ap.add_argument('--audio', default=None, help='audio to align on (default work/<slug>/stems/vocals.wav)')
-    ap.add_argument('--keep-sections', action='store_true', help='do not move section bounds')
+    ap.add_argument('--move-sections', action='store_true', help='move section bounds to the measured words (off by default)')
     ap.add_argument('--dry-run', action='store_true', help='write only work/<slug>/align-report.json and timing.json')
     ap.add_argument('--force', action='store_true', help='overwrite even when song.json timing is "verified"')
-    ap.add_argument('--second', default='mms1b', help='second aligner for word proof: mms1b | none (default mms1b)')
+    ap.add_argument('--second', default='auto', help='second aligner: auto | whisperx | mms1b | none (default auto)')
     ap.add_argument('--proof', choices=['agree', 'strict'], default='agree',
                     help='agree: two aligners within 100 ms + line on the voice; strict: also a clear onset at every word')
     args = ap.parse_args()
@@ -448,12 +447,12 @@ def main() -> None:
             e += F.HOP
         w[1] = max(w[1], min(e, limit))
 
-    # Second opinion on the lines the main aligner placed confidently.
+    # Second opinion on solo lines the main aligner placed confidently. Choir and duet lines are
+    # never proven, so the heavy model is not run for them.
     jobs = [{'id': u.id, 'lang': u.line['lang'], 'script': u.line['script'], 'words': [w['w'] for w in u.line['words']],
              't0': ws[0][0] - 1.0, 't1': ws[-1][1] + 1.0}
-            for u, ws, c in zip(units, times, conf) if c['status'] == 'good']
-    second = engines.load(args.second) if jobs else None
-    second_starts = second.word_starts(x, jobs) if second else {}
+            for u, ws, c in zip(units, times, conf) if c['status'] == 'good' and T.is_solo(u.sec, u.line)]
+    second_starts, second_name = engines.align_jobs(args.second, x, jobs)
 
     # The sync check on the final times, line by line.
     qa = Q.check_lines(sig, [[{'w': w['w'], 's': t[0], 'e': t[1]} for w, t in zip(u.line['words'], ws)] for u, ws in zip(units, times)],
@@ -463,6 +462,8 @@ def main() -> None:
     for u, p, ws, c, raw, odt, q in zip(units, passes, times, conf, raw_starts, onset_dt, qa):
         status, scores, score, gap, agree = c['status'], c['scores'], c['score'], c['gap'], c['agree']
         s2 = second_starts.get(u.id)
+        if s2 is not None and len(s2) != len(u.line['words']):
+            s2 = None
         words_out, proven_n, letters_n = [], 0, 0
         for wi, (w, rm, t, sc) in enumerate(zip(u.line['words'], u.roman, ws, scores)):
             has_letters = bool(rm)
@@ -491,6 +492,7 @@ def main() -> None:
             placed.add(u.id)
         report_lines.append({
             'id': u.id, 'section': u.sec['id'], 'lang': u.line['lang'], 'text': T.line_text(u.line),
+            'solo': T.is_solo(u.sec, u.line), 'second': second_name.get(u.id),
             'status': status, 'level': level, 'conf': round(proven_n / letters_n, 2) if letters_n else 0.0,
             'qa': q['verdict'], 'qa_offset': q['offset'], 'method': p['method'],
             'window': [round(p['window'][0], 2), round(p['window'][1], 2)],
@@ -500,16 +502,17 @@ def main() -> None:
             'score': round(score, 3), 'gap': round(gap, 3), 'words': words_out,
         })
 
-    # Apply to the data: only lines proven word by word lose `timing-draft`.
+    # Times are written for every requested line. The flag stays on: qa_sync.py --apply is the
+    # only step that may clear timing-draft, and only for a line it can prove.
     level_of = {r['id']: r['level'] for r in report_lines}
     for u, ws in zip(units, times):
         if only and u.id not in only:
             continue
         for w, t in zip(u.line['words'], ws):
             w['s'], w['e'] = T.r2(t[0]), T.r2(t[1])
-        T.set_flag(u.line, 'timing-draft', level_of[u.id] != 'word')
+        T.set_flag(u.line, 'timing-draft', True)
     fixes = T.enforce_order(lyrics)
-    section_notes = [] if args.keep_sections else T.fit_sections(lyrics, song['duration'], placed)
+    section_notes = T.fit_sections(lyrics, song['duration'], placed) if args.move_sections else []
 
     n, n_good = len(units), len(good)
     n_weak = sum(r['status'] == 'weak' for r in report_lines)
@@ -524,7 +527,8 @@ def main() -> None:
         'words': sum(len(u.line['words']) for u in units),
         'words_in_good_lines': len(ws_good),
         'words_proven': sum(w['proven'] for w in ws_good),
-        'second_engine': second.name if second else None,
+        'second_engine': args.second,
+        'second_engines_used': sorted(set(second_name.values())),
         'second_compared': int(len(pair)),
         'second_within_100ms': int((pair <= ENGINE_AGREE).sum()) if len(pair) else 0,
         'second_median_diff': round(float(np.median(pair)), 3) if len(pair) else None,
@@ -539,20 +543,21 @@ def main() -> None:
         'engine': 'torchaudio MMS_FA + uroman, CTC Viterbi', 'second': summary['second_engine'],
         'anchors': args.anchors, 'margin': margin,
         'thresholds': {'score': GOOD_SCORE, 'gap': GOOD_GAP, 'agree': GOOD_AGREE, 'keep_score': KEEP_SCORE,
-                       'keep_agree': KEEP_AGREE, 'snap_win': SNAP_WIN, 'snap_min': SNAP_MIN, 'engine_agree': ENGINE_AGREE},
+                       'keep_agree': KEEP_AGREE, 'snap_win': SNAP_WIN, 'snap_min': Q.PEAK_HEIGHT, 'engine_agree': ENGINE_AGREE},
         'summary': summary, 'sections': section_notes, 'lines': report_lines,
     }
     wd = work_dir(slug)
     (wd / 'align-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding='utf-8')
 
-    timing_note = (f'align.py {t_start:%Y-%m-%d}: строк {n}; пословно доказано {levels["word"]}, '
-                   f'на уровне строки {levels["line"]}, не подтверждено {levels["none"]} (из них {n_draft} не найдены в записи '
-                   f'и остались черновыми). Всё, что не доказано пословно, помечено timing-draft. '
-                   f'Отчёт: docs/analysis/{slug}-qa.md.')
-    new_timing = {'status': 'aligned' if n_good else song['timing']['status'], 'method': 'mms-fa', 'notes': timing_note}
+    timing_note = (f'align.py {t_start:%Y-%m-%d}: времена слов записаны, все строки помечены timing-draft. '
+                   f'Выравниватель уверен в {n_good} из {n}, не нашёл текст в {n_draft}. '
+                   f'Статус aligned ставит только qa_sync.py --apply, если сольные строки доказаны. '
+                   f'Отчёт выравнивания: work/{slug}/align-report.json.')
+    # status stays draft until qa_sync proves lines. method records that these times came from MMS_FA.
+    new_timing = {'status': 'draft', 'method': 'mms-fa', 'notes': timing_note}
     compact = {
         'slug': slug, 'created': report['created'], 'timing': new_timing,
-        'lines': {u.id: {'sig': T.text_sig(u.line), 'draft': level_of[u.id] != 'word', 'level': level_of[u.id],
+        'lines': {u.id: {'sig': T.text_sig(u.line), 'draft': True, 'level': level_of[u.id],
                          'w': [[w['s'], w['e']] for w in u.line['words']]} for u in units if not only or u.id in only},
         'sections': {s['id']: [s['start'], s['end'], 'timing-draft' in s.get('flags', [])] for s in lyrics['sections']},
     }
@@ -568,8 +573,8 @@ def main() -> None:
     print(f"\nСтрок: {n}. Выравниватель уверен: {n_good}, не уверен: {n_weak}, не нашёл текст (черновик): {n_draft}.")
     print(f"Доказано пословно: {levels['word']} строк, только построчно: {levels['line']}, не подтверждено: {levels['none']}. "
           f"Слов доказано: {summary['words_proven']} из {summary['words_in_good_lines']} в уверенных строках.")
-    if second:
-        print(f"Второй выравниватель {second.name}: сравнено {summary['second_compared']} слов, "
+    if second_name:
+        print(f"Второй выравниватель ({', '.join(summary['second_engines_used'])}): сравнено {summary['second_compared']} слов, "
               f"в пределах {ENGINE_AGREE * 1000:.0f} мс — {summary['second_within_100ms']}, медиана расхождения {summary['second_median_diff']} с.")
     print(f"Атаки голоса: начало сдвинуто к атаке у {summary['onset_snapped']} слов, медиана сдвига {summary['onset_median_shift']} с.")
     for r in report_lines:

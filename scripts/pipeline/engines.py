@@ -1,25 +1,34 @@
-"""Second opinions for align.py: independent aligners that measure the word starts of a line again.
+"""Second opinions for align.py: an aligner that measures word starts again, independently of MMS_FA.
 
-A word is "proven" only when the main aligner (torchaudio MMS_FA on romanised text), a second
-aligner and the vocal onsets agree (see align.py). This module holds the second aligners.
+A solo line is proven only when MMS_FA (romanised text, torchaudio), this second aligner and the
+vocal onsets agree within 0.1 s (see qa_sync.py). This module holds the second aligners.
 
-Interface — to add an engine, write a class with
+Interface of an engine:
     name: str
     def word_starts(self, x: np.ndarray, jobs: list[dict]) -> dict[str, list[float | None]]
-where x is mono 16 kHz audio and every job is
-    {'id': line id, 'lang': 'fa', 'script': 'Arab', 'words': ['مرده', 'بدم', …], 't0': s, 't1': s}
-(t0/t1 — the audio window to search, seconds). Return the start of every word in seconds, or None
-for a word the engine cannot place (letters outside its alphabet). Lines it cannot handle at all
-(no model for the language) are simply left out of the result. Register the class in ENGINES.
+x is mono 16 kHz. Every job is
+    {'id', 'lang', 'script', 'words': [...], 't0': seconds, 't1': seconds}
+Return the start of every word in seconds, or None for a word the engine cannot place.
+Lines the engine cannot handle are left out of the result.
 
-mms1b — facebook/mms-1b-all (wav2vec2, 1 B parameters, one adapter per language) through
-transformers. Different weights, size and alphabet from MMS_FA: it reads the native script
-(Arabic and Persian letters, Turkish ç ğ ı ö ş ü) instead of uroman Latin, so its mistakes are
-largely independent. CPU: about 1 s per second of audio on 4 cores; only lines that the main
-aligner placed confidently are measured. Model: 3.9 GB download, cached by Hugging Face.
+whisperx — the acoustic models WhisperX uses for forced alignment (not the whisperx package:
+that package also transcribes and pulls diarisation, and the text here is already known).
+English, French, German, Spanish and Italian come from torchaudio; Arabic, Persian, Turkish and
+the other languages in WHISPERX_HF come from the same Hugging Face wav2vec2 checkpoints WhisperX
+selects. Different weights from MMS_FA, so the mistakes are largely independent.
+
+mms1b — facebook/mms-1b-all (1 B parameters, one adapter per language) for languages WhisperX
+does not cover but MMS has an adapter for (Azerbaijani, Latin). It reads the native script, not
+uroman. About 3.9 GB. Not used for a language WhisperX already measured.
+
+ctc-forced-aligner's default checkpoint is a conversion of the same MMS_FA weights the primary
+aligner uses, so it is not a second opinion and is not called.
+Medieval German and Ottoman Turkish have no aligner of their own here; those lines stay unproven.
 """
 from __future__ import annotations
 
+import gc
+import os
 import unicodedata
 
 import numpy as np
@@ -28,13 +37,163 @@ from ctc import token_spans, viterbi
 
 SR = 16000
 
-# MMS adapter codes (ISO 639-3, with a script suffix where MMS has several).
-MMS_LANG = {'en': 'eng', 'tr': 'tur', 'ar': 'ara', 'fa': 'fas', 'az': 'azj-script_latin', 'de': 'deu',
-            'es': 'spa', 'la': 'lat', 'ru': 'rus', 'uz': 'uzb-script_latin', 'ur': 'urd-script_arabic',
-            'hi': 'hin', 'fr': 'fra', 'it': 'ita', 'ota': 'tur', 'gmh': 'deu'}
-# Letter variants: if the adapter's alphabet lacks a letter, try its twin.
-TWINS = {'ی': 'ي', 'ي': 'ی', 'ک': 'ك', 'ك': 'ک', 'ى': 'ي', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا', 'ٱ': 'ا',
-         'ة': 'ه', 'ۀ': 'ه', 'ؤ': 'و', 'ئ': 'ي', 'ı': 'i', 'İ': 'i'}
+# WhisperX's tables (m-bain/whisperX whisperx/alignment.py), copied so a missing package
+# cannot change which model a language gets.
+WHISPERX_TORCH = {
+    'en': 'WAV2VEC2_ASR_BASE_960H',
+    'fr': 'VOXPOPULI_ASR_BASE_10K_FR',
+    'de': 'VOXPOPULI_ASR_BASE_10K_DE',
+    'es': 'VOXPOPULI_ASR_BASE_10K_ES',
+    'it': 'VOXPOPULI_ASR_BASE_10K_IT',
+}
+WHISPERX_HF = {
+    'ja': 'jonatasgrosman/wav2vec2-large-xlsr-53-japanese',
+    'zh': 'jonatasgrosman/wav2vec2-large-xlsr-53-chinese-zh-cn',
+    'nl': 'jonatasgrosman/wav2vec2-large-xlsr-53-dutch',
+    'uk': 'Yehor/wav2vec2-xls-r-300m-uk-with-small-lm',
+    'pt': 'jonatasgrosman/wav2vec2-large-xlsr-53-portuguese',
+    'ar': 'jonatasgrosman/wav2vec2-large-xlsr-53-arabic',
+    'ru': 'jonatasgrosman/wav2vec2-large-xlsr-53-russian',
+    'pl': 'jonatasgrosman/wav2vec2-large-xlsr-53-polish',
+    'hu': 'jonatasgrosman/wav2vec2-large-xlsr-53-hungarian',
+    'fi': 'jonatasgrosman/wav2vec2-large-xlsr-53-finnish',
+    'fa': 'jonatasgrosman/wav2vec2-large-xlsr-53-persian',
+    'el': 'jonatasgrosman/wav2vec2-large-xlsr-53-greek',
+    'tr': 'mpoyraz/wav2vec2-xls-r-300m-cv7-turkish',
+    'da': 'saattrupdan/wav2vec2-xls-r-300m-ftspeech',
+    'he': 'imvladikon/wav2vec2-xls-r-300m-hebrew',
+    'vi': 'nguyenvulebinh/wav2vec2-base-vi-vlsp2020',
+    'ko': 'kresnik/wav2vec2-large-xlsr-korean',
+    'ur': 'kingabzpro/wav2vec2-large-xls-r-300m-Urdu',
+    'hi': 'theainerd/Wav2Vec2-large-xlsr-hindi',
+    'cs': 'comodoro/wav2vec2-xls-r-300m-cs-250',
+}
+
+# MMS-1b adapter codes. Only languages whose adapter matches the language: no substitution
+# of modern German for medieval German, or Turkish for Ottoman.
+MMS_LANG = {
+    'en': 'eng', 'tr': 'tur', 'ar': 'ara', 'fa': 'fas', 'az': 'azj-script_latin', 'de': 'deu',
+    'es': 'spa', 'la': 'lat', 'ru': 'rus', 'uz': 'uzb-script_latin', 'ur': 'urd-script_arabic',
+    'hi': 'hin', 'fr': 'fra', 'it': 'ita',
+}
+TWINS = {
+    'ی': 'ي', 'ي': 'ی', 'ک': 'ك', 'ك': 'ک', 'ى': 'ي', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا', 'ٱ': 'ا',
+    'ة': 'ه', 'ۀ': 'ه', 'ؤ': 'و', 'ئ': 'ي', 'ı': 'i', 'İ': 'i',
+}
+
+
+def preferred(lang: str) -> list[str]:
+    """The one independent engine for this language. Empty when none exists.
+
+    WhisperX where it has a checkpoint. MMS-1b only where WhisperX has nothing (Azerbaijani,
+    Latin). Not both: a line WhisperX could not place stays unproven, and the 1 B model is not
+    loaded as a fallback on the same runner.
+    """
+    if lang in WHISPERX_TORCH or lang in WHISPERX_HF:
+        return ['whisperx']
+    if lang in MMS_LANG:
+        return ['mms1b']
+    return []
+
+
+def _threads() -> None:
+    import torch
+
+    torch.set_num_threads(os.cpu_count() or 4)
+
+
+def _log_softmax(x: np.ndarray) -> np.ndarray:
+    """WhisperX applies log_softmax to both torchaudio and Hugging Face emissions (they are logits)."""
+    m = x.max(axis=-1, keepdims=True)
+    e = np.exp(x - m)
+    return (x - m) - np.log(e.sum(axis=-1, keepdims=True) + 1e-12)
+
+
+def _lower_vocab(vocab: dict) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for key, idx in vocab.items():
+        if key is None:
+            continue
+        out.setdefault(str(key).lower(), int(idx))
+    return out
+
+
+def _drop_marks(word: str) -> str:
+    word = unicodedata.normalize('NFC', word)
+    return ''.join(ch for ch in word if unicodedata.category(ch) not in ('Mn', 'Cf'))
+
+
+def encode_chars(word: str, vocab: dict[str, int], skip: set[int]) -> list[int]:
+    """Letter ids for one word. Unknown letters are skipped; too many skips and the word is refused."""
+    chars = []
+    for ch in _drop_marks(word):
+        if ch.isspace() or ch in '.,;:!?…—–«»"“”()[]':
+            continue
+        chars.append(ch)
+    ids: list[int] = []
+    letters = 0
+    for ch in chars:
+        letters += 1
+        hit = None
+        bare = unicodedata.normalize('NFD', ch)[0]
+        for cand in (ch, ch.lower(), ch.upper(), bare, bare.lower(), bare.upper(), TWINS.get(ch)):
+            if cand is None or cand not in vocab:
+                continue
+            idx = vocab[cand]
+            if idx in skip:
+                continue
+            hit = idx
+            break
+        if hit is not None:
+            ids.append(hit)
+    if letters and len(ids) * 2 < letters:
+        return []
+    return ids
+
+
+def line_tokens(words: list[str], vocab: dict[str, int], skip: set[int], blank: int) -> tuple[list[int], list[int]]:
+    """Letter ids for a line, and the word index of each id.
+
+    These models emit `|` between words (WhisperX puts that token in the path). A word start is
+    the first letter after the bar, so the bar itself has owner −1 and does not time a word.
+    """
+    boundary = vocab.get('|')
+    insert = boundary is not None and boundary != blank
+    tokens: list[int] = []
+    owner: list[int] = []
+    started = False
+    for wi, word in enumerate(words):
+        ids = encode_chars(word, vocab, skip)
+        if not ids:
+            continue
+        if insert and started:
+            tokens.append(int(boundary))
+            owner.append(-1)
+        tokens.extend(ids)
+        owner.extend([wi] * len(ids))
+        started = True
+    return tokens, owner
+
+
+def _place(first: np.ndarray, owner: list[int], starts: list[float | None], t0: float, n_frames: int, span: float) -> list[float | None]:
+    """Map token frames to word starts. `span` is the window length in seconds."""
+    scale = span / n_frames if n_frames else 0.02
+    for k, wi in enumerate(owner):
+        if wi < 0 or starts[wi] is not None or int(first[k]) < 0:
+            continue
+        starts[wi] = t0 + float(first[k]) * scale
+    return starts
+
+
+def align_window(lp: np.ndarray, tokens: list[int], owner: list[int], n_words: int, blank: int, t0: float, span: float) -> list[float | None] | None:
+    if not tokens or lp.shape[0] == 0:
+        return None
+    path = viterbi(lp, tokens, blank)
+    if path is None:
+        return None
+    first, _ = token_spans(path, len(tokens))
+    starts: list[float | None] = [None] * n_words
+    return _place(first, owner, starts, t0, lp.shape[0], span)
 
 
 class Mms1b:
@@ -42,28 +201,18 @@ class Mms1b:
     model_id = 'facebook/mms-1b-all'
 
     def __init__(self) -> None:
-        import os
-
         import torch
         from transformers import AutoProcessor, Wav2Vec2ForCTC
 
-        torch.set_num_threads(os.cpu_count() or 4)
+        _threads()
         self.torch = torch
         self.proc = AutoProcessor.from_pretrained(self.model_id)
         self.model = Wav2Vec2ForCTC.from_pretrained(self.model_id).eval()
 
-    def letters(self, word: str, vocab: dict[str, int]) -> list[int]:
-        out = []
-        for ch in unicodedata.normalize('NFC', word.lower()):
-            if unicodedata.category(ch) in ('Mn', 'Cf'):  # harakat, ZWNJ
-                continue
-            if ch in vocab:
-                out.append(vocab[ch])
-            elif TWINS.get(ch) in vocab:
-                out.append(vocab[TWINS[ch]])
-            elif unicodedata.normalize('NFD', ch)[0] in vocab:
-                out.append(vocab[unicodedata.normalize('NFD', ch)[0]])
-        return out
+    def close(self) -> None:
+        self.model = None
+        self.proc = None
+        gc.collect()
 
     def word_starts(self, x: np.ndarray, jobs: list[dict]) -> dict[str, list[float | None]]:
         out: dict[str, list[float | None]] = {}
@@ -76,48 +225,176 @@ class Mms1b:
             try:
                 self.proc.tokenizer.set_target_lang(code)
                 self.model.load_adapter(code)
-            except Exception as e:  # no adapter for this language: no second opinion
-                print(f'{self.name}: нет адаптера {code} ({e.__class__.__name__}) — строки на этом языке без второго мнения')
+            except Exception as e:
+                print(f'{self.name}: нет адаптера {code} ({e.__class__.__name__}: {e})')
                 continue
             vocab = self.proc.tokenizer.get_vocab()
-            blank = self.proc.tokenizer.pad_token_id
+            blank = int(self.proc.tokenizer.pad_token_id)
+            skip = {blank}
             for j in js:
-                a, b = max(0, int(j['t0'] * SR)), min(len(x), int(j['t1'] * SR))
-                seg = x[a:b]
-                inputs = self.proc(seg, sampling_rate=SR, return_tensors='pt')
-                with self.torch.inference_mode():
-                    logits = self.model(**inputs).logits[0]
-                lp = self.torch.log_softmax(logits, dim=-1).numpy()
-                tokens, owner = [], []
-                for wi, w in enumerate(j['words']):
-                    ls = self.letters(w, vocab)
-                    tokens += ls
-                    owner += [wi] * len(ls)
-                path = viterbi(lp, tokens, blank) if tokens else None
-                if path is None:
-                    continue
-                first, _ = token_spans(path, len(tokens))
-                step = (b - a) / SR / lp.shape[0]
-                starts: list[float | None] = [None] * len(j['words'])
-                for k, wi in enumerate(owner):
-                    if starts[wi] is None:
-                        starts[wi] = a / SR + first[k] * step
-                out[j['id']] = starts
-            print(f'{self.name}: {code} — {len(js)} строк')
+                placed = _one_line(self.torch, self.model, self.proc, x, j, vocab, blank, skip, hf=True)
+                if placed is not None:
+                    out[j['id']] = placed
+            print(f'{self.name}: {code} — {len(js)} строк', flush=True)
         return out
 
 
-ENGINES = {'mms1b': Mms1b}
+class WhisperX:
+    """WhisperX alignment models, one language at a time, released before the next is loaded."""
+
+    name = 'whisperx'
+
+    def __init__(self) -> None:
+        _threads()
+
+    def close(self) -> None:
+        gc.collect()
+
+    def word_starts(self, x: np.ndarray, jobs: list[dict]) -> dict[str, list[float | None]]:
+        out: dict[str, list[float | None]] = {}
+        by_lang: dict[str, list[dict]] = {}
+        for j in jobs:
+            if j['lang'] in WHISPERX_TORCH or j['lang'] in WHISPERX_HF:
+                by_lang.setdefault(j['lang'], []).append(j)
+        for lang, js in by_lang.items():
+            try:
+                if lang in WHISPERX_TORCH:
+                    part = self._torch(x, lang, js)
+                else:
+                    part = self._hf(x, lang, js)
+            except Exception as e:
+                print(f'{self.name}: {lang} не загрузился ({e.__class__.__name__}: {e})')
+                continue
+            out.update(part)
+            gc.collect()
+        return out
+
+    def _torch(self, x: np.ndarray, lang: str, jobs: list[dict]) -> dict[str, list[float | None]]:
+        import torch
+        import torchaudio
+
+        bundle_name = WHISPERX_TORCH[lang]
+        bundle = getattr(torchaudio.pipelines, bundle_name, None)
+        if bundle is None:
+            raise RuntimeError(f'torchaudio.pipelines.{bundle_name} нет в этой версии torchaudio')
+        model = bundle.get_model().eval()
+        labels = list(bundle.get_labels())
+        vocab = _lower_vocab({lab: i for i, lab in enumerate(labels)})
+        blank = vocab.get('-', 0)
+        skip = {blank, vocab['|']} if '|' in vocab else {blank}
+        out: dict[str, list[float | None]] = {}
+        try:
+            for j in jobs:
+                placed = _one_line(torch, model, None, x, j, vocab, blank, skip, hf=False)
+                if placed is not None:
+                    out[j['id']] = placed
+        finally:
+            del model
+            gc.collect()
+        print(f'{self.name}: {lang} ({bundle_name}) — {len(jobs)} строк', flush=True)
+        return out
+
+    def _hf(self, x: np.ndarray, lang: str, jobs: list[dict]) -> dict[str, list[float | None]]:
+        import torch
+        from transformers import AutoProcessor, Wav2Vec2ForCTC
+
+        model_id = WHISPERX_HF[lang]
+        proc = AutoProcessor.from_pretrained(model_id)
+        model = Wav2Vec2ForCTC.from_pretrained(model_id).eval()
+        raw_vocab = proc.tokenizer.get_vocab()
+        vocab = _lower_vocab(raw_vocab)
+        blank = int(proc.tokenizer.pad_token_id)
+        for key, idx in vocab.items():
+            if key in ('[pad]', '<pad>'):
+                blank = int(idx)
+        skip = {blank}
+        for tok in ('|', '[pad]', '<pad>', '<s>', '</s>', '<unk>', proc.tokenizer.pad_token, proc.tokenizer.bos_token, proc.tokenizer.eos_token, proc.tokenizer.unk_token):
+            if tok and str(tok).lower() in vocab:
+                skip.add(int(vocab[str(tok).lower()]))
+        out: dict[str, list[float | None]] = {}
+        try:
+            for j in jobs:
+                placed = _one_line(torch, model, proc, x, j, vocab, blank, skip, hf=True)
+                if placed is not None:
+                    out[j['id']] = placed
+        finally:
+            del model, proc
+            gc.collect()
+        print(f'{self.name}: {lang} ({model_id}) — {len(jobs)} строк', flush=True)
+        return out
 
 
-def load(name: str):
-    """The engine, or None (with a note) when it or its dependencies are missing."""
-    if name in ('', 'none'):
+def _one_line(torch, model, proc, x: np.ndarray, job: dict, vocab: dict[str, int], blank: int, skip: set[int], hf: bool) -> list[float | None] | None:
+    a = max(0, int(job['t0'] * SR))
+    b = min(len(x), int(job['t1'] * SR))
+    if b - a < int(0.05 * SR):
         return None
+    seg = np.ascontiguousarray(x[a:b])
+    tokens, owner = line_tokens(job['words'], vocab, skip, blank)
+    if not tokens:
+        return None
+    if hf:
+        inputs = proc(seg, sampling_rate=SR, return_tensors='pt')
+        with torch.inference_mode():
+            logits = model(**inputs).logits[0]
+        lp = torch.log_softmax(logits, dim=-1).numpy()
+    else:
+        wave = torch.from_numpy(seg).unsqueeze(0)
+        with torch.inference_mode():
+            em = model(wave)[0]
+        arr = em[0].numpy() if em.ndim == 3 else em.numpy()
+        lp = _log_softmax(arr)
+    return align_window(lp, tokens, owner, len(job['words']), blank, a / SR, (b - a) / SR)
+
+
+ENGINES = {'mms1b': Mms1b, 'whisperx': WhisperX}
+
+
+def run_engine(name: str, x: np.ndarray, jobs: list[dict]) -> dict[str, list[float | None]]:
+    eng = ENGINES[name]()
     try:
-        return ENGINES[name]()
-    except KeyError:
-        raise SystemExit(f'неизвестный второй выравниватель: {name} (есть: {", ".join(ENGINES)})')
-    except ImportError as e:
-        print(f'второй выравниватель {name} недоступен ({e}); слова подтверждаются только атаками голоса')
-        return None
+        return eng.word_starts(x, jobs)
+    finally:
+        closer = getattr(eng, 'close', None)
+        if closer:
+            closer()
+
+
+def align_jobs(which: str, x: np.ndarray, jobs: list[dict]) -> tuple[dict[str, list[float | None]], dict[str, str]]:
+    """Word starts and the engine name that produced them, per line id.
+
+    `which` is `auto` (WhisperX where the language has a model, otherwise MMS-1b), a single
+    engine name, or `none`. A failing engine is skipped; the line then has no second opinion
+    and cannot be proven.
+    """
+    if which in ('', 'none') or not jobs:
+        return {}, {}
+    if which != 'auto' and which not in ENGINES:
+        raise SystemExit(f'неизвестный второй выравниватель: {which} (есть: auto, {", ".join(ENGINES)}, none)')
+    starts: dict[str, list[float | None]] = {}
+    names: dict[str, str] = {}
+    order = [which] if which != 'auto' else ['whisperx', 'mms1b']
+    for name in order:
+        if which == 'auto':
+            batch = [j for j in jobs if j['id'] not in starts and name in preferred(j['lang'])]
+        else:
+            batch = [j for j in jobs if j['id'] not in starts]
+        if not batch:
+            continue
+        try:
+            part = run_engine(name, x, batch)
+        except Exception as e:
+            print(f'второй выравниватель {name} недоступен ({e.__class__.__name__}: {e})')
+            continue
+        for j in batch:
+            got = part.get(j['id'])
+            if got is None or len(got) != len(j['words']):
+                continue
+            if not any(s is not None for s in got):
+                continue
+            starts[j['id']] = got
+            names[j['id']] = ENGINES[name].name if name == 'mms1b' else name
+    missed = [j['id'] for j in jobs if j['id'] not in starts]
+    if missed:
+        print(f'без второго мнения: {len(missed)} строк ({", ".join(missed[:8])}{"…" if len(missed) > 8 else ""})')
+    return starts, names

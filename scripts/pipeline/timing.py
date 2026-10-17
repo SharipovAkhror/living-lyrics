@@ -17,6 +17,23 @@ def vocal_lines(lyrics: dict) -> list[tuple[dict, dict]]:
     return [(sec, line) for sec in lyrics['sections'] if sec['kind'] == 'vocal' for line in sec['lines']]
 
 
+# A line is solo only when one singer is named. Overlapping voices (choir, duet, tutti) do not
+# prove a word start: the stem mixes them and an onset may belong to someone else.
+_GROUP = ('хор', 'choir', 'chorus', 'cappella', 'ансамбль', 'ensemble', 'оркестр', 'orchestra', 'tutti')
+
+
+def is_solo(sec: dict, line: dict) -> bool:
+    voice = (line.get('voice') or sec.get('voice') or '').strip()
+    if not voice:
+        return False
+    low = voice.casefold().replace('ё', 'е')
+    if low in ('все', 'all', 'все исполнители') or low.startswith('все ') or low.startswith('all '):
+        return False
+    if ' и ' in f' {low} ':
+        return False
+    return not any(mark in low for mark in _GROUP)
+
+
 def line_text(line: dict) -> str:
     return ' '.join(w['w'] for w in line['words'])
 

@@ -41,6 +41,7 @@ log="$w/run.log"
 : > "$log"
 status=0
 cd "$root/scripts/pipeline"
+echo "python $(python3 --version 2>&1), ядер $(nproc 2>/dev/null || echo '?'), память $(free -g 2>/dev/null | awk '/Mem/{print $2}' || echo '?') ГБ" | tee -a "$log"
 
 step() {  # step <name> <command…>: run, log, keep the exit code
   local name="$1"; shift
@@ -92,7 +93,13 @@ if has qa && [ $status -lt 2 ]; then
   fi
   # shellcheck disable=SC2086
   if need_stem; then
-    step qa python3 qa_sync.py "$slug" "${baseline[@]}" ${QA_ARGS:-}
+    # --apply writes timing-draft and song.json timing. QA_ARGS must not repeat --apply.
+    apply=()
+    case " ${QA_ARGS:-} " in
+      *" --apply "*) ;;
+      *) apply=(--apply) ;;
+    esac
+    step qa python3 qa_sync.py "$slug" "${baseline[@]}" "${apply[@]}" ${QA_ARGS:-}
     rc=$?
     if [ $rc -eq 1 ]; then status=$(( status > 1 ? status : 1 )); elif [ $rc -ne 0 ]; then fail qa; fi
     if [ -f "$w/qa-sync.md" ]; then
