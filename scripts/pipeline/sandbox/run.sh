@@ -15,6 +15,9 @@
 #   diagnose    read-only locator table → docs/analysis/<slug>/locate.md (does not write lyrics)
 #   bench       compare aligners and vocal stems against cues.json → docs/analysis/bench/
 #               (does not write lyrics). Heavy; run it on its own, not beside align.
+#   calibrate   score rows for the cue threshold → work/<slug>/score-rows.json
+#               (does not write lyrics). The workflow runs this for every align job
+#               before align, then calibrate_score.py --choose.
 #   align       word times into lyrics.json (align.py), report → work/<slug>/align-report.json
 #   qa          sync check (qa_sync.py) → work/<slug>/qa-sync.md, copied to docs/analysis/<slug>-qa.md
 #   features    animation envelopes → public/audio/<slug>/features.json (features.py)
@@ -38,7 +41,7 @@ if [ -z "$slug" ] || [ $# -eq 0 ]; then
   exit 2
 fi
 for s in "$@"; do
-  case "$s" in decrypt|separate|sections|transcribe|diagnose|bench|align|qa|features|instruments) ;; *) echo "неизвестная стадия: $s"; exit 2 ;; esac
+  case "$s" in decrypt|separate|sections|transcribe|diagnose|bench|calibrate|align|qa|features|instruments) ;; *) echo "неизвестная стадия: $s"; exit 2 ;; esac
 done
 want=" $* "
 has() { [[ "$want" == *" $1 "* ]]; }
@@ -122,6 +125,11 @@ if has bench && [ $status -lt 2 ]; then
   for s in i-have-come-alive karitas one; do
     python3 stem_cache.py pack "$s" "$root/work/stem-cache" || true
   done
+fi
+if has calibrate && [ $status -lt 2 ]; then
+  # Scores only. sections and transcribe stay with align: this pass must not fit a threshold
+  # on the first song before the others have been measured.
+  { need_stem && step calibrate python3 calibrate_score.py "$slug" --collect; } || fail calibrate
 fi
 aligned=""
 if has align && [ $status -lt 2 ]; then

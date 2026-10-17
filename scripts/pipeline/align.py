@@ -20,16 +20,16 @@ How it works:
 3. Word ends of a confident line are extended while the voice still sounds (CTC marks the
    letter spike, not the held vowel), never into the next word. A start may then move onto an
    attack within 0.10 s; that move is not the measurement.
-4. Confidence per line: `score` (mean posterior of its letters) and `gap` (how much more likely
-   the best other label was on those frames). There is no agreement check against another pass:
-   that check was throwing away placements a tight window supports.
-     good and within 0.7 s of the cue — its start and end are written, and a second
-             aligner runs for solo and choir lines;
-     good but further from the cue — the cue times stay. The line is not proved.
-     weak or draft — the cue times already in the line stay. They are not slid into a gap.
+4. A line is placed (`good`) when its score clears the threshold in
+   docs/analysis/bench/calibration.json, the structural checks pass, and the pre-snap
+   start rounds to at most 0.30 s from the cue. The gap to another label is recorded
+   and is not a gate. Without that file the letter mean at 0.30 is the test fallback.
+     placed — its start and end are written, and a second aligner runs for solo and choir;
+     anything else with a cue — the cue times stay. They are not slid into a gap.
    align.py does not decide the flag. It marks every line `timing-draft` and leaves
-   `timing.status` at `draft`. qa_sync.py --apply clears the flag only where the pre-snap start
-   and a WhisperX start agree with each other and with a vocal attack (0.1 s solo, 0.2 s choir).
+   `timing.status` at `draft`. qa_sync.py --apply clears the flag only for a placed line
+   whose words are proved: an attack within 0.10 s (0.20 s choir), or, for a vowel,
+   legato or melisma with no attack within 0.30 s, a second aligner within 0.10 s.
    The song becomes `aligned` only when every group that exists is at least 80 % proved.
 
 Writes lyrics.json (word s/e and the timing-draft flag; section bounds only with --move-sections),
@@ -47,6 +47,7 @@ import unicodedata
 
 import numpy as np
 
+import calibrate_score as Cal
 import engines
 import features as F
 import qa_sync as Q
@@ -72,14 +73,11 @@ CUE_LEAD = 0.80
 CUE_TAIL = 0.50
 CUE_OVERLAP = 0.50
 CUE_SECTION_PAD = 0.50
-# A line is "good" when the letter score and the gap both hold. These are gates, not a fit
-# to one recording. Distance to a second pass is not a gate: on I Have Come Alive it threw
-# away lines the section pass had already placed on the voice.
+# Fallback when calibration.json is absent (tests, a manual run). The singing gate is the
+# threshold choose_threshold writes. GOOD_GAP is recorded and is not a placement gate.
 GOOD_SCORE = 0.30
 GOOD_GAP = 1.2
 GOOD_AGREE = 0.5
-# Below this the text was not found at all (wrong words, a verse not sung, a choir the model cannot
-# hear): the measured position is arbitrary, so the line keeps its draft, fitted between neighbours.
 KEEP_SCORE = 0.20
 KEEP_AGREE = 2.0
 
@@ -704,34 +702,64 @@ def main() -> None:
         k = int(t / F.HOP)
         return 0 <= k < len(act) and bool(act[k])
 
-    # Confidence per line, from the raw CTC result.
+    # Placement per line. The score threshold comes from the cue calibration. The gap is
+    # stored and does not decide. A line with no cue cannot be placed: there is no |Δ|.
+    metric_name, threshold = Cal.load_gate()
+    print(f'отбор: {metric_name} ≥ {threshold:.3f}', flush=True)
     conf = []
-    for u, p in zip(units, passes):
+    for i, (u, p) in enumerate(zip(units, passes)):
         r = p['res']
         placed_words = r['words'] if r else [None] * len(u.roman)
         scores = [None if w is None else round(w['score'], 3) for w in placed_words]
-        known = [s for s in scores if s is not None]
-        # Letter mean from the section pass, not a mean of word means: a long word must not
-        # be outvoted by a one-letter word, and the gate stays the one the diagnosis measured.
-        score = float(r['score']) if r is not None and r.get('score') is not None else (float(np.mean(known)) if known else 0.0)
+        letter, word_mean, word_min, _n_letters = Cal._metric_values(r, u.roman, placed_words)
+        values = {'letter': letter, 'word_mean': word_mean, 'word_min': word_min}
+        metric_value = values.get(metric_name)
+        score = 0.0 if letter is None else float(letter)
         gap = r['gap'] if r else 99.0
         agree = 0.0
         missing = r is None or any(rm and w is None for rm, w in zip(u.roman, placed_words))
-        if not missing and score >= GOOD_SCORE and gap <= GOOD_GAP:
+        starts: list[float | None] = []
+        ends: list[float | None] = []
+        for rm, w in zip(u.roman, placed_words):
+            if not rm:
+                continue
+            if w is None:
+                starts.append(None)
+                ends.append(None)
+            else:
+                starts.append(w['f0'] / FPS)
+                ends.append(w['f1'] / FPS)
+        next_cue = None
+        for nxt in units[i + 1:]:
+            nxt_cue = cues.get(nxt.id)
+            if nxt_cue is not None:
+                next_cue = float(nxt_cue['start'])
+                break
+        structure_ok, structure = (False, 'missing') if missing else Cal.structural(starts, ends, next_cue)
+        cue = cues.get(u.id)
+        raw_drift = [None if w is None else w['f0'] / FPS for w in placed_words]
+        delta = line_drift(raw_drift, u.roman, None if cue is None else float(cue['start']))
+        near = delta is not None and round(delta, 3) <= Q.PROOF_CUE_TOL
+        score_ok = (not missing) and metric_value is not None and float(metric_value) >= threshold
+        if missing or r is None:
+            status = 'draft'
+        elif score_ok and structure_ok and near:
             status = 'good'
-        elif not missing and score >= KEEP_SCORE and gap <= GOOD_GAP * 2:
-            status = 'weak'     # placed, but not sure enough to publish: the cue time stays
         else:
-            status = 'draft'    # text not found in the cue window: the cue times stay where they are
-        conf.append({'scores': scores, 'score': score, 'gap': gap, 'agree': agree, 'status': status})
+            status = 'weak'
+        conf.append({
+            'scores': scores, 'score': score, 'gap': gap, 'agree': agree, 'status': status,
+            'structure_ok': structure_ok, 'structure': structure,
+            'metric': metric_name, 'metric_value': metric_value, 'threshold': threshold,
+        })
 
-    # Word times (seconds). Aligner times are published only when the line is confident and
-    # its pre-snap start agrees with the cue. A confident line further than CUE_TOL keeps
-    # the cue a person placed (shushtari-s2 was 3.56 s off and must not reach the site).
-    # Anything else that has a cue keeps those cue times: not a fresh draft and not a gap.
-    # A draft with no cue is still fitted between its measured neighbours.
+    # Word times (seconds). Aligner times are published only for a placed line, which is
+    # already within 0.30 s of the cue. Anything else that has a cue keeps that cue
+    # (shushtari-s2 was 3.56 s off and must not reach the site). A draft with no cue is
+    # still fitted between its measured neighbours.
     times: list[list[list[float] | None]] = []
     ctc_starts: list[list[float | None]] = []
+    ctc_ends: list[list[float | None]] = []
     publish: list[bool] = []
     for u, p, c in zip(units, passes, conf):
         placed: list[list[float] | None] = [None] * len(u.roman)
@@ -741,6 +769,7 @@ def main() -> None:
                     placed[wi] = [w['f0'] / FPS, w['f1'] / FPS]
         raw = [None if w is None else w[0] for w in placed]
         ctc_starts.append(raw)
+        ctc_ends.append([None if w is None else w[1] for w in placed])
         cue = cues.get(u.id)
         drift = line_drift(raw, u.roman, None if cue is None else float(cue['start']))
         keep = keep_cue_time(c['status'], cue is not None, drift)
@@ -816,7 +845,7 @@ def main() -> None:
                        [u.sec['id'] for u in units])
 
     report_lines, good, placed = [], set(), set()
-    for u, p, ws, c, raw, odt, q, pub in zip(units, passes, times, conf, ctc_starts, onset_dt, qa, publish):
+    for u, p, ws, c, raw, raw_e, odt, q, pub in zip(units, passes, times, conf, ctc_starts, ctc_ends, onset_dt, qa, publish):
         status, scores, score, gap, agree = c['status'], c['scores'], c['score'], c['gap'], c['agree']
         s2 = second_starts.get(u.id)
         if s2 is not None and len(s2) != len(u.line['words']):
@@ -828,15 +857,15 @@ def main() -> None:
             tol = Q.CHOIR_TOL if T.group(u.sec, u.line) == 'choir' else ENGINE_AGREE
             engines_agree = None if e2 is None or raw[wi] is None else bool(abs(e2 - raw[wi]) <= tol)
             onset_ok = odt[wi] is not None
-            # Report note only. The line flag is qa_sync.proof_line: onset plus the 0.30 s cue.
-            # This word flag records that the second start landed within the group tolerance.
+            # Report note only. The line flag is qa_sync.proof_line.
             proven = (status == 'good' and q['verdict'] == 'ok' and engines_agree is True
                       and (onset_ok or args.proof != 'strict'))
             if has_letters:
                 letters_n += 1
                 proven_n += proven
             words_out.append({'w': w['w'], 'roman': rm, 's': round(t[0], 2), 'e': round(t[1], 2), 'draft_s': w['s'],
-                              'score': sc, 'ctc_s': None if raw[wi] is None else round(raw[wi], 2),
+                              'score': sc, 'ctc_s': None if raw[wi] is None else round(raw[wi], 3),
+                              'ctc_e': None if raw_e[wi] is None else round(raw_e[wi], 3),
                               'second_s': None if e2 is None else round(e2, 2),
                               'onset_dt': None if odt[wi] is None else round(odt[wi], 2), 'proven': proven})
         all_proven = letters_n > 0 and proven_n == letters_n
@@ -865,7 +894,10 @@ def main() -> None:
             'cue_end': None if cue is None else round(float(cue['end']), 3),
             'ctc_start': None if ctc_line is None else round(ctc_line, 3),
             'time_source': 'aligner' if pub else ('cue' if cue is not None else 'draft'),
-            'score': round(score, 3), 'gap': round(gap, 3), 'words': words_out,
+            'score': round(score, 3), 'gap': round(gap, 3),
+            'metric': c['metric'], 'metric_value': None if c['metric_value'] is None else round(float(c['metric_value']), 4),
+            'structure_ok': c['structure_ok'], 'structure': c['structure'],
+            'words': words_out,
         })
 
     # Times are written for every requested line. The flag stays on: qa_sync.py --apply is the
@@ -913,7 +945,8 @@ def main() -> None:
         'slug': slug, 'created': t_start.isoformat(timespec='seconds'), 'audio': audio.name, 'stem': is_stem,
         'engine': 'torchaudio MMS_FA + uroman, CTC Viterbi', 'second': summary['second_engine'],
         'anchors': 'cue' if cues else 'section', 'margin': CUE_LEAD if cues else margin,
-        'thresholds': {'score': GOOD_SCORE, 'gap': GOOD_GAP, 'agree': GOOD_AGREE, 'keep_score': KEEP_SCORE,
+        'thresholds': {'metric': metric_name, 'score': threshold, 'fallback_score': GOOD_SCORE,
+                       'gap_recorded': GOOD_GAP, 'agree': GOOD_AGREE, 'keep_score': KEEP_SCORE,
                        'keep_agree': KEEP_AGREE, 'snap_win': SNAP_WIN, 'snap_min': Q.PEAK_HEIGHT, 'engine_agree': ENGINE_AGREE,
                        'cue_tol': Q.CUE_TOL, 'cue_lead': CUE_LEAD, 'cue_tail': CUE_TAIL, 'cue_overlap': CUE_OVERLAP},
         'summary': summary, 'sections': section_notes, 'lines': report_lines,

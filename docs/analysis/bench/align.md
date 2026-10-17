@@ -108,7 +108,7 @@
 
 Это не оценка качества, и повторный прогон не запускался: дыры не меняют выбор для арабского, персидского, турецкого, азербайджанского и латыни.
 
-- whisperx на fa, tr и ar: `ModuleNotFoundError: Could not import module 'Wav2Vec2ForCTC'`. Английский (14/16) и немецкий (7/26, медиана 0,504 с) измерены.
+- whisperx на fa, tr и ar: `ModuleNotFoundError: Could not import module 'Wav2Vec2ForCTC'`. Английский (14/16) и немецкий (7/26, медиана 0,504 с) измерены. Ноль здесь — ошибка ленивого импорта transformers после пакетов стенда (NeMo, audio-separator), не чекпоинт и не качество на пении. Те же три модели на конвейере песни грузятся. Импорт теперь при этой ошибке берёт класс напрямую и печатает версии.
 - huang-2025: `AttributeError: np.Inf was removed in the NumPy 2.0 release`. Модель только для en/de/fr/es/it. 0/243 — сбой адаптера, не счёт.
 - nemo: `RuntimeError: operator torchvision::nms does not exist`. Только английский.
 - mdx: audio-separator, код выхода 1, 3,3 с.

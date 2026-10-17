@@ -1,8 +1,9 @@
 """Second opinions for align.py: an aligner that measures word starts again, independently of MMS_FA.
 
-qa_sync proves a line from the chosen aligner's onset and the cue. This second start is an
-extra check where the model places one; a missing or disagreeing time does not fail the line
-(see qa_sync.py). This module holds the second aligners.
+qa_sync proves a word from a vocal attack. A vowel, a legato or a melisma with no attack
+within 0.30 s can instead be proved when this second start agrees within 0.10 s. A missing
+second start does not fail a word that already has its attack. It does fail the no-attack
+path. A consonant still needs the attack. This module holds the second aligners.
 
 Interface of an engine:
     name: str
@@ -241,11 +242,10 @@ class WhisperX:
 
     def _hf(self, x: np.ndarray, lang: str, jobs: list[dict]) -> dict[str, list[float | None]]:
         import torch
-        from transformers import Wav2Vec2ForCTC
 
         model_id = WHISPERX_HF[lang]
         proc = _load_processor(model_id)
-        model = Wav2Vec2ForCTC.from_pretrained(model_id).eval()
+        model = _ctc_class().from_pretrained(model_id).eval()
         raw_vocab = proc.tokenizer.get_vocab()
         vocab = _lower_vocab(raw_vocab)
         blank = int(proc.tokenizer.pad_token_id)
@@ -265,8 +265,40 @@ class WhisperX:
         finally:
             del model, proc
             gc.collect()
-        print(f'{self.name}: {lang} ({model_id}) — {len(jobs)} строк', flush=True)
+        print(f'{self.name}: {lang} ({model_id}) — {len(jobs)} строк; {_stack_versions()}', flush=True)
         return out
+
+
+def _stack_versions() -> str:
+    try:
+        import torch
+        tv = torch.__version__
+    except Exception:
+        tv = '?'
+    try:
+        import transformers
+        hv = transformers.__version__
+    except Exception:
+        hv = '?'
+    return f'torch {tv}, transformers {hv}'
+
+
+def _ctc_class():
+    """Wav2Vec2ForCTC, even when the lazy transformers import hides the real error.
+
+    A bench job that also installs NeMo and audio-separator makes
+    `from transformers import Wav2Vec2ForCTC` raise ModuleNotFoundError, although the
+    class is in the package. That is a loader failure, not a missing checkpoint and not
+    a property of singing. The song job does not install those packages. The direct
+    import is the same class and lets a real install error through.
+    """
+    try:
+        from transformers import Wav2Vec2ForCTC
+        return Wav2Vec2ForCTC
+    except Exception as first:
+        print(f'whisperx: ленивый импорт Wav2Vec2ForCTC не прошёл ({first.__class__.__name__}: {first}); {_stack_versions()}', flush=True)
+        from transformers.models.wav2vec2.modeling_wav2vec2 import Wav2Vec2ForCTC
+        return Wav2Vec2ForCTC
 
 
 def _load_processor(model_id: str):

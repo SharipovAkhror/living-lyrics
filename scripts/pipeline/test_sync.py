@@ -183,30 +183,58 @@ def test_proof_decision() -> None:
     got = Q.proof_line(True, 'good', True, presnap, far, True, **cue)
     check('aligners 0.4 s apart do not block', got['pass'] and got.get('second') == 'disagree', str(got))
     got = Q.proof_line(True, 'draft', True, presnap, words, True, **cue)
-    check('text not found fails', got['reason'] == 'text-not-found', str(got))
-    # Published time is irrelevant: the gate reads this pre-snap distance.
+    check('a cued line with no placement does not blame the text', got['reason'] == 'aligner-failed', str(got))
+    got = Q.proof_line(True, 'draft', True, presnap, words, True)
+    check('an uncued miss stays text-not-found', got['reason'] == 'text-not-found', str(got))
+    # A consonant at 0.30 s still needs an attack. A vowel at exactly 0.30 s may use the second aligner.
+    cons = [
+        {'roman': 'ba', 'ctc_s': 1.0, 'second_s': 1.04},
+        {'roman': 'bb', 'ctc_s': 2.0, 'second_s': 2.05},
+    ]
+    got = Q.proof_line(True, 'good', True, [0.30, 0.04], cons, True, **cue)
+    check('a consonant at 0.30 s fails', (not got['pass']) and got['reason'] == 'onset', str(got))
     got = Q.proof_line(True, 'good', True, [0.30, 0.04], words, True, **cue)
-    check('pre-snap onset 0.3 s fails', (not got['pass']) and got['reason'] == 'onset', str(got))
+    check('a vowel at exactly 0.30 s uses the second aligner', got['pass'] and got['paths']['second'] == 1, str(got))
     got = Q.proof_line(True, 'good', True, presnap, words, False, **cue)
     check('no align report fails closed', got['reason'] == 'no-report', str(got))
-    # A missing attack is not legato and does not pass.
+    got = Q.proof_line(True, 'good', True, [None, 0.04], cons, True, **cue)
+    check('a consonant with no attack fails', (not got['pass']) and got['reason'] == 'onset', str(got))
     got = Q.proof_line(True, 'good', True, [None, 0.04], words, True, **cue)
-    check('no attack near the pre-snap start fails', (not got['pass']) and got['reason'] == 'onset', str(got))
-    bare = [{'roman': 'aa', 'ctc_s': 1.0}, {'roman': 'bb', 'ctc_s': 2.0}]
+    check('a vowel with no attack is proved by the second aligner', got['pass'] and got['paths']['second'] == 1 and got['paths']['attack'] == 1, str(got))
+    bare_vowel = [{'roman': 'aa', 'ctc_s': 1.0}, {'roman': 'bb', 'ctc_s': 2.0, 'second_s': 2.0}]
+    got = Q.proof_line(True, 'good', True, [None, 0.04], bare_vowel, True, **cue)
+    check('a vowel with no attack and no second start fails', (not got['pass']) and got['reason'] == 'no-second-aligner', str(got))
+    far_soft = [dict(words[0], second_s=1.4), words[1]]
+    got = Q.proof_line(True, 'good', True, [None, 0.04], far_soft, True, **cue)
+    check('a vowel whose second start is 0.4 s off fails', (not got['pass']) and got['reason'] == 'aligners-disagree', str(got))
+    choir_soft = [dict(words[0], second_s=1.15), words[1]]
+    got = Q.proof_line('choir', 'good', True, [None, 0.04], choir_soft, True, **cue)
+    check('choir path B still wants 0.10 s', (not got['pass']) and got['reason'] == 'aligners-disagree', str(got))
+    legato = [
+        {'roman': 'ba', 'ctc_s': 1.0, 'ctc_e': 1.02, 'second_s': 1.01},
+        {'roman': 'ka', 'ctc_s': 1.10, 'ctc_e': 1.12, 'second_s': 1.12},
+    ]
+    got = Q.proof_line(True, 'good', True, [0.02, None], legato, True, **cue)
+    check('legato within 0.20 s with no attack uses the second aligner', got['pass'] and got['paths']['second'] == 1, str(got))
+    bare = [{'roman': 'ba', 'ctc_s': 1.0}, {'roman': 'bb', 'ctc_s': 2.0}]
     got = Q.proof_line(True, 'good', True, presnap, bare, True, **cue)
-    check('a missing second model does not block', got['pass'] and got.get('second') == 'absent', str(got))
+    check('a missing second model does not block an attack', got['pass'] and got.get('second') == 'absent', str(got))
     got = Q.proof_line(True, 'good', True, presnap, words, True, cue_start=1.0, ctc_line_start=1.30)
     check('cue drift of 0.30 s passes', got['pass'], str(got))
     got = Q.proof_line(True, 'good', True, presnap, words, True, cue_start=1.0, ctc_line_start=1.31)
     check('cue drift of 0.31 s fails', (not got['pass']) and got['reason'] == 'cue-disagree', str(got))
     got = Q.proof_line(True, 'good', True, presnap, words, True, cue_start=1.0, ctc_line_start=1.70)
-    check('cue drift of 0.70 s is published but not proved', (not got['pass']) and got['reason'] == 'cue-disagree', str(got))
+    check('cue drift of 0.70 s is not proved', (not got['pass']) and got['reason'] == 'cue-disagree', str(got))
     got = Q.proof_line(True, 'good', True, presnap, words, True)
     check('a line with no cue is not proved', (not got['pass']) and got['reason'] == 'cue-disagree', str(got))
     got = Q.proof_line(True, 'draft', True, presnap, words, True, cue_start=1.0, ctc_line_start=5.0)
-    check('text not found still wins over the cue', got['reason'] == 'text-not-found', str(got))
+    check('a cued miss stays aligner-failed even when the cue is far', got['reason'] == 'aligner-failed', str(got))
     got = Q.proof_line(True, 'weak', True, presnap, words, True, cue_start=1.0, ctc_line_start=5.0)
-    check('low confidence still wins over the cue', got['reason'] == 'low-confidence', str(got))
+    check('a far weak line disagrees with the cue', got['reason'] == 'cue-disagree', str(got))
+    got = Q.proof_line(True, 'weak', True, presnap, words, True, cue_start=1.0, ctc_line_start=1.0, structure_ok=False)
+    check('structure failure on a near cue does not blame the text', got['reason'] == 'aligner-failed', str(got))
+    got = Q.proof_line(True, 'weak', True, presnap, words, True, structure_ok=False)
+    check('an uncued structure failure is text-not-found', got['reason'] == 'text-not-found', str(got))
 
 
 def test_second_span() -> None:
@@ -240,7 +268,8 @@ def test_cue_window() -> None:
 
 def test_cue_times_stay() -> None:
     check('a confident line that agrees publishes the aligner', not align.keep_cue_time('good', True, 0.20))
-    check('exactly 0.70 s still publishes the aligner', not align.keep_cue_time('good', True, 0.70))
+    check('exactly 0.30 s still publishes the aligner', not align.keep_cue_time('good', True, 0.30))
+    check('0.31 s keeps the cue', align.keep_cue_time('good', True, 0.31))
     check('a confident line 3.56 s off the cue keeps the cue', align.keep_cue_time('good', True, 3.56))
     check('0.81 s keeps the cue', align.keep_cue_time('good', True, 0.81))
     check('a confident line with no measured start keeps the cue', align.keep_cue_time('good', True, None))
@@ -327,12 +356,12 @@ def test_build_proof_independent() -> None:
     def line(lid: str) -> dict:
         return {'id': lid, 'lang': 'en', 'words': [{'w': 'a', 's': t, 'e': t + 0.1} for t in (1.0, 2.0, 3.0)]}
 
-    def rec(lid: str, status: str, ctc: list[float], second: list[float]) -> dict:
+    def rec(lid: str, status: str, ctc: list[float], second: list[float], roman: str = 'a') -> dict:
         return {
             'id': lid, 'status': status, 'text': 'a a a', 'second': 'whisperx',
             'second_window': [0.0, 4.0],
             'words': [
-                {'w': 'a', 'roman': 'a', 'ctc_s': c, 'second_s': s2, 's': p, 'onset_dt': round(p - c, 3)}
+                {'w': 'a', 'roman': roman, 'ctc_s': c, 'second_s': s2, 's': p, 'onset_dt': round(p - c, 3)}
                 for c, s2, p in zip(ctc, second, (1.0, 2.0, 3.0))
             ],
         }
@@ -340,7 +369,7 @@ def test_build_proof_independent() -> None:
     qa = [{'verdict': 'ok', 'offset': 0.0}]
     # Published s is the attack. CTC was 0.30 s early. Must not pass with error 0.
     snap = Q.build_proof(sig, [(sec, line('snapped'))], qa, {'lines': [
-        rec('snapped', 'good', [0.70, 1.70, 2.70], [0.72, 1.72, 2.72]),
+        rec('snapped', 'good', [0.70, 1.70, 2.70], [0.72, 1.72, 2.72], roman='b'),
     ]}, {'snapped': {'line': 'snapped', 'start': 0.70, 'end': 3.2}})
     check('snapped line does not prove itself', (not snap['lines'][0]['pass']) and snap['lines'][0]['reason'] == 'onset', str(snap['lines'][0]))
     # A fair line and a text-not-found line. One proven solo of two is under 80 %.
@@ -351,7 +380,8 @@ def test_build_proof_independent() -> None:
         'missing': {'line': 'missing', 'start': 1.02, 'end': 3.2}})
     by = {r['id']: r for r in proof['lines']}
     check('pre-snap agreement can pass', by['fair']['pass'], str(by['fair']))
-    check('text not found is not a proven solo', (not by['missing']['pass']) and by['missing']['reason'] == 'text-not-found', str(by['missing']))
+    check('a cued miss is not a proven solo and does not blame the text',
+          (not by['missing']['pass']) and by['missing']['reason'] == 'aligner-failed', str(by['missing']))
     check('one proven solo of two stays draft', (not proof['aligned']) and proof['passed'] == 1 and proof['solo'] == 2, f"{proof['passed']}/{proof['solo']}")
     med = proof['onset_median']
     check('passing median is the pre-snap error', med is not None and 0 < med <= 0.10, str(med))
@@ -390,6 +420,62 @@ def test_star_absorbs_a_hold() -> None:
     check('the next line stays after the gap', b is not None and b['f0'] == 30, str(b))
 
 
+def test_calibration() -> None:
+    import calibrate_score as C
+
+    ok, why = C.structural([0.0, 0.20, 0.40], [0.02, 0.22, 0.42], None)
+    check('spaced words pass structure', ok and why == 'ok', why)
+    ok, why = C.structural([0.0, 0.05, 0.10], [0.02, 0.07, 0.12], None)
+    check('two short gaps fail', (not ok) and why == 'short', why)
+    ok, why = C.structural([0.0, 0.05, 0.40], [0.02, 0.07, 0.42], None)
+    check('one short gap passes', ok, why)
+    ok, why = C.structural([0.0, 0.01], [0.02, 0.03], None)
+    check('a same-frame gap is eaten', (not ok) and why == 'eaten', why)
+    ok, why = C.structural([0.2, 0.0], [0.22, 0.02], None)
+    check('reversed order fails', (not ok) and why == 'order', why)
+    ok, why = C.structural([0.0, None], [0.02, None], None)
+    check('a missing word is eaten', (not ok) and why == 'eaten', why)
+    ok, why = C.structural([0.0, 1.0], [0.02, 1.08], 1.0)
+    check('a line end past the next cue fails', (not ok) and why == 'past-next', why)
+    ok, why = C.structural([0.0, 1.0], [0.02, 1.05], 1.0)
+    check('end slack of 0.05 passes', ok, why)
+    ok, why = C.structural([0.0], [0.02], None)
+    check('the last word is not checked for length', ok, why)
+
+    def row(score: float, delta: float | None, structure: bool = True, lang: str = 'en', word_min: float | None = None) -> dict:
+        return {'letter': score, 'word_mean': score, 'word_min': score if word_min is None else word_min,
+                'delta': delta, 'structure_ok': structure, 'lang': lang}
+
+    rows = [row(0.01, 1.5)] + [row(0.2, 0.1) for _ in range(60)]
+    got = C.choose_threshold(rows)
+    check('the cap prefers the threshold with no false lines',
+          got['cap_met'] and got['metric'] == 'letter' and abs(got['threshold'] - 0.2) < 1e-9, str(got['threshold']))
+    rows = [row(0.9, 1.2)] + [row(0.1, 0.05) for _ in range(40)]
+    got = C.choose_threshold(rows)
+    check('an unmet cap is reported', not got['cap_met'], str(got['cap_met']))
+    rows = [row(0.2, 1.0)] + [row(0.2, 0.1) for _ in range(49)]
+    got = C.choose_threshold(rows)
+    check('one false in 50 is inside 2%', got['cap_met'] and got['near'] == 49 and got['false'] == 1,
+          str({k: got[k] for k in ('cap_met', 'near', 'false', 'accepted')}))
+    rows = [row(0.2, 1.0)] + [row(0.2, 0.1) for _ in range(48)]
+    got = C.choose_threshold(rows)
+    check('one false in 49 is over 2%', not got['cap_met'], str({k: got[k] for k in ('cap_met', 'false', 'accepted')}))
+    rows = [row(0.5, None), row(0.4, 0.1, structure=False)]
+    got = C.choose_threshold(rows)
+    check('a row without a cue delta is not accepted', got['accepted'] == 1 and got['placed'] == 0 and got['near'] == 1, str(got))
+    rows = [row(0.4, 0.1) for _ in range(5)]
+    got = C.choose_threshold(rows)
+    check('a tie prefers the letter mean', got['metric'] == 'letter', got['metric'])
+    rows = [row(0.5, 0.1, structure=False), row(0.5, 0.1, structure=True)]
+    got = C.choose_threshold(rows)
+    check('structure cuts placement and not the score count', got['near'] == 2 and got['placed'] == 1, str(got))
+    # 0.300 is inside, 0.301 is not. A false line at a lower score must not pull the threshold down
+    # when the higher one already maximises the near count.
+    rows = [row(0.8, 0.300), row(0.8, 0.301), row(0.2, 2.0)]
+    got = C.choose_threshold(rows)
+    check('exactly 0.300 s counts as near and 0.301 s does not', got['cap_met'] and got['near'] == 1 and got['threshold'] >= 0.8 - 1e-9, str(got))
+
+
 def test_bench_summary() -> None:
     import bench_align as B
 
@@ -422,6 +508,7 @@ def main() -> int:
     test_second_span()
     test_cue_window()
     test_cue_times_stay()
+    test_calibration()
     test_bench_summary()
     test_harakat()
     test_cue_in_build_proof()

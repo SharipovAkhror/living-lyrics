@@ -8,7 +8,9 @@
 # and docs/analysis/<slug>-instruments.json / .md (docs/methodology/09-instruments.md). They do not
 # edit lyrics.json; the agent copies confirmed entrances afterwards.
 #
-# Job file fields: "stages" (decrypt separate sections transcribe diagnose bench align qa features instruments),
+# Job file fields: "stages" (decrypt separate sections transcribe diagnose bench align qa features instruments).
+# Before any align, the run collects a score row per cued line and writes docs/analysis/bench/calibration.json.
+# Jobs do not list that stage. A failed calibration does not fall through to the old 0.30 gate.
 # optional "align" and "qa" — lists of extra options for align.py / qa_sync.py, e.g. {"qa": ["--fix"]}.
 # Needs the repository secret AUDIO_KEY (Settings → Secrets and variables → Actions).
 name: pipeline
@@ -143,6 +145,38 @@ jobs:
         run: |
           set +e  # one failing song must not stop the others; run.sh reports through its exit code
           worst=0
+          : > /tmp/summary.txt
+          python3 -c "import json; jobs=json.load(open('/tmp/jobs.json')); open('/tmp/calibrate.txt','w').write('\n'.join(j['slug'] for j in jobs if 'align' in j.get('stages', [])))"
+          cal_rc=0
+          if [ -s /tmp/calibrate.txt ]; then
+            while read -r slug; do
+              [ -z "$slug" ] && continue
+              echo "::group::$slug: calibrate"
+              (cd scripts/pipeline && python3 stem_cache.py unpack "$slug" ../../work/stem-cache) < /dev/null
+              bash scripts/pipeline/sandbox/run.sh "$slug" calibrate < /dev/null
+              rc=$?
+              echo "::endgroup::"
+              echo "$slug calibrate: код $rc" >> /tmp/summary.txt
+              if [ $rc -ge 2 ]; then
+                cal_rc=2
+                echo "::error::$slug: калибровка не собрала оценки"
+              fi
+            done < /tmp/calibrate.txt
+            if [ $cal_rc -eq 0 ]; then
+              python3 scripts/pipeline/calibrate_score.py --choose
+              rc=$?
+              if [ $rc -ne 0 ]; then
+                cal_rc=2
+                echo "::error::порог по репликам не выбран"
+              fi
+            fi
+          fi
+          if [ $cal_rc -ge 2 ]; then
+            echo "калибровка не прошла, выравнивание не запускалось" >> /tmp/summary.txt
+            echo "worst=2" >> "$GITHUB_OUTPUT"
+            cat /tmp/summary.txt >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           python3 -c "import json; [print(j['slug'], ' '.join(j['stages']), '|', ' '.join(j.get('align', [])), '|', ' '.join(j.get('qa', []))) for j in json.load(open('/tmp/jobs.json'))]" > /tmp/jobs.txt
           while IFS='|' read -r head align qa; do
             set -- $head
