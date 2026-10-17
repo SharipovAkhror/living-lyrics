@@ -1,0 +1,109 @@
+/*
+ * Fitting mode only. These rules apply when <html data-font-preview> is set.
+ * Set A has no rules on purpose: it is today's pairing (tokens.css unchanged).
+ * Arabic stays on --font-mushaf (KFGQPC). The licence does not allow another cut of that file.
+ */
+
+html[data-font-preview='b'] {
+  --font-serif: 'Source Serif 4', 'Iowan Old Style', Palatino, Georgia, serif;
+  --font-preview-tr: 'Source Serif 4', Georgia, serif;
+  --font-preview-fa: 'Amiri', 'KFGQPC Hafs', serif;
+  --font-preview-fa-lh: 1.75;
+}
+
+html[data-font-preview='c'] {
+  --font-serif: 'EB Garamond', 'Iowan Old Style', Palatino, Georgia, serif;
+  --font-preview-tr: 'Literata', Georgia, serif;
+  --font-preview-fa: 'Scheherazade New', 'KFGQPC Hafs', serif;
+  --font-preview-fa-lh: 1.9;
+}
+
+/* Persian only. Arabic lines keep the Mushaf face. */
+html[data-font-preview='b'] .fb[lang='fa'] .fb-orig,
+html[data-font-preview='c'] .fb[lang='fa'] .fb-orig,
+html[data-font-preview='b'] .tl-orig[lang='fa'],
+html[data-font-preview='c'] .tl-orig[lang='fa'] {
+  font-family: var(--font-preview-fa);
+  font-weight: 400;
+  font-style: normal;
+  line-height: var(--font-preview-fa-lh);
+}
+
+html[data-font-preview='b'] .f-serif,
+html[data-font-preview='c'] .f-serif,
+html[data-font-preview='b'] .fb-tr,
+html[data-font-preview='c'] .fb-tr,
+html[data-font-preview='b'] .tl-tr,
+html[data-font-preview='c'] .tl-tr,
+html[data-font-preview='b'] .fb-translit,
+html[data-font-preview='c'] .fb-translit {
+  font-synthesis: none;
+  font-optical-sizing: auto;
+}
+
+html[data-font-preview='b'] .fb-tr,
+html[data-font-preview='c'] .fb-tr,
+html[data-font-preview='b'] .tl-tr,
+html[data-font-preview='c'] .tl-tr,
+html[data-font-preview='b'] .fb-translit,
+html[data-font-preview='c'] .fb-translit {
+  font-family: var(--font-preview-tr);
+  font-weight: 400;
+}
+
+/* The plaque. Visible only while the chip is mounted, which is only during fitting.
+   Two classes, so this wins over .glass { position: relative } whatever the cascade order. */
+.font-fit.glass {
+  position: fixed;
+  z-index: 40;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom) + 16px);
+  transform: translateX(-50%);
+  width: min(420px, calc(100vw - 24px));
+  padding: 8px 10px 10px;
+  border-radius: 22px;
+  text-align: center;
+}
+
+.font-fit--song {
+  bottom: auto;
+  top: calc(env(safe-area-inset-top) + 108px);
+}
+
+.font-fit-label {
+  margin: 0 0 6px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.08px;
+  color: var(--label);
+}
+
+.font-fit-switch {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.font-fit-btn {
+  min-height: 44px;
+  min-width: 44px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--fill-3);
+  color: var(--label);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.font-fit-btn[aria-checked='true'] {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.font-fit-off {
+  font-weight: 500;
+}
