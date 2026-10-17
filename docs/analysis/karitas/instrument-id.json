@@ -4,6 +4,7 @@
   "noncommercial": true,
   "noncommercialReason": "IRMAS на Zenodo помечен CC BY-NC-SA 4.0. Веса обучены и на этих записях.",
   "creditsUsed": false,
+  "audioPrimary": "mix",
   "threshold": 0.55,
   "threshold95": 0.76,
   "thresholdReached": true,

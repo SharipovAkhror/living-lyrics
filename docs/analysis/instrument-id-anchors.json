@@ -2,7 +2,7 @@
   "songs": [
     {
       "slug": "i-have-come-alive",
-      "failures": 0,
+      "failures": 1,
       "anchors": [
         {
           "section": "voice-open",
@@ -14,11 +14,13 @@
           "note": "",
           "source": "content/songs/i-have-come-alive/lyrics.json",
           "said": [
-            "flute"
+            "voice"
           ],
-          "acceptedRight": [],
+          "acceptedRight": [
+            "voice"
+          ],
           "acceptedWrong": [],
-          "verdict": "abstain"
+          "verdict": "correct"
         },
         {
           "section": "inst-tanbur",
@@ -30,12 +32,16 @@
           "note": "Длинный проигрыш танбура перед первым куплетом.",
           "source": "content/songs/i-have-come-alive/lyrics.json",
           "said": [
+            "cello",
             "flute",
-            "piano"
+            "guitar-acoustic",
+            "organ"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "voice"
+          ],
+          "verdict": "fail"
         },
         {
           "section": "voice-bridge",
@@ -46,9 +52,7 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/i-have-come-alive/lyrics.json",
-          "said": [
-            "flute"
-          ],
+          "said": [],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"
@@ -355,7 +359,7 @@
           "note": "",
           "source": "content/songs/one/lyrics.json",
           "said": [
-            "guitar-acoustic"
+            "voice"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -387,7 +391,6 @@
           "note": "",
           "source": "content/songs/one/lyrics.json",
           "said": [
-            "flute",
             "voice"
           ],
           "acceptedRight": [],
@@ -404,7 +407,6 @@
           "note": "",
           "source": "content/songs/one/lyrics.json",
           "said": [
-            "saxophone",
             "voice"
           ],
           "acceptedRight": [],
@@ -420,9 +422,7 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/one/lyrics.json",
-          "said": [
-            "voice"
-          ],
+          "said": [],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"
@@ -436,9 +436,7 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/one/lyrics.json",
-          "said": [
-            "flute"
-          ],
+          "said": [],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"
@@ -452,9 +450,7 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/one/lyrics.json",
-          "said": [
-            "voice"
-          ],
+          "said": [],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"

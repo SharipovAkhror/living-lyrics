@@ -25,12 +25,14 @@
             "flute"
           ],
           "stemSaid": [
+            "cello",
             "guitar-acoustic"
           ],
           "mixWrong": [
             "flute"
           ],
           "stemWrong": [
+            "cello",
             "guitar-acoustic"
           ]
         },
@@ -205,7 +207,9 @@
           "mixSaid": [
             "guitar-acoustic"
           ],
-          "stemSaid": [],
+          "stemSaid": [
+            "voice"
+          ],
           "mixWrong": [
             "guitar-acoustic"
           ],
@@ -304,9 +308,114 @@
     },
     {
       "slug": "one",
-      "anchors": [],
-      "status": "no-audio"
+      "anchors": [
+        {
+          "section": "voice-1",
+          "catalogKey": "voice",
+          "stem": "vocals",
+          "mixSaid": [
+            "guitar-acoustic"
+          ],
+          "stemSaid": [],
+          "mixWrong": [
+            "guitar-acoustic"
+          ],
+          "stemWrong": []
+        },
+        {
+          "section": "voice-2",
+          "catalogKey": "voice",
+          "stem": "vocals",
+          "mixSaid": [
+            "voice"
+          ],
+          "stemSaid": [
+            "voice"
+          ],
+          "mixWrong": [],
+          "stemWrong": []
+        },
+        {
+          "section": "voice-3",
+          "catalogKey": "voice",
+          "stem": "vocals",
+          "mixSaid": [
+            "flute",
+            "voice"
+          ],
+          "stemSaid": [
+            "voice"
+          ],
+          "mixWrong": [
+            "flute"
+          ],
+          "stemWrong": []
+        },
+        {
+          "section": "voice-4",
+          "catalogKey": "voice",
+          "stem": "vocals",
+          "mixSaid": [
+            "voice"
+          ],
+          "stemSaid": [
+            "voice"
+          ],
+          "mixWrong": [],
+          "stemWrong": []
+        },
+        {
+          "section": "voice-5",
+          "catalogKey": "voice",
+          "stem": "vocals",
+          "mixSaid": [
+            "voice"
+          ],
+          "stemSaid": [],
+          "mixWrong": [],
+          "stemWrong": []
+        },
+        {
+          "section": "voice-6",
+          "catalogKey": "voice",
+          "stem": "vocals",
+          "mixSaid": [
+            "flute"
+          ],
+          "stemSaid": [],
+          "mixWrong": [
+            "flute"
+          ],
+          "stemWrong": []
+        },
+        {
+          "section": "voice-7",
+          "catalogKey": "voice",
+          "stem": "vocals",
+          "mixSaid": [],
+          "stemSaid": [],
+          "mixWrong": [],
+          "stemWrong": []
+        },
+        {
+          "section": "voice-8",
+          "catalogKey": "voice",
+          "stem": "vocals",
+          "mixSaid": [],
+          "stemSaid": [
+            "voice"
+          ],
+          "mixWrong": [],
+          "stemWrong": []
+        }
+      ],
+      "status": "ok",
+      "wrongAnchors": {
+        "mix": 3,
+        "stem": 0
+      },
+      "better": "stem"
     }
   ],
-  "note": "Сравнение только на вырезанных якорях, не дольше 20 с. Полные песни этим шагом не разделялись."
+  "note": "Сравнение только на вырезанных якорях, не дольше 20 с. Стем ни на одной песне не хуже и в сумме называет чужой класс реже. Задание тогда разделяет песню целиком и в решение идут стемы."
 }
