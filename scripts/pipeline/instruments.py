@@ -20,11 +20,16 @@ except `ensemble` has an English prompt. A second, general list (timpani, tabla,
 is reported when it wins and is never written as a catalogue key. PANNs weights are not
 loaded: the code repository has no LICENSE file and the Zenodo record only says Open.
 
-Windows are 1–3 s. A label is active only when its cosine is the closest, ahead of silence
-and ahead of the runner-up, for at least two windows in a row. Softmax is reported but not
-used as a gate: with many prompts it sits near 1/N. Thresholds are constants of the method,
-not of a song. The agent confirms the proposal against the credits before anything is written
-into lyrics.json.
+Windows are 1–3 s. The open timeline (every prompt, for the markdown report) is active
+only when its cosine is the closest, ahead of silence and ahead of the runner-up, for at
+least two windows in a row. Softmax is reported but not used as a gate: with many prompts
+it sits near 1/N.
+
+Lyrics data is a second, closed pass over the same cosines: only instruments named in this
+recording's credits (song.json roles, plus the heading «Закрытый набор этой записи» in
+sources.md). A timed entrance needs a recording-relative cosine gap, three neighbouring
+windows, and the credited key to be the closest prompt on that stem. The script still does
+not edit lyrics.json.
 """
 from __future__ import annotations
 
@@ -66,6 +71,25 @@ BRIDGE_S = 2.0
 BRIDGE_DRUM_S = 1.0
 MIN_REGION_S = 1.5
 MIN_DRUM_REGION_S = 1.0
+# Closed-set gate for the data proposal. Method-wide: the same numbers on every recording.
+# The recording can only raise the floor (its 75th-percentile gap). If even the 90th
+# percentile stays under the floor, these prompts do not separate and no time is emitted.
+CLOSED_MARGIN_FLOOR = 0.04
+CLOSED_AGREE = 3
+CLOSED_GAP_PERCENTILE = 75.0
+CLOSED_SEPARATION_PERCENTILE = 90.0
+CLOSED_HEADING = '## Закрытый набор этой записи'
+# A credit that names drums without naming the drum. Not a darbuka, bendir or daf.
+GENERIC_PERCUSSION = ('ударные', 'оркестровая перкуссия', 'перкуссия', 'percussion')
+GROUP_ROLES = ('ансамбль', 'оркестр', 'orchestra', 'ensemble')
+# Credit phrasing that is not the catalogue's display name.
+ROLE_ALIASES = {
+    'классическая гитара': 'guitar',
+    'гитара': 'guitar',
+}
+# Singers stay in `voice`. They are not instrumental entrances.
+NOT_INSTRUMENTS = ('voice', 'choir')
+_ROLE_SPLIT = re.compile(r'[,;/+]|\s+и\s+', re.IGNORECASE)
 
 # English prompts state the organological facts already in src/instruments/list.ts.
 # `ensemble` is a drawing of several instruments, not a timbre, so it has no prompt.
@@ -428,7 +452,8 @@ def activation(probs: np.ndarray, sims: np.ndarray, column: int) -> tuple[np.nda
 
 
 def regions_from_mask(times: np.ndarray, mask: np.ndarray, hop: float, prob: np.ndarray,
-                      margin: np.ndarray, sim: np.ndarray, stem: str, min_len: float, bridge: float) -> list[Region]:
+                      margin: np.ndarray, sim: np.ndarray, stem: str, min_len: float, bridge: float,
+                      min_windows: int = MIN_WINDOWS) -> list[Region]:
     idx = np.flatnonzero(mask)
     if len(idx) == 0:
         return []
@@ -445,7 +470,7 @@ def regions_from_mask(times: np.ndarray, mask: np.ndarray, hop: float, prob: np.
         t0 = float(times[group[0]] - hop / 2.0)
         t1 = float(times[group[-1]] + hop / 2.0)
         # One window is a coin flip when cosines are close. Two agreeing windows are a region.
-        if len(group) < MIN_WINDOWS or t1 - t0 < min_len:
+        if len(group) < min_windows or t1 - t0 < min_len:
             continue
         out.append(Region(
             start=max(0.0, t0), end=t1,
@@ -729,6 +754,314 @@ def section_drums(onsets: np.ndarray, env: np.ndarray, sections: list[dict], fou
     return rows
 
 
+def _fold(text: str) -> str:
+    return text.casefold().replace('ё', 'е').strip()
+
+
+def _role_tokens(role: str) -> list[str]:
+    return [piece.strip() for piece in _ROLE_SPLIT.split(role) if piece.strip()]
+
+
+def _name_maps(rows: list[tuple[str, str, str]]) -> tuple[dict[str, str], dict[str, str]]:
+    """Folded catalogue display name → key, and folded extra-label name → key."""
+    catalog = {}
+    for key, name, _family in rows:
+        folded = _fold(name)
+        if folded:
+            catalog[folded] = key
+    extra = {_fold(name): key for key, name in EXTRA_NAMES.items()}
+    return catalog, extra
+
+
+def build_closed_set(credits: list[dict], sources: str, rows: list[tuple[str, str, str]]) -> dict:
+    """Instruments this recording's credits name, plus ensemble when the group is unnamed.
+
+    song.json roles are matched to catalogue display names. sources.md is read only under
+    the heading «Закрытый набор этой записи»: the rest of the file often quotes another
+    concert or a page that was not opened, and those names must not become candidates.
+    """
+    catalog_names, extra_names = _name_maps(rows)
+    russian = {key: name for key, name, _family in rows}
+    keys: list[str] = []
+    heading_unknown: list[str] = []
+    ensemble = False
+    generic = False
+    uncatalogued: list[str] = []
+    players: dict[str, list[str]] = {}
+    singers: list[str] = []
+
+    def add_key(key: str) -> None:
+        nonlocal ensemble
+        if key == 'ensemble':
+            ensemble = True
+            return
+        if key in NOT_INSTRUMENTS:
+            return
+        if key not in keys:
+            keys.append(key)
+
+    def consider_token(token: str, raw: str, person: str | None) -> None:
+        nonlocal generic, ensemble
+        folded = _fold(token)
+        if not folded:
+            return
+        if folded in GENERIC_PERCUSSION:
+            generic = True
+            ensemble = True
+            return
+        if folded in GROUP_ROLES:
+            ensemble = True
+            return
+        # Heading bullets are catalogue keys (`ney`); credit roles are Russian names (`Най`).
+        if folded in CATALOG_PROMPTS or folded == 'ensemble':
+            add_key(folded)
+            return
+        key = ROLE_ALIASES.get(folded) or catalog_names.get(folded)
+        if key == 'ensemble':
+            ensemble = True
+            return
+        if key in NOT_INSTRUMENTS:
+            if person and person not in singers:
+                singers.append(person)
+            return
+        if key:
+            add_key(key)
+            if person:
+                bucket = players.setdefault(key, [])
+                if person not in bucket:
+                    bucket.append(person)
+            return
+        extra = extra_names.get(folded)
+        if extra:
+            label = EXTRA_NAMES.get(extra, raw)
+            if label not in uncatalogued:
+                uncatalogued.append(label)
+            return
+        # A heading bullet that is neither a key nor a known name is a typo to surface.
+        if person is None and folded not in heading_unknown:
+            heading_unknown.append(raw.strip())
+
+    # The explicit list leads. Credit roles then add anything the heading did not repeat.
+    lines = sources.splitlines()
+    start = next((i + 1 for i, line in enumerate(lines) if line.strip() == CLOSED_HEADING), None)
+    if start is not None:
+        for line in lines[start:]:
+            if line.startswith('## '):
+                break
+            match = re.match(r'\s*[-*]\s+(\S+)', line)
+            if match:
+                consider_token(match.group(1), match.group(1), None)
+    for credit in credits:
+        role = str(credit.get('role', ''))
+        person = str(credit.get('name', '')).strip()
+        for token in _role_tokens(role):
+            consider_token(token, token, person or None)
+
+    if ensemble and 'ensemble' not in keys:
+        keys.append('ensemble')
+    performers = {}
+    for key, names in players.items():
+        if len(names) == 1:
+            performers[key] = f'{names[0]} ({russian.get(key, key).lower()})'
+    prompt_keys = [key for key in keys if key in CATALOG_PROMPTS]
+    return {
+        'keys': keys,
+        'prompt_keys': prompt_keys,
+        'ensemble': ensemble or ('ensemble' in keys),
+        'generic_percussion': generic,
+        'uncatalogued': uncatalogued,
+        'performers': performers,
+        'players': {key: names for key, names in players.items()},
+        'heading_unknown': heading_unknown,
+        'singers': singers,
+    }
+
+
+def closed_gaps_and_votes(sims: np.ndarray, scored: np.ndarray, closed_idx: list[int],
+                          threshold: float | None) -> tuple[np.ndarray, np.ndarray]:
+    """Per window: closed-set gap (nan if the window was quiet) and the voted column or -1.
+
+    The vote requires the credited key to beat the closed runner-up by `threshold`, to beat
+    silence by the method floor, and to be at least as close as every prompt outside the
+    closed set. An uncredited timbre that scores higher vetoes the window: the best of a
+    short list is not yet evidence that this instrument is the one sounding.
+    """
+    n = sims.shape[0]
+    gaps = np.full(n, np.nan)
+    vote = np.full(n, -1, dtype=int)
+    if n == 0 or not closed_idx:
+        return gaps, vote
+    bg = sims.shape[1] - 1
+    closed = np.asarray(closed_idx, dtype=int)
+    block = sims[:, closed]
+    rows = np.arange(n)
+    if block.shape[1] == 1:
+        top_local = np.zeros(n, dtype=int)
+        top_vals = block[:, 0]
+        second_vals = None
+    else:
+        order = np.argsort(block, axis=1)
+        top_local = order[:, -1]
+        second_vals = block[rows, order[:, -2]]
+        top_vals = block[rows, top_local]
+    silence = sims[:, bg]
+    outside = np.ones(sims.shape[1], dtype=bool)
+    outside[closed] = False
+    outside[bg] = False
+    outsider = sims[:, outside].max(axis=1) if outside.any() else np.full(n, -1.0)
+    if second_vals is None:
+        gap = np.minimum(top_vals - silence, top_vals - outsider)
+    else:
+        gap = top_vals - second_vals
+    gaps = np.where(scored, gap, np.nan)
+    if threshold is None:
+        return gaps, vote
+    ok = (scored & np.isfinite(gap) & (gap >= threshold)
+          & (top_vals >= silence + CLOSED_MARGIN_FLOOR)
+          & (top_vals >= outsider))
+    vote = np.where(ok, closed[top_local], -1).astype(int)
+    return gaps, vote
+
+
+def calibrate_closed(gaps: list[np.ndarray]) -> dict:
+    finite = np.concatenate([g[np.isfinite(g)] for g in gaps]) if gaps else np.zeros(0)
+    windows = int(len(finite))
+    if windows < CLOSED_AGREE:
+        return {'separated': False, 'threshold': None, 'gap_p75': None, 'gap_p90': None, 'windows': windows}
+    p75 = float(np.percentile(finite, CLOSED_GAP_PERCENTILE))
+    p90 = float(np.percentile(finite, CLOSED_SEPARATION_PERCENTILE))
+    separated = bool(p90 >= CLOSED_MARGIN_FLOOR)
+    threshold = max(CLOSED_MARGIN_FLOOR, p75) if separated else None
+    return {
+        'separated': separated,
+        'threshold': None if threshold is None else round(float(threshold), 4),
+        'gap_p75': round(p75, 4),
+        'gap_p90': round(p90, 4),
+        'windows': windows,
+    }
+
+
+def bass_unnamed(env: np.ndarray, prompt_keys: list[str]) -> dict:
+    """Low end with no credited bass instrument. A report note, never a lyrics entry."""
+    named = bool(set(prompt_keys) & {'double-bass', 'cello', 'piano'})
+    if len(env) == 0:
+        fraction = 0.0
+        longest_s = 0.0
+    else:
+        loud = env >= ENERGY_FLOOR
+        fraction = float(np.mean(loud))
+        longest = 0
+        run = 0
+        for on in loud:
+            run = run + 1 if on else 0
+            longest = max(longest, run)
+        longest_s = longest / FEATURE_RATE
+    present = (not named) and (fraction >= 0.05 or longest_s >= 3.0)
+    note = ''
+    if present:
+        note = (f'Басовый стем громкий: доля кадров выше порога {fraction:.2f}, '
+                f'самый длинный отрезок {longest_s:.1f} с. В титрах этой записи низкий инструмент не назван, '
+                'поэтому в данные вступление не ставится.')
+    return {
+        'present': present,
+        'named_bass': named,
+        'loud_fraction': round(fraction, 3),
+        'longest_s': round(longest_s, 2),
+        'note': note,
+    }
+
+
+def data_proposal(packs: dict[str, dict], closed: dict, sections: list[dict],
+                  names: dict[str, str], env_bass: np.ndarray) -> dict:
+    """Timed entrances that clear the closed-set gate. Open-set regions are not copied here."""
+    allowed = set(closed['prompt_keys'])
+    gap_rows = []
+    best: dict[str, float] = {}
+    for pack in packs.values():
+        closed_idx = [i for i, key in enumerate(pack['keys']) if key in allowed]
+        # Gaps of every loud window calibrate the recording. The best gap kept for the
+        # table is only a window the credited key actually won, including over outsiders.
+        gaps, votes_at_floor = closed_gaps_and_votes(
+            pack['sims'], pack['scored'], closed_idx, CLOSED_MARGIN_FLOOR)
+        gap_rows.append(gaps)
+        for key_i, key in enumerate(pack['keys']):
+            if key not in allowed:
+                continue
+            mine = votes_at_floor == key_i
+            if mine.any():
+                value = float(np.max(gaps[mine]))
+                if key not in best or value > best[key]:
+                    best[key] = value
+    cal = calibrate_closed(gap_rows)
+    found: dict[str, list[Region]] = {}
+    threshold = cal['threshold']
+    if cal['separated'] and threshold is not None:
+        for stem, pack in packs.items():
+            closed_idx = [i for i, key in enumerate(pack['keys']) if key in allowed]
+            gaps, votes = closed_gaps_and_votes(pack['sims'], pack['scored'], closed_idx, float(threshold))
+            margin = np.where(np.isfinite(gaps), gaps, 0.0)
+            for col, key in enumerate(pack['keys']):
+                if key not in allowed:
+                    continue
+                mask = votes == col
+                found.setdefault(key, []).extend(regions_from_mask(
+                    pack['times'], mask, pack['hop'], margin, margin, pack['sims'][:, col],
+                    stem, 1.0, 0.0, CLOSED_AGREE,
+                ))
+        for key, parts in list(found.items()):
+            merged = merge_regions(parts, 0.0)
+            if merged:
+                found[key] = merged
+            else:
+                del found[key]
+    flat = []
+    by_section = []
+    for section in sections:
+        start, end = float(section['start']), float(section['end'])
+        rows = []
+        for key, regions in found.items():
+            for region in regions:
+                clipped = clip_entry(region, start, end)
+                if clipped is None:
+                    continue
+                row = {
+                    'key': key,
+                    'name': names.get(key, key),
+                    'at': clipped['at'],
+                    'until': clipped['until'],
+                    'holds_to_section_end': clipped['holds_to_section_end'],
+                    'confidence': round(float(clipped['margin']), 3),
+                    'similarity': clipped['similarity'],
+                    'margin': round(float(clipped['margin']), 3),
+                    'stem': clipped['stem'],
+                }
+                rows.append(row)
+                flat.append({**row, 'section': section['id']})
+        rows.sort(key=lambda row: (row['at'], row['key']))
+        if rows:
+            by_section.append({'id': section['id'], 'kind': section['kind'], 'entries': rows})
+    flat.sort(key=lambda row: (row['at'], row['key']))
+    return {
+        'separated': cal['separated'],
+        'threshold': cal['threshold'],
+        'margin_floor': CLOSED_MARGIN_FLOOR,
+        'agree_windows': CLOSED_AGREE,
+        'gap_p75': cal['gap_p75'],
+        'gap_p90': cal['gap_p90'],
+        'windows': cal['windows'],
+        'instruments': closed['keys'],
+        'performers': closed['performers'],
+        'uncatalogued': closed['uncatalogued'],
+        'generic_percussion': closed['generic_percussion'],
+        'heading_unknown': closed['heading_unknown'],
+        'singers': closed['singers'],
+        'best_gap': {key: round(value, 3) for key, value in sorted(best.items())},
+        'entries': flat,
+        'sections': by_section,
+        'bass_unnamed': bass_unnamed(env_bass, closed['prompt_keys']),
+    }
+
+
 def _cell(value) -> str:
     return str(value).replace('|', '/').replace('\n', ' ')
 
@@ -737,8 +1070,34 @@ def _span(row: dict) -> str:
     return f"{row['at']:.2f}–{row['until']:.2f}"
 
 
+def _data_table(proposal: dict, names: dict[str, str]) -> str:
+    """One row per credited instrument: a confident entrance, or no time."""
+    by_key: dict[str, list[dict]] = {}
+    for row in proposal['entries']:
+        by_key.setdefault(row['key'], []).append(row)
+    head = '| инструмент из титров | вступление | уверенность |\n|---|---|---|\n'
+    body = []
+    threshold = proposal.get('threshold')
+    bar = 'запись не разделила эти подсказки' if not proposal['separated'] else f'порог записи {threshold}'
+    for key in proposal['instruments']:
+        name = names.get(key, key)
+        rows = by_key.get(key, [])
+        if key == 'ensemble' or key not in CATALOG_PROMPTS:
+            when = 'без времени'
+            conf = 'у ансамбля нет тембра, секунду скрипт не ставит'
+        elif rows:
+            when = '; '.join(f"{row['at']:.2f}–{row['until']:.2f}" for row in rows)
+            conf = '; '.join(f"отрыв {row['confidence']:.2f}" for row in rows) + f' ({bar})'
+        else:
+            when = 'без времени'
+            best = proposal.get('best_gap', {}).get(key)
+            conf = bar if best is None else f'лучший отрыв {best:.2f}, {bar}'
+        body.append(f'| {_cell(name)} | {when} | {_cell(conf)} |\n')
+    return head + ''.join(body)
+
+
 def render_md(slug: str, title: str, duration: float, line: list[dict], sections: list[dict],
-              drums: list[dict], diag: dict) -> str:
+              drums: list[dict], diag: dict, proposal: dict, names: dict[str, str]) -> str:
     def table(rows: list[dict]) -> str:
         if not rows:
             return 'Скрипт не выделил отдельный инструмент.\n'
@@ -755,19 +1114,48 @@ def render_md(slug: str, title: str, duration: float, line: list[dict], sections
         f"| {pack.get('margin_p90', '—')} | {pack.get('gap_p90', '—')} | {pack.get('top_prob_p90', '—')} |\n"
         for name, pack in diag.items()
     )
+    credited = ', '.join(names.get(key, key) for key in proposal['instruments']) or '—'
+    extra = ', '.join(proposal['uncatalogued']) or '—'
+    unknown = ', '.join(proposal['heading_unknown']) or '—'
+    performers = ', '.join(proposal['performers'].values()) or '—'
+    bass = proposal['bass_unnamed']
+    if bass.get('note'):
+        bass_line = bass['note'] + '\n'
+    elif bass.get('named_bass'):
+        bass_line = 'В титрах назван низкий инструмент. Отдельной пометки о безымянном низе нет.\n'
+    else:
+        bass_line = 'Басовый стем не держит длинный громкий отрезок. Пометки о безымянном низе нет.\n'
     parts = [
         f'# {title}: инструменты по звуку\n',
-        'Предложение скрипта. В `lyrics.json` его переносит агент после сверки с титрами. '
+        'Два слоя. Для данных — закрытый набор: инструменты, названные титрами этой записи, '
+        'и только те вступления, которые прошли порог этой же записи. Агент переносит в `lyrics.json` '
+        'только эту таблицу. Открытое распознавание ниже остаётся подсказкой человеку и в данные не идёт.\n',
         'Файл лежит рядом с картой голоса, а не в папке с тем же именем: `docs/analysis/'
         f'{slug}.md` уже занят.\n',
         f'Модель: `{CLAP_ID}` (Apache-2.0). Стемы: htdemucs (MIT). Огибающие: librosa (ISC). '
         f'Окно {WINDOW_S:.1f} с; шаг ударных {DRUM_HOP_S:.1f} с, остальных стемов {HOP_S:.1f} с, смеси {MIX_HOP_S:.1f} с. '
-        'Пороги общие для любой записи. Уверенность — средняя вероятность подсказки на окнах отрезка '
-        'после сглаживания, не калиброванная доля истины. Сходство — косинус CLAP.\n',
+        'Пороги общие для метода. Уверенность закрытого набора — отрыв косинуса от второй подсказки этого набора, '
+        'не вероятность softmax.\n',
         f'Длительность {duration:.2f} с.\n',
-        '## Вся запись\n',
+        '## Для данных\n',
+        f'Закрытый набор: {credited}.\n',
+        f'В титрах названо, в каталоге рисунков нет (в данные не пишется): {extra}.\n',
+        f'Один исполнитель на инструмент: {performers}.\n',
+        f'Неразобранные пункты закрытого списка: {unknown}.\n',
+        ('Ударные в титрах названы обобщённо: в данные идёт ансамбль, без выдуманного барабана.\n'
+         if proposal.get('generic_percussion') else ''),
+        (f"Порог: отрыв не ниже {CLOSED_MARGIN_FLOOR}, и не ниже 75-го перцентиля отрывов этой записи "
+         f"({proposal.get('gap_p75')}). 90-й перцентиль {proposal.get('gap_p90')}. "
+         f"Соседних окон подряд: {CLOSED_AGREE}. "
+         + ('Запись разделила подсказки закрытого набора.\n' if proposal['separated']
+            else 'Запись не разделила подсказки закрытого набора: временных вступлений нет.\n')),
+        _data_table(proposal, names),
+        bass_line,
+        '## Открытое распознавание\n',
+        'Всё, что слышно, включая отсутствующее в титрах и в каталоге. Подсказка для человека. '
+        'В `lyrics.json` эти строки не переносятся.\n',
         table(line),
-        '## По секциям\n',
+        '## По секциям (открытое распознавание)\n',
     ]
     by_id = {row['id']: row for row in drums}
     for section in sections:
@@ -841,6 +1229,13 @@ def analyze(slug: str) -> None:
     del tagger
     found = collect_regions(packs, rows)
     sections = project(found, lyrics['sections'], names)
+    sources_path = song_dir(slug) / 'sources.md'
+    sources = sources_path.read_text(encoding='utf-8') if sources_path.is_file() else ''
+    closed = build_closed_set(song.get('credits') or [], sources, rows)
+    proposal = data_proposal(packs, closed, lyrics['sections'], names, envs['bass'])
+    print(f"  закрытый набор: {closed['keys']}; порог {proposal['threshold']}; "
+          f"вступлений {len(proposal['entries'])}; низ без имени {proposal['bass_unnamed']['present']}",
+          flush=True)
     try:
         onsets = drum_onsets(stems['drums'], CLAP_SR)
     except Exception as exc:  # noqa: BLE001 — the names still stand if onset detection fails
@@ -872,6 +1267,10 @@ def analyze(slug: str) -> None:
         },
         'prompts': {**CATALOG_PROMPTS, **EXTRA_PROMPTS, 'background': BACKGROUND},
         'diagnostics': {'text_pairs': text_pairs, 'stems': diag},
+        'closed_set': {key: closed[key] for key in (
+            'keys', 'prompt_keys', 'ensemble', 'generic_percussion', 'uncatalogued',
+            'performers', 'players', 'heading_unknown', 'singers')},
+        'data_proposal': proposal,
         'timeline': line,
         'sections': sections,
         'drums': {'onset_count': int(len(onsets)), 'hits_per_s': hits_per_s.tolist(), 'sections': drums},
@@ -885,7 +1284,9 @@ def analyze(slug: str) -> None:
     json_path = out_dir / f'{slug}-instruments.json'
     md_path = out_dir / f'{slug}-instruments.md'
     json_path.write_text(dump_json(payload), encoding='utf-8')
-    md_path.write_text(render_md(slug, payload['title'], duration, line, sections, drums, diag), encoding='utf-8')
+    md_path.write_text(
+        render_md(slug, payload['title'], duration, line, sections, drums, diag, proposal, names),
+        encoding='utf-8')
     elapsed = time.perf_counter() - started
     catalog_n = sum(1 for row in line if row['in_catalog'] and not row['family_voice'])
     extra_n = sum(1 for row in line if not row['in_catalog'])
@@ -933,6 +1334,73 @@ def _self_test() -> None:
     sims[:, 2] = 0.05
     mask_a, _, _ = activation(probs, sims, 0)
     assert mask_a[3] and not mask_a[0], mask_a
+    # Closed set: a heading does not swallow a later roster, and a generic drum credit is ensemble.
+    fixture_sources = (
+        '## Закрытый набор этой записи\n'
+        '- ney\n- violin\n- ensemble\n'
+        '## Другой состав\n- piano\n- oud\n- double-bass\n'
+    )
+    fixture_credits = [
+        {'role': 'Танбур', 'name': 'А'},
+        {'role': 'Классическая гитара, танбур', 'name': 'Б'},
+        {'role': 'Ударные', 'name': 'В'},
+        {'role': 'Даф', 'name': 'Г'},
+        {'role': 'Балабан', 'name': 'Д'},
+        {'role': 'Хор', 'name': 'Е'},
+    ]
+    got = build_closed_set(fixture_credits, fixture_sources, rows)
+    assert got['keys'][:3] == ['ney', 'violin', 'ensemble'] or got['keys'][:2] == ['ney', 'violin'], got['keys']
+    assert 'piano' not in got['keys'] and 'double-bass' not in got['keys'] and 'oud' not in got['keys'], got
+    assert 'tanbur' in got['keys'] and 'guitar' in got['keys'] and 'daf' in got['keys'], got
+    assert 'darbuka' not in got['keys'] and 'bendir' not in got['keys'], got
+    assert got['generic_percussion'] is True and got['keys'][-1] == 'ensemble', got
+    assert 'балабан' in got['uncatalogued'], got
+    assert 'tanbur' not in got['performers'], got['performers']
+    assert got['performers']['guitar'].startswith('Б ('), got['performers']
+    assert got['performers']['daf'].startswith('Г ('), got['performers']
+    assert 'Е' in got['singers'], got
+    # Credited key must be the closest prompt. A louder uncredited timbre vetoes the window.
+    grid = np.zeros((6, 3))
+    grid[:, 2] = 0.10
+    grid[0:3, 0] = 0.50
+    grid[0:3, 1] = 0.20
+    grid[3:6, 0] = 0.20
+    grid[3:6, 1] = 0.50
+    scored = np.ones(6, dtype=bool)
+    gaps, votes = closed_gaps_and_votes(grid, scored, [0], CLOSED_MARGIN_FLOOR)
+    assert list(votes) == [0, 0, 0, -1, -1, -1], votes
+    assert calibrate_closed([np.array([0.01, 0.02, 0.015])])['separated'] is False
+    loud = np.array([0.2, 0.01, 0.01, 0.25])
+    assert calibrate_closed([loud])['separated'] is True
+    assert calibrate_closed([loud])['threshold'] >= CLOSED_MARGIN_FLOOR
+    # These three recordings: the 2020 roster and the unopened snippet must stay out of the data set.
+    expected = {
+        'i-have-come-alive': {'tanbur', 'ney', 'kamancheh', 'oud', 'qanun', 'erhu', 'daf', 'guitar', 'santur', 'baglama', 'ensemble'},
+        'one': {'ney', 'violin', 'qanun', 'santur', 'ensemble'},
+        'karitas': {'erhu', 'oud', 'ney', 'violin', 'ensemble'},
+    }
+    banned = {'double-bass', 'cello', 'harp', 'piano', 'tar', 'darbuka', 'bendir', 'tombak', 'riq'}
+    for slug, want in expected.items():
+        song = load_json(song_dir(slug) / 'song.json')
+        text = (song_dir(slug) / 'sources.md').read_text(encoding='utf-8')
+        closed = build_closed_set(song.get('credits') or [], text, rows)
+        assert set(closed['keys']) == want, (slug, closed['keys'])
+        assert not (set(closed['keys']) & banned), (slug, closed['keys'])
+        assert not closed['heading_unknown'], (slug, closed['heading_unknown'])
+    ihca = build_closed_set(
+        load_json(song_dir('i-have-come-alive') / 'song.json').get('credits') or [],
+        (song_dir('i-have-come-alive') / 'sources.md').read_text(encoding='utf-8'), rows)
+    assert 'tanbur' not in ihca['performers'] and 'kamancheh' not in ihca['performers'], ihca['performers']
+    for key in ('ney', 'oud', 'qanun', 'erhu', 'daf', 'guitar', 'santur', 'baglama'):
+        assert key in ihca['performers'], (key, ihca['performers'])
+    assert ihca['performers']['ney'].startswith('Eyüpcan Açıkpazu'), ihca['performers']['ney']
+    assert 'балабан' in ihca['uncatalogued'] and 'ситар' in ihca['uncatalogued'], ihca['uncatalogued']
+    quiet_bass = bass_unnamed(np.zeros(100), ['ney'])
+    assert quiet_bass['present'] is False, quiet_bass
+    loud_bass = bass_unnamed(np.full(FEATURE_RATE * 5, 0.5), ['ney'])
+    assert loud_bass['present'] is True and loud_bass['named_bass'] is False, loud_bass
+    named_bass = bass_unnamed(np.full(FEATURE_RATE * 5, 0.5), ['double-bass'])
+    assert named_bass['present'] is False and named_bass['named_bass'] is True, named_bass
     print('instruments self-test ok')
 
 

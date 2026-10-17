@@ -17,6 +17,7 @@ supplies beat times; librosa's beat tracker is the fallback. Nothing here is tun
 """
 from __future__ import annotations
 
+import gzip
 import json
 import sys
 
@@ -120,8 +121,11 @@ FEATURE_RATE = 20  # Hz. Contract allows 20–50; 20 matches peaks.json and keep
 FEATURE_SR = 16000
 DB_RANGE = 40.0  # 0 is this many dB under the mix's loud level; the loud level itself is 1.
 TRACK_ORDER = ('loud', 'onset', 'bright', 'drums', 'bass', 'other', 'vocals')
-# Compact JSON, two decimal places. One decimal if the file would pass 900 KB.
+# Compact JSON, two decimal places (values stay 0…1). One decimal if gzip would pass
+# ~150 KB — that is the size a host such as Vercel actually sends. The uncompressed
+# cap below is only a backstop for a file that would be huge even before compression.
 SIZE_BUDGET = 900_000
+COMPRESSED_BUDGET = 150_000
 BEAT_CHECKPOINT = 'final0'
 
 
@@ -163,6 +167,10 @@ def _fmt(value: float, places: int) -> str:
         return str(int(round(value)))
     text = f'{value:.{places}f}'.rstrip('0').rstrip('.')
     return text or '0'
+
+
+def _gzip_len(text: str) -> int:
+    return len(gzip.compress(text.encode('utf-8'), compresslevel=9))
 
 
 def _dumps(rate: int, duration: float, tracks: dict[str, np.ndarray], beats: list[float] | None, places: int) -> str:
@@ -293,17 +301,26 @@ def write_features(slug: str):
     tracks = _curves(mix, stems, FEATURE_SR, n)
     beats, beat_note = _track_beats(mix_path, mix, FEATURE_SR, duration)
     places = 2
-    text = _dumps(FEATURE_RATE, duration, {k: _quantize(tracks[k], places) for k in TRACK_ORDER}, beats, places)
-    if len(text.encode('utf-8')) > SIZE_BUDGET:
+    quantised = {k: _quantize(tracks[k], places) for k in TRACK_ORDER}
+    text = _dumps(FEATURE_RATE, duration, quantised, beats, places)
+    if len(text.encode('utf-8')) > SIZE_BUDGET or _gzip_len(text) > COMPRESSED_BUDGET:
+        # Still 0…1, so featureAt keeps interpolating. Tenths are coarser, not a new scale.
         places = 1
-        text = _dumps(FEATURE_RATE, duration, {k: _quantize(tracks[k], places) for k in TRACK_ORDER}, beats, places)
+        quantised = {k: _quantize(tracks[k], places) for k in TRACK_ORDER}
+        text = _dumps(FEATURE_RATE, duration, quantised, beats, places)
     out = audio_dir(slug) / 'features.json'
     out.write_text(text, encoding='utf-8')
     size = out.stat().st_size
+    gzip_size = _gzip_len(text)
     print(f'FEATURES {slug} duration={duration:.3f} rate={FEATURE_RATE} places={places} '
-          f'bytes={size} beats={beat_note} → {out}')
+          f'bytes={size} gzip={gzip_size} beats={beat_note} → {out}')
     if size > 1_500_000:
         raise SystemExit(f'features.json весит {size} байт — это больше бюджета')
+    if gzip_size > COMPRESSED_BUDGET:
+        raise SystemExit(
+            f'features.json после gzip весит {gzip_size} байт при одном знаке — '
+            f'это больше ~150 КБ, которые отдаёт сервер. Шкала в файле остаётся 0…1.'
+        )
     return out
 
 
