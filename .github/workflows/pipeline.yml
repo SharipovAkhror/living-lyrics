@@ -1,0 +1,179 @@
+# Audio pipeline on GitHub's runners (public repository: free, 4 CPU, 16 GB RAM).
+#
+# Start: push a job file jobs/<slug>.json, for example {"stages": ["separate", "align", "qa"]},
+# or Actions → pipeline → Run workflow. Result: one commit with the updated lyrics.json and song.json,
+# docs/analysis/<slug>-qa.md (sync report) and the job file removed. Procedure for agents:
+# docs/methodology/05-alignment.md.
+#
+# Job file fields: "stages" (decrypt separate sections transcribe align qa), optional "align" and
+# "qa" — lists of extra options for align.py / qa_sync.py, e.g. {"qa": ["--fix"]}.
+# Needs the repository secret AUDIO_KEY (Settings → Secrets and variables → Actions).
+name: pipeline
+
+on:
+  push:
+    paths: ['jobs/*.json']
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Песня (slug)'
+        required: true
+      stages:
+        description: 'Стадии через пробел'
+        default: 'separate align qa'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pipeline-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    env:
+      AUDIO_KEY: ${{ secrets.AUDIO_KEY }}
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PYTHONUNBUFFERED: '1'
+      OMP_NUM_THREADS: '4'
+      MKL_NUM_THREADS: '4'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - name: Check the AUDIO_KEY secret
+        run: |
+          if [ -z "$AUDIO_KEY" ]; then
+            echo "::error title=Нет секрета AUDIO_KEY::Записи в репозитории зашифрованы. Добавьте секрет: Settings → Secrets and variables → Actions → New repository secret, имя AUDIO_KEY, значение — как у переменной AUDIO_KEY в Vercel (64 шестнадцатеричных знака). Потом запустите задание снова."
+            exit 1
+          fi
+          if ! [[ "$AUDIO_KEY" =~ ^[0-9a-fA-F]{64}$ ]]; then
+            echo "::error title=AUDIO_KEY неверного вида::Ожидается 64 шестнадцатеричных знака (32 байта)."
+            exit 1
+          fi
+
+      - name: Collect jobs
+        id: jobs
+        env:
+          INPUT_SLUG: ${{ inputs.slug }}
+          INPUT_STAGES: ${{ inputs.stages }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, pathlib, re
+          jobs = []
+          if os.environ.get('INPUT_SLUG'):
+              jobs.append({'slug': os.environ['INPUT_SLUG'].strip(), 'stages': os.environ.get('INPUT_STAGES', '').split(), 'file': ''})
+          else:
+              for p in sorted(pathlib.Path('jobs').glob('*.json')):
+                  try:
+                      d = json.loads(p.read_text(encoding='utf-8'))
+                  except ValueError as e:
+                      print(f'::error file={p}::не JSON: {e}')
+                      continue
+                  jobs.append({'slug': d.get('slug', p.stem), 'stages': d.get('stages', ['separate', 'align', 'qa']),
+                               'align': d.get('align', []), 'qa': d.get('qa', []), 'file': str(p)})
+          ok = []
+          for j in jobs:
+              if not re.fullmatch(r'[a-z0-9-]+', j['slug']) or not pathlib.Path('content/songs', j['slug']).is_dir():
+                  print(f"::error::нет песни content/songs/{j['slug']}")
+                  continue
+              ok.append(j)
+          pathlib.Path('/tmp/jobs.json').write_text(json.dumps(ok))
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"count={len(ok)}\n")
+              f.write(f"slugs={' '.join(j['slug'] for j in ok)}\n")
+          print(json.dumps(ok, indent=1))
+          EOF
+
+      - uses: actions/setup-python@v5
+        if: steps.jobs.outputs.count != '0'
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: scripts/pipeline/requirements.txt
+
+      - name: Cache models (Demucs, MMS_FA, Whisper)
+        if: steps.jobs.outputs.count != '0'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/torch
+            ~/.cache/huggingface
+          key: models-v1-${{ hashFiles('scripts/pipeline/requirements.txt') }}
+          restore-keys: models-v1-
+
+      - name: Cache Demucs stems (encrypted, four stems)
+        if: steps.jobs.outputs.count != '0'
+        uses: actions/cache@v4
+        with:
+          path: work/stem-cache
+          # v1 held vocals only. Do not restore it: a partial cache must not skip four-stem Demucs.
+          key: stems-htdemucs4-v1-${{ github.run_id }}
+          restore-keys: stems-htdemucs4-v1-
+
+      - name: Install ffmpeg and Python packages
+        if: steps.jobs.outputs.count != '0'
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+          python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -r scripts/pipeline/requirements.txt
+          python -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available()); raise SystemExit('+cu' in torch.__version__)"
+
+      - name: Run stages
+        id: run
+        if: steps.jobs.outputs.count != '0'
+        run: |
+          set +e  # one failing song must not stop the others; run.sh reports through its exit code
+          worst=0
+          python3 -c "import json; [print(j['slug'], ' '.join(j['stages']), '|', ' '.join(j.get('align', [])), '|', ' '.join(j.get('qa', []))) for j in json.load(open('/tmp/jobs.json'))]" > /tmp/jobs.txt
+          while IFS='|' read -r head align qa; do
+            set -- $head
+            slug=$1; shift
+            echo "::group::$slug: $*"
+            # </dev/null: ffmpeg would otherwise eat the job list this loop reads
+            (cd scripts/pipeline && python3 stem_cache.py unpack "$slug" ../../work/stem-cache) < /dev/null
+            ALIGN_ARGS="$align" QA_ARGS="$qa" bash scripts/pipeline/sandbox/run.sh "$slug" "$@" < /dev/null
+            rc=$?
+            (cd scripts/pipeline && python3 stem_cache.py pack "$slug" ../../work/stem-cache) < /dev/null
+            echo "::endgroup::"
+            echo "$slug: код $rc" >> /tmp/summary.txt
+            if [ $rc -eq 2 ]; then
+              echo "::error::$slug: стадия упала, см. лог шага"
+              mkdir -p docs/analysis
+              { echo "# Конвейер: $slug — ошибка"; echo; echo "Запуск ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}, стадии: $*."; echo; echo '```'; tail -n 60 "work/$slug/run.log"; echo '```'; } > "docs/analysis/$slug-qa.md"
+            fi
+            [ $rc -gt $worst ] && worst=$rc
+          done < /tmp/jobs.txt
+          echo "worst=$worst" >> "$GITHUB_OUTPUT"
+          cat /tmp/summary.txt >> "$GITHUB_STEP_SUMMARY"
+          for f in docs/analysis/*-qa.md; do [ -f "$f" ] && { echo; cat "$f"; } >> "$GITHUB_STEP_SUMMARY"; done
+          exit 0
+
+      - name: Commit results and remove the job files
+        if: always() && steps.jobs.outputs.count != '0'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898283+github-actions[bot]@users.noreply.github.com'
+          for slug in ${{ steps.jobs.outputs.slugs }}; do
+            git add "content/songs/$slug/lyrics.json" "content/songs/$slug/song.json" 2>/dev/null || true
+            [ -f "docs/analysis/$slug-qa.md" ] && git add "docs/analysis/$slug-qa.md"
+          done
+          python3 -c "import json; [print(j['file']) for j in json.load(open('/tmp/jobs.json')) if j['file']]" | while read -r f; do
+            git rm -q --ignore-unmatch "$f"
+          done
+          if git diff --cached --quiet; then echo 'нечего коммитить'; exit 0; fi
+          git commit -q -m "pipeline: ${{ steps.jobs.outputs.slugs }}" -m "Run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          for i in 1 2 3; do
+            git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            sleep $((i * 5))
+          done
+          echo '::error::не удалось отправить коммит'; exit 1
+
+      - name: Fail when a stage failed
+        if: steps.run.outputs.worst == '2'
+        run: exit 1

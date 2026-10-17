@@ -63,6 +63,16 @@ export function letters(text: string) {
     .toLowerCase();
 }
 
+/** Same rule as scripts/pipeline/timing.py is_solo: one named singer, not a choir or a duet. */
+function isSoloVoice(sectionVoice: string | undefined, lineVoice: string | undefined): boolean {
+  const voice = (lineVoice || sectionVoice || '').trim();
+  if (!voice) return false;
+  const low = voice.toLowerCase().replace(/ё/g, 'е');
+  if (low === 'все' || low === 'all' || low === 'все исполнители' || low.startsWith('все ') || low.startsWith('all ')) return false;
+  if (` ${low} `.includes(' и ')) return false;
+  return !['хор', 'choir', 'chorus', 'cappella', 'ансамбль', 'ensemble', 'оркестр', 'orchestra', 'tutti'].some((m) => low.includes(m));
+}
+
 /**
  * Commentary used to be the field `sharh` (Arabic شرح) and the flag `sharh-draft`.
  * Zod strips unknown keys, so a leftover name would vanish without this check.
@@ -241,6 +251,7 @@ function check(slug: string): Issue[] {
       // Words: increasing, inside the section
       line.words.forEach((w, wi) => {
         if (w.e <= w.s) err(lw, `слово «${w.w}»: e ≤ s`);
+        if (w.e > song.duration + 0.5) err(lw, `слово «${w.w}» кончается (${w.e}) позже конца записи (${song.duration})`);
         if (w.s < lastWordEnd - 0.02 && !(li === 0 && wi === 0 && si > 0 && w.s >= s.start)) err(lw, `слово «${w.w}» начинается (${w.s}) раньше конца предыдущего (${lastWordEnd})`);
         if (w.s < s.start - 0.05 || w.e > s.end + 0.05) warn(lw, `слово «${w.w}» выходит за границы секции`);
         if (/\s/.test(w.w)) err(lw, `слово «${w.w}» содержит пробел — разбейте на два`);
@@ -289,6 +300,17 @@ function check(slug: string): Issue[] {
   });
   for (const script of uncoveredScripts) {
     warn('lyrics.json', `письмо ${script}: отдельного шрифта в проекте нет, строка рисуется f-serif, недостающие знаки берёт системный шрифт`);
+  }
+
+  if (song.timing.status === 'aligned') {
+    const vocalSections = lyrics.sections.filter((s) => s.kind === 'vocal');
+    const vocalLines = vocalSections.flatMap((s) => s.lines);
+    if (vocalLines.length > 0 && vocalLines.every((l) => l.flags?.includes('timing-draft')))
+      err('song.json', 'timing.status = aligned, но у каждой вокальной строки флаг timing-draft: пословная заливка нигде не включена, статус должен остаться draft');
+    const solo = vocalSections.flatMap((s) => s.lines.filter((l) => isSoloVoice(s.voice, l.voice)));
+    const proven = solo.filter((l) => !l.flags?.includes('timing-draft'));
+    if (solo.length === 0 || proven.length * 5 < solo.length * 4)
+      err('song.json', `timing.status = aligned, но доказано ${proven.length} из ${solo.length} сольных строк: нужно не меньше 80 %, иначе статус draft`);
   }
 
   for (const l of song.languages) if (!langsSeen.has(l)) warn('song.json', `язык ${l} указан в languages, но строк на нём нет`);
