@@ -96,6 +96,8 @@
   --ink-sung: var(--ink);
   /* Unsung words stay readable ahead of time (the reader must be able to read the whole line). */
   --ink-unsung: rgba(17, 17, 20, 0.4);
+  /* Opacity of words not yet sung (and of lines ahead). */
+  --dim-op: 0.42;
   /* Material plate behind the current line. */
   --plate-tint: rgba(255, 255, 255, 0.5);
   --ink-ghost: rgba(17, 17, 20, 0.1);
@@ -200,6 +202,7 @@
   :root {
     --glass-edge: var(--separator-opaque);
     --ink-unsung: color-mix(in srgb, var(--ink) 55%, transparent);
+    --dim-op: 0.58;
     --label-2: color-mix(in srgb, var(--label) 78%, transparent);
   }
 }

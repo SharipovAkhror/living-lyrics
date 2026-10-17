@@ -110,6 +110,9 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
         if (!b) continue;
         b.fn(t, k - pos, lerp(A.get(k) ?? 0, B.get(k) ?? 0, f), waits.get(k) ?? 0);
       }
+      // The title card is always in the DOM; once it leaves the window nothing updates it, so hide it
+      // explicitly (otherwise a seek from the start leaves it frozen over the lyrics).
+      if (!list.includes(INTRO) && intro.current && intro.current.style.visibility !== 'hidden') intro.current.style.visibility = 'hidden';
 
       // The material plate follows the current line (not the title card or an instrumental block,
       // which carry their own plates).

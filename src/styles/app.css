@@ -162,26 +162,30 @@
   height: 0;
 }
 .w {
-  /* One text layer per word. Colour comes from --lit (0–100 %, set per line by the Scene):
-     dim → lit for the whole line, or a travelling gradient clipped to the glyphs while a word is
-     sung. The generous padding (cancelled by negative margins) keeps overflowing Nastaliq and
-     Naskh strokes inside the box, so the clipped fill never cuts them. */
+  /* One text layer per word, always in an opaque colour. Dimming is done with the word's own
+     opacity (--litf 0…1 from the Scene), not with a translucent colour: a translucent colour paints
+     overlapping parts of joined Arabic and Persian letters twice and they look doubled at the
+     joins, while element opacity composites the word as one layer. While a word is sung, a
+     gradient clipped to the glyphs travels across it. Generous padding (cancelled by negative
+     margins) keeps overflowing Nastaliq and Naskh strokes inside the box, so the clip never cuts them. */
   --w-lit: var(--ink);
-  --w-dim: var(--ink-unsung);
   position: relative;
   display: inline-block;
   white-space: nowrap;
   padding: 0.36em 0.21em;
   margin: -0.3em -0.18em;
-  color: color-mix(in srgb, var(--w-lit) var(--lit, 0%), var(--w-dim));
+  color: var(--w-lit);
+  opacity: calc(var(--dim-op) + (1 - var(--dim-op)) * var(--litf, 0));
 }
 .w--em {
   --w-lit: var(--accent);
 }
 .w.is-sung {
-  color: var(--w-lit);
+  opacity: 1;
 }
 .w.is-filling {
+  --w-dim: color-mix(in srgb, var(--w-lit) 42%, transparent);
+  opacity: 1;
   color: transparent;
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;

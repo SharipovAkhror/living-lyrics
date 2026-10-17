@@ -115,7 +115,7 @@ function LineBlockImpl({ cue, wordSync, settings, motion, stage, register, onPic
     const o = orig.current;
     if (o) {
       const lit = d <= 0 ? 1 : clamp01((0.5 - d) / 0.5);
-      o.style.setProperty('--lit', `${Math.round((wordSync ? (d < 0 ? 1 : 0) : lit) * 100)}%`);
+      o.style.setProperty('--litf', (wordSync ? (d < 0 ? 1 : 0) : lit).toFixed(3));
     }
     for (let i = 0; i < line.words.length; i++) {
       const el = words.current[i];
