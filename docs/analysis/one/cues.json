@@ -1,0 +1,443 @@
+[
+  {
+    "line": "eckhart-1-1",
+    "cue": 1,
+    "lang": "en-GB",
+    "start": 0.145,
+    "end": 4.705
+  },
+  {
+    "line": "eckhart-1-2",
+    "cue": 2,
+    "lang": "en-GB",
+    "start": 5.896,
+    "end": 17.352
+  },
+  {
+    "line": "eckhart-1-3",
+    "cue": 3,
+    "lang": "en-GB",
+    "start": 17.352,
+    "end": 25.771
+  },
+  {
+    "line": "eckhart-2-1",
+    "cue": 4,
+    "lang": "en-GB",
+    "start": 28.004,
+    "end": 32.478
+  },
+  {
+    "line": "eckhart-2-2",
+    "cue": 5,
+    "lang": "en-GB",
+    "start": 32.478,
+    "end": 45
+  },
+  {
+    "line": "eckhart-2-3",
+    "cue": 6,
+    "lang": "en-GB",
+    "start": 45,
+    "end": 54.44
+  },
+  {
+    "line": "shushtari-1-1",
+    "cue": 7,
+    "lang": "en-GB",
+    "start": 58.298,
+    "end": 69.467
+  },
+  {
+    "line": "shushtari-1-2",
+    "cue": 8,
+    "lang": "en-GB",
+    "start": 71.411,
+    "end": 80.627
+  },
+  {
+    "line": "shushtari-1-3",
+    "cue": 9,
+    "lang": "en-GB",
+    "start": 82.349,
+    "end": 91.449
+  },
+  {
+    "line": "shushtari-2-1",
+    "cue": 10,
+    "lang": "en-GB",
+    "start": 91.682,
+    "end": 102.59
+  },
+  {
+    "line": "shushtari-2-2",
+    "cue": 11,
+    "lang": "en-GB",
+    "start": 102.88,
+    "end": 114
+  },
+  {
+    "line": "shushtari-2-3",
+    "cue": 12,
+    "lang": "en-GB",
+    "start": 114,
+    "end": 124.453
+  },
+  {
+    "line": "shushtari-2-tail-1",
+    "cue": 13,
+    "lang": "en-GB",
+    "start": 124.453,
+    "end": 129.173
+  },
+  {
+    "line": "shushtari-2-tail-2",
+    "cue": 14,
+    "lang": "en-GB",
+    "start": 130.605,
+    "end": 135.73
+  },
+  {
+    "line": "eckhart-3-1",
+    "cue": 15,
+    "lang": "en-GB",
+    "start": 137.275,
+    "end": 142.495
+  },
+  {
+    "line": "eckhart-3-2",
+    "cue": 16,
+    "lang": "en-GB",
+    "start": 142.857,
+    "end": 153.018
+  },
+  {
+    "line": "eckhart-3-3",
+    "cue": 17,
+    "lang": "en-GB",
+    "start": 153.018,
+    "end": 161.146
+  },
+  {
+    "line": "eckhart-4-1",
+    "cue": 18,
+    "lang": "en-GB",
+    "start": 162.169,
+    "end": 166.307
+  },
+  {
+    "line": "eckhart-4-2",
+    "cue": 19,
+    "lang": "en-GB",
+    "start": 166.307,
+    "end": 177.066
+  },
+  {
+    "line": "eckhart-4-3",
+    "cue": 20,
+    "lang": "en-GB",
+    "start": 177.066,
+    "end": 186.406
+  },
+  {
+    "line": "shushtari-3-1",
+    "cue": 21,
+    "lang": "en-GB",
+    "start": 191.085,
+    "end": 201.12
+  },
+  {
+    "line": "shushtari-3-2",
+    "cue": 22,
+    "lang": "en-GB",
+    "start": 201.12,
+    "end": 210.892
+  },
+  {
+    "line": "shushtari-3-3",
+    "cue": 23,
+    "lang": "en-GB",
+    "start": 211.504,
+    "end": 220.536
+  },
+  {
+    "line": "shushtari-3-tail",
+    "cue": 24,
+    "lang": "en-GB",
+    "start": 220.536,
+    "end": 226.141
+  },
+  {
+    "line": "shushtari-4-3",
+    "cue": 25,
+    "lang": "en-GB",
+    "start": 226.337,
+    "end": 246.391
+  },
+  {
+    "line": "qasida-b1a",
+    "cue": 26,
+    "lang": "en-GB",
+    "start": 303.383,
+    "end": 309.121
+  },
+  {
+    "line": "qasida-b1b",
+    "cue": 27,
+    "lang": "en-GB",
+    "start": 309.121,
+    "end": 315.04
+  },
+  {
+    "line": "qasida-b2a",
+    "cue": 28,
+    "lang": "en-GB",
+    "start": 315.04,
+    "end": 320.56
+  },
+  {
+    "line": "qasida-b2b",
+    "cue": 29,
+    "lang": "en-GB",
+    "start": 320.56,
+    "end": 326.573
+  },
+  {
+    "line": "qasida-b3a",
+    "cue": 30,
+    "lang": "en-GB",
+    "start": 332.165,
+    "end": 338.145
+  },
+  {
+    "line": "qasida-b3b",
+    "cue": 31,
+    "lang": "en-GB",
+    "start": 338.145,
+    "end": 343.565
+  },
+  {
+    "line": "qasida-b4a",
+    "cue": 32,
+    "lang": "en-GB",
+    "start": 343.748,
+    "end": 349.428
+  },
+  {
+    "line": "qasida-b4b",
+    "cue": 33,
+    "lang": "en-GB",
+    "start": 349.428,
+    "end": 354.988
+  },
+  {
+    "line": "qasida-b5a",
+    "cue": 34,
+    "lang": "en-GB",
+    "start": 367.051,
+    "end": 372.76
+  },
+  {
+    "line": "qasida-b5b",
+    "cue": 35,
+    "lang": "en-GB",
+    "start": 372.76,
+    "end": 378.573
+  },
+  {
+    "line": "qasida-b4a-2",
+    "cue": 36,
+    "lang": "en-GB",
+    "start": 378.573,
+    "end": 384.233
+  },
+  {
+    "line": "qasida-b4b-2",
+    "cue": 37,
+    "lang": "en-GB",
+    "start": 384.233,
+    "end": 390
+  },
+  {
+    "line": "qasida-b5a-2",
+    "cue": 38,
+    "lang": "en-GB",
+    "start": 442.276,
+    "end": 447.666
+  },
+  {
+    "line": "qasida-b5b-2",
+    "cue": 39,
+    "lang": "en-GB",
+    "start": 447.666,
+    "end": 453.48
+  },
+  {
+    "line": "qasida-b4a-3",
+    "cue": 40,
+    "lang": "en-GB",
+    "start": 453.48,
+    "end": 459.01
+  },
+  {
+    "line": "qasida-b4b-3",
+    "cue": 41,
+    "lang": "en-GB",
+    "start": 459.01,
+    "end": 464.86
+  },
+  {
+    "line": "qasida-b5a-3",
+    "cue": 42,
+    "lang": "en-GB",
+    "start": 476.2,
+    "end": 481.658
+  },
+  {
+    "line": "qasida-b5b-3",
+    "cue": 43,
+    "lang": "en-GB",
+    "start": 481.658,
+    "end": 487.134
+  },
+  {
+    "line": "qasida-b4a-4",
+    "cue": 44,
+    "lang": "en-GB",
+    "start": 487.134,
+    "end": 492.939
+  },
+  {
+    "line": "qasida-b4b-4",
+    "cue": 45,
+    "lang": "en-GB",
+    "start": 492.939,
+    "end": 498.196
+  },
+  {
+    "line": "qasida-b1a-2",
+    "cue": 46,
+    "lang": "en-GB",
+    "start": 560.667,
+    "end": 566.39
+  },
+  {
+    "line": "qasida-b1b-2",
+    "cue": 47,
+    "lang": "en-GB",
+    "start": 566.39,
+    "end": 572.027
+  },
+  {
+    "line": "qasida-b2a-2",
+    "cue": 48,
+    "lang": "en-GB",
+    "start": 572.027,
+    "end": 577.608
+  },
+  {
+    "line": "qasida-b2b-2",
+    "cue": 49,
+    "lang": "en-GB",
+    "start": 577.608,
+    "end": 583.298
+  },
+  {
+    "line": "eckhart-f-01",
+    "cue": 50,
+    "lang": "en-GB",
+    "start": 729.384,
+    "end": 731.103
+  },
+  {
+    "line": "eckhart-f-02",
+    "cue": 51,
+    "lang": "en-GB",
+    "start": 731.649,
+    "end": 733.255
+  },
+  {
+    "line": "eckhart-f-03",
+    "cue": 52,
+    "lang": "en-GB",
+    "start": 733.972,
+    "end": 735.785
+  },
+  {
+    "line": "eckhart-f-04",
+    "cue": 53,
+    "lang": "en-GB",
+    "start": 736.099,
+    "end": 738.039
+  },
+  {
+    "line": "eckhart-f-05",
+    "cue": 54,
+    "lang": "en-GB",
+    "start": 738.519,
+    "end": 740.697
+  },
+  {
+    "line": "eckhart-f-06",
+    "cue": 55,
+    "lang": "en-GB",
+    "start": 740.879,
+    "end": 742.539
+  },
+  {
+    "line": "eckhart-f-07",
+    "cue": 56,
+    "lang": "en-GB",
+    "start": 742.834,
+    "end": 744.934
+  },
+  {
+    "line": "eckhart-f-08",
+    "cue": 57,
+    "lang": "en-GB",
+    "start": 745.243,
+    "end": 747.378
+  },
+  {
+    "line": "eckhart-f-09",
+    "cue": 58,
+    "lang": "en-GB",
+    "start": 747.853,
+    "end": 749.828
+  },
+  {
+    "line": "eckhart-f-10",
+    "cue": 59,
+    "lang": "en-GB",
+    "start": 750.158,
+    "end": 752.098
+  },
+  {
+    "line": "eckhart-f-11",
+    "cue": 60,
+    "lang": "en-GB",
+    "start": 752.414,
+    "end": 754.194
+  },
+  {
+    "line": "eckhart-f-12",
+    "cue": 61,
+    "lang": "en-GB",
+    "start": 754.681,
+    "end": 756.438
+  },
+  {
+    "line": "eckhart-f-13",
+    "cue": 62,
+    "lang": "en-GB",
+    "start": 756.917,
+    "end": 758.952
+  },
+  {
+    "line": "eckhart-f-14",
+    "cue": 63,
+    "lang": "en-GB",
+    "start": 758.952,
+    "end": 764.339
+  }
+]

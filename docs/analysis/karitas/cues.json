@@ -1,0 +1,422 @@
+[
+  {
+    "line": "fuzuli-f1-1",
+    "cue": 1,
+    "lang": "tr",
+    "start": 37.39,
+    "end": 45.709
+  },
+  {
+    "line": "fuzuli-f2-1",
+    "cue": 2,
+    "lang": "tr",
+    "start": 46.562,
+    "end": 54.601
+  },
+  {
+    "line": "fuzuli-f3-1",
+    "cue": 3,
+    "lang": "tr",
+    "start": 55.467,
+    "end": 65.617
+  },
+  {
+    "line": "fuzuli-f4-1",
+    "cue": 4,
+    "lang": "tr",
+    "start": 65.617,
+    "end": 74.362
+  },
+  {
+    "line": "fuzuli-f5-1",
+    "cue": 5,
+    "lang": "tr",
+    "start": 76.373,
+    "end": 83.28
+  },
+  {
+    "line": "fuzuli-f6-1",
+    "cue": 6,
+    "lang": "tr",
+    "start": 83.28,
+    "end": 90.135
+  },
+  {
+    "line": "fuzuli-f5-2",
+    "cue": 7,
+    "lang": "tr",
+    "start": 90.135,
+    "end": 97.047
+  },
+  {
+    "line": "fuzuli-f6-2",
+    "cue": 8,
+    "lang": "tr",
+    "start": 97.047,
+    "end": 104.147
+  },
+  {
+    "line": "hildegard-h1-1",
+    "cue": 9,
+    "lang": "en-GB",
+    "start": 104.147,
+    "end": 112.252
+  },
+  {
+    "line": "hildegard-h2-1",
+    "cue": 10,
+    "lang": "en-GB",
+    "start": 112.252,
+    "end": 116.999
+  },
+  {
+    "line": "hildegard-h3-1",
+    "cue": 11,
+    "lang": "en-GB",
+    "start": 116.999,
+    "end": 120.466
+  },
+  {
+    "line": "hildegard-h4-1",
+    "cue": 12,
+    "lang": "en-GB",
+    "start": 120.466,
+    "end": 124.48
+  },
+  {
+    "line": "hildegard-h5-1",
+    "cue": 13,
+    "lang": "en-GB",
+    "start": 124.48,
+    "end": 128.76
+  },
+  {
+    "line": "hildegard-h6-1",
+    "cue": 14,
+    "lang": "en-GB",
+    "start": 128.76,
+    "end": 137.159
+  },
+  {
+    "line": "fuzuli-f5-3",
+    "cue": 15,
+    "lang": "tr",
+    "start": 138.48,
+    "end": 145.282
+  },
+  {
+    "line": "fuzuli-f6-3",
+    "cue": 16,
+    "lang": "tr",
+    "start": 145.282,
+    "end": 151.84
+  },
+  {
+    "line": "fuzuli-f5-4",
+    "cue": 17,
+    "lang": "tr",
+    "start": 151.84,
+    "end": 158.532
+  },
+  {
+    "line": "fuzuli-f6-4",
+    "cue": 18,
+    "lang": "tr",
+    "start": 158.532,
+    "end": 164.773
+  },
+  {
+    "line": "fuzuli-f7-1",
+    "cue": 19,
+    "lang": "tr",
+    "start": 164.773,
+    "end": 171.241
+  },
+  {
+    "line": "fuzuli-f8-1",
+    "cue": 20,
+    "lang": "tr",
+    "start": 171.241,
+    "end": 180.265
+  },
+  {
+    "line": "hildegard-h1-2",
+    "cue": 21,
+    "lang": "en-GB",
+    "start": 195,
+    "end": 202.8
+  },
+  {
+    "line": "hildegard-h2-2",
+    "cue": 22,
+    "lang": "en-GB",
+    "start": 202.8,
+    "end": 207.756
+  },
+  {
+    "line": "hildegard-h3-2",
+    "cue": 23,
+    "lang": "en-GB",
+    "start": 207.756,
+    "end": 211
+  },
+  {
+    "line": "hildegard-h4-2",
+    "cue": 24,
+    "lang": "en-GB",
+    "start": 211,
+    "end": 214.8
+  },
+  {
+    "line": "hildegard-h5-2",
+    "cue": 25,
+    "lang": "en-GB",
+    "start": 214.8,
+    "end": 219.2
+  },
+  {
+    "line": "hildegard-h6-2",
+    "cue": 26,
+    "lang": "en-GB",
+    "start": 219.387,
+    "end": 229.105
+  },
+  {
+    "line": "fuzuli-f5-5",
+    "cue": 27,
+    "lang": "tr",
+    "start": 229.105,
+    "end": 235.47
+  },
+  {
+    "line": "fuzuli-f6-5",
+    "cue": 28,
+    "lang": "tr",
+    "start": 235.47,
+    "end": 242.053
+  },
+  {
+    "line": "fuzuli-f5-6",
+    "cue": 29,
+    "lang": "tr",
+    "start": 242.053,
+    "end": 248.52
+  },
+  {
+    "line": "fuzuli-f6-6",
+    "cue": 30,
+    "lang": "tr",
+    "start": 248.52,
+    "end": 254.507
+  },
+  {
+    "line": "fuzuli-f7-2",
+    "cue": 31,
+    "lang": "tr",
+    "start": 254.507,
+    "end": 260.96
+  },
+  {
+    "line": "fuzuli-f8-2",
+    "cue": 32,
+    "lang": "tr",
+    "start": 260.96,
+    "end": 268.28
+  },
+  {
+    "line": "call-y1",
+    "cue": 33,
+    "lang": "ar",
+    "start": 291.12,
+    "end": 300.174
+  },
+  {
+    "line": "fuzuli-f1a",
+    "cue": 34,
+    "lang": "tr",
+    "start": 427.68,
+    "end": 433.169
+  },
+  {
+    "line": "fuzuli-f1-2",
+    "cue": 35,
+    "lang": "tr",
+    "start": 437.373,
+    "end": 451.345
+  },
+  {
+    "line": "call-y2-1",
+    "cue": 36,
+    "lang": "ar",
+    "start": 452.278,
+    "end": 459.217
+  },
+  {
+    "line": "call-y2-2",
+    "cue": 37,
+    "lang": "ar",
+    "start": 459.76,
+    "end": 466.172
+  },
+  {
+    "line": "shushtari-s1-1",
+    "cue": 38,
+    "lang": "ar",
+    "start": 466.892,
+    "end": 479.05
+  },
+  {
+    "line": "shushtari-s1-2",
+    "cue": 39,
+    "lang": "ar",
+    "start": 480.25,
+    "end": 486.296
+  },
+  {
+    "line": "shushtari-s2",
+    "cue": 40,
+    "lang": "ar",
+    "start": 486.296,
+    "end": 509.8
+  },
+  {
+    "line": "nabulsi-n1",
+    "cue": 41,
+    "lang": "ar",
+    "start": 509.8,
+    "end": 518.972
+  },
+  {
+    "line": "nabulsi-n2",
+    "cue": 42,
+    "lang": "ar",
+    "start": 520.64,
+    "end": 529.879
+  },
+  {
+    "line": "sabr-p1",
+    "cue": 43,
+    "lang": "ar",
+    "start": 529.879,
+    "end": 539.867
+  },
+  {
+    "line": "sabr-p2",
+    "cue": 44,
+    "lang": "ar",
+    "start": 539.867,
+    "end": 550.27
+  },
+  {
+    "line": "hildegard-h1-3",
+    "cue": 45,
+    "lang": "en-GB",
+    "start": 879.04,
+    "end": 884.48
+  },
+  {
+    "line": "hildegard-h2-3",
+    "cue": 46,
+    "lang": "en-GB",
+    "start": 884.48,
+    "end": 887.532
+  },
+  {
+    "line": "hildegard-h3-3",
+    "cue": 47,
+    "lang": "en-GB",
+    "start": 887.532,
+    "end": 889.68
+  },
+  {
+    "line": "hildegard-h4-3",
+    "cue": 48,
+    "lang": "en-GB",
+    "start": 889.68,
+    "end": 892.473
+  },
+  {
+    "line": "hildegard-h5-3",
+    "cue": 49,
+    "lang": "en-GB",
+    "start": 892.473,
+    "end": 894.766
+  },
+  {
+    "line": "hildegard-h6-3",
+    "cue": 50,
+    "lang": "en-GB",
+    "start": 894.766,
+    "end": 900
+  },
+  {
+    "line": "hildegard-h1-4",
+    "cue": 51,
+    "lang": "en-GB",
+    "start": 900,
+    "end": 905.257
+  },
+  {
+    "line": "hildegard-h2-4",
+    "cue": 52,
+    "lang": "en-GB",
+    "start": 905.257,
+    "end": 908.137
+  },
+  {
+    "line": "hildegard-h3-4",
+    "cue": 53,
+    "lang": "en-GB",
+    "start": 908.137,
+    "end": 910.457
+  },
+  {
+    "line": "hildegard-h4-4",
+    "cue": 54,
+    "lang": "en-GB",
+    "start": 910.457,
+    "end": 913.2
+  },
+  {
+    "line": "hildegard-h5-4",
+    "cue": 55,
+    "lang": "en-GB",
+    "start": 913.2,
+    "end": 915.64
+  },
+  {
+    "line": "hildegard-h6-4",
+    "cue": 56,
+    "lang": "en-GB",
+    "start": 915.64,
+    "end": 920.946
+  },
+  {
+    "line": "fuzuli-f1-3",
+    "cue": 57,
+    "lang": "tr",
+    "start": 920.946,
+    "end": 926.141
+  },
+  {
+    "line": "fuzuli-f2-2",
+    "cue": 58,
+    "lang": "tr",
+    "start": 926.141,
+    "end": 931.261
+  },
+  {
+    "line": "fuzuli-f3-2",
+    "cue": 59,
+    "lang": "tr",
+    "start": 931.261,
+    "end": 936.48
+  },
+  {
+    "line": "fuzuli-f4-2",
+    "cue": 60,
+    "lang": "tr",
+    "start": 936.48,
+    "end": 942.127
+  }
+]
