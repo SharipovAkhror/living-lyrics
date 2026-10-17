@@ -10,6 +10,7 @@ import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { z } from 'zod';
 import { LyricsSchema, SongSchema, type Lyrics, type Song } from '../../src/data/schema.ts';
+import { harakatWarning } from '../../src/data/harakat.ts';
 import { INSTRUMENTS } from '../../src/instruments/list.ts';
 import { MODE_COUNTS, modeFit } from '../../src/instruments/layout.ts';
 
@@ -63,14 +64,23 @@ export function letters(text: string) {
     .toLowerCase();
 }
 
-/** Same rule as scripts/pipeline/timing.py is_solo: one named singer, not a choir or a duet. */
-function isSoloVoice(sectionVoice: string | undefined, lineVoice: string | undefined): boolean {
+/** Same rule as scripts/pipeline/timing.py group. An empty voice is one unnamed lead. */
+function voiceGroup(sectionVoice: string | undefined, lineVoice: string | undefined): 'solo' | 'choir' | 'other' {
   const voice = (lineVoice || sectionVoice || '').trim();
-  if (!voice) return false;
   const low = voice.toLowerCase().replace(/ё/g, 'е');
-  if (low === 'все' || low === 'all' || low === 'все исполнители' || low.startsWith('все ') || low.startsWith('all ')) return false;
-  if (` ${low} `.includes(' и ')) return false;
-  return !['хор', 'choir', 'chorus', 'cappella', 'ансамбль', 'ensemble', 'оркестр', 'orchestra', 'tutti'].some((m) => low.includes(m));
+  if (['хор', 'choir', 'chorus', 'cappella'].some((m) => low.includes(m))) return 'choir';
+  if (!voice) return 'solo';
+  if (low === 'все' || low === 'all' || low === 'все исполнители' || low.startsWith('все ') || low.startsWith('all ')) return 'other';
+  if (` ${low} `.includes(' и ')) return 'other';
+  if (['ансамбль', 'ensemble', 'оркестр', 'orchestra', 'tutti'].some((m) => low.includes(m))) return 'other';
+  return 'solo';
+}
+
+/** Empty group does not block. Otherwise at least 80 % of its lines have lost timing-draft. */
+function shareOk(lines: { flags?: string[] }[]): boolean {
+  if (lines.length === 0) return true;
+  const proven = lines.filter((l) => !l.flags?.includes('timing-draft'));
+  return proven.length * 5 >= lines.length * 4;
 }
 
 /**
@@ -353,6 +363,14 @@ function check(slug: string): Issue[] {
       const ems = line.words.filter((w) => w.em).length;
       if (ems > 1) warn(lw, `ключевых слов (em) ${ems} — нужно не больше одного`);
       if (ems >= 1 && !hasEmphasisPair(line.tr.ru)) warn(lw, 'в оригинале есть em, а в переводе нет пары **…**');
+      if (ARABIC_SCRIPTS.has(line.script)) {
+        const gap = harakatWarning(line.words.map((w) => w.w).join(' '));
+        if (gap) warn(lw, gap);
+      }
+      if (line.alt && ARABIC_SCRIPTS.has(line.alt.script)) {
+        const gap = harakatWarning(line.alt.text);
+        if (gap) warn(lw, `историческое письмо: ${gap}`);
+      }
     });
   });
   for (const script of uncoveredScripts) {
@@ -364,10 +382,14 @@ function check(slug: string): Issue[] {
     const vocalLines = vocalSections.flatMap((s) => s.lines);
     if (vocalLines.length > 0 && vocalLines.every((l) => l.flags?.includes('timing-draft')))
       err('song.json', 'timing.status = aligned, но у каждой вокальной строки флаг timing-draft: пословная заливка нигде не включена, статус должен остаться draft');
-    const solo = vocalSections.flatMap((s) => s.lines.filter((l) => isSoloVoice(s.voice, l.voice)));
-    const proven = solo.filter((l) => !l.flags?.includes('timing-draft'));
-    if (solo.length === 0 || proven.length * 5 < solo.length * 4)
-      err('song.json', `timing.status = aligned, но доказано ${proven.length} из ${solo.length} сольных строк: нужно не меньше 80 %, иначе статус draft`);
+    const solo = vocalSections.flatMap((s) => s.lines.filter((l) => voiceGroup(s.voice, l.voice) === 'solo'));
+    const choir = vocalSections.flatMap((s) => s.lines.filter((l) => voiceGroup(s.voice, l.voice) === 'choir'));
+    const soloProved = solo.filter((l) => !l.flags?.includes('timing-draft')).length;
+    const choirProved = choir.filter((l) => !l.flags?.includes('timing-draft')).length;
+    if (solo.length + choir.length === 0)
+      err('song.json', 'timing.status = aligned, но нет ни соло, ни хора (дуэт и тутти в порог не входят): статус должен остаться draft');
+    else if (!shareOk(solo) || !shareOk(choir))
+      err('song.json', `timing.status = aligned, но доказано соло ${soloProved} из ${solo.length}, хор ${choirProved} из ${choir.length}: нужно не меньше 80 % в каждой группе, где она есть, иначе статус draft`);
   }
 
   for (const l of song.languages) if (!langsSeen.has(l)) warn('song.json', `язык ${l} указан в languages, но строк на нём нет`);

@@ -420,7 +420,7 @@ if (!sourcesReady) {
     row: '3',
     file: 'docs/methodology/03-structure.md',
     command: `git add jobs/${slug}.json`,
-    because: `Создайте jobs/${slug}.json: {"slug":"${slug}","stages":["separate","sections"]}. Ответ коммита сейчас не включает sections.suggested.json (он остаётся в work/ на раннере). Границы без этого файла не выдумывайте.`,
+    because: `Создайте jobs/${slug}.json: {"slug":"${slug}","stages":["separate","sections"]}. Ответ коммита кладёт карту в docs/analysis/${slug}/sections.suggested.json. Границы без этого файла не выдумывайте. Секунды перенесите в lyrics.json и проверьте на слух.`,
   };
 } else if (!textReady) {
   if (!structureReady) {

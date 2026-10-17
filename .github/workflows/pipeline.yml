@@ -2,12 +2,13 @@
 #
 # Start: push a job file jobs/<slug>.json, for example {"stages": ["separate", "align", "qa"]},
 # or Actions → pipeline → Run workflow. Result: one commit with the updated lyrics.json and song.json,
-# docs/analysis/<slug>-qa.md (sync report) and the job file removed. Procedure for agents:
+# docs/analysis/<slug>-qa.md, docs/analysis/<slug>/ (sections, transcript, locator) and the job file removed.
+# work/ is not committed. Procedure for agents:
 # docs/methodology/05-alignment.md. Stages features and instruments add public/audio/<slug>/features.json
 # and docs/analysis/<slug>-instruments.json / .md (docs/methodology/09-instruments.md). They do not
 # edit lyrics.json; the agent copies confirmed entrances afterwards.
 #
-# Job file fields: "stages" (decrypt separate sections transcribe align qa features instruments),
+# Job file fields: "stages" (decrypt separate sections transcribe diagnose align qa features instruments),
 # optional "align" and "qa" — lists of extra options for align.py / qa_sync.py, e.g. {"qa": ["--fix"]}.
 # Needs the repository secret AUDIO_KEY (Settings → Secrets and variables → Actions).
 name: pipeline
@@ -174,6 +175,8 @@ jobs:
             [ -f "public/audio/$slug/features.json" ] && git add "public/audio/$slug/features.json"
             [ -f "docs/analysis/$slug-instruments.json" ] && git add "docs/analysis/$slug-instruments.json"
             [ -f "docs/analysis/$slug-instruments.md" ] && git add "docs/analysis/$slug-instruments.md"
+            # sections.suggested.json, transcript.json, locate.md. Not work/.
+            [ -d "docs/analysis/$slug" ] && git add "docs/analysis/$slug"
           done
           python3 -c "import json; [print(j['file']) for j in json.load(open('/tmp/jobs.json')) if j['file']]" | while read -r f; do
             git rm -q --ignore-unmatch "$f"

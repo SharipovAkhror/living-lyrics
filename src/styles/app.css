@@ -1146,6 +1146,16 @@
 .seg-item[aria-checked='true'] {
   font-weight: 600;
 }
+.seg.seg--lines {
+  height: auto;
+  min-height: 44px;
+}
+.seg.seg--lines .seg-item {
+  white-space: normal;
+  font-size: 12px;
+  line-height: 1.15;
+  padding: 6px 3px;
+}
 .seg-sample {
   font-size: 17px;
   line-height: 1;

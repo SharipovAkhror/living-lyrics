@@ -177,15 +177,17 @@ export function Segmented<T extends string>({
   options,
   onChange,
   label,
+  className,
 }: {
   value: T;
   options: { value: T; label: ReactNode }[];
   onChange: (v: T) => void;
   label: string;
+  className?: string;
 }) {
   const i = Math.max(0, options.findIndex((o) => o.value === value));
   return (
-    <div className="seg" role="radiogroup" aria-label={label} style={{ ['--n' as string]: options.length, ['--i' as string]: i }}>
+    <div className={className ? `seg ${className}` : 'seg'} role="radiogroup" aria-label={label} style={{ ['--n' as string]: options.length, ['--i' as string]: i }}>
       <span className="seg-thumb" aria-hidden />
       {options.map((o) => (
         <button key={o.value} role="radio" aria-checked={o.value === value} className="seg-item" onClick={() => onChange(o.value)}>

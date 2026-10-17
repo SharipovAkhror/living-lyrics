@@ -1,0 +1,75 @@
+{
+  "key": "daf",
+  "name": "Даф",
+  "native": "دف",
+  "parts": [
+    {
+      "node": "part-skin",
+      "morph": "hit",
+      "drive": [
+        "pulse"
+      ]
+    },
+    {
+      "node": "part-jingles",
+      "drive": [
+        "pulse"
+      ],
+      "motion": "offset along extras.axis"
+    }
+  ],
+  "clips": [
+    "idle"
+  ],
+  "triangles": 34828,
+  "bytes": 226180,
+  "cameras": {
+    "hero": {
+      "position": [
+        0.58,
+        0.5,
+        0.64
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "fov": 36
+    },
+    "close": {
+      "position": [
+        0.72,
+        0.28,
+        0.5
+      ],
+      "target": [
+        0,
+        -0.02,
+        0
+      ],
+      "fov": 32
+    }
+  },
+  "materials": {
+    "wood": "#6b3e22",
+    "skin": "#d6c29e",
+    "metal": "#c7a159",
+    "leather": "#734728"
+  },
+  "author": "Living Lyrics",
+  "license": "project",
+  "proportions": {
+    "staples": 65,
+    "rings": 260,
+    "diameterCm": 52,
+    "depthCm": 6,
+    "wallCm": 1.2
+  },
+  "sources": [
+    "https://www.nasehpour.com/daf-iranian-frame-drum",
+    "https://wmic.net/iran-daf-frame-drum/",
+    "https://www.iranicaonline.org/articles/daff-and-dayera-daf-ar/",
+    "https://www.coopermanframedrums.com/products/daf"
+  ]
+}

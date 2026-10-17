@@ -3,6 +3,11 @@ import { useSyncExternalStore } from 'react';
 
 export type ThemePref = 'auto' | 'light' | 'dark';
 export type MotionPref = 'full' | 'calm' | 'off';
+/**
+ * Song-page instruments. `drawing` is the SVG engraving and the default.
+ * `engraving` and `materials` are the volume model.
+ */
+export type InstrumentStyle = 'drawing' | 'engraving' | 'materials';
 /** Persian verse. `naskh` here is Noto Naskh Arabic, not the Mushaf file. */
 export type FontPersian = 'amiri' | 'naskh' | 'scheherazade' | 'nastaliq';
 /** Latin and Cyrillic original. */
@@ -10,6 +15,7 @@ export type FontOriginal = 'source-serif' | 'cormorant' | 'eb-garamond' | 'liter
 /** Russian translation and transliteration. */
 export type FontTranslation = 'source-serif' | 'inter';
 
+const INSTRUMENT_STYLES: readonly InstrumentStyle[] = ['drawing', 'engraving', 'materials'];
 const FONT_PERSIAN: readonly FontPersian[] = ['amiri', 'naskh', 'scheherazade', 'nastaliq'];
 const FONT_ORIGINAL: readonly FontOriginal[] = ['source-serif', 'cormorant', 'eb-garamond', 'literata'];
 const FONT_TRANSLATION: readonly FontTranslation[] = ['source-serif', 'inter'];
@@ -19,6 +25,8 @@ export interface Settings {
   showTranslation: boolean;
   showTranslit: boolean;
   showAlt: boolean;
+  /** Vowel signs on Arabic-script lines. On by default: the reader is not a native. */
+  showHarakat: boolean;
   /** Commentary panel visible at all. */
   showComment: boolean;
   /** Commentary panel expanded (vs. one-line preview). */
@@ -31,6 +39,8 @@ export interface Settings {
   /** Stop at the end of every line (for learning a text line by line). */
   pauseAfterLine: boolean;
   quality: 'high' | 'saver';
+  /** Song pages. The instruments gallery previews the volume model on its own. */
+  instrumentStyle: InstrumentStyle;
   rate: number;
   volume: number;
   normalize: boolean;
@@ -45,6 +55,7 @@ export const DEFAULTS: Settings = {
   showTranslation: true,
   showTranslit: false,
   showAlt: false,
+  showHarakat: true,
   showComment: true,
   commentOpen: false,
   textScale: 1,
@@ -54,6 +65,7 @@ export const DEFAULTS: Settings = {
   fontTranslation: 'source-serif',
   pauseAfterLine: false,
   quality: 'high',
+  instrumentStyle: 'drawing',
   rate: 1,
   volume: 1,
   normalize: true,
@@ -100,6 +112,15 @@ function oneOf<T extends string>(value: unknown, allowed: readonly T[], fallback
   return typeof value === 'string' && (allowed as readonly string[]).includes(value) ? (value as T) : fallback;
 }
 
+function sanitize(out: Settings): Settings {
+  out.instrumentStyle = oneOf(out.instrumentStyle, INSTRUMENT_STYLES, 'drawing');
+  out.fontPersian = oneOf(out.fontPersian, FONT_PERSIAN, DEFAULTS.fontPersian);
+  out.fontOriginal = oneOf(out.fontOriginal, FONT_ORIGINAL, DEFAULTS.fontOriginal);
+  out.fontTranslation = oneOf(out.fontTranslation, FONT_TRANSLATION, DEFAULTS.fontTranslation);
+  if (typeof out.showHarakat !== 'boolean') out.showHarakat = DEFAULTS.showHarakat;
+  return out;
+}
+
 function read(): Settings {
   try {
     const raw = localStorage.getItem(KEY);
@@ -110,17 +131,11 @@ function read(): Settings {
     const saved = parsed as Record<string, unknown>;
     const commentMoved = migrateCommentKeys(saved);
     const fontMoved = migrateFontKeys(saved);
-    const migrated = commentMoved || fontMoved;
     const out = { ...DEFAULTS };
     for (const k of Object.keys(DEFAULTS) as (keyof Settings)[]) if (k in saved) (out as Record<string, unknown>)[k] = saved[k];
-    const fontPersian = oneOf(out.fontPersian, FONT_PERSIAN, DEFAULTS.fontPersian);
-    const fontOriginal = oneOf(out.fontOriginal, FONT_ORIGINAL, DEFAULTS.fontOriginal);
-    const fontTranslation = oneOf(out.fontTranslation, FONT_TRANSLATION, DEFAULTS.fontTranslation);
-    const sanitized = fontPersian !== out.fontPersian || fontOriginal !== out.fontOriginal || fontTranslation !== out.fontTranslation;
-    out.fontPersian = fontPersian;
-    out.fontOriginal = fontOriginal;
-    out.fontTranslation = fontTranslation;
-    if (migrated || sanitized) {
+    const before = JSON.stringify(out);
+    sanitize(out);
+    if (commentMoved || fontMoved || JSON.stringify(out) !== before) {
       try {
         localStorage.setItem(KEY, JSON.stringify(out));
       } catch {
@@ -141,7 +156,7 @@ export function getSettings() {
 }
 
 export function setSettings(patch: Partial<Settings>) {
-  state = { ...state, ...patch };
+  state = sanitize({ ...state, ...patch });
   try {
     localStorage.setItem(KEY, JSON.stringify(state));
   } catch {

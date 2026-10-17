@@ -1,0 +1,124 @@
+/* 3D instruments. The canvas is transparent outside the drawing; plates and captions stay in HTML. */
+
+.ist-gl {
+  position: absolute;
+  inset: 0;
+  /* Above every plate (fan uses z-index up to the instrument count). Transparent pixels keep the captions. */
+  z-index: 8;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  color: var(--ist-ink);
+}
+
+.ist-art.is-3d {
+  visibility: hidden;
+}
+
+.ig-card-art.is-3d {
+  touch-action: none;
+  cursor: grab;
+}
+
+.ig-card-art.is-3d:active {
+  cursor: grabbing;
+}
+
+.ig-gl {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  color: var(--ig-ink);
+}
+
+.ig-card-art.is-3d .ist-art {
+  visibility: hidden;
+}
+
+.ig .ig-card-art {
+  order: 0;
+}
+
+.ig .ig-card-text {
+  order: 1;
+}
+
+.ig-volume {
+  max-width: 280px;
+  margin-top: var(--sp-3);
+}
+
+.ig-drive,
+.ig-slider {
+  --accent: var(--ig-ink);
+}
+
+.ig-drive {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  order: 2;
+  margin-top: var(--sp-2);
+}
+
+.ig-drive label {
+  display: grid;
+  grid-template-columns: 7.2em minmax(0, 1fr) 2.4em;
+  align-items: center;
+  gap: 6px;
+  color: var(--label-2);
+  font-size: var(--t-caption1);
+}
+
+.ig-drive label > span:first-child {
+  white-space: nowrap;
+}
+
+.ig-drive .slider,
+.ig-slider .slider {
+  width: 100%;
+  min-width: 0;
+}
+
+.ig-drive-play {
+  margin-top: 4px;
+  align-self: flex-start;
+}
+
+/* A 3D instrument is the card, not a thumbnail in the corner. SVG-only cards stay a row. */
+@media (max-width: 560px) {
+  .ig .ig-card:has([data-instrument='daf']),
+  .ig .ig-card:has([data-instrument='oud']) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ig .ig-card:has([data-instrument='daf']) .ig-card-art,
+  .ig .ig-card:has([data-instrument='oud']) .ig-card-art {
+    width: auto;
+    align-self: stretch;
+    flex: none;
+    aspect-ratio: 1;
+    margin: var(--sp-3) var(--sp-3) 0;
+    border-radius: var(--r-lg);
+  }
+  .ig .ig-drive {
+    flex: none;
+    width: auto;
+    margin: 0;
+    padding: 0 var(--sp-3) var(--sp-4);
+  }
+}
+
+.t6-bench {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--label);
+}
+
+.t6-bench-stage,
+.t6-frame {
+  margin: 0 auto;
+}
