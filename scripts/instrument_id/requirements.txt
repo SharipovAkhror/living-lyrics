@@ -1,0 +1,8 @@
+# Probe dependencies. torch and torchaudio are installed first from the CPU index
+# (https://download.pytorch.org/whl/cpu), then torchvision from the same index:
+# EfficientAT imports torchvision.ops.misc.ConvNormActivation.
+# Do not add a CUDA wheel.
+numpy>=1.26
+scikit-learn>=1.4
+pillow>=10
+imageio-ffmpeg>=0.5

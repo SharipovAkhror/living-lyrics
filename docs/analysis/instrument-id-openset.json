@@ -1,0 +1,600 @@
+{
+  "goal": {
+    "oodRejection": 0.9,
+    "idCoverage": 0.8
+  },
+  "chosen": "softmax",
+  "summary": {
+    "softmax": {
+      "classes": 19,
+      "goalMet": 0,
+      "meanOodRejection": 0.44873396644131786,
+      "meanIdCoverage": 0.7832254073353736
+    },
+    "mahalanobis": {
+      "classes": 19,
+      "goalMet": 0,
+      "meanOodRejection": 0.31577892368166327,
+      "meanIdCoverage": 0.8179388678537688
+    },
+    "knn": {
+      "classes": 19,
+      "goalMet": 0,
+      "meanOodRejection": 0.349930484971137,
+      "meanIdCoverage": 0.8160541631687668
+    }
+  },
+  "perClass": [
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "oodN": 302,
+      "idTestN": 1185,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8126245070800331,
+        "idCoverage": 0.7890295358649789,
+        "oodRejection": 0.4452054794520548,
+        "oodAcceptedAsOther": 0.5547945205479452,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1151.5718946186962,
+        "idCoverage": 0.8194092827004219,
+        "oodRejection": 0.6917808219178082,
+        "oodAcceptedAsOther": 0.3082191780821918,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 33.1507707065382,
+        "idCoverage": 0.8261603375527427,
+        "oodRejection": 0.773972602739726,
+        "oodAcceptedAsOther": 0.226027397260274,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "guitar-electric",
+      "name": "электрогитара",
+      "oodN": 302,
+      "idTestN": 1191,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8483115959848434,
+        "idCoverage": 0.7766582703610412,
+        "oodRejection": 0.55,
+        "oodAcceptedAsOther": 0.44999999999999996,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1149.8407633962502,
+        "idCoverage": 0.8144416456759026,
+        "oodRejection": 0.51875,
+        "oodAcceptedAsOther": 0.48124999999999996,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 32.95474126127197,
+        "idCoverage": 0.8136020151133502,
+        "oodRejection": 0.60625,
+        "oodAcceptedAsOther": 0.39375000000000004,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "oodN": 585,
+      "idTestN": 1134,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8413492528996924,
+        "idCoverage": 0.800705467372134,
+        "oodRejection": 0.24381625441696114,
+        "oodAcceptedAsOther": 0.7561837455830389,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1161.6837364586304,
+        "idCoverage": 0.826278659611993,
+        "oodRejection": 0.24734982332155478,
+        "oodAcceptedAsOther": 0.7526501766784452,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 32.85649423247298,
+        "idCoverage": 0.8218694885361552,
+        "oodRejection": 0.27208480565371024,
+        "oodAcceptedAsOther": 0.7279151943462898,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "viola",
+      "name": "альт",
+      "oodN": 309,
+      "idTestN": 1195,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8370657653571749,
+        "idCoverage": 0.7882845188284519,
+        "oodRejection": 0.2781065088757396,
+        "oodAcceptedAsOther": 0.7218934911242604,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1150.1059279898132,
+        "idCoverage": 0.8267782426778243,
+        "oodRejection": 0.03550295857988166,
+        "oodAcceptedAsOther": 0.9644970414201184,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 32.84371883852453,
+        "idCoverage": 0.8066945606694561,
+        "oodRejection": 0.0,
+        "oodAcceptedAsOther": 1.0,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "oodN": 592,
+      "idTestN": 1121,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8407306342589941,
+        "idCoverage": 0.7957181088314005,
+        "oodRejection": 0.30847457627118646,
+        "oodAcceptedAsOther": 0.6915254237288135,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1146.6570323540232,
+        "idCoverage": 0.8046387154326494,
+        "oodRejection": 0.41694915254237286,
+        "oodAcceptedAsOther": 0.5830508474576271,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 33.02551112009894,
+        "idCoverage": 0.8135593220338984,
+        "oodRejection": 0.3050847457627119,
+        "oodAcceptedAsOther": 0.6949152542372881,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "oodN": 309,
+      "idTestN": 1194,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8274619525531983,
+        "idCoverage": 0.7855946398659966,
+        "oodRejection": 0.3129251700680272,
+        "oodAcceptedAsOther": 0.6870748299319728,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1146.512781715586,
+        "idCoverage": 0.8241206030150754,
+        "oodRejection": 0.3945578231292517,
+        "oodAcceptedAsOther": 0.6054421768707483,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 33.119954742219264,
+        "idCoverage": 0.8207705192629816,
+        "oodRejection": 0.3877551020408163,
+        "oodAcceptedAsOther": 0.6122448979591837,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "oodN": 420,
+      "idTestN": 1170,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8578411132649696,
+        "idCoverage": 0.7666666666666667,
+        "oodRejection": 0.48633879781420764,
+        "oodAcceptedAsOther": 0.5136612021857924,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1150.966410560194,
+        "idCoverage": 0.8196581196581196,
+        "oodRejection": 0.45901639344262296,
+        "oodAcceptedAsOther": 0.540983606557377,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 32.9449021150592,
+        "idCoverage": 0.8196581196581196,
+        "oodRejection": 0.5027322404371585,
+        "oodAcceptedAsOther": 0.4972677595628415,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "clarinet",
+      "name": "кларнет",
+      "oodN": 426,
+      "idTestN": 1171,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8585172631283937,
+        "idCoverage": 0.7882152006831767,
+        "oodRejection": 0.5174129353233831,
+        "oodAcceptedAsOther": 0.48258706467661694,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1162.9098517989473,
+        "idCoverage": 0.8189581554227157,
+        "oodRejection": 0.1791044776119403,
+        "oodAcceptedAsOther": 0.8208955223880597,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 32.829867335642746,
+        "idCoverage": 0.807002561912895,
+        "oodRejection": 0.2885572139303483,
+        "oodAcceptedAsOther": 0.7114427860696517,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "oboe",
+      "name": "гобой",
+      "oodN": 107,
+      "idTestN": 1233,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8229056956676624,
+        "idCoverage": 0.7891321978913219,
+        "oodRejection": 0.5094339622641509,
+        "oodAcceptedAsOther": 0.49056603773584906,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1141.9906662622427,
+        "idCoverage": 0.8158961881589619,
+        "oodRejection": 0.0,
+        "oodAcceptedAsOther": 1.0,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 32.837946021636036,
+        "idCoverage": 0.8110300081103001,
+        "oodRejection": 0.0,
+        "oodAcceptedAsOther": 1.0,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "bassoon",
+      "name": "фагот",
+      "oodN": 126,
+      "idTestN": 1230,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.836110719219976,
+        "idCoverage": 0.775609756097561,
+        "oodRejection": 0.5466666666666666,
+        "oodAcceptedAsOther": 0.45333333333333337,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1141.2868644687223,
+        "idCoverage": 0.8146341463414634,
+        "oodRejection": 0.10666666666666667,
+        "oodAcceptedAsOther": 0.8933333333333333,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 32.92764632545349,
+        "idCoverage": 0.8130081300813008,
+        "oodRejection": 0.0,
+        "oodAcceptedAsOther": 1.0,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "saxophone",
+      "name": "саксофон",
+      "oodN": 401,
+      "idTestN": 1195,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8867838649933955,
+        "idCoverage": 0.7707112970711297,
+        "oodRejection": 0.5161290322580645,
+        "oodAcceptedAsOther": 0.4838709677419355,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1166.2866919598346,
+        "idCoverage": 0.8225941422594142,
+        "oodRejection": 0.25806451612903225,
+        "oodAcceptedAsOther": 0.7419354838709677,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 32.99118852326587,
+        "idCoverage": 0.80836820083682,
+        "oodRejection": 0.3271889400921659,
+        "oodAcceptedAsOther": 0.6728110599078341,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "trumpet",
+      "name": "труба",
+      "oodN": 397,
+      "idTestN": 1172,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8387087143919374,
+        "idCoverage": 0.78839590443686,
+        "oodRejection": 0.39226519337016574,
+        "oodAcceptedAsOther": 0.6077348066298343,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1160.7182709404608,
+        "idCoverage": 0.8250853242320819,
+        "oodRejection": 0.2983425414364641,
+        "oodAcceptedAsOther": 0.7016574585635359,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 32.91860067920541,
+        "idCoverage": 0.8088737201365188,
+        "oodRejection": 0.4419889502762431,
+        "oodAcceptedAsOther": 0.5580110497237569,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "trombone",
+      "name": "тромбон",
+      "oodN": 117,
+      "idTestN": 1231,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8316395843852259,
+        "idCoverage": 0.7806661251015434,
+        "oodRejection": 0.43103448275862066,
+        "oodAcceptedAsOther": 0.5689655172413793,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1154.6085189875528,
+        "idCoverage": 0.8237205523964257,
+        "oodRejection": 0.10344827586206896,
+        "oodAcceptedAsOther": 0.896551724137931,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 33.06525319518076,
+        "idCoverage": 0.8164094232331438,
+        "oodRejection": 0.017241379310344827,
+        "oodAcceptedAsOther": 0.9827586206896551,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "french-horn",
+      "name": "валторна",
+      "oodN": 134,
+      "idTestN": 1230,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8326413503651686,
+        "idCoverage": 0.7764227642276422,
+        "oodRejection": 0.4057971014492754,
+        "oodAcceptedAsOther": 0.5942028985507246,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1157.5344237568677,
+        "idCoverage": 0.8227642276422764,
+        "oodRejection": 0.014492753623188406,
+        "oodAcceptedAsOther": 0.9855072463768116,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 33.00151832045349,
+        "idCoverage": 0.8105691056910569,
+        "oodRejection": 0.0,
+        "oodAcceptedAsOther": 1.0,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "tuba",
+      "name": "туба",
+      "oodN": 108,
+      "idTestN": 1236,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8186738947228694,
+        "idCoverage": 0.7936893203883495,
+        "oodRejection": 0.41818181818181815,
+        "oodAcceptedAsOther": 0.5818181818181818,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1151.0706852894707,
+        "idCoverage": 0.8252427184466019,
+        "oodRejection": 0.38181818181818183,
+        "oodAcceptedAsOther": 0.6181818181818182,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 32.99632834632008,
+        "idCoverage": 0.8114886731391586,
+        "oodRejection": 0.3090909090909091,
+        "oodAcceptedAsOther": 0.6909090909090909,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "accordion",
+      "name": "аккордеон",
+      "oodN": 689,
+      "idTestN": 1118,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.7912884375669225,
+        "idCoverage": 0.7880143112701252,
+        "oodRejection": 0.5920245398773006,
+        "oodAcceptedAsOther": 0.40797546012269936,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1098.6060536063394,
+        "idCoverage": 0.7987477638640429,
+        "oodRejection": 0.18404907975460122,
+        "oodAcceptedAsOther": 0.8159509202453987,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 32.80069878371973,
+        "idCoverage": 0.8094812164579607,
+        "oodRejection": 0.12269938650306748,
+        "oodAcceptedAsOther": 0.8773006134969326,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "piano",
+      "name": "фортепиано",
+      "oodN": 302,
+      "idTestN": 1196,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.833715823606221,
+        "idCoverage": 0.7750836120401338,
+        "oodRejection": 0.5133333333333333,
+        "oodAcceptedAsOther": 0.4866666666666667,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1153.0541945935138,
+        "idCoverage": 0.81438127090301,
+        "oodRejection": 0.44,
+        "oodAcceptedAsOther": 0.56,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 32.93608665233474,
+        "idCoverage": 0.8068561872909699,
+        "oodRejection": 0.7466666666666667,
+        "oodAcceptedAsOther": 0.2533333333333333,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "organ",
+      "name": "орган",
+      "oodN": 300,
+      "idTestN": 1212,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8394868750094837,
+        "idCoverage": 0.783003300330033,
+        "oodRejection": 0.5967741935483871,
+        "oodAcceptedAsOther": 0.4032258064516129,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1152.3318933821536,
+        "idCoverage": 0.8085808580858086,
+        "oodRejection": 0.5483870967741935,
+        "oodAcceptedAsOther": 0.4516129032258065,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 33.017851101836904,
+        "idCoverage": 0.806930693069307,
+        "oodRejection": 0.6612903225806451,
+        "oodAcceptedAsOther": 0.33870967741935487,
+        "valMetGoal": false
+      }
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "oodN": 301,
+      "idTestN": 1194,
+      "softmax": {
+        "goal": false,
+        "threshold": 0.8338126337008658,
+        "idCoverage": 0.7696817420435511,
+        "oodRejection": 0.4620253164556962,
+        "oodAcceptedAsOther": 0.5379746835443038,
+        "valMetGoal": false
+      },
+      "mahalanobis": {
+        "goal": false,
+        "threshold": 1142.6883815286524,
+        "idCoverage": 0.8149078726968174,
+        "oodRejection": 0.7215189873417721,
+        "oodAcceptedAsOther": 0.2784810126582279,
+        "valMetGoal": false
+      },
+      "knn": {
+        "goal": false,
+        "threshold": 33.807977308055946,
+        "idCoverage": 0.8726968174204355,
+        "oodRejection": 0.8860759493670886,
+        "oodAcceptedAsOther": 0.11392405063291144,
+        "valMetGoal": true
+      }
+    }
+  ],
+  "note": "Порог выбирается на проверке: половина групп выкинутого класса и проверка своих классов. В таблице — отложенная половина групп и тест своих классов. Цель выполнена по классу, только если обе доли держатся на этой отложенной части."
+}

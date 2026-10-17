@@ -1,0 +1,298 @@
+{
+  "perClass": [
+    {
+      "precision": 0.7571428571428571,
+      "recall": 0.7464788732394366,
+      "f1": 0.75177304964539,
+      "support": 71,
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара"
+    },
+    {
+      "precision": 0.631578947368421,
+      "recall": 0.5538461538461539,
+      "f1": 0.5901639344262295,
+      "support": 65,
+      "id": "guitar-electric",
+      "name": "электрогитара"
+    },
+    {
+      "precision": 0.8214285714285714,
+      "recall": 0.7540983606557377,
+      "f1": 0.7863247863247863,
+      "support": 122,
+      "id": "violin",
+      "name": "скрипка"
+    },
+    {
+      "precision": 0.90625,
+      "recall": 0.9508196721311475,
+      "f1": 0.9279999999999999,
+      "support": 61,
+      "id": "viola",
+      "name": "альт"
+    },
+    {
+      "precision": 0.864406779661017,
+      "recall": 0.7555555555555555,
+      "f1": 0.8063241106719368,
+      "support": 135,
+      "id": "cello",
+      "name": "виолончель"
+    },
+    {
+      "precision": 0.9523809523809523,
+      "recall": 0.967741935483871,
+      "f1": 0.96,
+      "support": 62,
+      "id": "double-bass",
+      "name": "контрабас"
+    },
+    {
+      "precision": 0.7526881720430108,
+      "recall": 0.813953488372093,
+      "f1": 0.782122905027933,
+      "support": 86,
+      "id": "flute",
+      "name": "поперечная флейта"
+    },
+    {
+      "precision": 0.6179775280898876,
+      "recall": 0.6470588235294118,
+      "f1": 0.632183908045977,
+      "support": 85,
+      "id": "clarinet",
+      "name": "кларнет"
+    },
+    {
+      "precision": 0.8214285714285714,
+      "recall": 1.0,
+      "f1": 0.9019607843137255,
+      "support": 23,
+      "id": "oboe",
+      "name": "гобой"
+    },
+    {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 26,
+      "id": "bassoon",
+      "name": "фагот"
+    },
+    {
+      "precision": 0.48717948717948717,
+      "recall": 0.6229508196721312,
+      "f1": 0.5467625899280575,
+      "support": 61,
+      "id": "saxophone",
+      "name": "саксофон"
+    },
+    {
+      "precision": 0.8676470588235294,
+      "recall": 0.7023809523809523,
+      "f1": 0.7763157894736842,
+      "support": 84,
+      "id": "trumpet",
+      "name": "труба"
+    },
+    {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 25,
+      "id": "trombone",
+      "name": "тромбон"
+    },
+    {
+      "precision": 0.8064516129032258,
+      "recall": 0.9615384615384616,
+      "f1": 0.8771929824561403,
+      "support": 26,
+      "id": "french-horn",
+      "name": "валторна"
+    },
+    {
+      "precision": 0.7777777777777778,
+      "recall": 0.7,
+      "f1": 0.7368421052631577,
+      "support": 20,
+      "id": "tuba",
+      "name": "туба"
+    },
+    {
+      "precision": 0.9854014598540146,
+      "recall": 0.9782608695652174,
+      "f1": 0.9818181818181817,
+      "support": 138,
+      "id": "accordion",
+      "name": "аккордеон"
+    },
+    {
+      "precision": 0.8028169014084507,
+      "recall": 0.95,
+      "f1": 0.8702290076335878,
+      "support": 60,
+      "id": "piano",
+      "name": "фортепиано"
+    },
+    {
+      "precision": 0.6875,
+      "recall": 0.75,
+      "f1": 0.717391304347826,
+      "support": 44,
+      "id": "organ",
+      "name": "орган"
+    },
+    {
+      "precision": 0.95,
+      "recall": 0.9193548387096774,
+      "f1": 0.9344262295081968,
+      "support": 62,
+      "id": "voice",
+      "name": "голос"
+    }
+  ],
+  "macroF1": 0.8199911404676217,
+  "microF1": 0.8105095541401274,
+  "accuracy": 0.8105095541401274,
+  "testN": 1256,
+  "acceptedPrecision": 0.8743016759776536,
+  "coverage": 0.8550955414012739,
+  "testAcceptedPrecision95": 0.9236031927023945,
+  "testCoverage95": 0.6982484076433121,
+  "familyFallback": {
+    "n": 182,
+    "correct": 0.6208791208791209,
+    "minProb": 0.7
+  },
+  "bins": [
+    {
+      "lo": 0.0,
+      "hi": 0.5,
+      "n": 131,
+      "accuracy": 0.40458015267175573
+    },
+    {
+      "lo": 0.5,
+      "hi": 0.6,
+      "n": 100,
+      "accuracy": 0.54
+    },
+    {
+      "lo": 0.6,
+      "hi": 0.7,
+      "n": 86,
+      "accuracy": 0.6627906976744186
+    },
+    {
+      "lo": 0.7,
+      "hi": 0.8,
+      "n": 104,
+      "accuracy": 0.7211538461538461
+    },
+    {
+      "lo": 0.8,
+      "hi": 0.9,
+      "n": 128,
+      "accuracy": 0.828125
+    },
+    {
+      "lo": 0.9,
+      "hi": 1.0,
+      "n": 707,
+      "accuracy": 0.9519094766619519
+    }
+  ],
+  "bySource": {
+    "irmas": {
+      "n": 673,
+      "accuracy": 0.6998514115898959,
+      "acceptedPrecision": 0.7779816513761468,
+      "coverage": 0.8098068350668648
+    },
+    "tinysol": {
+      "n": 583,
+      "accuracy": 0.9382504288164666,
+      "acceptedPrecision": 0.9735349716446124,
+      "coverage": 0.9073756432246999
+    }
+  },
+  "meta": {
+    "trainedAt": "2026-10-17T15:55Z",
+    "embedding": "efficientat-mn10_as",
+    "featureDim": 960,
+    "windowSec": 2.0,
+    "hopSec": 1.0,
+    "sampleRate": 32000,
+    "classes": [
+      "guitar-acoustic",
+      "guitar-electric",
+      "violin",
+      "viola",
+      "cello",
+      "double-bass",
+      "flute",
+      "clarinet",
+      "oboe",
+      "bassoon",
+      "saxophone",
+      "trumpet",
+      "trombone",
+      "french-horn",
+      "tuba",
+      "accordion",
+      "piano",
+      "organ",
+      "voice"
+    ],
+    "families": [
+      "guitar",
+      "bowed",
+      "flute",
+      "reed",
+      "brass",
+      "free-reed",
+      "keyboard",
+      "voice"
+    ],
+    "temperature": 1.6,
+    "threshold": 0.55,
+    "thresholdReached": true,
+    "valAcceptedPrecision": 0.9000960614793467,
+    "valCoverage": 0.871859296482412,
+    "threshold95": 0.76,
+    "valAcceptedPrecision95": 0.9506462984723855,
+    "valCoverage95": 0.7127303182579564,
+    "familyFallbackMin": 0.7,
+    "fewExamples": [],
+    "noncommercial": true,
+    "noncommercialReason": "IRMAS на Zenodo помечен CC BY-NC-SA 4.0. Веса обучены и на этих записях.",
+    "licenses": [
+      {
+        "source": "tinysol",
+        "license": "CC BY 4.0",
+        "record": "https://doi.org/10.5281/zenodo.3685367"
+      },
+      {
+        "source": "irmas",
+        "license": "CC BY-NC-SA 4.0",
+        "record": "https://doi.org/10.5281/zenodo.1290750"
+      },
+      {
+        "source": "encoder",
+        "license": "MIT",
+        "record": "https://github.com/fschmid56/EfficientAT"
+      }
+    ],
+    "irmasCapPerClass": 300,
+    "seed": 17,
+    "counts": {
+      "train": 3777,
+      "val": 1194,
+      "test": 1256
+    },
+    "split": "TinySOL: официальные fold 0–2 обучение, 3 проверка, 4 тест. IRMAS: группа — номер отрывка в имени файла, 60/20/20 по sha256, потолок файлов на класс. Официальный тест IRMAS не скачивался. Оба разбиения оптимистичны: исполнитель не удержан."
+  },
+  "supportSum": 1256
+}

@@ -1,0 +1,142 @@
+[
+  {
+    "id": "erhu",
+    "clips": 5,
+    "recordings": 1,
+    "enough": false,
+    "note": "Zenodo 10.5281/zenodo.4320991, CC BY 4.0. Исполнители в файлах не размечены, это одна коллекция консерватории, поэтому класс в голову не входит."
+  },
+  {
+    "id": "violin",
+    "clips": 585,
+    "recordings": "irmas 301, tinysol 284",
+    "enough": true,
+    "note": "уже в голове"
+  },
+  {
+    "id": "cello",
+    "clips": 592,
+    "recordings": "irmas 301, tinysol 291",
+    "enough": true,
+    "note": "уже в голове"
+  },
+  {
+    "id": "piano",
+    "clips": 302,
+    "recordings": "irmas 302",
+    "enough": true,
+    "note": "уже в голове"
+  },
+  {
+    "id": "guitar-acoustic",
+    "clips": 302,
+    "recordings": "irmas 302",
+    "enough": true,
+    "note": "уже в голове. Это не гравюра фламенко."
+  },
+  {
+    "id": "voice",
+    "clips": 301,
+    "recordings": "irmas 301",
+    "enough": true,
+    "note": "уже в голове"
+  },
+  {
+    "id": "choir",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "отдельного набора хора с явной лицензией нет. В голове есть голос, не хор."
+  },
+  {
+    "id": "baglama",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Отдельной записи с явной лицензией не нашлось."
+  },
+  {
+    "id": "bendir",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Отдельной записи с явной лицензией не нашлось."
+  },
+  {
+    "id": "daf",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Отдельной записи с явной лицензией не нашлось."
+  },
+  {
+    "id": "darbuka",
+    "clips": 4,
+    "recordings": 1,
+    "enough": false,
+    "note": "4 клипа одного файла, CC BY-SA 4.0. В голову не входит."
+  },
+  {
+    "id": "duduk",
+    "clips": 5,
+    "recordings": 1,
+    "enough": false,
+    "note": "5 клипов одной записи, CC BY-SA 4.0. В голову не входит."
+  },
+  {
+    "id": "kamancheh",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Отдельной записи с явной лицензией не нашлось."
+  },
+  {
+    "id": "ney",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Отдельной записи с явной лицензией не нашлось."
+  },
+  {
+    "id": "oud",
+    "clips": 11,
+    "recordings": 2,
+    "enough": false,
+    "note": "11 клипов, 2 исполнителя: Andy R. Jordan (две части одной пьесы) и открытые струны. В голову не входит."
+  },
+  {
+    "id": "qanun",
+    "clips": 5,
+    "recordings": 1,
+    "enough": false,
+    "note": "5 клипов одной записи: канун вместе с пением, CC0. В голову не входит."
+  },
+  {
+    "id": "santur",
+    "clips": 14,
+    "recordings": 2,
+    "enough": false,
+    "note": "14 клипов, 2 исполнителя. Короткий и полный файл концертино — одна пьеса. В голову не входит."
+  },
+  {
+    "id": "setar",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Демонстрация ладов одного автора не скачалась: Wikimedia ответила 429. В голову не входит."
+  },
+  {
+    "id": "tanbur",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Отдельной записи с явной лицензией не нашлось."
+  },
+  {
+    "id": "tar",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Запрос с персидским и азербайджанским таром не дал файла с явной лицензией."
+  }
+]
