@@ -135,6 +135,144 @@
       }
     }
   },
+  "closed_set": {
+    "keys": [
+      "tanbur",
+      "ney",
+      "kamancheh",
+      "oud",
+      "qanun",
+      "erhu",
+      "daf",
+      "guitar",
+      "santur",
+      "baglama",
+      "ensemble"
+    ],
+    "prompt_keys": [
+      "tanbur",
+      "ney",
+      "kamancheh",
+      "oud",
+      "qanun",
+      "erhu",
+      "daf",
+      "guitar",
+      "santur",
+      "baglama"
+    ],
+    "ensemble": true,
+    "generic_percussion": true,
+    "uncatalogued": [
+      "балабан",
+      "ситар",
+      "дхолак",
+      "табла"
+    ],
+    "performers": {
+      "ney": "Eyüpcan Açıkpazu (най)",
+      "oud": "Selim Boyaci (уд)",
+      "qanun": "Onur Cicin (канун)",
+      "erhu": "Guo Gan (эрху)",
+      "daf": "Mohammad Jaberi (даф)",
+      "guitar": "Jon Lawton (гитара фламенко)",
+      "santur": "Farshad Mohammadi (сантур)",
+      "baglama": "Kutay Ozcan (баглама)"
+    },
+    "players": {
+      "tanbur": [
+        "Сейед Али Джабери",
+        "Jon Lawton"
+      ],
+      "ney": [
+        "Eyüpcan Açıkpazu"
+      ],
+      "kamancheh": [
+        "Togrul Asadullayev",
+        "Fariz Huseynov",
+        "Khalil Masimov",
+        "Rufat Xalilov"
+      ],
+      "oud": [
+        "Selim Boyaci"
+      ],
+      "qanun": [
+        "Onur Cicin"
+      ],
+      "erhu": [
+        "Guo Gan"
+      ],
+      "daf": [
+        "Mohammad Jaberi"
+      ],
+      "guitar": [
+        "Jon Lawton"
+      ],
+      "santur": [
+        "Farshad Mohammadi"
+      ],
+      "baglama": [
+        "Kutay Ozcan"
+      ]
+    },
+    "heading_unknown": [],
+    "singers": []
+  },
+  "data_proposal": {
+    "separated": true,
+    "threshold": 0.04,
+    "margin_floor": 0.04,
+    "agree_windows": 3,
+    "gap_p75": 0.0242,
+    "gap_p90": 0.0545,
+    "windows": 780,
+    "instruments": [
+      "tanbur",
+      "ney",
+      "kamancheh",
+      "oud",
+      "qanun",
+      "erhu",
+      "daf",
+      "guitar",
+      "santur",
+      "baglama",
+      "ensemble"
+    ],
+    "performers": {
+      "ney": "Eyüpcan Açıkpazu (най)",
+      "oud": "Selim Boyaci (уд)",
+      "qanun": "Onur Cicin (канун)",
+      "erhu": "Guo Gan (эрху)",
+      "daf": "Mohammad Jaberi (даф)",
+      "guitar": "Jon Lawton (гитара фламенко)",
+      "santur": "Farshad Mohammadi (сантур)",
+      "baglama": "Kutay Ozcan (баглама)"
+    },
+    "uncatalogued": [
+      "балабан",
+      "ситар",
+      "дхолак",
+      "табла"
+    ],
+    "generic_percussion": true,
+    "heading_unknown": [],
+    "singers": [],
+    "best_gap": {
+      "guitar": 0.075,
+      "kamancheh": 0.078,
+      "qanun": 0.112
+    },
+    "entries": [],
+    "sections": [],
+    "bass_unnamed": {
+      "present": true,
+      "named_bass": false,
+      "loud_fraction": 0.422,
+      "longest_s": 29.8,
+      "note": "Басовый стем громкий: доля кадров выше порога 0.42, самый длинный отрезок 29.8 с. В титрах этой записи низкий инструмент не назван, поэтому в данные вступление не ставится."
+    }
+  },
   "timeline": [
     {
       "key": "tabla",
@@ -2075,7 +2213,7 @@
       "kind": "instrumental",
       "label": "Танбур",
       "start": 23.7,
-      "end": 100.9,
+      "end": 100.814,
       "entries": [
         {
           "at": 34.0,
@@ -2103,7 +2241,7 @@
         },
         {
           "at": 98.0,
-          "until": 100.9,
+          "until": 100.81,
           "holds_to_section_end": true,
           "confidence": 0.124,
           "similarity": 0.453,
@@ -2263,7 +2401,7 @@
       "voice": [
         {
           "at": 99.0,
-          "until": 100.9,
+          "until": 100.81,
           "holds_to_section_end": true,
           "confidence": 0.517,
           "similarity": 0.33,
@@ -2279,11 +2417,11 @@
       "id": "english-verse-1",
       "kind": "vocal",
       "label": "Английский куплет",
-      "start": 100.9,
-      "end": 107.75,
+      "start": 100.814,
+      "end": 108.662,
       "entries": [
         {
-          "at": 100.9,
+          "at": 100.814,
           "until": 102.0,
           "holds_to_section_end": false,
           "confidence": 0.124,
@@ -2310,7 +2448,7 @@
         },
         {
           "at": 106.5,
-          "until": 107.75,
+          "until": 108.66,
           "holds_to_section_end": true,
           "confidence": 0.329,
           "similarity": 0.435,
@@ -2323,8 +2461,8 @@
       ],
       "voice": [
         {
-          "at": 100.9,
-          "until": 107.75,
+          "at": 100.814,
+          "until": 108.66,
           "holds_to_section_end": true,
           "confidence": 0.517,
           "similarity": 0.33,
@@ -2340,12 +2478,12 @@
       "id": "english-refrain-1",
       "kind": "vocal",
       "label": "Английский припев",
-      "start": 107.75,
-      "end": 115.81,
+      "start": 108.662,
+      "end": 116.529,
       "entries": [
         {
           "at": 112.0,
-          "until": 115.81,
+          "until": 116.529,
           "holds_to_section_end": true,
           "confidence": 0.211,
           "similarity": 0.311,
@@ -2358,7 +2496,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 107.75,
+          "at": 108.662,
           "until": 109.5,
           "holds_to_section_end": false,
           "confidence": 0.329,
@@ -2368,12 +2506,24 @@
           "key": "tabla",
           "name": "табла",
           "in_catalog": false
+        },
+        {
+          "at": 115.5,
+          "until": 116.529,
+          "holds_to_section_end": true,
+          "confidence": 0.404,
+          "similarity": 0.266,
+          "margin": 0.123,
+          "stem": "drums",
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
         }
       ],
       "voice": [
         {
-          "at": 107.75,
-          "until": 115.81,
+          "at": 108.662,
+          "until": 116.529,
           "holds_to_section_end": true,
           "confidence": 0.517,
           "similarity": 0.33,
@@ -2389,11 +2539,11 @@
       "id": "english-verse-2",
       "kind": "vocal",
       "label": "Английский куплет, продолжение",
-      "start": 115.81,
-      "end": 123.83,
+      "start": 116.529,
+      "end": 124.273,
       "entries": [
         {
-          "at": 115.81,
+          "at": 116.53,
           "until": 118.0,
           "holds_to_section_end": false,
           "confidence": 0.211,
@@ -2407,7 +2557,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 115.81,
+          "at": 116.53,
           "until": 118.5,
           "holds_to_section_end": false,
           "confidence": 0.404,
@@ -2420,7 +2570,7 @@
         },
         {
           "at": 118.0,
-          "until": 123.83,
+          "until": 124.27,
           "holds_to_section_end": true,
           "confidence": 0.224,
           "similarity": 0.483,
@@ -2445,8 +2595,8 @@
       ],
       "voice": [
         {
-          "at": 115.81,
-          "until": 123.83,
+          "at": 116.53,
+          "until": 124.27,
           "holds_to_section_end": true,
           "confidence": 0.517,
           "similarity": 0.33,
@@ -2462,12 +2612,12 @@
       "id": "english-refrain-2",
       "kind": "vocal",
       "label": "Английский припев, повтор",
-      "start": 123.83,
-      "end": 127.59,
+      "start": 124.273,
+      "end": 128.365,
       "entries": [],
       "uncatalogued": [
         {
-          "at": 123.83,
+          "at": 124.273,
           "until": 126.0,
           "holds_to_section_end": false,
           "confidence": 0.224,
@@ -2481,8 +2631,8 @@
       ],
       "voice": [
         {
-          "at": 123.83,
-          "until": 127.59,
+          "at": 124.273,
+          "until": 128.365,
           "holds_to_section_end": true,
           "confidence": 0.517,
           "similarity": 0.33,
@@ -2498,12 +2648,12 @@
       "id": "english-refrain-3",
       "kind": "vocal",
       "label": "Английский припев, окончание",
-      "start": 127.59,
-      "end": 132.0,
+      "start": 128.365,
+      "end": 132.594,
       "entries": [
         {
           "at": 130.0,
-          "until": 132.0,
+          "until": 132.59,
           "holds_to_section_end": true,
           "confidence": 0.216,
           "similarity": 0.462,
@@ -2515,30 +2665,17 @@
         }
       ],
       "uncatalogued": [],
-      "voice": [
-        {
-          "at": 127.59,
-          "until": 129.0,
-          "holds_to_section_end": false,
-          "confidence": 0.517,
-          "similarity": 0.33,
-          "margin": 0.275,
-          "stem": "mix",
-          "key": "voice",
-          "name": "Голос",
-          "in_catalog": true
-        }
-      ]
+      "voice": []
     },
     {
       "id": "rumi-beyt-1",
       "kind": "vocal",
       "label": "Руми, бейт 1",
-      "start": 132.0,
-      "end": 165.8,
+      "start": 132.594,
+      "end": 163.954,
       "entries": [
         {
-          "at": 132.0,
+          "at": 132.594,
           "until": 134.0,
           "holds_to_section_end": false,
           "confidence": 0.216,
@@ -2599,7 +2736,7 @@
         },
         {
           "at": 162.0,
-          "until": 165.8,
+          "until": 163.95,
           "holds_to_section_end": true,
           "confidence": 0.694,
           "similarity": 0.36,
@@ -2612,7 +2749,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 132.0,
+          "at": 132.594,
           "until": 156.0,
           "holds_to_section_end": false,
           "confidence": 0.482,
@@ -2670,37 +2807,13 @@
           "key": "tabla",
           "name": "табла",
           "in_catalog": false
-        },
-        {
-          "at": 163.5,
-          "until": 165.8,
-          "holds_to_section_end": true,
-          "confidence": 0.402,
-          "similarity": 0.324,
-          "margin": 0.297,
-          "stem": "drums",
-          "key": "bass-drum",
-          "name": "большой барабан",
-          "in_catalog": false
-        },
-        {
-          "at": 164.0,
-          "until": 165.8,
-          "holds_to_section_end": true,
-          "confidence": 0.617,
-          "similarity": 0.574,
-          "margin": 0.441,
-          "stem": "mix+other",
-          "key": "string-section",
-          "name": "группа смычковых",
-          "in_catalog": false
         }
       ],
       "voice": [
         {
-          "at": 132.0,
-          "until": 165.0,
-          "holds_to_section_end": false,
+          "at": 132.594,
+          "until": 163.95,
+          "holds_to_section_end": true,
           "confidence": 0.604,
           "similarity": 0.396,
           "margin": 0.443,
@@ -2715,11 +2828,11 @@
       "id": "inst-bridge-a",
       "kind": "instrumental",
       "label": "Проигрыш",
-      "start": 165.8,
+      "start": 163.954,
       "end": 172.0,
       "entries": [
         {
-          "at": 165.8,
+          "at": 163.954,
           "until": 172.0,
           "holds_to_section_end": true,
           "confidence": 0.694,
@@ -2733,19 +2846,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 165.8,
-          "until": 172.0,
-          "holds_to_section_end": true,
-          "confidence": 0.617,
-          "similarity": 0.574,
-          "margin": 0.441,
-          "stem": "mix+other",
-          "key": "string-section",
-          "name": "группа смычковых",
-          "in_catalog": false
-        },
-        {
-          "at": 165.8,
+          "at": 163.954,
           "until": 169.5,
           "holds_to_section_end": false,
           "confidence": 0.402,
@@ -2754,6 +2855,18 @@
           "stem": "drums",
           "key": "bass-drum",
           "name": "большой барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 164.0,
+          "until": 172.0,
+          "holds_to_section_end": true,
+          "confidence": 0.617,
+          "similarity": 0.574,
+          "margin": 0.441,
+          "stem": "mix+other",
+          "key": "string-section",
+          "name": "группа смычковых",
           "in_catalog": false
         },
         {
@@ -2769,7 +2882,20 @@
           "in_catalog": false
         }
       ],
-      "voice": []
+      "voice": [
+        {
+          "at": 163.954,
+          "until": 165.0,
+          "holds_to_section_end": false,
+          "confidence": 0.604,
+          "similarity": 0.396,
+          "margin": 0.443,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "voice-bridge",
@@ -2824,7 +2950,7 @@
       "kind": "instrumental",
       "label": "Проигрыш",
       "start": 174.0,
-      "end": 183.3,
+      "end": 183.39,
       "entries": [
         {
           "at": 174.0,
@@ -2866,7 +2992,7 @@
         },
         {
           "at": 180.0,
-          "until": 183.3,
+          "until": 183.39,
           "holds_to_section_end": true,
           "confidence": 0.176,
           "similarity": 0.478,
@@ -2883,8 +3009,8 @@
       "id": "turkish-verse",
       "kind": "vocal",
       "label": "Турецкий куплет",
-      "start": 183.3,
-      "end": 211.59,
+      "start": 183.39,
+      "end": 210.67,
       "entries": [
         {
           "at": 186.0,
@@ -2901,7 +3027,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 183.3,
+          "at": 183.39,
           "until": 188.0,
           "holds_to_section_end": false,
           "confidence": 0.176,
@@ -2962,7 +3088,7 @@
         },
         {
           "at": 208.5,
-          "until": 211.59,
+          "until": 210.67,
           "holds_to_section_end": true,
           "confidence": 0.425,
           "similarity": 0.373,
@@ -2975,7 +3101,7 @@
       ],
       "voice": [
         {
-          "at": 183.3,
+          "at": 183.39,
           "until": 198.0,
           "holds_to_section_end": false,
           "confidence": 0.56,
@@ -3000,7 +3126,7 @@
         },
         {
           "at": 207.0,
-          "until": 211.59,
+          "until": 210.67,
           "holds_to_section_end": true,
           "confidence": 0.499,
           "similarity": 0.377,
@@ -3016,12 +3142,12 @@
       "id": "turkish-chorus-1",
       "kind": "vocal",
       "label": "Турецкий припев",
-      "start": 211.59,
-      "end": 230.58,
+      "start": 210.67,
+      "end": 230.833,
       "entries": [
         {
           "at": 216.0,
-          "until": 230.58,
+          "until": 230.83,
           "holds_to_section_end": true,
           "confidence": 0.831,
           "similarity": 0.42,
@@ -3034,7 +3160,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 211.59,
+          "at": 210.67,
           "until": 222.0,
           "holds_to_section_end": false,
           "confidence": 0.425,
@@ -3047,7 +3173,7 @@
         },
         {
           "at": 212.0,
-          "until": 230.58,
+          "until": 230.83,
           "holds_to_section_end": true,
           "confidence": 0.145,
           "similarity": 0.407,
@@ -3071,7 +3197,7 @@
         },
         {
           "at": 225.0,
-          "until": 230.58,
+          "until": 230.83,
           "holds_to_section_end": true,
           "confidence": 0.342,
           "similarity": 0.329,
@@ -3084,7 +3210,7 @@
       ],
       "voice": [
         {
-          "at": 211.59,
+          "at": 210.67,
           "until": 216.0,
           "holds_to_section_end": false,
           "confidence": 0.499,
@@ -3097,7 +3223,7 @@
         },
         {
           "at": 216.0,
-          "until": 230.58,
+          "until": 230.83,
           "holds_to_section_end": true,
           "confidence": 0.471,
           "similarity": 0.369,
@@ -3113,13 +3239,13 @@
       "id": "turkish-chorus-2",
       "kind": "vocal",
       "label": "Турецкий припев, повтор",
-      "start": 230.58,
-      "end": 251.8,
+      "start": 230.833,
+      "end": 246.704,
       "entries": [
         {
-          "at": 230.58,
-          "until": 248.0,
-          "holds_to_section_end": false,
+          "at": 230.833,
+          "until": 246.7,
+          "holds_to_section_end": true,
           "confidence": 0.831,
           "similarity": 0.42,
           "margin": 0.339,
@@ -3155,7 +3281,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 230.58,
+          "at": 230.833,
           "until": 232.0,
           "holds_to_section_end": false,
           "confidence": 0.145,
@@ -3180,8 +3306,8 @@
         },
         {
           "at": 240.0,
-          "until": 249.0,
-          "holds_to_section_end": false,
+          "until": 246.7,
+          "holds_to_section_end": true,
           "confidence": 0.377,
           "similarity": 0.312,
           "margin": 0.254,
@@ -3189,37 +3315,13 @@
           "key": "bass-drum",
           "name": "большой барабан",
           "in_catalog": false
-        },
-        {
-          "at": 248.0,
-          "until": 251.8,
-          "holds_to_section_end": true,
-          "confidence": 0.375,
-          "similarity": 0.454,
-          "margin": 0.387,
-          "stem": "other+mix",
-          "key": "accordion",
-          "name": "аккордеон",
-          "in_catalog": false
-        },
-        {
-          "at": 249.0,
-          "until": 251.8,
-          "holds_to_section_end": true,
-          "confidence": 0.237,
-          "similarity": 0.365,
-          "margin": 0.414,
-          "stem": "drums",
-          "key": "tabla",
-          "name": "табла",
-          "in_catalog": false
         }
       ],
       "voice": [
         {
-          "at": 230.58,
-          "until": 249.0,
-          "holds_to_section_end": false,
+          "at": 230.833,
+          "until": 246.7,
+          "holds_to_section_end": true,
           "confidence": 0.471,
           "similarity": 0.369,
           "margin": 0.404,
@@ -3234,9 +3336,21 @@
       "id": "inst-mid",
       "kind": "instrumental",
       "label": "Проигрыш",
-      "start": 251.8,
-      "end": 286.4,
+      "start": 246.704,
+      "end": 286.302,
       "entries": [
+        {
+          "at": 246.704,
+          "until": 248.0,
+          "holds_to_section_end": false,
+          "confidence": 0.831,
+          "similarity": 0.42,
+          "margin": 0.339,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
+          "in_catalog": true
+        },
         {
           "at": 260.0,
           "until": 268.0,
@@ -3275,7 +3389,7 @@
         },
         {
           "at": 284.0,
-          "until": 286.4,
+          "until": 286.3,
           "holds_to_section_end": true,
           "confidence": 0.188,
           "similarity": 0.441,
@@ -3288,7 +3402,19 @@
       ],
       "uncatalogued": [
         {
-          "at": 251.8,
+          "at": 246.704,
+          "until": 249.0,
+          "holds_to_section_end": false,
+          "confidence": 0.377,
+          "similarity": 0.312,
+          "margin": 0.254,
+          "stem": "drums",
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 248.0,
           "until": 274.0,
           "holds_to_section_end": false,
           "confidence": 0.375,
@@ -3297,6 +3423,18 @@
           "stem": "other+mix",
           "key": "accordion",
           "name": "аккордеон",
+          "in_catalog": false
+        },
+        {
+          "at": 249.0,
+          "until": 252.0,
+          "holds_to_section_end": false,
+          "confidence": 0.237,
+          "similarity": 0.365,
+          "margin": 0.414,
+          "stem": "drums",
+          "key": "tabla",
+          "name": "табла",
           "in_catalog": false
         },
         {
@@ -3361,7 +3499,7 @@
         },
         {
           "at": 283.5,
-          "until": 286.4,
+          "until": 286.3,
           "holds_to_section_end": true,
           "confidence": 0.496,
           "similarity": 0.326,
@@ -3374,8 +3512,20 @@
       ],
       "voice": [
         {
+          "at": 246.704,
+          "until": 249.0,
+          "holds_to_section_end": false,
+          "confidence": 0.471,
+          "similarity": 0.369,
+          "margin": 0.404,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        },
+        {
           "at": 285.0,
-          "until": 286.4,
+          "until": 286.3,
           "holds_to_section_end": true,
           "confidence": 0.411,
           "similarity": 0.337,
@@ -3391,11 +3541,11 @@
       "id": "arabic-verse",
       "kind": "vocal",
       "label": "Арабский куплет",
-      "start": 286.4,
-      "end": 293.48,
+      "start": 286.302,
+      "end": 294.205,
       "entries": [
         {
-          "at": 286.4,
+          "at": 286.302,
           "until": 288.0,
           "holds_to_section_end": false,
           "confidence": 0.188,
@@ -3409,7 +3559,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 286.4,
+          "at": 286.302,
           "until": 292.5,
           "holds_to_section_end": false,
           "confidence": 0.496,
@@ -3423,8 +3573,8 @@
       ],
       "voice": [
         {
-          "at": 286.4,
-          "until": 293.48,
+          "at": 286.302,
+          "until": 294.2,
           "holds_to_section_end": true,
           "confidence": 0.411,
           "similarity": 0.337,
@@ -3440,8 +3590,8 @@
       "id": "arabic-main",
       "kind": "vocal",
       "label": "Арабское переложение",
-      "start": 293.48,
-      "end": 388.4,
+      "start": 294.205,
+      "end": 385.887,
       "entries": [
         {
           "at": 344.0,
@@ -3481,8 +3631,8 @@
         },
         {
           "at": 380.0,
-          "until": 388.0,
-          "holds_to_section_end": false,
+          "until": 385.887,
+          "holds_to_section_end": true,
           "confidence": 0.193,
           "similarity": 0.433,
           "margin": 0.398,
@@ -3490,23 +3640,11 @@
           "key": "violin",
           "name": "Скрипка",
           "in_catalog": true
-        },
-        {
-          "at": 386.0,
-          "until": 388.4,
-          "holds_to_section_end": true,
-          "confidence": 0.599,
-          "similarity": 0.305,
-          "margin": 0.191,
-          "stem": "bass",
-          "key": "double-bass",
-          "name": "Контрабас",
-          "in_catalog": true
         }
       ],
       "uncatalogued": [
         {
-          "at": 294.0,
+          "at": 294.205,
           "until": 302.0,
           "holds_to_section_end": false,
           "confidence": 0.364,
@@ -3612,35 +3750,11 @@
           "key": "electric-bass",
           "name": "бас-гитара",
           "in_catalog": false
-        },
-        {
-          "at": 385.5,
-          "until": 388.4,
-          "holds_to_section_end": true,
-          "confidence": 0.35,
-          "similarity": 0.346,
-          "margin": 0.263,
-          "stem": "drums",
-          "key": "bass-drum",
-          "name": "большой барабан",
-          "in_catalog": false
-        },
-        {
-          "at": 387.0,
-          "until": 388.4,
-          "holds_to_section_end": true,
-          "confidence": 0.492,
-          "similarity": 0.533,
-          "margin": 0.34,
-          "stem": "mix+other",
-          "key": "string-section",
-          "name": "группа смычковых",
-          "in_catalog": false
         }
       ],
       "voice": [
         {
-          "at": 293.48,
+          "at": 294.205,
           "until": 303.0,
           "holds_to_section_end": false,
           "confidence": 0.411,
@@ -3701,8 +3815,8 @@
         },
         {
           "at": 378.0,
-          "until": 387.0,
-          "holds_to_section_end": false,
+          "until": 385.887,
+          "holds_to_section_end": true,
           "confidence": 0.418,
           "similarity": 0.378,
           "margin": 0.357,
@@ -3717,11 +3831,23 @@
       "id": "inst-before-mawwal",
       "kind": "instrumental",
       "label": "Проигрыш",
-      "start": 388.4,
-      "end": 404.2,
+      "start": 385.887,
+      "end": 404.084,
       "entries": [
         {
-          "at": 388.4,
+          "at": 385.89,
+          "until": 388.0,
+          "holds_to_section_end": false,
+          "confidence": 0.193,
+          "similarity": 0.433,
+          "margin": 0.398,
+          "stem": "other",
+          "key": "violin",
+          "name": "Скрипка",
+          "in_catalog": true
+        },
+        {
+          "at": 386.0,
           "until": 398.0,
           "holds_to_section_end": false,
           "confidence": 0.599,
@@ -3747,19 +3873,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 388.4,
-          "until": 400.0,
-          "holds_to_section_end": false,
-          "confidence": 0.492,
-          "similarity": 0.533,
-          "margin": 0.34,
-          "stem": "mix+other",
-          "key": "string-section",
-          "name": "группа смычковых",
-          "in_catalog": false
-        },
-        {
-          "at": 388.4,
+          "at": 385.89,
           "until": 390.0,
           "holds_to_section_end": false,
           "confidence": 0.35,
@@ -3768,6 +3882,18 @@
           "stem": "drums",
           "key": "bass-drum",
           "name": "большой барабан",
+          "in_catalog": false
+        },
+        {
+          "at": 387.0,
+          "until": 400.0,
+          "holds_to_section_end": false,
+          "confidence": 0.492,
+          "similarity": 0.533,
+          "margin": 0.34,
+          "stem": "mix+other",
+          "key": "string-section",
+          "name": "группа смычковых",
           "in_catalog": false
         },
         {
@@ -3795,43 +3921,31 @@
           "in_catalog": false
         }
       ],
-      "voice": []
+      "voice": [
+        {
+          "at": 385.89,
+          "until": 387.0,
+          "holds_to_section_end": false,
+          "confidence": 0.418,
+          "similarity": 0.378,
+          "margin": 0.357,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "mawwal",
       "kind": "vocal",
       "label": "Мавваль",
-      "start": 404.2,
-      "end": 443.0,
-      "entries": [
-        {
-          "at": 424.0,
-          "until": 428.0,
-          "holds_to_section_end": false,
-          "confidence": 0.408,
-          "similarity": 0.356,
-          "margin": 0.184,
-          "stem": "bass",
-          "key": "double-bass",
-          "name": "Контрабас",
-          "in_catalog": true
-        },
-        {
-          "at": 432.0,
-          "until": 436.0,
-          "holds_to_section_end": false,
-          "confidence": 0.185,
-          "similarity": 0.425,
-          "margin": 0.363,
-          "stem": "other",
-          "key": "violin",
-          "name": "Скрипка",
-          "in_catalog": true
-        }
-      ],
+      "start": 404.084,
+      "end": 424.281,
+      "entries": [],
       "uncatalogued": [
         {
-          "at": 404.2,
+          "at": 404.084,
           "until": 408.0,
           "holds_to_section_end": false,
           "confidence": 0.107,
@@ -3889,9 +4003,82 @@
           "key": "snare-drum",
           "name": "малый барабан",
           "in_catalog": false
+        }
+      ],
+      "voice": [
+        {
+          "at": 405.0,
+          "until": 414.0,
+          "holds_to_section_end": false,
+          "confidence": 0.198,
+          "similarity": 0.349,
+          "margin": 0.354,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
         },
         {
-          "at": 424.0,
+          "at": 414.0,
+          "until": 420.0,
+          "holds_to_section_end": false,
+          "confidence": 0.133,
+          "similarity": 0.276,
+          "margin": 0.362,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        },
+        {
+          "at": 420.0,
+          "until": 424.28,
+          "holds_to_section_end": true,
+          "confidence": 0.26,
+          "similarity": 0.348,
+          "margin": 0.37,
+          "stem": "mix",
+          "key": "voice",
+          "name": "Голос",
+          "in_catalog": true
+        }
+      ]
+    },
+    {
+      "id": "rumi-dowlat",
+      "kind": "vocal",
+      "label": "Руми, бейт 1",
+      "start": 424.281,
+      "end": 435.594,
+      "entries": [
+        {
+          "at": 424.281,
+          "until": 428.0,
+          "holds_to_section_end": false,
+          "confidence": 0.408,
+          "similarity": 0.356,
+          "margin": 0.184,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
+          "in_catalog": true
+        },
+        {
+          "at": 432.0,
+          "until": 435.59,
+          "holds_to_section_end": true,
+          "confidence": 0.185,
+          "similarity": 0.425,
+          "margin": 0.363,
+          "stem": "other",
+          "key": "violin",
+          "name": "Скрипка",
+          "in_catalog": true
+        }
+      ],
+      "uncatalogued": [
+        {
+          "at": 424.281,
           "until": 428.0,
           "holds_to_section_end": false,
           "confidence": 0.266,
@@ -3925,47 +4112,11 @@
           "key": "tabla",
           "name": "табла",
           "in_catalog": false
-        },
-        {
-          "at": 436.0,
-          "until": 442.0,
-          "holds_to_section_end": false,
-          "confidence": 0.105,
-          "similarity": 0.435,
-          "margin": 0.221,
-          "stem": "other",
-          "key": "viola",
-          "name": "альт",
-          "in_catalog": false
         }
       ],
       "voice": [
         {
-          "at": 405.0,
-          "until": 414.0,
-          "holds_to_section_end": false,
-          "confidence": 0.198,
-          "similarity": 0.349,
-          "margin": 0.354,
-          "stem": "mix",
-          "key": "voice",
-          "name": "Голос",
-          "in_catalog": true
-        },
-        {
-          "at": 414.0,
-          "until": 420.0,
-          "holds_to_section_end": false,
-          "confidence": 0.133,
-          "similarity": 0.276,
-          "margin": 0.362,
-          "stem": "mix",
-          "key": "choir",
-          "name": "Хор",
-          "in_catalog": true
-        },
-        {
-          "at": 420.0,
+          "at": 424.281,
           "until": 429.0,
           "holds_to_section_end": false,
           "confidence": 0.26,
@@ -3987,18 +4138,6 @@
           "key": "choir",
           "name": "Хор",
           "in_catalog": true
-        },
-        {
-          "at": 435.0,
-          "until": 443.0,
-          "holds_to_section_end": true,
-          "confidence": 0.409,
-          "similarity": 0.316,
-          "margin": 0.351,
-          "stem": "mix",
-          "key": "voice",
-          "name": "Голос",
-          "in_catalog": true
         }
       ]
     },
@@ -4006,8 +4145,8 @@
       "id": "rumi-beyts-15",
       "kind": "vocal",
       "label": "Руми, бейты 15–21",
-      "start": 443.0,
-      "end": 506.35,
+      "start": 435.594,
+      "end": 508.014,
       "entries": [
         {
           "at": 454.0,
@@ -4056,9 +4195,33 @@
           "key": "cello",
           "name": "Виолончель",
           "in_catalog": true
+        },
+        {
+          "at": 506.0,
+          "until": 508.01,
+          "holds_to_section_end": true,
+          "confidence": 0.637,
+          "similarity": 0.333,
+          "margin": 0.217,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
+          "in_catalog": true
         }
       ],
       "uncatalogued": [
+        {
+          "at": 436.0,
+          "until": 442.0,
+          "holds_to_section_end": false,
+          "confidence": 0.105,
+          "similarity": 0.435,
+          "margin": 0.221,
+          "stem": "other",
+          "key": "viola",
+          "name": "альт",
+          "in_catalog": false
+        },
         {
           "at": 451.5,
           "until": 457.5,
@@ -4194,7 +4357,7 @@
       ],
       "voice": [
         {
-          "at": 443.0,
+          "at": 435.594,
           "until": 471.0,
           "holds_to_section_end": false,
           "confidence": 0.409,
@@ -4231,14 +4394,26 @@
         },
         {
           "at": 486.0,
-          "until": 506.35,
-          "holds_to_section_end": true,
+          "until": 507.0,
+          "holds_to_section_end": false,
           "confidence": 0.382,
           "similarity": 0.287,
           "margin": 0.296,
           "stem": "mix",
           "key": "voice",
           "name": "Голос",
+          "in_catalog": true
+        },
+        {
+          "at": 507.0,
+          "until": 508.01,
+          "holds_to_section_end": true,
+          "confidence": 0.582,
+          "similarity": 0.384,
+          "margin": 0.411,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
           "in_catalog": true
         }
       ]
@@ -4247,13 +4422,13 @@
       "id": "coda-arabic",
       "kind": "vocal",
       "label": "Арабская кода",
-      "start": 506.35,
-      "end": 532.53,
+      "start": 508.014,
+      "end": 523.572,
       "entries": [
         {
-          "at": 506.35,
-          "until": 532.0,
-          "holds_to_section_end": false,
+          "at": 508.014,
+          "until": 523.57,
+          "holds_to_section_end": true,
           "confidence": 0.637,
           "similarity": 0.333,
           "margin": 0.217,
@@ -4264,8 +4439,8 @@
         },
         {
           "at": 510.0,
-          "until": 524.0,
-          "holds_to_section_end": false,
+          "until": 523.57,
+          "holds_to_section_end": true,
           "confidence": 0.162,
           "similarity": 0.365,
           "margin": 0.329,
@@ -4278,7 +4453,7 @@
       "uncatalogued": [
         {
           "at": 508.5,
-          "until": 532.53,
+          "until": 523.57,
           "holds_to_section_end": true,
           "confidence": 0.484,
           "similarity": 0.372,
@@ -4291,8 +4466,8 @@
       ],
       "voice": [
         {
-          "at": 507.0,
-          "until": 532.53,
+          "at": 508.014,
+          "until": 523.57,
           "holds_to_section_end": true,
           "confidence": 0.582,
           "similarity": 0.384,
@@ -4308,11 +4483,23 @@
       "id": "coda-persian",
       "kind": "vocal",
       "label": "Персидский финал",
-      "start": 532.53,
-      "end": 552.89,
+      "start": 523.572,
+      "end": 565.09,
       "entries": [
         {
-          "at": 532.53,
+          "at": 523.572,
+          "until": 532.0,
+          "holds_to_section_end": false,
+          "confidence": 0.637,
+          "similarity": 0.333,
+          "margin": 0.217,
+          "stem": "bass",
+          "key": "double-bass",
+          "name": "Контрабас",
+          "in_catalog": true
+        },
+        {
+          "at": 532.0,
           "until": 538.0,
           "holds_to_section_end": false,
           "confidence": 0.377,
@@ -4324,7 +4511,7 @@
           "in_catalog": true
         },
         {
-          "at": 532.53,
+          "at": 532.0,
           "until": 536.0,
           "holds_to_section_end": false,
           "confidence": 0.181,
@@ -4337,79 +4524,6 @@
         },
         {
           "at": 538.0,
-          "until": 552.89,
-          "holds_to_section_end": true,
-          "confidence": 0.599,
-          "similarity": 0.306,
-          "margin": 0.192,
-          "stem": "bass",
-          "key": "double-bass",
-          "name": "Контрабас",
-          "in_catalog": true
-        }
-      ],
-      "uncatalogued": [
-        {
-          "at": 532.53,
-          "until": 552.89,
-          "holds_to_section_end": true,
-          "confidence": 0.484,
-          "similarity": 0.372,
-          "margin": 0.416,
-          "stem": "drums",
-          "key": "tabla",
-          "name": "табла",
-          "in_catalog": false
-        },
-        {
-          "at": 538.0,
-          "until": 544.0,
-          "holds_to_section_end": false,
-          "confidence": 0.163,
-          "similarity": 0.465,
-          "margin": 0.287,
-          "stem": "other",
-          "key": "string-section",
-          "name": "группа смычковых",
-          "in_catalog": false
-        },
-        {
-          "at": 546.0,
-          "until": 552.89,
-          "holds_to_section_end": true,
-          "confidence": 0.212,
-          "similarity": 0.387,
-          "margin": 0.311,
-          "stem": "other",
-          "key": "accordion",
-          "name": "аккордеон",
-          "in_catalog": false
-        }
-      ],
-      "voice": [
-        {
-          "at": 532.53,
-          "until": 552.89,
-          "holds_to_section_end": true,
-          "confidence": 0.582,
-          "similarity": 0.384,
-          "margin": 0.411,
-          "stem": "mix",
-          "key": "choir",
-          "name": "Хор",
-          "in_catalog": true
-        }
-      ]
-    },
-    {
-      "id": "voice-tail",
-      "kind": "instrumental",
-      "label": "Голос",
-      "start": 552.89,
-      "end": 566.1,
-      "entries": [
-        {
-          "at": 552.89,
           "until": 554.0,
           "holds_to_section_end": false,
           "confidence": 0.599,
@@ -4435,7 +4549,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 552.89,
+          "at": 523.572,
           "until": 564.0,
           "holds_to_section_end": false,
           "confidence": 0.484,
@@ -4447,7 +4561,19 @@
           "in_catalog": false
         },
         {
-          "at": 552.89,
+          "at": 538.0,
+          "until": 544.0,
+          "holds_to_section_end": false,
+          "confidence": 0.163,
+          "similarity": 0.465,
+          "margin": 0.287,
+          "stem": "other",
+          "key": "string-section",
+          "name": "группа смычковых",
+          "in_catalog": false
+        },
+        {
+          "at": 546.0,
           "until": 562.0,
           "holds_to_section_end": false,
           "confidence": 0.212,
@@ -4472,7 +4598,7 @@
         },
         {
           "at": 562.0,
-          "until": 566.0,
+          "until": 565.09,
           "holds_to_section_end": true,
           "confidence": 0.23,
           "similarity": 0.418,
@@ -4485,8 +4611,8 @@
       ],
       "voice": [
         {
-          "at": 552.89,
-          "until": 566.1,
+          "at": 523.572,
+          "until": 565.09,
           "holds_to_section_end": true,
           "confidence": 0.582,
           "similarity": 0.384,
@@ -4502,10 +4628,22 @@
       "id": "inst-end",
       "kind": "instrumental",
       "label": "Окончание",
-      "start": 566.1,
+      "start": 565.09,
       "end": 580.06,
       "entries": [],
       "uncatalogued": [
+        {
+          "at": 565.09,
+          "until": 566.0,
+          "holds_to_section_end": false,
+          "confidence": 0.23,
+          "similarity": 0.418,
+          "margin": 0.308,
+          "stem": "other",
+          "key": "viola",
+          "name": "альт",
+          "in_catalog": false
+        },
         {
           "at": 567.0,
           "until": 573.0,
@@ -4521,7 +4659,7 @@
       ],
       "voice": [
         {
-          "at": 566.1,
+          "at": 565.09,
           "until": 567.0,
           "holds_to_section_end": false,
           "confidence": 0.582,
@@ -5180,9 +5318,9 @@
       {
         "id": "inst-tanbur",
         "start": 23.7,
-        "end": 100.9,
+        "end": 100.814,
         "hits": 309,
-        "per_s": 4.0,
+        "per_s": 4.01,
         "density": "плотно",
         "mean_level": 0.576,
         "regular": false,
@@ -5255,12 +5393,12 @@
       },
       {
         "id": "english-verse-1",
-        "start": 100.9,
-        "end": 107.75,
-        "hits": 16,
-        "per_s": 2.34,
+        "start": 100.814,
+        "end": 108.662,
+        "hits": 18,
+        "per_s": 2.29,
         "density": "плотно",
-        "mean_level": 0.362,
+        "mean_level": 0.364,
         "regular": false,
         "labels": [
           {
@@ -5275,7 +5413,7 @@
             "key": "tabla",
             "name": "табла",
             "at": 106.5,
-            "until": 107.75,
+            "until": 108.66,
             "confidence": 0.329,
             "in_catalog": false
           }
@@ -5283,18 +5421,26 @@
       },
       {
         "id": "english-refrain-1",
-        "start": 107.75,
-        "end": 115.81,
+        "start": 108.662,
+        "end": 116.529,
         "hits": 14,
-        "per_s": 1.74,
+        "per_s": 1.78,
         "density": "умеренно",
-        "mean_level": 0.267,
+        "mean_level": 0.247,
         "regular": false,
         "labels": [
           {
+            "key": "bass-drum",
+            "name": "большой барабан",
+            "at": 115.5,
+            "until": 116.529,
+            "confidence": 0.404,
+            "in_catalog": false
+          },
+          {
             "key": "tabla",
             "name": "табла",
-            "at": 107.75,
+            "at": 108.662,
             "until": 109.5,
             "confidence": 0.329,
             "in_catalog": false
@@ -5303,18 +5449,18 @@
       },
       {
         "id": "english-verse-2",
-        "start": 115.81,
-        "end": 123.83,
-        "hits": 18,
-        "per_s": 2.24,
-        "density": "плотно",
-        "mean_level": 0.348,
+        "start": 116.529,
+        "end": 124.273,
+        "hits": 17,
+        "per_s": 2.2,
+        "density": "умеренно",
+        "mean_level": 0.369,
         "regular": false,
         "labels": [
           {
             "key": "bass-drum",
             "name": "большой барабан",
-            "at": 115.81,
+            "at": 116.53,
             "until": 118.5,
             "confidence": 0.404,
             "in_catalog": false
@@ -5331,50 +5477,42 @@
       },
       {
         "id": "english-refrain-2",
-        "start": 123.83,
-        "end": 127.59,
-        "hits": 10,
-        "per_s": 2.66,
+        "start": 124.273,
+        "end": 128.365,
+        "hits": 12,
+        "per_s": 2.93,
         "density": "плотно",
-        "mean_level": 0.383,
+        "mean_level": 0.372,
         "regular": false,
         "labels": []
       },
       {
         "id": "english-refrain-3",
-        "start": 127.59,
-        "end": 132.0,
-        "hits": 11,
-        "per_s": 2.49,
+        "start": 128.365,
+        "end": 132.594,
+        "hits": 10,
+        "per_s": 2.36,
         "density": "плотно",
-        "mean_level": 0.394,
+        "mean_level": 0.373,
         "regular": false,
         "labels": []
       },
       {
         "id": "rumi-beyt-1",
-        "start": 132.0,
-        "end": 165.8,
-        "hits": 132,
-        "per_s": 3.91,
+        "start": 132.594,
+        "end": 163.954,
+        "hits": 125,
+        "per_s": 3.99,
         "density": "плотно",
-        "mean_level": 0.602,
+        "mean_level": 0.615,
         "regular": false,
         "labels": [
           {
             "key": "tabla",
             "name": "табла",
-            "at": 132.0,
+            "at": 132.594,
             "until": 156.0,
             "confidence": 0.482,
-            "in_catalog": false
-          },
-          {
-            "key": "bass-drum",
-            "name": "большой барабан",
-            "at": 163.5,
-            "until": 165.8,
-            "confidence": 0.402,
             "in_catalog": false
           },
           {
@@ -5389,18 +5527,18 @@
       },
       {
         "id": "inst-bridge-a",
-        "start": 165.8,
+        "start": 163.954,
         "end": 172.0,
-        "hits": 21,
-        "per_s": 3.39,
+        "hits": 26,
+        "per_s": 3.23,
         "density": "плотно",
-        "mean_level": 0.516,
+        "mean_level": 0.507,
         "regular": false,
         "labels": [
           {
             "key": "bass-drum",
             "name": "большой барабан",
-            "at": 165.8,
+            "at": 163.954,
             "until": 169.5,
             "confidence": 0.402,
             "in_catalog": false
@@ -5438,11 +5576,11 @@
       {
         "id": "inst-bridge-b",
         "start": 174.0,
-        "end": 183.3,
+        "end": 183.39,
         "hits": 22,
-        "per_s": 2.37,
+        "per_s": 2.34,
         "density": "плотно",
-        "mean_level": 0.377,
+        "mean_level": 0.373,
         "regular": false,
         "labels": [
           {
@@ -5457,19 +5595,19 @@
       },
       {
         "id": "turkish-verse",
-        "start": 183.3,
-        "end": 211.59,
-        "hits": 63,
-        "per_s": 2.23,
+        "start": 183.39,
+        "end": 210.67,
+        "hits": 61,
+        "per_s": 2.24,
         "density": "плотно",
-        "mean_level": 0.333,
+        "mean_level": 0.332,
         "regular": false,
         "labels": [
           {
             "key": "tabla",
             "name": "табла",
             "at": 208.5,
-            "until": 211.59,
+            "until": 210.67,
             "confidence": 0.425,
             "in_catalog": false
           },
@@ -5493,18 +5631,18 @@
       },
       {
         "id": "turkish-chorus-1",
-        "start": 211.59,
-        "end": 230.58,
-        "hits": 59,
-        "per_s": 3.11,
+        "start": 210.67,
+        "end": 230.833,
+        "hits": 62,
+        "per_s": 3.07,
         "density": "плотно",
-        "mean_level": 0.558,
+        "mean_level": 0.551,
         "regular": true,
         "labels": [
           {
             "key": "tabla",
             "name": "табла",
-            "at": 211.59,
+            "at": 210.67,
             "until": 222.0,
             "confidence": 0.425,
             "in_catalog": false
@@ -5513,7 +5651,7 @@
             "key": "tabla",
             "name": "табла",
             "at": 225.0,
-            "until": 230.58,
+            "until": 230.83,
             "confidence": 0.342,
             "in_catalog": false
           },
@@ -5529,12 +5667,12 @@
       },
       {
         "id": "turkish-chorus-2",
-        "start": 230.58,
-        "end": 251.8,
-        "hits": 76,
-        "per_s": 3.58,
+        "start": 230.833,
+        "end": 246.704,
+        "hits": 58,
+        "per_s": 3.65,
         "density": "плотно",
-        "mean_level": 0.592,
+        "mean_level": 0.572,
         "regular": false,
         "labels": [
           {
@@ -5549,36 +5687,36 @@
             "key": "bass-drum",
             "name": "большой барабан",
             "at": 240.0,
-            "until": 249.0,
+            "until": 246.7,
             "confidence": 0.377,
-            "in_catalog": false
-          },
-          {
-            "key": "tabla",
-            "name": "табла",
-            "at": 249.0,
-            "until": 251.8,
-            "confidence": 0.237,
             "in_catalog": false
           }
         ]
       },
       {
         "id": "inst-mid",
-        "start": 251.8,
-        "end": 286.4,
-        "hits": 115,
-        "per_s": 3.32,
+        "start": 246.704,
+        "end": 286.302,
+        "hits": 132,
+        "per_s": 3.33,
         "density": "плотно",
-        "mean_level": 0.648,
+        "mean_level": 0.649,
         "regular": false,
         "labels": [
           {
             "key": "bass-drum",
             "name": "большой барабан",
             "at": 283.5,
-            "until": 286.4,
+            "until": 286.3,
             "confidence": 0.496,
+            "in_catalog": false
+          },
+          {
+            "key": "bass-drum",
+            "name": "большой барабан",
+            "at": 246.704,
+            "until": 249.0,
+            "confidence": 0.377,
             "in_catalog": false
           },
           {
@@ -5598,6 +5736,14 @@
             "in_catalog": false
           },
           {
+            "key": "tabla",
+            "name": "табла",
+            "at": 249.0,
+            "until": 252.0,
+            "confidence": 0.237,
+            "in_catalog": false
+          },
+          {
             "key": "dholak",
             "name": "дхолак",
             "at": 258.0,
@@ -5609,18 +5755,18 @@
       },
       {
         "id": "arabic-verse",
-        "start": 286.4,
-        "end": 293.48,
-        "hits": 11,
-        "per_s": 1.55,
+        "start": 286.302,
+        "end": 294.205,
+        "hits": 12,
+        "per_s": 1.52,
         "density": "умеренно",
-        "mean_level": 0.206,
+        "mean_level": 0.191,
         "regular": false,
         "labels": [
           {
             "key": "bass-drum",
             "name": "большой барабан",
-            "at": 286.4,
+            "at": 286.302,
             "until": 292.5,
             "confidence": 0.496,
             "in_catalog": false
@@ -5629,12 +5775,12 @@
       },
       {
         "id": "arabic-main",
-        "start": 293.48,
-        "end": 388.4,
-        "hits": 228,
-        "per_s": 2.4,
+        "start": 294.205,
+        "end": 385.887,
+        "hits": 215,
+        "per_s": 2.35,
         "density": "плотно",
-        "mean_level": 0.336,
+        "mean_level": 0.335,
         "regular": false,
         "labels": [
           {
@@ -5670,14 +5816,6 @@
             "in_catalog": false
           },
           {
-            "key": "bass-drum",
-            "name": "большой барабан",
-            "at": 385.5,
-            "until": 388.4,
-            "confidence": 0.35,
-            "in_catalog": false
-          },
-          {
             "key": "tabla",
             "name": "табла",
             "at": 372.0,
@@ -5689,18 +5827,18 @@
       },
       {
         "id": "inst-before-mawwal",
-        "start": 388.4,
-        "end": 404.2,
-        "hits": 54,
-        "per_s": 3.42,
+        "start": 385.887,
+        "end": 404.084,
+        "hits": 66,
+        "per_s": 3.63,
         "density": "плотно",
-        "mean_level": 0.519,
+        "mean_level": 0.514,
         "regular": false,
         "labels": [
           {
             "key": "bass-drum",
             "name": "большой барабан",
-            "at": 388.4,
+            "at": 385.89,
             "until": 390.0,
             "confidence": 0.35,
             "in_catalog": false
@@ -5725,12 +5863,12 @@
       },
       {
         "id": "mawwal",
-        "start": 404.2,
-        "end": 443.0,
-        "hits": 149,
-        "per_s": 3.84,
+        "start": 404.084,
+        "end": 424.281,
+        "hits": 83,
+        "per_s": 4.11,
         "density": "плотно",
-        "mean_level": 0.505,
+        "mean_level": 0.517,
         "regular": false,
         "labels": [
           {
@@ -5739,22 +5877,6 @@
             "at": 418.5,
             "until": 421.5,
             "confidence": 0.313,
-            "in_catalog": false
-          },
-          {
-            "key": "tabla",
-            "name": "табла",
-            "at": 429.0,
-            "until": 435.0,
-            "confidence": 0.307,
-            "in_catalog": false
-          },
-          {
-            "key": "tabla",
-            "name": "табла",
-            "at": 424.5,
-            "until": 427.5,
-            "confidence": 0.286,
             "in_catalog": false
           },
           {
@@ -5776,13 +5898,41 @@
         ]
       },
       {
+        "id": "rumi-dowlat",
+        "start": 424.281,
+        "end": 435.594,
+        "hits": 51,
+        "per_s": 4.51,
+        "density": "очень плотно",
+        "mean_level": 0.609,
+        "regular": false,
+        "labels": [
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 429.0,
+            "until": 435.0,
+            "confidence": 0.307,
+            "in_catalog": false
+          },
+          {
+            "key": "tabla",
+            "name": "табла",
+            "at": 424.5,
+            "until": 427.5,
+            "confidence": 0.286,
+            "in_catalog": false
+          }
+        ]
+      },
+      {
         "id": "rumi-beyts-15",
-        "start": 443.0,
-        "end": 506.35,
-        "hits": 173,
-        "per_s": 2.73,
+        "start": 435.594,
+        "end": 508.014,
+        "hits": 188,
+        "per_s": 2.6,
         "density": "плотно",
-        "mean_level": 0.386,
+        "mean_level": 0.369,
         "regular": false,
         "labels": [
           {
@@ -5845,19 +5995,19 @@
       },
       {
         "id": "coda-arabic",
-        "start": 506.35,
-        "end": 532.53,
-        "hits": 95,
-        "per_s": 3.63,
+        "start": 508.014,
+        "end": 523.572,
+        "hits": 59,
+        "per_s": 3.79,
         "density": "плотно",
-        "mean_level": 0.561,
+        "mean_level": 0.588,
         "regular": true,
         "labels": [
           {
             "key": "tabla",
             "name": "табла",
             "at": 508.5,
-            "until": 532.53,
+            "until": 523.57,
             "confidence": 0.484,
             "in_catalog": false
           }
@@ -5865,38 +6015,18 @@
       },
       {
         "id": "coda-persian",
-        "start": 532.53,
-        "end": 552.89,
-        "hits": 84,
-        "per_s": 4.13,
+        "start": 523.572,
+        "end": 565.09,
+        "hits": 177,
+        "per_s": 4.26,
         "density": "плотно",
-        "mean_level": 0.595,
+        "mean_level": 0.608,
         "regular": true,
         "labels": [
           {
             "key": "tabla",
             "name": "табла",
-            "at": 532.53,
-            "until": 552.89,
-            "confidence": 0.484,
-            "in_catalog": false
-          }
-        ]
-      },
-      {
-        "id": "voice-tail",
-        "start": 552.89,
-        "end": 566.1,
-        "hits": 57,
-        "per_s": 4.31,
-        "density": "плотно",
-        "mean_level": 0.574,
-        "regular": false,
-        "labels": [
-          {
-            "key": "tabla",
-            "name": "табла",
-            "at": 552.89,
+            "at": 523.572,
             "until": 564.0,
             "confidence": 0.484,
             "in_catalog": false
@@ -5905,12 +6035,12 @@
       },
       {
         "id": "inst-end",
-        "start": 566.1,
+        "start": 565.09,
         "end": 580.06,
         "hits": 2,
-        "per_s": 0.14,
+        "per_s": 0.13,
         "density": "почти нет ударов",
-        "mean_level": 0.188,
+        "mean_level": 0.175,
         "regular": null,
         "labels": [
           {

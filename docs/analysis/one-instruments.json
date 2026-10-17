@@ -135,6 +135,98 @@
       }
     }
   },
+  "closed_set": {
+    "keys": [
+      "ney",
+      "violin",
+      "qanun",
+      "santur",
+      "ensemble"
+    ],
+    "prompt_keys": [
+      "ney",
+      "violin",
+      "qanun",
+      "santur"
+    ],
+    "ensemble": true,
+    "generic_percussion": false,
+    "uncatalogued": [],
+    "performers": {},
+    "players": {},
+    "heading_unknown": [],
+    "singers": [
+      "Cappella Amsterdam"
+    ]
+  },
+  "data_proposal": {
+    "separated": true,
+    "threshold": 0.1685,
+    "margin_floor": 0.04,
+    "agree_windows": 3,
+    "gap_p75": 0.1685,
+    "gap_p90": 0.248,
+    "windows": 645,
+    "instruments": [
+      "ney",
+      "violin",
+      "qanun",
+      "santur",
+      "ensemble"
+    ],
+    "performers": {},
+    "uncatalogued": [],
+    "generic_percussion": false,
+    "heading_unknown": [],
+    "singers": [
+      "Cappella Amsterdam"
+    ],
+    "best_gap": {
+      "ney": 0.061,
+      "qanun": 0.201,
+      "violin": 0.342
+    },
+    "entries": [
+      {
+        "key": "violin",
+        "name": "Скрипка",
+        "at": 458.0,
+        "until": 464.0,
+        "holds_to_section_end": false,
+        "confidence": 0.252,
+        "similarity": 0.486,
+        "margin": 0.252,
+        "stem": "other",
+        "section": "qasida-najd-2"
+      }
+    ],
+    "sections": [
+      {
+        "id": "qasida-najd-2",
+        "kind": "vocal",
+        "entries": [
+          {
+            "key": "violin",
+            "name": "Скрипка",
+            "at": 458.0,
+            "until": 464.0,
+            "holds_to_section_end": false,
+            "confidence": 0.252,
+            "similarity": 0.486,
+            "margin": 0.252,
+            "stem": "other"
+          }
+        ]
+      }
+    ],
+    "bass_unnamed": {
+      "present": true,
+      "named_bass": false,
+      "loud_fraction": 0.318,
+      "longest_s": 4.45,
+      "note": "Басовый стем громкий: доля кадров выше порога 0.32, самый длинный отрезок 4.5 с. В титрах этой записи низкий инструмент не назван, поэтому в данные вступление не ставится."
+    }
+  },
   "timeline": [
     {
       "key": "choir",
@@ -2787,7 +2879,7 @@
       "kind": "vocal",
       "label": "Касыда, Неджд",
       "start": 367.051,
-      "end": 391.0,
+      "end": 389.811,
       "entries": [
         {
           "at": 367.051,
@@ -2826,25 +2918,13 @@
           "key": "bass-drum",
           "name": "большой барабан",
           "in_catalog": false
-        },
-        {
-          "at": 390.0,
-          "until": 391.0,
-          "holds_to_section_end": true,
-          "confidence": 0.249,
-          "similarity": 0.483,
-          "margin": 0.438,
-          "stem": "other",
-          "key": "string-section",
-          "name": "группа смычковых",
-          "in_catalog": false
         }
       ],
       "voice": [
         {
           "at": 367.051,
-          "until": 390.0,
-          "holds_to_section_end": false,
+          "until": 389.81,
+          "holds_to_section_end": true,
           "confidence": 0.318,
           "similarity": 0.338,
           "margin": 0.394,
@@ -2859,7 +2939,7 @@
       "id": "inst-2",
       "kind": "instrumental",
       "label": "Проигрыш",
-      "start": 391.0,
+      "start": 389.811,
       "end": 442.276,
       "entries": [
         {
@@ -2973,7 +3053,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 391.0,
+          "at": 390.0,
           "until": 394.0,
           "holds_to_section_end": false,
           "confidence": 0.249,
@@ -3053,7 +3133,7 @@
       "kind": "vocal",
       "label": "Неджд, второй цикл",
       "start": 442.276,
-      "end": 466.0,
+      "end": 464.669,
       "entries": [
         {
           "at": 442.28,
@@ -3081,7 +3161,7 @@
         },
         {
           "at": 458.0,
-          "until": 466.0,
+          "until": 464.669,
           "holds_to_section_end": true,
           "confidence": 0.306,
           "similarity": 0.484,
@@ -3155,7 +3235,7 @@
         },
         {
           "at": 463.5,
-          "until": 466.0,
+          "until": 464.669,
           "holds_to_section_end": true,
           "confidence": 0.345,
           "similarity": 0.374,
@@ -3181,8 +3261,8 @@
         },
         {
           "at": 456.0,
-          "until": 465.0,
-          "holds_to_section_end": false,
+          "until": 464.669,
+          "holds_to_section_end": true,
           "confidence": 0.293,
           "similarity": 0.342,
           "margin": 0.383,
@@ -3197,12 +3277,12 @@
       "id": "inst-3",
       "kind": "instrumental",
       "label": "Проигрыш",
-      "start": 466.0,
-      "end": 474.0,
+      "start": 464.669,
+      "end": 476.2,
       "entries": [
         {
-          "at": 466.0,
-          "until": 474.0,
+          "at": 464.67,
+          "until": 476.2,
           "holds_to_section_end": true,
           "confidence": 0.306,
           "similarity": 0.484,
@@ -3215,9 +3295,21 @@
       ],
       "uncatalogued": [
         {
+          "at": 464.67,
+          "until": 466.5,
+          "holds_to_section_end": false,
+          "confidence": 0.345,
+          "similarity": 0.374,
+          "margin": 0.39,
+          "stem": "drums",
+          "key": "bass-drum",
+          "name": "большой барабан",
+          "in_catalog": false
+        },
+        {
           "at": 471.0,
           "until": 474.0,
-          "holds_to_section_end": true,
+          "holds_to_section_end": false,
           "confidence": 0.393,
           "similarity": 0.361,
           "margin": 0.406,
@@ -3233,11 +3325,11 @@
       "id": "qasida-najd-3",
       "kind": "vocal",
       "label": "Неджд, третий цикл",
-      "start": 474.0,
-      "end": 500.0,
+      "start": 476.2,
+      "end": 498.022,
       "entries": [
         {
-          "at": 474.0,
+          "at": 476.2,
           "until": 478.0,
           "holds_to_section_end": false,
           "confidence": 0.306,
@@ -3250,7 +3342,7 @@
         },
         {
           "at": 482.0,
-          "until": 500.0,
+          "until": 498.02,
           "holds_to_section_end": true,
           "confidence": 0.263,
           "similarity": 0.478,
@@ -3315,7 +3407,7 @@
         {
           "at": 486.0,
           "until": 498.0,
-          "holds_to_section_end": false,
+          "holds_to_section_end": true,
           "confidence": 0.17,
           "similarity": 0.297,
           "margin": 0.362,
@@ -3330,9 +3422,21 @@
       "id": "inst-4",
       "kind": "instrumental",
       "label": "Проигрыш",
-      "start": 500.0,
-      "end": 559.0,
+      "start": 498.022,
+      "end": 560.667,
       "entries": [
+        {
+          "at": 498.022,
+          "until": 500.0,
+          "holds_to_section_end": false,
+          "confidence": 0.263,
+          "similarity": 0.478,
+          "margin": 0.487,
+          "stem": "other",
+          "key": "violin",
+          "name": "Скрипка",
+          "in_catalog": true
+        },
         {
           "at": 501.0,
           "until": 549.0,
@@ -3433,7 +3537,7 @@
         },
         {
           "at": 548.0,
-          "until": 559.0,
+          "until": 560.667,
           "holds_to_section_end": true,
           "confidence": 0.385,
           "similarity": 0.521,
@@ -3457,7 +3561,7 @@
         },
         {
           "at": 556.5,
-          "until": 559.0,
+          "until": 560.667,
           "holds_to_section_end": true,
           "confidence": 0.284,
           "similarity": 0.341,
@@ -3474,8 +3578,8 @@
       "id": "qasida-reprise",
       "kind": "vocal",
       "label": "Касыда, повтор чаши",
-      "start": 559.0,
-      "end": 585.0,
+      "start": 560.667,
+      "end": 583.121,
       "entries": [
         {
           "at": 562.0,
@@ -3492,7 +3596,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 559.0,
+          "at": 560.67,
           "until": 562.0,
           "holds_to_section_end": false,
           "confidence": 0.385,
@@ -3501,18 +3605,6 @@
           "stem": "mix+other",
           "key": "string-section",
           "name": "группа смычковых",
-          "in_catalog": false
-        },
-        {
-          "at": 559.0,
-          "until": 561.0,
-          "holds_to_section_end": false,
-          "confidence": 0.284,
-          "similarity": 0.341,
-          "margin": 0.364,
-          "stem": "drums",
-          "key": "bass-drum",
-          "name": "большой барабан",
           "in_catalog": false
         },
         {
@@ -3541,8 +3633,8 @@
         },
         {
           "at": 579.0,
-          "until": 583.5,
-          "holds_to_section_end": false,
+          "until": 583.12,
+          "holds_to_section_end": true,
           "confidence": 0.435,
           "similarity": 0.338,
           "margin": 0.302,
@@ -3550,24 +3642,12 @@
           "key": "bass-drum",
           "name": "большой барабан",
           "in_catalog": false
-        },
-        {
-          "at": 583.5,
-          "until": 585.0,
-          "holds_to_section_end": true,
-          "confidence": 0.527,
-          "similarity": 0.481,
-          "margin": 0.618,
-          "stem": "drums",
-          "key": "snare-drum",
-          "name": "малый барабан",
-          "in_catalog": false
         }
       ],
       "voice": [
         {
           "at": 561.0,
-          "until": 585.0,
+          "until": 583.12,
           "holds_to_section_end": true,
           "confidence": 0.321,
           "similarity": 0.336,
@@ -3583,7 +3663,7 @@
       "id": "inst-5",
       "kind": "instrumental",
       "label": "Проигрыш",
-      "start": 585.0,
+      "start": 583.121,
       "end": 622.0,
       "entries": [
         {
@@ -3601,7 +3681,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 585.0,
+          "at": 583.5,
           "until": 597.0,
           "holds_to_section_end": false,
           "confidence": 0.527,
@@ -3661,7 +3741,20 @@
           "in_catalog": false
         }
       ],
-      "voice": []
+      "voice": [
+        {
+          "at": 583.121,
+          "until": 585.0,
+          "holds_to_section_end": false,
+          "confidence": 0.321,
+          "similarity": 0.336,
+          "margin": 0.395,
+          "stem": "mix",
+          "key": "choir",
+          "name": "Хор",
+          "in_catalog": true
+        }
+      ]
     },
     {
       "id": "voice-4",
@@ -5597,11 +5690,11 @@
       {
         "id": "qasida-najd-1",
         "start": 367.051,
-        "end": 391.0,
+        "end": 389.811,
         "hits": 51,
-        "per_s": 2.13,
-        "density": "умеренно",
-        "mean_level": 0.402,
+        "per_s": 2.24,
+        "density": "плотно",
+        "mean_level": 0.422,
         "regular": false,
         "labels": [
           {
@@ -5616,12 +5709,12 @@
       },
       {
         "id": "inst-2",
-        "start": 391.0,
+        "start": 389.811,
         "end": 442.276,
         "hits": 150,
-        "per_s": 2.93,
+        "per_s": 2.86,
         "density": "плотно",
-        "mean_level": 0.385,
+        "mean_level": 0.376,
         "regular": false,
         "labels": [
           {
@@ -5653,11 +5746,11 @@
       {
         "id": "qasida-najd-2",
         "start": 442.276,
-        "end": 466.0,
-        "hits": 62,
-        "per_s": 2.61,
+        "end": 464.669,
+        "hits": 57,
+        "per_s": 2.55,
         "density": "плотно",
-        "mean_level": 0.49,
+        "mean_level": 0.485,
         "regular": false,
         "labels": [
           {
@@ -5680,7 +5773,7 @@
             "key": "bass-drum",
             "name": "большой барабан",
             "at": 463.5,
-            "until": 466.0,
+            "until": 464.669,
             "confidence": 0.345,
             "in_catalog": false
           },
@@ -5704,10 +5797,10 @@
       },
       {
         "id": "inst-3",
-        "start": 466.0,
-        "end": 474.0,
-        "hits": 20,
-        "per_s": 2.5,
+        "start": 464.669,
+        "end": 476.2,
+        "hits": 30,
+        "per_s": 2.6,
         "density": "плотно",
         "mean_level": 0.603,
         "regular": false,
@@ -5719,17 +5812,25 @@
             "until": 474.0,
             "confidence": 0.393,
             "in_catalog": false
+          },
+          {
+            "key": "bass-drum",
+            "name": "большой барабан",
+            "at": 464.67,
+            "until": 466.5,
+            "confidence": 0.345,
+            "in_catalog": false
           }
         ]
       },
       {
         "id": "qasida-najd-3",
-        "start": 474.0,
-        "end": 500.0,
-        "hits": 62,
-        "per_s": 2.38,
+        "start": 476.2,
+        "end": 498.022,
+        "hits": 56,
+        "per_s": 2.57,
         "density": "плотно",
-        "mean_level": 0.446,
+        "mean_level": 0.462,
         "regular": false,
         "labels": [
           {
@@ -5752,12 +5853,12 @@
       },
       {
         "id": "inst-4",
-        "start": 500.0,
-        "end": 559.0,
-        "hits": 201,
-        "per_s": 3.41,
+        "start": 498.022,
+        "end": 560.667,
+        "hits": 207,
+        "per_s": 3.3,
         "density": "плотно",
-        "mean_level": 0.429,
+        "mean_level": 0.423,
         "regular": false,
         "labels": [
           {
@@ -5804,7 +5905,7 @@
             "key": "bass-drum",
             "name": "большой барабан",
             "at": 556.5,
-            "until": 559.0,
+            "until": 560.667,
             "confidence": 0.284,
             "in_catalog": false
           }
@@ -5812,27 +5913,19 @@
       },
       {
         "id": "qasida-reprise",
-        "start": 559.0,
-        "end": 585.0,
-        "hits": 62,
-        "per_s": 2.38,
+        "start": 560.667,
+        "end": 583.121,
+        "hits": 51,
+        "per_s": 2.27,
         "density": "плотно",
-        "mean_level": 0.443,
+        "mean_level": 0.415,
         "regular": false,
         "labels": [
-          {
-            "key": "snare-drum",
-            "name": "малый барабан",
-            "at": 583.5,
-            "until": 585.0,
-            "confidence": 0.527,
-            "in_catalog": false
-          },
           {
             "key": "bass-drum",
             "name": "большой барабан",
             "at": 579.0,
-            "until": 583.5,
+            "until": 583.12,
             "confidence": 0.435,
             "in_catalog": false
           },
@@ -5851,25 +5944,17 @@
             "until": 568.5,
             "confidence": 0.378,
             "in_catalog": false
-          },
-          {
-            "key": "bass-drum",
-            "name": "большой барабан",
-            "at": 559.0,
-            "until": 561.0,
-            "confidence": 0.284,
-            "in_catalog": false
           }
         ]
       },
       {
         "id": "inst-5",
-        "start": 585.0,
+        "start": 583.121,
         "end": 622.0,
-        "hits": 139,
-        "per_s": 3.76,
+        "hits": 145,
+        "per_s": 3.73,
         "density": "плотно",
-        "mean_level": 0.684,
+        "mean_level": 0.681,
         "regular": false,
         "labels": [
           {
@@ -5891,7 +5976,7 @@
           {
             "key": "snare-drum",
             "name": "малый барабан",
-            "at": 585.0,
+            "at": 583.5,
             "until": 597.0,
             "confidence": 0.527,
             "in_catalog": false

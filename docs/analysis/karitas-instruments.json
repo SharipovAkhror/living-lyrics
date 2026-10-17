@@ -135,6 +135,98 @@
       }
     }
   },
+  "closed_set": {
+    "keys": [
+      "erhu",
+      "oud",
+      "ney",
+      "violin",
+      "ensemble"
+    ],
+    "prompt_keys": [
+      "erhu",
+      "oud",
+      "ney",
+      "violin"
+    ],
+    "ensemble": true,
+    "generic_percussion": false,
+    "uncatalogued": [],
+    "performers": {},
+    "players": {},
+    "heading_unknown": [],
+    "singers": [
+      "Cappella Amsterdam"
+    ]
+  },
+  "data_proposal": {
+    "separated": true,
+    "threshold": 0.1711,
+    "margin_floor": 0.04,
+    "agree_windows": 3,
+    "gap_p75": 0.1711,
+    "gap_p90": 0.2306,
+    "windows": 780,
+    "instruments": [
+      "erhu",
+      "oud",
+      "ney",
+      "violin",
+      "ensemble"
+    ],
+    "performers": {},
+    "uncatalogued": [],
+    "generic_percussion": false,
+    "heading_unknown": [],
+    "singers": [
+      "Cappella Amsterdam"
+    ],
+    "best_gap": {
+      "ney": 0.069,
+      "oud": 0.156,
+      "violin": 0.289
+    },
+    "entries": [
+      {
+        "key": "violin",
+        "name": "Скрипка",
+        "at": 930.0,
+        "until": 936.0,
+        "holds_to_section_end": false,
+        "confidence": 0.253,
+        "similarity": 0.488,
+        "margin": 0.253,
+        "stem": "other",
+        "section": "fuzuli-finale"
+      }
+    ],
+    "sections": [
+      {
+        "id": "fuzuli-finale",
+        "kind": "vocal",
+        "entries": [
+          {
+            "key": "violin",
+            "name": "Скрипка",
+            "at": 930.0,
+            "until": 936.0,
+            "holds_to_section_end": false,
+            "confidence": 0.253,
+            "similarity": 0.488,
+            "margin": 0.253,
+            "stem": "other"
+          }
+        ]
+      }
+    ],
+    "bass_unnamed": {
+      "present": true,
+      "named_bass": false,
+      "loud_fraction": 0.213,
+      "longest_s": 5.35,
+      "note": "Басовый стем громкий: доля кадров выше порога 0.21, самый длинный отрезок 5.3 с. В титрах этой записи низкий инструмент не назван, поэтому в данные вступление не ставится."
+    }
+  },
   "timeline": [
     {
       "key": "choir",
@@ -2865,7 +2957,7 @@
       "kind": "vocal",
       "label": "Газель Физули, бейт 1",
       "start": 37.39,
-      "end": 55.47,
+      "end": 55.467,
       "entries": [
         {
           "at": 50.0,
@@ -2912,8 +3004,8 @@
       "id": "fuzuli-2",
       "kind": "vocal",
       "label": "Газель Физули, бейт 2",
-      "start": 55.47,
-      "end": 76.37,
+      "start": 55.467,
+      "end": 76.373,
       "entries": [
         {
           "at": 68.0,
@@ -2973,8 +3065,8 @@
       "id": "fuzuli-4a",
       "kind": "vocal",
       "label": "Газель Физули, бейт 4",
-      "start": 76.37,
-      "end": 104.15,
+      "start": 76.373,
+      "end": 104.147,
       "entries": [
         {
           "at": 80.0,
@@ -3041,8 +3133,8 @@
       ],
       "voice": [
         {
-          "at": 76.37,
-          "until": 104.15,
+          "at": 76.373,
+          "until": 104.147,
           "holds_to_section_end": true,
           "confidence": 0.722,
           "similarity": 0.451,
@@ -3058,7 +3150,7 @@
       "id": "hildegard-1",
       "kind": "vocal",
       "label": "Антифон Хильдегарды",
-      "start": 104.15,
+      "start": 104.147,
       "end": 138.48,
       "entries": [
         {
@@ -3313,7 +3405,7 @@
       "kind": "vocal",
       "label": "Антифон Хильдегарды, второй проход",
       "start": 195.0,
-      "end": 229.1,
+      "end": 229.105,
       "entries": [],
       "uncatalogued": [
         {
@@ -3348,8 +3440,8 @@
       "id": "fuzuli-4c",
       "kind": "vocal",
       "label": "Газель Физули, бейты 4 и 5",
-      "start": 229.1,
-      "end": 269.0,
+      "start": 229.105,
+      "end": 268.163,
       "entries": [
         {
           "at": 258.0,
@@ -3484,24 +3576,12 @@
           "key": "electric-bass",
           "name": "бас-гитара",
           "in_catalog": false
-        },
-        {
-          "at": 268.0,
-          "until": 269.0,
-          "holds_to_section_end": true,
-          "confidence": 0.618,
-          "similarity": 0.55,
-          "margin": 0.497,
-          "stem": "other+mix",
-          "key": "string-section",
-          "name": "группа смычковых",
-          "in_catalog": false
         }
       ],
       "voice": [
         {
-          "at": 229.1,
-          "until": 269.0,
+          "at": 229.105,
+          "until": 268.16,
           "holds_to_section_end": true,
           "confidence": 0.722,
           "similarity": 0.451,
@@ -3517,7 +3597,7 @@
       "id": "instruments-1",
       "kind": "instrumental",
       "label": "Инструментальный проигрыш",
-      "start": 269.0,
+      "start": 268.163,
       "end": 281.0,
       "entries": [
         {
@@ -3547,7 +3627,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 269.0,
+          "at": 268.163,
           "until": 281.0,
           "holds_to_section_end": true,
           "confidence": 0.618,
@@ -3559,7 +3639,7 @@
           "in_catalog": false
         },
         {
-          "at": 269.0,
+          "at": 268.5,
           "until": 271.5,
           "holds_to_section_end": false,
           "confidence": 0.255,
@@ -3585,7 +3665,7 @@
       ],
       "voice": [
         {
-          "at": 269.0,
+          "at": 268.163,
           "until": 270.0,
           "holds_to_section_end": false,
           "confidence": 0.722,
@@ -4264,7 +4344,7 @@
       "kind": "vocal",
       "label": "Газель Физули, бейт 1",
       "start": 427.68,
-      "end": 452.28,
+      "end": 452.278,
       "entries": [
         {
           "at": 430.0,
@@ -4330,7 +4410,7 @@
         },
         {
           "at": 448.0,
-          "until": 452.28,
+          "until": 452.278,
           "holds_to_section_end": true,
           "confidence": 0.312,
           "similarity": 0.485,
@@ -4342,7 +4422,7 @@
         },
         {
           "at": 450.0,
-          "until": 452.28,
+          "until": 452.278,
           "holds_to_section_end": true,
           "confidence": 0.297,
           "similarity": 0.271,
@@ -4372,8 +4452,8 @@
       "id": "call-2",
       "kind": "vocal",
       "label": "Возглас",
-      "start": 452.28,
-      "end": 466.89,
+      "start": 452.278,
+      "end": 466.892,
       "entries": [
         {
           "at": 456.0,
@@ -4481,7 +4561,7 @@
       "id": "shushtari",
       "kind": "vocal",
       "label": "Мавваль аш-Шуштари",
-      "start": 466.89,
+      "start": 466.892,
       "end": 509.8,
       "entries": [
         {
@@ -4559,7 +4639,7 @@
       ],
       "uncatalogued": [
         {
-          "at": 466.89,
+          "at": 466.892,
           "until": 469.5,
           "holds_to_section_end": false,
           "confidence": 0.473,
@@ -4571,7 +4651,7 @@
           "in_catalog": false
         },
         {
-          "at": 466.89,
+          "at": 466.892,
           "until": 470.0,
           "holds_to_section_end": false,
           "confidence": 0.27,
@@ -4663,11 +4743,11 @@
       "kind": "vocal",
       "label": "Мавваль ан-Набулси",
       "start": 509.8,
-      "end": 529.88,
+      "end": 529.879,
       "entries": [
         {
           "at": 509.8,
-          "until": 529.88,
+          "until": 529.879,
           "holds_to_section_end": true,
           "confidence": 0.732,
           "similarity": 0.427,
@@ -4691,7 +4771,7 @@
         },
         {
           "at": 526.0,
-          "until": 529.88,
+          "until": 529.879,
           "holds_to_section_end": true,
           "confidence": 0.136,
           "similarity": 0.405,
@@ -4717,7 +4797,7 @@
         },
         {
           "at": 528.0,
-          "until": 529.88,
+          "until": 529.879,
           "holds_to_section_end": true,
           "confidence": 0.366,
           "similarity": 0.334,
@@ -4743,7 +4823,7 @@
         },
         {
           "at": 522.0,
-          "until": 529.88,
+          "until": 529.879,
           "holds_to_section_end": true,
           "confidence": 0.04,
           "similarity": 0.275,
@@ -4759,7 +4839,7 @@
       "id": "sabr",
       "kind": "vocal",
       "label": "Бейт о терпении",
-      "start": 529.88,
+      "start": 529.879,
       "end": 550.27,
       "entries": [
         {
@@ -6445,7 +6525,7 @@
       "kind": "vocal",
       "label": "Антифон Хильдегарды, четвёртый проход",
       "start": 900.0,
-      "end": 920.95,
+      "end": 920.946,
       "entries": [
         {
           "at": 910.0,
@@ -6487,7 +6567,7 @@
         },
         {
           "at": 919.5,
-          "until": 920.95,
+          "until": 920.946,
           "holds_to_section_end": true,
           "confidence": 0.37,
           "similarity": 0.385,
@@ -6499,7 +6579,7 @@
         },
         {
           "at": 920.0,
-          "until": 920.95,
+          "until": 920.946,
           "holds_to_section_end": true,
           "confidence": 0.252,
           "similarity": 0.448,
@@ -6513,7 +6593,7 @@
       "voice": [
         {
           "at": 900.0,
-          "until": 920.95,
+          "until": 920.946,
           "holds_to_section_end": true,
           "confidence": 0.768,
           "similarity": 0.472,
@@ -6529,7 +6609,7 @@
       "id": "fuzuli-finale",
       "kind": "vocal",
       "label": "Газель Физули, бейты 1 и 2",
-      "start": 920.95,
+      "start": 920.946,
       "end": 942.13,
       "entries": [
         {
@@ -7761,7 +7841,7 @@
       {
         "id": "fuzuli-1",
         "start": 37.39,
-        "end": 55.47,
+        "end": 55.467,
         "hits": 0,
         "per_s": 0.0,
         "density": "почти нет ударов",
@@ -7771,8 +7851,8 @@
       },
       {
         "id": "fuzuli-2",
-        "start": 55.47,
-        "end": 76.37,
+        "start": 55.467,
+        "end": 76.373,
         "hits": 1,
         "per_s": 0.05,
         "density": "почти нет ударов",
@@ -7782,8 +7862,8 @@
       },
       {
         "id": "fuzuli-4a",
-        "start": 76.37,
-        "end": 104.15,
+        "start": 76.373,
+        "end": 104.147,
         "hits": 50,
         "per_s": 1.8,
         "density": "умеренно",
@@ -7818,7 +7898,7 @@
       },
       {
         "id": "hildegard-1",
-        "start": 104.15,
+        "start": 104.147,
         "end": 138.48,
         "hits": 1,
         "per_s": 0.03,
@@ -7893,7 +7973,7 @@
       {
         "id": "hildegard-2",
         "start": 195.0,
-        "end": 229.1,
+        "end": 229.105,
         "hits": 8,
         "per_s": 0.23,
         "density": "редко",
@@ -7903,12 +7983,12 @@
       },
       {
         "id": "fuzuli-4c",
-        "start": 229.1,
-        "end": 269.0,
-        "hits": 94,
+        "start": 229.105,
+        "end": 268.163,
+        "hits": 92,
         "per_s": 2.36,
         "density": "плотно",
-        "mean_level": 0.498,
+        "mean_level": 0.496,
         "regular": false,
         "labels": [
           {
@@ -7955,12 +8035,12 @@
       },
       {
         "id": "instruments-1",
-        "start": 269.0,
+        "start": 268.163,
         "end": 281.0,
-        "hits": 34,
-        "per_s": 2.83,
+        "hits": 36,
+        "per_s": 2.8,
         "density": "плотно",
-        "mean_level": 0.554,
+        "mean_level": 0.552,
         "regular": false,
         "labels": [
           {
@@ -7974,7 +8054,7 @@
           {
             "key": "bass-drum",
             "name": "большой барабан",
-            "at": 269.0,
+            "at": 268.5,
             "until": 271.5,
             "confidence": 0.255,
             "in_catalog": false
@@ -8243,7 +8323,7 @@
       {
         "id": "fuzuli-return",
         "start": 427.68,
-        "end": 452.28,
+        "end": 452.278,
         "hits": 15,
         "per_s": 0.61,
         "density": "редко",
@@ -8262,8 +8342,8 @@
       },
       {
         "id": "call-2",
-        "start": 452.28,
-        "end": 466.89,
+        "start": 452.278,
+        "end": 466.892,
         "hits": 7,
         "per_s": 0.48,
         "density": "редко",
@@ -8298,7 +8378,7 @@
       },
       {
         "id": "shushtari",
-        "start": 466.89,
+        "start": 466.892,
         "end": 509.8,
         "hits": 26,
         "per_s": 0.61,
@@ -8325,7 +8405,7 @@
           {
             "key": "bass-drum",
             "name": "большой барабан",
-            "at": 466.89,
+            "at": 466.892,
             "until": 469.5,
             "confidence": 0.473,
             "in_catalog": false
@@ -8343,7 +8423,7 @@
       {
         "id": "nabulsi",
         "start": 509.8,
-        "end": 529.88,
+        "end": 529.879,
         "hits": 24,
         "per_s": 1.2,
         "density": "умеренно",
@@ -8354,7 +8434,7 @@
             "key": "tabla",
             "name": "табла",
             "at": 528.0,
-            "until": 529.88,
+            "until": 529.879,
             "confidence": 0.366,
             "in_catalog": false
           }
@@ -8362,7 +8442,7 @@
       },
       {
         "id": "sabr",
-        "start": 529.88,
+        "start": 529.879,
         "end": 550.27,
         "hits": 40,
         "per_s": 1.96,
@@ -8902,7 +8982,7 @@
       {
         "id": "hildegard-4",
         "start": 900.0,
-        "end": 920.95,
+        "end": 920.946,
         "hits": 44,
         "per_s": 2.1,
         "density": "умеренно",
@@ -8929,7 +9009,7 @@
             "key": "tabla",
             "name": "табла",
             "at": 919.5,
-            "until": 920.95,
+            "until": 920.946,
             "confidence": 0.37,
             "in_catalog": false
           }
@@ -8937,12 +9017,12 @@
       },
       {
         "id": "fuzuli-finale",
-        "start": 920.95,
+        "start": 920.946,
         "end": 942.13,
         "hits": 59,
         "per_s": 2.79,
         "density": "плотно",
-        "mean_level": 0.571,
+        "mean_level": 0.572,
         "regular": false,
         "labels": [
           {
