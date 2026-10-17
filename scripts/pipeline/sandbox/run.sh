@@ -119,11 +119,12 @@ if has qa && [ $status -lt 2 ]; then
 fi
 # Sound features for the scene. Independent of alignment: a sync miss (code 1) still leaves
 # envelopes and an instrument proposal. Neither script writes lyrics.json.
+# The stem cache restores the four wavs without the mix, so decrypt even when separate is a no-op.
 if has features && [ $status -lt 2 ]; then
-  { separate && step features python3 features.py "$slug"; } || fail features
+  { decrypt && separate && step features python3 features.py "$slug"; } || fail features
 fi
 if has instruments && [ $status -lt 2 ]; then
-  { separate && step instruments python3 instruments.py "$slug"; } || fail instruments
+  { decrypt && separate && step instruments python3 instruments.py "$slug"; } || fail instruments
 fi
 echo "=== итог $slug: код $status (0 — всё в такт, 1 — есть строки не в такт, 2 — стадия упала)" | tee -a "$log"
 exit $status
