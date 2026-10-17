@@ -493,45 +493,16 @@
   opacity: calc(var(--hatch, 1) * 0.12);
 }
 .eng .str {
-  --amp: calc(var(--energy, 0) * 0.9px);
-  animation: string-vibrate 70ms linear infinite alternate;
-}
-.eng .str:nth-child(2n) {
-  animation-duration: 83ms;
-}
-.eng .str:nth-child(3n) {
-  animation-duration: 97ms;
-}
-@keyframes string-vibrate {
-  from {
-    transform: translate(calc(var(--amp) * -0.4), calc(var(--amp) * -1));
-  }
-  to {
-    transform: translate(calc(var(--amp) * 0.4), var(--amp));
-  }
+  transform: translate(var(--str-x, 0), var(--str-y, 0));
 }
 .eng .skin {
   transform-box: fill-box;
   transform-origin: center;
-  transform: scale(calc(1 + var(--energy, 0) * 0.018));
-  transition: transform 90ms linear;
+  transform: scale(var(--skin, 1));
 }
+.eng .breath,
 .eng .breath-dot {
-  animation: air-drift 2.8s var(--ease-out) infinite;
-  opacity: 0;
-}
-@keyframes air-drift {
-  0% {
-    opacity: 0;
-    transform: translate(0, 0);
-  }
-  25% {
-    opacity: calc(0.25 + var(--energy, 0) * 0.6);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-26px, -10px);
-  }
+  opacity: var(--breath-o, 0);
 }
 /* ----- Chrome: top bar, commentary, player ----- */
 .topbar {

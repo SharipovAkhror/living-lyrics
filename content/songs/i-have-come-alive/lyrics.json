@@ -25,7 +25,6 @@
       "instruments": [
         "voice"
       ],
-      "note": "Короткие фразы: голос без разобранных слов.",
       "flags": [
         "timing-draft",
         "text-unverified"
@@ -937,7 +936,6 @@
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "timing-draft",
         "text-unverified"

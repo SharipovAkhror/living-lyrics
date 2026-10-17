@@ -13,6 +13,7 @@ import { LEAD } from '@/scene/flow';
 import { Icon } from '@/icons/Icon';
 import { RichText } from '@/components/RichText';
 import { stripHarakat } from '@/data/harakat';
+import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
 import { preloadInstruments } from '@/instruments/catalog';
 import { SettingsSheet } from './SettingsSheet';
 import { TextSheet } from './TextSheet';
@@ -59,6 +60,7 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
   const settings = useSettings();
   const [lyrics, setLyrics] = useState<Lyrics | null>(null);
   const [peaks, setPeaks] = useState<Peaks | null>(null);
+  const [features, setFeatures] = useState<AudioFeatures | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const engine = useMemo(
@@ -92,6 +94,25 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
       })
       .catch((e) => alive && setLoadError(String(e)));
     if (song.audio.peaks) void loadPeaks(song.audio.peaks).then((p) => alive && p && setPeaks(p));
+    // Features are large and only drive instrument motion, so they wait until the page has painted.
+    const ctrl = new AbortController();
+    const loadFeatures = () => {
+      fetch(`/audio/${song.slug}/features.json`, { signal: ctrl.signal })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((raw) => {
+          if (alive) setFeatures(parseAudioFeatures(raw));
+        })
+        .catch(() => {
+          /* aborted, or no file: the drawings stay still */
+        });
+    };
+    // Idle is missing on older WebKit. The typed Window always has the method, so the check goes through a widened view.
+    const host = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const idle = typeof host.requestIdleCallback === 'function' ? host.requestIdleCallback(loadFeatures, { timeout: 1200 }) : window.setTimeout(loadFeatures, 40);
+    const idleWasCallback = typeof host.requestIdleCallback === 'function';
     const s = settings;
     void engine.init({ quality: s.quality, rate: s.rate, volume: s.volume, normalize: s.normalize }).then(() => {
       if (s.eqEnabled) engine.setEffects(true, s.eqBands, s.eqPreamp);
@@ -101,6 +122,9 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
     });
     return () => {
       alive = false;
+      ctrl.abort();
+      if (idleWasCallback) host.cancelIdleCallback?.(idle);
+      else clearTimeout(idle);
       engine.destroy();
     };
     // Settings are read once at start; later changes go through the settings sheet.
@@ -257,7 +281,7 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
   return (
     <div className={`song${comment ? ' has-comment' : ''}${settings.commentOpen ? ' comment-open' : ''}`}>
       {timeline ? (
-        <Scene song={song} timeline={timeline} settings={settings} dark={dark} clock={clock} onOwnerChange={setOwner} onPick={pick} />
+        <Scene song={song} timeline={timeline} settings={settings} dark={dark} features={features} clock={clock} onOwnerChange={setOwner} onPick={pick} />
       ) : (
         <div className="scene scene--loading">{loadError ? <p className="t-body secondary">{loadError}</p> : null}</div>
       )}
