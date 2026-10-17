@@ -45,6 +45,7 @@ MAX_LAG = 2.0          # search ±2 s
 TOL = 0.25             # whole-line shift alarm only. Not the word proof, and not the song gate.
 WORD_TOL = 0.10        # solo: pre-snap aligner start vs the attack, and the two aligners vs each other
 CHOIR_TOL = 0.20       # choir group: the same two checks, wider because several voices share the stem
+CUE_TOL = 0.70         # aligner line start vs the official subtitle cue. A person places the cue to ~0.1–0.5 s
 SONG_SHARE = 0.80      # each group that exists (solo, choir) must be at least this share proved
 ONSET_SEARCH = 0.35    # look for an attack this far from the written start
 LEGATO_GAP = 0.20      # a word continuing the previous one, with no new attack, may have no onset
@@ -154,6 +155,7 @@ REASON_RU = {
     'no-voice': 'нет голоса',
     'line-shift': 'строка сдвинута относительно голоса',
     'onset': 'начало слова дальше допуска группы от атаки',
+    'cue-disagree': 'расходится с субтитрами',
     'text-changed': 'текст изменился после выравнивания',
     'no-report': 'нет отчёта выравнивания',
 }
@@ -215,13 +217,15 @@ def _kind(group: str | bool) -> str:
     return 'other'
 
 
-def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presnap: list[float | None], align_words: list[dict] | None, has_report: bool) -> dict:
+def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presnap: list[float | None], align_words: list[dict] | None, has_report: bool,
+               cue_start: float | None = None, ctc_line_start: float | None = None) -> dict:
     """Whether one line may lose timing-draft. The first failing reason wins.
 
-    The two measurements that count are independent of the published time: the first aligner's
-    word start before any snap to an attack, and the second aligner's start. Solo uses WORD_TOL,
-    choir uses CHOIR_TOL. A duet or tutti is neither group. A word that merely continues the
-    previous one (legato) does not pass. The whole-line shift alarm is not a gate.
+    The measurements that count are independent of the published time: the first aligner's
+    word start before any snap to an attack, the second aligner's start, and the official
+    subtitle cue. Solo uses WORD_TOL, choir uses CHOIR_TOL. The cue check is CUE_TOL on the
+    line start. A duet or tutti is neither group. A word that merely continues the previous
+    one (legato) does not pass. The whole-line shift alarm is not a gate.
     """
     kind = _kind(group)
     tol = CHOIR_TOL if kind == 'choir' else WORD_TOL
@@ -232,9 +236,19 @@ def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presn
     if kind == 'other':
         return {'pass': False, 'reason': 'not-solo', 'detail': 'дуэт, тутти или несколько голосов'}
     if ctc_status == 'draft':
-        return {'pass': False, 'reason': 'text-not-found', 'detail': 'MMS не нашёл эти слова в секции'}
+        where = 'окне реплики' if cue_start is not None else 'секции'
+        return {'pass': False, 'reason': 'text-not-found', 'detail': f'MMS не нашёл эти слова в {where}'}
     if ctc_status != 'good':
         return {'pass': False, 'reason': 'low-confidence', 'detail': ctc_status or 'нет оценки'}
+    if cue_start is not None:
+        drift = None if ctc_line_start is None else abs(float(ctc_line_start) - float(cue_start))
+        # Round to a millisecond so a difference of exactly 0.7 s is still inside the tolerance.
+        if drift is None or round(drift, 3) > CUE_TOL:
+            if drift is None:
+                detail = 'нет начала выравнивателя'
+            else:
+                detail = f'{drift:.3f} с при допуске {CUE_TOL:.1f} с'
+            return {'pass': False, 'reason': 'cue-disagree', 'detail': detail}
     if not align_words:
         return {'pass': False, 'reason': 'no-second-aligner', 'detail': ''}
     if len(presnap) != len(align_words):
@@ -269,8 +283,14 @@ def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presn
     return {'pass': True, 'reason': 'pass', 'detail': ''}
 
 
-def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict], align_report: dict | None) -> dict:
-    """Per-line pass/fail. Headline numbers are pre-snap only; published times may already be snapped."""
+def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict], align_report: dict | None,
+                cues: dict | None = None) -> dict:
+    """Per-line pass/fail. Headline numbers are pre-snap only; published times may already be snapped.
+
+    `cues` is the official subtitle file keyed by line id. The cue check reads it here, not the
+    published word time, so a line that kept its cue cannot agree with itself.
+    """
+    cues = cues or {}
     by_id = {r['id']: r for r in align_report.get('lines', [])} if align_report else {}
     peaks = onset_peak_times(sig)
     rows = []
@@ -282,6 +302,13 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
         tol = CHOIR_TOL if kind == 'choir' else WORD_TOL
         text_same = bool(rec) and rec.get('text') == T.line_text(line)
         align_words = _lettered(rec.get('words') if rec else None, len(words))
+        cue = cues.get(line['id'])
+        cue_start = float(cue['start']) if cue and cue.get('start') is not None else None
+        ctc_line = None
+        for aw in align_words:
+            if aw.get('roman') and aw.get('ctc_s') is not None:
+                ctc_line = float(aw['ctc_s'])
+                break
         presnap: list[float | None] = []
         abs_pre: list[float] = []
         agree: list[float] = []
@@ -298,11 +325,17 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
             if aw.get('second_s') is not None:
                 agree.append(abs(float(aw['second_s']) - t))
             prev_ctc = t
-        decision = proof_line(kind, rec.get('status') if rec else None, text_same, presnap, align_words or None, align_report is not None)
+        decision = proof_line(kind, rec.get('status') if rec else None, text_same, presnap, align_words or None, align_report is not None,
+                              cue_start=cue_start, ctc_line_start=ctc_line)
+        found_line = (rec or {}).get('status') in ('good', 'weak')
+        cue_delta = None
+        if found_line and cue_start is not None and ctc_line is not None:
+            cue_delta = round(abs(ctc_line - cue_start), 3)
         rows.append({
             'id': line['id'], 'solo': kind == 'solo', 'group': kind, 'pass': decision['pass'], 'reason': decision['reason'],
             'detail': decision['detail'], 'engine': (rec or {}).get('second'),
             'ctc': (rec or {}).get('status'), 'start': words[0]['s'],
+            'cue_start': cue_start, 'cue_delta': cue_delta,
             'window': (rec or {}).get('second_window'),
             'onset_abs': [round(a, 3) for a in abs_pre] if decision['pass'] else [],
             'presnap_abs': [round(a, 3) for a in abs_pre] if decision['pass'] else [],
@@ -334,7 +367,9 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
             reasons[r['reason']] = reasons.get(r['reason'], 0) + 1
     failed_solo = [r for r in solo_rows if not r['pass']]
     failed_choir = [r for r in choir_rows if not r['pass']]
-    worst = sorted(failed_solo + failed_choir, key=lambda r: (-(r['aligner_max'] or 0), -(r['presnap_max'] or 0), r['start']))[:15]
+    worst = sorted(failed_solo + failed_choir, key=lambda r: (-(r.get('cue_delta') or 0), -(r['aligner_max'] or 0), -(r['presnap_max'] or 0), r['start']))[:15]
+    cue_vals = [r['cue_delta'] for r in rows if r.get('cue_delta') is not None]
+    found = sum(1 for r in rows if r.get('ctc') in ('good', 'weak'))
     missing = [r for r in rows if r['ctc'] == 'draft']
     return {
         'aligned': aligned, 'solo': len(solo_rows), 'passed': len(passed), 'failed_solo': len(failed_solo),
@@ -348,6 +383,8 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
         'solo_agree_median': solo_amed, 'solo_agree_p90': solo_ap90,
         'choir_onset_median': choir_med, 'choir_onset_p90': choir_p90, 'choir_onset_words': len(choir_onset),
         'choir_agree_median': choir_amed, 'choir_agree_p90': choir_ap90,
+        'found': found, 'cue_n': len(cue_vals), 'cue_tol': CUE_TOL,
+        'cue_median': round(float(np.median(cue_vals)), 3) if cue_vals else None,
     }
 
 
@@ -652,11 +689,17 @@ def proof_md(proof: dict) -> list[str]:
     L.append('')
     L.append('Pass/fail и цифры ниже считаются до притяжения начала слова к атаке. '
              'Притяжение (не дальше 0,1 с) может сдвинуть записанное время на пик, но в эти цифры не входит. '
-             'Первый проход ставит текст всей вокальной секции сразу. Черновые s/e окном не служат. '
-             'Окно второго выравнивателя — фраза, которую этот проход уже поставил, плюс до 2 с, '
-             'но не дальше соседней измеренной строки и не длиннее 12 с. '
+             'Окно поиска строки — официальная реплика с запасом; черновые s/e окном не служат. '
+             'Строка без реплики ищется по своей вокальной секции. '
+             'Окно второго выравнивателя — фраза, которую первый проход уже поставил, плюс до 2 с, '
+             'но не дальше соседней строки (её поставленного края или реплики) и не длиннее 12 с. '
              'Фразу, которая уже стоит вне своей секции, окно в секцию не затаскивает. '
              'Соло и хор ниже посчитаны отдельно: пороги 0,1 с и 0,2 с в одну цифру не смешиваются.')
+    L.append(f"- Найдено выравнивателем: {proof.get('found', 0)} из {proof['lines_n']} "
+             f"(фраза поставлена, пусть и не доказана). "
+             f"|начало строки − начало реплики|: медиана {_fmt_opt(proof.get('cue_median'))} с "
+             f"по {proof.get('cue_n', 0)} найденным строкам с репликой. "
+             f"Допуск доказательства {ru(proof.get('cue_tol', CUE_TOL))} с: дальше — «расходится с субтитрами».")
     L.append(f"- Соло, только доказанные строки, до притяжения. Атака: медиана {_fmt_opt(proof.get('solo_onset_median', proof.get('onset_median')))} с, "
              f"90-й перцентиль {_fmt_opt(proof.get('solo_onset_p90', proof.get('onset_p90')))} с, порог {ru(WORD_TOL)} с, "
              f"слов {proof.get('solo_onset_words', proof.get('onset_words', 0))}. "
@@ -686,6 +729,8 @@ def proof_md(proof: dict) -> list[str]:
                 bits.append(f"выравниватели до {ru(r['aligner_max'], 3)} с")
             if r.get('presnap_max') is not None:
                 bits.append(f"атака до притяжения до {ru(r['presnap_max'], 3)} с")
+            if r.get('cue_delta') is not None:
+                bits.append(f"реплика {ru(r['cue_delta'], 3)} с")
             if r.get('window'):
                 w0, w1 = r['window']
                 bits.append(f"окно {ru(w0, 1)}–{ru(w1, 1)} с")
@@ -907,7 +952,11 @@ def main() -> int:
     align_report = json.loads(align_path.read_text(encoding='utf-8')) if use_report else None
     proof = None
     if use_report or args.apply:
-        proof = build_proof(sig, lines, results, align_report)
+        cue_path = ROOT / 'docs' / 'analysis' / slug / 'cues.json'
+        cues = {}
+        if cue_path.exists():
+            cues = {r['line']: r for r in json.loads(cue_path.read_text(encoding='utf-8')) if r.get('line')}
+        proof = build_proof(sig, lines, results, align_report, cues)
     if args.apply and proof is not None and song.get('timing', {}).get('status') == 'verified':
         print('song.json: timing.status = verified — qa_sync --apply ничего не меняет')
     elif args.apply and proof is not None:
@@ -945,8 +994,10 @@ def main() -> int:
         if proof.get('choir'):
             choir_bit = f" · хор {proof.get('choir_passed', 0)} из {proof['choir']}"
         print(f"критерий: {'пройден' if proof['aligned'] else 'не пройден'} · соло {proof['passed']} из {proof['solo']}{choir_bit} · "
+              f"найдено {proof.get('found', 0)} · "
               f"до притяжения медиана {_fmt_opt(proof['onset_median'])} с · "
-              f"90-й перцентиль {_fmt_opt(proof['onset_p90'])} с")
+              f"90-й перцентиль {_fmt_opt(proof['onset_p90'])} с · "
+              f"|реплика| медиана {_fmt_opt(proof.get('cue_median'))} с")
     for r in results:
         if r['verdict'] != 'ok':
             print(f"  {r['id']:<22} {r['start']:7.2f}  {verdict_text(r)}  (gain {r['gain']}, prom {r['prom']}, тишина {r['silence']})")

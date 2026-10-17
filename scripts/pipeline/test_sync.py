@@ -109,7 +109,7 @@ def test_solo() -> None:
     n_solo = sum(T.is_solo(sec, line) for sec, line in pairs)
     n_choir = sum(T.is_choir(sec, line) for sec, line in pairs)
     n = len(pairs)
-    check('IHCA solo count', n_solo == 105 and n_choir == 0 and n == 105, f'{n_solo} solo, {n_choir} choir of {n}')
+    check('IHCA solo count', n_solo == 120 and n_choir == 0 and n == 120, f'{n_solo} solo, {n_choir} choir of {n}')
 
 
 def _bursts() -> tuple[np.ndarray, Q.Signals]:
@@ -193,6 +193,17 @@ def test_proof_decision() -> None:
     bare = [{'roman': 'aa', 'ctc_s': 1.0}, {'roman': 'bb', 'ctc_s': 2.0}]
     got = Q.proof_line(True, 'good', True, presnap, bare, True)
     check('a missing second model is not a fake disagreement', (not got['pass']) and got['reason'] == 'no-second-aligner', str(got))
+    # The cue is a third anchor. 0.70 s is still inside the tolerance; past it the line is not proved.
+    got = Q.proof_line(True, 'good', True, presnap, words, True, cue_start=1.0, ctc_line_start=1.70)
+    check('cue drift of 0.70 s does not fail by itself', got['pass'], str(got))
+    got = Q.proof_line(True, 'good', True, presnap, words, True, cue_start=1.0, ctc_line_start=1.40)
+    check('cue drift of 0.40 s does not fail by itself', got['pass'], str(got))
+    got = Q.proof_line(True, 'good', True, presnap, words, True, cue_start=1.0, ctc_line_start=1.81)
+    check('cue drift over 0.7 s fails', (not got['pass']) and got['reason'] == 'cue-disagree', str(got))
+    got = Q.proof_line(True, 'draft', True, presnap, words, True, cue_start=1.0, ctc_line_start=5.0)
+    check('text not found still wins over the cue', got['reason'] == 'text-not-found', str(got))
+    got = Q.proof_line(True, 'weak', True, presnap, words, True, cue_start=1.0, ctc_line_start=5.0)
+    check('low confidence still wins over the cue', got['reason'] == 'low-confidence', str(got))
 
 
 def test_second_span() -> None:
@@ -208,6 +219,65 @@ def test_second_span() -> None:
     check('window stays inside the section fence', t0 >= 11.5 and t1 <= 20.5, f'{t0:.2f}–{t1:.2f}')
     t0, t1 = align.second_span(126.54, 128.47, 107.75, 115.81, 580.0)
     check('a phrase outside its section is not dragged back', abs(t0 - 124.54) < 1e-6 and abs(t1 - 130.47) < 1e-6, f'{t0:.2f}–{t1:.2f}')
+
+
+def test_cue_window() -> None:
+    # Back-to-back cues. The window may enter a neighbour by the overlap and no further.
+    # Draft s/e are not an argument: the cue, its neighbours and the section fence are.
+    t0, t1 = align.cue_window(102.462, 104.422, (100.814, 102.462), (104.422, 106.144), 90.0, 160.0, 580.0)
+    check('cue window stays within the overlap of the previous cue', t0 >= 102.462 - align.CUE_OVERLAP - 1e-9, f'{t0:.3f}')
+    check('cue window does not pass the next cue by more than the overlap', t1 <= 104.422 + align.CUE_OVERLAP + 1e-9, f'{t1:.3f}')
+    check('the cue itself sits inside its window', t0 <= 102.462 <= 104.422 <= t1, f'{t0:.3f}–{t1:.3f}')
+    t0, t1 = align.cue_window(10.0, 12.0, (0.0, 4.0), (20.0, 22.0), 0.0, 30.0, 580.0)
+    check('a gap keeps the lead in front of the cue', abs(t0 - (10.0 - align.CUE_LEAD)) < 1e-9, f'{t0:.3f}')
+    check('a gap keeps the tail after the cue', abs(t1 - (12.0 + align.CUE_TAIL)) < 1e-9, f'{t1:.3f}')
+    t0, t1 = align.cue_window(10.0, 12.0, None, None, 11.0, 11.5, 580.0)
+    check('the section map fences the cue window', t0 >= 11.0 - align.CUE_SECTION_PAD - 1e-9 and t1 <= 11.5 + align.CUE_SECTION_PAD + 1e-9, f'{t0:.3f}–{t1:.3f}')
+
+
+def test_cue_times_stay() -> None:
+    check('a confident line publishes the aligner', not align.keep_cue_time('good', True))
+    check('a weak line keeps its cue', align.keep_cue_time('weak', True))
+    check('an unfound line keeps its cue', align.keep_cue_time('draft', True))
+    check('a draft without a cue may be fitted', not align.keep_cue_time('draft', False))
+    moved = [[[0.0, 1.0]], [[10.0, 11.0]], [[3.0, 4.0]]]
+    align.fit_drafts(moved, [False, True, False], 20.0)
+    check('an uncued draft still moves into the gap', moved[1][0][0] < 10.0, str(moved[1]))
+    kept = [[[0.0, 1.0]], [[10.0, 11.0]], [[3.0, 4.0]]]
+    align.fit_drafts(kept, [False, False, False], 20.0)
+    check('a cue time is not slid into the gap', kept[1][0] == [10.0, 11.0], str(kept[1]))
+
+
+def test_harakat() -> None:
+    try:
+        import uroman  # noqa: F401
+    except ImportError:
+        check('uroman is installed', False, 'pip install uroman')
+        return
+    rom = align.Romaniser()
+    voc = rom('بُدَمْ', 'fa', 'Arab')
+    bare = rom('بدم', 'fa', 'Arab')
+    check('harakat reach uroman as vowels', voc == 'budam', voc)
+    check('the same word without harakat is the consonant skeleton', bare == 'bdm', bare)
+
+
+def test_cue_in_build_proof() -> None:
+    _, sig = _bursts()
+    sec = {'id': 's', 'kind': 'vocal', 'voice': 'Сами Юсуф', 'start': 0.0, 'end': 4.0}
+    line = {'id': 'drift', 'lang': 'en', 'words': [{'w': 'a', 's': t, 'e': t + 0.1} for t in (1.0, 2.0, 3.0)]}
+    rec = {
+        'id': 'drift', 'status': 'good', 'text': 'a a a', 'second': 'whisperx',
+        'words': [
+            {'w': 'a', 'roman': 'a', 'ctc_s': c, 'second_s': c + 0.02}
+            for c in (1.90, 2.02, 3.02)
+        ],
+    }
+    proof = Q.build_proof(sig, [(sec, line)], [{'verdict': 'ok'}], {'lines': [rec]},
+                          {'drift': {'line': 'drift', 'start': 1.0, 'end': 3.2}})
+    row = proof['lines'][0]
+    check('a line 0.9 s off its cue is not proved', (not row['pass']) and row['reason'] == 'cue-disagree', str(row))
+    check('cue median is that drift', proof['cue_median'] is not None and abs(proof['cue_median'] - 0.9) < 0.02, str(proof['cue_median']))
+    check('the line counts as found', proof['found'] == 1, str(proof['found']))
 
 
 def test_anchor_fence() -> None:
@@ -321,6 +391,10 @@ def main() -> int:
     test_song_status()
     test_build_proof_independent()
     test_second_span()
+    test_cue_window()
+    test_cue_times_stay()
+    test_harakat()
+    test_cue_in_build_proof()
     test_anchor_fence()
     print('FAIL' if PASS else 'all checks passed')
     return PASS

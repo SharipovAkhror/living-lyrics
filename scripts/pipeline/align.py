@@ -11,19 +11,21 @@ diacritics (Turkish ş → s, ı → i; German ß → ss).
 How it works:
 1. Letter posteriors for the whole vocal stem (50 frames per second) are computed once, in 30 s
    chunks with 3 s of context on each side, and cached in work/<slug>/align-emission.npy.
-2. One CTC pass per vocal section, on the voice-map bounds (a 2 s pad only if the text does not
-   fit). Draft s/e are not a window. A repeatable star sits between words, with a flat log-score
-   of 0, so a pause or a melisma is not soaked up by a letter and one line cannot eat the next.
-   The same line in the next section is a separate pass, so a repeated refrain stays in order.
-3. Word ends are extended while the voice still sounds (CTC marks the letter spike, not the held
-   vowel), never into the next word. A start may then move onto an attack within 0.10 s; that
-   move is not the measurement.
+2. One CTC pass per vocal line, inside that line's official subtitle cue plus a short margin
+   (docs/analysis/<slug>/cues.json: start and end, no cue text). The recording is the video's
+   own audio, so the cue clock is the file. A neighbour cue stops the window half a second
+   into that neighbour. A line with no cue falls back to one pass of its vocal section. Draft
+   s/e are not a window. A repeatable star sits between words, with a flat log-score of 0, so
+   a pause or a melisma is not soaked up by a letter and one line cannot eat the next.
+3. Word ends of a confident line are extended while the voice still sounds (CTC marks the
+   letter spike, not the held vowel), never into the next word. A start may then move onto an
+   attack within 0.10 s; that move is not the measurement.
 4. Confidence per line: `score` (mean posterior of its letters) and `gap` (how much more likely
    the best other label was on those frames). There is no agreement check against another pass:
-   that check was throwing away placements the section pass and a tight window both supported.
-     good  — the text was found; a second aligner is run for solo and choir lines;
-     weak  — measured and plausible, but not sure enough to prove;
-     draft — the text was not found: the draft times stay, fitted between the measured neighbours.
+   that check was throwing away placements a tight window supports.
+     good  — the text was found: its start and end are written, and a second aligner runs
+             for solo and choir lines;
+     weak or draft — the cue times already in the line stay. They are not slid into a gap.
    align.py does not decide the flag. It marks every line `timing-draft` and leaves
    `timing.status` at `draft`. qa_sync.py --apply clears the flag only where the pre-snap start
    and a WhisperX start agree with each other and with a vocal attack (0.1 s solo, 0.2 s choir).
@@ -49,7 +51,7 @@ import features as F
 import qa_sync as Q
 import timing as T
 from ctc import token_spans, viterbi
-from common import dump_json, load_audio, load_json, song_dir, vocal_stem, work_dir
+from common import ROOT, dump_json, load_audio, load_json, song_dir, vocal_stem, work_dir
 
 ISO3 = {'ar': 'ara', 'fa': 'fas', 'az': 'aze', 'tr': 'tur', 'ota': 'ota', 'en': 'eng', 'la': 'lat', 'de': 'deu', 'gmh': 'deu',
         'es': 'spa', 'ur': 'urd', 'hi': 'hin', 'ru': 'rus', 'uz': 'uzb', 'fr': 'fra', 'it': 'ita'}
@@ -62,6 +64,13 @@ MAX_TOKEN = 0.5          # longest stretch one letter may hold in the CTC path
 MAX_WORD_SPAN = 2.5      # longest span from a word's first to its last letter
 SNAP_WIN = 0.10          # a word start moves to a clear vocal onset at most this far (the proof gate)
 ENGINE_AGREE = 0.10      # the second aligner must put the word start this close to the first
+# Official subtitle cue. A person places it to about 0.1–0.5 s. The search window is the cue
+# plus this margin. A neighbour cue stops the window CUE_OVERLAP inside that neighbour, so
+# this line's text is not aligned on the next line. The section map is the same kind of fence.
+CUE_LEAD = 0.80
+CUE_TAIL = 0.50
+CUE_OVERLAP = 0.50
+CUE_SECTION_PAD = 0.50
 # A line is "good" when the letter score and the gap both hold. These are gates, not a fit
 # to one recording. Distance to a second pass is not a gate: on I Have Come Alive it threw
 # away lines the section pass had already placed on the voice.
@@ -97,6 +106,9 @@ class Romaniser:
             import uroman
 
             self._u = uroman.Uroman()
+        # Vowel signs stay on the word. uroman turns fatha/kasra/damma into a/i/u, doubles a
+        # consonant for shadda and drops sukun. Stripping the signs first would leave the
+        # consonant skeleton and delete the vowels MMS has to hear. The letters do not change.
         return normalise(self._u.romanize_string(word, lcode=ISO3.get(lang, 'eng')))
 
 
@@ -334,6 +346,105 @@ def section_pass(lp: np.ndarray, units: list[Unit]) -> list[dict]:
     return results
 
 
+def load_cues(slug: str) -> dict[str, dict]:
+    """Official subtitle cues keyed by line id. Empty when the song has none."""
+    path = ROOT / 'docs' / 'analysis' / slug / 'cues.json'
+    if not path.exists():
+        return {}
+    rows = json.loads(path.read_text(encoding='utf-8'))
+    return {row['line']: row for row in rows if row.get('line') and row.get('start') is not None and row.get('end') is not None}
+
+
+def cue_window(start: float, end: float, prev: tuple[float, float] | None, nxt: tuple[float, float] | None,
+               sec_start: float, sec_end: float, duration: float) -> tuple[float, float]:
+    """Search window around one subtitle cue. Draft word times are not an input.
+
+    Lead and tail cover the 0.1–0.5 s a person misses, plus a short attack. A neighbour
+    cue is a fence: the window may enter it by CUE_OVERLAP and no further. The section
+    map is the same kind of fence, not the search itself.
+    """
+    start = float(start)
+    end = max(float(end), start)
+    t0 = start - CUE_LEAD
+    t1 = end + CUE_TAIL
+    if prev is not None:
+        t0 = max(t0, float(prev[1]) - CUE_OVERLAP)
+    if nxt is not None:
+        t1 = min(t1, float(nxt[0]) + CUE_OVERLAP)
+    t0 = max(0.0, t0, float(sec_start) - CUE_SECTION_PAD)
+    t1 = min(float(duration), t1, float(sec_end) + CUE_SECTION_PAD)
+    if t1 < t0 + 0.40:
+        t1 = min(float(duration), t0 + 0.40)
+    return t0, t1
+
+
+def keep_cue_time(status: str, has_cue: bool) -> bool:
+    """A confident line publishes the aligner. Any other line that has a cue keeps that cue."""
+    return has_cue and status != 'good'
+
+
+def _pack_star(rec: dict | None, t0: int, window: tuple[float, float], method: str, cue: dict | None) -> dict:
+    """One line's star pass, frames shifted back onto the whole-file axis."""
+    if rec is None:
+        return {'method': method, 'window': window, 'res': None, 'cue': cue}
+    words = []
+    for w in rec['words']:
+        if w is None:
+            words.append(None)
+        else:
+            words.append({'f0': t0 + int(w['f0']), 'f1': t0 + int(w['f1']) + 1, 'score': w['score']})
+    placed_w = [w for w in words if w is not None]
+    res = None
+    if placed_w:
+        res = {
+            'words': words, 'gap': rec['gap'], 'score': rec['score'],
+            'f0': min(w['f0'] for w in placed_w), 'f1': max(w['f1'] for w in placed_w),
+        }
+    return {'method': method, 'window': window, 'res': res, 'cue': cue}
+
+
+def cue_pass(lp: np.ndarray, units: list[Unit], cues: dict[str, dict], duration: float) -> list[dict]:
+    """Place each line inside its cue. Lines with no cue share one pass of their section."""
+    results: list[dict | None] = [None] * len(units)
+    uncued: list[Unit] = []
+    for i, u in enumerate(units):
+        cue = cues.get(u.id)
+        if cue is None:
+            uncued.append(u)
+            continue
+        prev = cues.get(units[i - 1].id) if i else None
+        nxt = cues.get(units[i + 1].id) if i + 1 < len(units) else None
+        prev_t = (float(prev['start']), float(prev['end'])) if prev else None
+        nxt_t = (float(nxt['start']), float(nxt['end'])) if nxt else None
+        win = cue_window(float(cue['start']), float(cue['end']), prev_t, nxt_t,
+                         float(u.sec['start']), float(u.sec['end']), duration)
+        t0 = max(0, int(win[0] * FPS))
+        t1 = min(len(lp), int(win[1] * FPS))
+        placed = align_stars(lp[t0:t1], [u]) if t1 > t0 else None
+        rec = placed[0] if placed else None
+        results[u.idx] = _pack_star(rec, t0, win, 'cue', cue)
+        print(f"cue {u.id}: {win[0]:.2f}–{win[1]:.2f} s", flush=True)
+    for sec, group in _section_groups(uncued):
+        placed = None
+        t0 = t1 = 0
+        for pad in (0.0, 2.0):
+            t0 = max(0, int((float(sec['start']) - pad) * FPS))
+            t1 = min(len(lp), int((float(sec['end']) + pad) * FPS))
+            placed = align_stars(lp[t0:t1], group)
+            if placed is not None:
+                break
+        window = (t0 / FPS, t1 / FPS)
+        if placed is None:
+            for u in group:
+                results[u.idx] = {'method': 'section', 'window': window, 'res': None, 'cue': None}
+            print(f"section {sec.get('id')}: text does not fit", flush=True)
+            continue
+        print(f"section {sec.get('id')}: {window[0]:.1f}–{window[1]:.1f} s", flush=True)
+        for u, rec in zip(group, placed):
+            results[u.idx] = _pack_star(rec, t0, window, 'section', None)
+    return [r if r is not None else {'method': 'section', 'window': (0.0, 0.0), 'res': None, 'cue': None} for r in results]
+
+
 # ---------------------------------------------------------------- passes
 
 def anchor_in_section(a0: float, a1: float, sec_start: float, sec_end: float, slack: float = ANCHOR_SLACK) -> bool:
@@ -558,10 +669,10 @@ def main() -> None:
         roman = [rom(w['w'], line['lang'], line['script']) for w in line['words']]
         units.append(Unit(idx, sec, line, roman, vocab))
 
-    # The search is one CTC pass per vocal section. A distance to a global anchor is not a gate:
-    # on I Have Come Alive that distance threw away lines the section pass had already placed
-    # on the voice. Draft s/e are not read here.
-    passes = section_pass(lp, units)
+    # The search window is the official cue, not the draft s/e and not the previous line's end.
+    # A line with no cue falls back to its vocal section. The section map is only a fence.
+    cues = load_cues(slug)
+    passes = cue_pass(lp, units, cues, duration)
 
     # Voice activity for word-end extension and onset snapping.
     act, _ = F.activity(F.rms_db(x))
@@ -586,19 +697,30 @@ def main() -> None:
         if not missing and score >= GOOD_SCORE and gap <= GOOD_GAP:
             status = 'good'
         elif not missing and score >= KEEP_SCORE and gap <= GOOD_GAP * 2:
-            status = 'weak'     # measured, plausible, but not sure: written, flagged
+            status = 'weak'     # placed, but not sure enough to publish: the cue time stays
         else:
-            status = 'draft'    # text not found in the section: keep the draft, fitted between neighbours
+            status = 'draft'    # text not found in the cue window: the cue times stay where they are
         conf.append({'scores': scores, 'score': score, 'gap': gap, 'agree': agree, 'status': status})
 
-    # Word times (seconds) per unit; drafts for lines the aligner could not place.
+    # Word times (seconds). A confident line publishes the aligner. Anything else that has a
+    # cue keeps the cue times already in the line: not a fresh draft and not a gap. A draft
+    # with no cue is still fitted between its measured neighbours.
     times: list[list[list[float] | None]] = []
+    ctc_starts: list[list[float | None]] = []
     for u, p, c in zip(units, passes, conf):
-        if c['status'] == 'draft':
-            times.append([[w['s'], w['e']] for w in u.line['words']])
+        placed: list[list[float] | None] = [None] * len(u.roman)
+        if p['res'] is not None:
+            for wi, w in enumerate(p['res']['words']):
+                if w is not None:
+                    placed[wi] = [w['f0'] / FPS, w['f1'] / FPS]
+        ctc_starts.append([None if w is None else w[0] for w in placed])
+        has_cue = u.id in cues
+        if (not keep_cue_time(c['status'], has_cue)) and c['status'] != 'draft':
+            times.append([None if w is None else [w[0], w[1]] for w in placed])
         else:
-            times.append([None if w is None else [w['f0'] / FPS, w['f1'] / FPS] for w in p['res']['words']])
-    fit_drafts(times, [c['status'] == 'draft' for c in conf], duration)
+            times.append([[w['s'], w['e']] for w in u.line['words']])
+    fit_drafts(times, [c['status'] == 'draft' and not keep_cue_time(c['status'], u.id in cues)
+                       for u, c in zip(units, conf)], duration)
 
     # Words without letters (punctuation): a 10 ms slot right after the previous word.
     for ws in times:
@@ -613,9 +735,8 @@ def main() -> None:
     # The second aligner needs the phrase from before that move.
     sig = Q.Signals(x)
     phrase = [(ws[0][0], ws[-1][1]) for ws in times]
-    raw_starts = [[w[0] for w in ws] for ws in times]
-    onset_dt = snap_onsets(sig, times, units, [c['status'] != 'draft' for c in conf])
-    flat = [(w, c['status'] != 'draft') for ws, c in zip(times, conf) for w in ws]
+    onset_dt = snap_onsets(sig, times, units, [c['status'] == 'good' for c in conf])
+    flat = [(w, c['status'] == 'good') for ws, c in zip(times, conf) for w in ws]
     for j, (w, measured) in enumerate(flat):
         if not measured:
             continue
@@ -626,17 +747,30 @@ def main() -> None:
             e += F.HOP
         w[1] = max(w[1], min(e, limit))
 
-    # Second opinion on solo and choir lines the section pass placed confidently. The window is
-    # the measured phrase, padded, but cut at the neighbouring measured line (see second_span).
-    # Draft word times are not used. A duet or a tutti stays out.
+    # Second opinion on solo and choir lines the cue window placed confidently. The window is
+    # the measured phrase, padded, but cut at the neighbouring line: a good neighbour by its
+    # aligner edge, any other neighbour by its cue. Draft word times are not used. A duet or
+    # a tutti stays out.
     jobs = []
     second_window: dict[str, tuple[float, float]] = {}
-    measured = [span if c['status'] != 'draft' else None for span, c in zip(phrase, conf)]
+    fence_start: list[float | None] = []
+    fence_end: list[float | None] = []
+    for u, c, span in zip(units, conf, phrase):
+        cue = cues.get(u.id)
+        if c['status'] == 'good':
+            fence_start.append(span[0])
+            fence_end.append(span[1])
+        elif cue is not None:
+            fence_start.append(float(cue['start']))
+            fence_end.append(float(cue['end']))
+        else:
+            fence_start.append(None)
+            fence_end.append(None)
     for i, (u, c, span) in enumerate(zip(units, conf, phrase)):
         if c['status'] != 'good' or T.group(u.sec, u.line) == 'other':
             continue
-        prev_end = next((measured[j][1] for j in range(i - 1, -1, -1) if measured[j] is not None), None)
-        next_start = next((measured[j][0] for j in range(i + 1, len(measured)) if measured[j] is not None), None)
+        prev_end = next((fence_end[j] for j in range(i - 1, -1, -1) if fence_end[j] is not None), None)
+        next_start = next((fence_start[j] for j in range(i + 1, len(fence_start)) if fence_start[j] is not None), None)
         t0, t1 = second_span(span[0], span[1], float(u.sec['start']), float(u.sec['end']), duration,
                              prev_end, next_start)
         second_window[u.id] = (t0, t1)
@@ -649,7 +783,7 @@ def main() -> None:
                        [u.sec['id'] for u in units])
 
     report_lines, good, placed = [], set(), set()
-    for u, p, ws, c, raw, odt, q in zip(units, passes, times, conf, raw_starts, onset_dt, qa):
+    for u, p, ws, c, raw, odt, q in zip(units, passes, times, conf, ctc_starts, onset_dt, qa):
         status, scores, score, gap, agree = c['status'], c['scores'], c['score'], c['gap'], c['agree']
         s2 = second_starts.get(u.id)
         if s2 is not None and len(s2) != len(u.line['words']):
@@ -659,7 +793,7 @@ def main() -> None:
             has_letters = bool(rm)
             e2 = float(s2[wi]) if (s2 and s2[wi] is not None) else None
             tol = Q.CHOIR_TOL if T.group(u.sec, u.line) == 'choir' else ENGINE_AGREE
-            engines_agree = None if e2 is None else bool(abs(e2 - raw[wi]) <= tol)
+            engines_agree = None if e2 is None or raw[wi] is None else bool(abs(e2 - raw[wi]) <= tol)
             onset_ok = odt[wi] is not None
             # Proof: the line is placed confidently, the sync check finds it on the voice, and the
             # second aligner puts this word where the first did. --proof strict also wants a clear
@@ -670,7 +804,8 @@ def main() -> None:
                 letters_n += 1
                 proven_n += proven
             words_out.append({'w': w['w'], 'roman': rm, 's': round(t[0], 2), 'e': round(t[1], 2), 'draft_s': w['s'],
-                              'score': sc, 'ctc_s': round(raw[wi], 2), 'second_s': None if e2 is None else round(e2, 2),
+                              'score': sc, 'ctc_s': None if raw[wi] is None else round(raw[wi], 2),
+                              'second_s': None if e2 is None else round(e2, 2),
                               'onset_dt': None if odt[wi] is None else round(odt[wi], 2), 'proven': proven})
         all_proven = letters_n > 0 and proven_n == letters_n
         if status == 'good' and q['verdict'] == 'ok':
@@ -681,6 +816,8 @@ def main() -> None:
             good.add(u.id)
         if level != 'none':
             placed.add(u.id)
+        cue = cues.get(u.id)
+        ctc_line = next((t for t, rm in zip(raw, u.roman) if rm and t is not None), None)
         report_lines.append({
             'id': u.id, 'section': u.sec['id'], 'lang': u.line['lang'], 'text': T.line_text(u.line),
             'solo': T.is_solo(u.sec, u.line), 'group': T.group(u.sec, u.line), 'second': second_name.get(u.id),
@@ -692,6 +829,9 @@ def main() -> None:
             'start': round(ws[0][0], 2), 'end': round(ws[-1][1], 2),
             'draft_start': u.draft[0], 'shift': round(ws[0][0] - u.draft[0], 2),
             'anchor_start': round(p['window'][0], 2), 'agree': round(agree, 2),
+            'cue_start': None if cue is None else round(float(cue['start']), 3),
+            'cue_end': None if cue is None else round(float(cue['end']), 3),
+            'ctc_start': None if ctc_line is None else round(ctc_line, 3),
             'score': round(score, 3), 'gap': round(gap, 3), 'words': words_out,
         })
 
@@ -712,8 +852,10 @@ def main() -> None:
     n_draft = sum(r['status'] == 'draft' for r in report_lines)
     levels = {lv: sum(r['level'] == lv for r in report_lines) for lv in ('word', 'line', 'none')}
     shifts = np.array([abs(r['shift']) for r in report_lines if r['status'] == 'good'])
+    cue_deltas = [abs(r['ctc_start'] - r['cue_start']) for r in report_lines
+                  if r['status'] in ('good', 'weak') and r['ctc_start'] is not None and r['cue_start'] is not None]
     ws_good = [w for r in report_lines if r['status'] == 'good' for w in r['words'] if w['roman']]
-    pair = np.array([abs(w['second_s'] - w['ctc_s']) for w in ws_good if w['second_s'] is not None])
+    pair = np.array([abs(w['second_s'] - w['ctc_s']) for w in ws_good if w['second_s'] is not None and w['ctc_s'] is not None])
     snaps = np.array([abs(w['onset_dt']) for w in ws_good if w['onset_dt'] is not None])
     summary = {
         'lines': n, 'good': n_good, 'weak': n_weak, 'draft': n_draft, 'levels': levels,
@@ -729,14 +871,18 @@ def main() -> None:
         'onset_median_shift': round(float(np.median(snaps)), 3) if len(snaps) else None,
         'median_shift_from_draft_good': round(float(np.median(shifts)), 2) if len(shifts) else None,
         'max_shift_from_draft_good': round(float(shifts.max()), 2) if len(shifts) else None,
+        'found': n_good + n_weak,
+        'cue_n': len(cue_deltas),
+        'cue_median': round(float(np.median(cue_deltas)), 3) if cue_deltas else None,
         'order_fixes': fixes,
     }
     report = {
         'slug': slug, 'created': t_start.isoformat(timespec='seconds'), 'audio': audio.name, 'stem': is_stem,
         'engine': 'torchaudio MMS_FA + uroman, CTC Viterbi', 'second': summary['second_engine'],
-        'anchors': 'section', 'margin': margin,
+        'anchors': 'cue' if cues else 'section', 'margin': CUE_LEAD if cues else margin,
         'thresholds': {'score': GOOD_SCORE, 'gap': GOOD_GAP, 'agree': GOOD_AGREE, 'keep_score': KEEP_SCORE,
-                       'keep_agree': KEEP_AGREE, 'snap_win': SNAP_WIN, 'snap_min': Q.PEAK_HEIGHT, 'engine_agree': ENGINE_AGREE},
+                       'keep_agree': KEEP_AGREE, 'snap_win': SNAP_WIN, 'snap_min': Q.PEAK_HEIGHT, 'engine_agree': ENGINE_AGREE,
+                       'cue_tol': Q.CUE_TOL, 'cue_lead': CUE_LEAD, 'cue_tail': CUE_TAIL, 'cue_overlap': CUE_OVERLAP},
         'summary': summary, 'sections': section_notes, 'lines': report_lines,
     }
     wd = work_dir(slug)
@@ -763,7 +909,9 @@ def main() -> None:
         song['timing'] = new_timing
         song_path.write_text(dump_json(song), encoding='utf-8')
 
-    print(f"\nСтрок: {n}. Выравниватель уверен: {n_good}, не уверен: {n_weak}, не нашёл текст (черновик): {n_draft}.")
+    print(f"\nСтрок: {n}. Найдено: {n_good + n_weak}. Уверен: {n_good}, не уверен: {n_weak}, не нашёл текст: {n_draft}.")
+    if cue_deltas:
+        print(f"Реплика: медиана |начало строки − начало реплики| {float(np.median(cue_deltas)):.3f} с по {len(cue_deltas)} найденным строкам.")
     print(f"Доказано пословно: {levels['word']} строк, только построчно: {levels['line']}, не подтверждено: {levels['none']}. "
           f"Слов доказано: {summary['words_proven']} из {summary['words_in_good_lines']} в уверенных строках.")
     if second_name:
