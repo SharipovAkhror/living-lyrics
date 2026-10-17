@@ -18,6 +18,13 @@ html[data-font-preview='c'] {
   --font-preview-fa-lh: 1.9;
 }
 
+/* The plaque sits under the top bar. The stage starts below it, so the current line stays readable. */
+html[data-font-preview='a'] .song .scene-stage,
+html[data-font-preview='b'] .song .scene-stage,
+html[data-font-preview='c'] .song .scene-stage {
+  top: calc(var(--chrome-top) + 96px);
+}
+
 /* Persian only. Arabic lines keep the Mushaf face. */
 html[data-font-preview='b'] .fb[lang='fa'] .fb-orig,
 html[data-font-preview='c'] .fb[lang='fa'] .fb-orig,
@@ -67,7 +74,7 @@ html[data-font-preview='c'] .fb-translit {
 
 .font-fit--song {
   bottom: auto;
-  top: calc(env(safe-area-inset-top) + 108px);
+  top: calc(env(safe-area-inset-top) + 68px);
 }
 
 .font-fit-label {
