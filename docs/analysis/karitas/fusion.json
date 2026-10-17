@@ -2,38 +2,6 @@
   "slug": "karitas",
   "intervals": [
     {
-      "id": "clarinet",
-      "name": "кларнет",
-      "catalogKey": null,
-      "start": 836.0,
-      "end": 841.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.9832,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "flute",
-      "name": "поперечная флейта",
-      "catalogKey": null,
-      "start": 27.0,
-      "end": 30.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.7269,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
@@ -85,14 +53,14 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 337.0,
+      "start": 339.0,
       "end": 346.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9748,
+      "audioConfidence": 0.8685,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -150,6 +118,22 @@
       "name": "поперечная флейта",
       "catalogKey": null,
       "start": 579.0,
+      "end": 587.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9937,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 590.0,
       "end": 599.0,
       "decision": "check",
       "review": "",
@@ -213,22 +197,6 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 704.0,
-      "end": 707.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.7082,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "flute",
-      "name": "поперечная флейта",
-      "catalogKey": null,
       "start": 719.0,
       "end": 772.0,
       "decision": "check",
@@ -245,7 +213,7 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 806.0,
+      "start": 809.0,
       "end": 814.0,
       "decision": "check",
       "review": "",
@@ -278,7 +246,7 @@
       "name": "поперечная флейта",
       "catalogKey": null,
       "start": 845.0,
-      "end": 862.0,
+      "end": 861.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -301,22 +269,6 @@
         "audio"
       ],
       "audioConfidence": 0.9923,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "guitar-acoustic",
-      "name": "акустическая гитара",
-      "catalogKey": null,
-      "start": 306.0,
-      "end": 309.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.6429,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -358,7 +310,7 @@
       "name": "акустическая гитара",
       "catalogKey": null,
       "start": 813.0,
-      "end": 820.0,
+      "end": 819.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -370,42 +322,10 @@
       "audioAlone": true
     },
     {
-      "id": "piano",
-      "name": "фортепиано",
-      "catalogKey": "piano",
-      "start": 304.0,
-      "end": 307.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.8141,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "piano",
-      "name": "фортепиано",
-      "catalogKey": "piano",
-      "start": 393.0,
-      "end": 396.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.7713,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 4.0,
+      "start": 7.0,
       "end": 12.0,
       "decision": "check",
       "review": "",
@@ -470,7 +390,7 @@
       "name": "голос",
       "catalogKey": "voice",
       "start": 137.0,
-      "end": 184.0,
+      "end": 179.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -485,7 +405,7 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 194.0,
+      "start": 195.0,
       "end": 269.0,
       "decision": "check",
       "review": "",
@@ -518,7 +438,7 @@
       "name": "голос",
       "catalogKey": "voice",
       "start": 290.0,
-      "end": 300.0,
+      "end": 299.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -566,29 +486,13 @@
       "name": "голос",
       "catalogKey": "voice",
       "start": 426.0,
-      "end": 551.0,
+      "end": 550.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
       "audioConfidence": 0.9998,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "voice",
-      "name": "голос",
-      "catalogKey": "voice",
-      "start": 567.0,
-      "end": 570.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.7903,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -693,38 +597,6 @@
   "accepted": [],
   "check": [
     {
-      "id": "clarinet",
-      "name": "кларнет",
-      "catalogKey": null,
-      "start": 836.0,
-      "end": 841.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.9832,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "flute",
-      "name": "поперечная флейта",
-      "catalogKey": null,
-      "start": 27.0,
-      "end": 30.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.7269,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
@@ -776,14 +648,14 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 337.0,
+      "start": 339.0,
       "end": 346.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9748,
+      "audioConfidence": 0.8685,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -841,6 +713,22 @@
       "name": "поперечная флейта",
       "catalogKey": null,
       "start": 579.0,
+      "end": 587.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9937,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 590.0,
       "end": 599.0,
       "decision": "check",
       "review": "",
@@ -904,22 +792,6 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 704.0,
-      "end": 707.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.7082,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "flute",
-      "name": "поперечная флейта",
-      "catalogKey": null,
       "start": 719.0,
       "end": 772.0,
       "decision": "check",
@@ -936,7 +808,7 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 806.0,
+      "start": 809.0,
       "end": 814.0,
       "decision": "check",
       "review": "",
@@ -969,7 +841,7 @@
       "name": "поперечная флейта",
       "catalogKey": null,
       "start": 845.0,
-      "end": 862.0,
+      "end": 861.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -992,22 +864,6 @@
         "audio"
       ],
       "audioConfidence": 0.9923,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "guitar-acoustic",
-      "name": "акустическая гитара",
-      "catalogKey": null,
-      "start": 306.0,
-      "end": 309.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.6429,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -1049,7 +905,7 @@
       "name": "акустическая гитара",
       "catalogKey": null,
       "start": 813.0,
-      "end": 820.0,
+      "end": 819.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -1061,42 +917,10 @@
       "audioAlone": true
     },
     {
-      "id": "piano",
-      "name": "фортепиано",
-      "catalogKey": "piano",
-      "start": 304.0,
-      "end": 307.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.8141,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "piano",
-      "name": "фортепиано",
-      "catalogKey": "piano",
-      "start": 393.0,
-      "end": 396.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.7713,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 4.0,
+      "start": 7.0,
       "end": 12.0,
       "decision": "check",
       "review": "",
@@ -1161,7 +985,7 @@
       "name": "голос",
       "catalogKey": "voice",
       "start": 137.0,
-      "end": 184.0,
+      "end": 179.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -1176,7 +1000,7 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 194.0,
+      "start": 195.0,
       "end": 269.0,
       "decision": "check",
       "review": "",
@@ -1209,7 +1033,7 @@
       "name": "голос",
       "catalogKey": "voice",
       "start": 290.0,
-      "end": 300.0,
+      "end": 299.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -1257,29 +1081,13 @@
       "name": "голос",
       "catalogKey": "voice",
       "start": 426.0,
-      "end": 551.0,
+      "end": 550.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
       "audioConfidence": 0.9998,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "voice",
-      "name": "голос",
-      "catalogKey": "voice",
-      "start": 567.0,
-      "end": 570.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.7903,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true

@@ -13,7 +13,7 @@
       "windows": 579,
       "segments": [
         {
-          "start": 7.0,
+          "start": 11.0,
           "end": 14.0,
           "id": "flute",
           "family": "flute",
@@ -22,16 +22,6 @@
           "kind": "instrument",
           "confidence": 0.8941,
           "accepted": true
-        },
-        {
-          "start": 23.0,
-          "end": 26.0,
-          "id": null,
-          "family": "guitar",
-          "name": "гитара",
-          "kind": "family",
-          "confidence": 0.984,
-          "accepted": false
         },
         {
           "start": 25.0,
@@ -43,16 +33,6 @@
           "kind": "instrument",
           "confidence": 0.8885,
           "accepted": true
-        },
-        {
-          "start": 36.0,
-          "end": 39.0,
-          "id": null,
-          "family": "bowed",
-          "name": "смычковые",
-          "kind": "family",
-          "confidence": 0.9737,
-          "accepted": false
         },
         {
           "start": 40.0,
@@ -88,19 +68,8 @@
           "accepted": true
         },
         {
-          "start": 49.0,
-          "end": 52.0,
-          "id": "flute",
-          "family": "flute",
-          "name": "поперечная флейта",
-          "catalogKey": null,
-          "kind": "instrument",
-          "confidence": 0.5977,
-          "accepted": true
-        },
-        {
           "start": 65.0,
-          "end": 70.0,
+          "end": 69.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
@@ -121,17 +90,6 @@
           "accepted": true
         },
         {
-          "start": 95.0,
-          "end": 98.0,
-          "id": "flute",
-          "family": "flute",
-          "name": "поперечная флейта",
-          "catalogKey": null,
-          "kind": "instrument",
-          "confidence": 0.5966,
-          "accepted": true
-        },
-        {
           "start": 100.0,
           "end": 165.0,
           "id": "voice",
@@ -143,7 +101,7 @@
           "accepted": true
         },
         {
-          "start": 165.0,
+          "start": 170.0,
           "end": 175.0,
           "id": "flute",
           "family": "flute",
@@ -177,7 +135,7 @@
         },
         {
           "start": 255.0,
-          "end": 259.0,
+          "end": 258.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
@@ -198,17 +156,6 @@
           "accepted": true
         },
         {
-          "start": 283.0,
-          "end": 286.0,
-          "id": "flute",
-          "family": "flute",
-          "name": "поперечная флейта",
-          "catalogKey": null,
-          "kind": "instrument",
-          "confidence": 0.8866,
-          "accepted": true
-        },
-        {
           "start": 285.0,
           "end": 387.0,
           "id": "voice",
@@ -217,17 +164,6 @@
           "catalogKey": "voice",
           "kind": "instrument",
           "confidence": 1.0,
-          "accepted": true
-        },
-        {
-          "start": 388.0,
-          "end": 391.0,
-          "id": "flute",
-          "family": "flute",
-          "name": "поперечная флейта",
-          "catalogKey": null,
-          "kind": "instrument",
-          "confidence": 0.7451,
           "accepted": true
         },
         {
@@ -242,17 +178,7 @@
           "accepted": true
         },
         {
-          "start": 394.0,
-          "end": 397.0,
-          "id": null,
-          "family": "keyboard",
-          "name": "клавишные",
-          "kind": "family",
-          "confidence": 0.9591,
-          "accepted": false
-        },
-        {
-          "start": 396.0,
+          "start": 398.0,
           "end": 402.0,
           "id": "flute",
           "family": "flute",
@@ -275,6 +201,17 @@
         },
         {
           "start": 403.0,
+          "end": 415.0,
+          "id": "voice",
+          "family": "voice",
+          "name": "голос",
+          "catalogKey": "voice",
+          "kind": "instrument",
+          "confidence": 0.9981,
+          "accepted": true
+        },
+        {
+          "start": 416.0,
           "end": 569.0,
           "id": "voice",
           "family": "voice",
@@ -282,27 +219,6 @@
           "catalogKey": "voice",
           "kind": "instrument",
           "confidence": 1.0,
-          "accepted": true
-        },
-        {
-          "start": 574.0,
-          "end": 577.0,
-          "id": null,
-          "family": "brass",
-          "name": "медные",
-          "kind": "family",
-          "confidence": 0.9984,
-          "accepted": false
-        },
-        {
-          "start": 576.0,
-          "end": 580.0,
-          "id": "accordion",
-          "family": "free-reed",
-          "name": "аккордеон",
-          "catalogKey": null,
-          "kind": "instrument",
-          "confidence": 0.6343,
           "accepted": true
         }
       ],

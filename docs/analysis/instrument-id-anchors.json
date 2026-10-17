@@ -69,7 +69,6 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "flute",
             "voice"
           ],
           "acceptedRight": [],
@@ -86,8 +85,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "flute",
-            "voice"
+            "flute"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -119,9 +117,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "flute",
-            "guitar-acoustic",
-            "piano"
+            "flute"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -289,7 +285,6 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "clarinet",
             "flute"
           ],
           "acceptedRight": [],

@@ -2,26 +2,10 @@
   "slug": "i-have-come-alive",
   "intervals": [
     {
-      "id": "accordion",
-      "name": "аккордеон",
-      "catalogKey": null,
-      "start": 576.0,
-      "end": 580.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.6343,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 7.0,
+      "start": 11.0,
       "end": 14.0,
       "decision": "check",
       "review": "",
@@ -69,14 +53,14 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 49.0,
-      "end": 52.0,
+      "start": 65.0,
+      "end": 69.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.5977,
+      "audioConfidence": 0.9919,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -85,7 +69,7 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 65.0,
+      "start": 71.0,
       "end": 89.0,
       "decision": "check",
       "review": "",
@@ -101,23 +85,7 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 95.0,
-      "end": 98.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.5966,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "flute",
-      "name": "поперечная флейта",
-      "catalogKey": null,
-      "start": 165.0,
+      "start": 170.0,
       "end": 179.0,
       "decision": "check",
       "review": "",
@@ -134,7 +102,7 @@
       "name": "поперечная флейта",
       "catalogKey": null,
       "start": 255.0,
-      "end": 259.0,
+      "end": 258.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -150,7 +118,7 @@
       "name": "поперечная флейта",
       "catalogKey": null,
       "start": 263.0,
-      "end": 286.0,
+      "end": 282.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -165,14 +133,30 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 388.0,
-      "end": 402.0,
+      "start": 392.0,
+      "end": 395.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
       "audioConfidence": 0.9282,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 398.0,
+      "end": 402.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8965,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -350,26 +334,10 @@
   ],
   "check": [
     {
-      "id": "accordion",
-      "name": "аккордеон",
-      "catalogKey": null,
-      "start": 576.0,
-      "end": 580.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.6343,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 7.0,
+      "start": 11.0,
       "end": 14.0,
       "decision": "check",
       "review": "",
@@ -417,14 +385,14 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 49.0,
-      "end": 52.0,
+      "start": 65.0,
+      "end": 69.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.5977,
+      "audioConfidence": 0.9919,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -433,7 +401,7 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 65.0,
+      "start": 71.0,
       "end": 89.0,
       "decision": "check",
       "review": "",
@@ -449,23 +417,7 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 95.0,
-      "end": 98.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.5966,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "flute",
-      "name": "поперечная флейта",
-      "catalogKey": null,
-      "start": 165.0,
+      "start": 170.0,
       "end": 179.0,
       "decision": "check",
       "review": "",
@@ -482,7 +434,7 @@
       "name": "поперечная флейта",
       "catalogKey": null,
       "start": 255.0,
-      "end": 259.0,
+      "end": 258.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -498,7 +450,7 @@
       "name": "поперечная флейта",
       "catalogKey": null,
       "start": 263.0,
-      "end": 286.0,
+      "end": 282.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -513,14 +465,30 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 388.0,
-      "end": 402.0,
+      "start": 392.0,
+      "end": 395.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
       "audioConfidence": 0.9282,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 398.0,
+      "end": 402.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8965,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
