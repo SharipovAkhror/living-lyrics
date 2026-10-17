@@ -97,14 +97,15 @@ publish() {  # publish <src> <name>: copy a small analysis file, never work/ its
 }
 # A timing run publishes the voice map and the transcript. A later agent reads them from
 # docs/analysis and cannot see work/. Naming the stage still runs it on its own.
-if { has sections || has align || has qa; } && [ $status -lt 2 ]; then
+# PIPELINE_SKIP_PREP=1: qa is running after align already published both files.
+if [ -z "${PIPELINE_SKIP_PREP:-}" ] && { has sections || has align || has qa; } && [ $status -lt 2 ]; then
   if need_stem && step sections python3 sections.py "$slug" --gap 3; then
     publish "$w/sections.suggested.json" sections.suggested.json
   else
     fail sections
   fi
 fi
-if { has transcribe || has align || has qa; } && [ $status -lt 2 ]; then
+if [ -z "${PIPELINE_SKIP_PREP:-}" ] && { has transcribe || has align || has qa; } && [ $status -lt 2 ]; then
   if need_stem && step transcribe python3 transcribe.py "$slug" --model "${WHISPER_MODEL:-large-v3-turbo}"; then
     publish "$w/transcript.json" transcript.json
   else
@@ -139,7 +140,8 @@ if has align && [ $status -lt 2 ]; then
 fi
 if has qa && [ $status -lt 2 ]; then
   baseline=()
-  if [ -n "$aligned" ]; then
+  # Align writes lyrics.before.json. A later qa-only pass still compares against it.
+  if [ -n "$aligned" ] || [ -f "$w/lyrics.before.json" ]; then
     step qa-before python3 qa_sync.py "$slug" --lyrics "$w/lyrics.before.json" --tag before
     [ -f "$w/qa-sync-before.json" ] && baseline=(--baseline "$w/qa-sync-before.json")
   fi

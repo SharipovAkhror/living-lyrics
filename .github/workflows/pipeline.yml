@@ -11,6 +11,9 @@
 # Job file fields: "stages" (decrypt separate sections transcribe diagnose bench align qa features instruments).
 # Before any align, the run collects a score row per cued line and writes docs/analysis/bench/calibration.json.
 # Jobs do not list that stage. A failed calibration does not fall through to the old 0.30 gate.
+# After every align and before qa, the run measures how often a shifted word start still
+# hits an attack and writes docs/analysis/bench/attack-chance.json. qa reads that rule.
+# A failed measurement does not fall through to the 0.10 s attack test.
 # optional "align" and "qa" — lists of extra options for align.py / qa_sync.py, e.g. {"qa": ["--fix"]}.
 # Needs the repository secret AUDIO_KEY (Settings → Secrets and variables → Actions).
 name: pipeline
@@ -197,30 +200,96 @@ jobs:
             exit 0
           fi
           python3 -c "import json; [print(j['slug'], ' '.join(j['stages']), '|', ' '.join(j.get('align', [])), '|', ' '.join(j.get('qa', []))) for j in json.load(open('/tmp/jobs.json'))]" > /tmp/jobs.txt
+          # Align every song before qa. The attack measurement has to see all of them,
+          # the same way the score threshold does. A qa-only job still runs afterwards.
+          : > /tmp/qa-jobs.txt
+          align_rc=0
           while IFS='|' read -r head align qa; do
             set -- $head
             slug=$1; shift
-            echo "::group::$slug: $*"
+            rest=""
+            for s in "$@"; do
+              if [ "$s" = "qa" ]; then
+                printf '%s|%s\n' "$slug" "$qa" >> /tmp/qa-jobs.txt
+              else
+                rest="$rest $s"
+              fi
+            done
+            if [ -z "$rest" ]; then
+              continue
+            fi
+            echo "::group::$slug:$rest"
             # </dev/null: ffmpeg would otherwise eat the job list this loop reads
             (cd scripts/pipeline && python3 stem_cache.py unpack "$slug" ../../work/stem-cache) < /dev/null
-            ALIGN_ARGS="$align" QA_ARGS="$qa" bash scripts/pipeline/sandbox/run.sh "$slug" "$@" < /dev/null
+            ALIGN_ARGS="$align" QA_ARGS="$qa" bash scripts/pipeline/sandbox/run.sh "$slug" $rest < /dev/null
             rc=$?
             (cd scripts/pipeline && python3 stem_cache.py pack "$slug" ../../work/stem-cache) < /dev/null
             echo "::endgroup::"
-            echo "$slug: код $rc" >> /tmp/summary.txt
+            echo "$slug:$rest код $rc" >> /tmp/summary.txt
             if [ $rc -eq 2 ]; then
               echo "::error::$slug: стадия упала, см. лог шага"
+              align_rc=2
               mkdir -p docs/analysis
-              # A features/instruments failure must not overwrite an existing sync report.
-              err="docs/analysis/$slug-qa.md"
-              case " $* " in
-                *" qa "*) ;;
-                *) err="docs/analysis/$slug-pipeline.md" ;;
-              esac
-              { echo "# Конвейер: $slug — ошибка"; echo; echo "Запуск ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}, стадии: $*."; echo; echo '```'; tail -n 60 "work/$slug/run.log"; echo '```'; } > "$err"
+              { echo "# Конвейер: $slug — ошибка"; echo; echo "Запуск ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}, стадии:$rest."; echo; echo '```'; tail -n 60 "work/$slug/run.log"; echo '```'; } > "docs/analysis/$slug-pipeline.md"
             fi
             [ $rc -gt $worst ] && worst=$rc
           done < /tmp/jobs.txt
+          if [ -s /tmp/calibrate.txt ] && [ $align_rc -eq 0 ]; then
+            echo "::group::attack chance"
+            # shellcheck disable=SC2046
+            python3 scripts/pipeline/attack_chance.py --choose $(tr '\n' ' ' < /tmp/calibrate.txt)
+            rc=$?
+            echo "::endgroup::"
+            echo "attack-chance: код $rc" >> /tmp/summary.txt
+            if [ $rc -ne 0 ]; then
+              align_rc=2
+              worst=2
+              echo "::error::замер атак не выбрал правило"
+            else
+              python3 - <<'PY'
+          import json
+          from pathlib import Path
+          want = [s for s in Path('/tmp/calibrate.txt').read_text(encoding='utf-8').split() if s]
+          data = json.loads(Path('docs/analysis/bench/attack-chance.json').read_text(encoding='utf-8'))
+          have = set(data.get('songs') or [])
+          missing = [s for s in want if s not in have]
+          if missing:
+              raise SystemExit('нет замера атак: ' + ', '.join(missing))
+          chosen = data.get('chosen') or {}
+          if not chosen.get('within_limit'):
+              raise SystemExit('случайный проход выше предела: ' + str(chosen.get('chance')))
+          print('правило слова: ' + str(chosen.get('name')) + ' случайный проход ' + str(chosen.get('chance')))
+          PY
+              rc=$?
+              if [ $rc -ne 0 ]; then
+                align_rc=2
+                worst=2
+                echo "::error::замер атак не покрыл песни или не уложился в 15 %"
+              fi
+            fi
+          elif [ -s /tmp/calibrate.txt ]; then
+            echo "выравнивание не прошло, проверка не запускалась" >> /tmp/summary.txt
+            align_rc=2
+            worst=2
+          fi
+          if [ $align_rc -eq 0 ] && [ -s /tmp/qa-jobs.txt ]; then
+            while IFS='|' read -r slug qa; do
+              [ -z "$slug" ] && continue
+              echo "::group::$slug: qa"
+              (cd scripts/pipeline && python3 stem_cache.py unpack "$slug" ../../work/stem-cache) < /dev/null
+              PIPELINE_SKIP_PREP=1 QA_ARGS="$qa" bash scripts/pipeline/sandbox/run.sh "$slug" qa < /dev/null
+              rc=$?
+              (cd scripts/pipeline && python3 stem_cache.py pack "$slug" ../../work/stem-cache) < /dev/null
+              echo "::endgroup::"
+              echo "$slug qa: код $rc" >> /tmp/summary.txt
+              if [ $rc -eq 2 ]; then
+                echo "::error::$slug: проверка упала, см. лог шага"
+                mkdir -p docs/analysis
+                { echo "# Конвейер: $slug — ошибка"; echo; echo "Запуск ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}, стадия: qa."; echo; echo '```'; tail -n 60 "work/$slug/run.log"; echo '```'; } > "docs/analysis/$slug-qa.md"
+              fi
+              [ $rc -gt $worst ] && worst=$rc
+            done < /tmp/qa-jobs.txt
+          fi
           echo "worst=$worst" >> "$GITHUB_OUTPUT"
           cat /tmp/summary.txt >> "$GITHUB_STEP_SUMMARY"
           for f in docs/analysis/*-qa.md; do [ -f "$f" ] && { echo; cat "$f"; } >> "$GITHUB_STEP_SUMMARY"; done

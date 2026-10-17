@@ -11,10 +11,11 @@ and writes docs/analysis/bench/calibration.json and calibration.md.
 The threshold is the score alone, across every cued line of the songs collected
 together. It maximises lines whose |start − cue| rounds to at most 0.30 s, while
 the share of accepted lines further than 0.70 s stays at most 2 % (false × 50 ≤
-accepted). A line is placed only when the score also clears that threshold, the
-structural checks pass, and |start − cue| rounds to at most 0.30 s. The gap to
-another label is recorded and is not a gate. Without the file, align.py falls
-back to the letter mean at 0.30: that fallback is for tests, not for singing.
+accepted). A cued line is no longer placed by this threshold: placement is the
+structural checks and |Δ| ≤ 0.30 s, and the score is only reported. A line with
+no cue still needs the threshold. The gap to another label is recorded and is
+not a gate. Without the file, align.py falls back to the letter mean at 0.30
+for that uncued gate: the fallback is for tests, not for singing.
 """
 from __future__ import annotations
 
@@ -219,7 +220,9 @@ def render_md(result: dict) -> str:
         'Принята строка, у которой оценка не ниже порога и есть |начало − реплика|. '
         'Цель — максимум принятых с |Δ| ≤ 0,3 с. Доля принятых с |Δ| > 0,7 с не выше 2 %: '
         'ложных × 50 ≤ принятых. 1 из 50 проходит, 1 из 49 нет. '
-        'Строка поставлена, только если сверх этого прошли структурные проверки и |Δ| ≤ 0,3 с. '
+        'Колонка «поставлено» считает строки, которые прошли бы и порог, и структуру, и |Δ| ≤ 0,3 с. '
+        'Для строки с репликой конвейер этот порог больше не применяет: поставленной её делает структура и |Δ| ≤ 0,3 с, '
+        'а оценка остаётся в отчёте. Для строки без реплики порог остаётся воротами. '
         'Разрыв с другой меткой записан в строке и в отбор не входит.',
         '',
         f"Выбрана оценка `{result['metric']}`, порог {_ru(result['threshold'])}. Ограничение {cap}.",

@@ -20,12 +20,17 @@ How it works:
 3. Word ends of a confident line are extended while the voice still sounds (CTC marks the
    letter spike, not the held vowel), never into the next word. A start may then move onto an
    attack within 0.10 s; that move is not the measurement.
-4. A line is placed (`good`) when its score clears the threshold in
-   docs/analysis/bench/calibration.json, the structural checks pass, and the pre-snap
-   start rounds to at most 0.30 s from the cue. The gap to another label is recorded
-   and is not a gate. Without that file the letter mean at 0.30 is the test fallback.
+4. A cued line is placed (`good`) when the structural checks pass and the pre-snap
+   start rounds to at most 0.30 s from the cue. The MMS score is reported and does
+   not reject that line: |Δ| already drops a false placement. A line with no cue is
+   placed when its score clears docs/analysis/bench/calibration.json and the
+   structural checks pass. The gap to another label is recorded and is not a gate.
+   Without that file the letter mean at 0.30 is the test fallback for the uncued gate.
      placed — its start and end are written, and a second aligner runs for solo and choir;
-     anything else with a cue — the cue times stay. They are not slid into a gap.
+     anything else with a cue — the whole word block shifts so the first word starts
+     on the cue. Copying the file's s/e is not that: those times may be an older
+     aligner (shushtari-s2 sat at 489.82 while the cue is 486.296). They are not
+     slid into a gap.
    align.py does not decide the flag. It marks every line `timing-draft` and leaves
    `timing.status` at `draft`. qa_sync.py --apply clears the flag only for a placed line
    whose words are proved: an attack within 0.10 s (0.20 s choir), or, for a vowel,
@@ -377,6 +382,119 @@ def cue_window(start: float, end: float, prev: tuple[float, float] | None, nxt: 
     return t0, t1
 
 
+def placement_status(missing: bool, score_ok: bool, structure_ok: bool, near: bool, has_cue: bool) -> str:
+    """`good`, `weak` or `draft`.
+
+    A cued line is placed on structure and |Δ| ≤ 0.30 s. The score does not
+    reject it. A line with no cue keeps the calibrated score and the structure:
+    there is no cue distance to test. No path at all stays `draft`.
+    """
+    if missing:
+        return 'draft'
+    if has_cue:
+        if structure_ok and near:
+            return 'good'
+        return 'weak'
+    if score_ok and structure_ok:
+        return 'good'
+    return 'weak'
+
+
+def shift_block(words: list, target: float) -> float:
+    """Move every [s, e] so the first start equals `target`. Empty slots stay empty.
+
+    Relative gaps stay. An unplaced cued line publishes the cue this way, not the
+    s/e already stored in the file.
+    """
+    first = next((w for w in words if w is not None), None)
+    if first is None:
+        return 0.0
+    delta = float(target) - float(first[0])
+    if delta == 0.0:
+        return 0.0
+    for w in words:
+        if w is None:
+            continue
+        w[0] += delta
+        w[1] += delta
+    return delta
+
+
+def clamp_block(words: list, cue_start: float, limit: float = 0.30) -> float:
+    """Pull a block toward the cue until its first start is within `limit`.
+
+    A start already inside does not move. The shift is the excess only.
+    """
+    first = next((w for w in words if w is not None), None)
+    if first is None:
+        return 0.0
+    drift = float(first[0]) - float(cue_start)
+    if round(abs(drift), 3) <= limit:
+        return 0.0
+    target = float(cue_start) + (limit if drift > 0 else -limit)
+    return shift_block(words, target)
+
+
+def _nudge_line(words: list[dict], delta: float) -> None:
+    for w in words:
+        w['s'] = T.r2(float(w['s']) + delta)
+        w['e'] = T.r2(float(w['e']) + delta)
+        if w['e'] <= w['s']:
+            w['e'] = T.r2(float(w['s']) + 0.02)
+
+
+def _trim_overlap(lyrics: dict) -> None:
+    """Shorten a word end that overlaps the next start by more than 0.02 s. Starts stay."""
+    prev = None
+    for _, line in T.vocal_lines(lyrics):
+        for w in line.get('words') or []:
+            if prev is not None and float(w['s']) < float(prev['e']) - 0.02:
+                prev['e'] = T.r2(max(float(prev['s']) + 0.02, float(w['s'])))
+                if prev['e'] <= prev['s']:
+                    prev['e'] = T.r2(float(prev['s']) + 0.02)
+            if float(w['e']) <= float(w['s']):
+                w['e'] = T.r2(float(w['s']) + 0.02)
+            prev = w
+
+
+def lock_written_cues(lyrics: dict, cues: dict[str, dict], placed_ids: set[str], only: set[str] | None = None) -> int:
+    """After rounding, a cued line's first word stays within 0.30 s of the cue.
+
+    A line that was not placed (`placed_ids`) starts on the cue, on the file's
+    two-decimal grid. A placed line moves only when it sits further than 0.30 s,
+    and only by the excess. Returns how many lines moved.
+    """
+    only = only or set()
+    moved = 0
+    for _, line in T.vocal_lines(lyrics):
+        if only and line['id'] not in only:
+            continue
+        words = line.get('words') or []
+        cue = cues.get(line['id'])
+        if cue is None or not words:
+            continue
+        cue_s = float(cue['start'])
+        placed = line['id'] in placed_ids
+        changed = False
+        for _ in range(8):
+            first = float(words[0]['s'])
+            gap = first - cue_s
+            if placed and round(abs(gap), 3) <= Q.CUE_TOL:
+                break
+            goal = T.r2(cue_s) if not placed else T.r2(cue_s + (1.0 if gap > 0 else -1.0) * (Q.CUE_TOL - 0.01))
+            if not placed and abs(first - goal) <= 0.001:
+                break
+            delta = goal - first
+            if abs(delta) < 0.001:
+                delta = -0.01 if gap > 0 else 0.01
+            _nudge_line(words, delta)
+            changed = True
+        if changed:
+            moved += 1
+    _trim_overlap(lyrics)
+    return moved
+
+
 def keep_cue_time(status: str, has_cue: bool, drift: float | None = None) -> bool:
     """Cue times stay unless the aligner is confident and agrees with the cue.
 
@@ -702,10 +820,10 @@ def main() -> None:
         k = int(t / F.HOP)
         return 0 <= k < len(act) and bool(act[k])
 
-    # Placement per line. The score threshold comes from the cue calibration. The gap is
-    # stored and does not decide. A line with no cue cannot be placed: there is no |Δ|.
+    # Placement per line. A cued line is structure plus |Δ| ≤ 0.30 s. The score is
+    # stored and does not reject it. A line with no cue still needs the calibrated score.
     metric_name, threshold = Cal.load_gate()
-    print(f'отбор: {metric_name} ≥ {threshold:.3f}', flush=True)
+    print(f'отбор: с репликой — структура и |Δ| ≤ {Q.PROOF_CUE_TOL:.2f} с; без реплики — {metric_name} ≥ {threshold:.3f}', flush=True)
     conf = []
     for i, (u, p) in enumerate(zip(units, passes)):
         r = p['res']
@@ -741,12 +859,7 @@ def main() -> None:
         delta = line_drift(raw_drift, u.roman, None if cue is None else float(cue['start']))
         near = delta is not None and round(delta, 3) <= Q.PROOF_CUE_TOL
         score_ok = (not missing) and metric_value is not None and float(metric_value) >= threshold
-        if missing or r is None:
-            status = 'draft'
-        elif score_ok and structure_ok and near:
-            status = 'good'
-        else:
-            status = 'weak'
+        status = placement_status(missing or r is None, score_ok, structure_ok, near, cue is not None)
         conf.append({
             'scores': scores, 'score': score, 'gap': gap, 'agree': agree, 'status': status,
             'structure_ok': structure_ok, 'structure': structure,
@@ -754,9 +867,9 @@ def main() -> None:
         })
 
     # Word times (seconds). Aligner times are published only for a placed line, which is
-    # already within 0.30 s of the cue. Anything else that has a cue keeps that cue
-    # (shushtari-s2 was 3.56 s off and must not reach the site). A draft with no cue is
-    # still fitted between its measured neighbours.
+    # already within 0.30 s of the cue. Anything else that has a cue is shifted so its
+    # first word starts on the cue. Copying the stored s/e left shushtari-s2 at 489.82
+    # while the cue is 486.296. A draft with no cue is still fitted between neighbours.
     times: list[list[list[float] | None]] = []
     ctc_starts: list[list[float | None]] = []
     ctc_ends: list[list[float | None]] = []
@@ -778,7 +891,10 @@ def main() -> None:
         if use_aligner:
             times.append([None if w is None else [w[0], w[1]] for w in placed])
         else:
-            times.append([[w['s'], w['e']] for w in u.line['words']])
+            copied = [[w['s'], w['e']] for w in u.line['words']]
+            if cue is not None:
+                shift_block(copied, float(cue['start']))
+            times.append(copied)
     fit_drafts(times, [c['status'] == 'draft' and not keep_cue_time(c['status'], u.id in cues)
                        for u, c in zip(units, conf)], duration)
 
@@ -808,6 +924,16 @@ def main() -> None:
         while e + F.HOP <= limit and active(e):
             e += F.HOP
         w[1] = max(w[1], min(e, limit))
+
+    # Snap can walk a start that was 0.30 s from the cue out to 0.40 s. Pull the
+    # published line back by the excess so the written first word stays inside.
+    for ws, u, pub in zip(times, units, publish):
+        if not pub:
+            continue
+        cue = cues.get(u.id)
+        if cue is None:
+            continue
+        clamp_block(ws, float(cue['start']), Q.CUE_TOL)
 
     # Second opinion on solo and choir lines the cue window placed confidently. The window is
     # the measured phrase, padded, but cut at the neighbouring line: a good neighbour by its
@@ -910,6 +1036,18 @@ def main() -> None:
             w['s'], w['e'] = T.r2(t[0]), T.r2(t[1])
         T.set_flag(u.line, 'timing-draft', True)
     fixes = T.enforce_order(lyrics)
+    placed_ids = {u.id for u, pub in zip(units, publish) if pub}
+    locked = lock_written_cues(lyrics, cues, placed_ids, only)
+    by_written = {line['id']: line for _, line in T.vocal_lines(lyrics)}
+    for rec in report_lines:
+        line = by_written.get(rec['id'])
+        if not line or not line.get('words'):
+            continue
+        rec['start'] = line['words'][0]['s']
+        rec['end'] = line['words'][-1]['e']
+        rec['shift'] = round(rec['start'] - rec['draft_start'], 2)
+        for rw, w in zip(rec['words'], line['words']):
+            rw['s'], rw['e'] = w['s'], w['e']
     section_notes = T.fit_sections(lyrics, song['duration'], placed) if args.move_sections else []
 
     n, n_good = len(units), len(good)
@@ -940,6 +1078,7 @@ def main() -> None:
         'cue_n': len(cue_deltas),
         'cue_median': round(float(np.median(cue_deltas)), 3) if cue_deltas else None,
         'order_fixes': fixes,
+        'cue_locks': locked,
     }
     report = {
         'slug': slug, 'created': t_start.isoformat(timespec='seconds'), 'audio': audio.name, 'stem': is_stem,

@@ -476,6 +476,91 @@ def test_calibration() -> None:
     check('exactly 0.300 s counts as near and 0.301 s does not', got['cap_met'] and got['near'] == 1 and got['threshold'] >= 0.8 - 1e-9, str(got))
 
 
+def test_placement_and_cue_lock() -> None:
+    check('a cued line with a low score is placed',
+          align.placement_status(False, False, True, True, True) == 'good')
+    check('a cued line far from the cue is not placed',
+          align.placement_status(False, True, True, False, True) == 'weak')
+    check('a cued line that fails structure is not placed',
+          align.placement_status(False, True, False, True, True) == 'weak')
+    check('an uncued line still needs the score',
+          align.placement_status(False, False, True, False, False) == 'weak')
+    check('an uncued line with the score is placed',
+          align.placement_status(False, True, True, False, False) == 'good')
+    check('a missing line stays draft',
+          align.placement_status(True, True, True, True, True) == 'draft')
+    # Copying the file left this block 3.5 s late. The shift puts the first word on the cue.
+    stale = [[489.82, 496.83], [496.83, 498.53]]
+    gap = abs(stale[0][0] - 486.296)
+    check('the old copy leaves shushtari 3.5 s late', round(gap, 3) > 0.30, f'{gap:.3f}')
+    moved = [list(pair) for pair in stale]
+    align.shift_block(moved, 486.296)
+    check('the block starts on the cue', abs(moved[0][0] - 486.296) < 1e-9, str(moved[0]))
+    check('the gap inside the block stays',
+          abs((moved[1][0] - moved[0][0]) - (496.83 - 489.82)) < 1e-6, str(moved))
+    pulled = [[10.40, 11.0], [11.2, 12.0]]
+    align.clamp_block(pulled, 10.0, 0.30)
+    check('excess over 0.30 s is pulled back', abs(pulled[0][0] - 10.30) < 1e-9, str(pulled))
+    check('a clamp moves the whole block', abs((pulled[1][0] - pulled[0][0]) - (11.2 - 10.40)) < 1e-6, str(pulled))
+    held = [[10.20, 11.0]]
+    align.clamp_block(held, 10.0, 0.30)
+    check('a start already inside 0.30 s stays', held[0][0] == 10.20, str(held))
+    lyrics = {'sections': [{'kind': 'vocal', 'id': 's', 'start': 400.0, 'end': 600.0, 'lines': [
+        {'id': 'shushtari-s2', 'words': [
+            {'w': 'اَلْكُلُّ', 's': 489.82, 'e': 496.83},
+            {'w': 'لَمَّا', 's': 496.83, 'e': 498.53},
+        ]},
+    ]}]}
+    align.lock_written_cues(lyrics, {'shushtari-s2': {'start': 486.296, 'end': 510.0}}, set())
+    words = lyrics['sections'][0]['lines'][0]['words']
+    check('a locked unplaced line starts on the cue grid', abs(words[0]['s'] - 486.3) < 1e-9, str(words[0]))
+    check('the locked gap stays', abs((words[1]['s'] - words[0]['s']) - 7.01) < 0.021, str(words))
+    check('the locked word text stays', words[0]['w'] == 'اَلْكُلُّ')
+
+
+def test_cued_lines_stay_near_the_cue() -> None:
+    """The site takes a line's start from its first word. That start stays within 0.30 s of the cue."""
+    root = Path(__file__).resolve().parents[2]
+    for slug in ('i-have-come-alive', 'karitas', 'one'):
+        lyrics = json.loads((root / 'content' / 'songs' / slug / 'lyrics.json').read_text(encoding='utf-8'))
+        cues = {row['line']: row for row in json.loads((root / 'docs' / 'analysis' / slug / 'cues.json').read_text(encoding='utf-8'))}
+        seen = 0
+        for _, line in T.vocal_lines(lyrics):
+            cue = cues.get(line['id'])
+            if cue is None or not line.get('words'):
+                continue
+            seen += 1
+            gap = abs(float(line['words'][0]['s']) - float(cue['start']))
+            check(f'{slug} {line["id"]} within 0.30 s of its cue', round(gap, 3) <= 0.30, f'{gap:.3f} s')
+        check(f'{slug} has cued lines', seen > 0, str(seen))
+
+
+def test_attack_chance() -> None:
+    import attack_chance as A
+
+    current = {'name': 'tol-0.10-h0.5', 'tol': 0.10, 'choir_tol': 0.20, 'peak_height': 0.5,
+               'require_rise': False, 'require_second': False, 'chance': 0.12, 'true_rate': 0.90}
+    tight = {'name': 'tol-0.04-h1.2', 'tol': 0.04, 'choir_tol': 0.08, 'peak_height': 1.2,
+             'require_rise': False, 'require_second': False, 'chance': 0.01, 'true_rate': 0.40}
+    got = A.choose([current, tight])
+    check('a current rule under 15 % stays', got['name'] == 'tol-0.10-h0.5' and got['within_limit'], str(got))
+    weak = dict(current, chance=0.40)
+    got = A.choose([weak, tight])
+    check('a weak current rule yields the tighter one', got['name'] == 'tol-0.04-h1.2' and got['within_limit'], str(got))
+    better = {'name': 'tol-0.06-h0.5', 'tol': 0.06, 'choir_tol': 0.12, 'peak_height': 0.5,
+              'require_rise': False, 'require_second': False, 'chance': 0.10, 'true_rate': 0.85}
+    got = A.choose([weak, tight, better])
+    check('among rules under 15 % the higher proof rate wins', got['name'] == 'tol-0.06-h0.5', str(got))
+    rule = {'name': 'tol-0.10-h0.5', 'tol': 0.10, 'choir_tol': 0.20, 'peak_height': 0.5,
+            'require_rise': False, 'require_second': False}
+    one = [{'t': 1.0, 'group': 'solo', 'second': 1.0, 'line': 'a', 'roman': 'ba'}]
+    dense = np.arange(0.0, 4.0, 0.2)
+    check('dense onsets let a 0.15 s shift pass', A.hit_rate(one, dense, 0.15, rule) == 1.0)
+    sparse = np.array([1.0, 5.0, 9.0])
+    check('sparse onsets reject a 0.15 s shift', A.hit_rate(one, sparse, 0.15, rule) == 0.0)
+    check('attacks every 0.2 s have that median gap', abs((A.median_interval(dense) or 0) - 0.2) < 1e-9)
+
+
 def test_bench_summary() -> None:
     import bench_align as B
 
@@ -508,6 +593,9 @@ def main() -> int:
     test_second_span()
     test_cue_window()
     test_cue_times_stay()
+    test_placement_and_cue_lock()
+    test_cued_lines_stay_near_the_cue()
+    test_attack_chance()
     test_calibration()
     test_bench_summary()
     test_harakat()
