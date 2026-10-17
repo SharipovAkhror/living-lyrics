@@ -108,11 +108,22 @@ for (const section of lyrics.sections) {
 const flagCount = [...flags.values()].reduce((sum, n) => sum + n, 0);
 const review = song.review ?? [];
 
-const sourcesReady = !!sources && !sources.includes(TEMPLATE) && (/https?:\/\//.test(sources) || /файл:\s*\S+/i.test(sources));
+/** A url, or a line `Файл: name.m4a`. `Файл: нет` is not a citation. */
+function citesWork(text: string) {
+  if (/https?:\/\//.test(text)) return true;
+  return /файл:\s*\S+\.[A-Za-z0-9]{2,5}\b/i.test(text);
+}
+
+const languageStub =
+  song.languages.length === 1 &&
+  song.languages[0] === 'en' &&
+  review.some((item) => /заглушка/.test(item) && /\ben\b/.test(item));
+const sourcesReady = !!sources && !sources.includes(TEMPLATE) && citesWork(sources) && !languageStub;
 const audioReady = song.audio.status === 'ready' && (enc || plain) && !!song.audio.provenance && song.duration > 1;
 const structureReady = vocal.length > 0 && lines.length > 0;
-const canonReady = !!canonText && !canonText.includes(TEMPLATE) && (/https?:\/\//.test(canonText) || /Подтверждено:\s*[1-9]/.test(canonText));
-const textReady = canonReady && missingCanon.length === 0;
+const canonReady =
+  !!canonText && !canonText.includes(TEMPLATE) && (citesWork(canonText) || /Подтверждено:\s*[1-9]/.test(canonText));
+const textReady = canonReady && lines.length > 0 && missingCanon.length === 0;
 const timingReady = song.timing.status === 'aligned' || song.timing.status === 'verified';
 const translationReady = lines.every((line) => line.tr.ru.trim()) && slow.length === 0;
 const commentsReady = emWithoutComment.length === 0 && sectionsWithoutComment.length === 0;
@@ -121,7 +132,16 @@ const instrumentsReady = unknownInstruments.length === 0;
 const qaReady = flagCount === 0 && review.length === 0;
 
 const rows: Row[] = [
-  { n: '1', name: 'приём', state: sourcesReady ? 'да' : 'нет', detail: sourcesReady ? 'song.json и sources.md со ссылкой или файлом' : 'sources.md ещё шаблон или без источника' },
+  {
+    n: '1',
+    name: 'приём',
+    state: sourcesReady ? 'да' : 'нет',
+    detail: sourcesReady
+      ? 'song.json и sources.md со ссылкой или файлом'
+      : !sources || sources.includes(TEMPLATE) || !citesWork(sources)
+        ? 'sources.md ещё шаблон или без источника'
+        : 'в song.json всё ещё язык-заглушка en',
+  },
   {
     n: '2',
     name: 'запись',
@@ -146,9 +166,11 @@ const rows: Row[] = [
       ? 'нет canon.md'
       : !canonReady
         ? 'canon.md ещё шаблон или без источника'
-        : missingCanon.length
-          ? `не найдены в canon.md: ${missingCanon.length}`
-          : 'все строки есть в canon.md',
+        : lines.length === 0
+          ? 'вокальных строк ещё нет'
+          : missingCanon.length
+            ? `не найдены в canon.md: ${missingCanon.length}`
+            : 'все строки есть в canon.md',
   },
   {
     n: '5',
@@ -219,11 +241,30 @@ function audioNext(): Next {
       because: `Скопируйте файл владельца в work/${slug}/source.m4a. Ссылку на YouTube не скачивайте: облако её не достанет, а эта команда её не качает. Когда файл лежит в work, song-status даст process_audio.py.`,
     };
   }
+  const missingTool = !python && !ffmpeg ? 'нет ни Python, ни ffmpeg' : !ffmpeg ? 'нет ffmpeg' : 'нет Python';
   return {
     row: '2',
     file: 'docs/methodology/02-audio.md',
     command: `npm run song-status -- ${slug}`,
-    because: 'Команды, которая достанет запись, нет. Файл присылает владелец. С YouTube не скачивайте. Пока файла нет, песню не обрабатывайте. Параллельно можно собирать canon.md по docs/methodology/04-text.md. Когда файл будет в work/' + slug + '/source.m4a и на машине появятся Python и ffmpeg, та же команда перейдёт к обработке.',
+    because:
+      `Команды, которая достанет запись, нет (${missingTool}). Файл присылает владелец: положите его в work/${slug}/source.m4a. С YouTube не скачивайте. Раздел «Скачать» в 02-audio.md для агента не действует. Когда файл лежит в work и в системе есть и Python, и ffmpeg, эта команда сменится на process_audio.py.`,
+  };
+}
+
+function textNext(prefix = ''): Next {
+  const shown = missingCanon.slice(0, 8);
+  const more = missingCanon.length - shown.length;
+  const sample = shown.map((line) => `  ${line.id} — ${short(line.words.map((w) => w.w).join(' '))}`).join('\n');
+  const because = !canonReady
+    ? 'Соберите canon.md по шаблону docs/methodology/templates/canon.md: фрагмент, источник, пометка «Подтверждено: 1 источник» или «Подтверждено: 2 источника», затем «Последовательность в записи» и «Расхождения и вопросы». Строку «пустой шаблон» удалите. Секунды не выдумывайте: в столбце «с» ставьте «?».'
+    : lines.length === 0
+      ? 'Ссылки в canon.md мало: в lyrics.json ещё нет вокальных строк. Допишите цитату, «Как поётся» и последовательность. Строки в lyrics.json переносите, когда есть карта записи или официальные титры с порядком. Границы секций и секунды не выдумывайте.'
+      : `Эти строки не найдены в canon.md:\n${sample}${more > 0 ? `\n  … и ещё ${more}` : ''}\nПриведите lyrics.json к эталону или объясните расхождение в разделе «Расхождения и вопросы». Канон не переписывайте по слуху.`;
+  return {
+    row: '4',
+    file: 'docs/methodology/04-text.md',
+    command: lines.length > 0 && canonReady ? `npm run validate -- ${slug}` : `npm run song-status -- ${slug}`,
+    because: prefix + because,
   };
 }
 
@@ -253,8 +294,18 @@ if (!sourcesReady) {
     row: '1',
     file: 'docs/methodology/01-intake.md',
     command: `npm run song-status -- ${slug}`,
-    because: 'Заполните song.json только подтверждёнными фактами и sources.md со ссылкой или именем файла. Строку «пустой шаблон» удалите. С YouTube ничего не скачивайте.',
+    because:
+      languageStub && !!sources && !sources.includes(TEMPLATE) && citesWork(sources)
+        ? 'В song.json замените язык-заглушку en на языки, которые реально поются. Когда код уже верный, пункт review про заглушку перепишите. С YouTube ничего не скачивайте.'
+        : 'Заполните sources.md: адрес https:// или строка «Файл: имя.расширение» (например «Файл: recording.m4a»). «Файл: нет» источником не считается. Строку «пустой шаблон» удалите. В song.json замените язык-заглушку en на языки, которые реально поются. С YouTube ничего не скачивайте.',
   };
+} else if (!audioReady && ((plain && !enc) || Boolean(python && ffmpeg))) {
+  next = audioNext();
+} else if (!audioReady && !textReady) {
+  const missingTool = !python && !ffmpeg ? 'нет ни Python, ни ffmpeg' : !ffmpeg ? 'нет ffmpeg' : 'нет Python';
+  next = textNext(
+    `Записи ещё нет (${missingTool}), скачивать её нечем и не нужно. Файл потом положите в work/${slug}/source.m4a. Пока его нет, соберите текст.\n`,
+  );
 } else if (!audioReady) {
   next = audioNext();
 } else if (!structureReady && python && ffmpeg) {
@@ -275,17 +326,7 @@ if (!sourcesReady) {
   if (!structureReady) {
     rows[2] = { n: '3', name: 'структура', state: 'отложено', detail: 'границы не выдуманы: нет ни Python с ffmpeg, ни конвейера на ветке' };
   }
-  const shown = missingCanon.slice(0, 8);
-  const more = missingCanon.length - shown.length;
-  const sample = shown.map((line) => `  ${line.id} — ${short(line.words.map((w) => w.w).join(' '))}`).join('\n');
-  next = {
-    row: '4',
-    file: 'docs/methodology/04-text.md',
-    command: `npm run validate -- ${slug}`,
-    because: canonReady
-      ? `Эти строки не найдены в canon.md:\n${sample}${more > 0 ? `\n  … и ещё ${more}` : ''}\nПриведите lyrics.json к эталону или объясните расхождение в разделе «Расхождения и вопросы». Канон не переписывайте по слуху.`
-      : 'Соберите canon.md по шаблону docs/methodology/templates/canon.md: фрагмент, источник, пометка «подтверждено 1» или «подтверждено 2», затем «Последовательность в записи» и «Расхождения и вопросы». Строку «пустой шаблон» удалите.',
-  };
+  next = textNext();
 } else if (!timingReady && pipeline) {
   next = timingNext();
 } else if (!translationReady) {
@@ -307,7 +348,7 @@ if (!sourcesReady) {
     row: '7',
     file: 'docs/methodology/07-comment.md',
     command: `npm run song-status -- ${slug}`,
-    because: `Пояснение нужно строке с em и каждой секции. Сцена не подставит его сама.\n${sample}`,
+    because: `Пояснение нужно каждой секции и каждой строке с em. Строка без em может остаться пустой: сцена покажет пояснение секции.\n${sample}`,
   };
 } else if (!translitReady) {
   const sample = noTranslit.slice(0, 5).map((line) => `  ${line.id}`).join('\n');
@@ -356,3 +397,6 @@ console.log(`Дальше одна команда. Стадия ${next.row}, ф�
 console.log(next.because);
 console.log('Команда:');
 console.log(`  ${next.command}`);
+if (next.command.includes('song-status')) {
+  console.log('Эта команда файлы не правит. Сначала сделайте то, что в абзаце выше, потом запустите её снова.');
+}
