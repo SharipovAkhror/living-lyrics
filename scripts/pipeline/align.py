@@ -12,10 +12,10 @@ How it works:
 1. Letter posteriors for the whole vocal stem (50 frames per second) are computed once, in 30 s
    chunks with 3 s of context on each side, and cached in work/<slug>/align-emission.npy.
 2. Anchor pass — roughly where is each line? By default one Viterbi pass of the whole text over the
-   whole song: it needs no draft times at all. If that path leaves a line's section (more than 2 s
-   outside the section map), it is discarded and each section is aligned in its own window
-   (section bounds ± 15 s). `--anchors sections` does that directly; `--anchors draft` trusts the
-   times in lyrics.json.
+   whole song: it needs no draft times at all. A span that leaves its section by more than 2 s does
+   not pull the line search with it: the search stays inside that section ± 15 s, and the stray span
+   is not an agreement check. `--anchors sections` aligns each section in its own window;
+   `--anchors draft` trusts the times in lyrics.json.
 3. Line pass, in lyrics.json order. Line i is searched in a window that starts where line i-1 ended
    (or `margin` s before its anchor, whichever is later) and ends `margin` s after the anchor end of
    line i+1. Line i+1 is aligned together with it as look-ahead and then discarded, so line i cannot
@@ -248,12 +248,10 @@ def anchor_pass(lp: np.ndarray, units: list[Unit], mode: str) -> dict[int, tuple
                 print('anchors: global pass failed, using sections')
                 mode = 'sections'
             else:
-                raw = {u.idx: (r['f0'] / FPS, r['f1'] / FPS) for u, r in zip(units, res)}
-                outside = [u.id for u in units if not anchor_in_section(*raw[u.idx], float(u.sec['start']), float(u.sec['end']))]
-                if not outside:
-                    return raw
-                print(f'anchors: global pass left the section map ({", ".join(outside[:6])}), using sections')
-                mode = 'sections'
+                # Kept even when a few spans leave their section. Replacing the whole path with a
+                # section pass makes `agree` a distance to a coarse bound, and a line the model did
+                # find is then thrown away as "text not found".
+                return {u.idx: (r['f0'] / FPS, r['f1'] / FPS) for u, r in zip(units, res)}
     if mode == 'sections':
         out: dict[int, tuple[float, float]] = {}
         prev_end = 0
@@ -291,13 +289,20 @@ def line_pass(lp: np.ndarray, units: list[Unit], anchors: dict, margin: float) -
         look = units[i + 1] if i + 1 < len(units) else None
         a_start = anchors[u.idx][0]
         a_end = anchors[look.idx][1] if look else anchors[u.idx][1]
-        t0 = max(prev_end, int((a_start - margin) * FPS))
-        t1 = int((a_end + margin) * FPS)
+        # The section map fences the search. A global anchor on an earlier vocalise must not
+        # become this line's window. Draft word times are not a fence.
+        fence_lo = float(u.sec['start']) - SECTION_PAD
+        fence_hi = float((look or u).sec['end']) + SECTION_PAD
+        t0 = max(prev_end, int(max(a_start - margin, fence_lo) * FPS))
+        t1 = int(min(max(a_end + margin, fence_lo + 0.4), fence_hi) * FPS)
+        if t1 < t0 + int(0.4 * FPS):
+            t1 = t0 + int(0.4 * FPS)
         group = [u, look] if look else [u]
         res = align_window(lp, t0, t1, group)
         method = 'line'
-        if res is None:  # window too short: try alone, then wider
-            res = align_window(lp, t0, int((anchors[u.idx][1] + 2 * margin) * FPS), [u])
+        if res is None:  # window too short: try alone, then wider, still inside the section map
+            alone_hi = min(anchors[u.idx][1] + 2 * margin, float(u.sec['end']) + SECTION_PAD)
+            res = align_window(lp, t0, int(max(alone_hi, t0 / FPS + 0.4) * FPS), [u])
             method = 'line-alone'
         if res is None:
             results.append({'method': 'anchor', 'window': (t0 / FPS, t1 / FPS), 'res': None})
@@ -333,7 +338,9 @@ def second_span(phrase_start: float, phrase_end: float, sec_start: float, sec_en
         t1 = min(duration, t0 + max_win)
     sec0 = max(0.0, sec_start - sec_pad)
     sec1 = min(duration, sec_end + sec_pad)
-    if sec1 - sec0 >= 0.4:
+    # Trim a pad that sticks out of the section. Do not drag a phrase that already sits
+    # outside the section back in: that plays the wrong audio to the second aligner.
+    if sec1 - sec0 >= 0.4 and phrase_end >= sec0 and phrase_start <= sec1:
         t0 = min(max(t0, sec0), sec1 - 0.4)
         t1 = max(min(t1, sec1), t0 + 0.4)
     return t0, t1
@@ -442,6 +449,16 @@ def main() -> None:
         units.append(Unit(idx, sec, line, roman, vocab))
 
     anchors = anchor_pass(lp, units, args.anchors)
+    # A global span outside its section is a different occurrence. It must not fail the line
+    # for disagreeing with that span. The line search itself is already fenced in line_pass.
+    outside: set[int] = set()
+    if args.anchors == 'global':
+        outside = {u.idx for u in units
+                   if not anchor_in_section(*anchors[u.idx], float(u.sec['start']), float(u.sec['end']))}
+        if outside:
+            names = [u.id for u in units if u.idx in outside]
+            print(f'anchors: {len(outside)} lines left the section map ({", ".join(names[:6])}); '
+                  f'that span is not an agreement check')
     passes = line_pass(lp, units, anchors, margin)
 
     # Voice activity for word-end extension and onset snapping.
@@ -459,7 +476,7 @@ def main() -> None:
         known = [s for s in scores if s is not None]
         score = float(np.mean(known)) if known else 0.0
         gap = r['gap'] if r else 99.0
-        agree = abs(r['f0'] / FPS - anchors[u.idx][0]) if (r and args.anchors != 'draft') else 0.0
+        agree = abs(r['f0'] / FPS - anchors[u.idx][0]) if (r and args.anchors != 'draft' and u.idx not in outside) else 0.0
         if p['method'] == 'line' and score >= GOOD_SCORE and gap <= GOOD_GAP and agree <= GOOD_AGREE:
             status = 'good'
         elif r is not None and score >= KEEP_SCORE and agree <= KEEP_AGREE:

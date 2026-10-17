@@ -187,6 +187,8 @@ def test_second_span() -> None:
     check('a smeared phrase is capped at 12 s', abs((t1 - t0) - 12.0) < 1e-6 and t1 < 50, f'{t0:.2f}–{t1:.2f}')
     t0, t1 = align.second_span(10.0, 14.0, 12.0, 20.0, 580.0)
     check('window stays inside the section fence', t0 >= 11.5 and t1 <= 20.5, f'{t0:.2f}–{t1:.2f}')
+    t0, t1 = align.second_span(126.54, 128.47, 107.75, 115.81, 580.0)
+    check('a phrase outside its section is not dragged back', abs(t0 - 124.54) < 1e-6 and abs(t1 - 130.47) < 1e-6, f'{t0:.2f}–{t1:.2f}')
 
 
 def test_anchor_fence() -> None:
