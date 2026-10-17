@@ -297,7 +297,7 @@ function check(slug: string): Issue[] {
       // Any other script falls through to the system font and must not be reported glyph by glyph.
       const text = line.words.map((w) => w.w).join(' ');
       const bundled = ARABIC_SCRIPTS.has(line.script)
-        ? line.lang === 'fa' ? ['mushaf', 'nastaliq'] : ['mushaf']
+        ? line.lang === 'fa' ? ['amiri', 'naskh', 'scheherazade', 'nastaliq'] : ['mushaf']
         : line.script === 'Latn' || line.script === 'Cyrl' ? ['serif'] : null;
       if (!bundled) uncoveredScripts.add(line.script);
       else {

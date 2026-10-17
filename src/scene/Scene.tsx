@@ -151,13 +151,13 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
   const poets = song.poets?.map((p) => p.name).join(' · ');
   const textSettings = useMemo(
     () => ({
-      persianStyle: settings.persianStyle,
+      fontPersian: settings.fontPersian,
       showTranslation: settings.showTranslation,
       showTranslit: settings.showTranslit,
       showAlt: settings.showAlt,
       textScale: settings.textScale,
     }),
-    [settings.persianStyle, settings.showTranslation, settings.showTranslit, settings.showAlt, settings.textScale],
+    [settings.fontPersian, settings.fontOriginal, settings.fontTranslation, settings.showTranslation, settings.showTranslit, settings.showAlt, settings.textScale],
   );
 
   return (
@@ -184,7 +184,7 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
           if (!c) return null;
           return c.kind === 'line' ? (
             <LineBlock
-              key={`${idx}-${settings.persianStyle}`}
+              key={`${idx}-${settings.fontPersian}-${settings.fontOriginal}-${settings.fontTranslation}`}
               cue={c}
               wordSync={wordSync && !c.line.flags?.includes('timing-draft')}
               settings={textSettings}

@@ -18,8 +18,12 @@
   --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter Variable', 'Inter', system-ui, sans-serif;
   --font-rounded: ui-rounded, 'SF Pro Rounded', -apple-system, 'Inter Variable', system-ui, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace;
-  --font-serif: 'Cormorant Garamond', 'Iowan Old Style', 'Palatino', Georgia, serif;
+  --font-serif: 'Source Serif 4', 'Iowan Old Style', Palatino, Georgia, serif;
+  /* Translation and transliteration. Lighter than the verse; not the interface face. */
+  --font-tr: 'Source Serif 4', Georgia, serif;
   --font-mushaf: 'KFGQPC Hafs', 'Amiri Quran', 'Scheherazade New', serif;
+  --font-persian: 'Amiri', 'KFGQPC Hafs', serif;
+  --font-persian-lh: 1.75;
   --font-nastaliq: 'Noto Nastaliq Urdu', 'KFGQPC Hafs', serif;
 
   /* Dynamic Type, iOS "Large" (default) sizes in px = pt */

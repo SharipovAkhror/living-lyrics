@@ -3,6 +3,16 @@ import { useSyncExternalStore } from 'react';
 
 export type ThemePref = 'auto' | 'light' | 'dark';
 export type MotionPref = 'full' | 'calm' | 'off';
+/** Persian verse. `naskh` here is Noto Naskh Arabic, not the Mushaf file. */
+export type FontPersian = 'amiri' | 'naskh' | 'scheherazade' | 'nastaliq';
+/** Latin and Cyrillic original. */
+export type FontOriginal = 'source-serif' | 'cormorant' | 'eb-garamond' | 'literata';
+/** Russian translation and transliteration. */
+export type FontTranslation = 'source-serif' | 'inter';
+
+const FONT_PERSIAN: readonly FontPersian[] = ['amiri', 'naskh', 'scheherazade', 'nastaliq'];
+const FONT_ORIGINAL: readonly FontOriginal[] = ['source-serif', 'cormorant', 'eb-garamond', 'literata'];
+const FONT_TRANSLATION: readonly FontTranslation[] = ['source-serif', 'inter'];
 
 export interface Settings {
   theme: ThemePref;
@@ -15,7 +25,9 @@ export interface Settings {
   commentOpen: boolean;
   textScale: number;
   motion: MotionPref;
-  persianStyle: 'nastaliq' | 'naskh';
+  fontPersian: FontPersian;
+  fontOriginal: FontOriginal;
+  fontTranslation: FontTranslation;
   /** Stop at the end of every line (for learning a text line by line). */
   pauseAfterLine: boolean;
   quality: 'high' | 'saver';
@@ -37,7 +49,9 @@ export const DEFAULTS: Settings = {
   commentOpen: false,
   textScale: 1,
   motion: 'full',
-  persianStyle: 'nastaliq',
+  fontPersian: 'amiri',
+  fontOriginal: 'source-serif',
+  fontTranslation: 'source-serif',
   pauseAfterLine: false,
   quality: 'high',
   rate: 1,
@@ -70,6 +84,22 @@ function migrateCommentKeys(saved: Record<string, unknown>): boolean {
   return changed;
 }
 
+/**
+ * Persian used to be `persianStyle`: `nastaliq` or `naskh`.
+ * Nastaliq stays nastaliq. The old naskh was the Mushaf file, which is no longer a Persian choice,
+ * so a saved naskh becomes Amiri (the classical naskh). Arabic lines keep the Mushaf either way.
+ */
+function migrateFontKeys(saved: Record<string, unknown>): boolean {
+  if (!('persianStyle' in saved)) return false;
+  if (!('fontPersian' in saved)) saved.fontPersian = saved.persianStyle === 'nastaliq' ? 'nastaliq' : 'amiri';
+  delete saved.persianStyle;
+  return true;
+}
+
+function oneOf<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
+  return typeof value === 'string' && (allowed as readonly string[]).includes(value) ? (value as T) : fallback;
+}
+
 function read(): Settings {
   try {
     const raw = localStorage.getItem(KEY);
@@ -78,10 +108,19 @@ function read(): Settings {
     const parsed: unknown = JSON.parse(legacyRaw ?? '{}');
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return { ...DEFAULTS };
     const saved = parsed as Record<string, unknown>;
-    const migrated = migrateCommentKeys(saved);
+    const commentMoved = migrateCommentKeys(saved);
+    const fontMoved = migrateFontKeys(saved);
+    const migrated = commentMoved || fontMoved;
     const out = { ...DEFAULTS };
     for (const k of Object.keys(DEFAULTS) as (keyof Settings)[]) if (k in saved) (out as Record<string, unknown>)[k] = saved[k];
-    if (migrated) {
+    const fontPersian = oneOf(out.fontPersian, FONT_PERSIAN, DEFAULTS.fontPersian);
+    const fontOriginal = oneOf(out.fontOriginal, FONT_ORIGINAL, DEFAULTS.fontOriginal);
+    const fontTranslation = oneOf(out.fontTranslation, FONT_TRANSLATION, DEFAULTS.fontTranslation);
+    const sanitized = fontPersian !== out.fontPersian || fontOriginal !== out.fontOriginal || fontTranslation !== out.fontTranslation;
+    out.fontPersian = fontPersian;
+    out.fontOriginal = fontOriginal;
+    out.fontTranslation = fontTranslation;
+    if (migrated || sanitized) {
       try {
         localStorage.setItem(KEY, JSON.stringify(out));
       } catch {
