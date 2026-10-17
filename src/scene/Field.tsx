@@ -1,90 +1,144 @@
 /**
- * Animated colour field behind the Scene: four soft light sources drifting on slow Lissajous paths,
- * breathing with the music's loudness envelope. Rendered on a tiny canvas and upscaled — cheap and smooth.
+ * The song's sky: three washes from its palette and a fixed field of stars.
+ * Position and brightness are a function of playback time, so a seek paints the same sky.
+ * Nothing here is a game engine. A hidden or off-screen field does not keep a timer.
  */
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
-function hexToRgb(hex: string): [number, number, number] {
-  const n = parseInt(hex.slice(1), 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+function skyAt(t: number) {
+  const a = t * 0.018;
+  return {
+    x1: 50 + Math.sin(a) * 18,
+    y1: 38 + Math.cos(a * 0.73) * 16,
+    x2: 70 + Math.sin(a * 0.51 + 1.4) * 16,
+    y2: 64 + Math.cos(a * 0.44 + 0.5) * 14,
+    x3: 26 + Math.sin(a * 0.36 + 2.2) * 12,
+    y3: 76 + Math.cos(a * 0.66 + 1) * 10,
+  };
+}
+
+interface Star {
+  x: number;
+  y: number;
+  r: number;
+  p: number;
+}
+
+/** Forty-eight stars, the same ones every visit. Seeded so the sky is not a fresh random each mount. */
+function starField(): Star[] {
+  let s = 20261017;
+  const next = () => {
+    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+  const out: Star[] = [];
+  for (let i = 0; i < 48; i++) out.push({ x: next() * 100, y: next() * 100, r: 1.1 + next() * 1.3, p: next() * 6.28 });
+  return out;
 }
 
 export function Field({
   colors,
   dark,
-  energy,
-  still,
+  clock,
+  t = 0,
+  still = false,
 }: {
   colors: string[];
   dark: boolean;
-  /** Returns 0..1 loudness for "now". */
-  energy: () => number;
-  still: boolean;
+  /** Playback seconds. Omit for a frozen sky (`t`). */
+  clock?: () => number;
+  t?: number;
+  /** One frame, then stop. Library bands use this. */
+  still?: boolean;
 }) {
-  const ref = useRef<HTMLCanvasElement>(null);
+  const root = useRef<HTMLDivElement>(null);
+  const sky = useRef<HTMLDivElement>(null);
+  const starEls = useRef<(HTMLElement | null)[]>([]);
+  const stars = useMemo(starField, []);
+  const [c1, c2, c3, c4] = colors;
 
   useEffect(() => {
-    const canvas = ref.current!;
-    const ctx = canvas.getContext('2d', { alpha: false })!;
-    const rgb = colors.map(hexToRgb);
-    let raf = 0;
-    let last = 0;
-    let smooth = 0;
-    const W = 72;
-    const H = 128;
-    canvas.width = W;
-    canvas.height = H;
+    const host = root.current;
+    const wash = sky.current;
+    if (!host || !wash) return;
+    let timer = 0;
+    let lastT = -1;
+    let seen = false;
+    const nodes = starEls.current;
 
-    const draw = (now: number) => {
-      raf = requestAnimationFrame(draw);
-      if (now - last < 33 && !still) return; // ~30 fps is plenty for a blurred field
-      last = now;
-      const t = still ? 12 : now / 1000;
-      smooth += (energy() - smooth) * 0.12;
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = dark ? '#060608' : '#faf9f7';
-      ctx.fillRect(0, 0, W, H);
-      const paths = [
-        [0.27, 0.031, 0.043, 0.0],
-        [0.73, 0.023, 0.037, 1.7],
-        [0.5, 0.017, 0.029, 3.1],
-        [0.38, 0.029, 0.021, 4.4],
-      ];
-      rgb.forEach(([r, g, b], i) => {
-        const [cx, fx, fy, ph] = paths[i % paths.length];
-        const x = (cx + 0.28 * Math.sin(t * fx * 6.28 + ph)) * W;
-        const y = (0.5 + 0.36 * Math.sin(t * fy * 6.28 + ph * 1.3)) * H;
-        const rad = (0.55 + 0.1 * Math.sin(t * 0.21 + i) + 0.14 * smooth) * Math.max(W, H);
-        const grd = ctx.createRadialGradient(x, y, 0, x, y, rad);
-        // Dark: the colours deepened, like Apple Music's darkened artwork. Light: pastel washes over paper white.
-        const k = dark ? 0.62 + 0.18 * smooth : 0.3 + 0.12 * smooth;
-        const m = dark ? 0.6 : 1;
-        const c = `${Math.round(r * m)},${Math.round(g * m)},${Math.round(b * m)}`;
-        grd.addColorStop(0, `rgba(${c},${k})`);
-        grd.addColorStop(1, `rgba(${c},0)`);
-        ctx.fillStyle = grd;
-        ctx.fillRect(0, 0, W, H);
-      });
-      // Keep the field quiet behind text: lift toward white in light mode, toward black in dark mode.
-      ctx.fillStyle = dark ? 'rgba(0,0,0,0.22)' : 'rgba(255,255,255,0.28)';
-      ctx.fillRect(0, 0, W, H);
+    const paint = (time: number) => {
+      const p = skyAt(time);
+      wash.style.setProperty('--x1', `${p.x1.toFixed(2)}%`);
+      wash.style.setProperty('--y1', `${p.y1.toFixed(2)}%`);
+      wash.style.setProperty('--x2', `${p.x2.toFixed(2)}%`);
+      wash.style.setProperty('--y2', `${p.y2.toFixed(2)}%`);
+      wash.style.setProperty('--x3', `${p.x3.toFixed(2)}%`);
+      wash.style.setProperty('--y3', `${p.y3.toFixed(2)}%`);
+      for (let i = 0; i < stars.length; i++) {
+        const node = nodes[i];
+        if (!node) continue;
+        const tw = 0.5 + 0.5 * Math.sin(time * 0.22 + stars[i].p);
+        node.style.opacity = (dark ? 0.28 + tw * 0.62 : 0.16 + tw * 0.3).toFixed(3);
+      }
     };
-    raf = requestAnimationFrame(draw);
+
+    const tick = () => {
+      timer = 0;
+      if (document.hidden || !seen) return;
+      const time = clock ? clock() : t;
+      if (lastT < 0 || Math.abs(time - lastT) >= 0.01) {
+        lastT = time;
+        paint(time);
+      }
+      if (!still && clock) timer = window.setTimeout(tick, 100);
+    };
+
+    const start = () => {
+      if (timer || document.hidden || !seen) return;
+      tick();
+    };
+    const stop = () => {
+      if (timer) window.clearTimeout(timer);
+      timer = 0;
+    };
+
+    const io = new IntersectionObserver(([entry]) => {
+      seen = entry.isIntersecting;
+      if (seen) start();
+      else stop();
+    });
+    io.observe(host);
     const onVis = () => {
-      if (document.hidden) cancelAnimationFrame(raf);
-      else raf = requestAnimationFrame(draw);
+      if (document.hidden) stop();
+      else start();
     };
     document.addEventListener('visibilitychange', onVis);
     return () => {
-      cancelAnimationFrame(raf);
+      stop();
+      io.disconnect();
       document.removeEventListener('visibilitychange', onVis);
     };
-  }, [colors, dark, energy, still]);
+  }, [clock, t, still, dark, stars]);
 
   return (
-    <div className="field" aria-hidden>
-      <canvas ref={ref} className="field-canvas" />
-      <div className="field-grain" />
+    <div
+      ref={root}
+      className={`field${dark ? ' is-dark' : ''}`}
+      style={{ ['--f1' as string]: c1, ['--f2' as string]: c2, ['--f3' as string]: c3, ['--f4' as string]: c4 ?? c3 }}
+      aria-hidden
+    >
+      <div ref={sky} className="field-sky" />
+      <div className="field-veil" />
+      {stars.map((star, i) => (
+        <i
+          key={i}
+          ref={(el) => {
+            starEls.current[i] = el;
+          }}
+          className="field-star"
+          style={{ left: `${star.x}%`, top: `${star.y}%`, width: star.r, height: star.r }}
+        />
+      ))}
     </div>
   );
 }

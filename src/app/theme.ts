@@ -20,7 +20,7 @@ export function useAppliedTheme(pref: ThemePref): boolean {
   const dark = pref === 'dark' || (pref === 'auto' && systemDark);
   useEffect(() => {
     const meta = document.querySelector('meta[name="theme-color"]');
-    meta?.setAttribute('content', dark ? '#000000' : '#f2f2f7');
+    meta?.setAttribute('content', dark ? '#07060c' : '#efe6da');
   }, [dark]);
   return dark;
 }

@@ -263,73 +263,81 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
       )}
 
       <header className="topbar">
-        <a className="btn btn-circle glass" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
+        <a className="btn btn-circle btn-quiet" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
           <Icon name="chevron.left" size={20} weight={2.2} />
         </a>
         <div className="topbar-title">
-          <div className="t-headline topbar-song">{song.title}</div>
-          <div className="t-footnote secondary topbar-section">{sectionLabel}</div>
+          <div className="topbar-song">{song.title}</div>
+          <div className="topbar-section">{sectionLabel}</div>
         </div>
-        <button className="btn btn-circle glass" onClick={() => setSheet('info')} aria-label="О песне: кто поёт и играет">
+        <button className="btn btn-circle btn-quiet" onClick={() => setSheet('info')} aria-label="О песне: кто поёт и играет">
           <Icon name="info.circle" size={21} />
         </button>
       </header>
 
       {comment && (
-        <aside className={`comment material material--thick${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
+        <aside className={`comment${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
           <button className="comment-head" onClick={() => setSettings({ commentOpen: !settings.commentOpen })} aria-expanded={settings.commentOpen}>
-            <Icon name="book.closed" size={17} className="comment-icon" />
-            <span className="comment-kicker t-footnote">Пояснение</span>
-            <span className="comment-preview t-footnote secondary">{settings.commentOpen ? '' : (settings.showHarakat ? comment.text : stripHarakat(comment.text)).replace(/\*+/g, '')}</span>
-            <Icon name={settings.commentOpen ? 'chevron.down' : 'chevron.up'} size={15} weight={2.2} className="comment-chevron tertiary" />
+            <span className="comment-kicker">Пояснение</span>
+            <span className="comment-preview">{settings.commentOpen ? '' : (settings.showHarakat ? comment.text : stripHarakat(comment.text)).replace(/\*+/g, '')}</span>
+            <Icon name={settings.commentOpen ? 'chevron.down' : 'chevron.up'} size={15} weight={2.2} className="comment-chevron" />
           </button>
-          <RichText key={comment.from.idx} text={comment.text} showHarakat={settings.showHarakat} className="comment-body t-callout" />
+          <RichText key={comment.from.idx} text={comment.text} showHarakat={settings.showHarakat} className="comment-body" />
         </aside>
       )}
 
       {state?.source === 'silent' && !playing && (
-        <button className="hint glass t-footnote" onClick={() => setSheet('settings')}>
+        <button className="hint" onClick={() => setSheet('settings')}>
           <Icon name="music.note" size={15} />
           Аудио не подключено — подключить
         </button>
       )}
 
-      <footer className="player glass">
-        {timeline && <Scrubber timeline={timeline} duration={duration} clock={clock} onSeek={(t) => engine.seek(t)} />}
+      <footer className="player">
+        {timeline && (
+          <Scrubber
+            timeline={timeline}
+            duration={duration}
+            clock={clock}
+            onSeek={(t) => engine.seek(t)}
+            accessory={
+              <div className="mark-bar">
+                {toast && (
+                  <div className="mark-toast" role="status">
+                    <span>Отмечено {formatTime(toast.t)}</span>
+                    <button type="button" className="mark-toast-undo" onClick={undoToast}>
+                      Отменить
+                    </button>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  className="mark-btn"
+                  onClick={placeMark}
+                  disabled={!timeline}
+                  aria-label="Не совпадает"
+                  aria-keyshortcuts="M"
+                >
+                  <span className="mark-btn-label" aria-hidden="true">
+                    Не совпадает
+                  </span>
+                  <kbd className="mark-kbd" aria-hidden="true">
+                    M
+                  </kbd>
+                </button>
+              </div>
+            }
+          />
+        )}
         <div className="transport">
           <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)">
-            <Icon name="backward" size={30} />
+            <Icon name="backward" size={26} />
           </button>
-          <button className="btn btn-circle btn-xl btn-prominent" onClick={togglePlay} aria-label={playing ? 'Пауза' : 'Воспроизвести'}>
-            <Icon name={playing ? 'pause' : 'play'} size={30} style={playing ? undefined : { marginLeft: 3 }} />
+          <button className="btn btn-circle btn-xl btn-ring" onClick={togglePlay} aria-label={playing ? 'Пауза' : 'Воспроизвести'}>
+            <Icon name={playing ? 'pause' : 'play'} size={26} style={playing ? undefined : { marginLeft: 3 }} />
           </button>
           <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)">
-            <Icon name="forward" size={30} />
-          </button>
-        </div>
-        <div className="mark-bar">
-          {toast && (
-            <div className="mark-toast" role="status">
-              <span>Отмечено {formatTime(toast.t)}</span>
-              <button type="button" className="mark-toast-undo" onClick={undoToast}>
-                Отменить
-              </button>
-            </div>
-          )}
-          <button
-            type="button"
-            className="mark-btn"
-            onClick={placeMark}
-            disabled={!timeline}
-            aria-label="Не совпадает"
-            aria-keyshortcuts="M"
-          >
-            <span className="mark-btn-label" aria-hidden="true">
-              Не совпадает
-            </span>
-            <kbd className="mark-kbd" aria-hidden="true">
-              M
-            </kbd>
+            <Icon name="forward" size={26} />
           </button>
         </div>
         <div className="utility">

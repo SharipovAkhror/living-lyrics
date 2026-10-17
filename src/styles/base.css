@@ -73,48 +73,14 @@ a {
 .secondary { color: var(--label-2); }
 .tertiary { color: var(--label-3); }
 
-/* ---------- Liquid Glass (functional layer only) ---------- */
+/* ---------- Paper surfaces. Sheets and a few raised controls, without a glass rim. ---------- */
 .glass {
   position: relative;
   isolation: isolate;
   background: var(--glass-tint);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--glass-shadow),
-    inset 0 0 0 0.5px var(--glass-edge),
-    inset 0 1px 0.5px -0.5px var(--glass-rim),
-    inset 0 -1px 1px -0.5px var(--glass-rim-low);
-}
-/* Specular rim: a 1 px gradient border that catches light at the top-leading and bottom-trailing edges. */
-.glass::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    150deg,
-    var(--glass-rim) 0%,
-    transparent 28%,
-    transparent 70%,
-    color-mix(in srgb, var(--glass-rim) 60%, transparent) 100%
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-  pointer-events: none;
-  z-index: -1;
-}
-/* Soft internal light, as if the glass bends light from above. */
-.glass::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(120% 90% at 30% -10%, rgba(255, 255, 255, 0.22), transparent 55%);
-  pointer-events: none;
-  z-index: -1;
+    inset 0 0 0 0.5px var(--glass-edge);
 }
 .glass--strong {
   background: var(--glass-tint-strong);
@@ -127,11 +93,9 @@ a {
   background: rgba(0, 0, 0, 0.35);
 }
 
-/* Standard materials for the content layer (lists, commentary). */
+/* Flat paper for the few lists that still ask for a material. */
 .material {
   background: var(--material-regular);
-  -webkit-backdrop-filter: blur(30px) saturate(160%);
-  backdrop-filter: blur(30px) saturate(160%);
 }
 .material--thick {
   background: var(--material-thick);
@@ -190,34 +154,34 @@ a {
   width: var(--btn-xl);
   height: var(--btn-xl);
 }
-/* Glass buttons swell slightly and brighten under the finger, then spring back. */
-.btn.glass:active:not(:disabled) {
-  transform: scale(1.08);
-  background: var(--glass-tint-strong);
+.btn-quiet {
+  color: var(--ink);
+  background: transparent;
+}
+.btn-quiet:active:not(:disabled) {
+  transform: scale(0.96);
+  opacity: 0.6;
+}
+/* Play: one ring in the song colour. It is not filled, so it does not compete with the line. */
+.btn-ring {
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  background: transparent;
+}
+.btn-ring:active:not(:disabled) {
+  transform: scale(0.96);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 .btn-plain:active:not(:disabled) {
   transform: scale(0.9);
   opacity: 0.6;
 }
 
-/* Prominent: a lit orb in the song colour with a white glyph (one per view). */
+/* Kept for any older call site. The song uses .btn-ring. */
 .btn-prominent {
-  --deep: color-mix(in srgb, var(--accent) 62%, #000);
-  background:
-    radial-gradient(120% 120% at 30% 22%, color-mix(in srgb, var(--accent) 88%, #fff) 0%, var(--accent) 38%, var(--deep) 100%);
-  color: #fff;
-  box-shadow:
-    0 12px 30px -10px color-mix(in srgb, var(--accent) 80%, transparent),
-    0 0 0 1px color-mix(in srgb, #fff 18%, transparent),
-    inset 0 1px 0.5px rgba(255, 255, 255, 0.5),
-    inset 0 -2px 6px rgba(0, 0, 0, 0.18);
-}
-.btn-prominent svg {
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
-}
-.btn-prominent:active:not(:disabled) {
-  transform: scale(1.06);
-  filter: brightness(1.08);
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  background: transparent;
 }
 
 /* Capsule text button */
