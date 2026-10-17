@@ -97,32 +97,36 @@
 .ist-t-s .ist-art svg {
   filter: drop-shadow(0 0 0.35px currentColor);
 }
-/* Strings tremble only while there is sound (the stage adds ist--live when energy > 0) */
-.ist--live .ist-art .str {
-  --amp: calc(var(--energy, 0) * 0.9px);
-  animation: ist-string 70ms linear infinite alternate;
+/* Pose is the plate's variables (--str-x, --skin, --sway, …), written each frame from (drive, time).
+   No infinite animation: a seek to the same second is the same picture. */
+.ist-art .str {
+  transform: translate(var(--str-x, 0), var(--str-y, 0));
 }
-.ist--live .ist-art .str:nth-child(2n) {
-  animation-duration: 83ms;
+.ist-art .str:nth-child(2n) {
+  transform: translate(calc(var(--str-x, 0px) * -0.85), calc(var(--str-y, 0px) * -0.7));
 }
-.ist--live .ist-art .str:nth-child(3n) {
-  animation-duration: 97ms;
-}
-@keyframes ist-string {
-  from {
-    transform: translate(calc(var(--amp) * -0.4), calc(var(--amp) * -1));
-  }
-  to {
-    transform: translate(calc(var(--amp) * 0.4), var(--amp));
-  }
+.ist-art .str:nth-child(3n) {
+  transform: translate(calc(var(--str-x, 0px) * 0.55), calc(var(--str-y, 0px) * 0.45));
 }
 .ist-art .skin {
   transform-box: fill-box;
   transform-origin: center;
-  transform: scale(calc(1 + var(--energy, 0) * 0.018));
+  transform: scale(var(--skin, 1));
 }
+.ist-art .breath,
 .ist-art .breath-dot {
-  opacity: calc(var(--energy, 0) * 0.5);
+  opacity: var(--breath-o, 0);
+}
+.ist-art .part-jingles {
+  transform: translate(var(--jingle, 0), calc(var(--jingle, 0px) * -0.4));
+}
+.ist-art .part-bow {
+  transform: translate(var(--bow, 0), 0);
+}
+/* The 3D plate already leans in the model. Rotating its box would also move the scissor. */
+.ist-art:not(.is-3d) {
+  transform-origin: 50% 62%;
+  transform: rotate(var(--sway, 0deg));
 }
 
 /* Caption */
@@ -218,8 +222,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ist--live .ist-art .str {
-    animation: none;
+  .ist-art {
+    --str-x: 0px;
+    --str-y: 0px;
+    --skin: 1;
+    --breath-o: 0;
+    --jingle: 0px;
+    --bow: 0px;
+    --sway: 0deg;
   }
 }
 

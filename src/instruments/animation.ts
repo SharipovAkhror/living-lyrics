@@ -111,6 +111,44 @@ export function driveAt(f: AudioFeatures | null, family: InstrumentInfo['family'
  * Any drawing format plugs in through this interface: today SVG (CSS variables on the plate),
  * later Lottie (segments/markers), Rive (state-machine inputs with the same names) or glTF.
  */
+const FEATURE_TRACKS: readonly FeatureTrack[] = ['loud', 'onset', 'bright', 'drums', 'bass', 'other', 'vocals'];
+
+function trackArray(value: unknown): number[] | null {
+  if (!Array.isArray(value) || value.length < 2) return null;
+  const first = value[0];
+  const last = value[value.length - 1];
+  if (typeof first !== 'number' || typeof last !== 'number' || !Number.isFinite(first) || !Number.isFinite(last)) return null;
+  return value as number[];
+}
+
+/**
+ * Accept a `features.json` body. Returns null when the shape is not the contract, so a missing
+ * or half-written file leaves the drawings still instead of throwing on the song page.
+ * Samples the ends of each track; the file is produced by the pipeline and can be hundreds of kilobytes.
+ */
+export function parseAudioFeatures(raw: unknown): AudioFeatures | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const body = raw as Record<string, unknown>;
+  const rate = body.rate;
+  const duration = body.duration;
+  if (typeof rate !== 'number' || typeof duration !== 'number' || !(rate > 0) || !(duration > 0)) return null;
+  const tracksIn = body.tracks;
+  if (!tracksIn || typeof tracksIn !== 'object' || Array.isArray(tracksIn)) return null;
+  const tracks: AudioFeatures['tracks'] = {};
+  for (const name of FEATURE_TRACKS) {
+    const arr = trackArray((tracksIn as Record<string, unknown>)[name]);
+    if (arr) tracks[name] = arr;
+  }
+  if (!tracks.loud) return null;
+  let beats: number[] | undefined;
+  if (body.beats != null) {
+    const arr = trackArray(body.beats);
+    if (!arr) return null;
+    beats = arr;
+  }
+  return { rate, duration, tracks, beats };
+}
+
 export interface InstrumentRenderer {
   readonly kind: 'svg' | 'lottie' | 'rive' | 'gltf';
   mount(container: HTMLElement, key: string): Promise<void> | void;

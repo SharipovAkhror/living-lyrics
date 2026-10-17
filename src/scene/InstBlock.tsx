@@ -1,11 +1,14 @@
 import { memo, useLayoutEffect, useRef, useState } from 'react';
 import type { InstCue, Timeline } from '@/data/timeline';
+import type { AudioFeatures } from '@/instruments/animation';
 import type { LineEntrance, MotionPref } from '@/app/settings';
 import { formatTime } from '@/data/library';
 import { instrument } from '@/instruments/catalog';
 import { blockState, clamp01, entranceOpacity, type Measure } from './flow';
 import type { BlockUpdater } from './LineBlock';
-import { InstrumentStage } from './InstrumentStage';
+import { InstrumentStage, type InstrumentStageHandle, type StagePose } from './InstrumentStage';
+import { NARROW_MAX, castAt, castSignature, isVoicePassage, type CastMember } from './cast';
+import { stageDrive } from './stageDrive';
 
 interface Props {
   cue: InstCue;
@@ -15,39 +18,72 @@ interface Props {
   entrance: LineEntrance;
   motion: MotionPref;
   stage: { w: number; h: number };
+  /** Song-level audio features. Null until the file arrives, or when the song has none. */
+  features: AudioFeatures | null;
   register: (idx: number, fn: BlockUpdater | null, m?: Measure) => void;
   onPick: (idx: number) => void;
 }
 
+function passageTitle(keys: string[]) {
+  if (!isVoicePassage(keys)) return null;
+  const voice = keys.includes('voice');
+  const choir = keys.includes('choir');
+  if (voice && choir) return 'Голос и хор';
+  if (choir) return 'Хор';
+  return 'Голос';
+}
+
+function frameFor(members: CastMember[], features: AudioFeatures | null, t: number, motion: MotionPref): StagePose {
+  const heroes = members.filter((m) => m.place === 'hero');
+  const echoes = members.filter((m) => m.place === 'echo');
+  return {
+    time: t,
+    drives: heroes.map((m) => stageDrive(features, m.key, m.at, m.calm, t, motion)),
+    plates: heroes.map((m) => m.presence),
+    echoes: echoes.map((m) => ({ drive: stageDrive(features, m.key, m.at, m.calm, t, motion), presence: m.presence })),
+  };
+}
 
 /**
  * An instrumental passage in the flow. Ahead of time it is a compact line ("Дальше — уд, канун"),
- * on stage it opens into the engravings on a material plate, with who plays and when the voice returns.
+ * on stage it opens into the engravings, one arrival at a time, with who plays and when the voice returns.
+ * A passage that is only voice or choir keeps that engraving and does not invent an orchestra.
  */
-function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, register, onPick }: Props) {
+function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features, register, onPick }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const compact = useRef<HTMLDivElement>(null);
   const full = useRef<HTMLDivElement>(null);
   const count = useRef<HTMLSpanElement>(null);
+  const stageRef = useRef<InstrumentStageHandle>(null);
   const { section } = cue;
   const keys = section.instruments;
   const names = keys.map((k) => instrument(k)?.name ?? k);
+  const title = passageTitle(keys);
   const nextVocal = timeline.cues.find((c) => c.kind === 'line' && c.start >= cue.end - 0.01);
-  // Draw-in, presence and loudness reach the stage through React state, quantised so it re-renders
-  // only while something visibly changes (a few dozen times per passage, not every frame).
-  const [anim, setAnim] = useState({ progress: 0, presence: 0, energy: 0 });
+  const [anim, setAnim] = useState({ progress: 0, presence: 0 });
   const animRef = useRef(anim);
+  const castSig = useRef('');
+  const frameRef = useRef<StagePose | null>(null);
 
   const fullH = Math.round(Math.min(stage.h * 0.72, 620));
   const textH = section.note ? 96 : section.mode ? 64 : 44;
   const stageSize = { w: Math.max(200, Math.min(stage.w - 24, 1040)), h: Math.max(160, fullH - textH) };
+  const narrow = stageSize.w < NARROW_MAX;
   const compactH = useRef(56);
+  const [cast, setCast] = useState<CastMember[]>(() => castAt(section, section.start, stageSize.w, motion));
+  const heroes = cast.filter((m) => m.place === 'hero');
+  const echoes = cast.filter((m) => m.place === 'echo');
 
   useLayoutEffect(() => {
     if (!compact.current) return;
     compactH.current = compact.current.offsetHeight;
     register(cue.idx, call, { main: 0, sub: 0, compact: compactH.current, full: fullH });
   });
+
+  useLayoutEffect(() => {
+    const frame = frameRef.current;
+    if (frame) stageRef.current?.pose(frame);
+  }, [cast, heroes.length, echoes.length]);
 
   const updater = useRef<BlockUpdater>(() => {});
   const call = useRef<BlockUpdater>((t, d, top, wait) => updater.current(t, d, top, wait)).current;
@@ -66,13 +102,20 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, register
       full.current.style.opacity = clamp01(p * 1.6 - 0.4).toFixed(3);
       full.current.style.transform = `scale(${(0.94 + 0.06 * p).toFixed(4)})`;
     }
-    // Draw-in is a function of time since the passage began, so seeking lands on the same drawing.
-    const progress = motion === 'off' ? 1 : clamp01((t - (cue.start - 0.3)) / 2.6);
-    const energy = motion === 'full' && p > 0.5 ? Math.round(timeline.energyAt(t) * 10) / 10 : 0;
+    const members = castAt(section, t, stageSize.w, motion);
+    const sig = castSignature(members);
+    const frame = frameFor(members, features, t, motion);
+    frameRef.current = frame;
+    if (sig !== castSig.current) {
+      castSig.current = sig;
+      setCast(members);
+    } else if (p > 0.02) {
+      stageRef.current?.pose(frame);
+    }
     const q = (v: number) => Math.round(v * 50) / 50;
-    const next = { progress: q(progress), presence: q(p), energy };
+    const next = { progress: q(motion === 'off' ? 1 : clamp01((t - (cue.start - 0.3)) / 2.6)), presence: q(p) };
     const cur = animRef.current;
-    if (next.progress !== cur.progress || next.presence !== cur.presence || next.energy !== cur.energy) {
+    if (next.presence !== cur.presence || next.progress !== cur.progress) {
       animRef.current = next;
       setAnim(next);
     }
@@ -88,17 +131,20 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, register
   return (
     <div ref={root} className="fb fb--inst" onClick={() => onPick(cue.idx)} style={{ visibility: 'hidden' }}>
       <div ref={compact} className="fb-inst-compact t-subhead">
-        <span className="fb-inst-kicker">Инструменты</span> {names.join(' · ')}
+        <span className="fb-inst-kicker">{title ?? 'Инструменты'}</span>
+        {title ? '' : ` ${names.join(' · ')}`}
       </div>
       <div ref={full} className="fb-inst-full" style={{ height: fullH }}>
-        {anim.presence > 0 && (
+        {anim.presence > 0.02 && heroes.length > 0 && (
           <InstrumentStage
-            keys={keys}
+            ref={stageRef}
+            keys={heroes.map((m) => m.key)}
+            echoes={echoes.map((m) => ({ key: m.key }))}
             performers={section.performers}
-            mode={section.layout}
-            progress={anim.progress}
+            mode={narrow ? 'single' : (section.layout ?? 'auto')}
+            progress={1}
             presence={anim.presence}
-            energy={anim.energy}
+            energy={0}
             size={stageSize}
           />
         )}
