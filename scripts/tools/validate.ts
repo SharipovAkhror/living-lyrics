@@ -6,8 +6,8 @@
  * Exit code 1 on errors.
  */
 import { readFileSync, existsSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { z } from 'zod';
 import { LyricsSchema, SongSchema, type Lyrics, type Song } from '../../src/data/schema.ts';
 import { INSTRUMENTS } from '../../src/instruments/list.ts';
@@ -18,20 +18,32 @@ const args = process.argv.slice(2);
 const strict = args.includes('--strict');
 const only = args.filter((a) => !a.startsWith('--'));
 
-if (args.includes('--emit-schema')) {
-  mkdirSync(join(root, 'docs/schema'), { recursive: true });
-  writeFileSync(join(root, 'docs/schema/song.schema.json'), JSON.stringify(z.toJSONSchema(SongSchema), null, 2) + '\n');
-  writeFileSync(join(root, 'docs/schema/lyrics.schema.json'), JSON.stringify(z.toJSONSchema(LyricsSchema), null, 2) + '\n');
-  console.log('schemas → docs/schema/');
-}
-
 const coverage = JSON.parse(readFileSync(join(root, 'scripts/tools/font-coverage.json'), 'utf8')) as Record<string, number[]>;
 const covSets = Object.fromEntries(Object.entries(coverage).map(([k, v]) => [k, new Set(v)]));
 const instrumentKeys = new Set(INSTRUMENTS.map((i) => i.key));
 const svgDir = join(root, 'src/instruments/svg');
 const ARABIC_LANGS = new Set(['ar', 'fa', 'ota', 'ur']);
-// Reading speed for the Russian layer. Subtitle practice: ≤ 17 characters per second is comfortable.
-const CPS_WARN = 20;
+/** Arabic-script codes. Transliteration is required for these, whatever the language. */
+export const ARABIC_SCRIPTS = new Set(['Arab', 'Aran']);
+/**
+ * Comfortable reading speed for the Russian line, characters per second of the line as sung
+ * (last word end minus first word start). Above CPS_WARN the validator warns.
+ */
+export const CPS_OK = 17;
+export const CPS_WARN = 20;
+
+/**
+ * Words the karaoke translation must not use. One list, shared with
+ * docs/methodology/06-translation.md. Matched as whole words, with inflections
+ * for the longer ones. «сей» does not match «сейчас».
+ */
+export const BANNED_RU: { name: string; re: RegExp }[] = [
+  { name: 'сей', re: /(?<![\p{L}])сей(?![\p{L}])/giu },
+  { name: 'дабы', re: /(?<![\p{L}])дабы(?![\p{L}])/giu },
+  { name: 'предвечный', re: /(?<![\p{L}])предвечн\p{L}*/giu },
+  { name: 'сокровенный', re: /(?<![\p{L}])сокровенн\p{L}*/giu },
+  { name: 'священный', re: /(?<![\p{L}])священн\p{L}*/giu },
+];
 
 type Issue = { level: 'error' | 'warn'; where: string; msg: string };
 
@@ -39,7 +51,7 @@ type Issue = { level: 'error' | 'warn'; where: string; msg: string };
  * Letters only, for checking that a sung line occurs in canon.md: no harakat or other marks,
  * Arabic and Persian letter variants unified, no spaces, punctuation or case.
  */
-function letters(text: string) {
+export function letters(text: string) {
   return text
     .normalize('NFKD')
     .replace(/[\u0300-\u036f\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '')
@@ -51,10 +63,90 @@ function letters(text: string) {
     .toLowerCase();
 }
 
+/** Same rule as scripts/pipeline/timing.py is_solo: one named singer, not a choir or a duet. */
+function isSoloVoice(sectionVoice: string | undefined, lineVoice: string | undefined): boolean {
+  const voice = (lineVoice || sectionVoice || '').trim();
+  if (!voice) return false;
+  const low = voice.toLowerCase().replace(/ё/g, 'е');
+  if (low === 'все' || low === 'all' || low === 'все исполнители' || low.startsWith('все ') || low.startsWith('all ')) return false;
+  if (` ${low} `.includes(' и ')) return false;
+  return !['хор', 'choir', 'chorus', 'cappella', 'ансамбль', 'ensemble', 'оркестр', 'orchestra', 'tutti'].some((m) => low.includes(m));
+}
+
 /**
  * Commentary used to be the field `sharh` (Arabic شرح) and the flag `sharh-draft`.
  * Zod strips unknown keys, so a leftover name would vanish without this check.
  */
+/** Characters the reader actually sees: markdown asterisks are not read aloud. */
+export function translationChars(ru: string) {
+  return ru.replace(/\*/g, '').length;
+}
+
+/** Sung length of a line, seconds. Not the gap until the next line. */
+export function sungDuration(words: { s: number; e: number }[]) {
+  if (words.length === 0) return 0;
+  return words[words.length - 1].e - words[0].s;
+}
+
+export function readingCps(ru: string, words: { s: number; e: number }[]) {
+  const sung = sungDuration(words);
+  const cps = translationChars(ru) / Math.max(0.5, sung);
+  return { cps, sung };
+}
+
+export function bannedIn(text: string) {
+  const found: string[] = [];
+  for (const ban of BANNED_RU) {
+    ban.re.lastIndex = 0;
+    const hit = ban.re.exec(text);
+    if (hit) found.push(hit[0]);
+  }
+  return found;
+}
+
+/**
+ * Editor's notes that belong in canon.md, review or sources.md, not in a reader-facing comment.
+ * One list, shared with docs/methodology/07-comment.md.
+ */
+export const EDITORIAL_MARKERS: { name: string; re: RegExp }[] = [
+  { name: 'субтитр', re: /субтитр/giu },
+  { name: 'титр', re: /(?<!суб)титр/giu },
+  { name: 'транскрипт', re: /транскрипт/giu },
+  { name: 'whisper', re: /whisper/giu },
+  { name: 'распознава', re: /распознава/giu },
+  { name: 'слухом', re: /(?<![\p{L}])слухом(?![\p{L}])/giu },
+  { name: 'ухом', re: /(?<![\p{L}])ухом(?![\p{L}])/giu },
+  { name: 'не проверен', re: /не[\s-]+проверен/giu },
+  { name: 'реплика', re: /(?<![\p{L}])реплик/giu },
+];
+
+export function editorialMarkers(text: string) {
+  const found: string[] = [];
+  for (const marker of EDITORIAL_MARKERS) {
+    marker.re.lastIndex = 0;
+    if (marker.re.test(text)) found.push(marker.name);
+  }
+  return found;
+}
+
+/** A line of punctuation or single letters («؟», «…», «آ») is a stub, not sung text. */
+export function isStubLine(words: { w: string }[]) {
+  return words.length > 0 && words.every((word) => letters(word.w).length <= 1);
+}
+
+/** A run of three or more capital letters is shouting. Roman numerals (XVI) are not. */
+export function capsWords(text: string) {
+  const plain = text.replace(/\*/g, '');
+  return [...plain.matchAll(/(?<![\p{L}\p{N}])[\p{Lu}]{3,}(?![\p{L}\p{N}])/gu)]
+    .map((m) => m[0])
+    .filter((word) => !/^[IVXLCDM]+$/.test(word));
+}
+
+/** The translation's pair for a key word marked `em` in the original. */
+export function hasEmphasisPair(ru: string) {
+  return /\*\*[^*\n]+\*\*/.test(ru);
+}
+
 function rejectRetiredNames(raw: unknown, err: (where: string, msg: string) => void) {
   if (!raw || typeof raw !== 'object') return;
   const sections = (raw as { sections?: unknown }).sections;
@@ -135,6 +227,7 @@ function check(slug: string): Issue[] {
   let prevEnd = 0;
   let lastWordEnd = 0;
   const langsSeen = new Set<string>();
+  const uncoveredScripts = new Set<string>();
   lyrics.sections.forEach((s, si) => {
     const where = `section ${s.id}`;
     if (ids.has(s.id)) err(where, 'повтор id');
@@ -144,6 +237,14 @@ function check(slug: string): Issue[] {
     if (s.end > song.duration + 0.5) err(where, `end ${s.end} больше длительности песни ${song.duration}`);
     prevEnd = s.end;
     if (/[A-ZА-ЯЁ]{4,}/.test(s.label) && s.label === s.label.toUpperCase()) warn(where, 'подпись набрана капсом — нужен обычный регистр');
+    const labelCaps = capsWords(s.label);
+    if (labelCaps.length && s.label !== s.label.toUpperCase()) warn(where, `в подписи капс: ${labelCaps.join(', ')}`);
+    if (s.comment) {
+      const commentCaps = capsWords(s.comment);
+      if (commentCaps.length) warn(where, `в пояснении капс: ${commentCaps.join(', ')}`);
+      const marks = editorialMarkers(s.comment);
+      if (marks.length) warn(where, `в пояснении редакторская пометка (${marks.join(', ')}): её место — canon.md, раздел «Расхождения и вопросы», song.json → review или sources.md`);
+    }
 
     if (s.kind === 'instrumental') {
       for (const k of s.instruments) {
@@ -151,6 +252,10 @@ function check(slug: string): Issue[] {
         else if (!existsSync(join(svgDir, `${k}.svg`))) warn(where, `для "${k}" нет гравюры (src/instruments/svg/${k}.svg) — будет показан ансамбль`);
       }
       if (new Set(s.instruments).size !== s.instruments.length) warn(where, 'инструмент повторяется в списке');
+      if (s.note) {
+        const noteCaps = capsWords(s.note);
+        if (noteCaps.length) warn(where, `в заметке капс: ${noteCaps.join(', ')}`);
+      }
       // Hand-set layout: does it suit the number of instruments? (rules: src/instruments/layout.ts)
       if (s.layout) {
         const n = s.instruments.length;
@@ -170,7 +275,7 @@ function check(slug: string): Issue[] {
       langsSeen.add(line.lang);
       const arab = ARABIC_LANGS.has(line.lang);
       if (arab && line.script !== 'Arab') warn(lw, `язык ${line.lang} обычно пишется арабской графикой, а script = ${line.script}`);
-      if (line.script === 'Arab' && !line.translit) warn(lw, 'нет транскрипции (translit) для строки арабской графикой');
+      if (ARABIC_SCRIPTS.has(line.script) && !line.translit) warn(lw, 'нет транскрипции (translit) для строки арабским письмом');
       if (!line.tr.ru.trim()) err(lw, 'пустой перевод');
       if (canon && !canon.includes(letters(line.words.map((w) => w.w).join(' '))))
         warn(lw, `строки нет в canon.md: «${line.words.map((w) => w.w).join(' ')}» — сверьте с оригиналом или объясните расхождение`);
@@ -178,51 +283,105 @@ function check(slug: string): Issue[] {
       // Words: increasing, inside the section
       line.words.forEach((w, wi) => {
         if (w.e <= w.s) err(lw, `слово «${w.w}»: e ≤ s`);
+        if (w.e > song.duration + 0.5) err(lw, `слово «${w.w}» кончается (${w.e}) позже конца записи (${song.duration})`);
         if (w.s < lastWordEnd - 0.02 && !(li === 0 && wi === 0 && si > 0 && w.s >= s.start)) err(lw, `слово «${w.w}» начинается (${w.s}) раньше конца предыдущего (${lastWordEnd})`);
         if (w.s < s.start - 0.05 || w.e > s.end + 0.05) warn(lw, `слово «${w.w}» выходит за границы секции`);
         if (/\s/.test(w.w)) err(lw, `слово «${w.w}» содержит пробел — разбейте на два`);
         lastWordEnd = Math.max(lastWordEnd, w.e);
       });
-
-      // Glyph coverage
-      const text = line.words.map((w) => w.w).join(' ');
-      const face = line.script === 'Arab' ? (line.lang === 'fa' ? ['mushaf', 'nastaliq'] : ['mushaf']) : ['serif'];
-      for (const f of face) {
-        const missing = new Set<string>();
-        for (const ch of text) {
-          const cp = ch.codePointAt(0)!;
-          if (cp <= 0x20 || cp === 0x200c || cp === 0x200d) continue;
-          if (!covSets[f].has(cp)) missing.add(`${ch} U+${cp.toString(16).toUpperCase().padStart(4, '0')}`);
-        }
-        if (missing.size) warn(lw, `в шрифте ${f} нет символов: ${[...missing].join(', ')}`);
+      if (isStubLine(line.words)) {
+        err(lw, 'строка-заглушка: слова — только знаки препинания или одна буква. Голос без разобранных слов записывайте инструментальной секцией с ключом voice или choir, без строк');
       }
 
-      // Reading speed of the translation over the time the line is on screen
-      const next = s.lines[li + 1];
-      const shown = (next ? next.words[0].s : s.end) - line.words[0].s;
-      const cps = line.tr.ru.length / Math.max(0.5, shown);
-      if (cps > CPS_WARN) warn(lw, `перевод читается со скоростью ${cps.toFixed(0)} зн/с (норма ≤ 17): сократите`);
-      if (line.tr.ru.length > 90) warn(lw, `перевод длиннее 90 знаков (${line.tr.ru.length}) — в караоке он не успеет прочитаться`);
+      // Glyph coverage. Arab uses the bundled Mushaf face. Latin and Cyrillic use the serif.
+      // Any other script falls through to the system font and must not be reported glyph by glyph.
+      const text = line.words.map((w) => w.w).join(' ');
+      const bundled = ARABIC_SCRIPTS.has(line.script)
+        ? line.lang === 'fa' ? ['amiri', 'naskh', 'scheherazade', 'nastaliq'] : ['mushaf']
+        : line.script === 'Latn' || line.script === 'Cyrl' ? ['serif'] : null;
+      if (!bundled) uncoveredScripts.add(line.script);
+      else {
+        for (const f of bundled) {
+          const missing = new Set<string>();
+          for (const ch of text) {
+            const cp = ch.codePointAt(0)!;
+            if (cp <= 0x20 || cp === 0x200c || cp === 0x200d) continue;
+            if (!covSets[f].has(cp)) missing.add(`${ch} U+${cp.toString(16).toUpperCase().padStart(4, '0')}`);
+          }
+          if (missing.size) warn(lw, `в шрифте ${f} нет символов: ${[...missing].join(', ')}`);
+        }
+      }
+
+      // Reading speed over the time this line is actually sung.
+      const speed = readingCps(line.tr.ru, line.words);
+      if (speed.cps > CPS_WARN) {
+        warn(lw, `перевод читается со скоростью ${speed.cps.toFixed(0)} зн/с при длительности строки ${speed.sung.toFixed(1)} с (норма ≤ ${CPS_OK}): сократите, остальное — в пояснение`);
+      }
+      const visible = translationChars(line.tr.ru);
+      if (visible > 90) warn(lw, `перевод длиннее 90 знаков (${visible}) — в караоке он не успеет прочитаться`);
+
+      const banned = bannedIn(line.tr.ru);
+      if (banned.length) warn(lw, `в переводе запрещённые слова: ${banned.join(', ')} (список BANNED_RU, docs/methodology/06-translation.md)`);
+      const shouted = capsWords(line.tr.ru);
+      if (shouted.length) warn(lw, `в переводе капс: ${shouted.join(', ')} — нужен обычный регистр`);
+      if (line.comment) {
+        const commentCaps = capsWords(line.comment);
+        if (commentCaps.length) warn(lw, `в пояснении капс: ${commentCaps.join(', ')}`);
+        const marks = editorialMarkers(line.comment);
+        if (marks.length) warn(lw, `в пояснении редакторская пометка (${marks.join(', ')}): её место — canon.md, раздел «Расхождения и вопросы», song.json → review или sources.md`);
+      }
+      const ems = line.words.filter((w) => w.em).length;
+      if (ems > 1) warn(lw, `ключевых слов (em) ${ems} — нужно не больше одного`);
+      if (ems >= 1 && !hasEmphasisPair(line.tr.ru)) warn(lw, 'в оригинале есть em, а в переводе нет пары **…**');
     });
   });
+  for (const script of uncoveredScripts) {
+    warn('lyrics.json', `письмо ${script}: отдельного шрифта в проекте нет, строка рисуется f-serif, недостающие знаки берёт системный шрифт`);
+  }
+
+  if (song.timing.status === 'aligned') {
+    const vocalSections = lyrics.sections.filter((s) => s.kind === 'vocal');
+    const vocalLines = vocalSections.flatMap((s) => s.lines);
+    if (vocalLines.length > 0 && vocalLines.every((l) => l.flags?.includes('timing-draft')))
+      err('song.json', 'timing.status = aligned, но у каждой вокальной строки флаг timing-draft: пословная заливка нигде не включена, статус должен остаться draft');
+    const solo = vocalSections.flatMap((s) => s.lines.filter((l) => isSoloVoice(s.voice, l.voice)));
+    const proven = solo.filter((l) => !l.flags?.includes('timing-draft'));
+    if (solo.length === 0 || proven.length * 5 < solo.length * 4)
+      err('song.json', `timing.status = aligned, но доказано ${proven.length} из ${solo.length} сольных строк: нужно не меньше 80 %, иначе статус draft`);
+  }
 
   for (const l of song.languages) if (!langsSeen.has(l)) warn('song.json', `язык ${l} указан в languages, но строк на нём нет`);
-  for (const l of langsSeen) if (!song.languages.includes(l as never)) warn('song.json', `строки на языке ${l} есть, но он не указан в languages`);
+  for (const l of langsSeen) if (!song.languages.includes(l)) warn('song.json', `строки на языке ${l} есть, но он не указан в languages`);
   return issues;
 }
 
-const slugs = readdirSync(join(root, 'content/songs')).filter((d) => !only.length || only.includes(d));
-let errors = 0;
-let warnings = 0;
-for (const slug of slugs) {
-  const issues = check(slug);
-  const e = issues.filter((i) => i.level === 'error');
-  const w = issues.filter((i) => i.level === 'warn');
-  errors += e.length;
-  warnings += w.length;
-  console.log(`\n${e.length ? '✗' : '✓'} ${slug}  (${e.length} ошибок, ${w.length} предупреждений)`);
-  for (const i of [...e, ...w].slice(0, 60)) console.log(`  ${i.level === 'error' ? 'ошибка' : 'внимание'}  ${i.where}: ${i.msg}`);
-  if (e.length + w.length > 60) console.log(`  … и ещё ${e.length + w.length - 60}`);
+function isCli() {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  return import.meta.url === pathToFileURL(resolve(entry)).href;
 }
-console.log(`\nИтого: ${errors} ошибок, ${warnings} предупреждений.`);
-if (errors || (strict && warnings)) process.exit(1);
+
+if (isCli()) {
+  if (args.includes('--emit-schema')) {
+    mkdirSync(join(root, 'docs/schema'), { recursive: true });
+    writeFileSync(join(root, 'docs/schema/song.schema.json'), JSON.stringify(z.toJSONSchema(SongSchema), null, 2) + '\n');
+    writeFileSync(join(root, 'docs/schema/lyrics.schema.json'), JSON.stringify(z.toJSONSchema(LyricsSchema), null, 2) + '\n');
+    console.log('schemas → docs/schema/');
+  }
+
+  const slugs = readdirSync(join(root, 'content/songs')).filter((d) => !only.length || only.includes(d));
+  let errors = 0;
+  let warnings = 0;
+  for (const slug of slugs) {
+    const issues = check(slug);
+    const e = issues.filter((i) => i.level === 'error');
+    const w = issues.filter((i) => i.level === 'warn');
+    errors += e.length;
+    warnings += w.length;
+    console.log(`\n${e.length ? '✗' : '✓'} ${slug}  (${e.length} ошибок, ${w.length} предупреждений)`);
+    for (const i of [...e, ...w].slice(0, 80)) console.log(`  ${i.level === 'error' ? 'ошибка' : 'внимание'}  ${i.where}: ${i.msg}`);
+    if (e.length + w.length > 80) console.log(`  … и ещё ${e.length + w.length - 80}`);
+  }
+  console.log(`\nИтого: ${errors} ошибок, ${warnings} предупреждений.`);
+  if (errors || (strict && warnings)) process.exit(1);
+}

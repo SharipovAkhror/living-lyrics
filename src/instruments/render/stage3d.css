@@ -46,6 +46,11 @@
   order: 1;
 }
 
+.ig-volume {
+  max-width: 280px;
+  margin-top: var(--sp-3);
+}
+
 .ig-drive,
 .ig-slider {
   --accent: var(--ig-ink);

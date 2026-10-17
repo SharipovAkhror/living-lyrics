@@ -115,6 +115,7 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
   const settings = useSettings();
   const motion = effectiveMotion(settings);
   const style = settings.instrumentStyle;
+  const wants3d = style !== 'drawing' && canTry3d(motion);
   const hostRef = useRef<HTMLDivElement>(null);
   const sessionRef = useRef<StageSession | null>(null);
   const clockRef = useRef(time ?? 0);
@@ -176,7 +177,7 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
 
   useLayoutEffect(() => {
     const host = hostRef.current;
-    if (!host || !canTry3d(motion)) return;
+    if (!host || !wants3d) return;
     let alive = true;
     let session: StageSession | null = null;
     let canvas: HTMLCanvasElement | null = null;
@@ -198,7 +199,7 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
         return;
       }
       sessionRef.current = session;
-      session.setStyle(style);
+      session.setStyle(style === 'materials' ? 'materials' : 'engraving');
       session.setTime(clockRef.current);
       if (cameraRef.current) session.setCamera(cameraRef.current);
       const latest = collect(index);
@@ -219,9 +220,9 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
       canvas?.remove();
       host.querySelectorAll('.ist-art.is-3d').forEach((el) => el.classList.remove('is-3d'));
     };
-    // The collector closes over the latest layout; remounting follows the instrument list and motion only.
+    // Remount when the reader turns volume on or off, or the instrument list changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [motion, listKey, preserve]);
+  }, [wants3d, listKey, preserve]);
 
   useLayoutEffect(() => {
     const session = sessionRef.current;
@@ -252,6 +253,7 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
   }, [glReady, layout, progress, presence, energy, drives, listKey]);
 
   useLayoutEffect(() => {
+    if (style === 'drawing') return;
     sessionRef.current?.setStyle(style);
   }, [style, glReady]);
 

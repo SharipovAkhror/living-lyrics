@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { getSong, loadLyrics, loadPeaks } from '@/data/library';
+import { formatTime, getSong, loadLyrics, loadPeaks } from '@/data/library';
+import { marksFor, momentAt } from '@/app/marks';
 import type { Lyrics, Peaks } from '@/data/schema';
 import { buildTimeline, commentFor, type Cue } from '@/data/timeline';
 import { useSettings, setSettings } from '@/app/settings';
@@ -185,7 +186,26 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
 
   const togglePlay = useCallback(() => engine?.toggle(), [engine]);
 
+  // A mismatch mark records the clock and the line on stage. It does not pause, seek, or open a sheet.
+  const [toast, setToast] = useState<{ id: string; t: number } | null>(null);
+  const placeMark = useCallback(() => {
+    if (!song || !timeline || !engine) return;
+    const mark = marksFor(song.slug).add(momentAt(timeline.cues, owner, engine.currentTime()));
+    setToast({ id: mark.id, t: mark.t });
+  }, [song, timeline, engine, owner]);
+  const undoToast = useCallback(() => {
+    if (!song || !toast) return;
+    marksFor(song.slug).remove(toast.id);
+    setToast(null);
+  }, [song, toast]);
+  useEffect(() => {
+    if (!toast) return;
+    const id = window.setTimeout(() => setToast(null), 6000);
+    return () => clearTimeout(id);
+  }, [toast]);
+
   // Keyboard: Space play/pause, ←/→ lines, Shift+←/→ ±10 s, T translation, K commentary.
+  // M (same physical key as ь) drops a mismatch mark. Repeat is ignored so a held key is one mark.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (sheet || e.metaKey || e.ctrlKey || e.altKey) return;
@@ -198,12 +218,14 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
       else if (e.key === 'ArrowLeft') (e.shiftKey ? engine?.skip(-10) : nav(-1));
       else if (e.key === 't' || e.key === 'е') setSettings({ showTranslation: !settings.showTranslation });
       else if (e.key === 'k' || e.key === 'л') setSettings({ showComment: !settings.showComment });
-      else return;
+      else if (e.code === 'KeyM') {
+        if (!e.repeat) placeMark();
+      } else return;
       e.preventDefault();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [sheet, togglePlay, nav, engine, settings.showTranslation, settings.showComment]);
+  }, [sheet, togglePlay, nav, engine, settings.showTranslation, settings.showComment, placeMark]);
 
   const back = useHold(
     () => nav(-1),
@@ -275,6 +297,31 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
             <Icon name="forward" size={30} />
           </button>
         </div>
+        <div className="mark-bar">
+          {toast && (
+            <div className="mark-toast" role="status">
+              <span>Отмечено {formatTime(toast.t)}</span>
+              <button type="button" className="mark-toast-undo" onClick={undoToast}>
+                Отменить
+              </button>
+            </div>
+          )}
+          <button
+            type="button"
+            className="mark-btn"
+            onClick={placeMark}
+            disabled={!timeline}
+            aria-label="Не совпадает"
+            aria-keyshortcuts="M"
+          >
+            <span className="mark-btn-label" aria-hidden="true">
+              Не совпадает
+            </span>
+            <kbd className="mark-kbd" aria-hidden="true">
+              M
+            </kbd>
+          </button>
+        </div>
         <div className="utility">
           <button className="util" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
             <Icon name="character.bubble" size={22} />
@@ -296,7 +343,16 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
       </footer>
 
       <SettingsSheet open={sheet === 'settings'} onClose={() => setSheet(null)} song={song} engine={engine} state={state} settings={settings} has={has} />
-      <InfoSheet open={sheet === 'info'} onClose={() => setSheet(null)} song={song} lyrics={lyrics} />
+      <InfoSheet
+        open={sheet === 'info'}
+        onClose={() => setSheet(null)}
+        song={song}
+        lyrics={lyrics}
+        onSeek={(t) => {
+          engine.seek(t);
+          setSheet(null);
+        }}
+      />
       {timeline && (
         <TextSheet
           open={sheet === 'text'}

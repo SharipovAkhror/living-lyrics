@@ -3,8 +3,22 @@ import { useSyncExternalStore } from 'react';
 
 export type ThemePref = 'auto' | 'light' | 'dark';
 export type MotionPref = 'full' | 'calm' | 'off';
-/** Engraving is the outline-and-hatch look. Materials is wood, skin and metal. */
-export type InstrumentStyle = 'engraving' | 'materials';
+/**
+ * Song-page instruments. `drawing` is the SVG engraving and the default.
+ * `engraving` and `materials` are the volume model.
+ */
+export type InstrumentStyle = 'drawing' | 'engraving' | 'materials';
+/** Persian verse. `naskh` here is Noto Naskh Arabic, not the Mushaf file. */
+export type FontPersian = 'amiri' | 'naskh' | 'scheherazade' | 'nastaliq';
+/** Latin and Cyrillic original. */
+export type FontOriginal = 'source-serif' | 'cormorant' | 'eb-garamond' | 'literata';
+/** Russian translation and transliteration. */
+export type FontTranslation = 'source-serif' | 'inter';
+
+const INSTRUMENT_STYLES: readonly InstrumentStyle[] = ['drawing', 'engraving', 'materials'];
+const FONT_PERSIAN: readonly FontPersian[] = ['amiri', 'naskh', 'scheherazade', 'nastaliq'];
+const FONT_ORIGINAL: readonly FontOriginal[] = ['source-serif', 'cormorant', 'eb-garamond', 'literata'];
+const FONT_TRANSLATION: readonly FontTranslation[] = ['source-serif', 'inter'];
 
 export interface Settings {
   theme: ThemePref;
@@ -17,11 +31,13 @@ export interface Settings {
   commentOpen: boolean;
   textScale: number;
   motion: MotionPref;
-  persianStyle: 'nastaliq' | 'naskh';
+  fontPersian: FontPersian;
+  fontOriginal: FontOriginal;
+  fontTranslation: FontTranslation;
   /** Stop at the end of every line (for learning a text line by line). */
   pauseAfterLine: boolean;
   quality: 'high' | 'saver';
-  /** Shared by the song stage and the instruments page. */
+  /** Song pages. The instruments gallery previews the volume model on its own. */
   instrumentStyle: InstrumentStyle;
   rate: number;
   volume: number;
@@ -41,10 +57,12 @@ export const DEFAULTS: Settings = {
   commentOpen: false,
   textScale: 1,
   motion: 'full',
-  persianStyle: 'nastaliq',
+  fontPersian: 'amiri',
+  fontOriginal: 'source-serif',
+  fontTranslation: 'source-serif',
   pauseAfterLine: false,
   quality: 'high',
-  instrumentStyle: 'engraving',
+  instrumentStyle: 'drawing',
   rate: 1,
   volume: 1,
   normalize: true,
@@ -75,8 +93,27 @@ function migrateCommentKeys(saved: Record<string, unknown>): boolean {
   return changed;
 }
 
+/**
+ * Persian used to be `persianStyle`: `nastaliq` or `naskh`.
+ * Nastaliq stays nastaliq. The old naskh was the Mushaf file, which is no longer a Persian choice,
+ * so a saved naskh becomes Amiri (the classical naskh). Arabic lines keep the Mushaf either way.
+ */
+function migrateFontKeys(saved: Record<string, unknown>): boolean {
+  if (!('persianStyle' in saved)) return false;
+  if (!('fontPersian' in saved)) saved.fontPersian = saved.persianStyle === 'nastaliq' ? 'nastaliq' : 'amiri';
+  delete saved.persianStyle;
+  return true;
+}
+
+function oneOf<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
+  return typeof value === 'string' && (allowed as readonly string[]).includes(value) ? (value as T) : fallback;
+}
+
 function sanitize(out: Settings): Settings {
-  if (out.instrumentStyle !== 'engraving' && out.instrumentStyle !== 'materials') out.instrumentStyle = 'engraving';
+  out.instrumentStyle = oneOf(out.instrumentStyle, INSTRUMENT_STYLES, 'drawing');
+  out.fontPersian = oneOf(out.fontPersian, FONT_PERSIAN, DEFAULTS.fontPersian);
+  out.fontOriginal = oneOf(out.fontOriginal, FONT_ORIGINAL, DEFAULTS.fontOriginal);
+  out.fontTranslation = oneOf(out.fontTranslation, FONT_TRANSLATION, DEFAULTS.fontTranslation);
   return out;
 }
 
@@ -88,11 +125,13 @@ function read(): Settings {
     const parsed: unknown = JSON.parse(legacyRaw ?? '{}');
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return { ...DEFAULTS };
     const saved = parsed as Record<string, unknown>;
-    const migrated = migrateCommentKeys(saved);
+    const commentMoved = migrateCommentKeys(saved);
+    const fontMoved = migrateFontKeys(saved);
     const out = { ...DEFAULTS };
     for (const k of Object.keys(DEFAULTS) as (keyof Settings)[]) if (k in saved) (out as Record<string, unknown>)[k] = saved[k];
+    const before = JSON.stringify(out);
     sanitize(out);
-    if (migrated) {
+    if (commentMoved || fontMoved || JSON.stringify(out) !== before) {
       try {
         localStorage.setItem(KEY, JSON.stringify(out));
       } catch {

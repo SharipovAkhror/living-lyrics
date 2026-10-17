@@ -33,13 +33,15 @@
  * - Fingerboard, purfling and roses are plain stand-ins. The 1977 oud’s abalone
  *   borders, plastic fretwork and fingerboard inlay are not copied. The roses are a
  *   circular lattice only: the soundboard is cut on the circle, with no plate behind.
- * - A risha guard sits on the treble side, below the large rose. A lesson that names
+ * - A risha guard sits on the treble side, under the large rose. A lesson that names
  *   the parts of an Arabic oud puts “the risha guard” on the soundboard between the
  *   bridge and the sound holes (Learn The Oud, “Oud Rundown”, the risha-guard
  *   chapter: https://www.youtube.com/watch?v=afRYiI-gWmI). A luthier glues a wood
  *   veneer 0.5–1 mm thick there so the risha does not cut the spruce (Mansour Oud,
- *   “Oud Pick guard”: https://www.youtube.com/watch?v=n89kCR7uymQ). This one is a
- *   plain oval veneer, not a copy of either instrument’s shape.
+ *   “Oud Pick guard”: https://www.youtube.com/watch?v=n89kCR7uymQ). The usual plate
+ *   is a teardrop or a crescent, in wood or tortoiseshell, not a red ellipse. This
+ *   one is a teardrop under the large rose on the treble side. It is not a tracing
+ *   of one measured instrument.
  * - Viewer-left is the bass string. That is a display convention, not a claim about
  *   the player’s left hand.
  * - String radius 0.045 cm. The engraving outline in the app is what makes a line of
@@ -303,23 +305,51 @@ function roseLattice(h) {
   return mergeGeoms(parts);
 }
 
-/** Thin veneer where the risha strikes, treble side, below the large rose. */
+/** Smooth a closed outline. Two passes turn the teardrop corners into a plate. */
+function chaikin(pts) {
+  const out = [];
+  for (let i = 0; i < pts.length; i++) {
+    const a = pts[i];
+    const b = pts[(i + 1) % pts.length];
+    out.push([a[0] * 0.75 + b[0] * 0.25, a[1] * 0.75 + b[1] * 0.25]);
+    out.push([a[0] * 0.25 + b[0] * 0.75, a[1] * 0.25 + b[1] * 0.75]);
+  }
+  return out;
+}
+
+/**
+ * Teardrop veneer where the risha strikes: wide just under the large rose,
+ * point toward the bridge, on the treble side. 0.8 mm thick.
+ */
 function pickguard() {
   const g = geom();
-  const cx = 5.6;
-  const cy = -11.4;
-  const rx = 4.2;
-  const ry = 2.7;
+  // Large rose is (0, -1.5) r 4.2, so its lower edge is about y = -5.7. Bridge is y = -16.
+  let ring = [
+    [2.1, -6.5],
+    [4.6, -6.2],
+    [6.8, -7.2],
+    [7.8, -9.0],
+    [7.2, -11.2],
+    [5.8, -13.2],
+    [4.2, -14.8],
+    [3.2, -15.3],
+    [2.5, -13.6],
+    [2.0, -11.4],
+    [1.7, -9.2],
+    [1.7, -7.6],
+  ];
+  ring = chaikin(chaikin(ring));
   const z0 = 0.18;
   const z1 = 0.26;
-  const seg = 32;
-  const ring = [];
-  for (let i = 0; i < seg; i++) {
-    const a = (i / seg) * Math.PI * 2;
-    const x = cx + Math.cos(a) * rx;
-    const y = cy + Math.sin(a) * ry;
-    ring.push([x, y]);
+  const seg = ring.length;
+  let cx = 0;
+  let cy = 0;
+  for (const p of ring) {
+    cx += p[0];
+    cy += p[1];
   }
+  cx /= seg;
+  cy /= seg;
   const c0 = add(g, cx, cy, z0);
   const c1 = add(g, cx, cy, z1);
   const bot = ring.map((p) => add(g, p[0], p[1], z0));

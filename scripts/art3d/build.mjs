@@ -68,7 +68,7 @@ const BUILDERS = {
           hero: { position: [0.62, 0.3, 0.72], target: [0, 0, 0], fov: 38 },
           close: { position: [0.78, 0.16, 0.48], target: [0, -0.08, 0], fov: 32 },
         },
-        materials: { wood: '#6b3e22', spruce: '#e6d2a8', ebony: '#2a211c', string: '#f2efe6', metal: '#c7a159', guard: '#8a4b22' },
+        materials: { wood: '#6b3e22', spruce: '#e6d2a8', ebony: '#2a211c', string: '#f2efe6', metal: '#c7a159', guard: '#8d6236' },
         author: 'Living Lyrics',
         license: 'project',
         proportions: notes,

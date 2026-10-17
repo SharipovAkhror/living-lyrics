@@ -1,37 +1,51 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 import { useRoute } from './router';
 import { useSettings } from './settings';
 import { useAppliedTheme } from './theme';
+import './fontCatalog';
 import { LibraryPage } from '@/pages/LibraryPage';
 import { SongPage } from '@/pages/song/SongPage';
 
 const MethodPage = lazy(() => import('@/pages/MethodPage').then((m) => ({ default: m.MethodPage })));
 const InstrumentsPage = lazy(() => import('@/pages/InstrumentsPage'));
+const LabPage = lazy(() => import('@/lab/design/LabPage').then((m) => ({ default: m.LabPage })));
 
 export function App() {
   const route = useRoute();
   const settings = useSettings();
   const dark = useAppliedTheme(settings.theme);
 
+  let page: ReactNode;
   switch (route.name) {
     case 'library':
-      return <LibraryPage />;
+      page = <LibraryPage />;
+      break;
     case 'song':
-      return <SongPage key={route.slug} slug={route.slug} dark={dark} />;
+      page = <SongPage key={route.slug} slug={route.slug} dark={dark} />;
+      break;
     case 'instruments':
-      return (
+      page = (
         <Suspense fallback={null}>
           <InstrumentsPage />
         </Suspense>
       );
+      break;
     case 'method':
-      return (
+      page = (
         <Suspense fallback={null}>
           <MethodPage doc={route.doc} />
         </Suspense>
       );
+      break;
+    case 'lab':
+      page = (
+        <Suspense fallback={null}>
+          <LabPage dir={route.dir} />
+        </Suspense>
+      );
+      break;
     default:
-      return (
+      page = (
         <div className="empty">
           <p className="t-title3">Страница не найдена</p>
           <a className="btn btn-capsule btn-tinted" href="/">
@@ -40,4 +54,6 @@ export function App() {
         </div>
       );
   }
+
+  return page;
 }

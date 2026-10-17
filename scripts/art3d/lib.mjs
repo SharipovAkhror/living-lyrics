@@ -452,7 +452,7 @@ const ROLE = {
   metal: { color: [0.78, 0.63, 0.35, 1], rough: 0.32, metal: 0.86 },
   string: { color: [0.93, 0.9, 0.84, 1], rough: 0.4, metal: 0.05 },
   seam: { color: [0.22, 0.12, 0.07, 1], rough: 0.5, metal: 0.02 },
-  guard: { color: [0.55, 0.28, 0.1, 1], rough: 0.38, metal: 0.06 },
+  guard: { color: [0.55, 0.38, 0.2, 1], rough: 0.46, metal: 0.04 },
   void: { color: [0.1, 0.07, 0.05, 1], rough: 0.9, metal: 0 },
 };
 

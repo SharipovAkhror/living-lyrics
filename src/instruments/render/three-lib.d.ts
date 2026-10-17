@@ -31,6 +31,8 @@ declare module 'three' {
     length(): number;
     lengthSq(): number;
     addScaledVector(v: Vector3, scale: number): this;
+    applyMatrix4(m: Matrix4): this;
+    project(camera: Object3D): this;
   }
 
   export class Matrix3 {
@@ -40,6 +42,9 @@ declare module 'three' {
 
   export class Matrix4 {
     elements: number[];
+    copy(m: Matrix4): this;
+    invert(): this;
+    multiplyMatrices(a: Matrix4, b: Matrix4): this;
   }
 
   export class Euler {
@@ -79,7 +84,10 @@ declare module 'three' {
     renderOrder: number;
     parent: Object3D | null;
     matrix: Matrix4;
+    matrixWorld: Matrix4;
     traverse(callback: (object: Object3D) => void): void;
+    updateMatrixWorld(force?: boolean): void;
+    updateWorldMatrix(updateParents: boolean, updateChildren: boolean): void;
     updateMatrix(): void;
     add(...objects: Object3D[]): this;
     removeFromParent(): this;

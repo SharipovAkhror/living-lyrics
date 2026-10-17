@@ -4,6 +4,8 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { effectiveMotion, useSettings, type InstrumentStyle } from '@/app/settings';
+
+type VolumeStyle = Exclude<InstrumentStyle, 'drawing'>;
 import type { InstrumentDrive } from '@/instruments/animation';
 import { INSTRUMENTS, hasArt, instrumentSvg, loadInstrumentSvg, scopeSvgIds, type InstrumentInfo } from '@/instruments/catalog';
 import { LAYOUT_MODES, LAYOUT_NAMES, type Layout, type LayoutMode } from '@/instruments/layout';
@@ -12,7 +14,7 @@ import { DRIVE_KEYS, DRIVE_LABELS, exampleDrive, type DriveKey } from '@/instrum
 import { canTry3d } from '@/instruments/render/support';
 import { InstrumentStage, type InstrumentStageHandle } from '@/scene/InstrumentStage';
 import { linkHandler } from '@/app/router';
-import { Slider } from '@/components/controls';
+import { Segmented, Slider } from '@/components/controls';
 import { Icon } from '@/icons/Icon';
 
 import '@/instruments/render/stage3d.css';
@@ -30,6 +32,8 @@ export default function InstrumentsPage() {
 }
 
 function Catalogue() {
+  const settings = useSettings();
+  const [volume, setVolume] = useState<VolumeStyle>(settings.instrumentStyle === 'engraving' ? 'engraving' : 'materials');
   const groups = useMemo(() => FAMILIES.map((family) => ({ family, items: INSTRUMENTS.filter((i) => i.family === family) })).filter((g) => g.items.length), []);
   const drawn = INSTRUMENTS.filter((i) => hasArt(i.key)).length;
 
@@ -44,8 +48,19 @@ function Catalogue() {
       <div className="ig-head">
         <h1 className="t-large-title">Инструменты</h1>
         <p className="t-body secondary">
-          Гравюры, которые сцена показывает в инструментальных частях песен: {drawn} из {INSTRUMENTS.length} в каталоге. У дафа и уда уже есть объёмная модель: её можно повернуть пальцем и подать удар, звучание, дыхание, громкость и долю. Стиль — гравюра или материалы — выбирается в настройках песни. Если модели ещё нет или устройство не тянет объём, остаётся гравюра. Если играют несколько инструментов сразу, сцена раскладывает их сама — это можно попробовать внизу страницы.
+          Гравюры, которые сцена показывает в инструментальных частях песен: {drawn} из {INSTRUMENTS.length} в каталоге. У дафа и уда здесь объём: его можно повернуть пальцем и подать удар, звучание, дыхание, громкость и долю. На странице песни по умолчанию остаётся рисунок; объём там включается в настройках. Если модели ещё нет или устройство не тянет объём, остаётся рисунок. Если играют несколько инструментов сразу, сцена раскладывает их сама — это можно попробовать внизу страницы.
         </p>
+        <div className="ig-volume">
+          <Segmented
+            label="Объём дафа и уда"
+            value={volume}
+            options={[
+              { value: 'engraving', label: 'Гравюра' },
+              { value: 'materials', label: 'Материалы' },
+            ]}
+            onChange={setVolume}
+          />
+        </div>
       </div>
 
       <section aria-labelledby="ig-catalogue">
@@ -58,7 +73,7 @@ function Catalogue() {
             <ul className="ig-grid">
               {g.items.map((info) => (
                 <li key={info.key}>
-                  <Card info={info} />
+                  <Card info={info} volume={volume} />
                 </li>
               ))}
             </ul>
@@ -79,11 +94,11 @@ interface CardRenderer {
   mount(container: HTMLElement, key: string): Promise<void> | void;
   update(drive: InstrumentDrive, time?: number): void;
   setOrbit(yaw: number, pitch: number): void;
-  setStyle(style: InstrumentStyle): void;
+  setStyle(style: VolumeStyle): void;
   dispose(): void;
 }
 
-function Card({ info }: { info: InstrumentInfo }) {
+function Card({ info, volume }: { info: InstrumentInfo; volume: VolumeStyle }) {
   const ref = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<CardRenderer | null>(null);
   const driveRef = useRef<InstrumentDrive>(REST);
@@ -100,9 +115,9 @@ function Card({ info }: { info: InstrumentInfo }) {
   const [live, setLive] = useState(false);
   const settings = useSettings();
   const motion = effectiveMotion(settings);
-  const styleRef = useRef(settings.instrumentStyle);
+  const styleRef = useRef(volume);
   const svgRef = useRef(svg);
-  styleRef.current = settings.instrumentStyle;
+  styleRef.current = volume;
   svgRef.current = svg;
   playingRef.current = playing;
 
@@ -179,8 +194,8 @@ function Card({ info }: { info: InstrumentInfo }) {
   }, [info.key, motion]);
 
   useEffect(() => {
-    rendererRef.current?.setStyle(settings.instrumentStyle);
-  }, [settings.instrumentStyle, live]);
+    rendererRef.current?.setStyle(volume);
+  }, [volume, live]);
 
   useEffect(() => {
     if (!playing) return;

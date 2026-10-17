@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Group, Row, Segmented, Sheet, Slider, Switch } from '@/components/controls';
 import { Icon } from '@/icons/Icon';
+import { loadFontLabels, ORIGINAL_FONTS, PERSIAN_FONTS, TRANSLATION_FONTS, type FontFace } from '@/app/fontCatalog';
 import { setSettings, type Settings } from '@/app/settings';
 import { EQ_FREQS, EQ_PRESETS, formatFreq, presetById } from '@/player/eq';
 import type { AudioEngine, EngineState } from '@/player/engine';
@@ -34,6 +35,10 @@ export function SettingsSheet({
   const [page, setPage] = useState<'main' | 'eq'>('main');
   const input = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (open) void loadFontLabels();
+  }, [open]);
 
   const close = () => {
     onClose();
@@ -148,21 +153,13 @@ export function SettingsSheet({
         </div>
       </Group>
 
-      {has.persian && (
-        <Group header="Персидский почерк" footer="Насталик — классический почерк персидской поэзии. Насх — шрифт Мединского Мусхафа.">
-          <div className="row row--control">
-            <Segmented
-              label="Персидский почерк"
-              value={settings.persianStyle}
-              options={[
-                { value: 'nastaliq', label: <span className="f-nastaliq seg-sample">نستعلیق</span> },
-                { value: 'naskh', label: <span className="f-mushaf seg-sample">نسخ</span> },
-              ]}
-              onChange={(v) => setSettings({ persianStyle: v })}
-            />
-          </div>
-        </Group>
-      )}
+      <Group header="Шрифты" footer="Арабский текст всегда шрифтом Мединского Мусхафа. Насталик — для тех, кто к нему привык.">
+        {has.persian && (
+          <FontPick label="Персидский" value={settings.fontPersian} options={PERSIAN_FONTS} onChange={(fontPersian) => setSettings({ fontPersian })} />
+        )}
+        <FontPick label="Оригинал латиницей и кириллицей" value={settings.fontOriginal} options={ORIGINAL_FONTS} onChange={(fontOriginal) => setSettings({ fontOriginal })} />
+        <FontPick label="Перевод" value={settings.fontTranslation} options={TRANSLATION_FONTS} onChange={(fontTranslation) => setSettings({ fontTranslation })} />
+      </Group>
 
       <Group header="Слушать" footer="Пауза после строки — чтобы разбирать текст по строке: «Воспроизвести» продолжает со следующей.">
         <Row title="Пауза после каждой строки">
@@ -227,7 +224,7 @@ export function SettingsSheet({
         </Row>
       </Group>
 
-      <Group header="Оформление" footer="Стиль инструментов общий для песни и страницы инструментов. При системной настройке «Уменьшение движения» анимация отключается сама, и вместо объёма остаётся гравюра.">
+      <Group header="Оформление" footer="На странице песни по умолчанию рисунок. Объём включает модель дафа и уда. При системной настройке «Уменьшение движения», без WebGL или на слабом устройстве остаётся рисунок. В галерее инструментов даф и уд показываются объёмом.">
         <div className="row row--control">
           <Segmented
             label="Тема"
@@ -254,11 +251,13 @@ export function SettingsSheet({
         </div>
         <div className="row row--control">
           <Segmented
-            label="Стиль инструментов"
+            className="seg--lines"
+            label="Инструменты"
             value={settings.instrumentStyle}
             options={[
-              { value: 'engraving', label: 'Гравюра' },
-              { value: 'materials', label: 'Материалы' },
+              { value: 'drawing', label: 'рисунок' },
+              { value: 'engraving', label: 'объём · гравюра' },
+              { value: 'materials', label: 'объём · материалы' },
             ]}
             onChange={(v) => setSettings({ instrumentStyle: v })}
           />
@@ -289,5 +288,38 @@ export function SettingsSheet({
       </Group>
       {error && <p className="sheet-error t-footnote">{error}</p>}
     </Sheet>
+  );
+}
+
+function FontPick<Id extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: Id;
+  options: FontFace<Id>[];
+  onChange: (id: Id) => void;
+}) {
+  return (
+    <div className="font-pick" role="radiogroup" aria-label={label}>
+      <div className="font-pick-label t-footnote secondary">{label}</div>
+      {options.map((face) => (
+        <button
+          key={face.id}
+          type="button"
+          role="radio"
+          aria-checked={value === face.id}
+          className={`font-opt${value === face.id ? ' is-on' : ''}`}
+          onClick={() => onChange(face.id)}
+        >
+          <span className="font-opt-name" style={{ fontFamily: face.stack }}>
+            {face.name}
+          </span>
+          <span className="font-opt-note">{face.note}</span>
+        </button>
+      ))}
+    </div>
   );
 }

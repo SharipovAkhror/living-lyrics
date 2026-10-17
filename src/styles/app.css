@@ -10,6 +10,15 @@
 .f-serif {
   font-family: var(--font-serif);
   font-weight: 600;
+  font-synthesis: none;
+}
+/* Persian naskh chosen in settings. Arabic lines stay on .f-mushaf. */
+.f-persian {
+  font-family: var(--font-persian);
+  font-weight: 400;
+  font-style: normal;
+  font-synthesis: none;
+  line-height: var(--font-persian-lh);
 }
 
 .empty {
@@ -25,7 +34,8 @@
 
 /* ===================== Song page ===================== */
 .song {
-  --player-h: 192px;
+  /* 192 was the transport + utility row. The mismatch button adds a 44 px row. */
+  --player-h: 236px;
   --chrome-top: calc(env(safe-area-inset-top) + 64px);
   --player-bottom: calc(env(safe-area-inset-bottom) + 10px);
   position: fixed;
@@ -154,6 +164,10 @@
   line-height: 2;
   column-gap: 0.34em;
 }
+.fb-orig.f-persian {
+  line-height: var(--font-persian-lh);
+  column-gap: 0.3em;
+}
 .w-wrap {
   display: contents;
 }
@@ -206,6 +220,13 @@
 }
 .fb-tr em {
   font-style: italic;
+}
+.fb-tr,
+.tl-tr,
+.fb-translit {
+  font-family: var(--font-tr);
+  font-weight: 400;
+  font-synthesis: none;
 }
 .fb-tr {
   margin: 0;
@@ -545,6 +566,89 @@
   color: var(--accent);
 }
 
+/* One labelled control. It stays in the player (paused or playing) so the stage does not jump. */
+.mark-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+.mark-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-left: auto;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--fill);
+  color: var(--label);
+  font: 600 15px/1 var(--font-ui);
+  letter-spacing: -0.23px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--dur-2) var(--ease-spring),
+    background-color var(--dur-1);
+}
+.mark-btn:active:not(:disabled) {
+  transform: scale(0.97);
+  background: var(--fill-2);
+}
+.mark-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.mark-kbd {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border: 1px solid var(--separator);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  color: var(--label-2);
+  font: 600 11px/1 var(--font-ui);
+}
+@media (min-width: 720px) {
+  .mark-kbd {
+    display: inline-flex;
+  }
+}
+
+/* Confirmation stays in the player row, so it does not cover the line being sung. */
+.mark-toast {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  min-height: 44px;
+  color: var(--label);
+  font: 600 14px/1 var(--font-ui);
+  white-space: nowrap;
+}
+.mark-toast-undo {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: none;
+  color: var(--accent);
+  font: 600 14px/1 var(--font-ui);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.mark-toast-undo:active {
+  opacity: 0.6;
+}
+
 .scrub-track {
   height: 22px;
   display: flex;
@@ -853,6 +957,83 @@
 .row--button:active {
   background: var(--fill-3);
 }
+.row--danger {
+  color: var(--system-red);
+}
+.mark-item {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-height: 52px;
+}
+.mark-item + .mark-item::before,
+.mark-item + .row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 16px;
+  right: 0;
+  height: 0.5px;
+  background: var(--separator);
+}
+.mark-jump {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 4px 8px 16px;
+  border: 0;
+  background: none;
+  color: var(--label);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.mark-jump:active {
+  background: var(--fill-3);
+}
+.mark-time {
+  flex: none;
+  min-width: 52px;
+}
+.mark-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mark-line {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.mark-line.f-mushaf {
+  font-size: 18px;
+  line-height: 1.7;
+}
+.mark-section {
+  color: var(--label-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mark-delete {
+  flex: none;
+  width: 44px;
+  min-height: 44px;
+  border: 0;
+  background: none;
+  color: var(--label-2);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.mark-delete:active {
+  color: var(--system-red);
+}
 .row-text {
   flex: 1;
   min-width: 0;
@@ -965,9 +1146,60 @@
 .seg-item[aria-checked='true'] {
   font-weight: 600;
 }
+.seg.seg--lines {
+  height: auto;
+  min-height: 44px;
+}
+.seg.seg--lines .seg-item {
+  white-space: normal;
+  font-size: 12px;
+  line-height: 1.15;
+  padding: 6px 3px;
+}
 .seg-sample {
   font-size: 17px;
   line-height: 1;
+}
+
+.font-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px 12px;
+}
+.font-pick-label {
+  padding: 2px 4px 4px;
+}
+.font-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1px;
+  min-height: 44px;
+  width: 100%;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+  color: var(--label);
+}
+.font-opt.is-on {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.font-opt-name {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.25;
+  font-synthesis: none;
+}
+.font-opt-note {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--label-2);
 }
 
 .slider {
@@ -1150,6 +1382,10 @@
 .tl-orig.f-nastaliq {
   font-size: 19px;
   line-height: 2.2;
+}
+.tl-orig.f-persian {
+  font-size: 22px;
+  line-height: var(--font-persian-lh);
 }
 
 /* ===================== Library ===================== */

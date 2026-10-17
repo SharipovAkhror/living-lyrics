@@ -63,34 +63,10 @@
                       "pattern": "^[a-z0-9-]+$"
                     },
                     "lang": {
-                      "type": "string",
-                      "enum": [
-                        "ar",
-                        "fa",
-                        "az",
-                        "tr",
-                        "ota",
-                        "en",
-                        "la",
-                        "de",
-                        "es",
-                        "ur",
-                        "hi",
-                        "ru",
-                        "uz",
-                        "fr",
-                        "it",
-                        "gmh"
-                      ]
+                      "type": "string"
                     },
                     "script": {
-                      "type": "string",
-                      "enum": [
-                        "Arab",
-                        "Latn",
-                        "Cyrl",
-                        "Deva"
-                      ]
+                      "type": "string"
                     },
                     "words": {
                       "minItems": 1,
@@ -129,13 +105,7 @@
                       "type": "object",
                       "properties": {
                         "script": {
-                          "type": "string",
-                          "enum": [
-                            "Arab",
-                            "Latn",
-                            "Cyrl",
-                            "Deva"
-                          ]
+                          "type": "string"
                         },
                         "text": {
                           "type": "string",

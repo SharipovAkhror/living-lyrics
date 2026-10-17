@@ -7,7 +7,9 @@
  *
  * Frame: models face +Z, Y up, X to the right. `cameras.hero.position` in the manifest is a
  * direction from the target to the camera, not a placed point. The distance is fitted so the
- * bounding sphere stays inside the view. Dragging right decreases rotation.y; the camera does
+ * projected instrument is about 80% of the frame height and at most 90% of its width. The aim
+ * point slides in the camera's view plane until the box is centered; the hero direction stays.
+ * Dragging right decreases rotation.y; the camera does
  * not orbit. CSS rotate is clockwise, so rotation.z uses the opposite sign. Jingle nodes carry
  * a quantization scale, so a world-space shift is divided by that scale.
  *
@@ -17,6 +19,9 @@
  */
 import type { InstrumentDrive, InstrumentRenderer } from '@/instruments/animation';
 import type { InstrumentStyle } from '@/app/settings';
+
+/** The two volume looks. The SVG drawing never reaches the renderer. */
+type VolumeStyle = Exclude<InstrumentStyle, 'drawing'>;
 import { jingleShift, skinWeight, stringWeight, sway } from './pose';
 
 import './stage3d.css';
@@ -167,6 +172,11 @@ interface ViewModel {
   jingles: Jingle[];
   /** Distance from the origin to the farthest point of the rest pose. */
   reach: number;
+  /**
+   * Rest-pose surface points in the root's local space. The hero frame is fitted
+   * to these, not to the bounding-box corners: a disk's box sticks out past the rim.
+   */
+  shell: Float32Array;
   hero: HeroView;
   shadow: Mesh;
   shadowAlpha: { value: number };
@@ -315,8 +325,10 @@ function pbrFragment(role: Role): { color: string; light: string } {
   }
   if (role === 'guard') {
     return {
-      color: `float blot = fract(sin(dot(floor(vStick.xy * 26.0), vec2(12.9898, 78.233))) * 43758.5453);
-         diffuseColor.rgb *= mix(0.7, 1.08, blot);`,
+      color: `float blot = fract(sin(dot(floor(vStick.xy * 11.0), vec2(12.9898, 78.233))) * 43758.5453);
+         vec3 amber = vec3(0.62, 0.40, 0.20);
+         vec3 umber = vec3(0.30, 0.17, 0.08);
+         diffuseColor.rgb = mix(amber, umber, smoothstep(0.28, 0.82, blot));`,
       light: '',
     };
   }
@@ -353,7 +365,7 @@ function tune(mat: Material, role: Role) {
     std.roughness = 0.9;
     std.metalness = 0.02;
   } else if (role === 'guard') {
-    std.color.set('#6e3d1c');
+    std.color.set('#8d6236');
     std.roughness = 0.46;
     std.metalness = 0.04;
   } else if (role === 'skin') {
@@ -465,7 +477,7 @@ function dress(THREE: THREE, root: Group, uniforms: Uniforms) {
   return { strings, skin, jingles, pbr, owned };
 }
 
-function applyStyle(root: Group, style: InstrumentStyle) {
+function applyStyle(root: Group, style: VolumeStyle) {
   root.traverse((obj) => {
     const mesh = obj as Mesh;
     if (!mesh.isMesh || mesh.userData.pass) return;
@@ -552,7 +564,7 @@ export interface StageSession {
   setDriveOverride(drives: InstrumentDrive[] | null): void;
   setOrbit(yaw: number, pitch: number): void;
   setCamera(frame: CameraFrame | null): void;
-  setStyle(style: InstrumentStyle): void;
+  setStyle(style: VolumeStyle): void;
   draw(): void;
   pixels(): { width: number; height: number; data: Uint8ClampedArray };
   dispose(): void;
@@ -581,7 +593,7 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
   rim.position.set(0.35, 0.55, -1.25);
   scene.add(hemi, key, fill, rim);
 
-  let style: InstrumentStyle = 'engraving';
+  let style: VolumeStyle = 'engraving';
   let slots: Slot[] = [];
   let time = 0;
   let override: InstrumentDrive[] | null = null;
@@ -602,21 +614,63 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
     }
   };
 
+  const ndc = new THREE.Vector3();
   const placeCamera = (model: ViewModel, aspect: number) => {
     const hero = model.hero;
     camera.fov = hero.fov;
     camera.aspect = aspect;
+    camera.updateProjectionMatrix();
     const vFov = (camera.fov * Math.PI) / 180;
     const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
     const half = Math.min(vFov, hFov) / 2;
-    // sin, not tan: the sphere should be tangent to the frustum, then padded so the head is not cut.
-    const dist = (model.reach / Math.sin(half)) * 1.36 * camScale;
-    const tx = hero.target.x;
-    const ty = hero.target.y + camTargetY;
-    const tz = hero.target.z;
-    camera.position.set(tx + hero.dir.x * dist, ty + hero.dir.y * dist, tz + hero.dir.z * dist);
-    camera.lookAt(tx, ty, tz);
-    camera.updateProjectionMatrix();
+    // Start from the bounding sphere, then match the projected box: about 80% of the
+    // frame height, and never wider than 90%. NDC y is the full frame from -1 to 1,
+    // so a half-span of 0.8 is 80% of the height.
+    let dist = (model.reach / Math.sin(half)) * camScale;
+    let tx = hero.target.x;
+    let ty = hero.target.y + camTargetY;
+    let tz = hero.target.z;
+    const aim = () => {
+      camera.position.set(tx + hero.dir.x * dist, ty + hero.dir.y * dist, tz + hero.dir.z * dist);
+      camera.lookAt(tx, ty, tz);
+      camera.updateMatrixWorld(true);
+      model.root.updateWorldMatrix(true, false);
+    };
+    const span = () => {
+      aim();
+      let minX = Infinity;
+      let maxX = -Infinity;
+      let minY = Infinity;
+      let maxY = -Infinity;
+      const shell = model.shell;
+      for (let p = 0; p < shell.length; p += 3) {
+        ndc.set(shell[p], shell[p + 1], shell[p + 2]).applyMatrix4(model.root.matrixWorld).project(camera);
+        if (ndc.x < minX) minX = ndc.x;
+        if (ndc.x > maxX) maxX = ndc.x;
+        if (ndc.y < minY) minY = ndc.y;
+        if (ndc.y > maxY) maxY = ndc.y;
+      }
+      return { minX, maxX, minY, maxY, w: (maxX - minX) / 2, h: (maxY - minY) / 2 };
+    };
+    for (let i = 0; i < 4; i++) {
+      const fitted = span();
+      const cx = (fitted.minX + fitted.maxX) / 2;
+      const cy = (fitted.minY + fitted.maxY) / 2;
+      if (Number.isFinite(cx) && Number.isFinite(cy) && (Math.abs(cx) > 0.01 || Math.abs(cy) > 0.01)) {
+        // Screen right and up are the camera matrix columns. Shift the aim by the
+        // projected offset so the box center lands on the view axis.
+        const e = camera.matrixWorld.elements;
+        const halfH = Math.tan(vFov / 2) * dist;
+        const halfW = halfH * aspect;
+        tx += e[0] * cx * halfW + e[4] * cy * halfH;
+        ty += e[1] * cx * halfW + e[5] * cy * halfH;
+        tz += e[2] * cx * halfW + e[6] * cy * halfH;
+      }
+      const scale = Math.max(fitted.h / 0.8, fitted.w / 0.9);
+      if (!Number.isFinite(scale) || scale < 1e-4) break;
+      dist *= scale;
+    }
+    aim();
   };
 
   function draw() {
@@ -685,6 +739,26 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
     const box = new THREE.Box3().setFromObject(root);
     const sphere = box.getBoundingSphere(new THREE.Sphere());
     const reach = Math.max(0.25, sphere.center.length() + sphere.radius);
+    root.updateWorldMatrix(true, true);
+    const intoRoot = new THREE.Matrix4();
+    const rootInverse = new THREE.Matrix4().copy(root.matrixWorld).invert();
+    const shellPts: number[] = [];
+    root.traverse((obj) => {
+      const mesh = obj as Mesh;
+      if (!mesh.isMesh || mesh.userData.pass) return;
+      const pos = (mesh.geometry as { attributes?: { position?: { count: number; getX(i: number): number; getY(i: number): number; getZ(i: number): number } } }).attributes?.position;
+      if (!pos || pos.count < 1) return;
+      intoRoot.multiplyMatrices(rootInverse, mesh.matrixWorld);
+      const e = intoRoot.elements;
+      const step = Math.max(1, Math.ceil(pos.count / 80));
+      for (let i = 0; i < pos.count; i += step) {
+        const x = pos.getX(i);
+        const y = pos.getY(i);
+        const z = pos.getZ(i);
+        shellPts.push(e[0] * x + e[4] * y + e[8] * z + e[12], e[1] * x + e[5] * y + e[9] * z + e[13], e[2] * x + e[6] * y + e[10] * z + e[14]);
+      }
+    });
+    const shell = new Float32Array(shellPts);
     const shadowAlpha = { value: 0.2 };
     const shadowMat = new THREE.ShaderMaterial({
       transparent: true,
@@ -711,6 +785,7 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
       skin: parts.skin,
       jingles: parts.jingles,
       reach,
+      shell,
       hero,
       shadow,
       shadowAlpha,
@@ -854,13 +929,13 @@ const REST: InstrumentDrive = { draw: 1, hatch: 1, energy: 0, pulse: 0, sustain:
 /** One instrument, one canvas. Gallery cards use this; the stage uses `mountStage`. */
 export function createInstrumentRenderer(): InstrumentRenderer & {
   setOrbit(yaw: number, pitch: number): void;
-  setStyle(style: InstrumentStyle): void;
+  setStyle(style: VolumeStyle): void;
 } {
   let session: StageSession | null = null;
   let canvas: HTMLCanvasElement | null = null;
   let host: HTMLElement | null = null;
   let alive = true;
-  let style: InstrumentStyle = 'engraving';
+  let style: VolumeStyle = 'engraving';
 
   return {
     kind: 'gltf',
