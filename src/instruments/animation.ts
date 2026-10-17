@@ -21,11 +21,16 @@ export type FeatureTrack =
   | 'vocals';
 
 export interface AudioFeatures {
-  /** Values per second in every track (20–50). */
+  /**
+   * Values per second in every track (20–50). The writer uses 20, the same rate as peaks.json,
+   * and stores each sample as a 0…1 number with two decimal places (one, if that is what keeps
+   * the file under about 900 KB). The file is compact JSON: seven tracks pretty-printed would
+   * be megabytes.
+   */
   rate: number;
   duration: number;
   tracks: Partial<Record<FeatureTrack, number[]>>;
-  /** Beat times in seconds, if a beat tracker found a pulse. */
+  /** Beat times in seconds. Absent when no steady pulse was found, including free rhythm. */
   beats?: number[];
 }
 

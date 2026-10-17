@@ -246,6 +246,26 @@ function check(slug: string): Issue[] {
       if (marks.length) warn(where, `в пояснении редакторская пометка (${marks.join(', ')}): её место — canon.md, раздел «Расхождения и вопросы», song.json → review или sources.md`);
     }
 
+    // entries: catalogue keys, and the entrance sits inside the section (accompaniment on a vocal
+    // section uses the same field). Order is appearance order; an unsorted list is a warning.
+    if (s.entries?.length) {
+      const spans: { key: string; at: number; until: number }[] = [];
+      let prevAt = -1;
+      for (const e of s.entries) {
+        if (!instrumentKeys.has(e.key)) err(where, `entries: инструмент «${e.key}» не описан в src/instruments/list.ts`);
+        else if (!existsSync(join(svgDir, `${e.key}.svg`))) warn(where, `entries: для «${e.key}» нет гравюры — будет показан ансамбль`);
+        if (e.at < s.start - 0.05 || e.at >= s.end) err(where, `entries: «${e.key}» вступает на ${e.at} с, это вне секции ${s.start}–${s.end}`);
+        if (e.until != null && e.until <= e.at) err(where, `entries: «${e.key}» уходит (${e.until}) не позже вступления (${e.at})`);
+        if (e.until != null && e.until > s.end + 0.05) err(where, `entries: «${e.key}» уходит на ${e.until} с, позже конца секции ${s.end}`);
+        if (e.at + 1e-6 < prevAt) warn(where, 'entries идут не по времени вступления');
+        prevAt = e.at;
+        const until = e.until ?? s.end;
+        if (spans.some((p) => p.key === e.key && e.at < p.until - 0.05 && until > p.at + 0.05))
+          warn(where, `entries: «${e.key}» пересекается сам с собой`);
+        spans.push({ key: e.key, at: e.at, until });
+      }
+    }
+
     if (s.kind === 'instrumental') {
       for (const k of s.instruments) {
         if (!instrumentKeys.has(k)) err(where, `инструмент "${k}" не описан в src/instruments/list.ts`);

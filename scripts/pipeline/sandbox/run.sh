@@ -12,7 +12,10 @@
 #   transcribe  Whisper draft → work/<slug>/transcript.json
 #   align       word times into lyrics.json (align.py), report → work/<slug>/align-report.json
 #   qa          sync check (qa_sync.py) → work/<slug>/qa-sync.md, copied to docs/analysis/<slug>-qa.md
-# Stages that need the vocal stem decrypt and separate first when it is missing.
+#   features    animation envelopes → public/audio/<slug>/features.json (features.py)
+#   instruments who plays when → docs/analysis/<slug>-instruments.json and .md (instruments.py)
+# Stages that need stems decrypt and separate first when a stem is missing.
+# features and instruments need all four htdemucs stems. They do not edit lyrics.json.
 #
 # Environment: AUDIO_KEY, ALIGN_ARGS / QA_ARGS (extra options), WHISPER_MODEL (large-v3-turbo),
 # SEPARATOR_MODEL (htdemucs | htdemucs_ft | an audio-separator model file, see separate.py),
@@ -30,7 +33,7 @@ if [ -z "$slug" ] || [ $# -eq 0 ]; then
   exit 2
 fi
 for s in "$@"; do
-  case "$s" in decrypt|separate|sections|transcribe|align|qa) ;; *) echo "неизвестная стадия: $s"; exit 2 ;; esac
+  case "$s" in decrypt|separate|sections|transcribe|align|qa|features|instruments) ;; *) echo "неизвестная стадия: $s"; exit 2 ;; esac
 done
 want=" $* "
 has() { [[ "$want" == *" $1 "* ]]; }
@@ -113,6 +116,14 @@ if has qa && [ $status -lt 2 ]; then
   else
     fail qa
   fi
+fi
+# Sound features for the scene. Independent of alignment: a sync miss (code 1) still leaves
+# envelopes and an instrument proposal. Neither script writes lyrics.json.
+if has features && [ $status -lt 2 ]; then
+  { separate && step features python3 features.py "$slug"; } || fail features
+fi
+if has instruments && [ $status -lt 2 ]; then
+  { separate && step instruments python3 instruments.py "$slug"; } || fail instruments
 fi
 echo "=== итог $slug: код $status (0 — всё в такт, 1 — есть строки не в такт, 2 — стадия упала)" | tee -a "$log"
 exit $status
