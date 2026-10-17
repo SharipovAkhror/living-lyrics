@@ -1,0 +1,1021 @@
+{
+ "slug": "i-have-come-alive",
+ "checked": "2026-10-17",
+ "note": "Independent letter-check for T2. There was no earlier i-have-come-alive.json. The line-by-line sung order is the same 110 rows as in content/songs/i-have-come-alive/canon.md. The recording was not heard. Timed caption files were not downloaded.",
+ "officialLyrics": {
+  "found": true,
+  "url": "https://www.youtube.com/watch?v=M_8ano37jYo",
+  "text": "The official video lists an English (United Kingdom) caption track. Its indexed transcript was read; the timed VTT was not downloaded, so the cues have no times. That track is a running English translation of every sung language, and it is evidence of order and meaning, not of Persian, Turkish or Arabic spelling. It opens with the sung English: I was dead / I came alive / I once wept / Now I smile / You have lit the fire / I have come alive / Lift me ever higher / I have come alive / I was sane / You drove me mad / You put chains / On my hands / and the refrain again. The artist posted the first two lines on 2022-03-21. Arabic and Turkish caption bodies were not retrieved. Official credit: Composer and Musical Director Sami Yusuf; Words by Rumi. No separate translator is named."
+ },
+ "pieces": [
+  {
+   "id": "rumi-ghazal-1393",
+   "title": "Rumi, Divan-e Shams, ghazal 1393 (21 bayts)",
+   "author": "Jalal al-Din Muhammad Balkhi (Rumi)",
+   "era": "13th c.",
+   "lang": "fa",
+   "script": "Arab",
+   "text": "1. مُرده بُدم زنده شدم، گریه بُدم خنده شدم\nدولت عشق آمد و من دولت پاینده شدم\n2. دیدهٔ سیر است مرا، جان دلیر است مرا\nزَهرهٔ شیر است مرا، زُهرهٔ تابنده شدم\n3. گفت که: «دیوانه نه‌ای، لایق این خانه نه‌ای»\nرفتم دیوانه شدم سلسله بندنده شدم\n4. گفت که: «سرمست نه‌ای، رو که از این دست نه‌ای»\nرفتم و سرمست شدم وز طرب آکنده شدم\n5. گفت که: «تو کشته نه‌ای، در طرب آغشته نه‌ای»\nپیش رخ زنده‌کُنش کشته و افکنده شدم\n6. گفت که: «تو زیرککی، مست خیالی و شکی»\nگول شدم، هول شدم، وز همه برکنده شدم\n7. گفت که: «تو شمع شدی، قبلهٔ این جمع شدی»\nجمع نیَم، شمع نیَم، دودِ پراکنده شدم\n8. گفت که: «شیخی و سَری، پیش‌رو و راهبری»\nشیخ نیَم، پیش نیَم، امرِ تو را بنده شدم\n9. گفت که: «با بال و پری، من پر و بالت ندهم»\nدر هوسِ بال و پرش، بی‌پر و پرکنده شدم\n10. گفت مرا دولت نو: «راه مرو رنجه مشو\nزانک من از لطف و کرم سوی تو آینده شدم»\n11. گفت مرا عشقِ کهن: «از برِ ما نقل مکن»\nگفتم: «آری، نکنم، ساکن و باشنده شدم»\n12. چشمهٔ خورشید تویی، سایه‌گه بید منم\nچونک زدی بر سر من، پست و گُدازنده شدم\n13. تابش جان یافت دلم، وا شد و بشکافت دلم\nاطلس نو بافت دلم، دشمن این ژنده شدم\n14. صورت جان، وقت سحر، لاف همی‌زد ز بطر\nبنده و خربنده بُدم، شاه و خداونده شدم\n15. شُکر کند کاغذ تو از شَکر بی‌حدِ تو\nکآمد او در بر من، با وی ماننده شدم\n16. شکر کند خاک دُژم، از فلک و چرخ به خم\nکز نظر و گردش او، نور پذیرنده شدم\n17. شکر کند چرخِ فلک، از مَلِک و مُلک و مَلَک\nکز کرم و بخشش او روشن بخشنده شدم\n18. شکر کند عارف حق کز همه بردیم سبق\nبر زبر هفت طبق، اختر رخشنده شدم\n19. زُهره بدم ماه شدم، چرخ دو صد تاه شدم\nیوسف بودم ز کنون یوسف زاینده شدم\n20. از توام ای شهره قمر، در من و در خود بنگر\nکز اثر خندهٔ تو، گلشنِ خندنده شدم\n21. باش چو شطرنج روان، خامش و خود جمله زبان\nکز رخِ آن شاهِ جهان، فرّخ و فرخُنده شدم",
+   "textSourceUrl": "https://ganjoor.net/moulavi/shams/ghazalsh/sh1393",
+   "otherSources": [
+    "https://fa.wikisource.org/w/index.php?title=%D8%AF%DB%8C%D9%88%D8%A7%D9%86_%D8%B4%D9%85%D8%B3/%D9%85%D8%B1%D8%AF%D9%87_%D8%A8%D8%AF%D9%85_%D8%B2%D9%86%D8%AF%D9%87_%D8%B4%D8%AF%D9%85_%DA%AF%D8%B1%DB%8C%D9%87_%D8%A8%D8%AF%D9%85_%D8%AE%D9%86%D8%AF%D9%87_%D8%B4%D8%AF%D9%85&oldid=192609"
+   ],
+   "confidence": "two-sources-agree",
+   "notes": "Ganjoor poem id 4017, source named ویکی‌درج. The text field is verses[].text from the Ganjoor API, not plainText. Metre on Ganjoor: مفتعلن four times (رجز مثمن مطوی). Wikisource (no edition named) differs in bayt 3 (رفتم و دیوانه), bayt 12 (چون که), bayt 17 (روشن و بخشنده) and bayt 20 (خنده تو without the ezafe heh). Ganjoor is the text kept in canon.md. Foruzanfar's edition was not read letter by letter. Bayts 9–14 are not evidenced in this recording. Bayt 8 is evidenced in Arabic, not as sung Persian. T10: اختر begins with ا U+0627, not أ. Whisper's «روشن و بخشند» may be the wikisource variant or a misheard ezafe."
+  },
+  {
+   "id": "english-sung",
+   "title": "English verse and refrain of this recording",
+   "author": "not separately named; official credit is Words by Rumi",
+   "era": "2021–2022",
+   "lang": "en",
+   "script": "Latn",
+   "text": "I was dead\nI came alive\nI once wept\nNow I smile\nYou have lit the fire\nI have come alive\nLift me ever higher\nI have come alive\nI was sane\nYou drove me mad\nYou put chains\nOn my hands",
+   "textSourceUrl": "https://www.youtube.com/watch?v=M_8ano37jYo",
+   "otherSources": [
+    "https://www.facebook.com/reel/3167008923534020/",
+    "https://www.shazam.com/song/1607544681/i-have-come-alive-live"
+   ],
+   "confidence": "two-sources-agree",
+   "notes": "The refrain is not a line of the ghazal. AZLyrics drops «me» in «Lift ever higher»; the en-GB track and Shazam keep it. Whisper wrote «worked» for «wept» and «high» for the first «higher»."
+  },
+  {
+   "id": "turkish-rendering",
+   "title": "Modern Turkish rendering of bayts 1–3",
+   "author": "not named; official credit remains Words by Rumi",
+   "era": "2021–2022",
+   "lang": "tr",
+   "script": "Latn",
+   "text": "Gözüm toktur benim\nCanım pektir benim\nAslan gibi ödüm var\nParlayan Zühre'yim\nDedi değilisin sen divane\nLâyık değilisin bu eve\nGittim divane oldum\nbağlandım zincirlere\nBir ölüydüm canla doldum\nağlar idim gülüş oldum\nAşk devleti gelince ben\nsonsuzluk devleti buldum",
+   "textSourceUrl": "https://www.facebook.com/reel/1672133843534219/",
+   "otherSources": [
+    "https://www.azlyrics.com/lyrics/samiyusuf/ihavecomealivelive.html",
+    "https://www.musixmatch.com/lyrics/Sami-Yusuf/I-Have-Come-Alive-Live"
+   ],
+   "confidence": "two-sources-agree",
+   "notes": "The artist post of 2024-08-03 has Gittim, bağlandım and the chorus only. Gözüm through Lâyık are from AZLyrics and Musixmatch; Whisper does not have them. değilisin is the live-lyric-site form; lyrics.json and the 2025 studio Musixmatch have değilsin. Not heard. No Arabic-script original: this is modern Turkish, not an Ottoman poem. AZ/Musixmatch «Bağnlandım» is a typo; the artist and Whisper have bağlandım."
+  },
+  {
+   "id": "arabic-rendering",
+   "title": "Modern Arabic rendering of the same ghazal",
+   "author": "not named. Mohammed el-Wafi is not in the official credits.",
+   "era": "2021–2022",
+   "lang": "ar",
+   "script": "Arab",
+   "text": "عيناي ملآنة\nأكرم بها نظرة\nضوئي له بعد\nأمثل الزهرة\nوما أنا مجنون\nأكذب الظنون\nأصبت بالجنون\nفي رحلة الفنون\nفي رحلة الفنون\nصرت مقيدا\nوما أنا سكران\nبل كنته بعد\nبالطرب شبعان\nقد قيل لي خبيث\nوواهم حيران\nبل احمق بليد\nمبتعد حيران\nمبتعد حيران\nقيل انا شمعة\nقطبا لذا المجلس\nوما أنا شيخ\nولا انا مريد\nولا انا زعيم\nابدي او اعيد\nولست كل ذاك\nبل خادم مطيع\nبل خادم مطيع\nبل خادم مطيع\nقد كنت قبل ميتا\nفي ضحكتي نبع وري\nمملكة العشق ارى\nمنعم وخالد",
+   "textSourceUrl": "https://www.azlyrics.com/lyrics/samiyusuf/ihavecomealivelive.html",
+   "otherSources": [
+    "https://www.musixmatch.com/lyrics/Sami-Yusuf/I-Have-Come-Alive-Live"
+   ],
+   "confidence": "two-sources-agree",
+   "notes": "Two lyric aggregators, not a classical diwan and not an official caption file. Musixmatch «Verified» is a community flag; its Writer(s) field says Sami Yusuf, which is not adopted against the official «Words by Rumi». Harakat are not supplied. Whisper confirms a subset and mishears وصبت, مريب, مطيق. الزهرة is Venus. The coda is printed once here and sung twice in the sequence."
+  },
+  {
+   "id": "mawwal-sung",
+   "title": "Anonymous bayt quoted by al-Qushayri, sung without عليك",
+   "author": "anonymous; quoted by Abu al-Qasim al-Qushayri after وأنشدوا",
+   "era": "quoted in the 11th c.",
+   "lang": "ar",
+   "script": "Arab",
+   "text": "فأحيا بالمنى وأموت شوقا\nفكم أحيا وكم أموت",
+   "textSourceUrl": "https://www.tiktok.com/@samiyusuf/video/7350795609739250946",
+   "otherSources": [
+    "https://ablibrary.net/book_content/b/9533/453"
+   ],
+   "confidence": "single-source",
+   "notes": "Literary text, one edition only (Abd al-Halim Mahmud / Mahmud ibn al-Sharif, p. 453): فكم أحيا عليك وكم أموت. Page 582 of the same book is an index entry for p. 453, not a second edition. No second printing was opened. The sung line drops عليك. The artist's TikTok of 2024-03-26 and the en-GB line «How many times will I live and will I die?» agree with the drop. Confidence is single-source for the Risala wording, and the artist's own post for the sung omission. Qushayri is not the poet. The hekams.com attribution to Ibn al-Farid is not used."
+  },
+  {
+   "id": "unidentified",
+   "title": "Vocal sounds with no recovered words",
+   "author": null,
+   "lang": null,
+   "script": null,
+   "text": "",
+   "textSourceUrl": null,
+   "otherSources": [],
+   "confidence": "unidentified",
+   "notes": "Voice-map hits at 10.6, 16.2, 19.8–23.7, 172–174, and the tail 552.89–566.1. No words in Whisper or in the en-GB transcript. Not assigned to the mugham line in lyrics.json."
+  }
+ ],
+ "sequence": [
+  {
+   "n": 1,
+   "t": "10.6",
+   "pieceId": "unidentified",
+   "line": "не опознано: короткая вокальная фраза",
+   "repeat": "—",
+   "evidence": "карта голоса; слов нет"
+  },
+  {
+   "n": 2,
+   "t": "16.2",
+   "pieceId": "unidentified",
+   "line": "не опознано: короткая вокальная фраза",
+   "repeat": "—",
+   "evidence": "карта голоса; слов нет"
+  },
+  {
+   "n": 3,
+   "t": "19.8–23.7",
+   "pieceId": "unidentified",
+   "line": "не опознано: короткие фразы",
+   "repeat": "—",
+   "evidence": "карта голоса; слов нет"
+  },
+  {
+   "n": 4,
+   "t": "~101.07",
+   "pieceId": "english-sung",
+   "line": "англ. «I was dead»",
+   "repeat": "1",
+   "evidence": "Whisper; en-GB"
+  },
+  {
+   "n": 5,
+   "t": "~101–107.75",
+   "pieceId": "english-sung",
+   "line": "англ. «I came alive»",
+   "repeat": "1",
+   "evidence": "Whisper; en-GB"
+  },
+  {
+   "n": 6,
+   "t": "~101–107.75",
+   "pieceId": "english-sung",
+   "line": "англ. «I once wept»",
+   "repeat": "1",
+   "evidence": "en-GB и пост 2022-03-21; Whisper дал «worked»"
+  },
+  {
+   "n": 7,
+   "t": "~101–107.75",
+   "pieceId": "english-sung",
+   "line": "англ. «Now I smile»",
+   "repeat": "1",
+   "evidence": "Whisper; en-GB"
+  },
+  {
+   "n": 8,
+   "t": "~108.39",
+   "pieceId": "english-sung",
+   "line": "англ. «You have lit the fire»",
+   "repeat": "1",
+   "evidence": "Whisper; en-GB"
+  },
+  {
+   "n": 9,
+   "t": "~108–115.81",
+   "pieceId": "english-sung",
+   "line": "англ. «I have come alive»",
+   "repeat": "1",
+   "evidence": "Whisper; en-GB"
+  },
+  {
+   "n": 10,
+   "t": "~108–115.81",
+   "pieceId": "english-sung",
+   "line": "англ. «Lift me ever higher»",
+   "repeat": "1",
+   "evidence": "en-GB («higher»); Whisper дал «high»"
+  },
+  {
+   "n": 11,
+   "t": "~115.81",
+   "pieceId": "english-sung",
+   "line": "англ. «I have come alive»",
+   "repeat": "1",
+   "evidence": "Whisper; en-GB"
+  },
+  {
+   "n": 12,
+   "t": "~116.27",
+   "pieceId": "english-sung",
+   "line": "англ. «I was sane»",
+   "repeat": "1",
+   "evidence": "Whisper; en-GB"
+  },
+  {
+   "n": 13,
+   "t": "~116–123.83",
+   "pieceId": "english-sung",
+   "line": "англ. «You drove me mad»",
+   "repeat": "1",
+   "evidence": "Whisper; en-GB"
+  },
+  {
+   "n": 14,
+   "t": "~116–123.83",
+   "pieceId": "english-sung",
+   "line": "англ. «You put chains / On my hands»",
+   "repeat": "1",
+   "evidence": "Whisper; en-GB"
+  },
+  {
+   "n": 15,
+   "t": "~124.11",
+   "pieceId": "english-sung",
+   "line": "англ. «You have lit the fire»",
+   "repeat": "2",
+   "evidence": "Whisper; en-GB"
+  },
+  {
+   "n": 16,
+   "t": "~124–127.59",
+   "pieceId": "english-sung",
+   "line": "англ. «I have come alive»",
+   "repeat": "2",
+   "evidence": "Whisper; en-GB"
+  },
+  {
+   "n": 17,
+   "t": "~127.59–131.73",
+   "pieceId": "english-sung",
+   "line": "англ. «Lift me ever higher»",
+   "repeat": "2",
+   "evidence": "Whisper «higher»; en-GB"
+  },
+  {
+   "n": 18,
+   "t": "~131.73",
+   "pieceId": "english-sung",
+   "line": "англ. «I have come alive»",
+   "repeat": "2",
+   "evidence": "Whisper; en-GB"
+  },
+  {
+   "n": 19,
+   "t": "~132–166",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "газель 1393, бейт 1, «مرده بدم زنده شدم»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью: Whisper молчит; en-GB переводит бейт дважды; сайты печатают бейт дважды"
+  },
+  {
+   "n": 20,
+   "t": "~132–166",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «گریه بدم خنده شدم»",
+   "repeat": "1",
+   "evidence": "то же"
+  },
+  {
+   "n": 21,
+   "t": "~132–166",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «دولت عشق آمد و من»",
+   "repeat": "1",
+   "evidence": "то же"
+  },
+  {
+   "n": 22,
+   "t": "~132–166",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «دولت پاینده شدم»",
+   "repeat": "1",
+   "evidence": "то же"
+  },
+  {
+   "n": 23,
+   "t": "~132–166",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «مرده بدم زنده شدم»",
+   "repeat": "2",
+   "evidence": "то же"
+  },
+  {
+   "n": 24,
+   "t": "~132–166",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «گریه بدم خنده شدم»",
+   "repeat": "2",
+   "evidence": "то же"
+  },
+  {
+   "n": 25,
+   "t": "~132–166",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «دولت عشق آمد و من»",
+   "repeat": "2",
+   "evidence": "то же"
+  },
+  {
+   "n": 26,
+   "t": "~132–166",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «دولت پاینده شدم»",
+   "repeat": "2",
+   "evidence": "то же"
+  },
+  {
+   "n": 27,
+   "t": "172–174",
+   "pieceId": "unidentified",
+   "line": "не опознано: короткие фразы среди инструментов",
+   "repeat": "—",
+   "evidence": "карта голоса; это не строка mugham-1, пока слух не подтвердит"
+  },
+  {
+   "n": 28,
+   "t": "183.3–211",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «Gözüm toktur benim»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью; сайты текстов; по смыслу en-GB «My eyes are full»"
+  },
+  {
+   "n": 29,
+   "t": "183.3–211",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «Canım pektir benim»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью; en-GB «My soul is bold»"
+  },
+  {
+   "n": 30,
+   "t": "183.3–211",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «Aslan gibi ödüm var»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью; en-GB «heart of a lion»"
+  },
+  {
+   "n": 31,
+   "t": "183.3–211",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «Parlayan Zühre'yim»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью; en-GB «morning star»"
+  },
+  {
+   "n": 32,
+   "t": "183.3–211",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «Dedi değilisin sen divane»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью; форма değilisin под вопросом"
+  },
+  {
+   "n": 33,
+   "t": "183.3–211",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «Lâyık değilisin bu eve»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью"
+  },
+  {
+   "n": 34,
+   "t": "~183–211",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «Gittim divane oldum»",
+   "repeat": "1",
+   "evidence": "слова: пост исполнителя 2024-08-03; в Whisper строки нет"
+  },
+  {
+   "n": 35,
+   "t": "211.59–214.39",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «bağlandım zincirlere»",
+   "repeat": "1",
+   "evidence": "Whisper; пост исполнителя"
+  },
+  {
+   "n": 36,
+   "t": "214.39–218.93",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «Bir ölüydüm canla doldum»",
+   "repeat": "1",
+   "evidence": "Whisper («ölüm»); пост исполнителя"
+  },
+  {
+   "n": 37,
+   "t": "~214–223",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «ağlar idim gülüş oldum»",
+   "repeat": "1",
+   "evidence": "пост исполнителя; отдельной строкой Whisper не дал"
+  },
+  {
+   "n": 38,
+   "t": "223.34–228.40",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «Aşk devleti gelince ben»",
+   "repeat": "1",
+   "evidence": "Whisper («gerice»); пост исполнителя"
+  },
+  {
+   "n": 39,
+   "t": "228.40–230.58",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «sonsuzluk devleti buldum»",
+   "repeat": "1",
+   "evidence": "Whisper; пост исполнителя"
+  },
+  {
+   "n": 40,
+   "t": "~230–239",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «Bir ölüydüm canla doldum»",
+   "repeat": "2",
+   "evidence": "не подтверждено записью отдельно; сайты печатают припев дважды"
+  },
+  {
+   "n": 41,
+   "t": "~230–239",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «ağlar idim gülüş oldum»",
+   "repeat": "2",
+   "evidence": "не подтверждено записью отдельно"
+  },
+  {
+   "n": 42,
+   "t": "239.32–241.78",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «Aşk devleti gelince ben»",
+   "repeat": "2",
+   "evidence": "Whisper"
+  },
+  {
+   "n": 43,
+   "t": "243.96–246.24",
+   "pieceId": "turkish-rendering",
+   "line": "тур. «sonsuzluk devleti buldum»",
+   "repeat": "2",
+   "evidence": "Whisper"
+  },
+  {
+   "n": 44,
+   "t": "286.4–293",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «عيناي ملآنة»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью; сайты; en-GB снова даёт «My eyes are full» уже после турецкого блока"
+  },
+  {
+   "n": 45,
+   "t": "286.4–293",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «أكرم بها نظرة»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью"
+  },
+  {
+   "n": 46,
+   "t": "286.4–293",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «ضوئي له بعد»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью"
+  },
+  {
+   "n": 47,
+   "t": "286.4–293",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «أمثل الزهرة»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью"
+  },
+  {
+   "n": 48,
+   "t": "293.48–",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «وما أنا مجنون»",
+   "repeat": "1",
+   "evidence": "Whisper"
+  },
+  {
+   "n": 49,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «أكذب الظنون»",
+   "repeat": "1",
+   "evidence": "Whisper"
+  },
+  {
+   "n": 50,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «أصبت بالجنون»",
+   "repeat": "1",
+   "evidence": "сайты «أصبت»; Whisper «وصبت»"
+  },
+  {
+   "n": 51,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «في رحلة الفنون»",
+   "repeat": "1",
+   "evidence": "Whisper"
+  },
+  {
+   "n": 52,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «في رحلة الفنون»",
+   "repeat": "2",
+   "evidence": "Whisper"
+  },
+  {
+   "n": 53,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «صرت مقيدا»",
+   "repeat": "1",
+   "evidence": "Whisper"
+  },
+  {
+   "n": 54,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «وما أنا سكران»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью пословно; en-GB «not drunk»"
+  },
+  {
+   "n": 55,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «بل كنته بعد»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью пословно"
+  },
+  {
+   "n": 56,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «بالطرب شبعان»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью пословно; en-GB «became drunk»"
+  },
+  {
+   "n": 57,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «قد قيل لي خبيث»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью; только сайты"
+  },
+  {
+   "n": 58,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «وواهم حيران»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью"
+  },
+  {
+   "n": 59,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «بل احمق بليد»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью пословно; en-GB «like a fool»"
+  },
+  {
+   "n": 60,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «مبتعد حيران»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью пословно; en-GB «I stayed away»"
+  },
+  {
+   "n": 61,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «مبتعد حيران»",
+   "repeat": "2",
+   "evidence": "не подтверждено записью; сайты"
+  },
+  {
+   "n": 62,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «قيل انا شمعة»",
+   "repeat": "1",
+   "evidence": "Whisper «قيل أنا شمعة»"
+  },
+  {
+   "n": 63,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «قطبا لذا المجلس»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью пословно; en-GB «pole of this assembly»"
+  },
+  {
+   "n": 64,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «وما أنا شيخ»",
+   "repeat": "1",
+   "evidence": "Whisper"
+  },
+  {
+   "n": 65,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «ولا انا مريد»",
+   "repeat": "1",
+   "evidence": "сайты; Whisper «مريب»"
+  },
+  {
+   "n": 66,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «ولا انا زعيم»",
+   "repeat": "1",
+   "evidence": "Whisper «زعيم»"
+  },
+  {
+   "n": 67,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «ابدي او اعيد»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью пословно; en-GB «neither becoming nor abiding»"
+  },
+  {
+   "n": 68,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «ولست كل ذاك»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью пословно; en-GB «I am nothing»"
+  },
+  {
+   "n": 69,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «بل خادم مطيع»",
+   "repeat": "1",
+   "evidence": "Whisper «خادم مطيق»"
+  },
+  {
+   "n": 70,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «بل خادم مطيع»",
+   "repeat": "2",
+   "evidence": "сайты; отдельно Whisper не разделил"
+  },
+  {
+   "n": 71,
+   "t": "293–367",
+   "pieceId": "arabic-rendering",
+   "line": "ар. «بل خادم مطيع»",
+   "repeat": "3",
+   "evidence": "сайты; отдельно Whisper не разделил"
+  },
+  {
+   "n": 72,
+   "t": "конец блока до 366.87",
+   "pieceId": "arabic-rendering",
+   "line": "ар. кода «قد كنت قبل ميتا»",
+   "repeat": "1",
+   "evidence": "в этом окне Whisper выписал «ضحكتي / العشق», не «ميتا»; сайты и секция arabic-chorus"
+  },
+  {
+   "n": 73,
+   "t": "до 366.87",
+   "pieceId": "arabic-rendering",
+   "line": "ар. кода «في ضحكتي نبع وري»",
+   "repeat": "1",
+   "evidence": "Whisper «في ضحكتي»"
+  },
+  {
+   "n": 74,
+   "t": "до 366.87",
+   "pieceId": "arabic-rendering",
+   "line": "ар. кода «مملكة العشق ارى»",
+   "repeat": "1",
+   "evidence": "Whisper «العشق»"
+  },
+  {
+   "n": 75,
+   "t": "до 366.87",
+   "pieceId": "arabic-rendering",
+   "line": "ар. кода «منعم وخالد»",
+   "repeat": "1",
+   "evidence": "не подтверждено записью пословно"
+  },
+  {
+   "n": 76,
+   "t": "404–443",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, короткий «دولت عشق» перед маввалем",
+   "repeat": "—",
+   "evidence": "не подтверждено записью; только перевод en-GB между арабским и маввалем, без времени"
+  },
+  {
+   "n": 77,
+   "t": "404.2–443",
+   "pieceId": "mawwal-sung",
+   "line": "мавваль «فأحيا بالمنى وأموت شوقا»",
+   "repeat": "1",
+   "evidence": "текст: TikTok исполнителя и en-GB; время Whisper не дал"
+  },
+  {
+   "n": 78,
+   "t": "404.2–443",
+   "pieceId": "mawwal-sung",
+   "line": "мавваль «فكم أحيا وكم أموت» (без عليك)",
+   "repeat": "1",
+   "evidence": "то же"
+  },
+  {
+   "n": 79,
+   "t": "~430–443",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «دولت عشق» между маввалем и бейтом 15",
+   "repeat": "—",
+   "evidence": "не подтверждено записью; одна строка перевода en-GB"
+  },
+  {
+   "n": 80,
+   "t": "~443",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 15, «شکر کند کاغذ تو از شکر بی‌حد تو»",
+   "repeat": "1",
+   "evidence": "en-GB «Your letter gives thanks»; Whisper начало блока смазал"
+  },
+  {
+   "n": 81,
+   "t": "~443",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 15, «کآمد او در بر من، با وی ماننده شدم»",
+   "repeat": "1",
+   "evidence": "en-GB «embraced / dwelt»; пословно Whisper не разобрал"
+  },
+  {
+   "n": 82,
+   "t": "443.19–",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 16, «شکر کند خاک دژم، از فلک و چرخ به خم»",
+   "repeat": "1",
+   "evidence": "Whisper, сильно искажён"
+  },
+  {
+   "n": 83,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 16, «کز نظر و گردش او، نور پذیرنده شدم»",
+   "repeat": "1",
+   "evidence": "Whisper «نور پذیرند»"
+  },
+  {
+   "n": 84,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 17, «شکر کند چرخ فلک، از ملک و ملک و ملک»",
+   "repeat": "1",
+   "evidence": "Whisper «ملک و مالک» — искажение"
+  },
+  {
+   "n": 85,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 17, «کز کرم و بخشش او روشن بخشنده شدم»",
+   "repeat": "1",
+   "evidence": "Whisper «روشن و بخشند»; союз «و» под вопросом, в эталоне его нет"
+  },
+  {
+   "n": 86,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 18, «شکر کند عارف حق کز همه بردیم سبق»",
+   "repeat": "1",
+   "evidence": "Whisper смазан («آرف حق»)"
+  },
+  {
+   "n": 87,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 18, «اختر رخشنده شدم»",
+   "repeat": "1",
+   "evidence": "Whisper"
+  },
+  {
+   "n": 88,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 18, «اختر رخشنده شدم»",
+   "repeat": "2",
+   "evidence": "Whisper пометил ×2"
+  },
+  {
+   "n": 89,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 19, «زهره بدم ماه شدم»",
+   "repeat": "1",
+   "evidence": "en-GB дважды; Whisper один раз смазанно"
+  },
+  {
+   "n": 90,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 19, «چرخ دو صد تاه شدم»",
+   "repeat": "1",
+   "evidence": "en-GB"
+  },
+  {
+   "n": 91,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 19, «زهره بدم ماه شدم»",
+   "repeat": "2",
+   "evidence": "en-GB; отдельно Whisper не разметил"
+  },
+  {
+   "n": 92,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 19, «چرخ دو صد تاه شدم»",
+   "repeat": "2",
+   "evidence": "en-GB"
+  },
+  {
+   "n": 93,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 19, «یوسف بودم ز کنون یوسف زاینده شدم»",
+   "repeat": "1",
+   "evidence": "Whisper «یوسف بودم»; en-GB один раз"
+  },
+  {
+   "n": 94,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 20, «از توام ای شهره قمر، در من و در خود بنگر»",
+   "repeat": "1",
+   "evidence": "Whisper смазан"
+  },
+  {
+   "n": 95,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 20, «کز اثر خندهٔ تو، گلشن خندنده شدم»",
+   "repeat": "1",
+   "evidence": "Whisper узнаваем"
+  },
+  {
+   "n": 96,
+   "t": "443–506",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 21, «باش چو شطرنج روان، خامش و خود جمله زبان»",
+   "repeat": "1",
+   "evidence": "Whisper смазан; en-GB «chess» / «silence»"
+  },
+  {
+   "n": 97,
+   "t": "443–506.35",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 21, «فرخ و فرخنده شدم»",
+   "repeat": "1",
+   "evidence": "Whisper пометил ×3"
+  },
+  {
+   "n": 98,
+   "t": "443–506.35",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 21, «فرخ و فرخنده شدم»",
+   "repeat": "2",
+   "evidence": "Whisper"
+  },
+  {
+   "n": 99,
+   "t": "до 506.35",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 21, «فرخ و فرخنده شدم»",
+   "repeat": "3",
+   "evidence": "Whisper"
+  },
+  {
+   "n": 100,
+   "t": "506.35–526.20",
+   "pieceId": "arabic-rendering",
+   "line": "ар. кода «قد كنت قبل ميتا»",
+   "repeat": "2",
+   "evidence": "Whisper «كنت … ميتا»"
+  },
+  {
+   "n": 101,
+   "t": "506–526",
+   "pieceId": "arabic-rendering",
+   "line": "ар. кода «في ضحكتي نبع وري»",
+   "repeat": "2",
+   "evidence": "Whisper «في ضحكتي»"
+  },
+  {
+   "n": 102,
+   "t": "506–526",
+   "pieceId": "arabic-rendering",
+   "line": "ар. кода «مملكة العشق ارى»",
+   "repeat": "2",
+   "evidence": "Whisper «العشق»"
+  },
+  {
+   "n": 103,
+   "t": "506–526",
+   "pieceId": "arabic-rendering",
+   "line": "ар. кода «منعم وخالد»",
+   "repeat": "2",
+   "evidence": "сайты; пословно Whisper не дописал"
+  },
+  {
+   "n": 104,
+   "t": "532.53–552.89",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «دولت عشق آمد و من»",
+   "repeat": "3",
+   "evidence": "Whisper «عشق / دولت ایچ آمد» (ایچ — искажение عشق), не турецкий припев"
+  },
+  {
+   "n": 105,
+   "t": "532–552.89",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «دولت پاینده شدم»",
+   "repeat": "3",
+   "evidence": "Whisper"
+  },
+  {
+   "n": 106,
+   "t": "532–566",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «دولت عشق آمد و من»",
+   "repeat": "4",
+   "evidence": "не подтверждено записью отдельно; Musixmatch печатает строку ещё раз; en-GB повторяет перевод несколько раз"
+  },
+  {
+   "n": 107,
+   "t": "532–566",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «دولت پاینده شدم»",
+   "repeat": "4",
+   "evidence": "то же"
+  },
+  {
+   "n": 108,
+   "t": "532–566",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «دولت پاینده شدم»",
+   "repeat": "5",
+   "evidence": "Musixmatch, короткая строка; Whisper повторы не разделил"
+  },
+  {
+   "n": 109,
+   "t": "532–566",
+   "pieceId": "rumi-ghazal-1393",
+   "line": "бейт 1, «دولت پاینده شدم»",
+   "repeat": "6",
+   "evidence": "Musixmatch; то же"
+  },
+  {
+   "n": 110,
+   "t": "552.89–566.1",
+   "pieceId": "unidentified",
+   "line": "не опознано: вокальный хвост после последней разобранной фразы",
+   "repeat": "—",
+   "evidence": "карта голоса до 566.1; Whisper кончается на 552.89"
+  }
+ ],
+ "sequenceCount": 110,
+ "credits": {
+  "composer": "Sami Yusuf",
+  "words": "Rumi, as credited; English, Turkish and Arabic adapters unnamed",
+  "vocals": [
+   "Sami Yusuf",
+   "Nabyla Maan"
+  ],
+  "featured": [
+   "Seyed Ali Jaberi, tanbur",
+   "Nabyla Maan, Andalusian mawwal"
+  ],
+  "sources": [
+   "https://www.youtube.com/watch?v=M_8ano37jYo",
+   "https://samiyusuf.art/music/i-have-come-alive"
+  ],
+  "notThisRecording": [
+   "Mohammed el-Wafi is not in the official credits",
+   "Tayyar Bayramov is introduced for the concert, not credited on this song",
+   "Hindi and a separate Azerbaijani lyric are not in the official description",
+   "The 2025 studio Alive (Homayoun Shajarian) is a different recording"
+  ]
+ },
+ "openQuestions": [
+  "Words at 10.6, 16.2, 19.8–23.7 and 172–174.",
+  "Is Persian bayt 1 sung twice between about 132 and 166 s? Whisper is silent there.",
+  "değilisin or değilsin, and whether Gözüm through Gittim are sung in full.",
+  "Is Persian bayt 8 sung at all, or only the Arabic rendering?",
+  "Are bayts 4–7 sung in Persian anywhere?",
+  "Mawwal timing, and whether عليك is ever sung.",
+  "What sits in 367–388 and 404–443 besides the Arabic lines, the mawwal, and a possible short دولت عشق.",
+  "Exact repeat counts for اختر, نور پذیرنده, the Venus hemistich, فرخنده, and the final دولت پاینده. The en-GB translation repeats the power-of-love lines more often than the lyric sites.",
+  "Is the 532–553 refrain Persian (as Whisper reads it) or also the Turkish chorus (as AZLyrics ends)?",
+  "Vocal tail 553–566.",
+  "Who wrote the English refrain and the Turkish and Arabic renderings?",
+  "Whether the two-night compilation changes any sung word.",
+  "Foruzanfar's reading of رفتم و and روشن و."
+ ]
+}
