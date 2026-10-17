@@ -88,6 +88,18 @@ def _embed_batch(torch, model, mel, batch: np.ndarray):
         return features.detach().float().cpu().numpy()
 
 
+def _flush(done: dict[str, np.ndarray]) -> None:
+    """Checkpoint by path. The final file is rewritten in index order."""
+    if not done:
+        return
+    keys = list(done)
+    np.savez_compressed(
+        EMB_PATH,
+        paths=np.array(keys),
+        features=np.stack([done[key] for key in keys]).astype(np.float32),
+    )
+
+
 def embed(batch_size: int = 16) -> Path:
     data = load()
     rows = read_index()
@@ -116,7 +128,10 @@ def embed(batch_size: int = 16) -> Path:
         dim = int(feats.shape[1])
         for row, feat in zip(chunk, feats):
             done[row["path"]] = feat
-        print(f"  {min(start + batch_size, len(pending))}/{len(pending)}")
+        done_n = min(start + batch_size, len(pending))
+        print(f"  {done_n}/{len(pending)}", flush=True)
+        if done_n == len(pending) or (start // batch_size) % 40 == 39:
+            _flush(done)
 
     ordered = [done[row["path"]] for row in rows]
     features = np.stack(ordered).astype(np.float32)

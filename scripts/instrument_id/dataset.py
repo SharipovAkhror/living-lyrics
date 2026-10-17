@@ -1,7 +1,8 @@
 """Download TinySOL and the IRMAS training zip, then write work/instrument_id/index.jsonl.
 
-Only those two official Zenodo files are fetched. The IRMAS test parts are several
-extra gigabytes and are not the split used here. Audio is not committed.
+TinySOL audio and its metadata CSV are two files on the same Zenodo record.
+The IRMAS test parts are several extra gigabytes and are not the split used here.
+Audio is not committed.
 """
 
 from __future__ import annotations
@@ -19,6 +20,7 @@ from paths import DATA, WORK
 from taxonomy import load
 
 TINY_URL = "https://zenodo.org/records/3685367/files/TinySOL.tar.gz?download=1"
+TINY_CSV_URL = "https://zenodo.org/records/3685367/files/TinySOL_metadata.csv?download=1"
 IRMAS_URL = "https://zenodo.org/records/1290750/files/IRMAS-TrainingData.zip?download=1"
 
 # Sizes and md5 were read from the Zenodo API on 2026-10-17.
@@ -28,6 +30,14 @@ FILES = (
         "url": TINY_URL,
         "bytes": 1026917185,
         "md5": "36030a7fe389da86c3419e5ee48e3b7f",
+        "license": "CC BY 4.0",
+        "record": "https://doi.org/10.5281/zenodo.3685367",
+    },
+    {
+        "name": "TinySOL_metadata.csv",
+        "url": TINY_CSV_URL,
+        "bytes": 317576,
+        "md5": "a86c9bb115f69e61f2f25872e397fc4a",
         "license": "CC BY 4.0",
         "record": "https://doi.org/10.5281/zenodo.3685367",
     },
@@ -163,10 +173,14 @@ def _hash_split(group: str, seed: int) -> str:
 
 
 def _tiny_rows(root: Path) -> list[dict]:
-    csv_path = next(root.rglob("TinySOL_metadata.csv"), None)
-    if csv_path is None:
-        raise SystemExit("в TinySOL нет TinySOL_metadata.csv — раскладку не выдумываю")
-    base = csv_path.parent
+    # The CSV is a separate Zenodo file. It is not inside TinySOL.tar.gz.
+    csv_path = DATA / "TinySOL_metadata.csv"
+    if not csv_path.is_file():
+        found = next(root.rglob("TinySOL_metadata.csv"), None)
+        if found is None:
+            raise SystemExit("нет TinySOL_metadata.csv — раскладку не выдумываю")
+        csv_path = found
+    base = root
     rows = []
     with csv_path.open(encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -215,26 +229,26 @@ def _tiny_rows(root: Path) -> list[dict]:
 
 def _irmas_rows(root: Path, seed: int) -> list[dict]:
     import re
-    pattern = re.compile(r"\[([a-z]{3})\]\[[^\]]+\](\d+)__\d+", re.IGNORECASE)
+    # Two shapes seen in the training zip, both with a take suffix __1/__2/__3:
+    #   [cel][cla]0001__1.wav
+    #   008__[cel][nod][cla]0058__1.wav
+    # The first bracket is the predominant instrument and matches the class folder.
+    # The number before the take is the excerpt. Takes of one excerpt share a group.
+    pattern = re.compile(
+        r"^(?:\d+__)?\[([a-z]{3})\]\[[^\]]+\](?:\[[^\]]+\])?(\d+)__(\d+)$",
+        re.IGNORECASE,
+    )
     wavs = [p for p in root.rglob("*.wav")]
     if not wavs:
         raise SystemExit("в распакованном IRMAS нет wav")
     rows = []
     unknown = []
     for wav in wavs:
-        code = None
-        excerpt = None
-        match = pattern.search(wav.name)
-        if match:
-            code = match.group(1).lower()
-            excerpt = match.group(2)
-        else:
-            for part in wav.parts:
-                if part.lower() in IRMAS_CODES:
-                    code = part.lower()
-                    excerpt = wav.stem
-                    break
-        if code not in IRMAS_CODES:
+        folder = wav.parent.name.lower()
+        match = pattern.match(wav.stem)
+        code = match.group(1).lower() if match else None
+        excerpt = match.group(2) if match else None
+        if code not in IRMAS_CODES or folder != code or excerpt is None:
             unknown.append(str(wav))
             continue
         instrument = IRMAS_CODES[code]
