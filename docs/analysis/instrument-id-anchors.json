@@ -2,7 +2,7 @@
   "songs": [
     {
       "slug": "i-have-come-alive",
-      "failures": 1,
+      "failures": 0,
       "anchors": [
         {
           "section": "voice-open",
@@ -13,14 +13,10 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/i-have-come-alive/lyrics.json",
-          "said": [
-            "voice"
-          ],
-          "acceptedRight": [
-            "voice"
-          ],
+          "said": [],
+          "acceptedRight": [],
           "acceptedWrong": [],
-          "verdict": "correct"
+          "verdict": "abstain"
         },
         {
           "section": "inst-tanbur",
@@ -35,13 +31,11 @@
             "cello",
             "flute",
             "guitar-acoustic",
-            "organ"
+            "trumpet"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [
-            "voice"
-          ],
-          "verdict": "fail"
+          "acceptedWrong": [],
+          "verdict": "abstain"
         },
         {
           "section": "voice-bridge",
@@ -52,7 +46,9 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/i-have-come-alive/lyrics.json",
-          "said": [],
+          "said": [
+            "voice"
+          ],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"
@@ -89,7 +85,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "flute"
+            "voice"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -121,7 +117,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "flute"
+            "voice"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -137,7 +133,6 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "flute",
             "voice"
           ],
           "acceptedRight": [],
@@ -154,7 +149,6 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "flute",
             "voice"
           ],
           "acceptedRight": [],
@@ -170,9 +164,7 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
-          "said": [
-            "flute"
-          ],
+          "said": [],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"
@@ -186,9 +178,7 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
-          "said": [
-            "flute"
-          ],
+          "said": [],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"
@@ -203,8 +193,6 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "flute",
-            "guitar-acoustic",
             "voice"
           ],
           "acceptedRight": [],
@@ -221,8 +209,6 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "flute",
-            "guitar-acoustic",
             "voice"
           ],
           "acceptedRight": [],
@@ -239,8 +225,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "flute",
-            "guitar-acoustic"
+            "voice"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -256,7 +241,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "flute"
+            "voice"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -272,7 +257,6 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "flute",
             "voice"
           ],
           "acceptedRight": [],
@@ -288,9 +272,7 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
-          "said": [
-            "flute"
-          ],
+          "said": [],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"
@@ -305,7 +287,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "flute"
+            "voice"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -450,7 +432,9 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/one/lyrics.json",
-          "said": [],
+          "said": [
+            "voice"
+          ],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"
@@ -474,5 +458,5 @@
       ]
     }
   ],
-  "note": "Окно 23,7–62 с в I Have Come Alive, названное соло танбура, лежит внутри секции inst-tanbur 23,7–100,814 с. Отдельной границы 62 с в lyrics.json нет, поэтому якорь — вся секция."
+  "note": "Окно 23,7–62 с в I Have Come Alive, названное соло танбура, лежит внутри секции inst-tanbur 23,7–100,814 с. Отдельной границы 62 с в lyrics.json нет, поэтому якорь — вся секция. Чужое «принято», которое задевает только край секции короче 3 с, не считается провалом: это соседний отрезок, а не класс на теле якоря."
 }

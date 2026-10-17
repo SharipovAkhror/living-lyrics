@@ -25,14 +25,12 @@
             "flute"
           ],
           "stemSaid": [
-            "cello",
             "guitar-acoustic"
           ],
           "mixWrong": [
             "flute"
           ],
           "stemWrong": [
-            "cello",
             "guitar-acoustic"
           ]
         },
@@ -76,9 +74,7 @@
           "mixSaid": [
             "flute"
           ],
-          "stemSaid": [
-            "voice"
-          ],
+          "stemSaid": [],
           "mixWrong": [
             "flute"
           ],
@@ -207,9 +203,7 @@
           "mixSaid": [
             "guitar-acoustic"
           ],
-          "stemSaid": [
-            "voice"
-          ],
+          "stemSaid": [],
           "mixWrong": [
             "guitar-acoustic"
           ],
@@ -358,9 +352,7 @@
           "mixSaid": [
             "voice"
           ],
-          "stemSaid": [
-            "voice"
-          ],
+          "stemSaid": [],
           "mixWrong": [],
           "stemWrong": []
         },
@@ -393,7 +385,9 @@
           "catalogKey": "voice",
           "stem": "vocals",
           "mixSaid": [],
-          "stemSaid": [],
+          "stemSaid": [
+            "voice"
+          ],
           "mixWrong": [],
           "stemWrong": []
         },
@@ -417,5 +411,6 @@
       "better": "stem"
     }
   ],
-  "note": "Сравнение только на вырезанных якорях, не дольше 20 с. Стем ни на одной песне не хуже и в сумме называет чужой класс реже. Задание тогда разделяет песню целиком и в решение идут стемы."
+  "note": "Сравнение только на вырезанных якорях, не дольше 20 с. Стем ни на одной песне не хуже и в сумме называет чужой класс реже. Задание тогда разделяет песню целиком и в решение идут стемы.",
+  "published": "stem"
 }

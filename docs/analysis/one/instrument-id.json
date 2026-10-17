@@ -15,17 +15,6 @@
       "segments": [
         {
           "start": 0.0,
-          "end": 56.0,
-          "id": "voice",
-          "family": "voice",
-          "name": "голос",
-          "catalogKey": "voice",
-          "kind": "instrument",
-          "confidence": 0.9994,
-          "accepted": true
-        },
-        {
-          "start": 57.0,
           "end": 171.0,
           "id": "voice",
           "family": "voice",
@@ -43,7 +32,7 @@
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
-          "confidence": 0.9996,
+          "confidence": 0.9998,
           "accepted": true
         },
         {
@@ -54,11 +43,11 @@
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
-          "confidence": 0.9999,
+          "confidence": 1.0,
           "accepted": true
         },
         {
-          "start": 362.0,
+          "start": 361.0,
           "end": 391.0,
           "id": "voice",
           "family": "voice",
@@ -92,7 +81,7 @@
         },
         {
           "start": 559.0,
-          "end": 585.0,
+          "end": 586.0,
           "id": "voice",
           "family": "voice",
           "name": "голос",
@@ -102,36 +91,47 @@
           "accepted": true
         },
         {
-          "start": 622.0,
-          "end": 625.0,
-          "id": "voice",
-          "family": "voice",
-          "name": "голос",
-          "catalogKey": "voice",
-          "kind": "instrument",
-          "confidence": 0.9136,
-          "accepted": true
-        },
-        {
-          "start": 626.0,
+          "start": 625.0,
           "end": 629.0,
           "id": "voice",
           "family": "voice",
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
-          "confidence": 0.8892,
+          "confidence": 0.9531,
           "accepted": true
         },
         {
           "start": 729.0,
-          "end": 765.0,
+          "end": 774.0,
           "id": "voice",
           "family": "voice",
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
           "confidence": 1.0,
+          "accepted": true
+        },
+        {
+          "start": 778.0,
+          "end": 784.0,
+          "id": "voice",
+          "family": "voice",
+          "name": "голос",
+          "catalogKey": "voice",
+          "kind": "instrument",
+          "confidence": 0.9083,
+          "accepted": true
+        },
+        {
+          "start": 803.0,
+          "end": 807.0,
+          "id": "voice",
+          "family": "voice",
+          "name": "голос",
+          "catalogKey": "voice",
+          "kind": "instrument",
+          "confidence": 0.9321,
           "accepted": true
         },
         {
@@ -142,7 +142,7 @@
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
-          "confidence": 1.0,
+          "confidence": 0.9999,
           "accepted": true
         }
       ],
@@ -163,14 +163,25 @@
       "windows": 827,
       "segments": [
         {
-          "start": 94.0,
+          "start": 71.0,
+          "end": 74.0,
+          "id": "double-bass",
+          "family": "bowed",
+          "name": "контрабас",
+          "catalogKey": "double-bass",
+          "kind": "instrument",
+          "confidence": 0.8498,
+          "accepted": true
+        },
+        {
+          "start": 92.0,
           "end": 99.0,
           "id": "double-bass",
           "family": "bowed",
           "name": "контрабас",
           "catalogKey": "double-bass",
           "kind": "instrument",
-          "confidence": 0.8429,
+          "confidence": 0.7778,
           "accepted": true
         },
         {
@@ -181,7 +192,7 @@
           "name": "контрабас",
           "catalogKey": "double-bass",
           "kind": "instrument",
-          "confidence": 0.8285,
+          "confidence": 0.8829,
           "accepted": true
         },
         {
@@ -192,73 +203,40 @@
           "name": "контрабас",
           "catalogKey": "double-bass",
           "kind": "instrument",
-          "confidence": 0.9132,
+          "confidence": 0.9178,
           "accepted": true
         },
         {
-          "start": 199.0,
-          "end": 203.0,
-          "id": "double-bass",
-          "family": "bowed",
-          "name": "контрабас",
-          "catalogKey": "double-bass",
-          "kind": "instrument",
-          "confidence": 0.9686,
-          "accepted": true
-        },
-        {
-          "start": 207.0,
+          "start": 203.0,
           "end": 218.0,
           "id": "double-bass",
           "family": "bowed",
           "name": "контрабас",
           "catalogKey": "double-bass",
           "kind": "instrument",
-          "confidence": 0.9561,
+          "confidence": 0.8619,
           "accepted": true
         },
         {
-          "start": 226.0,
+          "start": 224.0,
           "end": 230.0,
           "id": "double-bass",
           "family": "bowed",
           "name": "контрабас",
           "catalogKey": "double-bass",
           "kind": "instrument",
-          "confidence": 0.9555,
-          "accepted": true
-        },
-        {
-          "start": 233.0,
-          "end": 236.0,
-          "id": "double-bass",
-          "family": "bowed",
-          "name": "контрабас",
-          "catalogKey": "double-bass",
-          "kind": "instrument",
-          "confidence": 0.8393,
+          "confidence": 0.9122,
           "accepted": true
         },
         {
           "start": 239.0,
-          "end": 243.0,
+          "end": 248.0,
           "id": "double-bass",
           "family": "bowed",
           "name": "контрабас",
           "catalogKey": "double-bass",
           "kind": "instrument",
-          "confidence": 0.8627,
-          "accepted": true
-        },
-        {
-          "start": 244.0,
-          "end": 247.0,
-          "id": "double-bass",
-          "family": "bowed",
-          "name": "контрабас",
-          "catalogKey": "double-bass",
-          "kind": "instrument",
-          "confidence": 0.8947,
+          "confidence": 0.8366,
           "accepted": true
         },
         {
@@ -269,34 +247,45 @@
           "name": "контрабас",
           "catalogKey": "double-bass",
           "kind": "instrument",
-          "confidence": 0.918,
+          "confidence": 0.862,
           "accepted": true
         },
         {
-          "start": 339.0,
+          "start": 319.0,
+          "end": 324.0,
+          "id": "double-bass",
+          "family": "bowed",
+          "name": "контрабас",
+          "catalogKey": "double-bass",
+          "kind": "instrument",
+          "confidence": 0.9073,
+          "accepted": true
+        },
+        {
+          "start": 338.0,
           "end": 342.0,
           "id": "double-bass",
           "family": "bowed",
           "name": "контрабас",
           "catalogKey": "double-bass",
           "kind": "instrument",
-          "confidence": 0.7413,
+          "confidence": 0.7039,
           "accepted": true
         },
         {
           "start": 350.0,
-          "end": 354.0,
+          "end": 353.0,
           "id": "double-bass",
           "family": "bowed",
           "name": "контрабас",
           "catalogKey": "double-bass",
           "kind": "instrument",
-          "confidence": 0.8423,
+          "confidence": 0.865,
           "accepted": true
         },
         {
-          "start": 359.0,
-          "end": 362.0,
+          "start": 358.0,
+          "end": 361.0,
           "id": null,
           "family": "bowed",
           "name": "смычковые",
@@ -305,30 +294,51 @@
           "accepted": false
         },
         {
-          "start": 406.0,
-          "end": 409.0,
+          "start": 364.0,
+          "end": 367.0,
+          "id": null,
+          "family": "bowed",
+          "name": "смычковые",
+          "kind": "family",
+          "confidence": 1.0,
+          "accepted": false
+        },
+        {
+          "start": 374.0,
+          "end": 377.0,
           "id": "double-bass",
           "family": "bowed",
           "name": "контрабас",
           "catalogKey": "double-bass",
           "kind": "instrument",
-          "confidence": 0.8588,
+          "confidence": 0.8778,
+          "accepted": true
+        },
+        {
+          "start": 408.0,
+          "end": 412.0,
+          "id": "double-bass",
+          "family": "bowed",
+          "name": "контрабас",
+          "catalogKey": "double-bass",
+          "kind": "instrument",
+          "confidence": 0.7838,
           "accepted": true
         },
         {
           "start": 447.0,
-          "end": 450.0,
+          "end": 451.0,
           "id": "double-bass",
           "family": "bowed",
           "name": "контрабас",
           "catalogKey": "double-bass",
           "kind": "instrument",
-          "confidence": 0.9048,
+          "confidence": 0.921,
           "accepted": true
         },
         {
-          "start": 457.0,
-          "end": 463.0,
+          "start": 470.0,
+          "end": 474.0,
           "id": null,
           "family": "bowed",
           "name": "смычковые",
@@ -337,57 +347,14 @@
           "accepted": false
         },
         {
-          "start": 469.0,
-          "end": 475.0,
-          "id": null,
-          "family": "bowed",
-          "name": "смычковые",
-          "kind": "family",
-          "confidence": 0.9998,
-          "accepted": false
-        },
-        {
           "start": 492.0,
-          "end": 499.0,
+          "end": 496.0,
           "id": "double-bass",
           "family": "bowed",
           "name": "контрабас",
           "catalogKey": "double-bass",
           "kind": "instrument",
-          "confidence": 0.9605,
-          "accepted": true
-        },
-        {
-          "start": 526.0,
-          "end": 529.0,
-          "id": "cello",
-          "family": "bowed",
-          "name": "виолончель",
-          "catalogKey": "cello",
-          "kind": "instrument",
-          "confidence": 0.7557,
-          "accepted": true
-        },
-        {
-          "start": 528.0,
-          "end": 531.0,
-          "id": "double-bass",
-          "family": "bowed",
-          "name": "контрабас",
-          "catalogKey": "double-bass",
-          "kind": "instrument",
-          "confidence": 0.8283,
-          "accepted": true
-        },
-        {
-          "start": 558.0,
-          "end": 561.0,
-          "id": "cello",
-          "family": "bowed",
-          "name": "виолончель",
-          "catalogKey": "cello",
-          "kind": "instrument",
-          "confidence": 0.6855,
+          "confidence": 0.9158,
           "accepted": true
         },
         {
@@ -398,60 +365,61 @@
           "name": "контрабас",
           "catalogKey": "double-bass",
           "kind": "instrument",
-          "confidence": 0.9143,
+          "confidence": 0.7992,
           "accepted": true
         },
         {
-          "start": 594.0,
-          "end": 599.0,
+          "start": 590.0,
+          "end": 593.0,
           "id": null,
           "family": "bowed",
           "name": "смычковые",
           "kind": "family",
-          "confidence": 0.999,
+          "confidence": 0.9992,
           "accepted": false
         },
         {
-          "start": 630.0,
-          "end": 633.0,
+          "start": 601.0,
+          "end": 604.0,
           "id": null,
           "family": "bowed",
           "name": "смычковые",
           "kind": "family",
-          "confidence": 0.9998,
+          "confidence": 0.9996,
           "accepted": false
         },
         {
-          "start": 640.0,
+          "start": 617.0,
+          "end": 625.0,
+          "id": "double-bass",
+          "family": "bowed",
+          "name": "контрабас",
+          "catalogKey": "double-bass",
+          "kind": "instrument",
+          "confidence": 0.9899,
+          "accepted": true
+        },
+        {
+          "start": 639.0,
           "end": 643.0,
           "id": "french-horn",
           "family": "brass",
           "name": "валторна",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.709,
+          "confidence": 0.949,
           "accepted": true
         },
         {
-          "start": 702.0,
-          "end": 705.0,
-          "id": "double-bass",
-          "family": "bowed",
-          "name": "контрабас",
-          "catalogKey": "double-bass",
+          "start": 823.0,
+          "end": 826.0,
+          "id": "french-horn",
+          "family": "brass",
+          "name": "валторна",
+          "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.7063,
+          "confidence": 0.7069,
           "accepted": true
-        },
-        {
-          "start": 737.0,
-          "end": 740.0,
-          "id": null,
-          "family": "bowed",
-          "name": "смычковые",
-          "kind": "family",
-          "confidence": 1.0,
-          "accepted": false
         }
       ],
       "audio": "/home/runner/work/living-lyrics/living-lyrics/work/one/stems/bass.wav",
@@ -463,6 +431,17 @@
       "windows": 827,
       "segments": [
         {
+          "start": 49.0,
+          "end": 54.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9242,
+          "accepted": true
+        },
+        {
           "start": 65.0,
           "end": 68.0,
           "id": "flute",
@@ -470,40 +449,29 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.8417,
+          "confidence": 0.853,
           "accepted": true
         },
         {
-          "start": 67.0,
-          "end": 70.0,
-          "id": "clarinet",
-          "family": "reed",
-          "name": "кларнет",
-          "catalogKey": null,
-          "kind": "instrument",
-          "confidence": 0.8547,
-          "accepted": true
-        },
-        {
-          "start": 78.0,
-          "end": 81.0,
+          "start": 94.0,
+          "end": 97.0,
           "id": "organ",
           "family": "keyboard",
           "name": "орган",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9145,
+          "confidence": 0.9467,
           "accepted": true
         },
         {
-          "start": 126.0,
-          "end": 129.0,
-          "id": "flute",
-          "family": "flute",
-          "name": "поперечная флейта",
+          "start": 115.0,
+          "end": 118.0,
+          "id": "clarinet",
+          "family": "reed",
+          "name": "кларнет",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.7761,
+          "confidence": 0.8665,
           "accepted": true
         },
         {
@@ -514,84 +482,84 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9045,
+          "confidence": 0.8668,
           "accepted": true
         },
         {
-          "start": 163.0,
-          "end": 166.0,
+          "start": 164.0,
+          "end": 167.0,
           "id": "violin",
           "family": "bowed",
           "name": "скрипка",
           "catalogKey": "violin",
           "kind": "instrument",
-          "confidence": 0.759,
+          "confidence": 0.6995,
           "accepted": true
         },
         {
-          "start": 177.0,
-          "end": 180.0,
-          "id": "violin",
-          "family": "bowed",
-          "name": "скрипка",
-          "catalogKey": "violin",
-          "kind": "instrument",
-          "confidence": 0.7273,
-          "accepted": true
-        },
-        {
-          "start": 202.0,
-          "end": 205.0,
+          "start": 187.0,
+          "end": 190.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.7567,
+          "confidence": 0.8919,
           "accepted": true
         },
         {
-          "start": 204.0,
+          "start": 199.0,
+          "end": 202.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9063,
+          "accepted": true
+        },
+        {
+          "start": 206.0,
+          "end": 209.0,
+          "id": "organ",
+          "family": "keyboard",
+          "name": "орган",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.7055,
+          "accepted": true
+        },
+        {
+          "start": 210.0,
           "end": 214.0,
           "id": "organ",
           "family": "keyboard",
           "name": "орган",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9364,
+          "confidence": 0.8192,
           "accepted": true
         },
         {
-          "start": 222.0,
-          "end": 229.0,
+          "start": 219.0,
+          "end": 230.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9455,
+          "confidence": 0.8967,
           "accepted": true
         },
         {
-          "start": 232.0,
-          "end": 235.0,
-          "id": "organ",
-          "family": "keyboard",
-          "name": "орган",
-          "catalogKey": null,
-          "kind": "instrument",
-          "confidence": 0.8573,
-          "accepted": true
-        },
-        {
-          "start": 243.0,
-          "end": 248.0,
+          "start": 241.0,
+          "end": 246.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.7801,
+          "confidence": 0.9565,
           "accepted": true
         },
         {
@@ -602,7 +570,7 @@
           "name": "акустическая гитара",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9916,
+          "confidence": 0.9953,
           "accepted": true
         },
         {
@@ -613,7 +581,7 @@
           "name": "виолончель",
           "catalogKey": "cello",
           "kind": "instrument",
-          "confidence": 0.8633,
+          "confidence": 0.8645,
           "accepted": true
         },
         {
@@ -624,7 +592,7 @@
           "name": "акустическая гитара",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9855,
+          "confidence": 0.9864,
           "accepted": true
         },
         {
@@ -635,7 +603,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9994,
+          "confidence": 0.9993,
           "accepted": true
         },
         {
@@ -657,7 +625,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9903,
+          "confidence": 0.9963,
           "accepted": true
         },
         {
@@ -668,7 +636,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9999,
+          "confidence": 0.9987,
           "accepted": true
         },
         {
@@ -679,18 +647,18 @@
           "name": "виолончель",
           "catalogKey": "cello",
           "kind": "instrument",
-          "confidence": 0.9912,
+          "confidence": 0.9801,
           "accepted": true
         },
         {
-          "start": 336.0,
+          "start": 335.0,
           "end": 343.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9902,
+          "confidence": 0.9807,
           "accepted": true
         },
         {
@@ -701,7 +669,7 @@
           "name": "виолончель",
           "catalogKey": "cello",
           "kind": "instrument",
-          "confidence": 0.7607,
+          "confidence": 0.6731,
           "accepted": true
         },
         {
@@ -712,84 +680,84 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9928,
+          "confidence": 0.9944,
           "accepted": true
         },
         {
           "start": 371.0,
+          "end": 380.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9745,
+          "accepted": true
+        },
+        {
+          "start": 381.0,
           "end": 384.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9787,
+          "confidence": 0.9592,
           "accepted": true
         },
         {
-          "start": 384.0,
+          "start": 383.0,
           "end": 387.0,
           "id": "cello",
           "family": "bowed",
           "name": "виолончель",
           "catalogKey": "cello",
           "kind": "instrument",
-          "confidence": 0.827,
+          "confidence": 0.9695,
           "accepted": true
         },
         {
-          "start": 402.0,
-          "end": 408.0,
+          "start": 405.0,
+          "end": 411.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.8796,
+          "confidence": 0.8277,
           "accepted": true
         },
         {
           "start": 417.0,
+          "end": 424.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9881,
+          "accepted": true
+        },
+        {
+          "start": 425.0,
           "end": 434.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9875,
-          "accepted": true
-        },
-        {
-          "start": 435.0,
-          "end": 439.0,
-          "id": "flute",
-          "family": "flute",
-          "name": "поперечная флейта",
-          "catalogKey": null,
-          "kind": "instrument",
-          "confidence": 0.9905,
+          "confidence": 0.9812,
           "accepted": true
         },
         {
           "start": 448.0,
-          "end": 453.0,
-          "id": "flute",
-          "family": "flute",
-          "name": "поперечная флейта",
-          "catalogKey": null,
-          "kind": "instrument",
-          "confidence": 0.9973,
-          "accepted": true
-        },
-        {
-          "start": 454.0,
           "end": 457.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.8506,
+          "confidence": 0.9971,
           "accepted": true
         },
         {
@@ -800,7 +768,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9355,
+          "confidence": 0.9349,
           "accepted": true
         },
         {
@@ -811,18 +779,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9869,
-          "accepted": true
-        },
-        {
-          "start": 479.0,
-          "end": 482.0,
-          "id": "flute",
-          "family": "flute",
-          "name": "поперечная флейта",
-          "catalogKey": null,
-          "kind": "instrument",
-          "confidence": 0.9723,
+          "confidence": 0.9938,
           "accepted": true
         },
         {
@@ -833,29 +790,29 @@
           "name": "виолончель",
           "catalogKey": "cello",
           "kind": "instrument",
-          "confidence": 0.9663,
+          "confidence": 0.9751,
           "accepted": true
         },
         {
-          "start": 484.0,
+          "start": 483.0,
           "end": 487.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.8923,
+          "confidence": 0.9161,
           "accepted": true
         },
         {
           "start": 489.0,
-          "end": 492.0,
+          "end": 493.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.8687,
+          "confidence": 0.9662,
           "accepted": true
         },
         {
@@ -866,7 +823,7 @@
           "name": "акустическая гитара",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9947,
+          "confidence": 0.9952,
           "accepted": true
         },
         {
@@ -877,7 +834,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9412,
+          "confidence": 0.9067,
           "accepted": true
         },
         {
@@ -888,18 +845,7 @@
           "name": "акустическая гитара",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9993,
-          "accepted": true
-        },
-        {
-          "start": 514.0,
-          "end": 519.0,
-          "id": "flute",
-          "family": "flute",
-          "name": "поперечная флейта",
-          "catalogKey": null,
-          "kind": "instrument",
-          "confidence": 0.7905,
+          "confidence": 0.9996,
           "accepted": true
         },
         {
@@ -910,7 +856,7 @@
           "name": "акустическая гитара",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9996,
+          "confidence": 0.9994,
           "accepted": true
         },
         {
@@ -921,7 +867,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9713,
+          "confidence": 0.9647,
           "accepted": true
         },
         {
@@ -932,7 +878,7 @@
           "name": "акустическая гитара",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9987,
+          "confidence": 0.9981,
           "accepted": true
         },
         {
@@ -943,7 +889,7 @@
           "name": "виолончель",
           "catalogKey": "cello",
           "kind": "instrument",
-          "confidence": 0.9793,
+          "confidence": 0.9507,
           "accepted": true
         },
         {
@@ -954,18 +900,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9431,
-          "accepted": true
-        },
-        {
-          "start": 562.0,
-          "end": 565.0,
-          "id": "cello",
-          "family": "bowed",
-          "name": "виолончель",
-          "catalogKey": "cello",
-          "kind": "instrument",
-          "confidence": 0.9908,
+          "confidence": 0.9163,
           "accepted": true
         },
         {
@@ -976,62 +911,62 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9876,
+          "confidence": 0.991,
           "accepted": true
         },
         {
-          "start": 583.0,
-          "end": 602.0,
+          "start": 582.0,
+          "end": 588.0,
           "id": "cello",
           "family": "bowed",
           "name": "виолончель",
           "catalogKey": "cello",
           "kind": "instrument",
-          "confidence": 0.9854,
+          "confidence": 0.991,
           "accepted": true
         },
         {
-          "start": 603.0,
-          "end": 610.0,
+          "start": 590.0,
+          "end": 599.0,
           "id": "cello",
           "family": "bowed",
           "name": "виолончель",
           "catalogKey": "cello",
           "kind": "instrument",
-          "confidence": 0.9112,
+          "confidence": 0.9657,
           "accepted": true
         },
         {
-          "start": 610.0,
-          "end": 613.0,
-          "id": "guitar-electric",
-          "family": "guitar",
-          "name": "электрогитара",
-          "catalogKey": null,
+          "start": 600.0,
+          "end": 607.0,
+          "id": "cello",
+          "family": "bowed",
+          "name": "виолончель",
+          "catalogKey": "cello",
           "kind": "instrument",
-          "confidence": 0.7997,
+          "confidence": 0.891,
           "accepted": true
         },
         {
-          "start": 614.0,
+          "start": 606.0,
+          "end": 609.0,
+          "id": "violin",
+          "family": "bowed",
+          "name": "скрипка",
+          "catalogKey": "violin",
+          "kind": "instrument",
+          "confidence": 0.6903,
+          "accepted": true
+        },
+        {
+          "start": 615.0,
           "end": 622.0,
           "id": "cello",
           "family": "bowed",
           "name": "виолончель",
           "catalogKey": "cello",
           "kind": "instrument",
-          "confidence": 0.9566,
-          "accepted": true
-        },
-        {
-          "start": 632.0,
-          "end": 635.0,
-          "id": "cello",
-          "family": "bowed",
-          "name": "виолончель",
-          "catalogKey": "cello",
-          "kind": "instrument",
-          "confidence": 0.9864,
+          "confidence": 0.9096,
           "accepted": true
         },
         {
@@ -1042,29 +977,18 @@
           "name": "скрипка",
           "catalogKey": "violin",
           "kind": "instrument",
-          "confidence": 0.8798,
+          "confidence": 0.8905,
           "accepted": true
         },
         {
-          "start": 647.0,
-          "end": 661.0,
+          "start": 646.0,
+          "end": 656.0,
           "id": "cello",
           "family": "bowed",
           "name": "виолончель",
           "catalogKey": "cello",
           "kind": "instrument",
-          "confidence": 0.9801,
-          "accepted": true
-        },
-        {
-          "start": 664.0,
-          "end": 670.0,
-          "id": "cello",
-          "family": "bowed",
-          "name": "виолончель",
-          "catalogKey": "cello",
-          "kind": "instrument",
-          "confidence": 0.8669,
+          "confidence": 0.9778,
           "accepted": true
         },
         {
@@ -1075,7 +999,18 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9972,
+          "confidence": 0.9906,
+          "accepted": true
+        },
+        {
+          "start": 673.0,
+          "end": 676.0,
+          "id": "guitar-acoustic",
+          "family": "guitar",
+          "name": "акустическая гитара",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.8619,
           "accepted": true
         },
         {
@@ -1086,29 +1021,18 @@
           "name": "акустическая гитара",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.8298,
+          "confidence": 0.8676,
           "accepted": true
         },
         {
-          "start": 693.0,
-          "end": 704.0,
-          "id": "flute",
-          "family": "flute",
-          "name": "поперечная флейта",
-          "catalogKey": null,
-          "kind": "instrument",
-          "confidence": 0.9893,
-          "accepted": true
-        },
-        {
-          "start": 707.0,
+          "start": 700.0,
           "end": 724.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9996,
+          "confidence": 0.9995,
           "accepted": true
         },
         {
@@ -1119,18 +1043,29 @@
           "name": "виолончель",
           "catalogKey": "cello",
           "kind": "instrument",
-          "confidence": 0.864,
+          "confidence": 0.868,
           "accepted": true
         },
         {
           "start": 736.0,
-          "end": 741.0,
+          "end": 739.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
           "confidence": 0.9991,
+          "accepted": true
+        },
+        {
+          "start": 769.0,
+          "end": 772.0,
+          "id": "violin",
+          "family": "bowed",
+          "name": "скрипка",
+          "catalogKey": "violin",
+          "kind": "instrument",
+          "confidence": 0.8038,
           "accepted": true
         },
         {
@@ -1141,7 +1076,7 @@
           "name": "скрипка",
           "catalogKey": "violin",
           "kind": "instrument",
-          "confidence": 0.8647,
+          "confidence": 0.9512,
           "accepted": true
         },
         {
@@ -1152,18 +1087,18 @@
           "name": "скрипка",
           "catalogKey": "violin",
           "kind": "instrument",
-          "confidence": 0.964,
+          "confidence": 0.9586,
           "accepted": true
         },
         {
-          "start": 809.0,
-          "end": 812.0,
-          "id": "flute",
-          "family": "flute",
-          "name": "поперечная флейта",
+          "start": 814.0,
+          "end": 817.0,
+          "id": "clarinet",
+          "family": "reed",
+          "name": "кларнет",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9887,
+          "confidence": 0.9136,
           "accepted": true
         }
       ],
