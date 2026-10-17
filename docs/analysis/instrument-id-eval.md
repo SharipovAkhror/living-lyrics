@@ -209,7 +209,7 @@ TinySOL: официальные fold 0–2 обучение, 3 проверка,
 |---|---|---|---|---|
 | 10.6 | 23.7 | voice | abstain | — |
 | 23.7 | 100.814 | tanbur | abstain | cello, flute, guitar-acoustic, trumpet |
-| 172.0 | 174.0 | voice | abstain | voice |
+| 172.0 | 174.0 | voice | correct | voice |
 
 ### karitas
 

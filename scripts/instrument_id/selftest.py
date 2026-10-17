@@ -177,8 +177,9 @@ def test_anchor_listen() -> None:
     audio["audioPrimary"] = "mix"
     said = labels_on_anchor(audio, anchor, data)
     check(said == ["flute"], f"якорь смеси читает смесь: {said}")
-    check(_boundary_bleed(23.7, 100.814, 99.0, 167.0), "голос у края секции не валит якорь")
+    check(_boundary_bleed(23.7, 100.814, 99.0, 167.0), "голос у края длинной секции не валит якорь")
     check(not _boundary_bleed(23.7, 100.814, 30.0, 80.0), "чужой класс внутри секции остаётся")
+    check(not _boundary_bleed(172.0, 174.0, 171.0, 174.0), "короткий якорь, покрытый принятым классом, остаётся")
 
 
 def main() -> None:

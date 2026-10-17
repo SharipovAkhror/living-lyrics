@@ -55,6 +55,10 @@ def _boundary_bleed(a0: float, a1: float, b0: float, b1: float, limit: float = 3
     hit = _overlap(a0, a1, b0, b1)
     if hit <= 0 or hit >= limit:
         return False
+    span = a1 - a0
+    # A two-second anchor covered by the accept is the anchor, not a neighbor.
+    if span > 0 and hit >= span * 0.5:
+        return False
     enters_from_before = b0 < a0 - 0.05 and min(a1, b1) <= a0 + limit
     leaves_after = b1 > a1 + 0.05 and max(a0, b0) >= a1 - limit
     return enters_from_before or leaves_after

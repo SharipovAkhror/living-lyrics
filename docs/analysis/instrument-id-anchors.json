@@ -49,9 +49,11 @@
           "said": [
             "voice"
           ],
-          "acceptedRight": [],
+          "acceptedRight": [
+            "voice"
+          ],
           "acceptedWrong": [],
-          "verdict": "abstain"
+          "verdict": "correct"
         }
       ]
     },
