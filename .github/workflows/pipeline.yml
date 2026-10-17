@@ -11,8 +11,10 @@
 # Job file fields: "stages" (decrypt separate sections transcribe diagnose bench align qa features instruments).
 # Before any align, the run collects a score row per cued line and writes docs/analysis/bench/calibration.json.
 # Jobs do not list that stage. A failed calibration does not fall through to the old 0.30 gate.
-# After every align and before qa, the run measures how often a shifted word start still
-# hits an attack and writes docs/analysis/bench/attack-chance.json. qa reads that rule.
+# After every align and before qa, the run writes docs/analysis/bench/aligner-review.json
+# (who is closer to a strong attack, the second aligner's shift, borrowed models) and then
+# measures how often a shifted word start still passes the word rule
+# (docs/analysis/bench/attack-chance.json). qa reads that rule.
 # A failed measurement does not fall through to the 0.10 s attack test.
 # optional "align" and "qa" — lists of extra options for align.py / qa_sync.py, e.g. {"qa": ["--fix"]}.
 # Needs the repository secret AUDIO_KEY (Settings → Secrets and variables → Actions).
@@ -131,12 +133,16 @@ jobs:
           sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
           python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           python -m pip install -r scripts/pipeline/requirements.txt
-          # Bench-only packages. They are not in requirements.txt: stable-ts pulls Whisper,
-          # audio-separator pulls the vocal models, and NeMo is optional. CPU torch is
-          # installed again afterwards so none of them can swap in a CUDA wheel.
+          # stable-ts is the third word clock on a song run and on the bench. It is not in
+          # requirements.txt. espeak, phonemizer, audio-separator and NeMo stay bench-only:
+          # they break the transformers import the song job needs. CPU torch is installed
+          # again afterwards so none of them can swap in a CUDA wheel.
+          if python3 -c "import json,sys; jobs=json.load(open('/tmp/jobs.json')); sys.exit(0 if any('align' in j.get('stages',[]) or 'bench' in j.get('stages',[]) for j in jobs) else 1)"; then
+            python -m pip install stable-ts
+          fi
           if python3 -c "import json,sys; jobs=json.load(open('/tmp/jobs.json')); sys.exit(0 if any('bench' in j.get('stages',[]) for j in jobs) else 1)"; then
             sudo apt-get install -y -q espeak-ng
-            python -m pip install stable-ts phonemizer 'audio-separator[cpu]'
+            python -m pip install phonemizer 'audio-separator[cpu]'
             python -m pip install 'nemo_toolkit[asr]' || echo 'nemo: пакет на CPU не встал'
           fi
           python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
@@ -235,6 +241,19 @@ jobs:
             [ $rc -gt $worst ] && worst=$rc
           done < /tmp/jobs.txt
           if [ -s /tmp/calibrate.txt ] && [ $align_rc -eq 0 ]; then
+            echo "::group::aligner review"
+            # shellcheck disable=SC2046
+            python3 scripts/pipeline/aligner_review.py --choose $(tr '\n' ' ' < /tmp/calibrate.txt)
+            rc=$?
+            echo "::endgroup::"
+            echo "aligner-review: код $rc" >> /tmp/summary.txt
+            if [ $rc -ne 0 ]; then
+              align_rc=2
+              worst=2
+              echo "::error::разбор расхождений не собрался"
+            fi
+          fi
+          if [ -s /tmp/calibrate.txt ] && [ $align_rc -eq 0 ]; then
             echo "::group::attack chance"
             # shellcheck disable=SC2046
             python3 scripts/pipeline/attack_chance.py --choose $(tr '\n' ' ' < /tmp/calibrate.txt)
@@ -268,7 +287,7 @@ jobs:
               fi
             fi
           elif [ -s /tmp/calibrate.txt ]; then
-            echo "выравнивание не прошло, проверка не запускалась" >> /tmp/summary.txt
+            echo "выравнивание или разбор не прошли, проверка не запускалась" >> /tmp/summary.txt
             align_rc=2
             worst=2
           fi

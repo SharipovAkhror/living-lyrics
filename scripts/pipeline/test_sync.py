@@ -55,6 +55,10 @@ def test_engines() -> None:
     check('persian uses whisperx only', engines.preferred('fa') == ['whisperx'])
     check('turkish uses whisperx only', engines.preferred('tr') == ['whisperx'])
     check('azerbaijani has no second model', engines.preferred('az') == [])
+    check('ə x q map to e h g', engines.map_word('ƏxQə', engines.AZ_TR_MAP) == 'EhGe', engines.map_word('ƏxQə', engines.AZ_TR_MAP))
+    check('azerbaijani k stays k', engines.map_word('k', engines.AZ_TR_MAP) == 'k')
+    check('latin y maps to italian i', engines.map_word('y', engines.LA_IT_MAP) == 'i')
+    check('latin w maps to spanish u', engines.map_word('w', engines.LA_ES_MAP) == 'u')
     check('latin has no second model', engines.preferred('la') == [])
     check('medieval german has no second model', engines.preferred('gmh') == [])
     check('ottoman turkish has no second model', engines.preferred('ota') == [])
@@ -535,6 +539,90 @@ def test_cued_lines_stay_near_the_cue() -> None:
         check(f'{slug} has cued lines', seen > 0, str(seen))
 
 
+def test_section_edges() -> None:
+    lyrics = {'sections': [
+        {'kind': 'vocal', 'id': 'a', 'start': 0.0, 'end': 10.0, 'lines': [
+            {'id': 'l', 'text': 'keep', 'words': [{'w': 'keep', 's': 9.0, 'e': 10.40}]},
+        ]},
+        {'kind': 'instrumental', 'id': 'b', 'start': 12.0, 'end': 20.0, 'lines': []},
+    ]}
+    n = T.fit_section_edges(lyrics)
+    word = lyrics['sections'][0]['lines'][0]['words'][0]
+    check('a free section end extends to the word', lyrics['sections'][0]['end'] == 10.40 and n >= 1, str(lyrics['sections'][0]['end']))
+    check('the extended word text and start stay', word['w'] == 'keep' and word['s'] == 9.0 and word['e'] == 10.40, str(word))
+    tight = {'sections': [
+        {'kind': 'vocal', 'id': 'a', 'start': 1.0, 'end': 10.0, 'lines': [
+            {'id': 'l', 'text': 'cut', 'words': [{'w': 'cut', 's': 9.5, 'e': 10.40}]},
+        ]},
+        {'kind': 'instrumental', 'id': 'b', 'start': 10.0, 'end': 20.0, 'lines': []},
+    ]}
+    T.fit_section_edges(tight)
+    cut = tight['sections'][0]['lines'][0]['words'][0]
+    check('a blocked word end is trimmed to the boundary', cut['e'] <= 10.05 and cut['s'] == 9.5 and cut['w'] == 'cut', str(cut))
+    check('a trim does not move the section start', tight['sections'][0]['start'] == 1.0)
+    inside = {'sections': [
+        {'kind': 'vocal', 'id': 'a', 'start': 0.0, 'end': 10.0, 'lines': [
+            {'id': 'l', 'words': [{'w': 'ok', 's': 9.0, 'e': 10.04}]},
+        ]},
+    ]}
+    check('a word inside the 0.05 s margin is left alone', T.fit_section_edges(inside) == 0 and inside['sections'][0]['end'] == 10.0)
+
+
+def test_bias_and_witnesses() -> None:
+    import aligner_review as R
+    import attack_chance as A
+
+    def line(i: int, shift: float) -> dict:
+        return {
+            'id': f'l{i}', 'lang': 'tr', 'status': 'good', 'second': 'whisperx',
+            'words': [
+                {'roman': 'ba', 'ctc_s': 10.0 + i, 'second_s': 10.0 + i + shift},
+                {'roman': 'ka', 'ctc_s': 10.4 + i, 'second_s': 10.4 + i + shift},
+            ],
+        }
+
+    stable = R.bias_decision([line(i, 0.05) for i in range(20)], R._second_of)
+    check('a stable shift is applied from the first half', stable['applied'] and abs(stable['offset'] - 0.05) < 1e-9, str(stable))
+    noisy = R.bias_decision([line(i, 0.50 if i % 2 == 0 else -0.40) for i in range(20)], R._second_of)
+    check('a wide spread is not subtracted', not noisy['applied'] and noisy['reason'] == 'wide-spread', str(noisy))
+
+    one = [{'roman': 'ba', 'ctc_s': 1.0, 'second_s': 1.05, 'third_s': 1.40}]
+    got = Q.prove_words(one, [0.02], 0.10, witnesses='one')
+    check('an attack plus one witness passes', got[0]['path'] == 'witness-second', str(got[0]))
+    alone = [{'roman': 'ba', 'ctc_s': 1.0, 'second_s': 1.40, 'third_s': 1.50}]
+    got = Q.prove_words(alone, [0.02], 0.10, witnesses='one')
+    check('an attack with no agreeing witness fails', got[0]['path'] == 'fail', str(got[0]))
+    missing = [{'roman': 'ba', 'ctc_s': 1.0}]
+    got = Q.prove_words(missing, [0.02], 0.10, witnesses='one')
+    check('an attack with both witnesses missing fails', got[0]['path'] == 'fail' and got[0]['reason'] == 'no-second-aligner', str(got[0]))
+    got = Q.prove_words(one, [0.02], 0.10, witnesses='two')
+    check('two of three needs both clocks within 0.10 s of MMS', got[0]['path'] == 'fail', str(got[0]))
+    both = [{'roman': 'ba', 'ctc_s': 1.0, 'second_s': 1.05, 'third_s': 1.08}]
+    got = Q.prove_words(both, [0.02], 0.10, witnesses='two')
+    check('both clocks within 0.10 s pass', got[0]['path'] == 'witness-both', str(got[0]))
+    # The default rule still has the soft path. build_proof(None) does not read the bench file.
+    soft = Q.prove_words([{'roman': 'aa', 'ctc_s': 1.0, 'second_s': 1.04}], [None], 0.10)
+    check('the default rule still proves a soft word from the second aligner', soft[0]['path'] == 'second', str(soft[0]))
+
+    witness = {'name': 'attack-h0.7-one', 'tol': 0.10, 'choir_tol': 0.20, 'peak_height': 0.7,
+               'require_rise': False, 'require_second': False, 'witnesses': 'one', 'agree_tol': 0.10}
+    probe = [{'t': 1.0, 'group': 'solo', 'second': 1.0, 'third': 9.0, 'line': 'a', 'roman': 'ba'}]
+    peaks = np.array([1.0, 1.15, 5.0])
+    check('a shifted probe that misses the fixed witnesses fails', A.hit_rate(probe, peaks, 0.15, witness) == 0.0)
+    on_clock = [{'t': 1.0, 'group': 'solo', 'second': 1.15, 'third': None, 'line': 'a', 'roman': 'ba'}]
+    check('a probe that lands on the witness passes', A.hit_rate(on_clock, peaks, 0.15, witness) == 1.0)
+
+    current = {'name': 'tol-0.10-h0.5', 'tol': 0.10, 'choir_tol': 0.20, 'peak_height': 0.5,
+               'require_rise': False, 'require_second': False, 'chance': 0.10, 'true_rate': 0.90}
+    one_rule = dict(witness, chance=0.12, true_rate=0.50)
+    got_rule = A.choose([current, one_rule])
+    check('a witness rule under 15 % wins over the older grid', got_rule['name'] == 'attack-h0.7-one', str(got_rule))
+    two_rule = {'name': 'attack-h0.7-two', 'tol': 0.10, 'choir_tol': 0.20, 'peak_height': 0.7,
+                'require_rise': False, 'require_second': False, 'witnesses': 'two', 'chance': 0.08, 'true_rate': 0.20}
+    got_rule = A.choose([current, dict(one_rule, chance=0.40), two_rule])
+    check('the two-witness rule is next when one witness is over 15 %', got_rule['name'] == 'attack-h0.7-two', str(got_rule))
+
+
 def test_attack_chance() -> None:
     import attack_chance as A
 
@@ -595,6 +683,8 @@ def main() -> int:
     test_cue_times_stay()
     test_placement_and_cue_lock()
     test_cued_lines_stay_near_the_cue()
+    test_section_edges()
+    test_bias_and_witnesses()
     test_attack_chance()
     test_calibration()
     test_bench_summary()
