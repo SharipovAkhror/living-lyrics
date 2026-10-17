@@ -1,0 +1,314 @@
+{
+  "slug": "i-have-come-alive",
+  "model": "efficientat-mn10_as-linear-probe",
+  "noncommercial": true,
+  "noncommercialReason": "IRMAS на Zenodo помечен CC BY-NC-SA 4.0. Веса обучены и на этих записях.",
+  "creditsUsed": false,
+  "threshold": 0.55,
+  "threshold95": 0.76,
+  "thresholdReached": true,
+  "sources": {
+    "mix": {
+      "stem": "mix",
+      "windows": 579,
+      "segments": [
+        {
+          "start": 7.0,
+          "end": 14.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.8941,
+          "accepted": true
+        },
+        {
+          "start": 23.0,
+          "end": 26.0,
+          "id": null,
+          "family": "guitar",
+          "name": "гитара",
+          "kind": "family",
+          "confidence": 0.984,
+          "accepted": false
+        },
+        {
+          "start": 25.0,
+          "end": 35.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.8885,
+          "accepted": true
+        },
+        {
+          "start": 36.0,
+          "end": 39.0,
+          "id": null,
+          "family": "bowed",
+          "name": "смычковые",
+          "kind": "family",
+          "confidence": 0.9737,
+          "accepted": false
+        },
+        {
+          "start": 40.0,
+          "end": 43.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.8635,
+          "accepted": true
+        },
+        {
+          "start": 44.0,
+          "end": 47.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.6804,
+          "accepted": true
+        },
+        {
+          "start": 47.0,
+          "end": 50.0,
+          "id": "piano",
+          "family": "keyboard",
+          "name": "фортепиано",
+          "catalogKey": "piano",
+          "kind": "instrument",
+          "confidence": 0.955,
+          "accepted": true
+        },
+        {
+          "start": 49.0,
+          "end": 52.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.5977,
+          "accepted": true
+        },
+        {
+          "start": 65.0,
+          "end": 70.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9919,
+          "accepted": true
+        },
+        {
+          "start": 71.0,
+          "end": 89.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9968,
+          "accepted": true
+        },
+        {
+          "start": 95.0,
+          "end": 98.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.5966,
+          "accepted": true
+        },
+        {
+          "start": 100.0,
+          "end": 165.0,
+          "id": "voice",
+          "family": "voice",
+          "name": "голос",
+          "catalogKey": "voice",
+          "kind": "instrument",
+          "confidence": 1.0,
+          "accepted": true
+        },
+        {
+          "start": 165.0,
+          "end": 175.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9024,
+          "accepted": true
+        },
+        {
+          "start": 176.0,
+          "end": 179.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9795,
+          "accepted": true
+        },
+        {
+          "start": 182.0,
+          "end": 251.0,
+          "id": "voice",
+          "family": "voice",
+          "name": "голос",
+          "catalogKey": "voice",
+          "kind": "instrument",
+          "confidence": 1.0,
+          "accepted": true
+        },
+        {
+          "start": 255.0,
+          "end": 259.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9925,
+          "accepted": true
+        },
+        {
+          "start": 263.0,
+          "end": 282.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9934,
+          "accepted": true
+        },
+        {
+          "start": 283.0,
+          "end": 286.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.8866,
+          "accepted": true
+        },
+        {
+          "start": 285.0,
+          "end": 387.0,
+          "id": "voice",
+          "family": "voice",
+          "name": "голос",
+          "catalogKey": "voice",
+          "kind": "instrument",
+          "confidence": 1.0,
+          "accepted": true
+        },
+        {
+          "start": 388.0,
+          "end": 391.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.7451,
+          "accepted": true
+        },
+        {
+          "start": 392.0,
+          "end": 395.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9282,
+          "accepted": true
+        },
+        {
+          "start": 394.0,
+          "end": 397.0,
+          "id": null,
+          "family": "keyboard",
+          "name": "клавишные",
+          "kind": "family",
+          "confidence": 0.9591,
+          "accepted": false
+        },
+        {
+          "start": 396.0,
+          "end": 402.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.8965,
+          "accepted": true
+        },
+        {
+          "start": 401.0,
+          "end": 404.0,
+          "id": "guitar-acoustic",
+          "family": "guitar",
+          "name": "акустическая гитара",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.8848,
+          "accepted": true
+        },
+        {
+          "start": 403.0,
+          "end": 569.0,
+          "id": "voice",
+          "family": "voice",
+          "name": "голос",
+          "catalogKey": "voice",
+          "kind": "instrument",
+          "confidence": 1.0,
+          "accepted": true
+        },
+        {
+          "start": 574.0,
+          "end": 577.0,
+          "id": null,
+          "family": "brass",
+          "name": "медные",
+          "kind": "family",
+          "confidence": 0.9984,
+          "accepted": false
+        },
+        {
+          "start": 576.0,
+          "end": 580.0,
+          "id": "accordion",
+          "family": "free-reed",
+          "name": "аккордеон",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.6343,
+          "accepted": true
+        }
+      ],
+      "audio": "/home/runner/work/living-lyrics/living-lyrics/work/i-have-come-alive/source.m4a",
+      "noncommercial": true,
+      "model": "efficientat-mn10_as-linear-probe"
+    }
+  }
+}

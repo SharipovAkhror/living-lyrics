@@ -1,0 +1,1177 @@
+{
+  "slug": "one",
+  "intervals": [
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "start": 257.0,
+      "end": 260.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8539,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "start": 723.0,
+      "end": 729.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.895,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 112.0,
+      "end": 115.0,
+      "decision": "reject",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7143,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 268.0,
+      "end": 277.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9991,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 280.0,
+      "end": 299.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 364.0,
+      "end": 367.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9609,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 417.0,
+      "end": 437.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9872,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 473.0,
+      "end": 476.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9159,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 506.0,
+      "end": 509.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9817,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 514.0,
+      "end": 519.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9046,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 526.0,
+      "end": 531.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8193,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 533.0,
+      "end": 536.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9066,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 678.0,
+      "end": 683.0,
+      "decision": "reject",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.6796,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 692.0,
+      "end": 724.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9954,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 247.0,
+      "end": 254.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9796,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 261.0,
+      "end": 266.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9865,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 390.0,
+      "end": 394.0,
+      "decision": "reject",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.6863,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 411.0,
+      "end": 416.0,
+      "decision": "reject",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7077,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 436.0,
+      "end": 440.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7656,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 500.0,
+      "end": 515.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9954,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 519.0,
+      "end": 526.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9875,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 530.0,
+      "end": 534.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9483,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 536.0,
+      "end": 547.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9908,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "saxophone",
+      "name": "саксофон",
+      "start": 631.0,
+      "end": 634.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7837,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 0.0,
+      "end": 247.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9999,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 302.0,
+      "end": 356.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 361.0,
+      "end": 391.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9999,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 441.0,
+      "end": 465.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 475.0,
+      "end": 499.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9999,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 559.0,
+      "end": 584.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9999,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 607.0,
+      "end": 612.0,
+      "decision": "reject",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.6576,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 622.0,
+      "end": 632.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9165,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 645.0,
+      "end": 648.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8111,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 670.0,
+      "end": 676.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8311,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 728.0,
+      "end": 753.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9975,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 760.0,
+      "end": 765.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8676,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 768.0,
+      "end": 771.0,
+      "decision": "reject",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7372,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 780.0,
+      "end": 787.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8042,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 798.0,
+      "end": 801.0,
+      "decision": "reject",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.5927,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 811.0,
+      "end": 828.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9993,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    }
+  ],
+  "accepted": [
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "start": 257.0,
+      "end": 260.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8539,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "start": 723.0,
+      "end": 729.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.895,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 268.0,
+      "end": 277.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9991,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 280.0,
+      "end": 299.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 364.0,
+      "end": 367.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9609,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 417.0,
+      "end": 437.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9872,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 473.0,
+      "end": 476.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9159,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 506.0,
+      "end": 509.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9817,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 514.0,
+      "end": 519.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9046,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 526.0,
+      "end": 531.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8193,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 533.0,
+      "end": 536.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9066,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "start": 692.0,
+      "end": 724.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9954,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 247.0,
+      "end": 254.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9796,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 261.0,
+      "end": 266.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9865,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 436.0,
+      "end": 440.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7656,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 500.0,
+      "end": 515.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9954,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 519.0,
+      "end": 526.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9875,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 530.0,
+      "end": 534.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9483,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "start": 536.0,
+      "end": 547.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9908,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "saxophone",
+      "name": "саксофон",
+      "start": 631.0,
+      "end": 634.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7837,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 0.0,
+      "end": 247.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9999,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 302.0,
+      "end": 356.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 361.0,
+      "end": 391.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9999,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 441.0,
+      "end": 465.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 475.0,
+      "end": 499.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9999,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 559.0,
+      "end": 584.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9999,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 622.0,
+      "end": 632.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9165,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 645.0,
+      "end": 648.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8111,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 670.0,
+      "end": 676.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8311,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 728.0,
+      "end": 753.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9975,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 760.0,
+      "end": 765.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8676,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 780.0,
+      "end": 787.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8042,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "start": 811.0,
+      "end": 828.0,
+      "decision": "accept-single",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9993,
+      "visionConfidence": 0.0,
+      "who": "",
+      "conflict": false,
+      "visionHighUncalibrated": 0.85,
+      "audioHighIs95": true
+    }
+  ],
+  "visionHigh": 0.85,
+  "visionCalibrated": false
+}
