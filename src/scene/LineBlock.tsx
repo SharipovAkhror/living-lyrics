@@ -15,7 +15,7 @@ interface Props {
   cue: LineCue;
   /** Word-by-word fill only where the timing is measured and checked; otherwise the whole line lights up. */
   wordSync: boolean;
-  settings: Pick<Settings, 'persianStyle' | 'showTranslation' | 'showTranslit' | 'showAlt' | 'textScale'>;
+  settings: Pick<Settings, 'fontPersian' | 'showTranslation' | 'showTranslit' | 'showAlt' | 'textScale'>;
   motion: MotionPref;
   stage: { w: number; h: number };
   register: (idx: number, fn: BlockUpdater | null, m?: Measure) => void;

@@ -2,7 +2,7 @@ import { lazy, Suspense, type ReactNode } from 'react';
 import { useRoute } from './router';
 import { useSettings } from './settings';
 import { useAppliedTheme } from './theme';
-import { FontFitChip } from './fontPreview';
+import './fontCatalog';
 import { LibraryPage } from '@/pages/LibraryPage';
 import { SongPage } from '@/pages/song/SongPage';
 
@@ -47,10 +47,5 @@ export function App() {
       );
   }
 
-  return (
-    <>
-      {page}
-      <FontFitChip song={route.name === 'song'} />
-    </>
-  );
+  return page;
 }
