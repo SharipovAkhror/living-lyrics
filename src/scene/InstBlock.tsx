@@ -6,7 +6,7 @@ import { formatTime } from '@/data/library';
 import { instrument } from '@/instruments/catalog';
 import { blockState, clamp01, entranceOpacity, type Measure } from './flow';
 import type { BlockUpdater } from './LineBlock';
-import { InstrumentStage, type InstrumentStageHandle, type StagePose } from './InstrumentStage';
+import { InstrumentStage, assignPerformers, type InstrumentStageHandle, type StagePose } from './InstrumentStage';
 import { NARROW_MAX, castAt, castSignature, isVoicePassage, type CastMember } from './cast';
 import { stageDrive } from './stageDrive';
 
@@ -58,6 +58,8 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
   const { section } = cue;
   const keys = section.instruments;
   const names = keys.map((k) => instrument(k)?.name ?? k);
+  // Credit the player on the full section, then keep that name when the phone shows only the later entrance.
+  const credited = assignPerformers(keys.length ? keys : ['ensemble'], section.performers);
   const title = passageTitle(keys);
   const nextVocal = timeline.cues.find((c) => c.kind === 'line' && c.start >= cue.end - 0.01);
   const [anim, setAnim] = useState({ progress: 0, presence: 0 });
@@ -140,7 +142,7 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
             ref={stageRef}
             keys={heroes.map((m) => m.key)}
             echoes={echoes.map((m) => ({ key: m.key }))}
-            performers={section.performers}
+            performers={heroes.map((m) => (m.source >= 0 ? credited[m.source] ?? '' : ''))}
             mode={narrow ? 'single' : (section.layout ?? 'auto')}
             progress={1}
             presence={anim.presence}
