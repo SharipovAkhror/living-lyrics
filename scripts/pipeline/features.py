@@ -212,11 +212,17 @@ def stable_beats(times, duration: float) -> list[float] | None:
 
 
 def _track_beats(path, samples: np.ndarray, sr: int, duration: float) -> tuple[list[float] | None, str]:
-    """beat_this without the madmom DBN. librosa's tracker is only the fallback."""
-    try:
-        from beat_this.inference import File2Beats
+    """beat_this without the madmom DBN. librosa's tracker is only the fallback.
 
-        beats, _downbeats = File2Beats(checkpoint_path=BEAT_CHECKPOINT, device='cpu', dbn=False)(str(path))
+    Audio2Beats takes samples. File2Beats opens the path with torchaudio, which does not
+    read the decrypted m4a on the runner.
+    """
+    del path  # the decoded samples are the source of truth; the path is only for callers
+    try:
+        from beat_this.inference import Audio2Beats
+
+        signal = np.asarray(samples, dtype=np.float32)
+        beats, _downbeats = Audio2Beats(checkpoint_path=BEAT_CHECKPOINT, device='cpu', dbn=False)(signal, sr)
         kept = stable_beats(beats, duration)
         return kept, f'beat_this:{BEAT_CHECKPOINT}' + (f':{len(kept)}' if kept else ':no-pulse')
     except Exception as exc:  # noqa: BLE001 — a missing weight file must not drop the envelopes

@@ -299,7 +299,13 @@ class Tagger:
         print(f'CLAP: {CLAP_ID}', flush=True)
         self.processor = ClapProcessor.from_pretrained(CLAP_ID)
         self.model = ClapModel.from_pretrained(CLAP_ID).to(self.device).eval()
-        self.scale = float(self.model.logit_scale.detach().exp().clamp(max=100).item())
+        # transformers 4.57 names the temperature logit_scale_a (audio→text). Older builds used logit_scale.
+        scale = getattr(self.model, 'logit_scale_a', None)
+        if scale is None:
+            scale = getattr(self.model, 'logit_scale', None)
+        if scale is None:
+            raise RuntimeError('CLAP: у модели нет logit_scale_a')
+        self.scale = float(scale.detach().exp().clamp(max=100).item())
         self._text: dict[tuple[str, ...], np.ndarray] = {}
 
     def _tensors(self, inputs, names: tuple[str, ...]) -> dict:
