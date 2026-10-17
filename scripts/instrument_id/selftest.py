@@ -6,7 +6,7 @@ import json
 
 import numpy as np
 
-from anchors import labels_on_anchor
+from anchors import _boundary_bleed, labels_on_anchor
 from fuse import fuse_payload
 from paths import ROOT, SONGS
 from predict import smooth
@@ -177,6 +177,8 @@ def test_anchor_listen() -> None:
     audio["audioPrimary"] = "mix"
     said = labels_on_anchor(audio, anchor, data)
     check(said == ["flute"], f"якорь смеси читает смесь: {said}")
+    check(_boundary_bleed(23.7, 100.814, 99.0, 167.0), "голос у края секции не валит якорь")
+    check(not _boundary_bleed(23.7, 100.814, 30.0, 80.0), "чужой класс внутри секции остаётся")
 
 
 def main() -> None:

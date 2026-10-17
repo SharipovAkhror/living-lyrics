@@ -50,6 +50,16 @@ def _overlap(a0: float, a1: float, b0: float, b1: float) -> float:
     return max(0.0, min(a1, b1) - max(a0, b0))
 
 
+def _boundary_bleed(a0: float, a1: float, b0: float, b1: float, limit: float = 3.0) -> bool:
+    """A neighbor that only crosses the anchor edge. One analysis window is 2 s."""
+    hit = _overlap(a0, a1, b0, b1)
+    if hit <= 0 or hit >= limit:
+        return False
+    enters_from_before = b0 < a0 - 0.05 and min(a1, b1) <= a0 + limit
+    leaves_after = b1 > a1 + 0.05 and max(a0, b0) >= a1 - limit
+    return enters_from_before or leaves_after
+
+
 def _stem_name(anchor: dict, data: dict) -> str:
     """Same routing as the stem comparison: voice, percussion, otherwise melodic."""
     item = data["by_id"].get(anchor.get("id") or "")
@@ -96,8 +106,10 @@ def score_slug(slug: str, data: dict | None = None) -> dict:
         accepted_right = []
         if fusion:
             for item in fusion.get("accepted", []):
-                hit = _overlap(anchor["start"], anchor["end"], float(item["start"]), float(item["end"]))
-                if hit < 1.0:
+                start = float(item["start"])
+                end = float(item["end"])
+                hit = _overlap(anchor["start"], anchor["end"], start, end)
+                if hit < 1.0 or _boundary_bleed(anchor["start"], anchor["end"], start, end):
                     continue
                 if anchor["id"] and item["id"] == anchor["id"]:
                     accepted_right.append(item["id"])
@@ -126,7 +138,9 @@ def write_anchors() -> Path:
         "songs": [score_slug(slug, data) for slug in SONGS],
         "note": (
             "Окно 23,7–62 с в I Have Come Alive, названное соло танбура, лежит внутри секции "
-            "inst-tanbur 23,7–100,814 с. Отдельной границы 62 с в lyrics.json нет, поэтому якорь — вся секция."
+            "inst-tanbur 23,7–100,814 с. Отдельной границы 62 с в lyrics.json нет, поэтому якорь — вся секция. "
+            "Чужое «принято», которое задевает только край секции короче 3 с, не считается провалом: "
+            "это соседний отрезок, а не класс на теле якоря."
         ),
     }
     path = ROOT / "docs" / "analysis" / "instrument-id-anchors.json"

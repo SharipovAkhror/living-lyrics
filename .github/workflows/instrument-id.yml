@@ -75,7 +75,9 @@ jobs:
           PY
           while IFS= read -r slug || [ -n "$slug" ]; do
             [ -z "$slug" ] && continue
-            python3 scripts/pipeline/decrypt_audio.py "$slug"
+            # Commands in this loop inherit the slug-file stdin. Demucs reads it
+            # and would swallow the next slug, so every child gets /dev/null.
+            python3 scripts/pipeline/decrypt_audio.py "$slug" < /dev/null
           done < jobs-slugs.txt
           python3 scripts/instrument_id/run.py songs
           python3 scripts/instrument_id/run.py stems || echo "stem comparison failed"
@@ -93,7 +95,7 @@ jobs:
                 failed=1
                 break
               fi
-              python3 scripts/pipeline/separate.py "$slug" || { echo "separate failed for $slug; mix decisions stay"; failed=1; break; }
+              python3 scripts/pipeline/separate.py "$slug" < /dev/null || { echo "separate failed for $slug; mix decisions stay"; failed=1; break; }
             done < jobs-slugs.txt
             if [ "$failed" -eq 0 ]; then
               python3 scripts/instrument_id/run.py songs --primary stem
