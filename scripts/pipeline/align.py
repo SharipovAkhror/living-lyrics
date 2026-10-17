@@ -11,29 +11,23 @@ diacritics (Turkish ş → s, ı → i; German ß → ss).
 How it works:
 1. Letter posteriors for the whole vocal stem (50 frames per second) are computed once, in 30 s
    chunks with 3 s of context on each side, and cached in work/<slug>/align-emission.npy.
-2. Anchor pass — roughly where is each line? By default one Viterbi pass of the whole text over the
-   whole song: it needs no draft times at all. A span that leaves its section by more than 2 s does
-   not pull the line search with it: the search stays inside that section ± 15 s, and the stray span
-   is not an agreement check. `--anchors sections` aligns each section in its own window;
-   `--anchors draft` trusts the times in lyrics.json.
-3. Line pass, in lyrics.json order. Line i is searched in a window that starts where line i-1 ended
-   (or `margin` s before its anchor, whichever is later) and ends `margin` s after the anchor end of
-   line i+1. Line i+1 is aligned together with it as look-ahead and then discarded, so line i cannot
-   take the next line's audio, a repeated line cannot jump to its next occurrence, and an error stays
-   inside one line. If a window is too short for its text, the line takes the anchor-pass result.
-4. Word ends are extended while the voice still sounds (CTC marks letters, not the held vowel), never
-   into the next word; a line's first word may move back to the onset of the phrase (≤ 0.25 s).
-5. Confidence per line: `score` (mean posterior of its letters), `gap` (log-likelihood per frame
-   between the best unconstrained path and the forced one over the line: near 0 when the text is
-   what is sung) and `agree` (distance to the anchor pass). Three outcomes, recorded in the report:
-     good  — the text was found; a second aligner is run for solo lines;
+2. One CTC pass per vocal section, on the voice-map bounds (a 2 s pad only if the text does not
+   fit). Draft s/e are not a window. A repeatable star sits between words, with a flat log-score
+   of 0, so a pause or a melisma is not soaked up by a letter and one line cannot eat the next.
+   The same line in the next section is a separate pass, so a repeated refrain stays in order.
+3. Word ends are extended while the voice still sounds (CTC marks the letter spike, not the held
+   vowel), never into the next word. A start may then move onto an attack within 0.10 s; that
+   move is not the measurement.
+4. Confidence per line: `score` (mean posterior of its letters) and `gap` (how much more likely
+   the best other label was on those frames). There is no agreement check against another pass:
+   that check was throwing away placements the section pass and a tight window both supported.
+     good  — the text was found; a second aligner is run for solo and choir lines;
      weak  — measured and plausible, but not sure enough to prove;
-     draft — the text was not found (wrong words, a verse that is not sung): the draft times stay,
-             fitted between the measured neighbours.
+     draft — the text was not found: the draft times stay, fitted between the measured neighbours.
    align.py does not decide the flag. It marks every line `timing-draft` and leaves
    `timing.status` at `draft`. qa_sync.py --apply clears the flag only where the pre-snap start
-   and a WhisperX start agree with each other and with a vocal attack within 0.1 s. The song
-   becomes `aligned` only when at least 80 % of its solo lines are proved that way.
+   and a WhisperX start agree with each other and with a vocal attack (0.1 s solo, 0.2 s choir).
+   The song becomes `aligned` only when every group that exists is at least 80 % proved.
 
 Writes lyrics.json (word s/e and the timing-draft flag; section bounds only with --move-sections),
 song.json timing (status stays draft), work/<slug>/align-report.json and work/<slug>/timing.json.
@@ -54,7 +48,7 @@ import engines
 import features as F
 import qa_sync as Q
 import timing as T
-from ctc import viterbi
+from ctc import token_spans, viterbi
 from common import dump_json, load_audio, load_json, song_dir, vocal_stem, work_dir
 
 ISO3 = {'ar': 'ara', 'fa': 'fas', 'az': 'aze', 'tr': 'tur', 'ota': 'ota', 'en': 'eng', 'la': 'lat', 'de': 'deu', 'gmh': 'deu',
@@ -68,7 +62,9 @@ MAX_TOKEN = 0.5          # longest stretch one letter may hold in the CTC path
 MAX_WORD_SPAN = 2.5      # longest span from a word's first to its last letter
 SNAP_WIN = 0.10          # a word start moves to a clear vocal onset at most this far (the proof gate)
 ENGINE_AGREE = 0.10      # the second aligner must put the word start this close to the first
-# A line is "good" when all three hold. These are gates, not a fit to one recording.
+# A line is "good" when the letter score and the gap both hold. These are gates, not a fit
+# to one recording. Distance to a second pass is not a gate: on I Have Come Alive it threw
+# away lines the section pass had already placed on the voice.
 GOOD_SCORE = 0.30
 GOOD_GAP = 1.2
 GOOD_AGREE = 0.5
@@ -222,6 +218,120 @@ def align_window(lp: np.ndarray, t0: int, t1: int, units: list[Unit]) -> list[di
         out.append({'words': words, 'gap': gap, 'f0': t0 + int(lo), 'f1': t0 + int(hi)})
         base += len(u.tokens)
     return out
+
+
+def align_stars(lp_letters: np.ndarray, units: list[Unit]) -> list[dict] | None:
+    """CTC of one section. A star between words may repeat and absorbs pauses and melismas.
+
+    The star column is a flat log-score of 0 (the wildcard torchaudio uses for audio that is
+    not a letter). Each letter then lands on its best single frame instead of stretching.
+    Frames are relative to `lp_letters`. None when the text does not fit.
+    """
+    if len(lp_letters) == 0 or not units:
+        return None
+    star = int(lp_letters.shape[1])
+    lp = np.concatenate([lp_letters, np.zeros((len(lp_letters), 1), np.float32)], axis=1)
+    best = lp_letters.max(axis=1)
+    tokens: list[int] = [star]
+    owner: list[tuple[int, int] | None] = [None]
+    for ui, u in enumerate(units):
+        by_word: dict[int, list[int]] = {}
+        for tok, wi in zip(u.tokens, u.word_of):
+            by_word.setdefault(wi, []).append(int(tok))
+        for wi in range(len(u.roman)):
+            letters = by_word.get(wi)
+            if not letters:
+                continue
+            for tok in letters:
+                tokens.append(tok)
+                owner.append((ui, wi))
+            tokens.append(star)
+            owner.append(None)
+    path = viterbi(lp, tokens)
+    if path is None:
+        return None
+    first, last = token_spans(path, len(tokens))
+    posts: dict[tuple[int, int], list[float]] = {}
+    gaps: dict[int, list[float]] = {}
+    spans: dict[tuple[int, int], list[int]] = {}
+    for k, own in enumerate(owner):
+        if own is None or int(first[k]) < 0:
+            continue
+        ui, wi = own
+        f0 = int(first[k])
+        spans.setdefault((ui, wi), [f0, int(last[k])])
+        spans[(ui, wi)][0] = min(spans[(ui, wi)][0], f0)
+        spans[(ui, wi)][1] = max(spans[(ui, wi)][1], int(last[k]))
+        posts.setdefault((ui, wi), []).append(float(np.exp(lp_letters[f0, tokens[k]])))
+        gaps.setdefault(ui, []).append(float(best[f0] - lp_letters[f0, tokens[k]]))
+    out = []
+    for ui, u in enumerate(units):
+        words = []
+        line_posts: list[float] = []
+        for wi in range(len(u.roman)):
+            sp = spans.get((ui, wi))
+            ps = posts.get((ui, wi))
+            if sp is None or not ps:
+                words.append(None)
+                continue
+            words.append({'f0': sp[0], 'f1': sp[1], 'score': float(np.mean(ps))})
+            line_posts.extend(ps)
+        gs = gaps.get(ui, [])
+        out.append({
+            'words': words,
+            'score': float(np.mean(line_posts)) if line_posts else 0.0,
+            'gap': float(np.mean(gs)) if gs else 99.0,
+            'n': len(line_posts),
+        })
+    return out
+
+
+def _section_groups(units: list[Unit]) -> list[tuple[dict, list[Unit]]]:
+    groups: list[tuple[dict, list[Unit]]] = []
+    for u in units:
+        if groups and groups[-1][0] is u.sec:
+            groups[-1][1].append(u)
+        else:
+            groups.append((u.sec, [u]))
+    return groups
+
+
+def section_pass(lp: np.ndarray, units: list[Unit]) -> list[dict]:
+    """Place every line by one CTC pass of its vocal section. Draft times are not a window."""
+    results = [{'method': 'section', 'window': (0.0, 0.0), 'res': None} for _ in units]
+    for sec, group in _section_groups(units):
+        placed = None
+        t0 = t1 = 0
+        for pad in (0.0, 2.0):
+            t0 = max(0, int((float(sec['start']) - pad) * FPS))
+            t1 = min(len(lp), int((float(sec['end']) + pad) * FPS))
+            placed = align_stars(lp[t0:t1], group)
+            if placed is not None:
+                break
+        window = (t0 / FPS, t1 / FPS)
+        if placed is None:
+            for u in group:
+                results[u.idx] = {'method': 'section', 'window': window, 'res': None}
+            print(f"section {sec.get('id')}: text does not fit", flush=True)
+            continue
+        print(f"section {sec.get('id')}: {window[0]:.1f}–{window[1]:.1f} s", flush=True)
+        for u, rec in zip(group, placed):
+            words = []
+            for w in rec['words']:
+                if w is None:
+                    words.append(None)
+                else:
+                    words.append({'f0': t0 + int(w['f0']), 'f1': t0 + int(w['f1']) + 1, 'score': w['score']})
+            placed_w = [w for w in words if w is not None]
+            results[u.idx] = {
+                'method': 'section',
+                'window': window,
+                'res': None if not placed_w else {
+                    'words': words, 'gap': rec['gap'], 'score': rec['score'],
+                    'f0': min(w['f0'] for w in placed_w), 'f1': max(w['f1'] for w in placed_w),
+                },
+            }
+    return results
 
 
 # ---------------------------------------------------------------- passes
@@ -448,18 +558,10 @@ def main() -> None:
         roman = [rom(w['w'], line['lang'], line['script']) for w in line['words']]
         units.append(Unit(idx, sec, line, roman, vocab))
 
-    anchors = anchor_pass(lp, units, args.anchors)
-    # A global span outside its section is a different occurrence. It must not fail the line
-    # for disagreeing with that span. The line search itself is already fenced in line_pass.
-    outside: set[int] = set()
-    if args.anchors == 'global':
-        outside = {u.idx for u in units
-                   if not anchor_in_section(*anchors[u.idx], float(u.sec['start']), float(u.sec['end']))}
-        if outside:
-            names = [u.id for u in units if u.idx in outside]
-            print(f'anchors: {len(outside)} lines left the section map ({", ".join(names[:6])}); '
-                  f'that span is not an agreement check')
-    passes = line_pass(lp, units, anchors, margin)
+    # The search is one CTC pass per vocal section. A distance to a global anchor is not a gate:
+    # on I Have Come Alive that distance threw away lines the section pass had already placed
+    # on the voice. Draft s/e are not read here.
+    passes = section_pass(lp, units)
 
     # Voice activity for word-end extension and onset snapping.
     act, _ = F.activity(F.rms_db(x))
@@ -472,17 +574,21 @@ def main() -> None:
     conf = []
     for u, p in zip(units, passes):
         r = p['res']
-        scores = [None if (r is None or w is None) else round(w['score'], 3) for w in (r['words'] if r else [None] * len(u.roman))]
+        placed_words = r['words'] if r else [None] * len(u.roman)
+        scores = [None if w is None else round(w['score'], 3) for w in placed_words]
         known = [s for s in scores if s is not None]
-        score = float(np.mean(known)) if known else 0.0
+        # Letter mean from the section pass, not a mean of word means: a long word must not
+        # be outvoted by a one-letter word, and the gate stays the one the diagnosis measured.
+        score = float(r['score']) if r is not None and r.get('score') is not None else (float(np.mean(known)) if known else 0.0)
         gap = r['gap'] if r else 99.0
-        agree = abs(r['f0'] / FPS - anchors[u.idx][0]) if (r and args.anchors != 'draft' and u.idx not in outside) else 0.0
-        if p['method'] == 'line' and score >= GOOD_SCORE and gap <= GOOD_GAP and agree <= GOOD_AGREE:
+        agree = 0.0
+        missing = r is None or any(rm and w is None for rm, w in zip(u.roman, placed_words))
+        if not missing and score >= GOOD_SCORE and gap <= GOOD_GAP:
             status = 'good'
-        elif r is not None and score >= KEEP_SCORE and agree <= KEEP_AGREE:
+        elif not missing and score >= KEEP_SCORE and gap <= GOOD_GAP * 2:
             status = 'weak'     # measured, plausible, but not sure: written, flagged
         else:
-            status = 'draft'    # text not found where expected: keep the draft, fitted between neighbours
+            status = 'draft'    # text not found in the section: keep the draft, fitted between neighbours
         conf.append({'scores': scores, 'score': score, 'gap': gap, 'agree': agree, 'status': status})
 
     # Word times (seconds) per unit; drafts for lines the aligner could not place.
@@ -520,14 +626,14 @@ def main() -> None:
             e += F.HOP
         w[1] = max(w[1], min(e, limit))
 
-    # Second opinion on solo lines the main aligner placed confidently. The window is the measured
-    # phrase, padded, but cut at the neighbouring measured line (see second_span). Draft word
-    # times are not used. Choir is not run.
+    # Second opinion on solo and choir lines the section pass placed confidently. The window is
+    # the measured phrase, padded, but cut at the neighbouring measured line (see second_span).
+    # Draft word times are not used. A duet or a tutti stays out.
     jobs = []
     second_window: dict[str, tuple[float, float]] = {}
     measured = [span if c['status'] != 'draft' else None for span, c in zip(phrase, conf)]
     for i, (u, c, span) in enumerate(zip(units, conf, phrase)):
-        if c['status'] != 'good' or not T.is_solo(u.sec, u.line):
+        if c['status'] != 'good' or T.group(u.sec, u.line) == 'other':
             continue
         prev_end = next((measured[j][1] for j in range(i - 1, -1, -1) if measured[j] is not None), None)
         next_start = next((measured[j][0] for j in range(i + 1, len(measured)) if measured[j] is not None), None)
@@ -552,7 +658,8 @@ def main() -> None:
         for wi, (w, rm, t, sc) in enumerate(zip(u.line['words'], u.roman, ws, scores)):
             has_letters = bool(rm)
             e2 = float(s2[wi]) if (s2 and s2[wi] is not None) else None
-            engines_agree = None if e2 is None else bool(abs(e2 - raw[wi]) <= ENGINE_AGREE)
+            tol = Q.CHOIR_TOL if T.group(u.sec, u.line) == 'choir' else ENGINE_AGREE
+            engines_agree = None if e2 is None else bool(abs(e2 - raw[wi]) <= tol)
             onset_ok = odt[wi] is not None
             # Proof: the line is placed confidently, the sync check finds it on the voice, and the
             # second aligner puts this word where the first did. --proof strict also wants a clear
@@ -576,7 +683,7 @@ def main() -> None:
             placed.add(u.id)
         report_lines.append({
             'id': u.id, 'section': u.sec['id'], 'lang': u.line['lang'], 'text': T.line_text(u.line),
-            'solo': T.is_solo(u.sec, u.line), 'second': second_name.get(u.id),
+            'solo': T.is_solo(u.sec, u.line), 'group': T.group(u.sec, u.line), 'second': second_name.get(u.id),
             'status': status, 'level': level, 'conf': round(proven_n / letters_n, 2) if letters_n else 0.0,
             'qa': q['verdict'], 'qa_offset': q['offset'], 'method': p['method'],
             'window': [round(p['window'][0], 2), round(p['window'][1], 2)],
@@ -584,7 +691,7 @@ def main() -> None:
                               if u.id in second_window else None),
             'start': round(ws[0][0], 2), 'end': round(ws[-1][1], 2),
             'draft_start': u.draft[0], 'shift': round(ws[0][0] - u.draft[0], 2),
-            'anchor_start': round(anchors[u.idx][0], 2), 'agree': round(agree, 2),
+            'anchor_start': round(p['window'][0], 2), 'agree': round(agree, 2),
             'score': round(score, 3), 'gap': round(gap, 3), 'words': words_out,
         })
 
@@ -627,7 +734,7 @@ def main() -> None:
     report = {
         'slug': slug, 'created': t_start.isoformat(timespec='seconds'), 'audio': audio.name, 'stem': is_stem,
         'engine': 'torchaudio MMS_FA + uroman, CTC Viterbi', 'second': summary['second_engine'],
-        'anchors': args.anchors, 'margin': margin,
+        'anchors': 'section', 'margin': margin,
         'thresholds': {'score': GOOD_SCORE, 'gap': GOOD_GAP, 'agree': GOOD_AGREE, 'keep_score': KEEP_SCORE,
                        'keep_agree': KEEP_AGREE, 'snap_win': SNAP_WIN, 'snap_min': Q.PEAK_HEIGHT, 'engine_agree': ENGINE_AGREE},
         'summary': summary, 'sections': section_notes, 'lines': report_lines,
@@ -637,7 +744,7 @@ def main() -> None:
 
     timing_note = (f'align.py {t_start:%Y-%m-%d}: времена слов записаны, все строки помечены timing-draft. '
                    f'Выравниватель уверен в {n_good} из {n}, не нашёл текст в {n_draft}. '
-                   f'Статус aligned ставит только qa_sync.py --apply, если сольные строки доказаны. '
+                   f'Статус aligned ставит только qa_sync.py --apply, если каждая группа строк (соло и хор, где она есть) доказана не меньше чем на 80 %. '
                    f'Отчёт выравнивания: work/{slug}/align-report.json.')
     # status stays draft until qa_sync proves lines. method records that these times came from MMS_FA.
     new_timing = {'status': 'draft', 'method': 'mms-fa', 'notes': timing_note}

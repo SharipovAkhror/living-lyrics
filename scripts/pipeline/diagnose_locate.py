@@ -25,63 +25,14 @@ import align as A
 import qa_sync as Q
 import timing as T
 from common import ROOT, dump_json, load_audio, load_json, song_dir, vocal_stem, work_dir
-from ctc import token_spans, viterbi
-
 # English verse and refrains, plus the Turkish verse and chorus. The report asked for the
 # English lines and the Turkish chorus; the verse is the same slice, so it is included.
 DEFAULT_IDS = {f'english-{i}' for i in range(1, 16)} | {f'turkish-{i}' for i in range(1, 17)}
 
 
 def align_stars(lp_letters: np.ndarray, units: list) -> list[dict] | None:
-    """CTC of `units` over `lp_letters`. A star between words may repeat and absorbs gaps.
-
-    Returns one dict per unit: word starts in frames of this slice, or None when the text
-    does not fit. A word with no letters is None.
-    """
-    if len(lp_letters) == 0 or not units:
-        return None
-    star = int(lp_letters.shape[1])
-    lp = np.concatenate([lp_letters, np.zeros((len(lp_letters), 1), np.float32)], axis=1)
-    tokens: list[int] = []
-    owner: list[tuple[int, int] | None] = []
-    tokens.append(star)
-    owner.append(None)
-    for ui, u in enumerate(units):
-        by_word: dict[int, list[int]] = {}
-        for tok, wi in zip(u.tokens, u.word_of):
-            by_word.setdefault(wi, []).append(tok)
-        for wi in range(len(u.roman)):
-            letters = by_word.get(wi)
-            if not letters:
-                continue
-            for tok in letters:
-                tokens.append(tok)
-                owner.append((ui, wi))
-            tokens.append(star)
-            owner.append(None)
-    path = viterbi(lp, tokens)
-    if path is None:
-        return None
-    first, last = token_spans(path, len(tokens))
-    out = [{'words': [None] * len(u.roman), 'score': 0.0, 'n': 0} for u in units]
-    posts: list[list[float]] = [[] for _ in units]
-    for k, own in enumerate(owner):
-        if own is None or int(first[k]) < 0:
-            continue
-        ui, wi = own
-        cell = out[ui]['words'][wi]
-        f0, f1 = int(first[k]), int(last[k])
-        if cell is None:
-            out[ui]['words'][wi] = {'f0': f0, 'f1': f1}
-        else:
-            cell['f0'] = min(cell['f0'], f0)
-            cell['f1'] = max(cell['f1'], f1)
-        # The letter's own posterior, not the star column.
-        posts[ui].append(float(np.exp(lp_letters[f0, tokens[k]])))
-    for ui, ps in enumerate(posts):
-        out[ui]['score'] = float(np.mean(ps)) if ps else 0.0
-        out[ui]['n'] = len(ps)
-    return out
+    """Same placement the pipeline writes. Kept so the locator table and the tests share it."""
+    return A.align_stars(lp_letters, units)
 
 
 def _sections(units: list) -> list[tuple[dict, list]]:
