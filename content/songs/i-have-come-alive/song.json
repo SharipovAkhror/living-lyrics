@@ -61,9 +61,9 @@
     }
   },
   "timing": {
-    "status": "draft",
-    "method": "legacy-estimate",
-    "notes": "Тайм-коды строф перенесены из прототипа; время слов распределено по слогам. Нужна сверка по записи (docs/methodology/05-alignment.md)."
+    "status": "aligned",
+    "notes": "qa_sync: сольных строк 38, доказано 1, не доказано 37. У доказанных расхождение начала слова с атакой голоса: медиана 0,000 с, 90-й перцентиль 0,000 с (порог 0,1 с). Остальные строки с флагом timing-draft. Отчёт: docs/analysis/i-have-come-alive-qa.md.",
+    "method": "mms-fa+whisperx"
   },
   "review": [
     "Получить запись и выровнять слова (docs/methodology/05-alignment.md).",
