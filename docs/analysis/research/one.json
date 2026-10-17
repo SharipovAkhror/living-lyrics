@@ -1,431 +1,647 @@
 {
  "slug": "one",
+ "checked": "2026-10-17",
  "officialLyrics": {
-  "found": false,
-  "text": "",
-  "url": "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/"
+  "found": true,
+  "text": "Manual en-GB captions of the 2022 live video, original language plus English. Verbatim sung text and the 63 cue times are in content/songs/one/canon.md. The Turkish caption track has the same cue boundaries and a translation, not the Arabic letters.",
+  "url": "https://www.youtube.com/watch?v=BcSnZ-RuwyI",
+  "also": [
+   "https://www.youtube.com/watch?v=AAtA2RVF6LY",
+   "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/"
+  ]
  },
  "pieces": [
   {
    "id": "eckhart-ouge-yusuf",
-   "title": "Daz ouge, da inne ich got sihe (as quoted by Sami Yusuf)",
-   "author": "Meister Eckhart",
-   "era": "c. 1260–1328 (German sermon «Qui audit me»)",
-   "lang": "de",
-   "script": "Latn",
-   "text": "Daz ouge, da inne ich got sihe\nDaz ist daz selbe ouge, da inne mich got sihet\nMin ouge und gotes ouge daz ist ein ouge",
-   "textSourceUrl": "https://circle.samiyusuf.art/personality-of-the-month-meister-eckhart",
-   "otherSources": [
-    "https://archive.org/details/deutschemystiker02pfei/page/n328/mode/1up",
-    "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/"
-   ],
-   "confidence": "single-source",
-   "notes": "Middle High German (ISO 639-3 gmh), not modern German. In this artist article Sami Yusuf writes that these lines 'found their way, in their original Middle High German, into my composition ONE … recorded live at Amsterdam's Royal Concertgebouw'. The three lines are copied verbatim from the article, where they are three italic spans with no circumflexes. Their form ('Daz ouge…', 'sihet', 'und') follows the modern critical text (Quint, DW Pr. 12). Pfeiffer's 1857 edition (Predigt XCVI, p. 312) has the same words in a different form: '…dâ inne ich got sihe, daz ist daz selbe ouge, dâ inne mich got siht: mîn ouge unde gotes ouge daz ist ein ouge…'. The earlier draft's modern German ('Das Auge, darin ich Gott sehe, das ist dasselbe Auge, darin mich Gott sieht …') matches neither source and should be dropped. Official English translation (Holland Festival 2020 page): 'The eye through which I see God is the same eye through which God sees me; my eye and God's eye are one eye, one seeing, one knowing, one love.'"
-  },
-  {
-   "id": "eckhart-pfeiffer-xcvi",
-   "title": "Predigt XCVI «Qui audit me» (Pfeiffer 1857), sentence containing «ein gesiht … ein minnen»",
+   "title": "Daz ouge, da inne ich got sihe (sung orthography)",
    "author": "Meister Eckhart",
    "era": "c. 1260–1328",
    "lang": "de",
    "script": "Latn",
-   "text": "daz dâ gesehen wirt mit dem ougen, dâ inne ich got sihe, daz ist daz selbe ouge, dâ inne mich got siht:\nmîn ouge unde gotes ouge daz ist ein ouge\nund ein gesiht und ein bekennen und ein minnen.",
-   "textSourceUrl": "https://archive.org/details/deutschemystiker02pfei/page/n328/mode/1up",
+   "text": "Daz ouge, da inne ich got sihe\ndaz ist daz selbe ouge, da inne mich got sihet\nmin ouge und gotes ouge daz ist ein ouge",
+   "textSourceUrl": "https://circle.samiyusuf.art/personality-of-the-month-meister-eckhart",
    "otherSources": [
-    "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/",
-    "https://circle.samiyusuf.art/personality-of-the-month-meister-eckhart"
+    "https://www.youtube.com/watch?v=BcSnZ-RuwyI",
+    "https://www.youtube.com/watch?v=AAtA2RVF6LY"
+   ],
+   "confidence": "two-sources",
+   "notes": "Re-read 2026-10-17 from the artist article (signed SY, three italic lines, no circumflexes, sihet, und) and from the live en-GB captions. The 2020 captions use the same spelling. Two cues write 'daz istein' (45.000–54.440 and 153.018–161.146); neighbouring cues and the English 'are one eye' read it as two words. Not heard. Pfeiffer 1857, Predigt XCVI, p. 312, has siht and unde with circumflexes; that edition spelling is not what the captions print. A clean Quint page was not opened, so the acute on ein is not confirmed."
+  },
+  {
+   "id": "eckhart-pfeiffer-xcvi",
+   "title": "Predigt XCVI Qui audit me, Pfeiffer 1857, p. 312",
+   "author": "Meister Eckhart",
+   "era": "c. 1260–1328",
+   "lang": "de",
+   "script": "Latn",
+   "text": "daz dâ gesehen wirt mit dem ougen, dâ inne ich got sihe, daz ist daz selbe ouge, dâ inne mich got siht: mîn ouge unde gotes ouge daz ist ein ouge und ein gesiht und ein bekennen und ein minnen.",
+   "textSourceUrl": "https://archive.org/download/deutschemystiker02pfei/page/n327_w1400.jpg",
+   "otherSources": [
+    "https://archive.org/download/deutschemystiker02pfei/page/n324_w1000.jpg"
    ],
    "confidence": "single-source",
-   "notes": "Read from the page image of F. Pfeiffer, Deutsche Mystiker des 14. Jh., Bd. 2: Meister Eckhart (1857; 1906 reprint), Predigt XCVI, p. 312, lines 7–11. The original is prose; the line breaks here are mine. The internet archive OCR drops the circumflexes, so the text was checked against the scan. Only the last line ('und ein gesiht und ein bekennen und ein minnen') is used in the song sequence: the artist quote stops at 'ein ouge', but the official English translation of ONE ends '…are one eye, one seeing, one knowing, one love', so the continuation is probably sung. Its exact sung form (Pfeiffer's 'und ein gesiht…' or Quint's 'und éin gesiht…') and its position in the live arrangement are unverified. The earlier draft's 'Das ist ein Auge, und ein Gesicht, und ein Erkennen, und ein Minnen' mixes modern and old forms and has no source."
+   "notes": "Page images re-read 2026-10-17. n324 is printed p. 309 and carries the heading XCVI. Qui audit me, non confundetur (Eccles. XXIV, 30). n327 is printed p. 312; the eye sentence is in the paragraph that ends the sermon, before heading XCVII. Earlier citation of n328 was the next page. The sung finale uses these last nouns without circumflexes and with und: daz ist ein ouge / und ein gesiht / und ein bekennen / und ein minnen, fourteen short cues from 729.384 to 764.339, not one sentence in the opening. eckhart.de was not fetched this pass, so a Quint page number is not repeated here."
   },
   {
    "id": "shushtari-kharajtu-lings",
-   "title": "خرجت في حين بعد الفنا (Lings, Sufi Poems, no. 58)",
-   "author": "Abu al-Hasan al-Shushtari",
-   "era": "13th c. (1212–1269)",
+   "title": "Lings, Sufi Poems, no. 58",
+   "author": "Abu al-Hasan al-Shushtari (attribution via Shaykh al-Alawi; Lings says it is not in the diwan)",
+   "era": "13th c.",
    "lang": "ar",
    "script": "Arab",
    "text": "خرجت في حين بعد الفنا\nومن هنا بقيت بلا أنا\nومن أنا يا أنا إلا أنا",
-   "textSourceUrl": "https://sites.harvard.edu/sulaymanibnqiddees/2015/11/04/who-am-i/",
+   "textSourceUrl": "https://archive.org/download/sufi-poems-a-mediaeval-anthology-martin-lings/page/n99_w1000.jpg",
    "otherSources": [
-    "https://archive.org/details/sufi-poems-a-mediaeval-anthology-martin-lings",
-    "https://www.aldiwan.net/poem69206.html",
-    "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/"
+    "https://archive.org/download/sufi-poems-a-mediaeval-anthology-martin-lings/page/n98_w1000.jpg"
    ],
-   "confidence": "two-sources-agree",
-   "notes": "The text is verbatim and unvocalized from the Harvard 'Sufi Poems' blog, which credits Martin Lings, Sufi Poems: A Mediaeval Anthology (no. 58). I checked it against the scan of Lings's book (archive.org, PDF page 100, Arabic facing p. 87): the consonantal text is the same. My reading of the printed vowel marks, some of them uncertain on أنا: «خَرَجْتُ في حِينٍ بَعْدَ الفَنَا / وَمِنْ هُنَا بَقِيتُ بِلاَ أنَا / وَمنْ أنا يا أنَا إلاَّ أنَا». Lings's English: 'After extinction I came out, and I / Eternal now am, though not as I. / And who am I, O I, but I?'. Variant: the muwashshah «كم درت في ذاتي» (aldiwan poem69206, from the diwan) has «ظَفِرْتُ بي حقا بعد الفنا / ومن هنا أبقى بِلا أنا / ومَنْ أنا يا أنا إِلا أنا». The official English translation of ONE has exactly three lines here ('Annihilated, I then emerged / Living on, but without I, / And who am I, O I, but I?'). That fits the Lings version ('emerged' = خرجت, 'living on' = بقيت). The earlier draft's «خَرَجْتُ فِيهِ بَعْدَ الْفَنَا» (فيه) matches no source. Its extra line «ظَفِرْتُ بِي حَقًّا بَعْدَ الْفَنَا» is absent from the official translation and probably not sung. Not verified by ear."
+   "confidence": "single-source",
+   "notes": "Arabic consonants read from the scan of printed p. 89 (leaf n99). English of no. 58 is on printed p. 88: After extinction I came out, and I / Eternal now am, though not as I. / And who am I, O I, but I. Note 97 (notes p. 100 in the djvu text) says the poem is not in Shushtari's diwan and that Shaykh al-Alawi quoted it and attributed it to him, citing A Sufi Saint of the Twentieth Century, p. 127. That page was not opened, so this is one literary witness. Printed vowel signs were not copied mark by mark. Sung caption text, same on the 2020 and 2022 videos: خَرَجْتُ في حِين بَعْدَ الفَنَا / وَمِنْ هُنَا بَقِيتُ بِلاَ أنَا / وَمنْ أنَا يا أنَا إلاَّ أنَا, plus the fragments يا أنَا إلاَّ أنَا and إلاَّ أنَا. The muwashshah كم درت في ذاتي (aldiwan poem69206) has ظفرت بي حقا / أبقى and is not in these captions."
   },
   {
    "id": "shushtari-suqitu-kas-al-hawa",
    "title": "سقيت كأس الهوى قديما",
    "author": "Abu al-Hasan al-Shushtari",
-   "era": "13th c. (1212–1269)",
+   "era": "13th c.",
    "lang": "ar",
    "script": "Arab",
-   "text": "سُقيتُ كأس الهَوَى قديماً\nمن غير أَرْضيِ ولاَ سمَائِي\nأصْبحتُ به فَريدَ عَصري\nبَينَ الْوَرى حاَمِلاً لِوائِي\nلِي مَذْهَبٌ مَذْهَبٌ عَجِيب\nفي الحُبِّ قَدْ فَاقَ يَا هَنائِي\nيَا مَنْ هُمُو لِلجْمِيل أهْلٌ\nإِنْ لم يَمنُّوا فَيَا شَقائِي\nحاشَاكُموا يَا أَُهَيْلَ نَجْدٍ\nأن تَقْطَعوُا مِنْكْمُو رجاَئِي",
-   "textSourceUrl": "https://www.aldiwan.net/poem69371.html",
+   "text": "سقيت كأس الهوى قديما\nمن غير أرضي ولا سمائي\nأصبحت به فريد عصري\nبين الورى حاملا لوائي\nلي مذهب ، مذهب عجيب\nفي الحبّ قد فاق يا هنائي\nيا من همو للجميل أهل\nإن لم يمنّوا فيا شقائي\nحاشكمو يا أهيل نجد\nأن تقطعوا منكمو رجائي",
+   "textSourceUrl": "https://ablibrary.net/book_content/8758/28",
    "otherSources": [
-    "https://www.nawadiraat.org/poems/6733",
-    "https://archive.org/details/abu-al-hasan-al-shushtari-1",
-    "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/"
+    "https://www.aldiwan.net/poem69371.html"
    ],
-   "confidence": "two-sources-agree",
-   "notes": "Five bayts (mukhalla' al-basit). The text is verbatim from aldiwan.net, vowel marks as printed (including oddities such as «أَُهَيْلَ», «أَرْضيِ» and «تَقْطَعوُا»), split into hemistichs as on nawadiraat.org; nawadiraat is an identical copy. An independent check is the diwan edition on archive.org (abu-al-hasan-al-shushtari-1, OCR, poem 'سقيت كأس الهوى', citing Ibn al-Khatib, Rawdat al-ta'rif, p. 509). It has the same readings: «من غير أرضي ولا سمائي», «أصبحت به فريد عصري», «في الحب قد فاق يا هنائي», «إن لم يمنوا». The official English translation of ONE covers all five bayts in this order: 'I drank from the eternal cup of love, / that is neither of this world nor of heaven. / Thus I became peerless in my time / Carrying my banner among one and all. / Mine is a wondrous path, an unsurpassed path. / How great is its radiance and my delight therein. / O you, who are worthy of beauty / If you do not give me your favor freely, I am wretched. / O People of Najd, far be it from you / To cut the ties of hope that bind us.' The earlier draft has unsourced readings: «من غير أرض ولا سماء», «أصبحت فيه», «لي مذهب المذهب العجيب / بالحسن قد فاق», «إن لم تمنوا». Two of them may matter. Whisper heard «أصبحت فيه» at 571 s and 735 s. The translation's 'radiance' and 'If you do not' (second person) could point to a sung variant. Verify by ear before changing the edition text."
+   "confidence": "two-sources",
+   "notes": "Unvocalized text re-read from the Adluni / Abu al-Fuyud diwan, p. 28. aldiwan poem69371 has the same words vocalized, including printed oddities. ar.wikisource copies that vocalized text and is tagged as an unknown-source page, so it is not a second witness. Sung form on both official caption tracks differs and is kept as sung: فيه not به, بالحسن not في الحب, تمنوا not يمنوا, أرض/سماء without ya, حاشاكم/منكم/هم without waw, and سُقَيْتُ with fatha on qaf. No second manuscript of those sung readings was found. The fatha on qaf was not heard."
   }
  ],
+ "sequenceNote": "The array below is the 63 en-GB cues of BcSnZ-RuwyI plus 9 vocal stretches with no caption. Instrumental gaps and repeat numbers are in the 81-row table in content/songs/one/canon.md. The 2020 video uses the same line spellings in a different order and must not time this recording. German and Arabic in the opening are sequential on the caption track; overlap was not heard.",
  "sequence": [
   {
-   "t": 0,
+   "t": 0.145,
+   "end": 4.705,
    "pieceId": "eckhart-ouge-yusuf",
    "line": "Daz ouge, da inne ich got sihe",
-   "evidence": "Artist article says these MHG lines are sung in ONE. The official description says the piece opens with Cappella Amsterdam. Voice map: voice 0–250 s. Whisper at 0 s ('ترسل الهواء') is a hallucination. Exact onset not measured.",
-   "voice": "Cappella Amsterdam (choir)"
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": -1,
+   "t": 5.896,
+   "end": 17.352,
    "pieceId": "eckhart-ouge-yusuf",
-   "line": "Daz ist daz selbe ouge, da inne mich got sihet",
-   "evidence": "Artist article; order from the official translation. Time unknown (within 0–58 s?).",
-   "voice": "Cappella Amsterdam (choir)"
+   "line": "daz ist daz selbe ouge, da inne mich got sihet",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": -1,
+   "t": 17.352,
+   "end": 25.771,
    "pieceId": "eckhart-ouge-yusuf",
-   "line": "Min ouge und gotes ouge daz ist ein ouge",
-   "evidence": "Artist article; time unknown.",
-   "voice": "Cappella Amsterdam (choir)"
+   "line": "min ouge und gotes ouge daz ist ein ouge",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": -1,
+   "t": 28.004,
+   "end": 32.478,
+   "pieceId": "eckhart-ouge-yusuf",
+   "line": "Daz ouge, da inne ich got sihe",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 32.478,
+   "end": 45.0,
+   "pieceId": "eckhart-ouge-yusuf",
+   "line": "daz ist daz selbe ouge, da inne mich got sihet",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 45.0,
+   "end": 54.44,
+   "pieceId": "eckhart-ouge-yusuf",
+   "line": "min ouge und gotes ouge daz istein ouge",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 58.298,
+   "end": 69.467,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "خَرَجْتُ في حِين بَعْدَ الفَنَا",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 71.411,
+   "end": 80.627,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "وَمِنْ هُنَا بَقِيتُ بِلاَ أنَا",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 82.349,
+   "end": 91.449,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "وَمنْ أنَا يا أنَا إلاَّ أنَا",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 91.682,
+   "end": 102.59,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "خَرَجْتُ في حِين بَعْدَ الفَنَا",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 102.88,
+   "end": 114.0,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "وَمِنْ هُنَا بَقِيتُ بِلاَ أنَا",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 114.0,
+   "end": 124.453,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "وَمنْ أنَا يا أنَا إلاَّ أنَا",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 124.453,
+   "end": 129.173,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "يا أنَا إلاَّ أنَا",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 130.605,
+   "end": 135.73,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "إلاَّ أنَا",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 137.275,
+   "end": 142.495,
+   "pieceId": "eckhart-ouge-yusuf",
+   "line": "Daz ouge, da inne ich got sihe",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 142.857,
+   "end": 153.018,
+   "pieceId": "eckhart-ouge-yusuf",
+   "line": "daz ist daz selbe ouge, da inne mich got sihet",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 153.018,
+   "end": 161.146,
+   "pieceId": "eckhart-ouge-yusuf",
+   "line": "min ouge und gotes ouge daz istein ouge",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 162.169,
+   "end": 166.307,
+   "pieceId": "eckhart-ouge-yusuf",
+   "line": "Daz ouge, da inne ich got sihe",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 166.307,
+   "end": 177.066,
+   "pieceId": "eckhart-ouge-yusuf",
+   "line": "daz ist daz selbe ouge, da inne mich got sihet",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 177.066,
+   "end": 186.406,
+   "pieceId": "eckhart-ouge-yusuf",
+   "line": "min ouge und gotes ouge daz ist ein ouge",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 191.085,
+   "end": 201.12,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "خَرَجْتُ في حِين بَعْدَ الفَنَا",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 201.12,
+   "end": 210.892,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "وَمِنْ هُنَا بَقِيتُ بِلاَ أنَا",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 211.504,
+   "end": 220.536,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "وَمنْ أنَا يا أنَا إلاَّ أنَا",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 220.536,
+   "end": 226.141,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "يا أنَا إلاَّ أنَا",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 226.337,
+   "end": 246.391,
+   "pieceId": "shushtari-kharajtu-lings",
+   "line": "وَمنْ أنَا يا أنَا إلاَّ أنَا",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 246.391,
+   "end": 250,
+   "pieceId": null,
+   "line": "unidentified vocal tail after the last opening caption; voice map runs to 250",
+   "evidence": "Voice map in docs/analysis/one.md. No caption. Not heard."
+  },
+  {
+   "t": 303.383,
+   "end": 309.121,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "سُقَيْتُ كَأْسَ الْهَوَى قدِيماً",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 309.121,
+   "end": 315.04,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "مِنْ غَيْرِ أَرْضٍ وَلَاَ سَمَاءِ",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 315.04,
+   "end": 320.56,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "أصْبَحْتُ فِيهِ فَرِيدَ عَصْرِي",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 320.56,
+   "end": 326.573,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "بَيْنَ الْوَرَى حَامِلاً لِوَائِي",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 326.573,
+   "end": 332.165,
+   "pieceId": null,
+   "line": "unidentified; inside voice map 303–391, no caption",
+   "evidence": "Voice map in docs/analysis/one.md. No caption. Not heard."
+  },
+  {
+   "t": 332.165,
+   "end": 338.145,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "لِي مَذْهَبٌ مَذْهَبٌ عَجِيبٌ",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 338.145,
+   "end": 343.565,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "بِالْحُسنِ قَدْ فَاقَ يَا هَنَائِي",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 343.748,
+   "end": 349.428,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "يَا مَنْ هُمُ لِلْجَمِيلِ أَهْلٌ",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 349.428,
+   "end": 354.988,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "إِنْ لَمْ تَمُنُّوا فَيَا شَقَائِي",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 354.988,
+   "end": 367.051,
+   "pieceId": null,
+   "line": "unidentified; inside voice map 303–391, no caption",
+   "evidence": "Voice map in docs/analysis/one.md. No caption. Not heard."
+  },
+  {
+   "t": 367.051,
+   "end": 372.76,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "حَشَاكُمُ يَا أَُهَيْلَ نَجْدٍ",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 372.76,
+   "end": 378.573,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "أَنْ تَقْطَعُوا مِنْكُمُ رَجَاَئِي",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 378.573,
+   "end": 384.233,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "يَا مَنْ هُمُ لِلْجَمِيلِ أَهْلٌ",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 384.233,
+   "end": 390.0,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "إِنْ لَمْ تَمُنُّوا فَيَا شَقَائِي",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 442.276,
+   "end": 447.666,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "حَشَاكُمُ يَا أَُهَيْلَ نَجْدٍ",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 447.666,
+   "end": 453.48,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "أَنْ تَقْطَعُوا مِنْكُمُ رَجَاَئِي",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 453.48,
+   "end": 459.01,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "يَا مَنْ هُمُ لِلْجَمِيلِ أَهْلٌ",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 459.01,
+   "end": 464.86,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "إِنْ لَمْ تَمُنُّوا فَيَا شَقَائِي",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 474,
+   "end": 476.2,
+   "pieceId": null,
+   "line": "unidentified lead-in; voice map 474–500 starts before the caption",
+   "evidence": "Voice map in docs/analysis/one.md. No caption. Not heard."
+  },
+  {
+   "t": 476.2,
+   "end": 481.658,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "حَشَاكُمُ يَا أَُهَيْلَ نَجْدٍ",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 481.658,
+   "end": 487.134,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "أَنْ تَقْطَعُوا مِنْكُمُ رَجَاَئِي",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 487.134,
+   "end": 492.939,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "يَا مَنْ هُمُ لِلْجَمِيلِ أَهْلٌ",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 492.939,
+   "end": 498.196,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "إِنْ لَمْ تَمُنُّوا فَيَا شَقَائِي",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 560.667,
+   "end": 566.39,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "سُقَيْتُ كَأْسَ الْهَوَى قدِيماً",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 566.39,
+   "end": 572.027,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "مِنْ غَيْرِ أَرْضٍ وَلَاَ سَمَاءِ",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 572.027,
+   "end": 577.608,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "أصْبَحْتُ فِيهِ فَرِيدَ عَصْرِي",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 577.608,
+   "end": 583.298,
+   "pieceId": "shushtari-suqitu-kas-al-hawa",
+   "line": "بَيْنَ الْوَرَى حَامِلاً لِوَائِي",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
+  },
+  {
+   "t": 622,
+   "end": 632,
+   "pieceId": null,
+   "line": "unidentified; voice map, no caption",
+   "evidence": "Voice map in docs/analysis/one.md. No caption. Not heard."
+  },
+  {
+   "t": 671,
+   "end": 674,
+   "pieceId": null,
+   "line": "unidentified; voice map, no caption",
+   "evidence": "Voice map in docs/analysis/one.md. No caption. Not heard."
+  },
+  {
+   "t": 714,
+   "end": 721,
+   "pieceId": null,
+   "line": "unidentified; voice map, no caption",
+   "evidence": "Voice map in docs/analysis/one.md. No caption. Not heard."
+  },
+  {
+   "t": 729.384,
+   "end": 731.103,
    "pieceId": "eckhart-pfeiffer-xcvi",
-   "line": "und ein gesiht und ein bekennen und ein minnen.",
-   "evidence": "Official 2020 English translation ends 'one seeing, one knowing, one love'. Position in the live arrangement unknown: it may follow line 3 in the opening or belong to the finale (the earlier draft put it at ~730 s, with no evidence).",
-   "voice": "Cappella Amsterdam (choir)"
+   "line": "daz ist ein ouge",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": 65.8,
-   "pieceId": "shushtari-kharajtu-lings",
-   "line": "خرجت في حين بعد الفنا",
-   "evidence": "Whisper 'بعد الفناء' at 65.8 s (end of the line). The opening words (خرجت في حين / خرجت فيه / ظفرت بي حقا) were not heard.",
-   "voice": "solo, unconfirmed (Sami Yusuf per the earlier draft)"
+   "t": 731.649,
+   "end": 733.255,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "und ein gesiht",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": -1,
-   "pieceId": "shushtari-kharajtu-lings",
-   "line": "ومن هنا بقيت بلا أنا",
-   "evidence": "Official translation 'Living on, but without I'. Sung between ~66 and ~78 s by order; not heard by Whisper.",
-   "voice": "solo, unconfirmed"
+   "t": 733.972,
+   "end": 735.785,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "und ein bekennen",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": 78,
-   "pieceId": "shushtari-kharajtu-lings",
-   "line": "ومن أنا يا أنا إلا أنا",
-   "evidence": "Whisper 'إلى أنت' at 78 s, a plausible mishearing of 'إلا أنا'.",
-   "voice": "solo, unconfirmed"
+   "t": 736.099,
+   "end": 738.039,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "und ein minnen",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": 303,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "سُقيتُ كأس الهَوَى قديماً",
-   "evidence": "Hypothesis only. Voice map: a vocal section 303–391 s follows the 250–303 s instrumental, and the official translation puts this poem after the first fragment. Not heard by Whisper here.",
-   "voice": "unconfirmed (Sami Yusuf or Amsterdam Andalusian Orchestra vocalists)"
+   "t": 738.519,
+   "end": 740.697,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "daz ist ein ouge",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": -1,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "من غير أَرْضيِ ولاَ سمَائِي",
-   "evidence": "Hypothesis (303–391 s block), order from the official translation.",
-   "voice": "unconfirmed"
+   "t": 740.879,
+   "end": 742.539,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "und ein gesiht",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": -1,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "أصْبحتُ به فَريدَ عَصري",
-   "evidence": "Hypothesis (303–391 s block). The edition reads 'به'; Whisper elsewhere heard 'فيه'.",
-   "voice": "unconfirmed"
+   "t": 742.834,
+   "end": 744.934,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "daz ist ein ouge",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": -1,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "بَينَ الْوَرى حاَمِلاً لِوائِي",
-   "evidence": "Hypothesis (303–391 s block).",
-   "voice": "unconfirmed"
+   "t": 745.243,
+   "end": 747.378,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "und ein gesiht",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": -1,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "لِي مَذْهَبٌ مَذْهَبٌ عَجِيب",
-   "evidence": "Hypothesis (303–391 s block); line present in the official translation.",
-   "voice": "unconfirmed"
+   "t": 747.853,
+   "end": 749.828,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "und ein bekennen",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": -1,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "في الحُبِّ قَدْ فَاقَ يَا هَنائِي",
-   "evidence": "Hypothesis (303–391 s block); line present in the official translation.",
-   "voice": "unconfirmed"
+   "t": 750.158,
+   "end": 752.098,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "und ein minnen",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": 442,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "يَا مَنْ هُمُو لِلجْمِيل أهْلٌ",
-   "evidence": "Hypothesis. Voice map: vocal 442–466 and 474–500 s; Whisper 482–495 s heard 'أنت من' (unclear, possibly 'يا من'). The earlier draft also placed the Najd bayts here.",
-   "voice": "unconfirmed (earlier draft: choir)"
+   "t": 752.414,
+   "end": 754.194,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "daz ist ein ouge",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": -1,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "إِنْ لم يَمنُّوا فَيَا شَقائِي",
-   "evidence": "Hypothesis (442–500 s). The official translation uses the second person ('If you do not'), so the sung word may be تمنوا.",
-   "voice": "unconfirmed"
+   "t": 754.681,
+   "end": 756.438,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "und ein gesiht",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": -1,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "حاشَاكُموا يَا أَُهَيْلَ نَجْدٍ",
-   "evidence": "Hypothesis (442–500 s); line present in the official translation.",
-   "voice": "unconfirmed"
+   "t": 756.917,
+   "end": 758.952,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "und ein bekennen",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": -1,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "أن تَقْطَعوُا مِنْكْمُو رجاَئِي",
-   "evidence": "Hypothesis (442–500 s); line present in the official translation.",
-   "voice": "unconfirmed"
+   "t": 758.952,
+   "end": 764.339,
+   "pieceId": "eckhart-pfeiffer-xcvi",
+   "line": "und ein minnen",
+   "evidence": "en-GB caption of BcSnZ-RuwyI. Full row numbers and repeat counts are in content/songs/one/canon.md."
   },
   {
-   "t": 561,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "سُقيتُ كأس الهَوَى قديماً",
-   "evidence": "Whisper at 561 s: 'أسى الهواء' ≈ 'كأس الهوى' (reprise; voice map: vocal 559–585 s).",
-   "voice": "unconfirmed"
+   "t": 764.339,
+   "end": 786,
+   "pieceId": null,
+   "line": "unidentified; captions end, voice map continues to 786",
+   "evidence": "Voice map in docs/analysis/one.md. No caption. Not heard."
   },
   {
-   "t": -1,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "من غير أَرْضيِ ولاَ سمَائِي",
-   "evidence": "Whisper 561–574 s: 'إن غير / أره ولا' ≈ 'من غير أرضي ولا'.",
-   "voice": "unconfirmed"
-  },
-  {
-   "t": 571,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "أصْبحتُ به فَريدَ عَصري",
-   "evidence": "Whisper at 571 s: 'أصبحت فيه'. The edition reads 'به'; the sung word may be 'فيه'.",
-   "voice": "unconfirmed"
-  },
-  {
-   "t": 735,
-   "pieceId": "shushtari-suqitu-kas-al-hawa",
-   "line": "أصْبحتُ به فَريدَ عَصري",
-   "evidence": "Whisper 735–740 s: 'أصبحت فيه' ×5. The repeat count is unreliable (likely a Whisper loop). Voice map: vocal 730–786 s.",
-   "voice": "unconfirmed"
+   "t": 793,
+   "end": 828,
+   "pieceId": null,
+   "line": "unidentified; no caption. Not an Arabic coda. Whisper Amen at 740 is inside the German finale.",
+   "evidence": "Voice map in docs/analysis/one.md. No caption. Not heard."
   }
  ],
  "credits": [
   {
-   "role": "Composed and arranged",
+   "role": "2022 live recording, composed and arranged",
    "name": "Sami Yusuf",
-   "source": "https://play.samaanetwork.net/music/one/"
+   "source": "https://samiyusuf.art/music/one",
+   "scope": "This recording"
   },
   {
-   "role": "German words",
-   "name": "Meister Eckhart",
-   "source": "https://play.samaanetwork.net/music/one/"
+   "role": "2022 words",
+   "name": "Meister Eckhart (German); Abu al-Hasan al-Shushtari (Arabic)",
+   "source": "https://samiyusuf.art/music/one",
+   "scope": "This recording"
   },
   {
-   "role": "Arabic words",
-   "name": "Abu al-Hasan al-Shushtari",
-   "source": "https://play.samaanetwork.net/music/one/"
+   "role": "2022 performers, ensembles only",
+   "name": "Cappella Amsterdam; Amsterdam Andalusian Orchestra; Sami Yusuf's ensemble. Instruments named: ney, violin, qanun, santur, percussion. Opens with the choir, then the Andalusian orchestra, then santur and percussion.",
+   "source": "https://samiyusuf.art/music/one",
+   "scope": "This recording. No per-person list on the page. Who is audible in the 828 s file was not checked by ear."
   },
   {
-   "role": "Key / mode",
-   "name": "E flat (with allusions to maqām Nahāwand)",
-   "source": "https://play.samaanetwork.net/music/one/"
+   "role": "2022 live premiere date, as reprinted on the artist site",
+   "name": "6 June 2022, Royal Concertgebouw, Holland Festival",
+   "source": "https://samiyusuf.art/chronicles/press/sami-yusuf-overwhelms-packed-concertgebouw-with-cinematic-music-spectacle",
+   "scope": "The concert. The Cultuurpers original was not opened."
   },
   {
-   "role": "Vocal",
-   "name": "Sami Yusuf",
-   "source": "https://play.samaanetwork.net/music/one/"
+   "role": "2020 remote premiere, full named roster",
+   "name": "See content/songs/one/sources.md. Not the 2022 band. Composer and musical director Sami Yusuf; AAO musical leader Abderrahim Semlali.",
+   "source": "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/",
+   "scope": "2020 only"
   },
   {
-   "role": "Choir: Cappella Amsterdam, sopranos",
-   "name": "Sanda Audere, Elisabeth Blom, Marijke van der Harst",
-   "source": "https://play.samaanetwork.net/music/one/"
+   "role": "English from Arabic, 2020 page",
+   "name": "Dr. Yousef Casewit and Saad Ansari",
+   "source": "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/",
+   "scope": "2020 page. The 2022 on-screen English is close to this translation; the 2022 release page does not name the translators."
   },
   {
-   "role": "Choir: Cappella Amsterdam, altos",
-   "name": "Hebe de Champeaux, Irene Sorozabal, Inga Schneider",
-   "source": "https://play.samaanetwork.net/music/one/"
-  },
-  {
-   "role": "Choir: Cappella Amsterdam, tenors",
-   "name": "Jon Etxabe Arzuaga, Jelle Leistra, Diederik Rooker",
-   "source": "https://play.samaanetwork.net/music/one/"
-  },
-  {
-   "role": "Choir: Cappella Amsterdam, basses",
-   "name": "Jan Douwes, Angus van Grevenbroek, Johan Vermeer",
-   "source": "https://play.samaanetwork.net/music/one/"
-  },
-  {
-   "role": "Production (listed under Cappella Amsterdam)",
-   "name": "Francesca Thompson",
-   "source": "https://play.samaanetwork.net/music/one/"
-  },
-  {
-   "role": "Amsterdam Andalusian Orchestra: vocals",
-   "name": "Salah Mesbah",
-   "source": "https://play.samaanetwork.net/music/one/"
-  },
-  {
-   "role": "Amsterdam Andalusian Orchestra: percussion, vocals",
-   "name": "Dwight Breinburg",
-   "source": "https://play.samaanetwork.net/music/one/"
-  },
-  {
-   "role": "Amsterdam Andalusian Orchestra: rabab, vocals",
-   "name": "Mohamed Chairi",
-   "source": "https://play.samaanetwork.net/music/one/"
-  },
-  {
-   "role": "Amsterdam Andalusian Orchestra: qanun, oud, vocals",
-   "name": "Ahmed el Maai",
-   "source": "https://play.samaanetwork.net/music/one/"
-  },
-  {
-   "role": "Mixed and mastered",
-   "name": "Andante Studios",
-   "source": "https://play.samaanetwork.net/music/one/"
-  },
-  {
-   "role": "Recording",
-   "name": "Live at the Royal Concertgebouw, Amsterdam, Holland Festival, June 2022; released 2023 as a single and on ONE: When Paths Meet",
-   "source": "https://samiyusuf.art/music/one"
-  },
-  {
-   "role": "English translation from Arabic (official, 2020 version)",
-   "name": "Dr. Yousef Casewit & Saad Ansari",
-   "source": "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/"
-  },
-  {
-   "role": "English translation from German (official, 2020 version; the Holland Festival page credits Katherine O'Brien, the 2020 YouTube description credits Maurice O'C Walshe)",
-   "name": "Katherine O'Brien / Maurice O'C Walshe",
-   "source": "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/ ; https://www.youtube.com/watch?v=AAtA2RVF6LY"
-  },
-  {
-   "role": "Language consultants (2020 version): German / Arabic",
-   "name": "Marion Höchstötter / Elouafi Mohammed",
-   "source": "https://www.youtube.com/watch?v=AAtA2RVF6LY"
-  },
-  {
-   "role": "Idea and commission",
-   "name": "Holland Festival",
-   "source": "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/"
+   "role": "English from German, 2020 page",
+   "name": "Katherine O'Brien",
+   "source": "https://web.archive.org/web/20200704113536/https://www.hollandfestival.nl/en/program/20-20/one/",
+   "scope": "Opened. A conflicting credit to Maurice O'C. Walshe was reported from the 2020 YouTube description and was not re-opened."
   }
  ],
  "instruments": [
   {
-   "name": "santur (santoor)",
-   "player": "Mahyar Toreihi",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "Official description: the piece culminates in 'a mesmerising santur and percussion performance by Sami Yusuf's ensemble'. Probably the long instrumental stretch of ~585–730 s (voice map); not verified."
-  },
-  {
-   "name": "daf",
-   "player": "Seyyed Mohammad Jaberi",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "Percussion of the closing santur/percussion section (description); timing unverified."
-  },
-  {
-   "name": "bendir",
-   "player": "Ömer Avci",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "Percussion; timing unverified."
-  },
-  {
-   "name": "percussion (Amsterdam Andalusian Orchestra)",
-   "player": "Ruven Ruppik, Khaili Ahmed, Dwight Breinburg",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "With the Andalusian section after the choral opening (description); timing unverified."
-  },
-  {
-   "name": "ney",
-   "player": "Eyüpcan Açikpazu (Sami Yusuf ensemble); Marianne Noordink (Amsterdam Andalusian Orchestra)",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "Named in the official description among the Amsterdam Andalusian Orchestra sounds after the choral opening."
-  },
-  {
-   "name": "violin",
-   "player": "Abderrahim Semlali, Jaafar Lougmani, Mohamed Al Mokhlis, Hannelore de Vuyst",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "Named in the official description (Andalusian section)."
-  },
-  {
-   "name": "viola",
-   "player": "Hessel Moeselaar",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "Credited; audibility not checked."
-  },
-  {
-   "name": "qanun",
-   "player": "Onur Cicin (Sami Yusuf ensemble); Ahmed el Maai (Amsterdam Andalusian Orchestra)",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "Named in the official description (Andalusian section)."
-  },
-  {
-   "name": "oud",
-   "player": "Hasan Hekimoglu (Sami Yusuf ensemble); Haytham Safia, Ahmed el Maai (Amsterdam Andalusian Orchestra)",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "Credited; audibility not checked."
-  },
-  {
-   "name": "rabab",
-   "player": "Mohamed Chairi",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "Credited; audibility not checked."
-  },
-  {
-   "name": "double bass",
-   "player": "Daniël van Huffelen",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "Credited; audibility not checked."
-  },
-  {
-   "name": "bağlama",
-   "player": "Huseyin Can Pala",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "Credited; possibly concert-wide credit, not checked in ONE."
-  },
-  {
-   "name": "erhu",
-   "player": "Guo Gan",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "Credited on the ONE page, but not named in ONE's description; may be a concert-wide credit."
-  },
-  {
-   "name": "guitar",
-   "player": "Jon Lawton",
-   "source": "https://play.samaanetwork.net/music/one/",
-   "when": "Credited; may be a concert-wide credit, not checked in ONE."
-  },
-  {
-   "name": "voices: mixed chamber choir",
-   "player": "Cappella Amsterdam (12 singers, see credits)",
+   "name": "ney, violin, qanun, santur, percussion",
+   "player": "not named on the 2022 pages that were opened",
    "source": "https://samiyusuf.art/music/one",
-   "when": "Opens the piece ('hauntingly beautiful vocals'); voice map 0–250 s and the choir at 793–828 s."
+   "when": "Description of this recording. Which player is heard in which gap of the 828 s file was not checked."
   }
  ],
  "openQuestions": [
-  "No original-language lyrics for the live recording (or the 2020 version) were found from the artist or label. The YouTube descriptions of BcSnZ-RuwyI and AAtA2RVF6LY, samiyusuf.art, play.samaanetwork.net and cappellaamsterdam.nl give only descriptions and credits. The only official texts are the English translation on the 2020 Holland Festival page (© Andante Records) and Sami Yusuf's own quote of the three MHG lines (circle.samiyusuf.art). hollandfestival.nl/en/one is behind a Cloudflare challenge and has no Wayback snapshot. YouTube captions could not be read (bot check).",
-  "Eckhart: the artist says the lines are sung 'in their original Middle High German', so the draft's modern German must be replaced. Still to confirm by ear: whether the choir follows the artist's Quint-type spelling ('sihet', 'und') or Pfeiffer's ('siht', 'unde'); whether 'und ein gesiht und ein bekennen und ein minnen' is sung (the official translation implies it) and where; how often each line repeats in 0–250 s; and what the choir sings at 793–828 s.",
-  "First Shushtari fragment: is it «خرجت في حين بعد الفنا» (Lings), «خرجت فيه بعد الفنا» (earlier draft, unsourced) or «ظفرت بي حقا بعد الفنا» (diwan muwashshah, aldiwan poem69206)? And «بقيت» or «أبقى»? The official translation has only three lines, so the draft's extra «ظَفِرْتُ بِي حَقًّا بَعْدَ الْفَنَا» line is probably not sung. Check around 58–85 s and in the 138–245 s section, which the draft calls counterpoint (unverified).",
-  "Second poem: the edition reads «أصبحت به», but Whisper heard «أصبحت فيه» twice (571 s, 735 s). Other points to check: «إن لم يمنوا» (edition) or «تمنوا» (the official translation's 'If you do not' and the earlier draft); «في الحب قد فاق» or «بالحسن قد فاق» (earlier draft; 'radiance' in the translation). The full bayt order is in the official translation, but which bayts are sung in 303–391 s and 442–500 s is a hypothesis with no transcript support.",
-  "Amen at ~740 s: no published text (translation, artist quote, poems) contains a prayer or Amen, and 'Amen' is a known Whisper hallucination over choral or instrumental passages. Treat it as unconfirmed and check by ear before adding anything. The 735–740 s '×5' repeat of «أصبحت فيه» may also be a Whisper loop.",
-  "Who sings the Arabic: Sami Yusuf (credited 'Vocal'), or the Amsterdam Andalusian Orchestra vocalists (Salah Mesbah, Mohamed Chairi, Ahmed el Maai, Dwight Breinburg), or both? The earlier draft assigned it to Sami Yusuf without a source.",
-  "Credits: the Samaa block attached to 'One (Live at the Holland Festival)' is identical on the album page and may be concert-wide. Guo Gan (erhu), Jon Lawton (guitar) and the bağlama may not play in ONE. The cappellaamsterdam.nl/en/sami-yusuf-one list (Selim Boyaci, Seyed Ali Jaberi tanbour, Seyyed Pourya Jaberi, Kutay Ozcan, 'vocals, piano & barrel bass') belongs to the 2020 remote premiere, not the 2022 live recording. The draft's 'Музыкальное руководство: Sami Yusuf, Abderrahim Semlali' also comes from 2020 credits, where Semlali is 'Musical leader AAO'.",
-  "The German-translation credit conflicts: the Holland Festival 2020 page names Katherine O'Brien, the 2020 YouTube description names Maurice O'C Walshe.",
-  "My reading of the vowel marks in the Lings print (from a 600 dpi scan), especially the fatha on أنا, is uncertain. The pieces therefore use the unvocalized blog text, which matches the print letter for letter.",
-  "Times in the sequence are approximate: Whisper fragment times or voice-map block starts, as stated in each entry's evidence. Entries with t=-1 are ordering hypotheses only and need forced alignment (stage 5) after the texts are confirmed by ear."
+  "Nine vocal stretches have energy on the voice map and no caption: 246.4–250, 326.6–332.2, 355.0–367.1, 474–476.2, 622–632, 671–674, 714–721, 764.3–786, 793–828. Only listening or lyric frames can say whether they are words, melisma or a false voice detection.",
+  "Who sings each Arabic line is not in the captions.",
+  "The finale is captioned as Cappella-style German, but the 2022 blurb only says the piece opens with the choir. Amen at 740 s is a Whisper token sitting on the caption und ein gesiht; it was not heard.",
+  "Two cues print daz istein. Not heard.",
+  "Caption سُقَيْتُ has fatha on qaf. Not heard; it may be a subtitle vowel.",
+  "A single caption track does not show whether German and Arabic overlap.",
+  "Caption time versus the encrypted file was not aligned. Durations are both about 828 s.",
+  "Lings p. 89 vowel signs were not copied mark by mark. Al-Alawi, A Sufi Saint of the Twentieth Century, p. 127, was not opened. A clean Quint text, including the acute on ein, was not read.",
+  "The 2022 per-person roster was not verified. play.samaanetwork.net was not re-opened, and yt-dlp on the 2022 video returned HTTP 429, so a credits block in the video description was not re-read. Do not treat the previous Samaa name list as confirmed. Guo Gan, Jon Lawton and the bağlama remain unverified for this file.",
+  "German-translator credit: Holland Festival 2020 page says Katherine O'Brien. Maurice O'C. Walshe was not re-checked in the 2020 video description."
  ]
 }
