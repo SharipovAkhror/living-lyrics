@@ -3,6 +3,7 @@ import { LANG_NAMES, formatTime } from '@/data/library';
 import { linkHandler } from '@/app/router';
 import type { Lyrics, Song } from '@/data/schema';
 import { instrument } from '@/instruments/catalog';
+import { MarksSection } from './MarksSection';
 
 const TIMING: Record<Song['timing']['status'], string> = {
   draft: 'Черновые: время слов оценено, а не измерено по записи — возможны отставания',
@@ -11,7 +12,20 @@ const TIMING: Record<Song['timing']['status'], string> = {
 };
 
 /** "About this song": who sings, who plays, whose words, which recording, how exact the timing is. */
-export function InfoSheet({ open, onClose, song, lyrics }: { open: boolean; onClose: () => void; song: Song; lyrics: Lyrics | null }) {
+export function InfoSheet({
+  open,
+  onClose,
+  song,
+  lyrics,
+  onSeek,
+}: {
+  open: boolean;
+  onClose: () => void;
+  song: Song;
+  lyrics: Lyrics | null;
+  /** Jump to a marked moment. Playback keeps its current play or pause state. */
+  onSeek: (t: number) => void;
+}) {
   const voices = new Set<string>();
   const players = new Map<string, Set<string>>();
   for (const s of lyrics?.sections ?? []) {
@@ -43,6 +57,8 @@ export function InfoSheet({ open, onClose, song, lyrics }: { open: boolean; onCl
           {song.featuring?.length ? ` · ${song.featuring.join(', ')}` : ''}
         </div>
       </div>
+
+      <MarksSection slug={song.slug} title={song.title} open={open} onSeek={onSeek} />
 
       {(voices.size > 0 || song.credits?.length) && (
         <Group header="Кто поёт и играет">
