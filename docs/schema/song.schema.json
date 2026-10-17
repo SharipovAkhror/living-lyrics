@@ -65,25 +65,7 @@
       "minItems": 1,
       "type": "array",
       "items": {
-        "type": "string",
-        "enum": [
-          "ar",
-          "fa",
-          "az",
-          "tr",
-          "ota",
-          "en",
-          "la",
-          "de",
-          "es",
-          "ur",
-          "hi",
-          "ru",
-          "uz",
-          "fr",
-          "it",
-          "gmh"
-        ]
+        "type": "string"
       }
     },
     "poets": {
@@ -95,25 +77,7 @@
             "type": "string"
           },
           "lang": {
-            "type": "string",
-            "enum": [
-              "ar",
-              "fa",
-              "az",
-              "tr",
-              "ota",
-              "en",
-              "la",
-              "de",
-              "es",
-              "ur",
-              "hi",
-              "ru",
-              "uz",
-              "fr",
-              "it",
-              "gmh"
-            ]
+            "type": "string"
           },
           "era": {
             "type": "string"
