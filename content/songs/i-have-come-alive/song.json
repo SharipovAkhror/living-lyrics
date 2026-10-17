@@ -58,8 +58,8 @@
   },
   "timing": {
     "status": "draft",
-    "method": "voice-map + whisper windows + draft-timing",
-    "notes": "Границы секций — карта голоса Demucs в docs/analysis/i-have-come-alive.md (файл 580 с). Начала групп строк — окна Whisper и таблица «Последовательность» в canon.md. Слова внутри окна разложены скриптом draft-timing по слогам, равномерно, без пословной сверки с записью. Где голос на карте длиннее разобранных строк, секция дотянута до конца голоса, а слова оставлены в окне Whisper. Участки, где голос есть, а слов нет (10,6–23,7 с, 172–174 с, 552,89–566,1 с), — секции с инструментом voice, не строки. Субтитры VTT 17 октября 2026 скачать не удалось: YouTube ответил 429 и попросил подтвердить, что запрос не от бота. Пословное время измерит конвейер T1."
+    "notes": "qa_sync: критерий не пройден, статус оставлен draft. Доказано 0 из 103 сольных строк (0,0 %), нужно не меньше 80 %. Строка «текст не найден» в доказанные не входит. Причины: текст не найден в голосе 93, выравниватели расходятся 6, выравниватель не уверен 4, не соло 2. Отчёт: docs/analysis/i-have-come-alive-qa.md.",
+    "method": "mms-fa+whisperx"
   },
   "review": [
     "Что поётся на 10,6 с, 16,2 с, 19,8–23,7 с, 172–174 с и 553–566 с. Слов нет: в lyrics.json это секции с инструментом «голос», не строки. Возглас «аман» для 172–174 не подтверждён.",
@@ -81,28 +81,97 @@
     "Дорожки субтитров с временем не скачаны (YouTube 429)."
   ],
   "credits": [
-    { "role": "Слова", "name": "Джалал ад-Дин Руми" },
-    { "role": "Музыка и музыкальное руководство", "name": "Сами Юсуф" },
-    { "role": "Вокал", "name": "Сами Юсуф" },
-    { "role": "Вокал, мавваль", "name": "Набила Маан" },
-    { "role": "Танбур", "name": "Сейед Али Джабери" },
-    { "role": "Най", "name": "Eyüpcan Açıkpazu" },
-    { "role": "Кяманча", "name": "Togrul Asadullayev" },
-    { "role": "Ударные", "name": "Omer Avci" },
-    { "role": "Уд", "name": "Selim Boyaci" },
-    { "role": "Канун", "name": "Onur Cicin" },
-    { "role": "Балабан", "name": "Shirzad Fataliyev" },
-    { "role": "Эрху", "name": "Guo Gan" },
-    { "role": "Кяманча", "name": "Fariz Huseynov" },
-    { "role": "Даф", "name": "Mohammad Jaberi" },
-    { "role": "Ситар", "name": "Asad Khan" },
-    { "role": "Классическая гитара, танбур", "name": "Jon Lawton" },
-    { "role": "Кяманча", "name": "Khalil Masimov" },
-    { "role": "Сантур", "name": "Farshad Mohammadi" },
-    { "role": "Оркестровая перкуссия", "name": "Lyudmila Naumova" },
-    { "role": "Баглама", "name": "Kutay Ozcan" },
-    { "role": "Кяманча", "name": "Rufat Xalilov" },
-    { "role": "Дхолак", "name": "Manoj Kumar Moothedath" },
-    { "role": "Табла", "name": "Sudheesh Kakkur" }
+    {
+      "role": "Слова",
+      "name": "Джалал ад-Дин Руми"
+    },
+    {
+      "role": "Музыка и музыкальное руководство",
+      "name": "Сами Юсуф"
+    },
+    {
+      "role": "Вокал",
+      "name": "Сами Юсуф"
+    },
+    {
+      "role": "Вокал, мавваль",
+      "name": "Набила Маан"
+    },
+    {
+      "role": "Танбур",
+      "name": "Сейед Али Джабери"
+    },
+    {
+      "role": "Най",
+      "name": "Eyüpcan Açıkpazu"
+    },
+    {
+      "role": "Кяманча",
+      "name": "Togrul Asadullayev"
+    },
+    {
+      "role": "Ударные",
+      "name": "Omer Avci"
+    },
+    {
+      "role": "Уд",
+      "name": "Selim Boyaci"
+    },
+    {
+      "role": "Канун",
+      "name": "Onur Cicin"
+    },
+    {
+      "role": "Балабан",
+      "name": "Shirzad Fataliyev"
+    },
+    {
+      "role": "Эрху",
+      "name": "Guo Gan"
+    },
+    {
+      "role": "Кяманча",
+      "name": "Fariz Huseynov"
+    },
+    {
+      "role": "Даф",
+      "name": "Mohammad Jaberi"
+    },
+    {
+      "role": "Ситар",
+      "name": "Asad Khan"
+    },
+    {
+      "role": "Классическая гитара, танбур",
+      "name": "Jon Lawton"
+    },
+    {
+      "role": "Кяманча",
+      "name": "Khalil Masimov"
+    },
+    {
+      "role": "Сантур",
+      "name": "Farshad Mohammadi"
+    },
+    {
+      "role": "Оркестровая перкуссия",
+      "name": "Lyudmila Naumova"
+    },
+    {
+      "role": "Баглама",
+      "name": "Kutay Ozcan"
+    },
+    {
+      "role": "Кяманча",
+      "name": "Rufat Xalilov"
+    },
+    {
+      "role": "Дхолак",
+      "name": "Manoj Kumar Moothedath"
+    },
+    {
+      "role": "Табла",
+      "name": "Sudheesh Kakkur"
+    }
   ]
 }
