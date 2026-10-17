@@ -1,7 +1,7 @@
 {
   "name": "Living Lyrics",
   "short_name": "Lyrics",
-  "description": "Песни с пословной синхронизацией, переводом и шархом",
+  "description": "Песни с пословной синхронизацией, переводом и пояснением",
   "lang": "ru",
   "start_url": "/",
   "scope": "/",
