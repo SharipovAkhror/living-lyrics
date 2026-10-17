@@ -1,0 +1,107 @@
+{
+  "trainedAt": "2026-10-17T15:55Z",
+  "embedding": "efficientat-mn10_as",
+  "featureDim": 960,
+  "windowSec": 2.0,
+  "hopSec": 1.0,
+  "sampleRate": 32000,
+  "classes": [
+    "guitar-acoustic",
+    "guitar-electric",
+    "violin",
+    "viola",
+    "cello",
+    "double-bass",
+    "flute",
+    "clarinet",
+    "oboe",
+    "bassoon",
+    "saxophone",
+    "trumpet",
+    "trombone",
+    "french-horn",
+    "tuba",
+    "accordion",
+    "piano",
+    "organ",
+    "voice"
+  ],
+  "families": [
+    "guitar",
+    "bowed",
+    "flute",
+    "reed",
+    "brass",
+    "free-reed",
+    "keyboard",
+    "voice"
+  ],
+  "temperature": 1.6,
+  "threshold": 0.55,
+  "thresholdReached": true,
+  "valAcceptedPrecision": 0.9000960614793467,
+  "valCoverage": 0.871859296482412,
+  "threshold95": 0.76,
+  "valAcceptedPrecision95": 0.9506462984723855,
+  "valCoverage95": 0.7127303182579564,
+  "familyFallbackMin": 0.7,
+  "fewExamples": [],
+  "noncommercial": true,
+  "noncommercialReason": "IRMAS на Zenodo помечен CC BY-NC-SA 4.0. Веса обучены и на этих записях.",
+  "licenses": [
+    {
+      "source": "tinysol",
+      "license": "CC BY 4.0",
+      "record": "https://doi.org/10.5281/zenodo.3685367"
+    },
+    {
+      "source": "irmas",
+      "license": "CC BY-NC-SA 4.0",
+      "record": "https://doi.org/10.5281/zenodo.1290750"
+    },
+    {
+      "source": "encoder",
+      "license": "MIT",
+      "record": "https://github.com/fschmid56/EfficientAT"
+    }
+  ],
+  "irmasCapPerClass": 300,
+  "seed": 17,
+  "counts": {
+    "train": 3777,
+    "val": 1194,
+    "test": 1256
+  },
+  "split": "TinySOL: официальные fold 0–2 обучение, 3 проверка, 4 тест. IRMAS: группа — номер отрывка в имени файла, 60/20/20 по sha256, потолок файлов на класс. Официальный тест IRMAS не скачивался. Оба разбиения оптимистичны: исполнитель не удержан.",
+  "openSet": {
+    "method": "softmax",
+    "threshold": 0.6440783796676477,
+    "higherIsIn": true,
+    "idValCoverageTarget": 0.8,
+    "classes": [
+      "guitar-acoustic",
+      "guitar-electric",
+      "violin",
+      "viola",
+      "cello",
+      "double-bass",
+      "flute",
+      "clarinet",
+      "oboe",
+      "bassoon",
+      "saxophone",
+      "trumpet",
+      "trombone",
+      "french-horn",
+      "tuba",
+      "accordion",
+      "piano",
+      "organ",
+      "voice"
+    ],
+    "knnK": 5,
+    "goalMet": false,
+    "thresholdOn": "saved-probe-val-quantile",
+    "note": "Порог держит около 80% проверки сохранённой головы. Leave-class-out цель 90% отвержения при 80% покрытия не выполнен ни одним из трёх способов."
+  }
+}

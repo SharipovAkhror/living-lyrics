@@ -1,0 +1,113 @@
+# Listen to songs on a runner, where AUDIO_KEY exists.
+# Start the same way as pipeline.yml: push jobs/instrument-id/<slug>.json
+# or run the workflow by hand. jobs/*.json does not match this subfolder
+# (* does not cross a slash), so the main pipeline stays idle.
+# The result commit is JSON and Markdown under docs/analysis/ only.
+# Eyes are not here. pipeline.yml is not modified.
+name: instrument-id
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: 'Песня или all'
+        required: false
+        default: all
+  push:
+    paths:
+      - 'jobs/instrument-id/*.json'
+permissions:
+  contents: write
+concurrency:
+  group: instrument-id-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  songs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Key present
+        env: { AUDIO_KEY: "${{ secrets.AUDIO_KEY }}" }
+        run: |
+          if [ -z "$AUDIO_KEY" ]; then echo "::error::Secret AUDIO_KEY is missing"; exit 1; fi
+          echo "key is set"
+      - name: Install
+        run: |
+          sudo apt-get install -y -qq ffmpeg > /dev/null
+          pip install -q torch torchaudio torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -q -r scripts/instrument_id/requirements.txt cryptography demucs
+      - name: Decrypt, listen, compare stems
+        env:
+          AUDIO_KEY: ${{ secrets.AUDIO_KEY }}
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_SLUG: ${{ github.event.inputs.slug }}
+        run: |
+          shopt -s nullglob
+          files=(jobs/instrument-id/*.json)
+          if [ ${#files[@]} -eq 0 ] && [ "$EVENT_NAME" != "workflow_dispatch" ]; then
+            echo "no job file on this push; the result commit deleted it"
+            exit 0
+          fi
+          python3 - << 'PY'
+          import json, os
+          from pathlib import Path
+          slugs = []
+          for path in sorted(Path("jobs/instrument-id").glob("*.json")):
+              payload = json.loads(path.read_text(encoding="utf-8"))
+              if isinstance(payload, dict) and payload.get("slugs"):
+                  slugs.extend(payload["slugs"])
+              elif isinstance(payload, dict) and payload.get("slug"):
+                  slugs.append(payload["slug"])
+              else:
+                  slugs.append(path.stem)
+          if not slugs and os.environ.get("INPUT_SLUG"):
+              slugs.append(os.environ["INPUT_SLUG"])
+          if not slugs:
+              slugs = ["i-have-come-alive", "karitas", "one"]
+          Path("work").mkdir(exist_ok=True)
+          # A trailing newline is required: `read` skips a final line that has none,
+          # and that dropped the last slug (ONE) on the first run.
+          Path("jobs-slugs.txt").write_text("\n".join(dict.fromkeys(slugs)) + "\n", encoding="utf-8")
+          print("slugs", slugs)
+          PY
+          while IFS= read -r slug || [ -n "$slug" ]; do
+            [ -z "$slug" ] && continue
+            # Commands in this loop inherit the slug-file stdin. Demucs reads it
+            # and would swallow the next slug, so every child gets /dev/null.
+            python3 scripts/pipeline/decrypt_audio.py "$slug" < /dev/null
+          done < jobs-slugs.txt
+          python3 scripts/instrument_id/run.py songs
+          python3 scripts/instrument_id/run.py stems || echo "stem comparison failed"
+          choice=mix
+          if [ -f docs/analysis/instrument-id-stems.json ]; then
+            choice=$(python3 -c "import json; print(json.load(open('docs/analysis/instrument-id-stems.json', encoding='utf-8')).get('choice') or 'mix')")
+          fi
+          echo "stem choice: $choice"
+          if [ "$choice" = "stem" ]; then
+            failed=0
+            while IFS= read -r slug || [ -n "$slug" ]; do
+              [ -z "$slug" ] && continue
+              if [ ! -f "work/$slug/source.m4a" ]; then
+                echo "no audio for $slug; mix decisions stay"
+                failed=1
+                break
+              fi
+              python3 scripts/pipeline/separate.py "$slug" < /dev/null || { echo "separate failed for $slug; mix decisions stay"; failed=1; break; }
+            done < jobs-slugs.txt
+            if [ "$failed" -eq 0 ]; then
+              python3 scripts/instrument_id/run.py songs --primary stem
+            fi
+          fi
+          python3 scripts/instrument_id/run.py report
+      - name: Commit analysis
+        run: |
+          git config user.name "living-lyrics-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/analysis
+          git rm -q --ignore-unmatch jobs/instrument-id/*.json || true
+          git diff --cached --name-only | grep -E '^(docs/analysis/|jobs/instrument-id/)' || true
+          git commit -m "Record instrument decisions for the requested songs" || exit 0
+          git pull --rebase -q && git push -q

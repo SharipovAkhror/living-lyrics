@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["frames"],
+  "properties": {
+    "frames": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["time_s", "visible", "players", "note"],
+        "properties": {
+          "time_s": {"type": "number"},
+          "visible": {"type": "boolean"},
+          "note": {"type": "string"},
+          "players": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["instrument", "playing", "who", "confidence"],
+              "properties": {
+                "instrument": {"type": "string"},
+                "playing": {"type": "boolean"},
+                "who": {"type": "string"},
+                "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
