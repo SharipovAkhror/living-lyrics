@@ -291,6 +291,27 @@ def line_pass(lp: np.ndarray, units: list[Unit], anchors: dict, margin: float) -
     return results
 
 
+def second_span(phrase_start: float, phrase_end: float, sec_start: float, sec_end: float, duration: float,
+                pad: float = 2.0, max_win: float = 12.0) -> tuple[float, float]:
+    """Search window for the second aligner.
+
+    The phrase is the line pass (measured on the vocal stem, before any snap). Pad it by `pad`
+    seconds. A global-CTC anchor can stretch one line across the next chorus, so the window is
+    never longer than `max_win` and never taken from draft word times. It is also clipped to the
+    section map with the same pad.
+    """
+    t0 = max(0.0, phrase_start - pad)
+    t1 = min(duration, max(phrase_end, phrase_start) + pad)
+    if t1 - t0 > max_win:
+        t1 = min(duration, t0 + max_win)
+    sec0 = max(0.0, sec_start - pad)
+    sec1 = min(duration, sec_end + pad)
+    if sec1 - sec0 >= 0.4:
+        t0 = min(max(t0, sec0), sec1 - 0.4)
+        t1 = max(min(t1, sec1), t0 + 0.4)
+    return t0, t1
+
+
 def snap_onsets(sig, times: list[list], units: list[Unit], measured: list[bool]) -> list[list[float | None]]:
     """Move a measured word start onto a clear vocal attack within SNAP_WIN.
 
@@ -439,7 +460,9 @@ def main() -> None:
                 ws[j] = [t, t + 0.01]
 
     # Word starts move to the nearest clear vocal onset (see snap_onsets); ends follow the voice.
+    # The second aligner needs the phrase from before that move.
     sig = Q.Signals(x)
+    phrase = [(ws[0][0], ws[-1][1]) for ws in times]
     raw_starts = [[w[0] for w in ws] for ws in times]
     onset_dt = snap_onsets(sig, times, units, [c['status'] != 'draft' for c in conf])
     flat = [(w, c['status'] != 'draft') for ws, c in zip(times, conf) for w in ws]
@@ -453,24 +476,15 @@ def main() -> None:
             e += F.HOP
         w[1] = max(w[1], min(e, limit))
 
-    # Second opinion on solo lines the main aligner placed confidently. The window is the anchor
-    # (global CTC, or the section bounds when that pass failed) plus the same margin — never the
-    # draft word times, and never ±1 s around the already snapped starts. Choir is not run.
+    # Second opinion on solo lines the main aligner placed confidently. The window is the measured
+    # phrase plus 2 s, capped at 12 s (see second_span): a wide anchor swallows the next chorus.
+    # Draft word times are not used. Choir is not run.
     jobs = []
     second_window: dict[str, tuple[float, float]] = {}
-    for u, c in zip(units, conf):
+    for u, c, span in zip(units, conf, phrase):
         if c['status'] != 'good' or not T.is_solo(u.sec, u.line):
             continue
-        if args.anchors == 'draft':
-            t0 = max(0.0, float(u.sec['start']) - SECTION_PAD)
-            t1 = min(duration, float(u.sec['end']) + SECTION_PAD)
-        else:
-            a0, a1 = anchors[u.idx]
-            t0 = max(0.0, float(a0) - margin)
-            t1 = min(duration, float(a1) + margin)
-        if t1 - t0 < 0.4:
-            t0 = max(0.0, float(u.sec['start']) - SECTION_PAD)
-            t1 = min(duration, float(u.sec['end']) + SECTION_PAD)
+        t0, t1 = second_span(span[0], span[1], float(u.sec['start']), float(u.sec['end']), duration)
         second_window[u.id] = (t0, t1)
         jobs.append({'id': u.id, 'lang': u.line['lang'], 'script': u.line['script'],
                      'words': [w['w'] for w in u.line['words']], 't0': t0, 't1': t1})

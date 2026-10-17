@@ -240,10 +240,10 @@ class WhisperX:
 
     def _hf(self, x: np.ndarray, lang: str, jobs: list[dict]) -> dict[str, list[float | None]]:
         import torch
-        from transformers import AutoProcessor, Wav2Vec2ForCTC
+        from transformers import Wav2Vec2ForCTC
 
         model_id = WHISPERX_HF[lang]
-        proc = AutoProcessor.from_pretrained(model_id)
+        proc = _load_processor(model_id)
         model = Wav2Vec2ForCTC.from_pretrained(model_id).eval()
         raw_vocab = proc.tokenizer.get_vocab()
         vocab = _lower_vocab(raw_vocab)
@@ -266,6 +266,24 @@ class WhisperX:
             gc.collect()
         print(f'{self.name}: {lang} ({model_id}) — {len(jobs)} строк', flush=True)
         return out
+
+
+def _load_processor(model_id: str):
+    """Feature extractor and CTC tokenizer. The KenLM decoder is not used for alignment.
+
+    Some WhisperX checkpoints (Turkish) ship a Wav2Vec2ProcessorWithLM. AutoProcessor then
+    imports pyctcdecode and fails when that package is absent. Emissions do not need the
+    language model, so the fallback builds a plain processor from the same tokenizer.
+    """
+    from transformers import AutoProcessor, Wav2Vec2CTCTokenizer, Wav2Vec2FeatureExtractor, Wav2Vec2Processor
+
+    try:
+        return AutoProcessor.from_pretrained(model_id)
+    except ImportError as e:
+        print(f'{model_id}: процессор с LM не загрузился ({e.__class__.__name__}), беру CTC-токенайзер')
+        tok = Wav2Vec2CTCTokenizer.from_pretrained(model_id)
+        fe = Wav2Vec2FeatureExtractor.from_pretrained(model_id)
+        return Wav2Vec2Processor(feature_extractor=fe, tokenizer=tok)
 
 
 def _one_line(torch, model, proc, x: np.ndarray, job: dict, vocab: dict[str, int], blank: int, skip: set[int], hf: bool) -> list[float | None] | None:

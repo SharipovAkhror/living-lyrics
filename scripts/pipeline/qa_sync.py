@@ -224,13 +224,20 @@ def proof_line(solo: bool, ctc_status: str | None, text_same: bool, presnap: lis
     for a, dt in zip(align_words, presnap):
         if not a.get('roman'):
             continue
-        if a.get('second_s') is None or a.get('ctc_s') is None:
-            return {'pass': False, 'reason': 'aligners-disagree', 'detail': 'у слова нет второго времени'}
+        if a.get('ctc_s') is None or a.get('second_s') is None:
+            ons.append(None if dt is None else abs(float(dt)))
+            diffs.append(None)
+            continue
         diffs.append(abs(float(a['second_s']) - float(a['ctc_s'])))
         ons.append(None if dt is None else abs(float(dt)))
     if not diffs:
         return {'pass': False, 'reason': 'no-second-aligner', 'detail': 'в строке не осталось букв для сверки'}
-    worst = max(diffs)
+    if all(d is None for d in diffs):
+        return {'pass': False, 'reason': 'no-second-aligner', 'detail': 'модель не поставила ни одного слова'}
+    numbers = [d for d in diffs if d is not None]
+    if len(numbers) != len(diffs):
+        return {'pass': False, 'reason': 'aligners-disagree', 'detail': 'у слова нет второго времени'}
+    worst = max(numbers)
     if worst > WORD_TOL:
         return {'pass': False, 'reason': 'aligners-disagree', 'detail': f'максимум {worst:.3f} с'}
     far = [d for d in ons if d is None or d > WORD_TOL]
@@ -569,8 +576,9 @@ def proof_md(proof: dict) -> list[str]:
     L.append('')
     L.append('Pass/fail и цифры ниже считаются до притяжения начала слова к атаке. '
              'Притяжение (не дальше 0,1 с) может сдвинуть записанное время на пик, но в эти цифры не входит. '
-             'Окно второго выравнивателя берётся из якоря строки — общий проход или границы секции — с запасом, '
-             'а не из черновых времён слов и не из уже притянутых времён первого выравнивателя.')
+             'Окно второго выравнивателя — фраза, которую первый проход уже поставил на голос, плюс 2 с, '
+             'но не длиннее 12 с и не шире секции с запасом 2 с. Черновые времена слов окном не служат, '
+             'и длинный якорь общего прохода тоже: в него попадает следующий припев.')
     L.append(f"- Расхождение начала слова у первого выравнивателя (до притяжения) с ближайшей атакой голоса, "
              f"только у доказанных сольных строк: медиана {_fmt_opt(proof['onset_median'])} с, "
              f"90-й перцентиль {_fmt_opt(proof['onset_p90'])} с. Порог слова {ru(WORD_TOL)} с. Слов: {proof['onset_words']}.")

@@ -171,6 +171,18 @@ def test_proof_decision() -> None:
     # A missing attack is not legato and does not pass.
     got = Q.proof_line(True, 'good', True, [None, 0.04], words, True)
     check('no attack near the pre-snap start fails', (not got['pass']) and got['reason'] == 'onset', str(got))
+    bare = [{'roman': 'aa', 'ctc_s': 1.0}, {'roman': 'bb', 'ctc_s': 2.0}]
+    got = Q.proof_line(True, 'good', True, presnap, bare, True)
+    check('a missing second model is not a fake disagreement', (not got['pass']) and got['reason'] == 'no-second-aligner', str(got))
+
+
+def test_second_span() -> None:
+    t0, t1 = align.second_span(108.87, 112.78, 100.0, 140.0, 580.0)
+    check('phrase window is the line plus 2 s', abs(t0 - 106.87) < 1e-6 and abs(t1 - 114.78) < 1e-6, f'{t0:.2f}–{t1:.2f}')
+    t0, t1 = align.second_span(32.8, 104.2, 20.0, 160.0, 580.0)
+    check('a smeared phrase is capped at 12 s', abs((t1 - t0) - 12.0) < 1e-6 and t1 < 50, f'{t0:.2f}–{t1:.2f}')
+    t0, t1 = align.second_span(10.0, 14.0, 12.0, 20.0, 580.0)
+    check('window stays inside the section pad', 10.0 <= t0 and t1 <= 22.0, f'{t0:.2f}–{t1:.2f}')
 
 
 def test_song_status() -> None:
@@ -239,6 +251,7 @@ def main() -> int:
     test_proof_decision()
     test_song_status()
     test_build_proof_independent()
+    test_second_span()
     print('FAIL' if PASS else 'all checks passed')
     return PASS
 
