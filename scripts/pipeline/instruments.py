@@ -12,12 +12,13 @@ times in content/songs/<slug>/lyrics.json. Writes a proposal, not lyrics.json:
 The voice map already occupies docs/analysis/<slug>.md, so these files cannot live in a
 directory of the same name.
 
-Tagger: LAION CLAP `laion/larger_clap_music` (Apache-2.0), the music checkpoint published
-as music_audioset_epoch_15_esc_90.14, through transformers. Each catalogue key in
-src/instruments/list.ts except `ensemble` has an English prompt. A second, general list
-(timpani, tabla, sitar, …) is reported when it wins and is never written as a catalogue key.
-PANNs weights are not loaded: the code repository has no LICENSE file and the Zenodo record
-only says Open.
+Tagger: LAION CLAP `laion/clap-htsat-unfused` (Apache-2.0 on the model card) through
+transformers. The music checkpoint `laion/larger_clap_music` is not used: its text
+projection is near zero, so every prompt lands on one vector (pairwise cosine 0.9997
+on a real mix) and the argmax is noise. Each catalogue key in src/instruments/list.ts
+except `ensemble` has an English prompt. A second, general list (timpani, tabla, sitar, …)
+is reported when it wins and is never written as a catalogue key. PANNs weights are not
+loaded: the code repository has no LICENSE file and the Zenodo record only says Open.
 
 Windows are 1–3 s. A label is active only when its cosine is the closest, ahead of silence
 and ahead of the runner-up, for at least two windows in a row. Softmax is reported but not
@@ -38,9 +39,14 @@ import numpy as np
 from common import ROOT, load_audio, load_json, song_dir, work_dir
 from features import FEATURE_RATE, perceptual_01
 
-CLAP_ID = 'laion/larger_clap_music'
-CLAP_CARD = 'https://huggingface.co/laion/larger_clap_music'
+# Unfused HTS-AT + RoBERTa. The music checkpoint's published text projection does not
+# separate prompts (see the module docstring), so it cannot time an entrance.
+CLAP_ID = 'laion/clap-htsat-unfused'
+CLAP_CARD = 'https://huggingface.co/laion/clap-htsat-unfused'
 CLAP_SR = 48000
+# A live text tower does not map every prompt onto one vector. Above this median
+# pairwise cosine the checkpoint is dead and the report must not be written.
+TEXT_COLLAPSE = 0.98
 BACKGROUND = 'silence, room tone, or no distinct musical instrument'
 
 # Window length is the task's 1–3 s. Hop may be shorter so entrances are not stuck to a grid.
@@ -132,7 +138,8 @@ MODELS = {
     'tagger': CLAP_ID,
     'tagger_license': 'Apache-2.0',
     'tagger_card': CLAP_CARD,
-    'tagger_note': 'Music checkpoint corresponding to music_audioset_epoch_15_esc_90.14.pt. '
+    'tagger_note': 'HTS-AT unfused, LAION-Audio-630K. laion/larger_clap_music was not loaded: '
+                   'its text projection is near zero and every prompt collapses to one vector. '
                    'PANNs weights were not loaded: the code repository has no LICENSE file and the Zenodo record only says Open.',
     'stems': 'htdemucs',
     'stems_license': 'MIT',
@@ -289,7 +296,28 @@ class Tagger:
         self.device = 'cpu'
         print(f'CLAP: {CLAP_ID}', flush=True)
         self.processor = ClapProcessor.from_pretrained(CLAP_ID)
-        self.model = ClapModel.from_pretrained(CLAP_ID).to(self.device).eval()
+        loaded = ClapModel.from_pretrained(CLAP_ID, output_loading_info=True)
+        info = {}
+        if isinstance(loaded, tuple):
+            self.model, info = loaded
+        else:
+            self.model = loaded
+        self.model = self.model.to(self.device).eval()
+        missing = list(info.get('missing_keys', []))
+        unexpected = list(info.get('unexpected_keys', []))
+        print(f'CLAP weights missing {len(missing)} unexpected {len(unexpected)}', flush=True)
+        if missing:
+            print('  missing: ' + ', '.join(missing[:8]), flush=True)
+        if unexpected:
+            print('  unexpected: ' + ', '.join(unexpected[:8]), flush=True)
+        proj = getattr(self.model, 'text_projection', None)
+        for name in ('linear1', 'linear2'):
+            layer = getattr(proj, name, None)
+            weight = getattr(layer, 'weight', None)
+            if weight is None:
+                continue
+            print(f'CLAP text projection {name} std {float(weight.detach().std()):.4f}', flush=True)
+        self.text_pairs: dict | None = None
         # transformers 4.57 names the temperature logit_scale_a (audio→text). Older builds used logit_scale.
         scale = getattr(self.model, 'logit_scale_a', None)
         if scale is None:
@@ -326,8 +354,22 @@ class Tagger:
         if len(emb) > 1:
             pair = emb @ emb.T
             off = pair[~np.eye(len(emb), dtype=bool)]
-            print(f'  текст: попарный косинус медиана {float(np.median(off)):.4f} '
-                  f'мин {float(off.min()):.4f} макс {float(off.max()):.4f}', flush=True)
+            stats = {
+                'median': round(float(np.median(off)), 4),
+                'min': round(float(off.min()), 4),
+                'max': round(float(off.max()), 4),
+                'n': int(len(emb)),
+            }
+            self.text_pairs = stats
+            print(f'  текст: попарный косинус медиана {stats["median"]:.4f} '
+                  f'мин {stats["min"]:.4f} макс {stats["max"]:.4f}', flush=True)
+            # A collapsed text tower makes every window pick the same label by noise.
+            # Refuse the report rather than publish that label as an entrance.
+            if stats['median'] >= TEXT_COLLAPSE:
+                raise SystemExit(
+                    f'CLAP: текстовые эмбеддинги совпали (попарный косинус медиана {stats["median"]}). '
+                    f'Чекпойнт {CLAP_ID} не разделяет подсказки, отчёт инструментов не пишется.'
+                )
         return emb
 
     def score(self, clips: list[np.ndarray], prompts: list[str]) -> tuple[np.ndarray, np.ndarray]:
@@ -795,6 +837,7 @@ def analyze(slug: str) -> None:
         'mix': score_stem(tagger, mix, CLAP_SR, duration, envs['mix'],
                           candidate_keys('mix', rows), MIX_HOP_S, envs['vocals'], 'mix'),
     }
+    text_pairs = tagger.text_pairs
     del tagger
     found = collect_regions(packs, rows)
     sections = project(found, lyrics['sections'], names)
@@ -828,7 +871,7 @@ def analyze(slug: str) -> None:
             'min_region_s': MIN_REGION_S, 'min_drum_region_s': MIN_DRUM_REGION_S,
         },
         'prompts': {**CATALOG_PROMPTS, **EXTRA_PROMPTS, 'background': BACKGROUND},
-        'diagnostics': diag,
+        'diagnostics': {'text_pairs': text_pairs, 'stems': diag},
         'timeline': line,
         'sections': sections,
         'drums': {'onset_count': int(len(onsets)), 'hits_per_s': hits_per_s.tolist(), 'sections': drums},
