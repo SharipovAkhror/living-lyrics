@@ -22,14 +22,14 @@
       "kind": "instrumental",
       "start": 2,
       "end": 37.39,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -992,14 +992,14 @@
       "kind": "instrumental",
       "start": 180.26,
       "end": 195,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -1527,14 +1527,14 @@
       "kind": "instrumental",
       "start": 281,
       "end": 291.12,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -1575,14 +1575,14 @@
       "kind": "instrumental",
       "start": 305,
       "end": 319,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -1590,14 +1590,14 @@
       "kind": "instrumental",
       "start": 319,
       "end": 328,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -1605,14 +1605,14 @@
       "kind": "instrumental",
       "start": 328,
       "end": 355,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -1620,14 +1620,14 @@
       "kind": "instrumental",
       "start": 355,
       "end": 363,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -1650,14 +1650,14 @@
       "kind": "instrumental",
       "start": 403,
       "end": 405,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -2187,14 +2187,14 @@
       "kind": "instrumental",
       "start": 550.27,
       "end": 632,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -2217,14 +2217,14 @@
       "kind": "instrumental",
       "start": 687,
       "end": 705,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -2247,14 +2247,14 @@
       "kind": "instrumental",
       "start": 714,
       "end": 721,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -2277,14 +2277,14 @@
       "kind": "instrumental",
       "start": 733,
       "end": 750,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -2307,14 +2307,14 @@
       "kind": "instrumental",
       "start": 760,
       "end": 813,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -2337,14 +2337,14 @@
       "kind": "instrumental",
       "start": 835,
       "end": 861,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -2367,14 +2367,14 @@
       "kind": "instrumental",
       "start": 872,
       "end": 879.04,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -2991,14 +2991,14 @@
       "kind": "instrumental",
       "start": 942.13,
       "end": 953,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     },
     {
@@ -3021,14 +3021,14 @@
       "kind": "instrumental",
       "start": 961,
       "end": 977.05,
-      "label": "Голос без разобранных слов",
+      "label": "Голос",
       "instruments": [
         "voice"
       ],
-      "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
-        "timing-draft"
+        "timing-draft",
+        "text-unverified"
       ]
     }
   ]
