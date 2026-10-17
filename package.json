@@ -12,6 +12,7 @@
     "validate": "tsx scripts/tools/validate.ts",
     "draft-timing": "tsx scripts/tools/draft-timing.ts",
     "new-song": "tsx scripts/tools/new-song.ts",
+    "song-status": "tsx scripts/tools/song-status.ts",
     "art": "node scripts/art/build-instruments.mjs",
     "test:layout": "tsx scripts/tools/layout-test.ts",
     "shots": "node scripts/tools/screenshots.mjs",

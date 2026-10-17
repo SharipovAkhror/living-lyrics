@@ -5,13 +5,57 @@
  */
 import { z } from 'zod';
 import { LAYOUT_MODES } from '../instruments/layout';
+import { ISO639 } from './iso639';
 
-/** ISO 639-1/3 codes we expect. Extend when a new language appears. */
-export const LANG = z.enum(['ar', 'fa', 'az', 'tr', 'ota', 'en', 'la', 'de', 'es', 'ur', 'hi', 'ru', 'uz', 'fr', 'it', 'gmh']);
+/**
+ * Any ISO 639-1 or ISO 639-3 code (see src/data/iso639.ts). A new language is a code
+ * from that list, not a new module. The error names the bad value.
+ */
+export const LANG = z.string().superRefine((value, ctx) => {
+  if (ISO639.has(value)) return;
+  const shape = /^[a-z]{2,3}$/.test(value)
+    ? 'такого кода нет в ISO 639-1 и ISO 639-3'
+    : 'нужны строчные латинские буквы: 2 (ISO 639-1) или 3 (ISO 639-3)';
+  ctx.addIssue({
+    code: 'custom',
+    message: `язык «${value}»: ${shape}. Примеры: fa, ar, he, hi, la; ota — османский, gmh — средневерхненемецкий, grc — древнегреческий. Список — src/data/iso639.ts, пояснение — docs/data-format.md.`,
+  });
+});
 export type Lang = z.infer<typeof LANG>;
 
-/** ISO 15924 script codes. Arab = Arabic script (Arabic, Persian, Ottoman, Urdu). */
-export const SCRIPT = z.enum(['Arab', 'Latn', 'Cyrl', 'Deva']);
+/**
+ * ISO 15924 codes for scripts a sung line may use. Arabic script (Arabic, Persian,
+ * Ottoman, Urdu) is `Arab`. Adding a song in one of these scripts does not need new code.
+ */
+export const SCRIPT_CODES = [
+  'Latn', 'Cyrl', 'Grek', 'Glag',
+  'Arab', 'Aran', 'Syrc', 'Hebr', 'Mand', 'Samr', 'Thaa', 'Nkoo', 'Adlm', 'Rohg', 'Mend',
+  'Armn', 'Geor',
+  'Deva', 'Beng', 'Guru', 'Gujr', 'Orya', 'Taml', 'Telu', 'Knda', 'Mlym', 'Sinh', 'Olck', 'Mtei',
+  'Thai', 'Laoo', 'Khmr', 'Mymr', 'Tibt', 'Tale', 'Lana', 'Limb', 'Lisu',
+  'Hani', 'Hans', 'Hant', 'Jpan', 'Kore', 'Hang', 'Hira', 'Kana', 'Bopo', 'Yiii',
+  'Ethi', 'Tfng',
+  'Mong',
+  'Cans', 'Cher',
+  'Bali', 'Batk', 'Java', 'Sund',
+] as const;
+
+const SCRIPT_SET = new Set<string>(SCRIPT_CODES);
+
+/** Scripts written right to left. The Scene should use this set for `dir` (see timeline.ts). */
+export const RTL_SCRIPTS = ['Adlm', 'Arab', 'Aran', 'Hebr', 'Mand', 'Mend', 'Nkoo', 'Rohg', 'Samr', 'Syrc', 'Thaa'] as const;
+
+export function isRtlScript(script: string) {
+  return (RTL_SCRIPTS as readonly string[]).includes(script);
+}
+
+export const SCRIPT = z.string().superRefine((value, ctx) => {
+  if (SCRIPT_SET.has(value)) return;
+  ctx.addIssue({
+    code: 'custom',
+    message: `письмо «${value}» не из списка ISO 15924 в SCRIPT_CODES (src/data/schema.ts). Четыре буквы, как в стандарте: Latn, Cyrl, Arab, Hebr, Grek, Armn, Geor, Deva, Hani, Jpan, Kore. Пояснение — docs/data-format.md.`,
+  });
+});
 export type Script = z.infer<typeof SCRIPT>;
 
 const seconds = z.number().min(0);

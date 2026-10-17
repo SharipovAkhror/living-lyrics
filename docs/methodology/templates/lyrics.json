@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../docs/schema/lyrics.schema.json",
+  "sections": [
+    {
+      "id": "intro",
+      "kind": "instrumental",
+      "start": 0,
+      "end": 1,
+      "label": "Вступление",
+      "instruments": ["ensemble"],
+      "flags": ["timing-draft", "attribution-unverified"]
+    }
+  ]
+}
