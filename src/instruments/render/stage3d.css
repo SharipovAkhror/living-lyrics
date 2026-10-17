@@ -1,0 +1,89 @@
+/* 3D instruments. The canvas is transparent outside the drawing; plates and captions stay in HTML. */
+
+.ist-gl {
+  position: absolute;
+  inset: 0;
+  /* Above every plate (fan uses z-index up to the instrument count). Transparent pixels keep the captions. */
+  z-index: 8;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  color: var(--ist-ink);
+}
+
+.ist-art.is-3d {
+  visibility: hidden;
+}
+
+.ig-card-art.is-3d {
+  touch-action: none;
+  cursor: grab;
+}
+
+.ig-card-art.is-3d:active {
+  cursor: grabbing;
+}
+
+.ig-gl {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  color: var(--ig-ink);
+}
+
+.ig-card-art.is-3d .ist-art {
+  visibility: hidden;
+}
+
+.ig-drive {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: var(--sp-2);
+}
+
+.ig-drive label {
+  display: grid;
+  grid-template-columns: 4.8em minmax(0, 1fr) 2.2em;
+  align-items: center;
+  gap: 6px;
+  color: var(--label-2);
+  font-size: var(--t-caption1);
+}
+
+.ig-drive input[type='range'] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.ig-drive-play {
+  margin-top: 4px;
+  align-self: flex-start;
+}
+
+@media (max-width: 560px) {
+  .ig-card {
+    flex-wrap: wrap;
+  }
+  .ig-drive {
+    flex: 1 1 100%;
+    order: 3;
+    margin: 0;
+    padding: 0 var(--sp-3) var(--sp-3);
+  }
+}
+
+.t6-bench {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--label);
+}
+
+.t6-bench-stage,
+.t6-frame {
+  margin: 0 auto;
+}

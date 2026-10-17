@@ -227,7 +227,7 @@ export function SettingsSheet({
         </Row>
       </Group>
 
-      <Group header="Оформление" footer="При системной настройке «Уменьшение движения» анимация отключается сама.">
+      <Group header="Оформление" footer="Стиль инструментов общий для песни и страницы инструментов. При системной настройке «Уменьшение движения» анимация отключается сама, и вместо объёма остаётся гравюра.">
         <div className="row row--control">
           <Segmented
             label="Тема"
@@ -250,6 +250,17 @@ export function SettingsSheet({
               { value: 'off', label: 'Без анимации' },
             ]}
             onChange={(v) => setSettings({ motion: v })}
+          />
+        </div>
+        <div className="row row--control">
+          <Segmented
+            label="Стиль инструментов"
+            value={settings.instrumentStyle}
+            options={[
+              { value: 'engraving', label: 'Гравюра' },
+              { value: 'materials', label: 'Материалы' },
+            ]}
+            onChange={(v) => setSettings({ instrumentStyle: v })}
           />
         </div>
       </Group>

@@ -3,6 +3,8 @@ import { useSyncExternalStore } from 'react';
 
 export type ThemePref = 'auto' | 'light' | 'dark';
 export type MotionPref = 'full' | 'calm' | 'off';
+/** Engraving is the outline-and-hatch look. Materials is wood, skin and metal. */
+export type InstrumentStyle = 'engraving' | 'materials';
 
 export interface Settings {
   theme: ThemePref;
@@ -19,6 +21,8 @@ export interface Settings {
   /** Stop at the end of every line (for learning a text line by line). */
   pauseAfterLine: boolean;
   quality: 'high' | 'saver';
+  /** Shared by the song stage and the instruments page. */
+  instrumentStyle: InstrumentStyle;
   rate: number;
   volume: number;
   normalize: boolean;
@@ -40,6 +44,7 @@ export const DEFAULTS: Settings = {
   persianStyle: 'nastaliq',
   pauseAfterLine: false,
   quality: 'high',
+  instrumentStyle: 'engraving',
   rate: 1,
   volume: 1,
   normalize: true,
@@ -70,6 +75,11 @@ function migrateCommentKeys(saved: Record<string, unknown>): boolean {
   return changed;
 }
 
+function sanitize(out: Settings): Settings {
+  if (out.instrumentStyle !== 'engraving' && out.instrumentStyle !== 'materials') out.instrumentStyle = 'engraving';
+  return out;
+}
+
 function read(): Settings {
   try {
     const raw = localStorage.getItem(KEY);
@@ -81,6 +91,7 @@ function read(): Settings {
     const migrated = migrateCommentKeys(saved);
     const out = { ...DEFAULTS };
     for (const k of Object.keys(DEFAULTS) as (keyof Settings)[]) if (k in saved) (out as Record<string, unknown>)[k] = saved[k];
+    sanitize(out);
     if (migrated) {
       try {
         localStorage.setItem(KEY, JSON.stringify(out));
@@ -102,7 +113,7 @@ export function getSettings() {
 }
 
 export function setSettings(patch: Partial<Settings>) {
-  state = { ...state, ...patch };
+  state = sanitize({ ...state, ...patch });
   try {
     localStorage.setItem(KEY, JSON.stringify(state));
   } catch {
