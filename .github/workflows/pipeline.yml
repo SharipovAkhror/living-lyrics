@@ -146,7 +146,9 @@ jobs:
           set +e  # one failing song must not stop the others; run.sh reports through its exit code
           worst=0
           : > /tmp/summary.txt
-          python3 -c "import json; jobs=json.load(open('/tmp/jobs.json')); open('/tmp/calibrate.txt','w').write('\n'.join(j['slug'] for j in jobs if 'align' in j.get('stages', [])))"
+          # Trailing newline: `while read` skips a last line that does not end with one,
+          # and the last song would be left out of the threshold (run 39069466435 dropped ONE).
+          python3 -c "import json; jobs=json.load(open('/tmp/jobs.json')); open('/tmp/calibrate.txt','w').write('\n'.join(j['slug'] for j in jobs if 'align' in j.get('stages', [])) + '\n')"
           cal_rc=0
           if [ -s /tmp/calibrate.txt ]; then
             while read -r slug; do
@@ -168,6 +170,23 @@ jobs:
               if [ $rc -ne 0 ]; then
                 cal_rc=2
                 echo "::error::порог по репликам не выбран"
+              else
+                python3 - <<'PY'
+          import json
+          from pathlib import Path
+          want = [s for s in Path('/tmp/calibrate.txt').read_text(encoding='utf-8').split() if s]
+          data = json.loads(Path('docs/analysis/bench/calibration.json').read_text(encoding='utf-8'))
+          have = {Path(src).parent.name for src in data.get('sources', [])}
+          missing = [s for s in want if s not in have]
+          if missing:
+              raise SystemExit('в калибровке нет песен: ' + ', '.join(missing))
+          print('калибровка покрывает: ' + ' '.join(want))
+          PY
+                rc=$?
+                if [ $rc -ne 0 ]; then
+                  cal_rc=2
+                  echo "::error::калибровка собрана не по всем песням"
+                fi
               fi
             fi
           fi
