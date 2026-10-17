@@ -1,0 +1,114 @@
+/**
+ * The contract between audio analysis, the scene and instrument art. Instrument drawings are going
+ * to be redrawn (and may become Lottie, Rive or 3D models); whatever the format, they receive the
+ * same few numbers per frame, derived from precomputed audio features. Spec for artists and agents:
+ * docs/instruments/animation-contract.md. Nothing here depends on React or on a drawing format.
+ */
+import type { InstrumentInfo } from './list';
+
+/** Feature tracks precomputed per song (scripts/pipeline/features.py → public/audio/<slug>/features.json). */
+export type FeatureTrack =
+  /** Overall loudness, 0…1. */
+  | 'loud'
+  /** Onset strength (attacks: plucks, hits, consonants), 0…1. */
+  | 'onset'
+  /** Spectral brightness (centroid, normalised), 0…1. */
+  | 'bright'
+  /** Loudness of separated stems, 0…1 each. */
+  | 'drums'
+  | 'bass'
+  | 'other'
+  | 'vocals';
+
+export interface AudioFeatures {
+  /** Values per second in every track (20–50). */
+  rate: number;
+  duration: number;
+  tracks: Partial<Record<FeatureTrack, number[]>>;
+  /** Beat times in seconds, if a beat tracker found a pulse. */
+  beats?: number[];
+}
+
+/**
+ * What an instrument drawing receives every frame. All values 0…1 and pure functions of playback
+ * time, so seeking gives the same frame.
+ */
+export interface InstrumentDrive {
+  /** Appearance: contours draw in (SVG: stroke-dashoffset of `.d` paths). */
+  draw: number;
+  /** Secondary detail appears after the contours (SVG: `.h` hatching). */
+  hatch: number;
+  /** Overall energy of the passage. */
+  energy: number;
+  /** Short attacks: drum hits, plucked notes (SVG: `.skin` pulse, `.str` snap). */
+  pulse: number;
+  /** Held sound: bowing, singing, sustained notes (SVG: `.str` vibration, `.part-bow` travel). */
+  sustain: number;
+  /** Air: wind instruments and voices (SVG: `.breath` particles). */
+  breath: number;
+  /** Beat phase 0…1 inside the current beat (for gentle sway); 0 when no beat was found. */
+  beat: number;
+}
+
+/** Which feature drives which motion, by instrument family (list.ts → family). */
+export const FAMILY_DRIVE: Record<InstrumentInfo['family'], { pulse: FeatureTrack; sustain: FeatureTrack; breath?: FeatureTrack }> = {
+  'струнные щипковые': { pulse: 'onset', sustain: 'other' },
+  'струнные ударные': { pulse: 'onset', sustain: 'other' },
+  смычковые: { pulse: 'onset', sustain: 'other' },
+  духовые: { pulse: 'onset', sustain: 'other', breath: 'other' },
+  ударные: { pulse: 'drums', sustain: 'drums' },
+  клавишные: { pulse: 'onset', sustain: 'other' },
+  голоса: { pulse: 'onset', sustain: 'vocals', breath: 'vocals' },
+  ансамбль: { pulse: 'onset', sustain: 'loud' },
+};
+
+export function featureAt(f: AudioFeatures | null, track: FeatureTrack, t: number): number {
+  const arr = f?.tracks[track];
+  if (!f || !arr?.length) return 0;
+  const x = t * f.rate;
+  const i = Math.max(0, Math.min(arr.length - 1, Math.floor(x)));
+  const j = Math.min(arr.length - 1, i + 1);
+  return arr[i] + (arr[j] - arr[i]) * (x - i);
+}
+
+function beatPhase(beats: number[] | undefined, t: number) {
+  if (!beats || beats.length < 2) return 0;
+  let lo = 0;
+  let hi = beats.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (beats[mid] <= t) lo = mid;
+    else hi = mid - 1;
+  }
+  const a = beats[lo];
+  const b = beats[lo + 1];
+  return b && t >= a ? (t - a) / (b - a) : 0;
+}
+
+const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
+
+/** The drive for one instrument at time t of a passage that started at `start`. */
+export function driveAt(f: AudioFeatures | null, family: InstrumentInfo['family'], t: number, start: number): InstrumentDrive {
+  const map = FAMILY_DRIVE[family];
+  const appear = clamp01((t - (start - 0.3)) / 2.6);
+  return {
+    draw: 1 - Math.pow(1 - appear, 3),
+    hatch: clamp01((t - start - 0.9) / 1.6),
+    energy: featureAt(f, 'loud', t),
+    pulse: featureAt(f, map.pulse, t),
+    sustain: featureAt(f, map.sustain, t),
+    breath: map.breath ? featureAt(f, map.breath, t) : 0,
+    beat: beatPhase(f?.beats, t),
+  };
+}
+
+/**
+ * Any drawing format plugs in through this interface: today SVG (CSS variables on the plate),
+ * later Lottie (segments/markers), Rive (state-machine inputs with the same names) or glTF.
+ */
+export interface InstrumentRenderer {
+  readonly kind: 'svg' | 'lottie' | 'rive' | 'gltf';
+  mount(container: HTMLElement, key: string): Promise<void> | void;
+  update(drive: InstrumentDrive): void;
+  dispose(): void;
+}
