@@ -33,6 +33,7 @@ import argparse
 import datetime as dt
 import json
 import sys
+import unicodedata
 from pathlib import Path
 
 import numpy as np
@@ -43,11 +44,16 @@ from common import ROOT, dump_json, load_audio, load_json, song_dir, vocal_stem,
 
 MAX_LAG = 2.0          # search ±2 s
 TOL = 0.25             # whole-line shift alarm only. Not the word proof, and not the song gate.
-WORD_TOL = 0.10        # solo: pre-snap aligner start vs the attack, and the two aligners vs each other
-CHOIR_TOL = 0.20       # choir group: the same two checks, wider because several voices share the stem
+WORD_TOL = 0.10        # solo: pre-snap aligner start vs the vocal attack
+CHOIR_TOL = 0.20       # choir: the same onset check, wider because several voices share the stem
+CUE_TOL = 0.30         # publication (align.py): a placed line further than this keeps the cue time
+PROOF_CUE_TOL = 0.30   # the same distance: placement and the site both use it
 SONG_SHARE = 0.80      # each group that exists (solo, choir) must be at least this share proved
 ONSET_SEARCH = 0.35    # look for an attack this far from the written start
-LEGATO_GAP = 0.20      # a word continuing the previous one, with no new attack, may have no onset
+LEGATO_GAP = 0.20      # previous letter end to this start: the word is still the same gesture
+ATTACK_NEAR = 0.30     # path B opens only when no attack is closer than this
+SECOND_WORD_TOL = 0.10 # path B, choir included. The attack path keeps CHOIR_TOL
+MELISMA_SPAN = 0.80    # a letter spike this long is a held vowel, not a consonant burst
 PEAK_HEIGHT = 0.5      # onset curve units; 1 is the recording's 95th percentile
 NO_VOICE = 0.8         # share of silent word time that makes a line "no voice"
 W_ACT, W_EDGE = 1.0, 0.5
@@ -110,6 +116,66 @@ def onset_peak_times(sig: Signals, min_height: float = PEAK_HEIGHT, nms_s: float
     return np.asarray(keep, dtype=float) * F.HOP
 
 
+def peaks_on_rise(sig: Signals, peaks: np.ndarray, min_height: float) -> np.ndarray:
+    """Keep attacks that are also a local rise in level.
+
+    The stem features have no pitch track. A rise in energy is the measured
+    stand-in for "the note or the loudness changed here".
+    """
+    if len(peaks) == 0:
+        return np.zeros(0)
+    rise = sig.curves['rise']
+    n = len(rise)
+    keep: list[float] = []
+    for t in peaks:
+        i = int(round(float(t) / F.HOP))
+        if i <= 0 or i >= n - 1:
+            continue
+        v = float(rise[i])
+        if v >= min_height and v >= float(rise[i - 1]) and v >= float(rise[i + 1]):
+            keep.append(float(t))
+    return np.asarray(keep, dtype=float)
+
+
+def default_word_rule() -> dict:
+    """Attack within 0.10 s (choir 0.20 s), peak height 0.5. Tests use this.
+
+    The runner may replace it with docs/analysis/bench/attack-chance.json.
+    build_proof does not read that file unless the caller passes the rule.
+    """
+    return {
+        'name': 'tol-0.10-h0.5',
+        'tol': WORD_TOL,
+        'choir_tol': CHOIR_TOL,
+        'peak_height': PEAK_HEIGHT,
+        'require_rise': False,
+        'require_second': False,
+    }
+
+
+def load_word_rule() -> dict:
+    """The rule attack_chance.py wrote, or the 0.10 s default when the file is absent."""
+    path = ROOT / 'docs' / 'analysis' / 'bench' / 'attack-chance.json'
+    if not path.exists():
+        return default_word_rule()
+    try:
+        chosen = json.loads(path.read_text(encoding='utf-8')).get('chosen') or {}
+    except (OSError, json.JSONDecodeError):
+        return default_word_rule()
+    if 'tol' not in chosen:
+        return default_word_rule()
+    rule = default_word_rule()
+    for key in ('name', 'tol', 'choir_tol', 'peak_height', 'require_rise', 'require_second'):
+        if key in chosen:
+            rule[key] = chosen[key]
+    rule['tol'] = float(rule['tol'])
+    rule['choir_tol'] = float(rule['choir_tol'])
+    rule['peak_height'] = float(rule['peak_height'])
+    rule['require_rise'] = bool(rule['require_rise'])
+    rule['require_second'] = bool(rule['require_second'])
+    return rule
+
+
 def nearest_attack(t: float, peaks: np.ndarray, owned: float | None) -> float | None:
     """Signed seconds from a pre-snap word start to the nearest attack not claimed by the previous word.
 
@@ -148,12 +214,14 @@ REASON_RU = {
     'pass': 'доказано',
     'not-solo': 'не соло',
     'text-not-found': 'текст не найден в голосе',
+    'aligner-failed': 'выравниватель не справился',
     'low-confidence': 'выравниватель не уверен',
     'no-second-aligner': 'нет второго выравнивателя',
     'aligners-disagree': 'выравниватели расходятся',
     'no-voice': 'нет голоса',
     'line-shift': 'строка сдвинута относительно голоса',
     'onset': 'начало слова дальше допуска группы от атаки',
+    'cue-disagree': 'расходится с субтитрами',
     'text-changed': 'текст изменился после выравнивания',
     'no-report': 'нет отчёта выравнивания',
 }
@@ -215,73 +283,245 @@ def _kind(group: str | bool) -> str:
     return 'other'
 
 
-def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presnap: list[float | None], align_words: list[dict] | None, has_report: bool) -> dict:
-    """Whether one line may lose timing-draft. The first failing reason wins.
+def second_status(align_words: list[dict] | None, tol: float) -> str:
+    """How the second aligner sits next to the chosen one, for the report.
 
-    The two measurements that count are independent of the published time: the first aligner's
-    word start before any snap to an attack, and the second aligner's start. Solo uses WORD_TOL,
-    choir uses CHOIR_TOL. A duet or tutti is neither group. A word that merely continues the
-    previous one (legato) does not pass. The whole-line shift alarm is not a gate.
+    agree — every lettered word with a first start also has a second start within `tol`.
+    disagree — a second start exists and is further than `tol`.
+    partial — some of those words have a second start and some do not.
+    absent — no second start on any lettered word.
+    This label does not by itself fail a word that has an attack. A vowel, legato or
+    melisma with no attack within ATTACK_NEAR fails when the second start is missing
+    or further than SECOND_WORD_TOL. That decision is prove_words, not this label.
+    """
+    if not align_words:
+        return 'absent'
+    diffs: list[float | None] = []
+    for a in align_words:
+        if not a.get('roman') or a.get('ctc_s') is None:
+            continue
+        if a.get('second_s') is None:
+            diffs.append(None)
+        else:
+            diffs.append(abs(float(a['second_s']) - float(a['ctc_s'])))
+    if not diffs or all(d is None for d in diffs):
+        return 'absent'
+    if any(d is None for d in diffs):
+        return 'partial'
+    worst = max(d for d in diffs if d is not None)
+    return 'disagree' if worst > tol else 'agree'
+
+
+_VOWELS = set('aeiouyæøəɨüöïáéíóúàèìòùäëïöüâêîôûýÿ')
+
+
+def _vowel_char(ch: str) -> bool:
+    if not ch.isalpha():
+        return False
+    base = unicodedata.normalize('NFD', ch)[0].lower()
+    return base in _VOWELS or ch.lower() in _VOWELS
+
+
+def word_soft(roman: str, ctc_s: float | None, ctc_e: float | None, prev_e: float | None) -> bool:
+    """A vowel, a legato continuation, or a melisma. The onset detector often sees none of these.
+
+    Legato is the gap from the previous letter's end to this start, at most LEGATO_GAP.
+    A melisma is a vowel-only romanisation or a letter spike of MELISMA_SPAN or more.
+    The star usually keeps that spike to one frame, so the span check is the rare case.
+    """
+    letters = [ch for ch in roman if ch.isalpha()]
+    if letters and (_vowel_char(letters[0]) or all(_vowel_char(ch) for ch in letters)):
+        return True
+    if ctc_s is not None and ctc_e is not None and float(ctc_e) - float(ctc_s) >= MELISMA_SPAN:
+        return True
+    if prev_e is not None and ctc_s is not None and 0 <= float(ctc_s) - float(prev_e) <= LEGATO_GAP:
+        return True
+    return False
+
+
+def _path_counts(words: list[dict]) -> dict[str, int]:
+    counts = {'attack': 0, 'second': 0, 'fail': 0}
+    for word in words:
+        key = word.get('path') or 'fail'
+        counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def prove_words(align_words: list[dict] | None, presnap: list[float | None], tol: float,
+                require_second: bool = False) -> list[dict]:
+    """How each lettered word is proved. Interpolation between neighbours is not a path.
+
+    attack — |onset| is within the group tolerance (0.10 s solo, 0.20 s choir,
+    unless a measured rule tightened it). When `require_second` is set, that
+    attack also needs the second aligner within SECOND_WORD_TOL.
+    second — the word is soft, no attack is closer than ATTACK_NEAR, and the second
+    aligner agrees within SECOND_WORD_TOL (0.10 s even for the choir).
+    fail — anything else. A consonant with no attack fails. A missing second start
+    cannot take the second path. A missing CTC start fails.
+    """
+    out = []
+    prev_e: float | None = None
+    for word, dt in zip(align_words or [], presnap):
+        roman = word.get('roman') or ''
+        if not roman:
+            continue
+        ctc_s = word.get('ctc_s')
+        ctc_e = word.get('ctc_e')
+        soft = word_soft(
+            roman,
+            None if ctc_s is None else float(ctc_s),
+            None if ctc_e is None else float(ctc_e),
+            prev_e,
+        )
+        abs_dt = None if dt is None else abs(float(dt))
+        second = word.get('second_s')
+        path, reason, detail = 'fail', 'onset', ''
+        if ctc_s is None:
+            detail = 'нет начала выравнивателя у слова'
+        elif abs_dt is not None and abs_dt <= tol:
+            if not require_second:
+                path, reason = 'attack', 'pass'
+            elif second is None:
+                reason = 'no-second-aligner'
+                detail = 'атака есть, второго начала нет'
+            else:
+                gap = abs(float(second) - float(ctc_s))
+                if gap <= SECOND_WORD_TOL:
+                    path, reason = 'attack', 'pass'
+                else:
+                    reason = 'aligners-disagree'
+                    detail = f'второй выравниватель в {gap:.3f} с'
+        elif soft and (abs_dt is None or abs_dt >= ATTACK_NEAR):
+            if second is None:
+                reason = 'no-second-aligner'
+                detail = 'атаки ближе 0,3 с нет, второго начала нет'
+            else:
+                gap = abs(float(second) - float(ctc_s))
+                if gap <= SECOND_WORD_TOL:
+                    path, reason = 'second', 'pass'
+                else:
+                    reason = 'aligners-disagree'
+                    detail = f'второй выравниватель в {gap:.3f} с'
+        elif abs_dt is None:
+            detail = 'атаки рядом с началом выравнивателя нет'
+        else:
+            detail = f'до притяжения дальше всего {abs_dt:.3f} с'
+        out.append({
+            'path': path, 'soft': soft, 'reason': reason, 'detail': detail,
+            'abs': None if abs_dt is None else round(abs_dt, 3),
+        })
+        if ctc_s is not None:
+            prev_e = float(ctc_e) if ctc_e is not None else float(ctc_s)
+    return out
+
+
+def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presnap: list[float | None], align_words: list[dict] | None, has_report: bool,
+               cue_start: float | None = None, ctc_line_start: float | None = None, structure_ok: bool = True,
+               tol: float | None = None, require_second: bool = False) -> dict:
+    """Whether one line may lose timing-draft. The first failing word sets the reason.
+
+    Placed (`good`) for a cued line already means the structural checks and
+    |start − cue| ≤ 0.30 s. The MMS score does not decide that. Each lettered
+    word then needs an attack within the group tolerance, or, when it is soft
+    and no attack is closer than 0.30 s, a second aligner within 0.10 s.
+    `tol` overrides the group tolerance when a measured rule tightened it.
+    A duet or tutti is neither group. The whole-line shift alarm is not a gate.
+    A cued line that was not placed does not blame the text.
     """
     kind = _kind(group)
-    tol = CHOIR_TOL if kind == 'choir' else WORD_TOL
+    if tol is None:
+        tol = CHOIR_TOL if kind == 'choir' else WORD_TOL
+    second = second_status(align_words, tol)
+
+    def fail(reason: str, detail: str, words_proof: list[dict] | None = None) -> dict:
+        proved = words_proof or []
+        return {'pass': False, 'reason': reason, 'detail': detail, 'second': second,
+                'paths': _path_counts(proved), 'word_proof': proved}
+
     if not has_report:
-        return {'pass': False, 'reason': 'no-report', 'detail': ''}
+        return fail('no-report', '')
     if not text_same:
-        return {'pass': False, 'reason': 'text-changed', 'detail': ''}
+        return fail('text-changed', '')
     if kind == 'other':
-        return {'pass': False, 'reason': 'not-solo', 'detail': 'дуэт, тутти или несколько голосов'}
-    if ctc_status == 'draft':
-        return {'pass': False, 'reason': 'text-not-found', 'detail': 'MMS не нашёл эти слова в секции'}
+        return fail('not-solo', 'дуэт, тутти или несколько голосов')
+    has_cue = cue_start is not None
+    drift = None
+    agrees = False
+    if has_cue and ctc_line_start is not None:
+        drift = abs(float(ctc_line_start) - float(cue_start))
+        agrees = round(drift, 3) <= PROOF_CUE_TOL
+    if ctc_status in ('draft', None):
+        if has_cue:
+            return fail('aligner-failed', 'постановки нет')
+        return fail('text-not-found', 'MMS не нашёл эти слова в секции')
     if ctc_status != 'good':
-        return {'pass': False, 'reason': 'low-confidence', 'detail': ctc_status or 'нет оценки'}
-    if not align_words:
-        return {'pass': False, 'reason': 'no-second-aligner', 'detail': ''}
-    if len(presnap) != len(align_words):
-        return {'pass': False, 'reason': 'no-report', 'detail': 'нет допритяжного времени'}
-    diffs = []
-    ons: list[float | None] = []
-    for a, dt in zip(align_words, presnap):
-        if not a.get('roman'):
-            continue
-        if a.get('ctc_s') is None or a.get('second_s') is None:
-            ons.append(None if dt is None else abs(float(dt)))
-            diffs.append(None)
-            continue
-        diffs.append(abs(float(a['second_s']) - float(a['ctc_s'])))
-        ons.append(None if dt is None else abs(float(dt)))
-    if not diffs:
-        return {'pass': False, 'reason': 'no-second-aligner', 'detail': 'в строке не осталось букв для сверки'}
-    if all(d is None for d in diffs):
-        return {'pass': False, 'reason': 'no-second-aligner', 'detail': 'модель не поставила ни одного слова'}
-    numbers = [d for d in diffs if d is not None]
-    if len(numbers) != len(diffs):
-        return {'pass': False, 'reason': 'aligners-disagree', 'detail': 'у слова нет второго времени'}
-    worst = max(numbers)
-    if worst > tol:
-        return {'pass': False, 'reason': 'aligners-disagree', 'detail': f'максимум {worst:.3f} с'}
-    far = [d for d in ons if d is None or d > tol]
-    if far:
-        known = [d for d in far if d is not None]
-        if not known:
-            return {'pass': False, 'reason': 'onset', 'detail': 'атаки рядом с началом выравнивателя нет'}
-        return {'pass': False, 'reason': 'onset', 'detail': f'до притяжения дальше всего {max(known):.3f} с'}
-    return {'pass': True, 'reason': 'pass', 'detail': ''}
+        # A path exists and was not placed. Blame the text only when there is no cue
+        # to check it against and the path itself failed the structural checks.
+        if not structure_ok and not agrees:
+            if has_cue:
+                return fail('aligner-failed', 'путь не прошёл структурные проверки и с репликой не сошёлся')
+            return fail('text-not-found', 'путь не прошёл структурные проверки')
+        if not agrees:
+            if not has_cue:
+                return fail('cue-disagree', 'нет реплики')
+            if ctc_line_start is None:
+                return fail('cue-disagree', 'нет начала выравнивателя')
+            return fail('cue-disagree', f'{drift:.3f} с при допуске {PROOF_CUE_TOL:.1f} с')
+        if not structure_ok:
+            return fail('aligner-failed', 'структурные проверки')
+        return fail('low-confidence', ctc_status or 'нет оценки')
+    # Round to a millisecond so exactly 0.30 s stays inside.
+    if not has_cue:
+        return fail('cue-disagree', 'нет реплики')
+    if ctc_line_start is None:
+        return fail('cue-disagree', 'нет начала выравнивателя')
+    if not agrees:
+        return fail('cue-disagree', f'{drift:.3f} с при допуске {PROOF_CUE_TOL:.1f} с')
+    if not align_words or len(presnap) != len(align_words):
+        return fail('no-report', 'нет допритяжного времени')
+    proved = prove_words(align_words, presnap, tol, require_second=require_second)
+    if not proved:
+        if has_cue:
+            return fail('aligner-failed', 'в строке не осталось букв')
+        return fail('text-not-found', 'в строке не осталось букв')
+    first = next((word for word in proved if word['path'] == 'fail'), None)
+    paths = _path_counts(proved)
+    if first:
+        return {'pass': False, 'reason': first['reason'], 'detail': first['detail'], 'second': second,
+                'paths': paths, 'word_proof': proved}
+    return {'pass': True, 'reason': 'pass', 'detail': '', 'second': second, 'paths': paths, 'word_proof': proved}
 
 
-def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict], align_report: dict | None) -> dict:
-    """Per-line pass/fail. Headline numbers are pre-snap only; published times may already be snapped."""
+def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict], align_report: dict | None,
+                cues: dict | None = None, word_rule: dict | None = None) -> dict:
+    """Per-line pass/fail. Headline numbers are pre-snap only; published times may already be snapped.
+
+    `cues` is the official subtitle file keyed by line id. The cue check reads it here, not the
+    published word time, so a line that kept its cue cannot agree with itself.
+    """
+    cues = cues or {}
+    rule = default_word_rule() if word_rule is None else word_rule
     by_id = {r['id']: r for r in align_report.get('lines', [])} if align_report else {}
-    peaks = onset_peak_times(sig)
+    height = float(rule.get('peak_height', PEAK_HEIGHT))
+    peaks = onset_peak_times(sig, min_height=height)
+    if rule.get('require_rise'):
+        peaks = peaks_on_rise(sig, peaks, height)
     rows = []
     prev_ctc: float | None = None
     for (sec, line), _qa in zip(lines, qa_rows):
         rec = by_id.get(line['id'])
         words = line['words']
         kind = T.group(sec, line)
-        tol = CHOIR_TOL if kind == 'choir' else WORD_TOL
+        tol = float(rule['choir_tol']) if kind == 'choir' else float(rule['tol'])
         text_same = bool(rec) and rec.get('text') == T.line_text(line)
         align_words = _lettered(rec.get('words') if rec else None, len(words))
+        cue = cues.get(line['id'])
+        cue_start = float(cue['start']) if cue and cue.get('start') is not None else None
+        ctc_line = None
+        for aw in align_words:
+            if aw.get('roman') and aw.get('ctc_s') is not None:
+                ctc_line = float(aw['ctc_s'])
+                break
         presnap: list[float | None] = []
         abs_pre: list[float] = []
         agree: list[float] = []
@@ -298,11 +538,21 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
             if aw.get('second_s') is not None:
                 agree.append(abs(float(aw['second_s']) - t))
             prev_ctc = t
-        decision = proof_line(kind, rec.get('status') if rec else None, text_same, presnap, align_words or None, align_report is not None)
+        decision = proof_line(kind, rec.get('status') if rec else None, text_same, presnap, align_words or None, align_report is not None,
+                              cue_start=cue_start, ctc_line_start=ctc_line,
+                              structure_ok=True if rec is None else bool(rec.get('structure_ok', True)),
+                              tol=tol, require_second=bool(rule.get('require_second')))
+        found_line = (rec or {}).get('status') in ('good', 'weak')
+        cue_delta = None
+        if found_line and cue_start is not None and ctc_line is not None:
+            cue_delta = round(abs(ctc_line - cue_start), 3)
         rows.append({
-            'id': line['id'], 'solo': kind == 'solo', 'group': kind, 'pass': decision['pass'], 'reason': decision['reason'],
-            'detail': decision['detail'], 'engine': (rec or {}).get('second'),
+            'id': line['id'], 'lang': line.get('lang'), 'solo': kind == 'solo', 'group': kind,
+            'pass': decision['pass'], 'reason': decision['reason'],
+            'detail': decision['detail'], 'second': decision.get('second', ''), 'engine': (rec or {}).get('second'),
+            'paths': decision.get('paths') or {}, 'word_proof': decision.get('word_proof') or [],
             'ctc': (rec or {}).get('status'), 'start': words[0]['s'],
+            'cue_start': cue_start, 'cue_delta': cue_delta,
             'window': (rec or {}).get('second_window'),
             'onset_abs': [round(a, 3) for a in abs_pre] if decision['pass'] else [],
             'presnap_abs': [round(a, 3) for a in abs_pre] if decision['pass'] else [],
@@ -334,13 +584,40 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
             reasons[r['reason']] = reasons.get(r['reason'], 0) + 1
     failed_solo = [r for r in solo_rows if not r['pass']]
     failed_choir = [r for r in choir_rows if not r['pass']]
-    worst = sorted(failed_solo + failed_choir, key=lambda r: (-(r['aligner_max'] or 0), -(r['presnap_max'] or 0), r['start']))[:15]
-    missing = [r for r in rows if r['ctc'] == 'draft']
+    worst = sorted(failed_solo + failed_choir, key=lambda r: (-(r.get('cue_delta') or 0), -(r['aligner_max'] or 0), -(r['presnap_max'] or 0), r['start']))[:15]
+    cue_vals = [r['cue_delta'] for r in rows if r.get('cue_delta') is not None]
+    found = sum(1 for r in rows if r.get('ctc') in ('good', 'weak'))
+    placed = sum(1 for r in rows if r.get('ctc') == 'good')
+    weak = sum(1 for r in rows if r.get('ctc') == 'weak')
+    missing = [r for r in rows if r['reason'] == 'text-not-found']
+    aligner_failed = [r for r in rows if r['reason'] == 'aligner-failed']
+    by_lang: dict[str, dict] = {}
+    attack_n = second_n = fail_n = 0
+    consonant: list[float | None] = []
+    soft: list[float | None] = []
+    for r in rows:
+        lang = r.get('lang') or '?'
+        bucket = by_lang.setdefault(lang, {'n': 0, 'placed': 0, 'proved': 0})
+        bucket['n'] += 1
+        if r.get('ctc') == 'good':
+            bucket['placed'] += 1
+            for word in r.get('word_proof') or []:
+                if word['path'] == 'attack':
+                    attack_n += 1
+                elif word['path'] == 'second':
+                    second_n += 1
+                else:
+                    fail_n += 1
+                (soft if word['soft'] else consonant).append(word['abs'])
+        if r.get('pass'):
+            bucket['proved'] += 1
     return {
         'aligned': aligned, 'solo': len(solo_rows), 'passed': len(passed), 'failed_solo': len(failed_solo),
         'choir': len(choir_rows), 'choir_passed': len(choir_passed), 'failed_choir': len(failed_choir),
         'lines_n': len(rows), 'reasons': reasons, 'lines': rows, 'worst': worst, 'missing': missing,
-        'word_tol': WORD_TOL, 'choir_tol': CHOIR_TOL, 'line_tol': TOL, 'song_share': SONG_SHARE,
+        'word_tol': float(rule['tol']), 'choir_tol': float(rule['choir_tol']), 'line_tol': TOL, 'song_share': SONG_SHARE,
+        'word_rule': rule.get('name'), 'peak_height': height,
+        'require_rise': bool(rule.get('require_rise')), 'require_second': bool(rule.get('require_second')),
         'onset_median': onset_median, 'onset_p90': onset_p90, 'onset_words': len(onset),
         'presnap_median': onset_median, 'presnap_p90': onset_p90,
         'agree_median': agree_median, 'agree_p90': agree_p90,
@@ -348,6 +625,28 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
         'solo_agree_median': solo_amed, 'solo_agree_p90': solo_ap90,
         'choir_onset_median': choir_med, 'choir_onset_p90': choir_p90, 'choir_onset_words': len(choir_onset),
         'choir_agree_median': choir_amed, 'choir_agree_p90': choir_ap90,
+        'found': found, 'placed': placed, 'weak': weak, 'cue_n': len(cue_vals),
+        'cue_tol': PROOF_CUE_TOL, 'publish_cue_tol': CUE_TOL,
+        'cue_median': round(float(np.median(cue_vals)), 3) if cue_vals else None,
+        'aligner_failed': aligner_failed, 'by_lang': by_lang,
+        'fill_lines': len(passed) + len(choir_passed),
+        'word_paths': {'attack': attack_n, 'second': second_n, 'fail': fail_n},
+        'onset_consonant': _onset_stat(consonant), 'onset_soft': _onset_stat(soft),
+    }
+
+
+def _onset_stat(vals: list[float | None]) -> dict:
+    """n, how many have no attack closer than 0.30 s, and median/p90 of the distances that exist."""
+    known = [float(v) for v in vals if v is not None]
+    if not known:
+        median = p90 = None
+    else:
+        median = round(float(np.median(known)), 3)
+        p90 = round(float(np.percentile(known, 90)), 3)
+    return {
+        'n': len(vals),
+        'no_near': sum(1 for v in vals if v is None or v >= ATTACK_NEAR),
+        'median': median, 'p90': p90,
     }
 
 
@@ -399,11 +698,13 @@ def timing_payload(slug: str, proof: dict, align_report: dict | None) -> dict:
     solo_med = proof.get('solo_onset_median', proof.get('onset_median'))
     solo_p90 = proof.get('solo_onset_p90', proof.get('onset_p90'))
     if proof['aligned']:
+        wt = proof.get('word_tol', WORD_TOL)
+        ct = proof.get('choir_tol', CHOIR_TOL)
         notes = (f"qa_sync: {groups}, порог песни 80 % в каждой группе, где она есть. "
-                 f"Соло, до притяжения: медиана {_num(solo_med)} с, 90-й перцентиль {_num(solo_p90)} с (порог 0,1 с). ")
+                 f"Соло, до притяжения: медиана {_num(solo_med)} с, 90-й перцентиль {_num(solo_p90)} с (порог {_num(wt)} с). ")
         if proof.get('choir'):
             notes += (f"Хор, до притяжения: медиана {_num(proof.get('choir_onset_median'))} с, "
-                      f"90-й перцентиль {_num(proof.get('choir_onset_p90'))} с (порог 0,2 с). ")
+                      f"90-й перцентиль {_num(proof.get('choir_onset_p90'))} с (порог {_num(ct)} с). ")
         notes += ("Цифры посчитаны до притяжения; записанное время может стоять на атаке. "
                   f"Остальные строки с флагом timing-draft. Отчёт: docs/analysis/{slug}-qa.md.")
         status = 'aligned'
@@ -652,26 +953,98 @@ def proof_md(proof: dict) -> list[str]:
     L.append('')
     L.append('Pass/fail и цифры ниже считаются до притяжения начала слова к атаке. '
              'Притяжение (не дальше 0,1 с) может сдвинуть записанное время на пик, но в эти цифры не входит. '
-             'Первый проход ставит текст всей вокальной секции сразу. Черновые s/e окном не служат. '
-             'Окно второго выравнивателя — фраза, которую этот проход уже поставил, плюс до 2 с, '
-             'но не дальше соседней измеренной строки и не длиннее 12 с. '
+             'Окно поиска строки — официальная реплика с запасом; черновые s/e окном не служат. '
+             'Строка без реплики ищется по своей вокальной секции. '
+             'Окно второго выравнивателя — фраза, которую первый проход уже поставил, плюс до 2 с, '
+             'но не дальше соседней строки (её поставленного края или реплики) и не длиннее 12 с. '
              'Фразу, которая уже стоит вне своей секции, окно в секцию не затаскивает. '
              'Соло и хор ниже посчитаны отдельно: пороги 0,1 с и 0,2 с в одну цифру не смешиваются.')
+    wt = proof.get('word_tol', WORD_TOL)
+    ct = proof.get('choir_tol', CHOIR_TOL)
+    rule_name = proof.get('word_rule') or 'tol-0.10-h0.5'
+    extra = []
+    if proof.get('require_rise'):
+        extra.append('атака только на подъёме энергии')
+    if proof.get('require_second'):
+        extra.append('нужно согласие второго выравнивателя')
+    extra_bit = (', ' + ', '.join(extra)) if extra else ''
+    L.append(f"- Поставлено: {proof.get('placed', 0)} из {proof['lines_n']} "
+             f"(у строки с репликой — структурные проверки и |Δ| ≤ {ru(PROOF_CUE_TOL)} с; "
+             f"оценка MMS в отчёте и строку не бракует). "
+             f"Путь есть, но строка не поставлена: {proof.get('weak', 0)}. "
+             f"|начало строки − начало реплики|: медиана {_fmt_opt(proof.get('cue_median'))} с "
+             f"по {proof.get('cue_n', 0)} строкам, где путь есть и реплика есть. "
+             f"Дальше {ru(proof.get('cue_tol', PROOF_CUE_TOL))} с строка не поставлена и не доказана. "
+             f"На сайт время выравнивателя пишется только у поставленной строки; "
+             f"у непоставленной с репликой первое слово начинается с реплики.")
+    L.append(f"- Правило слова: `{rule_name}`, атака {ru(wt)} с у соло и {ru(ct)} с у хора"
+             f"{extra_bit}. Сила пика {ru(proof.get('peak_height', PEAK_HEIGHT))}.")
     L.append(f"- Соло, только доказанные строки, до притяжения. Атака: медиана {_fmt_opt(proof.get('solo_onset_median', proof.get('onset_median')))} с, "
-             f"90-й перцентиль {_fmt_opt(proof.get('solo_onset_p90', proof.get('onset_p90')))} с, порог {ru(WORD_TOL)} с, "
+             f"90-й перцентиль {_fmt_opt(proof.get('solo_onset_p90', proof.get('onset_p90')))} с, порог {ru(wt)} с, "
              f"слов {proof.get('solo_onset_words', proof.get('onset_words', 0))}. "
-             f"Два выравнивателя: медиана {_fmt_opt(proof.get('solo_agree_median', proof.get('agree_median')))} с, "
+             f"Второй выравниватель, где поставил время (порог не решает): медиана {_fmt_opt(proof.get('solo_agree_median', proof.get('agree_median')))} с, "
              f"90-й перцентиль {_fmt_opt(proof.get('solo_agree_p90', proof.get('agree_p90')))} с.")
     if proof.get('choir'):
         L.append(f"- Хор, отдельно. Атака: медиана {_fmt_opt(proof.get('choir_onset_median'))} с, "
-                 f"90-й перцентиль {_fmt_opt(proof.get('choir_onset_p90'))} с, порог {ru(CHOIR_TOL)} с, "
+                 f"90-й перцентиль {_fmt_opt(proof.get('choir_onset_p90'))} с, порог {ru(ct)} с, "
                  f"слов {proof.get('choir_onset_words', 0)}. "
-                 f"Два выравнивателя: медиана {_fmt_opt(proof.get('choir_agree_median'))} с, "
+                 f"Второй выравниватель, где поставил время: медиана {_fmt_opt(proof.get('choir_agree_median'))} с, "
                  f"90-й перцентиль {_fmt_opt(proof.get('choir_agree_p90'))} с.")
+    asked = [r for r in proof['lines'] if r.get('group') in ('solo', 'choir') and r.get('ctc') == 'good']
+    if asked:
+        names = (('agree', 'сошёлся'), ('disagree', 'разошёлся'), ('partial', 'поставил не все слова'), ('absent', 'времени нет'))
+        bits = [f"{label} {sum(1 for r in asked if r.get('second') == key)}" for key, label in names]
+        L.append('- Второй выравниватель на поставленных строках: ' + ', '.join(bits) + '. '
+                 'Доказательством он служит только у слова на гласную или связного, если атаки ближе 0,3 с нет, '
+                 'и только когда его начало не дальше 0,10 с. Для согласной атака по-прежнему нужна.')
     L.append(f"- Сдвиг строки целиком — отдельная тревога с порогом {ru(TOL)} с. В pass/fail слова он не входит.")
+    paths = proof.get('word_paths') or {}
+    L.append(f"- Слова на поставленных строках. Доказано атакой: {paths.get('attack', 0)}. "
+             f"Доказано вторым выравнивателем: {paths.get('second', 0)}. "
+             f"Не доказано: {paths.get('fail', 0)}. "
+             f"Интерполяция между соседними словами доказательством не считается.")
+    L.append(f"- Если бы пословная заливка включалась по строке, а не на всю песню, её получили бы "
+             f"{proof.get('fill_lines', 0)} строк — только доказанные. "
+             f"Сайт так не делает: заливка включается на всю песню, когда статус не draft, "
+             f"и не горит у строки с флагом timing-draft.")
     if proof['reasons']:
         bits = ', '.join(f"{REASON_RU.get(k, k)} — {v}" for k, v in sorted(proof['reasons'].items(), key=lambda kv: -kv[1]))
         L.append(f"- Почему строки не доказаны: {bits}.")
+    L.append('')
+    L.append('## По языкам')
+    L.append('')
+    L.append('Поставлено у строки с репликой — структура и |Δ| ≤ 0,3 с. Оценка строку не бракует. Доказано — поставленная строка, у которой прошло каждое слово.')
+    L.append('')
+    L.append('| язык | строк | поставлено | доказано |')
+    L.append('|---|---:|---:|---:|')
+    for lang, bucket in sorted((proof.get('by_lang') or {}).items()):
+        L.append(f"| {lang} | {bucket['n']} | {bucket['placed']} | {bucket['proved']} |")
+    if not proof.get('by_lang'):
+        L.append('| — | 0 | 0 | 0 |')
+    L.append('')
+    cons = proof.get('onset_consonant') or {}
+    soft = proof.get('onset_soft') or {}
+    L.append('## Атаки на поставленных строках')
+    L.append('')
+    L.append('Расстояние от начала слова до притяжения до ближайшей своей атаки. '
+             '«Нет ближе 0,3 с» — атаки в этом окне нет, в том числе когда ближайшая атака дальше. '
+             'Медиана и 90-й перцентиль — только по словам, у которых атака где-то нашлась.')
+    L.append('')
+    L.append('| слова | n | нет атаки ближе 0,3 с | медиана | 90-й |')
+    L.append('|---|---:|---:|---:|---:|')
+    L.append(f"| на согласную | {cons.get('n', 0)} | {cons.get('no_near', 0)} | {_fmt_opt(cons.get('median'))} | {_fmt_opt(cons.get('p90'))} |")
+    L.append(f"| на гласную или связные | {soft.get('n', 0)} | {soft.get('no_near', 0)} | {_fmt_opt(soft.get('median'))} | {_fmt_opt(soft.get('p90'))} |")
+    L.append('')
+    soft_n = int(soft.get('n') or 0)
+    soft_far = int(soft.get('no_near') or 0)
+    if soft_n == 0:
+        L.append('Поставленных строк со словами нет, поэтому про систематический пропуск атаки на легато сказать нечего.')
+    elif soft_far * 2 >= soft_n:
+        L.append('У гласных и связных атака ближе 0,3 с отсутствует не реже чем в половине слов. '
+                 'Для них основной путь доказательства — второй выравниватель, а не атака.')
+    else:
+        L.append('У гласных и связных атака ближе 0,3 с чаще есть. '
+                 'Путь через второй выравниватель посчитан и на этих данных не главный.')
     L.append('')
     L.append('## Худшие места')
     L.append('')
@@ -686,6 +1059,8 @@ def proof_md(proof: dict) -> list[str]:
                 bits.append(f"выравниватели до {ru(r['aligner_max'], 3)} с")
             if r.get('presnap_max') is not None:
                 bits.append(f"атака до притяжения до {ru(r['presnap_max'], 3)} с")
+            if r.get('cue_delta') is not None:
+                bits.append(f"реплика {ru(r['cue_delta'], 3)} с")
             if r.get('window'):
                 w0, w1 = r['window']
                 bits.append(f"окно {ru(w0, 1)}–{ru(w1, 1)} с")
@@ -696,11 +1071,25 @@ def proof_md(proof: dict) -> list[str]:
     L.append('')
     L.append('## Текст не найден в голосе')
     L.append('')
-    L.append('Эти строки MMS не смог поставить на вокальную дорожку: слова в `lyrics.json`, скорее всего, не те, что поются. Текст здесь не менялся.')
+    L.append('Только строки без реплики, у которых постановки нет или путь не прошёл структурные проверки. '
+             'Слова в `lyrics.json`, скорее всего, не те, что поются. Текст здесь не менялся.')
     L.append('')
     if proof['missing']:
         for r in proof['missing']:
             L.append(f"- `{r['id']}` {fmt_t(r['start'])} ({_group_name(r)})")
+    else:
+        L.append('Нет.')
+    L.append('')
+    L.append('## Выравниватель не справился')
+    L.append('')
+    L.append('У этих строк есть официальная реплика. Постановки нет, либо путь не прошёл структурные проверки и с репликой не сошёлся. '
+             'Слова сверены с субтитрами и здесь не называются неверными. Текст не менялся.')
+    L.append('')
+    failed_align = proof.get('aligner_failed') or []
+    if failed_align:
+        for r in failed_align:
+            extra = f" — {r['detail']}" if r.get('detail') else ''
+            L.append(f"- `{r['id']}` {fmt_t(r['start'])} ({_group_name(r)}){extra}")
     else:
         L.append('Нет.')
     L.append('')
@@ -714,9 +1103,13 @@ def render_md(meta: dict, summary: dict, results: list[dict], words: list[dict],
     title = meta.get('title') or meta['slug']
     L.append(f"# Синхронизация текста: {title}")
     L.append('')
+    wt = (proof or {}).get('word_tol', WORD_TOL)
+    ct = (proof or {}).get('choir_tol', CHOIR_TOL)
     L.append(f"Проверка `qa_sync.py` от {meta['date']}. Аудио: `{meta['audio']}`{'' if meta['stem'] else ' (полный микс — вокального стема нет, точность ниже)'}. "
              f"Текст: `{meta['lyrics']}`. "
-             f"Порог доказательства слова: {ru(WORD_TOL)} с для соло и {ru(CHOIR_TOL)} с для хора — расстояние от начала выравнивателя до притяжения до ближайшей атаки и расхождение двух выравнивателей. "
+             f"Порог доказательства слова: {ru(wt)} с для соло и {ru(ct)} с для хора — атака до притяжения. "
+             f"Слово на гласную или связное без атаки ближе {ru(ATTACK_NEAR)} с доказывается вторым выравнивателем в пределах {ru(SECOND_WORD_TOL)} с. "
+             f"Начало строки против реплики — {ru(PROOF_CUE_TOL)} с. У строки с репликой оценка MMS строку не бракует. "
              f"Порог сдвига строки целиком: {ru(TOL)} с — отдельная тревога, не порог доказательства.")
     L.append('')
     L.append('## Итог')
@@ -907,7 +1300,11 @@ def main() -> int:
     align_report = json.loads(align_path.read_text(encoding='utf-8')) if use_report else None
     proof = None
     if use_report or args.apply:
-        proof = build_proof(sig, lines, results, align_report)
+        cue_path = ROOT / 'docs' / 'analysis' / slug / 'cues.json'
+        cues = {}
+        if cue_path.exists():
+            cues = {r['line']: r for r in json.loads(cue_path.read_text(encoding='utf-8')) if r.get('line')}
+        proof = build_proof(sig, lines, results, align_report, cues, word_rule=load_word_rule())
     if args.apply and proof is not None and song.get('timing', {}).get('status') == 'verified':
         print('song.json: timing.status = verified — qa_sync --apply ничего не меняет')
     elif args.apply and proof is not None:
@@ -945,8 +1342,10 @@ def main() -> int:
         if proof.get('choir'):
             choir_bit = f" · хор {proof.get('choir_passed', 0)} из {proof['choir']}"
         print(f"критерий: {'пройден' if proof['aligned'] else 'не пройден'} · соло {proof['passed']} из {proof['solo']}{choir_bit} · "
+              f"найдено {proof.get('found', 0)} · "
               f"до притяжения медиана {_fmt_opt(proof['onset_median'])} с · "
-              f"90-й перцентиль {_fmt_opt(proof['onset_p90'])} с")
+              f"90-й перцентиль {_fmt_opt(proof['onset_p90'])} с · "
+              f"|реплика| медиана {_fmt_opt(proof.get('cue_median'))} с")
     for r in results:
         if r['verdict'] != 'ok':
             print(f"  {r['id']:<22} {r['start']:7.2f}  {verdict_text(r)}  (gain {r['gain']}, prom {r['prom']}, тишина {r['silence']})")

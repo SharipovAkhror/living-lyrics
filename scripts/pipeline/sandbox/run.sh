@@ -13,6 +13,11 @@
 #   transcribe  Whisper draft → work/<slug>/transcript.json
 #               also runs before align or qa, and is copied to docs/analysis/<slug>/
 #   diagnose    read-only locator table → docs/analysis/<slug>/locate.md (does not write lyrics)
+#   bench       compare aligners and vocal stems against cues.json → docs/analysis/bench/
+#               (does not write lyrics). Heavy; run it on its own, not beside align.
+#   calibrate   score rows for the cue threshold → work/<slug>/score-rows.json
+#               (does not write lyrics). The workflow runs this for every align job
+#               before align, then calibrate_score.py --choose.
 #   align       word times into lyrics.json (align.py), report → work/<slug>/align-report.json
 #   qa          sync check (qa_sync.py) → work/<slug>/qa-sync.md, copied to docs/analysis/<slug>-qa.md
 #   features    animation envelopes → public/audio/<slug>/features.json (features.py)
@@ -36,7 +41,7 @@ if [ -z "$slug" ] || [ $# -eq 0 ]; then
   exit 2
 fi
 for s in "$@"; do
-  case "$s" in decrypt|separate|sections|transcribe|diagnose|align|qa|features|instruments) ;; *) echo "неизвестная стадия: $s"; exit 2 ;; esac
+  case "$s" in decrypt|separate|sections|transcribe|diagnose|bench|calibrate|align|qa|features|instruments) ;; *) echo "неизвестная стадия: $s"; exit 2 ;; esac
 done
 want=" $* "
 has() { [[ "$want" == *" $1 "* ]]; }
@@ -92,14 +97,15 @@ publish() {  # publish <src> <name>: copy a small analysis file, never work/ its
 }
 # A timing run publishes the voice map and the transcript. A later agent reads them from
 # docs/analysis and cannot see work/. Naming the stage still runs it on its own.
-if { has sections || has align || has qa; } && [ $status -lt 2 ]; then
+# PIPELINE_SKIP_PREP=1: qa is running after align already published both files.
+if [ -z "${PIPELINE_SKIP_PREP:-}" ] && { has sections || has align || has qa; } && [ $status -lt 2 ]; then
   if need_stem && step sections python3 sections.py "$slug" --gap 3; then
     publish "$w/sections.suggested.json" sections.suggested.json
   else
     fail sections
   fi
 fi
-if { has transcribe || has align || has qa; } && [ $status -lt 2 ]; then
+if [ -z "${PIPELINE_SKIP_PREP:-}" ] && { has transcribe || has align || has qa; } && [ $status -lt 2 ]; then
   if need_stem && step transcribe python3 transcribe.py "$slug" --model "${WHISPER_MODEL:-large-v3-turbo}"; then
     publish "$w/transcript.json" transcript.json
   else
@@ -109,6 +115,23 @@ fi
 if has diagnose && [ $status -lt 2 ]; then
   { need_stem && step diagnose python3 diagnose_locate.py "$slug"; } || fail diagnose
 fi
+# The bench measures line starts against cues.json. It separates the three songs itself
+# and does not write lyrics. One job is enough: models load once inside the script.
+# Unpack every song's four-stem cache first so Demucs is not repeated.
+if has bench && [ $status -lt 2 ]; then
+  for s in i-have-come-alive karitas one; do
+    python3 stem_cache.py unpack "$s" "$root/work/stem-cache" || true
+  done
+  { step bench python3 bench_align.py i-have-come-alive karitas one --stems i-have-come-alive; } || fail bench
+  for s in i-have-come-alive karitas one; do
+    python3 stem_cache.py pack "$s" "$root/work/stem-cache" || true
+  done
+fi
+if has calibrate && [ $status -lt 2 ]; then
+  # Scores only. sections and transcribe stay with align: this pass must not fit a threshold
+  # on the first song before the others have been measured.
+  { need_stem && step calibrate python3 calibrate_score.py "$slug" --collect; } || fail calibrate
+fi
 aligned=""
 if has align && [ $status -lt 2 ]; then
   cp "$root/content/songs/$slug/lyrics.json" "$w/lyrics.before.json"
@@ -117,7 +140,8 @@ if has align && [ $status -lt 2 ]; then
 fi
 if has qa && [ $status -lt 2 ]; then
   baseline=()
-  if [ -n "$aligned" ]; then
+  # Align writes lyrics.before.json. A later qa-only pass still compares against it.
+  if [ -n "$aligned" ] || [ -f "$w/lyrics.before.json" ]; then
     step qa-before python3 qa_sync.py "$slug" --lyrics "$w/lyrics.before.json" --tag before
     [ -f "$w/qa-sync-before.json" ] && baseline=(--baseline "$w/qa-sync-before.json")
   fi

@@ -21,14 +21,19 @@ from __future__ import annotations
 import os
 import shutil
 import sys
+from pathlib import Path
 
 from common import find_source, run, work_dir
 
 
-def main(slug: str, model: str = 'htdemucs') -> None:
-    src = find_source(slug)
-    stems = work_dir(slug) / 'stems'
-    stems.mkdir(exist_ok=True)
+def main(slug: str, model: str = 'htdemucs', dest=None, source=None):
+    """Separate `slug`. `dest` writes stems there and leaves work/<slug>/stems alone.
+
+    `source` separates that file instead of work/<slug>/source.* (the bench uses an excerpt).
+    """
+    src = Path(source) if source is not None else find_source(slug)
+    stems = dest if dest is not None else work_dir(slug) / 'stems'
+    stems.mkdir(parents=True, exist_ok=True)
     if model.endswith(('.ckpt', '.onnx', '.pth', '.yaml')):
         out = work_dir(slug) / 'separator'
         out.mkdir(exist_ok=True)

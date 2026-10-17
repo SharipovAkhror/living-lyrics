@@ -1,0 +1,98 @@
+{
+ "metric": "letter",
+ "threshold": 0.412102,
+ "cap_met": true,
+ "accepted": 72,
+ "near": 63,
+ "mid": 8,
+ "false": 1,
+ "false_share": 0.0139,
+ "structure_fail": 12,
+ "placed": 54,
+ "rows": 243,
+ "cued": 243,
+ "by_metric": [
+  {
+   "accepted": 72,
+   "near": 63,
+   "mid": 8,
+   "false": 1,
+   "false_share": 0.0139,
+   "structure_fail": 12,
+   "placed": 54,
+   "cap_ok": true,
+   "metric": "letter",
+   "threshold": 0.412102,
+   "cap_met": true
+  },
+  {
+   "accepted": 72,
+   "near": 63,
+   "mid": 8,
+   "false": 1,
+   "false_share": 0.0139,
+   "structure_fail": 11,
+   "placed": 55,
+   "cap_ok": true,
+   "metric": "word_mean",
+   "threshold": 0.405059,
+   "cap_met": true
+  },
+  {
+   "accepted": 52,
+   "near": 44,
+   "mid": 7,
+   "false": 1,
+   "false_share": 0.0192,
+   "structure_fail": 10,
+   "placed": 37,
+   "cap_ok": true,
+   "metric": "word_min",
+   "threshold": 0.294715,
+   "cap_met": true
+  }
+ ],
+ "by_lang": {
+  "en": {
+   "cued_accepted": 14,
+   "near": 11,
+   "placed": 10,
+   "false": 0
+  },
+  "tr": {
+   "cued_accepted": 6,
+   "near": 6,
+   "placed": 6,
+   "false": 0
+  },
+  "ar": {
+   "cued_accepted": 24,
+   "near": 21,
+   "placed": 17,
+   "false": 1
+  },
+  "fa": {
+   "cued_accepted": 17,
+   "near": 16,
+   "placed": 13,
+   "false": 0
+  },
+  "az": {
+   "cued_accepted": 5,
+   "near": 3,
+   "placed": 3,
+   "false": 0
+  },
+  "la": {
+   "cued_accepted": 6,
+   "near": 6,
+   "placed": 5,
+   "false": 0
+  }
+ },
+ "sources": [
+  "/home/runner/work/living-lyrics/living-lyrics/work/i-have-come-alive/score-rows.json",
+  "/home/runner/work/living-lyrics/living-lyrics/work/karitas/score-rows.json",
+  "/home/runner/work/living-lyrics/living-lyrics/work/one/score-rows.json"
+ ]
+}
