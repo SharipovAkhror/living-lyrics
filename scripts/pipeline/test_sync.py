@@ -236,10 +236,16 @@ def test_cue_window() -> None:
 
 
 def test_cue_times_stay() -> None:
-    check('a confident line publishes the aligner', not align.keep_cue_time('good', True))
-    check('a weak line keeps its cue', align.keep_cue_time('weak', True))
+    check('a confident line that agrees publishes the aligner', not align.keep_cue_time('good', True, 0.20))
+    check('exactly 0.70 s still publishes the aligner', not align.keep_cue_time('good', True, 0.70))
+    check('a confident line 3.56 s off the cue keeps the cue', align.keep_cue_time('good', True, 3.56))
+    check('0.81 s keeps the cue', align.keep_cue_time('good', True, 0.81))
+    check('a confident line with no measured start keeps the cue', align.keep_cue_time('good', True, None))
+    check('a weak line keeps its cue', align.keep_cue_time('weak', True, 0.1))
     check('an unfound line keeps its cue', align.keep_cue_time('draft', True))
     check('a draft without a cue may be fitted', not align.keep_cue_time('draft', False))
+    check('shushtari drift is the aligner start against the cue',
+          abs((align.line_drift([489.0], ['karitas'], 485.436) or 0) - 3.564) < 1e-6)
     moved = [[[0.0, 1.0]], [[10.0, 11.0]], [[3.0, 4.0]]]
     align.fit_drafts(moved, [False, True, False], 20.0)
     check('an uncued draft still moves into the gap', moved[1][0][0] < 10.0, str(moved[1]))
@@ -379,6 +385,24 @@ def test_star_absorbs_a_hold() -> None:
     check('the next line stays after the gap', b is not None and b['f0'] == 30, str(b))
 
 
+def test_bench_summary() -> None:
+    import bench_align as B
+
+    rows = [
+        {'lang': 'en', 'delta': 0.1},
+        {'lang': 'en', 'delta': 0.4},
+        {'lang': 'en', 'delta': None},
+        {'lang': 'tr', 'delta': 0.2},
+    ]
+    got = B.summarize(rows)
+    en = got['by_lang']['en']
+    check('english places two of three', en['placed'] == 2 and en['n'] == 3, str(en))
+    check('one english line is within 0.3 s', en['within_0_3'] == 1, str(en))
+    check('both placed english lines are within 0.7 s', en['within_0_7'] == 2, str(en))
+    check('median of the placed english lines is 0.25 s', abs(en['median'] - 0.25) < 1e-9, str(en))
+    check('a missing start is not a zero', got['by_lang']['tr']['median'] == 0.2, str(got['by_lang']['tr']))
+
+
 def main() -> int:
     test_viterbi()
     test_star_absorbs_a_hold()
@@ -393,6 +417,7 @@ def main() -> int:
     test_second_span()
     test_cue_window()
     test_cue_times_stay()
+    test_bench_summary()
     test_harakat()
     test_cue_in_build_proof()
     test_anchor_fence()

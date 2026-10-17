@@ -23,8 +23,9 @@ How it works:
 4. Confidence per line: `score` (mean posterior of its letters) and `gap` (how much more likely
    the best other label was on those frames). There is no agreement check against another pass:
    that check was throwing away placements a tight window supports.
-     good  — the text was found: its start and end are written, and a second aligner runs
-             for solo and choir lines;
+     good and within 0.7 s of the cue — its start and end are written, and a second
+             aligner runs for solo and choir lines;
+     good but further from the cue — the cue times stay. The line is not proved.
      weak or draft — the cue times already in the line stay. They are not slid into a gap.
    align.py does not decide the flag. It marks every line `timing-draft` and leaves
    `timing.status` at `draft`. qa_sync.py --apply clears the flag only where the pre-snap start
@@ -378,9 +379,31 @@ def cue_window(start: float, end: float, prev: tuple[float, float] | None, nxt: 
     return t0, t1
 
 
-def keep_cue_time(status: str, has_cue: bool) -> bool:
-    """A confident line publishes the aligner. Any other line that has a cue keeps that cue."""
-    return has_cue and status != 'good'
+def keep_cue_time(status: str, has_cue: bool, drift: float | None = None) -> bool:
+    """Cue times stay unless the aligner is confident and agrees with the cue.
+
+    A person placed the subtitle cue, and that start is the line's anchor. `drift` is
+    |aligner line start − cue start| in seconds, before any snap. A confident aligner
+    further than CUE_TOL still publishes the cue (the line is not proved). None means
+    the aligner did not place the line. A line with no cue is not locked.
+    """
+    if not has_cue:
+        return False
+    if status != 'good':
+        return True
+    if drift is None or round(float(drift), 3) > Q.CUE_TOL:
+        return True
+    return False
+
+
+def line_drift(starts: list[float | None], roman: list[str], cue_start: float | None) -> float | None:
+    """|first lettered aligner start − cue start|, or None when either side is missing."""
+    if cue_start is None:
+        return None
+    placed = next((t for t, rm in zip(starts, roman) if rm and t is not None), None)
+    if placed is None:
+        return None
+    return abs(float(placed) - float(cue_start))
 
 
 def _pack_star(rec: dict | None, t0: int, window: tuple[float, float], method: str, cue: dict | None) -> dict:
@@ -702,20 +725,28 @@ def main() -> None:
             status = 'draft'    # text not found in the cue window: the cue times stay where they are
         conf.append({'scores': scores, 'score': score, 'gap': gap, 'agree': agree, 'status': status})
 
-    # Word times (seconds). A confident line publishes the aligner. Anything else that has a
-    # cue keeps the cue times already in the line: not a fresh draft and not a gap. A draft
-    # with no cue is still fitted between its measured neighbours.
+    # Word times (seconds). Aligner times are published only when the line is confident and
+    # its pre-snap start agrees with the cue. A confident line further than CUE_TOL keeps
+    # the cue a person placed (shushtari-s2 was 3.56 s off and must not reach the site).
+    # Anything else that has a cue keeps those cue times: not a fresh draft and not a gap.
+    # A draft with no cue is still fitted between its measured neighbours.
     times: list[list[list[float] | None]] = []
     ctc_starts: list[list[float | None]] = []
+    publish: list[bool] = []
     for u, p, c in zip(units, passes, conf):
         placed: list[list[float] | None] = [None] * len(u.roman)
         if p['res'] is not None:
             for wi, w in enumerate(p['res']['words']):
                 if w is not None:
                     placed[wi] = [w['f0'] / FPS, w['f1'] / FPS]
-        ctc_starts.append([None if w is None else w[0] for w in placed])
-        has_cue = u.id in cues
-        if (not keep_cue_time(c['status'], has_cue)) and c['status'] != 'draft':
+        raw = [None if w is None else w[0] for w in placed]
+        ctc_starts.append(raw)
+        cue = cues.get(u.id)
+        drift = line_drift(raw, u.roman, None if cue is None else float(cue['start']))
+        keep = keep_cue_time(c['status'], cue is not None, drift)
+        use_aligner = (not keep) and c['status'] != 'draft'
+        publish.append(use_aligner)
+        if use_aligner:
             times.append([None if w is None else [w[0], w[1]] for w in placed])
         else:
             times.append([[w['s'], w['e']] for w in u.line['words']])
@@ -735,8 +766,10 @@ def main() -> None:
     # The second aligner needs the phrase from before that move.
     sig = Q.Signals(x)
     phrase = [(ws[0][0], ws[-1][1]) for ws in times]
-    onset_dt = snap_onsets(sig, times, units, [c['status'] == 'good' for c in conf])
-    flat = [(w, c['status'] == 'good') for ws, c in zip(times, conf) for w in ws]
+    # Snap and voice-end extension only where the aligner time is the one we publish.
+    # A cue we kept must stay the cue, not an onset near it.
+    onset_dt = snap_onsets(sig, times, units, publish)
+    flat = [(w, pub) for ws, pub in zip(times, publish) for w in ws]
     for j, (w, measured) in enumerate(flat):
         if not measured:
             continue
@@ -783,7 +816,7 @@ def main() -> None:
                        [u.sec['id'] for u in units])
 
     report_lines, good, placed = [], set(), set()
-    for u, p, ws, c, raw, odt, q in zip(units, passes, times, conf, ctc_starts, onset_dt, qa):
+    for u, p, ws, c, raw, odt, q, pub in zip(units, passes, times, conf, ctc_starts, onset_dt, qa, publish):
         status, scores, score, gap, agree = c['status'], c['scores'], c['score'], c['gap'], c['agree']
         s2 = second_starts.get(u.id)
         if s2 is not None and len(s2) != len(u.line['words']):
@@ -832,6 +865,7 @@ def main() -> None:
             'cue_start': None if cue is None else round(float(cue['start']), 3),
             'cue_end': None if cue is None else round(float(cue['end']), 3),
             'ctc_start': None if ctc_line is None else round(ctc_line, 3),
+            'time_source': 'aligner' if pub else ('cue' if cue is not None else 'draft'),
             'score': round(score, 3), 'gap': round(gap, 3), 'words': words_out,
         })
 

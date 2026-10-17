@@ -8,7 +8,7 @@
 # and docs/analysis/<slug>-instruments.json / .md (docs/methodology/09-instruments.md). They do not
 # edit lyrics.json; the agent copies confirmed entrances afterwards.
 #
-# Job file fields: "stages" (decrypt separate sections transcribe diagnose align qa features instruments),
+# Job file fields: "stages" (decrypt separate sections transcribe diagnose bench align qa features instruments),
 # optional "align" and "qa" — lists of extra options for align.py / qa_sync.py, e.g. {"qa": ["--fix"]}.
 # Needs the repository secret AUDIO_KEY (Settings → Secrets and variables → Actions).
 name: pipeline
@@ -107,6 +107,7 @@ jobs:
           path: |
             ~/.cache/torch
             ~/.cache/huggingface
+            ~/.cache/whisper
           key: models-v1-${{ hashFiles('scripts/pipeline/requirements.txt') }}
           restore-keys: models-v1-
 
@@ -125,6 +126,15 @@ jobs:
           sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
           python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           python -m pip install -r scripts/pipeline/requirements.txt
+          # Bench-only packages. They are not in requirements.txt: stable-ts pulls Whisper,
+          # audio-separator pulls the vocal models, and NeMo is optional. CPU torch is
+          # installed again afterwards so none of them can swap in a CUDA wheel.
+          if python3 -c "import json,sys; jobs=json.load(open('/tmp/jobs.json')); sys.exit(0 if any('bench' in j.get('stages',[]) for j in jobs) else 1)"; then
+            sudo apt-get install -y -q espeak-ng
+            python -m pip install stable-ts phonemizer 'audio-separator[cpu]'
+            python -m pip install 'nemo_toolkit[asr]' || echo 'nemo: пакет на CPU не встал'
+          fi
+          python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           python -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available()); raise SystemExit('+cu' in torch.__version__)"
 
       - name: Run stages
@@ -178,6 +188,7 @@ jobs:
             # sections.suggested.json, transcript.json, locate.md. Not work/.
             [ -d "docs/analysis/$slug" ] && git add "docs/analysis/$slug"
           done
+          if [ -d docs/analysis/bench ]; then git add docs/analysis/bench; fi
           python3 -c "import json; [print(j['file']) for j in json.load(open('/tmp/jobs.json')) if j['file']]" | while read -r f; do
             git rm -q --ignore-unmatch "$f"
           done
