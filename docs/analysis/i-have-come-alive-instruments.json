@@ -22,9 +22,8 @@
   "thresholds": {
     "energy_floor": 0.15,
     "vocal_mask": 0.35,
-    "on_floor": 0.15,
-    "on_factor": 2.0,
-    "min_margin": 0.0,
+    "cosine_eps": 0.0001,
+    "min_windows": 2,
     "bridge_s": 2.0,
     "bridge_drum_s": 1.0,
     "min_region_s": 1.5,
@@ -82,41 +81,318 @@
     "drums": {
       "windows": 387,
       "scored": 317,
-      "margin_p50": 0.001,
-      "margin_p90": 0.001,
-      "margin_max": 0.001,
-      "top_prob_p50": 0.072,
-      "top_prob_p90": 0.072
+      "margin_p50": 0.0006,
+      "margin_p90": 0.0006,
+      "margin_max": 0.0007,
+      "gap_p50": 0.0008,
+      "gap_p90": 0.0008,
+      "sim_std": 0.0008,
+      "top_prob_p50": 0.0715,
+      "top_prob_p90": 0.0715
     },
     "bass": {
       "windows": 290,
       "scored": 129,
       "margin_p50": 0.0,
-      "margin_p90": 0.0,
-      "margin_max": 0.0,
-      "top_prob_p50": 0.2,
-      "top_prob_p90": 0.2
+      "margin_p90": 0.0001,
+      "margin_max": 0.0001,
+      "gap_p50": 0.0001,
+      "gap_p90": 0.0002,
+      "sim_std": 0.0007,
+      "top_prob_p50": 0.2001,
+      "top_prob_p90": 0.2001
     },
     "other": {
       "windows": 290,
       "scored": 272,
-      "margin_p50": 0.0,
-      "margin_p90": 0.0,
-      "margin_max": 0.0,
-      "top_prob_p50": 0.03,
-      "top_prob_p90": 0.03
+      "margin_p50": 0.0004,
+      "margin_p90": 0.0004,
+      "margin_max": 0.0005,
+      "gap_p50": 0.0004,
+      "gap_p90": 0.0004,
+      "sim_std": 0.002,
+      "top_prob_p50": 0.0303,
+      "top_prob_p90": 0.0303
     },
     "mix": {
       "windows": 193,
       "scored": 191,
-      "margin_p50": 0.001,
-      "margin_p90": 0.001,
-      "margin_max": 0.001,
-      "top_prob_p50": 0.022,
-      "top_prob_p90": 0.022
+      "margin_p50": 0.0005,
+      "margin_p90": 0.0006,
+      "margin_max": 0.0007,
+      "gap_p50": 0.0003,
+      "gap_p90": 0.0003,
+      "sim_std": 0.0024,
+      "top_prob_p50": 0.0218,
+      "top_prob_p90": 0.0218
     }
   },
-  "timeline": [],
+  "timeline": [
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 0.0,
+      "until": 97.5,
+      "confidence": 0.071,
+      "similarity": 0.008,
+      "margin": 0.001,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "santur",
+      "name": "Сантур",
+      "at": 0.0,
+      "until": 112.0,
+      "confidence": 0.03,
+      "similarity": 0.007,
+      "margin": 0.0,
+      "stem": "other",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 102.0,
+      "until": 105.0,
+      "confidence": 0.048,
+      "similarity": 0.008,
+      "margin": 0.0,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 106.5,
+      "until": 111.0,
+      "confidence": 0.056,
+      "similarity": 0.008,
+      "margin": 0.0,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 115.5,
+      "until": 124.5,
+      "confidence": 0.064,
+      "similarity": 0.008,
+      "margin": 0.001,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "santur",
+      "name": "Сантур",
+      "at": 116.0,
+      "until": 194.0,
+      "confidence": 0.03,
+      "similarity": 0.008,
+      "margin": 0.0,
+      "stem": "other",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 129.0,
+      "until": 180.0,
+      "confidence": 0.07,
+      "similarity": 0.008,
+      "margin": 0.001,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 198.0,
+      "until": 202.5,
+      "confidence": 0.056,
+      "similarity": 0.008,
+      "margin": 0.0,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "santur",
+      "name": "Сантур",
+      "at": 198.0,
+      "until": 442.0,
+      "confidence": 0.03,
+      "similarity": 0.007,
+      "margin": 0.0,
+      "stem": "other",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 204.0,
+      "until": 292.5,
+      "confidence": 0.071,
+      "similarity": 0.008,
+      "margin": 0.001,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 300.0,
+      "until": 303.0,
+      "confidence": 0.048,
+      "similarity": 0.008,
+      "margin": 0.0,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 316.5,
+      "until": 319.5,
+      "confidence": 0.048,
+      "similarity": 0.008,
+      "margin": 0.0,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 322.5,
+      "until": 327.0,
+      "confidence": 0.056,
+      "similarity": 0.008,
+      "margin": 0.0,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 345.0,
+      "until": 402.0,
+      "confidence": 0.07,
+      "similarity": 0.008,
+      "margin": 0.001,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 408.0,
+      "until": 436.5,
+      "confidence": 0.069,
+      "similarity": 0.008,
+      "margin": 0.001,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 445.5,
+      "until": 448.5,
+      "confidence": 0.048,
+      "similarity": 0.008,
+      "margin": 0.0,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "santur",
+      "name": "Сантур",
+      "at": 450.0,
+      "until": 570.0,
+      "confidence": 0.03,
+      "similarity": 0.008,
+      "margin": 0.0,
+      "stem": "other",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 451.5,
+      "until": 460.5,
+      "confidence": 0.064,
+      "similarity": 0.008,
+      "margin": 0.001,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 462.0,
+      "until": 489.0,
+      "confidence": 0.069,
+      "similarity": 0.008,
+      "margin": 0.001,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 492.0,
+      "until": 495.0,
+      "confidence": 0.048,
+      "similarity": 0.008,
+      "margin": 0.0,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 508.5,
+      "until": 565.5,
+      "confidence": 0.07,
+      "similarity": 0.008,
+      "margin": 0.001,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    },
+    {
+      "key": "darbuka",
+      "name": "Дарбука",
+      "at": 567.0,
+      "until": 573.0,
+      "confidence": 0.06,
+      "similarity": 0.008,
+      "margin": 0.001,
+      "stem": "drums",
+      "in_catalog": true,
+      "family_voice": false
+    }
+  ],
   "sections": [
     {
       "id": "inst-open",
@@ -124,7 +400,32 @@
       "label": "Вступление",
       "start": 0.0,
       "end": 10.6,
-      "entries": [],
+      "entries": [
+        {
+          "at": 0.0,
+          "until": 10.6,
+          "holds_to_section_end": true,
+          "confidence": 0.071,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 0.0,
+          "until": 10.6,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.007,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -134,7 +435,32 @@
       "label": "Голос",
       "start": 10.6,
       "end": 23.7,
-      "entries": [],
+      "entries": [
+        {
+          "at": 10.6,
+          "until": 23.7,
+          "holds_to_section_end": true,
+          "confidence": 0.071,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 10.6,
+          "until": 23.7,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.007,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -144,7 +470,32 @@
       "label": "Танбур",
       "start": 23.7,
       "end": 100.9,
-      "entries": [],
+      "entries": [
+        {
+          "at": 23.7,
+          "until": 97.5,
+          "holds_to_section_end": false,
+          "confidence": 0.071,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 23.7,
+          "until": 100.9,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.007,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -154,7 +505,44 @@
       "label": "Английский куплет",
       "start": 100.9,
       "end": 107.75,
-      "entries": [],
+      "entries": [
+        {
+          "at": 100.9,
+          "until": 107.75,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.007,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        },
+        {
+          "at": 102.0,
+          "until": 105.0,
+          "holds_to_section_end": false,
+          "confidence": 0.048,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 106.5,
+          "until": 107.75,
+          "holds_to_section_end": true,
+          "confidence": 0.056,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -164,7 +552,32 @@
       "label": "Английский припев",
       "start": 107.75,
       "end": 115.81,
-      "entries": [],
+      "entries": [
+        {
+          "at": 107.75,
+          "until": 111.0,
+          "holds_to_section_end": false,
+          "confidence": 0.056,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 107.75,
+          "until": 112.0,
+          "holds_to_section_end": false,
+          "confidence": 0.03,
+          "similarity": 0.007,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -174,7 +587,32 @@
       "label": "Английский куплет, продолжение",
       "start": 115.81,
       "end": 123.83,
-      "entries": [],
+      "entries": [
+        {
+          "at": 115.81,
+          "until": 123.83,
+          "holds_to_section_end": true,
+          "confidence": 0.064,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 116.0,
+          "until": 123.83,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -184,7 +622,20 @@
       "label": "Английский припев, повтор",
       "start": 123.83,
       "end": 127.59,
-      "entries": [],
+      "entries": [
+        {
+          "at": 123.83,
+          "until": 127.59,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -194,7 +645,32 @@
       "label": "Английский припев, окончание",
       "start": 127.59,
       "end": 132.0,
-      "entries": [],
+      "entries": [
+        {
+          "at": 127.59,
+          "until": 132.0,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        },
+        {
+          "at": 129.0,
+          "until": 132.0,
+          "holds_to_section_end": true,
+          "confidence": 0.07,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -204,7 +680,32 @@
       "label": "Руми, бейт 1",
       "start": 132.0,
       "end": 165.8,
-      "entries": [],
+      "entries": [
+        {
+          "at": 132.0,
+          "until": 165.8,
+          "holds_to_section_end": true,
+          "confidence": 0.07,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 132.0,
+          "until": 165.8,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -214,7 +715,32 @@
       "label": "Проигрыш",
       "start": 165.8,
       "end": 172.0,
-      "entries": [],
+      "entries": [
+        {
+          "at": 165.8,
+          "until": 172.0,
+          "holds_to_section_end": true,
+          "confidence": 0.07,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 165.8,
+          "until": 172.0,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -224,7 +750,32 @@
       "label": "Голос",
       "start": 172.0,
       "end": 174.0,
-      "entries": [],
+      "entries": [
+        {
+          "at": 172.0,
+          "until": 174.0,
+          "holds_to_section_end": true,
+          "confidence": 0.07,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 172.0,
+          "until": 174.0,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -234,7 +785,32 @@
       "label": "Проигрыш",
       "start": 174.0,
       "end": 183.3,
-      "entries": [],
+      "entries": [
+        {
+          "at": 174.0,
+          "until": 180.0,
+          "holds_to_section_end": false,
+          "confidence": 0.07,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 174.0,
+          "until": 183.3,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -244,7 +820,56 @@
       "label": "Турецкий куплет",
       "start": 183.3,
       "end": 211.59,
-      "entries": [],
+      "entries": [
+        {
+          "at": 183.3,
+          "until": 194.0,
+          "holds_to_section_end": false,
+          "confidence": 0.03,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        },
+        {
+          "at": 198.0,
+          "until": 202.5,
+          "holds_to_section_end": false,
+          "confidence": 0.056,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 198.0,
+          "until": 211.59,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.007,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        },
+        {
+          "at": 204.0,
+          "until": 211.59,
+          "holds_to_section_end": true,
+          "confidence": 0.071,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -254,7 +879,32 @@
       "label": "Турецкий припев",
       "start": 211.59,
       "end": 230.58,
-      "entries": [],
+      "entries": [
+        {
+          "at": 211.59,
+          "until": 230.58,
+          "holds_to_section_end": true,
+          "confidence": 0.071,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 211.59,
+          "until": 230.58,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.007,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -264,7 +914,32 @@
       "label": "Турецкий припев, повтор",
       "start": 230.58,
       "end": 251.8,
-      "entries": [],
+      "entries": [
+        {
+          "at": 230.58,
+          "until": 251.8,
+          "holds_to_section_end": true,
+          "confidence": 0.071,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 230.58,
+          "until": 251.8,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.007,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -274,7 +949,32 @@
       "label": "Проигрыш",
       "start": 251.8,
       "end": 286.4,
-      "entries": [],
+      "entries": [
+        {
+          "at": 251.8,
+          "until": 286.4,
+          "holds_to_section_end": true,
+          "confidence": 0.071,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 251.8,
+          "until": 286.4,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.007,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -284,7 +984,32 @@
       "label": "Арабский куплет",
       "start": 286.4,
       "end": 293.48,
-      "entries": [],
+      "entries": [
+        {
+          "at": 286.4,
+          "until": 292.5,
+          "holds_to_section_end": false,
+          "confidence": 0.071,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 286.4,
+          "until": 293.48,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.007,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -294,7 +1019,68 @@
       "label": "Арабское переложение",
       "start": 293.48,
       "end": 388.4,
-      "entries": [],
+      "entries": [
+        {
+          "at": 293.48,
+          "until": 388.4,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.007,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        },
+        {
+          "at": 300.0,
+          "until": 303.0,
+          "holds_to_section_end": false,
+          "confidence": 0.048,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 316.5,
+          "until": 319.5,
+          "holds_to_section_end": false,
+          "confidence": 0.048,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 322.5,
+          "until": 327.0,
+          "holds_to_section_end": false,
+          "confidence": 0.056,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 345.0,
+          "until": 388.4,
+          "holds_to_section_end": true,
+          "confidence": 0.07,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -304,7 +1090,32 @@
       "label": "Проигрыш",
       "start": 388.4,
       "end": 404.2,
-      "entries": [],
+      "entries": [
+        {
+          "at": 388.4,
+          "until": 402.0,
+          "holds_to_section_end": false,
+          "confidence": 0.07,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 388.4,
+          "until": 404.2,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.007,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -314,7 +1125,32 @@
       "label": "Мавваль",
       "start": 404.2,
       "end": 443.0,
-      "entries": [],
+      "entries": [
+        {
+          "at": 404.2,
+          "until": 442.0,
+          "holds_to_section_end": false,
+          "confidence": 0.03,
+          "similarity": 0.007,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        },
+        {
+          "at": 408.0,
+          "until": 436.5,
+          "holds_to_section_end": false,
+          "confidence": 0.069,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -324,7 +1160,68 @@
       "label": "Руми, бейты 15–21",
       "start": 443.0,
       "end": 506.35,
-      "entries": [],
+      "entries": [
+        {
+          "at": 445.5,
+          "until": 448.5,
+          "holds_to_section_end": false,
+          "confidence": 0.048,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 450.0,
+          "until": 506.35,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        },
+        {
+          "at": 451.5,
+          "until": 460.5,
+          "holds_to_section_end": false,
+          "confidence": 0.064,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 462.0,
+          "until": 489.0,
+          "holds_to_section_end": false,
+          "confidence": 0.069,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 492.0,
+          "until": 495.0,
+          "holds_to_section_end": false,
+          "confidence": 0.048,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -334,7 +1231,32 @@
       "label": "Арабская кода",
       "start": 506.35,
       "end": 532.53,
-      "entries": [],
+      "entries": [
+        {
+          "at": 506.35,
+          "until": 532.53,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        },
+        {
+          "at": 508.5,
+          "until": 532.53,
+          "holds_to_section_end": true,
+          "confidence": 0.07,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -344,7 +1266,32 @@
       "label": "Персидский финал",
       "start": 532.53,
       "end": 552.89,
-      "entries": [],
+      "entries": [
+        {
+          "at": 532.53,
+          "until": 552.89,
+          "holds_to_section_end": true,
+          "confidence": 0.07,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 532.53,
+          "until": 552.89,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -354,7 +1301,32 @@
       "label": "Голос",
       "start": 552.89,
       "end": 566.1,
-      "entries": [],
+      "entries": [
+        {
+          "at": 552.89,
+          "until": 565.5,
+          "holds_to_section_end": false,
+          "confidence": 0.07,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        },
+        {
+          "at": 552.89,
+          "until": 566.1,
+          "holds_to_section_end": true,
+          "confidence": 0.03,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     },
@@ -364,7 +1336,32 @@
       "label": "Окончание",
       "start": 566.1,
       "end": 580.06,
-      "entries": [],
+      "entries": [
+        {
+          "at": 566.1,
+          "until": 570.0,
+          "holds_to_section_end": false,
+          "confidence": 0.03,
+          "similarity": 0.008,
+          "margin": 0.0,
+          "stem": "other",
+          "key": "santur",
+          "name": "Сантур",
+          "in_catalog": true
+        },
+        {
+          "at": 567.0,
+          "until": 573.0,
+          "holds_to_section_end": false,
+          "confidence": 0.06,
+          "similarity": 0.008,
+          "margin": 0.001,
+          "stem": "drums",
+          "key": "darbuka",
+          "name": "Дарбука",
+          "in_catalog": true
+        }
+      ],
       "uncatalogued": [],
       "voice": []
     }
@@ -964,7 +1961,16 @@
         "density": "плотно",
         "mean_level": 0.478,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 0.0,
+            "until": 10.6,
+            "confidence": 0.071,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "voice-open",
@@ -975,7 +1981,16 @@
         "density": "очень плотно",
         "mean_level": 0.569,
         "regular": true,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 10.6,
+            "until": 23.7,
+            "confidence": 0.071,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "inst-tanbur",
@@ -986,7 +2001,16 @@
         "density": "плотно",
         "mean_level": 0.576,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 23.7,
+            "until": 97.5,
+            "confidence": 0.071,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "english-verse-1",
@@ -997,7 +2021,24 @@
         "density": "плотно",
         "mean_level": 0.362,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 106.5,
+            "until": 107.75,
+            "confidence": 0.056,
+            "in_catalog": true
+          },
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 102.0,
+            "until": 105.0,
+            "confidence": 0.048,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "english-refrain-1",
@@ -1008,7 +2049,16 @@
         "density": "умеренно",
         "mean_level": 0.267,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 107.75,
+            "until": 111.0,
+            "confidence": 0.056,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "english-verse-2",
@@ -1019,7 +2069,16 @@
         "density": "плотно",
         "mean_level": 0.348,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 115.81,
+            "until": 123.83,
+            "confidence": 0.064,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "english-refrain-2",
@@ -1041,7 +2100,16 @@
         "density": "плотно",
         "mean_level": 0.394,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 129.0,
+            "until": 132.0,
+            "confidence": 0.07,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "rumi-beyt-1",
@@ -1052,7 +2120,16 @@
         "density": "плотно",
         "mean_level": 0.602,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 132.0,
+            "until": 165.8,
+            "confidence": 0.07,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "inst-bridge-a",
@@ -1063,7 +2140,16 @@
         "density": "плотно",
         "mean_level": 0.516,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 165.8,
+            "until": 172.0,
+            "confidence": 0.07,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "voice-bridge",
@@ -1074,7 +2160,16 @@
         "density": "плотно",
         "mean_level": 0.583,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 172.0,
+            "until": 174.0,
+            "confidence": 0.07,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "inst-bridge-b",
@@ -1085,7 +2180,16 @@
         "density": "плотно",
         "mean_level": 0.377,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 174.0,
+            "until": 180.0,
+            "confidence": 0.07,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "turkish-verse",
@@ -1096,7 +2200,24 @@
         "density": "плотно",
         "mean_level": 0.333,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 204.0,
+            "until": 211.59,
+            "confidence": 0.071,
+            "in_catalog": true
+          },
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 198.0,
+            "until": 202.5,
+            "confidence": 0.056,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "turkish-chorus-1",
@@ -1107,7 +2228,16 @@
         "density": "плотно",
         "mean_level": 0.558,
         "regular": true,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 211.59,
+            "until": 230.58,
+            "confidence": 0.071,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "turkish-chorus-2",
@@ -1118,7 +2248,16 @@
         "density": "плотно",
         "mean_level": 0.592,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 230.58,
+            "until": 251.8,
+            "confidence": 0.071,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "inst-mid",
@@ -1129,7 +2268,16 @@
         "density": "плотно",
         "mean_level": 0.648,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 251.8,
+            "until": 286.4,
+            "confidence": 0.071,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "arabic-verse",
@@ -1140,7 +2288,16 @@
         "density": "умеренно",
         "mean_level": 0.206,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 286.4,
+            "until": 292.5,
+            "confidence": 0.071,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "arabic-main",
@@ -1151,7 +2308,40 @@
         "density": "плотно",
         "mean_level": 0.336,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 345.0,
+            "until": 388.4,
+            "confidence": 0.07,
+            "in_catalog": true
+          },
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 322.5,
+            "until": 327.0,
+            "confidence": 0.056,
+            "in_catalog": true
+          },
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 300.0,
+            "until": 303.0,
+            "confidence": 0.048,
+            "in_catalog": true
+          },
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 316.5,
+            "until": 319.5,
+            "confidence": 0.048,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "inst-before-mawwal",
@@ -1162,7 +2352,16 @@
         "density": "плотно",
         "mean_level": 0.519,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 388.4,
+            "until": 402.0,
+            "confidence": 0.07,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "mawwal",
@@ -1173,7 +2372,16 @@
         "density": "плотно",
         "mean_level": 0.505,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 408.0,
+            "until": 436.5,
+            "confidence": 0.069,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "rumi-beyts-15",
@@ -1184,7 +2392,40 @@
         "density": "плотно",
         "mean_level": 0.386,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 462.0,
+            "until": 489.0,
+            "confidence": 0.069,
+            "in_catalog": true
+          },
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 451.5,
+            "until": 460.5,
+            "confidence": 0.064,
+            "in_catalog": true
+          },
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 445.5,
+            "until": 448.5,
+            "confidence": 0.048,
+            "in_catalog": true
+          },
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 492.0,
+            "until": 495.0,
+            "confidence": 0.048,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "coda-arabic",
@@ -1195,7 +2436,16 @@
         "density": "плотно",
         "mean_level": 0.561,
         "regular": true,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 508.5,
+            "until": 532.53,
+            "confidence": 0.07,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "coda-persian",
@@ -1206,7 +2456,16 @@
         "density": "плотно",
         "mean_level": 0.595,
         "regular": true,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 532.53,
+            "until": 552.89,
+            "confidence": 0.07,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "voice-tail",
@@ -1217,7 +2476,16 @@
         "density": "плотно",
         "mean_level": 0.574,
         "regular": false,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 552.89,
+            "until": 565.5,
+            "confidence": 0.07,
+            "in_catalog": true
+          }
+        ]
       },
       {
         "id": "inst-end",
@@ -1228,7 +2496,16 @@
         "density": "почти нет ударов",
         "mean_level": 0.188,
         "regular": null,
-        "labels": []
+        "labels": [
+          {
+            "key": "darbuka",
+            "name": "Дарбука",
+            "at": 567.0,
+            "until": 573.0,
+            "confidence": 0.06,
+            "in_catalog": true
+          }
+        ]
       }
     ]
   },
