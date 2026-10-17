@@ -154,9 +154,17 @@
         }
       ],
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
-      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф."
+      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф.",
+      "entries": [
+        {
+          "key": "guitar",
+          "at": 50.0,
+          "until": 54.0
+        }
+      ]
     },
     {
       "id": "fuzuli-2",
@@ -269,9 +277,17 @@
         }
       ],
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
-      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф."
+      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф.",
+      "entries": [
+        {
+          "key": "guitar",
+          "at": 68.0,
+          "until": 74.0
+        }
+      ]
     },
     {
       "id": "fuzuli-4a",
@@ -481,9 +497,22 @@
         }
       ],
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
-      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф."
+      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф.",
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 80.0,
+          "until": 84.0
+        },
+        {
+          "key": "guitar",
+          "at": 96.0,
+          "until": 102.0
+        }
+      ]
     },
     {
       "id": "hildegard-1",
@@ -673,9 +702,27 @@
         }
       ],
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
-      "comment": "Антифон Хильдегарды Бингенской (1098–1179) из цикла песнопений «Symphonia»."
+      "comment": "Антифон Хильдегарды Бингенской (1098–1179) из цикла песнопений «Symphonia».",
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 104.15,
+          "until": 110.0
+        },
+        {
+          "key": "oud",
+          "at": 104.15,
+          "until": 108.0
+        },
+        {
+          "key": "harp",
+          "at": 114.0,
+          "until": 118.0
+        }
+      ]
     },
     {
       "id": "fuzuli-4b",
@@ -986,9 +1033,22 @@
         }
       ],
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
-      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф."
+      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф.",
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 140.0,
+          "until": 146.0
+        },
+        {
+          "key": "double-bass",
+          "at": 164.0,
+          "until": 170.0
+        }
+      ]
     },
     {
       "id": "voice-2",
@@ -1506,9 +1566,17 @@
         }
       ],
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
-      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф."
+      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф.",
+      "entries": [
+        {
+          "key": "guitar",
+          "at": 258.0,
+          "until": 264.0
+        }
+      ]
     },
     {
       "id": "instruments-1",
@@ -1517,12 +1585,24 @@
       "end": 281,
       "label": "Инструментальный проигрыш",
       "instruments": [
+        "double-bass",
         "ensemble"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 270.0,
+          "until": 274.0
+        },
+        {
+          "key": "double-bass",
+          "at": 278.0
+        }
       ]
     },
     {
@@ -1532,12 +1612,20 @@
       "end": 291.12,
       "label": "Голос без разобранных слов",
       "instruments": [
-        "voice"
+        "voice",
+        "double-bass"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 281.0,
+          "until": 288.0
+        }
       ]
     },
     {
@@ -1570,7 +1658,20 @@
         }
       ],
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 294.0,
+          "until": 300.0
+        },
+        {
+          "key": "qanun",
+          "at": 300.0,
+          "until": 304.0
+        }
       ]
     },
     {
@@ -1580,12 +1681,25 @@
       "end": 319,
       "label": "Голос без разобранных слов",
       "instruments": [
-        "voice"
+        "voice",
+        "kamancheh",
+        "double-bass"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "kamancheh",
+          "at": 312.0,
+          "until": 318.0
+        },
+        {
+          "key": "double-bass",
+          "at": 314.0
+        }
       ]
     },
     {
@@ -1595,12 +1709,19 @@
       "end": 328,
       "label": "Голос без разобранных слов",
       "instruments": [
-        "voice"
+        "voice",
+        "double-bass"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 319.0
+        }
       ]
     },
     {
@@ -1610,12 +1731,30 @@
       "end": 355,
       "label": "Голос без разобранных слов",
       "instruments": [
-        "voice"
+        "voice",
+        "double-bass",
+        "violin"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 328.0,
+          "until": 338.0
+        },
+        {
+          "key": "violin",
+          "at": 342.0,
+          "until": 348.0
+        },
+        {
+          "key": "double-bass",
+          "at": 354.0
+        }
       ]
     },
     {
@@ -1625,12 +1764,24 @@
       "end": 363,
       "label": "Голос без разобранных слов",
       "instruments": [
-        "voice"
+        "voice",
+        "double-bass",
+        "violin"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 355.0
+        },
+        {
+          "key": "violin",
+          "at": 360.0
+        }
       ]
     },
     {
@@ -1640,12 +1791,35 @@
       "end": 403,
       "label": "Инструментальный проигрыш",
       "instruments": [
+        "double-bass",
+        "violin",
         "ensemble"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 363.0,
+          "until": 364.0
+        },
+        {
+          "key": "violin",
+          "at": 363.0,
+          "until": 386.0
+        },
+        {
+          "key": "double-bass",
+          "at": 376.0,
+          "until": 390.0
+        },
+        {
+          "key": "violin",
+          "at": 393.0
+        }
       ]
     },
     {
@@ -1655,12 +1829,20 @@
       "end": 405,
       "label": "Голос без разобранных слов",
       "instruments": [
-        "voice"
+        "voice",
+        "violin"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 403.0,
+          "until": 404.0
+        }
       ]
     },
     {
@@ -1670,12 +1852,20 @@
       "end": 427.68,
       "label": "Инструментальный проигрыш",
       "instruments": [
+        "double-bass",
         "ensemble"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 410.0,
+          "until": 414.0
+        }
       ]
     },
     {
@@ -1781,7 +1971,19 @@
       "flags": [
         "timing-draft"
       ],
-      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф."
+      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф.",
+      "entries": [
+        {
+          "key": "violin",
+          "at": 430.0,
+          "until": 436.0
+        },
+        {
+          "key": "violin",
+          "at": 442.0,
+          "until": 446.0
+        }
+      ]
     },
     {
       "id": "call-2",
@@ -1844,6 +2046,13 @@
       ],
       "flags": [
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 456.0,
+          "until": 464.0
+        }
       ]
     },
     {
@@ -1973,9 +2182,40 @@
         }
       ],
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
-      "comment": "Бейт Абу-ль-Хасана аш-Шуштари (1212–1269). **Мавваль** — пение короткого стиха свободным ритмом."
+      "comment": "Бейт Абу-ль-Хасана аш-Шуштари (1212–1269). **Мавваль** — пение короткого стиха свободным ритмом.",
+      "entries": [
+        {
+          "key": "violin",
+          "at": 470.0,
+          "until": 478.0
+        },
+        {
+          "key": "cello",
+          "at": 480.0,
+          "until": 484.0
+        },
+        {
+          "key": "violin",
+          "at": 482.0,
+          "until": 494.0
+        },
+        {
+          "key": "cello",
+          "at": 492.0,
+          "until": 498.0
+        },
+        {
+          "key": "double-bass",
+          "at": 504.0
+        },
+        {
+          "key": "violin",
+          "at": 504.0
+        }
+      ]
     },
     {
       "id": "nabulsi",
@@ -2073,10 +2313,26 @@
         }
       ],
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "voice": "Ahmed Elmaai",
-      "comment": "Бейт Абд аль-Гани ан-Набулси (1641–1731). Тот же зачин есть у ат-Тилимсани, который жил раньше."
+      "comment": "Бейт Абд аль-Гани ан-Набулси (1641–1731). Тот же зачин есть у ат-Тилимсани, который жил раньше.",
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 509.8
+        },
+        {
+          "key": "violin",
+          "at": 509.8,
+          "until": 522.0
+        },
+        {
+          "key": "violin",
+          "at": 526.0
+        }
+      ]
     },
     {
       "id": "sabr",
@@ -2181,9 +2437,22 @@
         }
       ],
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
-      "comment": "Релиз относит бейт к ан-Набулси, но среди его десяти бейтов этой строки нет. У ат-Тилимсани второе полустишие то же, а первое другое: «советовался я с сердцем после вас», не «велел сердцу терпеть вас». Автор не установлен, атрибуция требует проверки."
+      "comment": "Релиз относит бейт к ан-Набулси, но среди его десяти бейтов этой строки нет. У ат-Тилимсани второе полустишие то же, а первое другое: «советовался я с сердцем после вас», не «велел сердцу терпеть вас». Автор не установлен, атрибуция требует проверки.",
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 529.88,
+          "until": 532.0
+        },
+        {
+          "key": "violin",
+          "at": 529.88,
+          "until": 538.0
+        }
+      ]
     },
     {
       "id": "voice-9",
@@ -2192,12 +2461,52 @@
       "end": 632,
       "label": "Голос без разобранных слов",
       "instruments": [
-        "voice"
+        "voice",
+        "violin",
+        "double-bass",
+        "baglama",
+        "tar"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 552.0,
+          "until": 562.0
+        },
+        {
+          "key": "violin",
+          "at": 566.0,
+          "until": 598.0
+        },
+        {
+          "key": "double-bass",
+          "at": 586.0,
+          "until": 592.0
+        },
+        {
+          "key": "baglama",
+          "at": 606.0,
+          "until": 610.0
+        },
+        {
+          "key": "violin",
+          "at": 610.0,
+          "until": 614.0
+        },
+        {
+          "key": "violin",
+          "at": 620.0,
+          "until": 628.0
+        },
+        {
+          "key": "tar",
+          "at": 630.0
+        }
       ]
     },
     {
@@ -2207,12 +2516,36 @@
       "end": 687,
       "label": "Инструментальный проигрыш",
       "instruments": [
+        "tar",
+        "violin",
+        "double-bass",
         "ensemble"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "tar",
+          "at": 632.0,
+          "until": 651.0
+        },
+        {
+          "key": "violin",
+          "at": 651.0,
+          "until": 663.0
+        },
+        {
+          "key": "violin",
+          "at": 669.0,
+          "until": 680.0
+        },
+        {
+          "key": "double-bass",
+          "at": 680.0
+        }
       ]
     },
     {
@@ -2222,12 +2555,35 @@
       "end": 705,
       "label": "Голос без разобранных слов",
       "instruments": [
-        "voice"
+        "voice",
+        "double-bass",
+        "violin",
+        "qanun"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 687.0,
+          "until": 688.0
+        },
+        {
+          "key": "violin",
+          "at": 688.0,
+          "until": 694.0
+        },
+        {
+          "key": "violin",
+          "at": 698.0
+        },
+        {
+          "key": "qanun",
+          "at": 704.0
+        }
       ]
     },
     {
@@ -2237,12 +2593,26 @@
       "end": 714,
       "label": "Инструментальный проигрыш",
       "instruments": [
+        "violin",
+        "qanun",
         "ensemble"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 705.0,
+          "until": 708.0
+        },
+        {
+          "key": "qanun",
+          "at": 705.0,
+          "until": 710.0
+        }
       ]
     },
     {
@@ -2267,12 +2637,19 @@
       "end": 733,
       "label": "Инструментальный проигрыш",
       "instruments": [
+        "kamancheh",
         "ensemble"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "kamancheh",
+          "at": 722.0
+        }
       ]
     },
     {
@@ -2282,12 +2659,26 @@
       "end": 750,
       "label": "Голос без разобранных слов",
       "instruments": [
-        "voice"
+        "voice",
+        "kamancheh",
+        "violin"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "kamancheh",
+          "at": 733.0,
+          "until": 736.0
+        },
+        {
+          "key": "violin",
+          "at": 740.0,
+          "until": 746.0
+        }
       ]
     },
     {
@@ -2297,12 +2688,19 @@
       "end": 760,
       "label": "Инструментальный проигрыш",
       "instruments": [
+        "double-bass",
         "ensemble"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 752.0
+        }
       ]
     },
     {
@@ -2312,12 +2710,51 @@
       "end": 813,
       "label": "Голос без разобранных слов",
       "instruments": [
-        "voice"
+        "voice",
+        "violin",
+        "double-bass",
+        "qanun"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 768.0,
+          "until": 774.0
+        },
+        {
+          "key": "double-bass",
+          "at": 774.0,
+          "until": 780.0
+        },
+        {
+          "key": "violin",
+          "at": 778.0,
+          "until": 786.0
+        },
+        {
+          "key": "violin",
+          "at": 790.0,
+          "until": 794.0
+        },
+        {
+          "key": "double-bass",
+          "at": 794.0,
+          "until": 798.0
+        },
+        {
+          "key": "violin",
+          "at": 798.0,
+          "until": 808.0
+        },
+        {
+          "key": "qanun",
+          "at": 808.0
+        }
       ]
     },
     {
@@ -2327,12 +2764,31 @@
       "end": 835,
       "label": "Инструментальный проигрыш",
       "instruments": [
+        "qanun",
+        "guitar",
         "ensemble"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "qanun",
+          "at": 813.0,
+          "until": 819.0
+        },
+        {
+          "key": "guitar",
+          "at": 816.0,
+          "until": 820.0
+        },
+        {
+          "key": "guitar",
+          "at": 830.0,
+          "until": 834.0
+        }
       ]
     },
     {
@@ -2342,12 +2798,30 @@
       "end": 861,
       "label": "Голос без разобранных слов",
       "instruments": [
-        "voice"
+        "voice",
+        "violin",
+        "double-bass"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 840.0,
+          "until": 846.0
+        },
+        {
+          "key": "double-bass",
+          "at": 846.0,
+          "until": 850.0
+        },
+        {
+          "key": "violin",
+          "at": 850.0
+        }
       ]
     },
     {
@@ -2357,12 +2831,19 @@
       "end": 872,
       "label": "Инструментальный проигрыш",
       "instruments": [
+        "violin",
         "ensemble"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 861.0
+        }
       ]
     },
     {
@@ -2372,12 +2853,20 @@
       "end": 879.04,
       "label": "Голос без разобранных слов",
       "instruments": [
-        "voice"
+        "voice",
+        "violin"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 872.0,
+          "until": 874.0
+        }
       ]
     },
     {
@@ -2762,7 +3251,14 @@
       "flags": [
         "timing-draft"
       ],
-      "comment": "Антифон Хильдегарды Бингенской (1098–1179) из цикла песнопений «Symphonia»."
+      "comment": "Антифон Хильдегарды Бингенской (1098–1179) из цикла песнопений «Symphonia».",
+      "entries": [
+        {
+          "key": "violin",
+          "at": 910.0,
+          "until": 918.0
+        }
+      ]
     },
     {
       "id": "fuzuli-finale",
@@ -2990,7 +3486,14 @@
       "flags": [
         "timing-draft"
       ],
-      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф."
+      "comment": "Газель Мухаммеда Физули (XVI в.) из месневи «Лейли и Меджнун». Сквозное слово бейтов — **nedir**, «что такое»: это редиф.",
+      "entries": [
+        {
+          "key": "violin",
+          "at": 926.0,
+          "until": 936.0
+        }
+      ]
     },
     {
       "id": "voice-16",

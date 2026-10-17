@@ -355,6 +355,15 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "harp",
+          "at": 56.0
+        }
+      ],
+      "flags": [
+        "attribution-unverified"
       ]
     },
     {
@@ -673,6 +682,26 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "harp",
+          "at": 58.3,
+          "until": 62.0
+        },
+        {
+          "key": "double-bass",
+          "at": 92.0,
+          "until": 118.0
+        },
+        {
+          "key": "double-bass",
+          "at": 122.0,
+          "until": 134.0
+        }
+      ],
+      "flags": [
+        "attribution-unverified"
       ]
     },
     {
@@ -1030,6 +1059,16 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 188.0
+        },
+        {
+          "key": "qanun",
+          "at": 190.0
+        }
       ]
     },
     {
@@ -1243,6 +1282,36 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 191.09,
+          "until": 200.0
+        },
+        {
+          "key": "qanun",
+          "at": 191.09,
+          "until": 196.0
+        },
+        {
+          "key": "double-bass",
+          "at": 206.0,
+          "until": 220.0
+        },
+        {
+          "key": "double-bass",
+          "at": 224.0,
+          "until": 246.0
+        },
+        {
+          "key": "harp",
+          "at": 224.0,
+          "until": 228.0
+        }
+      ],
+      "flags": [
+        "attribution-unverified"
       ]
     },
     {
@@ -1266,12 +1335,32 @@
       "end": 303.383,
       "label": "Проигрыш",
       "instruments": [
+        "oud",
+        "cello",
+        "violin",
         "ensemble"
       ],
       "note": "Инструментальный проигрыш.",
       "comment": "Строй пьесы — ми-бемоль, с отсылкой к макаму **нахаванд**.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "oud",
+          "at": 252.0,
+          "until": 258.0
+        },
+        {
+          "key": "cello",
+          "at": 276.0,
+          "until": 280.0
+        },
+        {
+          "key": "violin",
+          "at": 286.0,
+          "until": 294.0
+        }
       ]
     },
     {
@@ -1428,6 +1517,21 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 310.0,
+          "until": 314.0
+        },
+        {
+          "key": "violin",
+          "at": 314.0,
+          "until": 326.0
+        }
+      ],
+      "flags": [
+        "attribution-unverified"
       ]
     },
     {
@@ -1606,6 +1710,24 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 332.17,
+          "until": 346.0
+        },
+        {
+          "key": "double-bass",
+          "at": 346.0
+        },
+        {
+          "key": "violin",
+          "at": 352.0
+        }
+      ],
+      "flags": [
+        "attribution-unverified"
       ]
     },
     {
@@ -1615,11 +1737,25 @@
       "end": 367.051,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "double-bass",
+        "violin"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
-        "text-unverified"
+        "text-unverified",
+        "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 355.0,
+          "until": 356.0
+        },
+        {
+          "key": "violin",
+          "at": 355.0
+        }
       ]
     },
     {
@@ -1778,6 +1914,21 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 367.051,
+          "until": 388.0
+        },
+        {
+          "key": "double-bass",
+          "at": 372.0,
+          "until": 380.0
+        }
+      ],
+      "flags": [
+        "attribution-unverified"
       ]
     },
     {
@@ -1787,11 +1938,60 @@
       "end": 442.276,
       "label": "Проигрыш",
       "instruments": [
+        "double-bass",
+        "qanun",
+        "harp",
+        "piano",
+        "violin",
         "ensemble"
       ],
       "note": "Инструментальный проигрыш.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 396.0,
+          "until": 420.0
+        },
+        {
+          "key": "qanun",
+          "at": 396.0,
+          "until": 404.0
+        },
+        {
+          "key": "harp",
+          "at": 404.0,
+          "until": 414.0
+        },
+        {
+          "key": "qanun",
+          "at": 414.0,
+          "until": 420.0
+        },
+        {
+          "key": "piano",
+          "at": 416.0,
+          "until": 428.0
+        },
+        {
+          "key": "double-bass",
+          "at": 430.0
+        },
+        {
+          "key": "piano",
+          "at": 434.0,
+          "until": 438.0
+        },
+        {
+          "key": "qanun",
+          "at": 438.0
+        },
+        {
+          "key": "violin",
+          "at": 440.0
+        }
       ]
     },
     {
@@ -1949,6 +2149,22 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 442.28,
+          "until": 450.0
+        },
+        {
+          "key": "qanun",
+          "at": 442.28,
+          "until": 444.0
+        },
+        {
+          "key": "violin",
+          "at": 458.0
+        }
       ]
     },
     {
@@ -1958,11 +2174,18 @@
       "end": 474,
       "label": "Проигрыш",
       "instruments": [
+        "violin",
         "ensemble"
       ],
       "note": "Короткий проигрыш между фразами.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 466.0
+        }
       ]
     },
     {
@@ -2120,6 +2343,25 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 474.0,
+          "until": 478.0
+        },
+        {
+          "key": "violin",
+          "at": 482.0
+        },
+        {
+          "key": "double-bass",
+          "at": 492.0,
+          "until": 496.0
+        }
+      ],
+      "flags": [
+        "attribution-unverified"
       ]
     },
     {
@@ -2129,11 +2371,36 @@
       "end": 559,
       "label": "Проигрыш",
       "instruments": [
+        "tar",
+        "double-bass",
+        "violin",
         "ensemble"
       ],
       "note": "Инструментальный проигрыш.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "tar",
+          "at": 501.0,
+          "until": 549.0
+        },
+        {
+          "key": "double-bass",
+          "at": 506.0,
+          "until": 528.0
+        },
+        {
+          "key": "double-bass",
+          "at": 532.0,
+          "until": 554.0
+        },
+        {
+          "key": "violin",
+          "at": 554.0,
+          "until": 558.0
+        }
       ]
     },
     {
@@ -2289,6 +2556,13 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 562.0,
+          "until": 582.0
+        }
       ]
     },
     {
@@ -2298,11 +2572,18 @@
       "end": 622,
       "label": "Проигрыш",
       "instruments": [
+        "kamancheh",
         "ensemble"
       ],
       "note": "Инструментальный проигрыш.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "kamancheh",
+          "at": 612.0
+        }
       ]
     },
     {
@@ -2326,11 +2607,29 @@
       "end": 671,
       "label": "Проигрыш",
       "instruments": [
+        "cello",
+        "double-bass",
         "ensemble"
       ],
       "note": "Инструментальный проигрыш.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "cello",
+          "at": 638.0,
+          "until": 642.0
+        },
+        {
+          "key": "cello",
+          "at": 658.0,
+          "until": 662.0
+        },
+        {
+          "key": "double-bass",
+          "at": 668.0
+        }
       ]
     },
     {
@@ -2340,11 +2639,19 @@
       "end": 674,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "double-bass"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
-        "text-unverified"
+        "text-unverified",
+        "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 671.0
+        }
       ]
     },
     {
@@ -2354,11 +2661,40 @@
       "end": 714,
       "label": "Проигрыш",
       "instruments": [
+        "double-bass",
+        "cello",
+        "violin",
         "ensemble"
       ],
       "note": "Инструментальный проигрыш.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 674.0,
+          "until": 678.0
+        },
+        {
+          "key": "cello",
+          "at": 674.0,
+          "until": 686.0
+        },
+        {
+          "key": "double-bass",
+          "at": 686.0,
+          "until": 692.0
+        },
+        {
+          "key": "violin",
+          "at": 688.0,
+          "until": 692.0
+        },
+        {
+          "key": "double-bass",
+          "at": 702.0
+        }
       ]
     },
     {
@@ -2368,11 +2704,20 @@
       "end": 721,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "double-bass"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
-        "text-unverified"
+        "text-unverified",
+        "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 714.0,
+          "until": 720.0
+        }
       ]
     },
     {
@@ -2852,11 +3197,20 @@
       "end": 828.05,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "double-bass"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
-        "text-unverified"
+        "text-unverified",
+        "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 810.0,
+          "until": 818.0
+        }
       ]
     }
   ]
