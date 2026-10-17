@@ -8,12 +8,19 @@
       "end": 10.6,
       "label": "Вступление",
       "instruments": [
+        "cello",
         "ensemble"
       ],
       "note": "Инструменты до первого голоса.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "cello",
+          "at": 4.0
+        }
       ]
     },
     {
@@ -23,12 +30,25 @@
       "end": 23.7,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "cello"
       ],
       "note": "Короткие фразы: голос без разобранных слов.",
       "flags": [
         "timing-draft",
-        "text-unverified"
+        "text-unverified",
+        "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "cello",
+          "at": 10.6,
+          "until": 12.0
+        },
+        {
+          "key": "cello",
+          "at": 18.0
+        }
       ]
     },
     {
@@ -39,6 +59,9 @@
       "label": "Танбур",
       "instruments": [
         "tanbur",
+        "cello",
+        "double-bass",
+        "kamancheh",
         "ensemble"
       ],
       "performers": [
@@ -49,6 +72,26 @@
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "tanbur",
+          "at": 23.7
+        },
+        {
+          "key": "cello",
+          "at": 34.0,
+          "until": 46.0
+        },
+        {
+          "key": "double-bass",
+          "at": 94.0,
+          "until": 98.0
+        },
+        {
+          "key": "kamancheh",
+          "at": 98.0
+        }
       ]
     },
     {
@@ -175,6 +218,13 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "kamancheh",
+          "at": 100.9,
+          "until": 102.0
+        }
       ]
     },
     {
@@ -185,7 +235,8 @@
       "label": "Английский припев",
       "voice": "Сами Юсуф",
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "lines": [
         {
@@ -327,6 +378,12 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 112.0
+        }
       ]
     },
     {
@@ -337,7 +394,8 @@
       "label": "Английский куплет, продолжение",
       "voice": "Сами Юсуф",
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "lines": [
         {
@@ -446,6 +504,13 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 115.81,
+          "until": 118.0
+        }
       ]
     },
     {
@@ -540,7 +605,8 @@
       "label": "Английский припев, окончание",
       "voice": "Сами Юсуф",
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "lines": [
         {
@@ -609,6 +675,12 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 130.0
+        }
       ]
     },
     {
@@ -619,7 +691,8 @@
       "label": "Руми, бейт 1",
       "voice": "Сами Юсуф",
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "lines": [
         {
@@ -912,6 +985,37 @@
             "text-unverified"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 132.0,
+          "until": 134.0
+        },
+        {
+          "key": "cello",
+          "at": 134.0,
+          "until": 140.0
+        },
+        {
+          "key": "double-bass",
+          "at": 140.0,
+          "until": 154.0
+        },
+        {
+          "key": "violin",
+          "at": 144.0,
+          "until": 148.0
+        },
+        {
+          "key": "violin",
+          "at": 158.0,
+          "until": 162.0
+        },
+        {
+          "key": "double-bass",
+          "at": 162.0
+        }
       ]
     },
     {
@@ -921,12 +1025,19 @@
       "end": 172,
       "label": "Проигрыш",
       "instruments": [
+        "double-bass",
         "ensemble"
       ],
       "note": "Короткий проигрыш.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 165.8
+        }
       ]
     },
     {
@@ -936,12 +1047,20 @@
       "end": 174,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "double-bass"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "timing-draft",
-        "text-unverified"
+        "text-unverified",
+        "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 172.0
+        }
       ]
     },
     {
@@ -951,12 +1070,20 @@
       "end": 183.3,
       "label": "Проигрыш",
       "instruments": [
+        "double-bass",
         "ensemble"
       ],
       "note": "Инструменты до турецкого куплета.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 174.0,
+          "until": 176.0
+        }
       ]
     },
     {
@@ -967,7 +1094,8 @@
       "label": "Турецкий куплет",
       "voice": "Сами Юсуф",
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "lines": [
         {
@@ -1185,6 +1313,13 @@
             "text-unverified"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 186.0,
+          "until": 192.0
+        }
       ]
     },
     {
@@ -1195,7 +1330,8 @@
       "label": "Турецкий припев",
       "voice": "Сами Юсуф",
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "lines": [
         {
@@ -1351,6 +1487,12 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 216.0
+        }
       ]
     },
     {
@@ -1361,7 +1503,8 @@
       "label": "Турецкий припев, повтор",
       "voice": "Сами Юсуф",
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "lines": [
         {
@@ -1493,6 +1636,23 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 230.58,
+          "until": 248.0
+        },
+        {
+          "key": "qanun",
+          "at": 232.0,
+          "until": 238.0
+        },
+        {
+          "key": "tar",
+          "at": 234.0,
+          "until": 240.0
+        }
       ]
     },
     {
@@ -1502,12 +1662,36 @@
       "end": 286.4,
       "label": "Проигрыш",
       "instruments": [
+        "cello",
+        "double-bass",
+        "violin",
         "ensemble"
       ],
       "note": "Инструменты между турецким и арабским.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "cello",
+          "at": 260.0,
+          "until": 268.0
+        },
+        {
+          "key": "cello",
+          "at": 274.0,
+          "until": 280.0
+        },
+        {
+          "key": "double-bass",
+          "at": 280.0,
+          "until": 286.0
+        },
+        {
+          "key": "violin",
+          "at": 284.0
+        }
       ]
     },
     {
@@ -1518,7 +1702,8 @@
       "label": "Арабский куплет",
       "voice": "Сами Юсуф",
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "lines": [
         {
@@ -1632,6 +1817,13 @@
             "text-unverified"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 286.4,
+          "until": 288.0
+        }
       ]
     },
     {
@@ -1643,7 +1835,8 @@
       "voice": "Сами Юсуф",
       "comment": "Продолжение того же арабского переложения. Классической поэмы с этим текстом нет.",
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "lines": [
         {
@@ -2458,6 +2651,32 @@
             "text-unverified"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 344.0,
+          "until": 354.0
+        },
+        {
+          "key": "double-bass",
+          "at": 346.0,
+          "until": 362.0
+        },
+        {
+          "key": "kamancheh",
+          "at": 360.0,
+          "until": 364.0
+        },
+        {
+          "key": "violin",
+          "at": 380.0,
+          "until": 388.0
+        },
+        {
+          "key": "double-bass",
+          "at": 386.0
+        }
       ]
     },
     {
@@ -2467,12 +2686,26 @@
       "end": 404.2,
       "label": "Проигрыш",
       "instruments": [
+        "double-bass",
+        "violin",
         "ensemble"
       ],
       "note": "Инструменты перед маввалем.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 388.4,
+          "until": 398.0
+        },
+        {
+          "key": "violin",
+          "at": 396.0,
+          "until": 402.0
+        }
       ]
     },
     {
@@ -2482,7 +2715,8 @@
       "end": 443,
       "label": "Мавваль",
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "lines": [
         {
@@ -2611,6 +2845,18 @@
             "text-unverified"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 424.0,
+          "until": 428.0
+        },
+        {
+          "key": "violin",
+          "at": 432.0,
+          "until": 436.0
+        }
       ]
     },
     {
@@ -2622,7 +2868,8 @@
       "voice": "Сами Юсуф",
       "comment": "Бейты 15–21 газели Руми № 1393 из «Дивана Шамса».",
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "lines": [
         {
@@ -3582,6 +3829,28 @@
             "timing-draft"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 454.0,
+          "until": 458.0
+        },
+        {
+          "key": "double-bass",
+          "at": 458.0,
+          "until": 462.0
+        },
+        {
+          "key": "qanun",
+          "at": 458.0,
+          "until": 462.0
+        },
+        {
+          "key": "cello",
+          "at": 476.0,
+          "until": 482.0
+        }
       ]
     },
     {
@@ -3592,7 +3861,8 @@
       "label": "Арабская кода",
       "voice": "Сами Юсуф",
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "lines": [
         {
@@ -3719,6 +3989,18 @@
             "text-unverified"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 506.35,
+          "until": 532.0
+        },
+        {
+          "key": "violin",
+          "at": 510.0,
+          "until": 524.0
+        }
       ]
     },
     {
@@ -3729,7 +4011,8 @@
       "label": "Персидский финал",
       "voice": "Сами Юсуф",
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "attribution-unverified"
       ],
       "lines": [
         {
@@ -3933,6 +4216,22 @@
             "text-unverified"
           ]
         }
+      ],
+      "entries": [
+        {
+          "key": "cello",
+          "at": 532.53,
+          "until": 538.0
+        },
+        {
+          "key": "violin",
+          "at": 532.53,
+          "until": 536.0
+        },
+        {
+          "key": "double-bass",
+          "at": 538.0
+        }
       ]
     },
     {
@@ -3942,12 +4241,26 @@
       "end": 566.1,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "double-bass"
       ],
       "note": "Голос без разобранных слов.",
       "flags": [
         "timing-draft",
-        "text-unverified"
+        "text-unverified",
+        "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "double-bass",
+          "at": 552.89,
+          "until": 554.0
+        },
+        {
+          "key": "double-bass",
+          "at": 560.0,
+          "until": 564.0
+        }
       ]
     },
     {
