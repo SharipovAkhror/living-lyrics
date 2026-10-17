@@ -104,6 +104,36 @@ export function bannedIn(text: string) {
   return found;
 }
 
+/**
+ * Editor's notes that belong in canon.md, review or sources.md, not in a reader-facing comment.
+ * One list, shared with docs/methodology/07-comment.md.
+ */
+export const EDITORIAL_MARKERS: { name: string; re: RegExp }[] = [
+  { name: 'субтитр', re: /субтитр/giu },
+  { name: 'титр', re: /(?<!суб)титр/giu },
+  { name: 'транскрипт', re: /транскрипт/giu },
+  { name: 'whisper', re: /whisper/giu },
+  { name: 'распознава', re: /распознава/giu },
+  { name: 'слухом', re: /(?<![\p{L}])слухом(?![\p{L}])/giu },
+  { name: 'ухом', re: /(?<![\p{L}])ухом(?![\p{L}])/giu },
+  { name: 'не проверен', re: /не[\s-]+проверен/giu },
+  { name: 'реплика', re: /(?<![\p{L}])реплик/giu },
+];
+
+export function editorialMarkers(text: string) {
+  const found: string[] = [];
+  for (const marker of EDITORIAL_MARKERS) {
+    marker.re.lastIndex = 0;
+    if (marker.re.test(text)) found.push(marker.name);
+  }
+  return found;
+}
+
+/** A line of punctuation or single letters («؟», «…», «آ») is a stub, not sung text. */
+export function isStubLine(words: { w: string }[]) {
+  return words.length > 0 && words.every((word) => letters(word.w).length <= 1);
+}
+
 /** A run of three or more capital letters is shouting. Roman numerals (XVI) are not. */
 export function capsWords(text: string) {
   const plain = text.replace(/\*/g, '');
@@ -212,6 +242,8 @@ function check(slug: string): Issue[] {
     if (s.comment) {
       const commentCaps = capsWords(s.comment);
       if (commentCaps.length) warn(where, `в пояснении капс: ${commentCaps.join(', ')}`);
+      const marks = editorialMarkers(s.comment);
+      if (marks.length) warn(where, `в пояснении редакторская пометка (${marks.join(', ')}): её место — canon.md, раздел «Расхождения и вопросы», song.json → review или sources.md`);
     }
 
     if (s.kind === 'instrumental') {
@@ -257,6 +289,9 @@ function check(slug: string): Issue[] {
         if (/\s/.test(w.w)) err(lw, `слово «${w.w}» содержит пробел — разбейте на два`);
         lastWordEnd = Math.max(lastWordEnd, w.e);
       });
+      if (isStubLine(line.words)) {
+        err(lw, 'строка-заглушка: слова — только знаки препинания или одна буква. Голос без разобранных слов записывайте инструментальной секцией с ключом voice или choir, без строк');
+      }
 
       // Glyph coverage. Arab uses the bundled Mushaf face. Latin and Cyrillic use the serif.
       // Any other script falls through to the system font and must not be reported glyph by glyph.
@@ -292,6 +327,8 @@ function check(slug: string): Issue[] {
       if (line.comment) {
         const commentCaps = capsWords(line.comment);
         if (commentCaps.length) warn(lw, `в пояснении капс: ${commentCaps.join(', ')}`);
+        const marks = editorialMarkers(line.comment);
+        if (marks.length) warn(lw, `в пояснении редакторская пометка (${marks.join(', ')}): её место — canon.md, раздел «Расхождения и вопросы», song.json → review или sources.md`);
       }
       const ems = line.words.filter((w) => w.em).length;
       if (ems > 1) warn(lw, `ключевых слов (em) ${ems} — нужно не больше одного`);
