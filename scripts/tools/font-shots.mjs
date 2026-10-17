@@ -1,15 +1,15 @@
-// Photographs the font fitting sets on classical lines.
+// Photographs the default font set and two alternates on classical lines.
+// Choices are the saved settings (living-lyrics.settings.v2), not a query.
 // iPhone shots use Playwright WebKit. Desktop shots use Chromium.
-// Usage: node scripts/tools/font-shots.mjs [baseUrl] [outDir] [--zoom-only]
+// Usage: node scripts/tools/font-shots.mjs [baseUrl] [outDir] [--only=rumi,eckhart]
 //
 // Audio is not required. A failed or missing file does not move the scene,
-// so this script keeps a seekable clock on the media element and then
-// drags the scrubber to the line. Output stays in work/ (not committed).
+// so this script keeps a seekable clock on the media element. The line comes
+// from ?t=. Output stays in work/ (not committed).
 import { chromium, webkit, devices } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 
 const args = process.argv.slice(2).filter((a) => !a.startsWith('--'));
-const zoomOnly = process.argv.includes('--zoom-only');
 const onlyArg = process.argv.find((a) => a.startsWith('--only='));
 const only = onlyArg ? onlyArg.slice('--only='.length).split(',') : null;
 const [base = 'http://localhost:5173', out = 'work/shots/t4'] = args;
@@ -24,7 +24,26 @@ const scenes = [
   { id: 'shushtari', path: '/song/one', t: 60, duration: 828.05, label: 'Аш-Шуштари', pale: 'ar' },
 ];
 
-const sets = ['a', 'b', 'c'];
+const variants = [
+  { id: 'classic', settings: null },
+  { id: 'was', settings: { fontPersian: 'nastaliq', fontOriginal: 'cormorant', fontTranslation: 'inter' } },
+  { id: 'clear', settings: { fontPersian: 'scheherazade', fontOriginal: 'eb-garamond', fontTranslation: 'inter' } },
+];
+// Persian, Azerbaijani latin-ext, German, and Arabic (Mushaf, no choice).
+const shotScenes = ['rumi', 'fuzuli', 'eckhart', 'shushtari'];
+
+function expectFamily(variant, scene) {
+  if (scene.pale === 'ar') return 'KFGQPC';
+  const persian = scene.pale === 'fa';
+  if (persian) {
+    if (variant.id === 'was') return 'Nastaliq';
+    if (variant.id === 'clear') return 'Scheherazade';
+    return 'Amiri';
+  }
+  if (variant.id === 'was') return 'Cormorant';
+  if (variant.id === 'clear') return 'EB Garamond';
+  return 'Source Serif';
+}
 const phone = devices['iPhone 14 Pro'] ?? devices['iPhone 13'] ?? {
   viewport: { width: 393, height: 852 },
   deviceScaleFactor: 3,
@@ -108,7 +127,7 @@ async function readStage(page) {
     };
     const current = document.querySelector('.fb.is-current');
     return {
-      preview: document.documentElement.dataset.fontPreview ?? '',
+      fonts: document.documentElement.style.getPropertyValue('--font-persian'),
       section: document.querySelector('.topbar-section')?.textContent ?? '',
       lang: current?.getAttribute('lang') ?? '',
       orig: css(current?.querySelector('.fb-orig') ?? null),
@@ -120,51 +139,47 @@ async function readStage(page) {
   });
 }
 
-async function shootPale(page, lang, file) {
-  // Hide the chrome, scale the pale line, then clip the page. A zoomed element
-  // screenshot was clipping Nastaliq swashes and including the comment bar.
-  const clip = await page.evaluate((code) => {
-    const block = [...document.querySelectorAll(`.fb[lang="${code}"]`)].find((n) => {
-      if (n.classList.contains('is-current')) return false;
-      const s = getComputedStyle(n);
-      return s.visibility !== 'hidden' && parseFloat(s.opacity) > 0.2;
-    });
-    const orig = block?.querySelector('.fb-orig');
-    if (!(orig instanceof HTMLElement)) return null;
-    for (const el of document.querySelectorAll('.comment, .player, .font-fit, .hint, .topbar')) {
-      if (el instanceof HTMLElement) el.style.visibility = 'hidden';
+async function applyVariant(page, settings) {
+  // Set storage on the app origin before the song document boots, so the
+  // catalog reads the choice on its first paint.
+  await page.goto(`${base}/`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.evaluate((value) => {
+    const key = 'living-lyrics.settings.v2';
+    if (value == null) {
+      localStorage.removeItem(key);
+      return;
     }
-    orig.style.transform = 'scale(2.4)';
-    orig.style.transformOrigin = 'center center';
-    const r = orig.getBoundingClientRect();
-    const pad = 16;
-    return { x: r.x - pad, y: r.y - pad, width: r.width + pad * 2, height: r.height + pad * 2 };
-  }, lang);
-  if (!clip) {
-    console.error('no pale line', lang, file);
-    return false;
-  }
-  const viewport = page.viewportSize() ?? { width: clip.width, height: clip.height };
-  const x = Math.max(0, clip.x);
-  const y = Math.max(0, clip.y);
-  const width = Math.min(clip.width - (x - clip.x), viewport.width - x);
-  const height = Math.min(clip.height - (y - clip.y), viewport.height - y);
-  if (width < 40 || height < 40) {
-    console.error('pale clip too small', lang, file, clip);
-    return false;
-  }
-  await page.screenshot({ path: file, clip: { x, y, width, height } });
-  return true;
+    let prev = {};
+    try {
+      const raw = localStorage.getItem(key);
+      const parsed = raw ? JSON.parse(raw) : {};
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) prev = parsed;
+    } catch {
+      prev = {};
+    }
+    localStorage.setItem(key, JSON.stringify({ ...prev, ...value }));
+  }, settings);
 }
 
-async function openScene(page, scene, query) {
-  const url = `${base}${scene.path}?${query}${query ? '&' : ''}t=${scene.t}`;
+async function openScene(page, scene, variant) {
+  const url = `${base}${scene.path}?t=${scene.t}`;
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.waitForSelector('.fb-orig', { timeout: 20000 });
+  const family = expectFamily(variant, scene);
+  await page
+    .waitForFunction(
+      (needle) => {
+        const el = document.querySelector('.fb.is-current .fb-orig');
+        return !!el && getComputedStyle(el).fontFamily.includes(needle);
+      },
+      family,
+      { timeout: 15000 },
+    )
+    .catch(() => {});
   await page.evaluate(() => document.fonts.ready);
   await seek(page, scene.t);
   await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(500);
 }
 
 async function runDevice(name, browserType, device) {
@@ -175,57 +190,22 @@ async function runDevice(name, browserType, device) {
       await prepare(context);
       const page = await context.newPage();
       page.on('pageerror', (e) => console.error('pageerror', e.message));
-
-      if (!zoomOnly && !only && scheme === 'light') {
-        await openScene(page, scenes[0], '');
-        const file = `${out}/${name}-${scheme}-default-rumi.png`;
-        await page.screenshot({ path: file });
-        const info = await readStage(page);
-        notes.push({ file, info });
-        console.log(file, info.section, info.preview || 'default');
-      }
-
-      for (const set of sets) {
-        for (const scene of scenes) {
-          if (only && !only.includes(scene.id)) continue;
-          if (zoomOnly && !scene.pale) continue;
-          await openScene(page, scene, `fonts=${set}`);
-          const file = `${out}/${name}-${scheme}-${set}-${scene.id}.png`;
-          if (!zoomOnly) {
-            await page.screenshot({ path: file });
-            const info = await readStage(page);
-            notes.push({ file, info });
-            console.log(file, info.section, info.orig?.family);
-            if (info.section !== scene.label) console.error('  wrong section, wanted', scene.label);
-          }
-          if (scene.pale) {
-            const zoom = `${out}/zoom-${name}-${scheme}-${set}-${scene.id}.png`;
-            const ok = await shootPale(page, scene.pale, zoom);
-            if (ok) console.log(zoom);
-          }
+      const wanted = scenes.filter((scene) => (only ? only.includes(scene.id) : shotScenes.includes(scene.id)));
+      for (const variant of variants) {
+        await applyVariant(page, variant.settings);
+        for (const scene of wanted) {
+          await openScene(page, scene, variant);
+          const file = `${out}/${name}-${scheme}-${variant.id}-${scene.id}.png`;
+          await page.screenshot({ path: file });
+          const info = await readStage(page);
+          notes.push({ file, variant: variant.id, info });
+          console.log(file, info.section, info.orig?.family);
+          if (info.section !== scene.label) console.error('  wrong section, wanted', scene.label);
+          const needle = expectFamily(variant, scene);
+          if (info.orig && !info.orig.family.includes(needle)) console.error('  wrong family, wanted', needle);
         }
       }
-
       await context.close();
-
-      // Transliteration is the only italic line in the scene today. One light pass per device.
-      if (!zoomOnly && !only && scheme === 'light') {
-        const context2 = await browser.newContext({ ...device, colorScheme: 'light' });
-        await prepare(context2);
-        await context2.addInitScript(() => {
-          localStorage.setItem('living-lyrics.settings.v2', JSON.stringify({ showTranslit: true }));
-        });
-        const page2 = await context2.newPage();
-        for (const set of sets) {
-          await openScene(page2, scenes[0], `fonts=${set}`);
-          const file = `${out}/${name}-light-${set}-rumi-translit.png`;
-          await page2.screenshot({ path: file });
-          const info = await readStage(page2);
-          notes.push({ file, info });
-          console.log(file, info.section);
-        }
-        await context2.close();
-      }
     }
   } finally {
     await browser.close();
@@ -238,7 +218,5 @@ await runDevice('desktop', chromium, {
   deviceScaleFactor: 1,
 });
 
-if (!zoomOnly && !only) {
-  writeFileSync(`${out}/notes.json`, JSON.stringify(notes, null, 2));
-  console.log('notes', `${out}/notes.json`);
-}
+writeFileSync(`${out}/notes-settings.json`, JSON.stringify(notes, null, 2));
+console.log('notes', `${out}/notes-settings.json`);

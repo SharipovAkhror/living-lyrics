@@ -186,7 +186,8 @@ function check(slug: string): Issue[] {
 
       // Glyph coverage
       const text = line.words.map((w) => w.w).join(' ');
-      const face = line.script === 'Arab' ? (line.lang === 'fa' ? ['mushaf', 'nastaliq'] : ['mushaf']) : ['serif'];
+      // Persian can be any face the reader picks. Arabic stays on the Mushaf file.
+      const face = line.script === 'Arab' ? (line.lang === 'fa' ? ['amiri', 'naskh', 'scheherazade', 'nastaliq'] : ['mushaf']) : ['serif'];
       for (const f of face) {
         const missing = new Set<string>();
         for (const ch of text) {
