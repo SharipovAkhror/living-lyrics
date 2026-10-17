@@ -101,7 +101,7 @@ def test_solo() -> None:
     lyrics = json.loads((root / 'content/songs/i-have-come-alive/lyrics.json').read_text(encoding='utf-8'))
     n_solo = sum(T.is_solo(sec, line) for sec, line in T.vocal_lines(lyrics))
     n = sum(1 for _ in T.vocal_lines(lyrics))
-    check('IHCA solo count', n_solo == 38 and n == 60, f'{n_solo} solo of {n}')
+    check('IHCA solo count', n_solo == 103 and n == 105, f'{n_solo} solo of {n}')
 
 
 def _bursts() -> tuple[np.ndarray, Q.Signals]:

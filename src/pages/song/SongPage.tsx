@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { getSong, loadLyrics, loadPeaks } from '@/data/library';
+import { formatTime, getSong, loadLyrics, loadPeaks } from '@/data/library';
+import { marksFor, momentAt } from '@/app/marks';
 import type { Lyrics, Peaks } from '@/data/schema';
-import { buildTimeline, sharhFor, type Cue } from '@/data/timeline';
+import { buildTimeline, commentFor, type Cue } from '@/data/timeline';
 import { useSettings, setSettings } from '@/app/settings';
 import { useSongAccent } from '@/app/theme';
 import { linkHandler } from '@/app/router';
@@ -185,7 +186,26 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
 
   const togglePlay = useCallback(() => engine?.toggle(), [engine]);
 
+  // A mismatch mark records the clock and the line on stage. It does not pause, seek, or open a sheet.
+  const [toast, setToast] = useState<{ id: string; t: number } | null>(null);
+  const placeMark = useCallback(() => {
+    if (!song || !timeline || !engine) return;
+    const mark = marksFor(song.slug).add(momentAt(timeline.cues, owner, engine.currentTime()));
+    setToast({ id: mark.id, t: mark.t });
+  }, [song, timeline, engine, owner]);
+  const undoToast = useCallback(() => {
+    if (!song || !toast) return;
+    marksFor(song.slug).remove(toast.id);
+    setToast(null);
+  }, [song, toast]);
+  useEffect(() => {
+    if (!toast) return;
+    const id = window.setTimeout(() => setToast(null), 6000);
+    return () => clearTimeout(id);
+  }, [toast]);
+
   // Keyboard: Space play/pause, ←/→ lines, Shift+←/→ ±10 s, T translation, K commentary.
+  // M (same physical key as ь) drops a mismatch mark. Repeat is ignored so a held key is one mark.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (sheet || e.metaKey || e.ctrlKey || e.altKey) return;
@@ -197,13 +217,15 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
       else if (e.key === 'ArrowRight') (e.shiftKey ? engine?.skip(10) : nav(1));
       else if (e.key === 'ArrowLeft') (e.shiftKey ? engine?.skip(-10) : nav(-1));
       else if (e.key === 't' || e.key === 'е') setSettings({ showTranslation: !settings.showTranslation });
-      else if (e.key === 'k' || e.key === 'л') setSettings({ showSharh: !settings.showSharh });
-      else return;
+      else if (e.key === 'k' || e.key === 'л') setSettings({ showComment: !settings.showComment });
+      else if (e.code === 'KeyM') {
+        if (!e.repeat) placeMark();
+      } else return;
       e.preventDefault();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [sheet, togglePlay, nav, engine, settings.showTranslation, settings.showSharh]);
+  }, [sheet, togglePlay, nav, engine, settings.showTranslation, settings.showComment, placeMark]);
 
   const back = useHold(
     () => nav(-1),
@@ -218,12 +240,12 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
 
   const ownerCue = timeline && owner >= 0 ? timeline.cues[owner] : null;
   const sectionLabel = ownerCue ? ownerCue.section.label : song.artist;
-  const sharh = timeline && settings.showSharh && owner >= 0 ? sharhFor(timeline, owner) : null;
+  const comment = timeline && settings.showComment && owner >= 0 ? commentFor(timeline, owner) : null;
   const allLines = lyrics?.sections.flatMap((s) => (s.kind === 'vocal' ? s.lines : [])) ?? [];
   const has = { translit: allLines.some((l) => l.translit), alt: allLines.some((l) => l.alt), persian: allLines.some((l) => l.lang === 'fa') };
 
   return (
-    <div className={`song${sharh ? ' has-sharh' : ''}${settings.sharhOpen ? ' sharh-open' : ''}`}>
+    <div className={`song${comment ? ' has-comment' : ''}${settings.commentOpen ? ' comment-open' : ''}`}>
       {timeline ? (
         <Scene song={song} timeline={timeline} settings={settings} dark={dark} clock={clock} onOwnerChange={setOwner} onPick={pick} />
       ) : (
@@ -243,15 +265,15 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
         </button>
       </header>
 
-      {sharh && (
-        <aside className={`sharh material material--thick${settings.sharhOpen ? ' is-open' : ''}`} aria-label="Пояснение">
-          <button className="sharh-head" onClick={() => setSettings({ sharhOpen: !settings.sharhOpen })} aria-expanded={settings.sharhOpen}>
-            <Icon name="book.closed" size={17} className="sharh-icon" />
-            <span className="sharh-kicker t-footnote">Пояснение</span>
-            <span className="sharh-preview t-footnote secondary">{settings.sharhOpen ? '' : sharh.text.replace(/\*+/g, '')}</span>
-            <Icon name={settings.sharhOpen ? 'chevron.down' : 'chevron.up'} size={15} weight={2.2} className="sharh-chevron tertiary" />
+      {comment && (
+        <aside className={`comment material material--thick${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
+          <button className="comment-head" onClick={() => setSettings({ commentOpen: !settings.commentOpen })} aria-expanded={settings.commentOpen}>
+            <Icon name="book.closed" size={17} className="comment-icon" />
+            <span className="comment-kicker t-footnote">Пояснение</span>
+            <span className="comment-preview t-footnote secondary">{settings.commentOpen ? '' : comment.text.replace(/\*+/g, '')}</span>
+            <Icon name={settings.commentOpen ? 'chevron.down' : 'chevron.up'} size={15} weight={2.2} className="comment-chevron tertiary" />
           </button>
-          <RichText key={sharh.from.idx} text={sharh.text} className="sharh-body t-callout" />
+          <RichText key={comment.from.idx} text={comment.text} className="comment-body t-callout" />
         </aside>
       )}
 
@@ -275,12 +297,37 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
             <Icon name="forward" size={30} />
           </button>
         </div>
+        <div className="mark-bar">
+          {toast && (
+            <div className="mark-toast" role="status">
+              <span>Отмечено {formatTime(toast.t)}</span>
+              <button type="button" className="mark-toast-undo" onClick={undoToast}>
+                Отменить
+              </button>
+            </div>
+          )}
+          <button
+            type="button"
+            className="mark-btn"
+            onClick={placeMark}
+            disabled={!timeline}
+            aria-label="Не совпадает"
+            aria-keyshortcuts="M"
+          >
+            <span className="mark-btn-label" aria-hidden="true">
+              Не совпадает
+            </span>
+            <kbd className="mark-kbd" aria-hidden="true">
+              M
+            </kbd>
+          </button>
+        </div>
         <div className="utility">
           <button className="util" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
             <Icon name="character.bubble" size={22} />
             <span>Перевод</span>
           </button>
-          <button className="util" aria-pressed={settings.showSharh} onClick={() => setSettings({ showSharh: !settings.showSharh })}>
+          <button className="util" aria-pressed={settings.showComment} onClick={() => setSettings({ showComment: !settings.showComment })}>
             <Icon name="book.closed" size={21} />
             <span>Пояснение</span>
           </button>
@@ -296,7 +343,16 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
       </footer>
 
       <SettingsSheet open={sheet === 'settings'} onClose={() => setSheet(null)} song={song} engine={engine} state={state} settings={settings} has={has} />
-      <InfoSheet open={sheet === 'info'} onClose={() => setSheet(null)} song={song} lyrics={lyrics} />
+      <InfoSheet
+        open={sheet === 'info'}
+        onClose={() => setSheet(null)}
+        song={song}
+        lyrics={lyrics}
+        onSeek={(t) => {
+          engine.seek(t);
+          setSheet(null);
+        }}
+      />
       {timeline && (
         <TextSheet
           open={sheet === 'text'}
