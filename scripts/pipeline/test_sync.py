@@ -162,44 +162,47 @@ def test_proof_decision() -> None:
         {'roman': 'aa', 'ctc_s': 1.0, 'second_s': 1.04},
         {'roman': 'bb', 'ctc_s': 2.0, 'second_s': 2.05},
     ]
-    got = Q.proof_line(True, 'good', True, presnap, words, True)
-    check('solo agreement passes', got['pass'], str(got))
-    got = Q.proof_line(False, 'good', True, presnap, words, True)
+    # The cue gate is 0.30 s. Calls that should reach the onset pass a cue on the line start.
+    cue = dict(cue_start=1.0, ctc_line_start=1.0)
+    got = Q.proof_line(True, 'good', True, presnap, words, True, **cue)
+    check('solo onset and cue pass', got['pass'] and got.get('second') == 'agree', str(got))
+    got = Q.proof_line(False, 'good', True, presnap, words, True, **cue)
     check('a duet is not a group', (not got['pass']) and got['reason'] == 'not-solo', str(got))
-    got = Q.proof_line('choir', 'good', True, [0.15, 0.04], words, True)
+    got = Q.proof_line('choir', 'good', True, [0.15, 0.04], words, True, **cue)
     check('choir onset 0.15 s passes', got['pass'], str(got))
-    got = Q.proof_line('choir', 'good', True, [0.25, 0.04], words, True)
+    got = Q.proof_line('choir', 'good', True, [0.25, 0.04], words, True, **cue)
     check('choir onset over 0.2 s fails', (not got['pass']) and got['reason'] == 'onset', str(got))
-    got = Q.proof_line(True, 'good', True, [0.15, 0.04], words, True)
+    got = Q.proof_line(True, 'good', True, [0.15, 0.04], words, True, **cue)
     check('solo onset 0.15 s fails', (not got['pass']) and got['reason'] == 'onset', str(got))
     choir_words = [dict(words[0], second_s=1.15), words[1]]
-    got = Q.proof_line('choir', 'good', True, presnap, choir_words, True)
-    check('choir aligners 0.15 s apart pass', got['pass'], str(got))
-    got = Q.proof_line('solo', 'good', True, presnap, choir_words, True)
-    check('solo aligners 0.15 s apart fail', (not got['pass']) and got['reason'] == 'aligners-disagree', str(got))
+    got = Q.proof_line('choir', 'good', True, presnap, choir_words, True, **cue)
+    check('choir aligners 0.15 s apart still pass', got['pass'] and got.get('second') == 'agree', str(got))
+    got = Q.proof_line('solo', 'good', True, presnap, choir_words, True, **cue)
+    check('solo aligners 0.15 s apart do not block', got['pass'] and got.get('second') == 'disagree', str(got))
     far = [dict(words[0], second_s=1.4), words[1]]
-    got = Q.proof_line(True, 'good', True, presnap, far, True)
-    check('aligners 0.4 s apart fail', (not got['pass']) and got['reason'] == 'aligners-disagree', str(got))
-    got = Q.proof_line(True, 'draft', True, presnap, words, True)
+    got = Q.proof_line(True, 'good', True, presnap, far, True, **cue)
+    check('aligners 0.4 s apart do not block', got['pass'] and got.get('second') == 'disagree', str(got))
+    got = Q.proof_line(True, 'draft', True, presnap, words, True, **cue)
     check('text not found fails', got['reason'] == 'text-not-found', str(got))
     # Published time is irrelevant: the gate reads this pre-snap distance.
-    got = Q.proof_line(True, 'good', True, [0.30, 0.04], words, True)
+    got = Q.proof_line(True, 'good', True, [0.30, 0.04], words, True, **cue)
     check('pre-snap onset 0.3 s fails', (not got['pass']) and got['reason'] == 'onset', str(got))
-    got = Q.proof_line(True, 'good', True, presnap, words, False)
+    got = Q.proof_line(True, 'good', True, presnap, words, False, **cue)
     check('no align report fails closed', got['reason'] == 'no-report', str(got))
     # A missing attack is not legato and does not pass.
-    got = Q.proof_line(True, 'good', True, [None, 0.04], words, True)
+    got = Q.proof_line(True, 'good', True, [None, 0.04], words, True, **cue)
     check('no attack near the pre-snap start fails', (not got['pass']) and got['reason'] == 'onset', str(got))
     bare = [{'roman': 'aa', 'ctc_s': 1.0}, {'roman': 'bb', 'ctc_s': 2.0}]
-    got = Q.proof_line(True, 'good', True, presnap, bare, True)
-    check('a missing second model is not a fake disagreement', (not got['pass']) and got['reason'] == 'no-second-aligner', str(got))
-    # The cue is a third anchor. 0.70 s is still inside the tolerance; past it the line is not proved.
+    got = Q.proof_line(True, 'good', True, presnap, bare, True, **cue)
+    check('a missing second model does not block', got['pass'] and got.get('second') == 'absent', str(got))
+    got = Q.proof_line(True, 'good', True, presnap, words, True, cue_start=1.0, ctc_line_start=1.30)
+    check('cue drift of 0.30 s passes', got['pass'], str(got))
+    got = Q.proof_line(True, 'good', True, presnap, words, True, cue_start=1.0, ctc_line_start=1.31)
+    check('cue drift of 0.31 s fails', (not got['pass']) and got['reason'] == 'cue-disagree', str(got))
     got = Q.proof_line(True, 'good', True, presnap, words, True, cue_start=1.0, ctc_line_start=1.70)
-    check('cue drift of 0.70 s does not fail by itself', got['pass'], str(got))
-    got = Q.proof_line(True, 'good', True, presnap, words, True, cue_start=1.0, ctc_line_start=1.40)
-    check('cue drift of 0.40 s does not fail by itself', got['pass'], str(got))
-    got = Q.proof_line(True, 'good', True, presnap, words, True, cue_start=1.0, ctc_line_start=1.81)
-    check('cue drift over 0.7 s fails', (not got['pass']) and got['reason'] == 'cue-disagree', str(got))
+    check('cue drift of 0.70 s is published but not proved', (not got['pass']) and got['reason'] == 'cue-disagree', str(got))
+    got = Q.proof_line(True, 'good', True, presnap, words, True)
+    check('a line with no cue is not proved', (not got['pass']) and got['reason'] == 'cue-disagree', str(got))
     got = Q.proof_line(True, 'draft', True, presnap, words, True, cue_start=1.0, ctc_line_start=5.0)
     check('text not found still wins over the cue', got['reason'] == 'text-not-found', str(got))
     got = Q.proof_line(True, 'weak', True, presnap, words, True, cue_start=1.0, ctc_line_start=5.0)
@@ -338,13 +341,14 @@ def test_build_proof_independent() -> None:
     # Published s is the attack. CTC was 0.30 s early. Must not pass with error 0.
     snap = Q.build_proof(sig, [(sec, line('snapped'))], qa, {'lines': [
         rec('snapped', 'good', [0.70, 1.70, 2.70], [0.72, 1.72, 2.72]),
-    ]})
+    ]}, {'snapped': {'line': 'snapped', 'start': 0.70, 'end': 3.2}})
     check('snapped line does not prove itself', (not snap['lines'][0]['pass']) and snap['lines'][0]['reason'] == 'onset', str(snap['lines'][0]))
     # A fair line and a text-not-found line. One proven solo of two is under 80 %.
     proof = Q.build_proof(sig, [(sec, line('fair')), (sec, line('missing'))], qa * 2, {'lines': [
         rec('fair', 'good', [1.02, 2.02, 3.02], [1.04, 2.03, 3.05]),
         rec('missing', 'draft', [1.02, 2.02, 3.02], [1.04, 2.03, 3.05]),
-    ]})
+    ]}, {'fair': {'line': 'fair', 'start': 1.02, 'end': 3.2},
+        'missing': {'line': 'missing', 'start': 1.02, 'end': 3.2}})
     by = {r['id']: r for r in proof['lines']}
     check('pre-snap agreement can pass', by['fair']['pass'], str(by['fair']))
     check('text not found is not a proven solo', (not by['missing']['pass']) and by['missing']['reason'] == 'text-not-found', str(by['missing']))
@@ -355,7 +359,8 @@ def test_build_proof_independent() -> None:
     blocked = Q.build_proof(sig, [(choir_sec, line('sung')), (choir_sec, line('miss'))], qa * 2, {'lines': [
         rec('sung', 'good', [1.02, 2.02, 3.02], [1.04, 2.03, 3.05]),
         rec('miss', 'draft', [1.02, 2.02, 3.02], [1.04, 2.03, 3.05]),
-    ]})
+    ]}, {'sung': {'line': 'sung', 'start': 1.02, 'end': 3.2},
+        'miss': {'line': 'miss', 'start': 1.02, 'end': 3.2}})
     check('one proved choir line of two blocks the song',
           (not blocked['aligned']) and blocked['solo'] == 0
           and blocked['choir_passed'] == 1 and blocked['choir'] == 2,

@@ -64,7 +64,7 @@ MAX_EXTEND = 4.0         # a word end may follow the voice this far
 MAX_TOKEN = 0.5          # longest stretch one letter may hold in the CTC path
 MAX_WORD_SPAN = 2.5      # longest span from a word's first to its last letter
 SNAP_WIN = 0.10          # a word start moves to a clear vocal onset at most this far (the proof gate)
-ENGINE_AGREE = 0.10      # the second aligner must put the word start this close to the first
+ENGINE_AGREE = 0.10      # recorded gap for the second aligner. qa_sync does not fail the line on it
 # Official subtitle cue. A person places it to about 0.1–0.5 s. The search window is the cue
 # plus this margin. A neighbour cue stops the window CUE_OVERLAP inside that neighbour, so
 # this line's text is not aligned on the next line. The section map is the same kind of fence.
@@ -828,9 +828,8 @@ def main() -> None:
             tol = Q.CHOIR_TOL if T.group(u.sec, u.line) == 'choir' else ENGINE_AGREE
             engines_agree = None if e2 is None or raw[wi] is None else bool(abs(e2 - raw[wi]) <= tol)
             onset_ok = odt[wi] is not None
-            # Proof: the line is placed confidently, the sync check finds it on the voice, and the
-            # second aligner puts this word where the first did. --proof strict also wants a clear
-            # vocal onset at the word start itself (unstressed legato words rarely have one).
+            # Report note only. The line flag is qa_sync.proof_line: onset plus the 0.30 s cue.
+            # This word flag records that the second start landed within the group tolerance.
             proven = (status == 'good' and q['verdict'] == 'ok' and engines_agree is True
                       and (onset_ok or args.proof != 'strict'))
             if has_letters:

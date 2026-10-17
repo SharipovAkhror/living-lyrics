@@ -1,7 +1,8 @@
 """Second opinions for align.py: an aligner that measures word starts again, independently of MMS_FA.
 
-A solo line is proven only when MMS_FA (romanised text, torchaudio), this second aligner and the
-vocal onsets agree within 0.1 s (see qa_sync.py). This module holds the second aligners.
+qa_sync proves a line from the chosen aligner's onset and the cue. This second start is an
+extra check where the model places one; a missing or disagreeing time does not fail the line
+(see qa_sync.py). This module holds the second aligners.
 
 Interface of an engine:
     name: str
@@ -326,7 +327,8 @@ def align_jobs(which: str, x: np.ndarray, jobs: list[dict]) -> tuple[dict[str, l
     """Word starts and the engine name that produced them, per line id.
 
     `which` is `auto` (WhisperX where the language has a model), `whisperx`, or `none`.
-    A failing engine is skipped; the line then has no second opinion and cannot be proven.
+    A failing engine is skipped; the line then has no second opinion. That does not by itself
+    keep the line unproved: qa_sync records the gap and still checks the onset and the cue.
     """
     if which in ('', 'none') or not jobs:
         return {}, {}

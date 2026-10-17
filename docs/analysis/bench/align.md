@@ -104,6 +104,20 @@
 - Kick и др., box loss, 2025 (github.com/tikick/LyricsAlignment): код есть, готового чекпоинта в репозитории нет, нужен DALI и phonemizer IPA. Не запускался.
 - schufo/lyrics-aligner (2021, MIT, MUSDB, английские фонемы) старше запрошенного окна 2022–2026. Вместо него взята многоязычная модель Huang.
 
+## Чего в нулях нет
+
+Это не оценка качества, и повторный прогон не запускался: дыры не меняют выбор для арабского, персидского, турецкого, азербайджанского и латыни.
+
+- whisperx на fa, tr и ar: `ModuleNotFoundError: Could not import module 'Wav2Vec2ForCTC'`. Английский (14/16) и немецкий (7/26, медиана 0,504 с) измерены.
+- huang-2025: `AttributeError: np.Inf was removed in the NumPy 2.0 release`. Модель только для en/de/fr/es/it. 0/243 — сбой адаптера, не счёт.
+- nemo: `RuntimeError: operator torchvision::nms does not exist`. Только английский.
+- mdx: audio-separator, код выхода 1, 3,3 с.
+- mel-roformer: `StopIteration` через 741,7 с.
+
+## Решение
+
+Первый выравниватель — mms-ctc-star, стем — htdemucs, четыре дорожки. 178/243 в пределах 0,3 с, медиана 0,186 с. WhisperX выигрывает английский на одну строку из 16 (14 против 13). htdemucs_ft выигрывает отрывок на одну строку из 38 (35 против 34) за 493 с отделения против 124 с. Ни то ни другое конвейер не делит.
+
 ## Худшие места
 
 - mms-ctc-star: karitas sabr-p1 3.961 с, karitas shushtari-s2 3.564 с, i-have-come-alive coda-fa-8 3.087 с, i-have-come-alive coda-fa-2 1.688 с, i-have-come-alive arabic-26b 1.626 с
