@@ -12,6 +12,7 @@ import { Scene } from '@/scene/Scene';
 import { LEAD } from '@/scene/flow';
 import { Icon } from '@/icons/Icon';
 import { RichText } from '@/components/RichText';
+import { stripHarakat } from '@/data/harakat';
 import { preloadInstruments } from '@/instruments/catalog';
 import { SettingsSheet } from './SettingsSheet';
 import { TextSheet } from './TextSheet';
@@ -242,7 +243,16 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
   const sectionLabel = ownerCue ? ownerCue.section.label : song.artist;
   const comment = timeline && settings.showComment && owner >= 0 ? commentFor(timeline, owner) : null;
   const allLines = lyrics?.sections.flatMap((s) => (s.kind === 'vocal' ? s.lines : [])) ?? [];
-  const has = { translit: allLines.some((l) => l.translit), alt: allLines.some((l) => l.alt), persian: allLines.some((l) => l.lang === 'fa') };
+  const arabScript = /[\u0600-\u06FF]/;
+  const has = {
+    translit: allLines.some((l) => l.translit),
+    alt: allLines.some((l) => l.alt),
+    persian: allLines.some((l) => l.lang === 'fa'),
+    arab:
+      arabScript.test(song.titleOriginal ?? '') ||
+      allLines.some((l) => l.script === 'Arab' || l.script === 'Aran' || l.alt?.script === 'Arab' || l.alt?.script === 'Aran' || arabScript.test(l.comment ?? '')) ||
+      (lyrics?.sections.some((s) => arabScript.test(s.comment ?? '')) ?? false),
+  };
 
   return (
     <div className={`song${comment ? ' has-comment' : ''}${settings.commentOpen ? ' comment-open' : ''}`}>
@@ -270,10 +280,10 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
           <button className="comment-head" onClick={() => setSettings({ commentOpen: !settings.commentOpen })} aria-expanded={settings.commentOpen}>
             <Icon name="book.closed" size={17} className="comment-icon" />
             <span className="comment-kicker t-footnote">Пояснение</span>
-            <span className="comment-preview t-footnote secondary">{settings.commentOpen ? '' : comment.text.replace(/\*+/g, '')}</span>
+            <span className="comment-preview t-footnote secondary">{settings.commentOpen ? '' : (settings.showHarakat ? comment.text : stripHarakat(comment.text)).replace(/\*+/g, '')}</span>
             <Icon name={settings.commentOpen ? 'chevron.down' : 'chevron.up'} size={15} weight={2.2} className="comment-chevron tertiary" />
           </button>
-          <RichText key={comment.from.idx} text={comment.text} className="comment-body t-callout" />
+          <RichText key={comment.from.idx} text={comment.text} showHarakat={settings.showHarakat} className="comment-body t-callout" />
         </aside>
       )}
 

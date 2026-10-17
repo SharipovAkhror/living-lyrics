@@ -5,6 +5,7 @@ import { formatTime } from '@/data/library';
 import { instrument } from '@/instruments/catalog';
 import { fontClass } from '@/scene/fonts';
 import type { Settings } from '@/app/settings';
+import { showHarakatText } from '@/data/harakat';
 
 export function TextSheet({
   open,
@@ -47,7 +48,7 @@ export function TextSheet({
                 {c.kind === 'line' ? (
                   <span className="tl-text">
                     <span className={`tl-orig ${fontClass(c.line, settings)}`} dir={c.rtl ? 'rtl' : 'ltr'} lang={c.line.lang}>
-                      {c.line.words.map((w) => w.w).join(' ')}
+                      {c.line.words.map((w) => showHarakatText(w.w, settings.showHarakat)).join(' ')}
                     </span>
                     {c.repeat > 0 && <span className="tl-repeat t-caption1">повтор</span>}
                     {settings.showTranslation && <span className="tl-tr t-subhead secondary">{c.line.tr.ru}</span>}

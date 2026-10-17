@@ -10,6 +10,7 @@ import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { z } from 'zod';
 import { LyricsSchema, SongSchema, type Lyrics, type Song } from '../../src/data/schema.ts';
+import { harakatWarning } from '../../src/data/harakat.ts';
 import { INSTRUMENTS } from '../../src/instruments/list.ts';
 import { MODE_COUNTS, modeFit } from '../../src/instruments/layout.ts';
 
@@ -333,6 +334,14 @@ function check(slug: string): Issue[] {
       const ems = line.words.filter((w) => w.em).length;
       if (ems > 1) warn(lw, `ключевых слов (em) ${ems} — нужно не больше одного`);
       if (ems >= 1 && !hasEmphasisPair(line.tr.ru)) warn(lw, 'в оригинале есть em, а в переводе нет пары **…**');
+      if (ARABIC_SCRIPTS.has(line.script)) {
+        const gap = harakatWarning(line.words.map((w) => w.w).join(' '));
+        if (gap) warn(lw, gap);
+      }
+      if (line.alt && ARABIC_SCRIPTS.has(line.alt.script)) {
+        const gap = harakatWarning(line.alt.text);
+        if (gap) warn(lw, `историческое письмо: ${gap}`);
+      }
     });
   });
   for (const script of uncoveredScripts) {

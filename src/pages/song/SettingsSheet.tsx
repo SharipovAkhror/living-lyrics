@@ -30,7 +30,7 @@ export function SettingsSheet({
   engine: AudioEngine;
   state: EngineState | null;
   settings: Settings;
-  has: { translit: boolean; alt: boolean; persian: boolean };
+  has: { translit: boolean; alt: boolean; persian: boolean; arab: boolean };
 }) {
   const [page, setPage] = useState<'main' | 'eq'>('main');
   const input = useRef<HTMLInputElement>(null);
@@ -126,6 +126,11 @@ export function SettingsSheet({
   return (
     <Sheet open={open} onClose={close} title="Настройки" size="large">
       <Group header="Текст" footer="Оригинал показывается всегда — на том языке и тем письмом, которыми поют.">
+        {has.arab && (
+          <Row title="Огласовки" detail="Знаки гласных в арабском письме">
+            <Switch label="Огласовки" checked={settings.showHarakat} onChange={(v) => setSettings({ showHarakat: v })} />
+          </Row>
+        )}
         <Row title="Перевод на русский">
           <Switch label="Перевод" checked={settings.showTranslation} onChange={(v) => setSettings({ showTranslation: v })} />
         </Row>

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import type { Song } from '@/data/schema';
 import type { Timeline } from '@/data/timeline';
 import { effectiveMotion, type Settings } from '@/app/settings';
+import { showHarakatText } from '@/data/harakat';
 import { LineBlock, type BlockUpdater } from './LineBlock';
 import { InstBlock } from './InstBlock';
 import { Field } from './Field';
@@ -155,9 +156,10 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
       showTranslation: settings.showTranslation,
       showTranslit: settings.showTranslit,
       showAlt: settings.showAlt,
+      showHarakat: settings.showHarakat,
       textScale: settings.textScale,
     }),
-    [settings.fontPersian, settings.fontOriginal, settings.fontTranslation, settings.showTranslation, settings.showTranslit, settings.showAlt, settings.textScale],
+    [settings.fontPersian, settings.fontOriginal, settings.fontTranslation, settings.showTranslation, settings.showTranslit, settings.showAlt, settings.showHarakat, settings.textScale],
   );
 
   return (
@@ -169,7 +171,7 @@ export function Scene({ song, timeline, settings, dark, clock, onOwnerChange, on
           <div className="intro-title">{song.title}</div>
           {song.titleOriginal && (
             <div className="intro-original f-mushaf" dir="rtl">
-              {song.titleOriginal}
+              {showHarakatText(song.titleOriginal, settings.showHarakat)}
             </div>
           )}
           <div className="intro-meta t-subhead">

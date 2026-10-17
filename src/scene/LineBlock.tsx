@@ -3,6 +3,7 @@ import type { LineCue } from '@/data/timeline';
 import type { MotionPref, Settings } from '@/app/settings';
 import { formatTime } from '@/data/library';
 import { blockState, clamp01, type Measure } from './flow';
+import { showHarakatText } from '@/data/harakat';
 import { fontClass } from './fonts';
 
 /**
@@ -15,7 +16,7 @@ interface Props {
   cue: LineCue;
   /** Word-by-word fill only where the timing is measured and checked; otherwise the whole line lights up. */
   wordSync: boolean;
-  settings: Pick<Settings, 'fontPersian' | 'showTranslation' | 'showTranslit' | 'showAlt' | 'textScale'>;
+  settings: Pick<Settings, 'fontPersian' | 'showTranslation' | 'showTranslit' | 'showAlt' | 'showHarakat' | 'textScale'>;
   motion: MotionPref;
   stage: { w: number; h: number };
   register: (idx: number, fn: BlockUpdater | null, m?: Measure) => void;
@@ -195,7 +196,7 @@ function LineBlockImpl({ cue, wordSync, settings, motion, stage, register, onPic
                 }}
                 className={`w${w.em ? ' w--em' : ''}`}
               >
-                {w.w}
+                {showHarakatText(w.w, settings.showHarakat)}
               </span>
               {w.br && <span className="w-br" />}
             </span>
@@ -206,7 +207,7 @@ function LineBlockImpl({ cue, wordSync, settings, motion, stage, register, onPic
         <div ref={subs} className="fb-subs" dir="ltr">
           {showAlt && (
             <div className="fb-alt f-mushaf" dir="rtl" lang={line.lang}>
-              {line.alt!.text}
+              {showHarakatText(line.alt!.text, settings.showHarakat)}
             </div>
           )}
           {showTl && (
