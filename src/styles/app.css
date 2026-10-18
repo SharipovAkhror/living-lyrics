@@ -983,6 +983,7 @@
 }
 .part {
   background: color-mix(in srgb, var(--bg-elevated) 72%, transparent);
+  border: 0.5px solid var(--separator);
   border-radius: 22px;
   overflow: hidden;
 }
