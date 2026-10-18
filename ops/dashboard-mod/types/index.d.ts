@@ -1,0 +1,74 @@
+export type Group = { name: string; proven: number; placed?: number; total: number }
+
+export type Song = { id: string; title: string; state?: string; groups: Group[]; note?: string }
+
+export type AgentName = 'claude' | 'grok' | 'gemini'
+
+export type Task = {
+  id: string
+  section: 'you' | 'now' | 'done' | 'later'
+  /** Who does it. Absent on owner items and done/later rows. */
+  agent?: AgentName
+  status?: string
+  chip?: string
+  title: string
+  what?: string
+  now?: string
+  how?: string
+  next?: string
+  who?: string
+  date?: string
+  /** Folder in living-lyrics-wt whose Grok session this task is. */
+  worktree?: string
+}
+
+/** One hand-off between agents, newest first in the file. */
+export type FeedItem = { at: string; from: AgentName | 'owner'; to: AgentName | 'owner'; text: string }
+
+/** Readiness for a milestone (e.g. adding new songs): weighted steps, each 0…1 done. */
+export type Roadmap = { title: string; percent: number; steps: { name: string; weight: number; done: number }[] }
+
+export type Board = {
+  updated?: string
+  headline?: string
+  /** What Claude is doing now, one line. */
+  claude?: string
+  /** Model names shown beside each agent. */
+  models?: Partial<Record<AgentName, string>>
+  tasks: Task[]
+  songs: Song[]
+  feed?: FeedItem[]
+  roadmap?: Roadmap
+}
+
+export type GrokRun = {
+  name: string
+  state: 'working' | 'stalled' | 'finished' | 'none'
+  minutes: number
+  step: string
+  tokens?: number
+  model?: string
+}
+
+export type GeminiRun = { slug: string; minutes: number }
+
+export type Live = { grok: GrokRun[]; gemini: GeminiRun[] }
+
+/** Claude plan windows as the status line has them. */
+export type Limit = { kind: string; percentUsed: number; resetsAt?: string }
+
+/** Quota windows Antigravity's /usage shows, per model group. */
+export type QuotaGroup = { weeklyRemaining?: number; weeklyResetIn?: string; fiveHourRemaining?: number; fiveHourResetIn?: string; at?: string }
+
+/** ops/usage/latest.json, written by ops/usage/collect.py. */
+export type Usage = {
+  updated?: string
+  grok?: { plan?: string; today?: number; week?: number; todayByTask?: Record<string, number>; limit?: string }
+  gemini?: { plan?: string; quota?: Record<string, QuotaGroup>; runsToday?: number; secondsToday?: number }
+}
+
+declare module 'claude-code' {
+  interface PluginState {
+    'll-dashboard': { board: Board | null; live: Live; limits: Limit[]; usage: Usage | null }
+  }
+}
