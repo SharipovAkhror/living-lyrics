@@ -8,31 +8,31 @@
  "agree_tol": 0.1,
  "closer": {
   "words": {
-   "n": 258,
-   "mms": 128,
-   "second": 114,
-   "tie": 16,
+   "n": 255,
+   "mms": 132,
+   "second": 106,
+   "tie": 17,
    "no_peak": 0
   },
   "lines": {
    "n": 61,
-   "mms": 34,
-   "second": 19,
+   "mms": 35,
+   "second": 18,
    "tie": 8,
    "no_peak": 0
   },
   "by_lang": {
    "en": {
     "words": {
-     "n": 7,
-     "mms": 4,
-     "second": 3,
+     "n": 4,
+     "mms": 3,
+     "second": 1,
      "tie": 0,
      "no_peak": 0
     },
     "lines": {
-     "n": 2,
-     "mms": 2,
+     "n": 1,
+     "mms": 1,
      "second": 0,
      "tie": 0,
      "no_peak": 0
@@ -72,26 +72,26 @@
    },
    "ar": {
     "words": {
-     "n": 104,
-     "mms": 51,
-     "second": 41,
+     "n": 98,
+     "mms": 49,
+     "second": 37,
      "tie": 12,
      "no_peak": 0
     },
     "lines": {
-     "n": 27,
+     "n": 26,
      "mms": 12,
-     "second": 9,
+     "second": 8,
      "tie": 6,
      "no_peak": 0
     }
    },
    "az": {
     "words": {
-     "n": 8,
-     "mms": 2,
-     "second": 6,
-     "tie": 0,
+     "n": 9,
+     "mms": 4,
+     "second": 4,
+     "tie": 1,
      "no_peak": 0
     },
     "lines": {
@@ -120,15 +120,15 @@
    },
    "de": {
     "words": {
-     "n": 86,
-     "mms": 41,
+     "n": 91,
+     "mms": 46,
      "second": 45,
      "tie": 0,
      "no_peak": 0
     },
     "lines": {
-     "n": 17,
-     "mms": 14,
+     "n": 19,
+     "mms": 16,
      "second": 3,
      "tie": 0,
      "no_peak": 0
@@ -138,15 +138,15 @@
   "by_song": {
    "i-have-come-alive": {
     "words": {
-     "n": 81,
-     "mms": 46,
-     "second": 30,
+     "n": 78,
+     "mms": 45,
+     "second": 28,
      "tie": 5,
      "no_peak": 0
     },
     "lines": {
-     "n": 24,
-     "mms": 11,
+     "n": 23,
+     "mms": 10,
      "second": 11,
      "tie": 2,
      "no_peak": 0
@@ -154,10 +154,10 @@
    },
    "karitas": {
     "words": {
-     "n": 16,
-     "mms": 8,
-     "second": 7,
-     "tie": 1,
+     "n": 17,
+     "mms": 10,
+     "second": 5,
+     "tie": 2,
      "no_peak": 0
     },
     "lines": {
@@ -170,16 +170,16 @@
    },
    "one": {
     "words": {
-     "n": 161,
-     "mms": 74,
-     "second": 77,
+     "n": 160,
+     "mms": 77,
+     "second": 73,
      "tie": 10,
      "no_peak": 0
     },
     "lines": {
-     "n": 33,
-     "mms": 19,
-     "second": 8,
+     "n": 34,
+     "mms": 21,
+     "second": 7,
      "tie": 6,
      "no_peak": 0
     }
@@ -188,41 +188,55 @@
  },
  "third": {
   "en": {
-   "words": 55,
-   "third": 55,
-   "within_0_10": 24
+   "words": 52,
+   "third": 52,
+   "within_0_10": 11
   },
   "fa": {
    "words": 184,
    "third": 184,
-   "within_0_10": 116
+   "within_0_10": 58
   },
   "tr": {
    "words": 55,
    "third": 55,
-   "within_0_10": 19
+   "within_0_10": 3
   },
   "ar": {
-   "words": 298,
-   "third": 298,
-   "within_0_10": 108
+   "words": 292,
+   "third": 292,
+   "within_0_10": 40
   },
   "az": {
    "words": 165,
    "third": 156,
-   "within_0_10": 77
+   "within_0_10": 25
   },
   "la": {
    "words": 59,
    "third": 57,
-   "within_0_10": 15
+   "within_0_10": 4
   },
   "de": {
-   "words": 131,
-   "third": 131,
-   "within_0_10": 32
+   "words": 134,
+   "third": 134,
+   "within_0_10": 10
   }
  },
+ "stable_models": [
+  {
+   "song": "i-have-come-alive",
+   "model": "large-v3"
+  },
+  {
+   "song": "karitas",
+   "model": "large-v3"
+  },
+  {
+   "song": "one",
+   "model": "large-v3"
+  }
+ ],
  "groups": [
   {
    "consonant_lines": 14,
@@ -231,48 +245,48 @@
    "train_words": 43,
    "hold_words": 41,
    "median_train": -0.003,
-   "median_hold": 0.002,
+   "median_hold": 0.003,
    "line_median_train": -0.007,
-   "line_median_hold": -0.0055,
+   "line_median_hold": 0.0065,
    "iqr_train": 0.043,
    "offset": 0.0,
    "applied": false,
    "reason": "shift-under-0.02",
-   "hold_agree_before": 0.8679,
+   "hold_agree_before": 0.9057,
    "hold_agree_before_n": [
-    46,
+    48,
     53
    ],
-   "hold_agree_if_train_offset": 0.8679,
+   "hold_agree_if_train_offset": 0.9057,
    "hold_agree_if_train_offset_n": [
-    46,
+    48,
     53
    ],
    "key": "borrow-tr|az"
   },
   {
-   "consonant_lines": 52,
-   "train_lines": 26,
+   "consonant_lines": 51,
+   "train_lines": 25,
    "hold_lines": 26,
-   "train_words": 65,
-   "hold_words": 79,
+   "train_words": 61,
+   "hold_words": 82,
    "median_train": 0.02,
    "median_hold": 0.04,
    "line_median_train": 0.015,
-   "line_median_hold": 0.07,
+   "line_median_hold": 0.06,
    "iqr_train": 0.03,
    "offset": 0.0,
    "applied": false,
    "reason": "shift-under-0.02",
-   "hold_agree_before": 0.5691,
+   "hold_agree_before": 0.6116,
    "hold_agree_before_n": [
-    70,
-    123
+    74,
+    121
    ],
-   "hold_agree_if_train_offset": 0.5854,
+   "hold_agree_if_train_offset": 0.6281,
    "hold_agree_if_train_offset_n": [
-    72,
-    123
+    76,
+    121
    ],
    "key": "whisperx|ar"
   },
@@ -283,21 +297,21 @@
    "train_words": 0,
    "hold_words": 7,
    "median_train": null,
-   "median_hold": 0.178,
+   "median_hold": 0.358,
    "line_median_train": null,
-   "line_median_hold": 0.178,
+   "line_median_hold": 0.358,
    "iqr_train": null,
    "offset": null,
    "applied": false,
    "reason": "too-few-words",
-   "hold_agree_before": 0.1111,
+   "hold_agree_before": 0.0,
    "hold_agree_before_n": [
-    1,
+    0,
     9
    ],
-   "hold_agree_if_train_offset": 0.1111,
+   "hold_agree_if_train_offset": 0.0,
    "hold_agree_if_train_offset_n": [
-    1,
+    0,
     9
    ],
    "key": "whisperx|az"

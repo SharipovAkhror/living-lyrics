@@ -109,13 +109,16 @@
             {
               "w": "alive",
               "s": 103.45,
-              "e": 104.72
+              "e": 104.42
             }
           ],
           "tr": {
             "ru": "я ожил"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-3",
@@ -124,18 +127,18 @@
           "words": [
             {
               "w": "I",
-              "s": 104.72,
-              "e": 104.76
+              "s": 104.42,
+              "e": 104.46
             },
             {
               "w": "once",
-              "s": 104.76,
-              "e": 105.03
+              "s": 104.46,
+              "e": 104.73
             },
             {
               "w": "wept",
-              "s": 105.04,
-              "e": 106.33
+              "s": 104.74,
+              "e": 106.03
             }
           ],
           "tr": {
@@ -143,8 +146,7 @@
           },
           "flags": [
             "timing-draft"
-          ],
-          "placedBy": "stable-ts"
+          ]
         },
         {
           "id": "english-4",
@@ -222,7 +224,10 @@
           "tr": {
             "ru": "ты зажёг огонь"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-6",
@@ -254,7 +259,10 @@
           "tr": {
             "ru": "я **ожил**"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-7",
@@ -286,7 +294,10 @@
           "tr": {
             "ru": "подними меня ещё **выше**"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-8",
@@ -359,7 +370,10 @@
             "ru": "я был в своём уме"
           },
           "comment": "Переложение бейта 3: «сказал — ты не безумен и этого дома не достоин». Безумие здесь условие войти, а не болезнь.",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-10",
@@ -390,7 +404,10 @@
           "tr": {
             "ru": "ты свёл меня с ума"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-11",
@@ -417,7 +434,10 @@
           "tr": {
             "ru": "ты наложил цепи"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-11b",
@@ -443,7 +463,10 @@
           "tr": {
             "ru": "мне на руки"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         }
       ]
     },
@@ -492,7 +515,10 @@
           "tr": {
             "ru": "ты зажёг огонь"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-13",
@@ -502,21 +528,21 @@
             {
               "w": "I",
               "s": 126.54,
-              "e": 126.67
+              "e": 126.62
             },
             {
               "w": "have",
-              "s": 126.67,
+              "s": 126.62,
               "e": 126.89
             },
             {
               "w": "come",
               "s": 126.89,
-              "e": 127.78
+              "e": 127.33
             },
             {
               "w": "alive",
-              "s": 127.78,
+              "s": 127.33,
               "e": 128.37
             }
           ],
@@ -526,7 +552,7 @@
           "flags": [
             "timing-draft"
           ],
-          "placedBy": "second"
+          "placedBy": "mms-ft"
         }
       ]
     },
@@ -570,7 +596,10 @@
           "tr": {
             "ru": "подними меня ещё выше"
           },
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-15",
@@ -601,7 +630,10 @@
           "tr": {
             "ru": "я ожил"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         }
       ]
     },
@@ -649,7 +681,10 @@
           },
           "translit": "Морде бодам, зенде шодам",
           "comment": "Газель Джалал ад-Дина Руми, XIII в., «Диван Шамса», № 1393. Размер по Ganjoor — раджаз. Редиф **шодам** (شدم): бейт кончается тем, чем говорящий стал.",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-1-2a",
@@ -1711,7 +1746,10 @@
             "ru": "в странствии искусств"
           },
           "translit": "Фи рихляти ль-фунун",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-10",
@@ -2123,7 +2161,10 @@
             "ru": "я не всё это"
           },
           "translit": "Ва ласту кулла зака",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-26",
@@ -2217,7 +2258,10 @@
             "ru": "в моём смехе родник и влага"
           },
           "translit": "Фи дахкати наб‘ун ва рийй",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-31",
@@ -2518,7 +2562,10 @@
           },
           "translit": "Фа-кам ахйа ва кам амуту",
           "voice": "Набила Маан",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         }
       ]
     },
@@ -2618,7 +2665,10 @@
           },
           "translit": "Шокр конад кагаз-е то",
           "comment": "Игра слов: **шокр** (شکر) — «благодарность» и **шекар** (شکر) — «сахар» пишутся одинаково. Бумага, которой коснулся сахар, сама становится сладкой — так и говорящий, коснувшись любимого, становится ему подобным.",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-15-1b",
@@ -3045,7 +3095,10 @@
           },
           "translit": "Шокр конад ареф-е хакк",
           "comment": "**Ариф** (عارف) — познавший истину.",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-18-1b",
@@ -3245,7 +3298,10 @@
             "ru": "Венерой был — луной стал"
           },
           "translit": "Зохре бодам, мах шодам",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-19-4",
@@ -3525,7 +3581,10 @@
           },
           "translit": "Баш чу шатрандж-е раван",
           "comment": "Макта, последний бейт. Фигура молчит, но каждым ходом говорит.",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-21-1b",
@@ -3678,7 +3737,10 @@
             "ru": "прежде я был мёртв"
           },
           "translit": "Кад кунту кабла майтан",
-          "placedBy": "mms-ft"
+          "placedBy": "mms-ft",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "coda-ar-2",
@@ -3711,7 +3773,10 @@
             "ru": "в моём смехе родник и влага"
           },
           "translit": "Фи дахкати наб‘ун ва рийй",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "coda-ar-3",
@@ -3738,9 +3803,6 @@
             "ru": "вижу царство любви"
           },
           "translit": "Мамляката ль-‘ишк ара",
-          "flags": [
-            "timing-draft"
-          ],
           "placedBy": "mms"
         },
         {
