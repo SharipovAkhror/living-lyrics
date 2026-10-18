@@ -116,5 +116,117 @@
     "Автор бейта о терпении: релиз называет ан-Набулси, в его десяти бейтах строки нет. Строки помечены attribution-unverified.",
     "Арабское письмо газели Физули для поля alt не найдено, поле не заполнено.",
     "Страницы тома Догана 2000 и PDF антологии 1999 не открыты."
+  ],
+  "parts": [
+    {
+      "id": "fuzuli",
+      "title": "Газель Физули",
+      "lang": "az",
+      "author": {
+        "name": "Мухаммед Физули",
+        "years": "ум. 1556"
+      },
+      "work": {
+        "original": "Leylâ vü Mecnûn",
+        "ru": "Лейли и Меджнун",
+        "lang": "ota"
+      },
+      "ref": "бейты 2658–2662 месневи; поются 1, 2, 4 и 5, бейт 3 не поётся. Номера по статье Каяокая, том Догана не открыт. В диване этой газели нет",
+      "url": "https://tr.wikisource.org/wiki/%C3%96yle_ser-mestem_ki_idr%C3%A2k_etmezem_d%C3%BCny%C3%A2_nedir",
+      "note": "Поются бейты 1, 2, 4 и 5 газели внутри месневи, бейт 3 не звучит.",
+      "sections": [
+        "fuzuli-1",
+        "fuzuli-2",
+        "fuzuli-4a",
+        "fuzuli-4b",
+        "fuzuli-4c",
+        "fuzuli-return",
+        "fuzuli-finale"
+      ]
+    },
+    {
+      "id": "hildegard",
+      "title": "Антифон Хильдегарды",
+      "lang": "la",
+      "author": {
+        "name": "Хильдегарда Бингенская",
+        "years": "1098–1179"
+      },
+      "work": {
+        "original": "Karitas habundat",
+        "ru": "антифон из цикла Symphonia",
+        "lang": "la"
+      },
+      "ref": "Dendermonde 157r, Riesenkodex 466v; Cantus a00528",
+      "url": "https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html",
+      "note": "Один и тот же антифон звучит четыре раза.",
+      "sections": [
+        "hildegard-1",
+        "hildegard-2",
+        "hildegard-3",
+        "hildegard-4"
+      ]
+    },
+    {
+      "id": "calls",
+      "title": "Возглас",
+      "lang": "ar",
+      "url": "https://www.youtube.com/watch?v=xWwMzfGVikA",
+      "note": "Это возгласы, не стихотворение, и кто их сложил, не назван.",
+      "sections": [
+        "call-1",
+        "call-2"
+      ]
+    },
+    {
+      "id": "shushtari",
+      "title": "Мавваль аш-Шуштари",
+      "lang": "ar",
+      "author": {
+        "name": "Абу-ль-Хасан аш-Шуштари",
+        "years": "ум. 668 г. х."
+      },
+      "work": {
+        "original": "يا ساقي القوم من شذاه",
+        "ru": "Йа сакийа ль-каум",
+        "lang": "ar"
+      },
+      "ref": "бейт 1, диван с. 80; в печати бейт под заголовком «يا من هو هو»",
+      "url": "https://ablibrary.net/book_content/b/9579/80",
+      "note": "Поётся первый бейт, начальное полустишие — дважды.",
+      "sections": [
+        "shushtari"
+      ]
+    },
+    {
+      "id": "nabulsi",
+      "title": "Мавваль ан-Набулси",
+      "lang": "ar",
+      "author": {
+        "name": "Абд аль-Гани ан-Набулси",
+        "years": "1641–1731"
+      },
+      "work": {
+        "original": "عيني لغير جمالكم لا تنظر",
+        "ru": "Айни ли-гайри джамаликум",
+        "lang": "ar"
+      },
+      "ref": "бейт 1 из десяти",
+      "url": "https://ar.wikisource.org/wiki/%D8%B9%D9%8A%D9%86%D9%8A_%D9%84%D8%BA%D9%8A%D8%B1_%D8%AC%D9%85%D8%A7%D9%84%D9%83%D9%85_%D9%84%D8%A7_%D8%AA%D9%86%D8%B8%D8%B1",
+      "note": "Поётся первый бейт из десяти, в записи «وسواكم», а в издании «وسواكمو», и тот же зачин есть у ат-Тилимсани (ум. 690/1291).",
+      "sections": [
+        "nabulsi"
+      ]
+    },
+    {
+      "id": "sabr",
+      "title": "Бейт о терпении",
+      "lang": "ar",
+      "url": "https://sites.harvard.edu/sulaymanibnqiddees/2023/09/01/my-eyes-only-see-your-beauty/",
+      "note": "Автор не установлен: релиз называет ан-Набулси, в его десяти бейтах строки нет, а ближайший печатный бейт у ат-Тилимсани с другим первым полустишием.",
+      "sections": [
+        "sabr"
+      ]
+    }
   ]
 }

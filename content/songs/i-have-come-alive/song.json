@@ -165,5 +165,100 @@
       "role": "Табла",
       "name": "Sudheesh Kakkur"
     }
+  ],
+  "parts": [
+    {
+      "id": "english",
+      "title": "Английское переложение",
+      "lang": "en",
+      "work": {
+        "original": "دیوان شمس",
+        "ru": "Диван Шамса",
+        "lang": "fa"
+      },
+      "ref": "газель 1393, поэма Ganjoor 4017; рефрен строкой газели не является",
+      "url": "https://ganjoor.net/moulavi/shams/ghazalsh/sh1393",
+      "note": "Официальная подпись называет слова Руми, куплет и рефрен идут по смыслу бейтов 1 и 3, а кто написал английские строки, не назван.",
+      "sections": [
+        "english-verse-1",
+        "english-refrain-1",
+        "english-verse-2",
+        "english-refrain-2",
+        "english-refrain-3"
+      ]
+    },
+    {
+      "id": "rumi",
+      "title": "Газель Руми",
+      "lang": "fa",
+      "author": {
+        "name": "Джалал ад-Дин Руми",
+        "years": "XIII в."
+      },
+      "work": {
+        "original": "دیوان شمس",
+        "ru": "Диван Шамса",
+        "lang": "fa"
+      },
+      "ref": "газель 1393, 21 бейт, поэма Ganjoor 4017; по-персидски бейт 1 и бейты 15–21",
+      "url": "https://ganjoor.net/moulavi/shams/ghazalsh/sh1393",
+      "note": "По-персидски звучат бейт 1 и бейты 15–21, а бейты 2–14 по-персидски не поются.",
+      "sections": [
+        "rumi-beyt-1",
+        "rumi-dowlat",
+        "rumi-beyts-15",
+        "coda-persian"
+      ]
+    },
+    {
+      "id": "turkish",
+      "title": "Турецкое переложение",
+      "lang": "tr",
+      "work": {
+        "original": "دیوان شمس",
+        "ru": "Диван Шамса",
+        "lang": "fa"
+      },
+      "ref": "бейты 1–3; отдельной османской поэмы нет",
+      "url": "https://ganjoor.net/moulavi/shams/ghazalsh/sh1393",
+      "note": "Официальная подпись называет слова Руми, по-турецки поются бейты 1–3, а отдельной поэмы и автора переложения нет.",
+      "sections": [
+        "turkish-verse",
+        "turkish-chorus-1",
+        "turkish-chorus-2"
+      ]
+    },
+    {
+      "id": "arabic",
+      "title": "Арабское переложение",
+      "lang": "ar",
+      "work": {
+        "original": "دیوان شمس",
+        "ru": "Диван Шамса",
+        "lang": "fa"
+      },
+      "ref": "современное переложение тех же бейтов; классической арабской поэмы с этим текстом нет",
+      "url": "https://ganjoor.net/moulavi/shams/ghazalsh/sh1393",
+      "note": "Официальная подпись называет слова Руми, это современное арабское переложение тех же бейтов, и его автор не назван.",
+      "sections": [
+        "arabic-verse",
+        "arabic-main",
+        "coda-arabic"
+      ]
+    },
+    {
+      "id": "mawwal",
+      "title": "Мавваль",
+      "lang": "ar",
+      "work": {
+        "ru": "ар-Рисала ал-кушайриййа"
+      },
+      "ref": "глава باب المحبة, после «وأنشدوا», с. 453, изд. Абд ал-Халим Махмуд и Махмуд ибн аш-Шариф",
+      "url": "https://ablibrary.net/book_content/b/9533/453",
+      "note": "Поются два полустишия без «عليك»: аль-Кушайри (ум. 1072) приводит их и не сочиняет, а подпись видео относит раздел к нему.",
+      "sections": [
+        "mawwal"
+      ]
+    }
   ]
 }

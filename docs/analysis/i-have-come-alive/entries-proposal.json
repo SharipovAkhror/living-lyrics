@@ -2,9 +2,109 @@
   "slug": "i-have-come-alive",
   "entries": [
     {
+      "key": "tanbur",
+      "at": 8.5,
+      "until": 17.5
+    },
+    {
+      "key": "baglama",
+      "at": 11.5,
+      "until": 14.5
+    },
+    {
+      "key": "oud",
+      "at": 18.5,
+      "until": 21.5
+    },
+    {
+      "key": "qanun",
+      "at": 18.5,
+      "until": 21.5
+    },
+    {
+      "key": "tanbur",
+      "at": 20.5,
+      "until": 33.5
+    },
+    {
+      "key": "oud",
+      "at": 23.5,
+      "until": 26.5
+    },
+    {
+      "key": "qanun",
+      "at": 23.5,
+      "until": 26.5
+    },
+    {
+      "key": "daf",
+      "at": 29.5,
+      "until": 37.5
+    },
+    {
+      "key": "daf",
+      "at": 52.5,
+      "until": 55.5
+    },
+    {
+      "key": "kamancheh",
+      "at": 54.5,
+      "until": 65.5
+    },
+    {
+      "key": "baglama",
+      "at": 59.5,
+      "until": 62.5
+    },
+    {
+      "key": "kamancheh",
+      "at": 70.5,
+      "until": 77.5
+    },
+    {
+      "key": "baglama",
+      "at": 82.5,
+      "until": 85.5
+    },
+    {
+      "key": "daf",
+      "at": 82.5,
+      "until": 85.5
+    },
+    {
+      "key": "tanbur",
+      "at": 85.5,
+      "until": 89.5
+    },
+    {
+      "key": "daf",
+      "at": 87.5,
+      "until": 90.5
+    },
+    {
       "key": "voice",
       "at": 99.0,
-      "until": 167.0
+      "until": 169.5
+    },
+    {
+      "key": "erhu",
+      "at": 152.5,
+      "until": 155.5
+    },
+    {
+      "key": "tanbur",
+      "at": 162.5,
+      "until": 165.5
+    },
+    {
+      "key": "baglama",
+      "at": 164.5,
+      "until": 167.5
+    },
+    {
+      "key": "daf",
+      "at": 164.5,
+      "until": 171.5
     },
     {
       "key": "voice",
@@ -13,19 +113,163 @@
     },
     {
       "key": "voice",
-      "at": 182.0,
+      "at": 181.5,
       "until": 251.0
     },
     {
-      "key": "voice",
-      "at": 285.0,
-      "until": 388.0
+      "key": "kamancheh",
+      "at": 245.5,
+      "until": 249.5
+    },
+    {
+      "key": "baglama",
+      "at": 249.5,
+      "until": 253.5
+    },
+    {
+      "key": "daf",
+      "at": 249.5,
+      "until": 253.5
+    },
+    {
+      "key": "kamancheh",
+      "at": 253.5,
+      "until": 257.5
+    },
+    {
+      "key": "kamancheh",
+      "at": 263.5,
+      "until": 266.5
+    },
+    {
+      "key": "tanbur",
+      "at": 272.5,
+      "until": 275.5
+    },
+    {
+      "key": "daf",
+      "at": 274.5,
+      "until": 277.5
+    },
+    {
+      "key": "qanun",
+      "at": 274.5,
+      "until": 277.5
+    },
+    {
+      "key": "baglama",
+      "at": 280.5,
+      "until": 283.5
+    },
+    {
+      "key": "daf",
+      "at": 280.5,
+      "until": 285.5
     },
     {
       "key": "voice",
-      "at": 403.0,
+      "at": 284.5,
+      "until": 389.5
+    },
+    {
+      "key": "baglama",
+      "at": 347.5,
+      "until": 350.5
+    },
+    {
+      "key": "daf",
+      "at": 347.5,
+      "until": 350.5
+    },
+    {
+      "key": "baglama",
+      "at": 388.5,
+      "until": 395.5
+    },
+    {
+      "key": "daf",
+      "at": 388.5,
+      "until": 391.5
+    },
+    {
+      "key": "tanbur",
+      "at": 390.5,
+      "until": 393.5
+    },
+    {
+      "key": "daf",
+      "at": 396.5,
+      "until": 399.5
+    },
+    {
+      "key": "baglama",
+      "at": 398.5,
+      "until": 401.5
+    },
+    {
+      "key": "voice",
+      "at": 402.5,
       "until": 566.0
+    },
+    {
+      "key": "kamancheh",
+      "at": 496.5,
+      "until": 499.5
+    },
+    {
+      "key": "tanbur",
+      "at": 496.5,
+      "until": 499.5
+    },
+    {
+      "key": "daf",
+      "at": 525.5,
+      "until": 529.5
+    },
+    {
+      "key": "erhu",
+      "at": 533.5,
+      "until": 537.5
+    },
+    {
+      "key": "baglama",
+      "at": 537.5,
+      "until": 541.5
+    },
+    {
+      "key": "erhu",
+      "at": 541.5,
+      "until": 545.5
+    },
+    {
+      "key": "kamancheh",
+      "at": 550.5,
+      "until": 553.5
+    },
+    {
+      "key": "tanbur",
+      "at": 550.5,
+      "until": 553.5
+    },
+    {
+      "key": "erhu",
+      "at": 554.5,
+      "until": 557.5
+    },
+    {
+      "key": "baglama",
+      "at": 560.5,
+      "until": 563.5
+    },
+    {
+      "key": "daf",
+      "at": 560.5,
+      "until": 563.5
     }
   ],
-  "skippedNoCatalogKey": []
+  "skippedNoCatalogKey": [
+    "orchestral-percussion",
+    "sitar",
+    "tabla"
+  ]
 }

@@ -1,9 +1,11 @@
+import type { FontPersian } from '@/app/settings';
 import { Group, Row, Sheet } from '@/components/controls';
 import { LANG_NAMES, formatTime } from '@/data/library';
 import { linkHandler } from '@/app/router';
 import type { Lyrics, Song } from '@/data/schema';
 import { instrument } from '@/instruments/catalog';
 import { MarksSection } from './MarksSection';
+import { PartsSection } from './PartsSection';
 
 const TIMING: Record<Song['timing']['status'], string> = {
   draft: 'Черновые: время слов оценено, а не измерено по записи — возможны отставания',
@@ -11,18 +13,22 @@ const TIMING: Record<Song['timing']['status'], string> = {
   verified: 'Выровнены и проверены',
 };
 
-/** "About this song": who sings, who plays, whose words, which recording, how exact the timing is. */
+/** "About this song": composition, who sings, who plays, which recording, how exact the timing is. */
 export function InfoSheet({
   open,
   onClose,
   song,
   lyrics,
+  showHarakat,
+  fontPersian,
   onSeek,
 }: {
   open: boolean;
   onClose: () => void;
   song: Song;
   lyrics: Lyrics | null;
+  showHarakat: boolean;
+  fontPersian: FontPersian;
   /** Jump to a marked moment. Playback keeps its current play or pause state. */
   onSeek: (t: number) => void;
 }) {
@@ -58,6 +64,14 @@ export function InfoSheet({
         </div>
       </div>
 
+      <PartsSection
+        song={song}
+        lyrics={lyrics}
+        showHarakat={showHarakat}
+        fontPersian={fontPersian}
+        onSeek={onSeek}
+      />
+
       <MarksSection slug={song.slug} title={song.title} open={open} onSeek={onSeek} />
 
       {(voices.size > 0 || song.credits?.length) && (
@@ -79,7 +93,7 @@ export function InfoSheet({
         </Group>
       )}
 
-      {song.poets?.length ? (
+      {!song.parts?.length && song.poets?.length ? (
         <Group header="Чьи слова">
           {song.poets.map((p) => (
             <Row key={p.name} title={p.name} detail={[p.lang ? LANG_NAMES[p.lang] : null, p.era].filter(Boolean).join(', ')} />

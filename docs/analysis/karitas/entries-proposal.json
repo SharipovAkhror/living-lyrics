@@ -1,0 +1,173 @@
+{
+  "slug": "karitas",
+  "entries": [
+    {
+      "key": "choir",
+      "at": 0.5,
+      "until": 5.5
+    },
+    {
+      "key": "voice",
+      "at": 7.0,
+      "until": 181.0
+    },
+    {
+      "key": "choir",
+      "at": 8.5,
+      "until": 11.5
+    },
+    {
+      "key": "double-bass",
+      "at": 11.0,
+      "until": 16.0
+    },
+    {
+      "key": "choir",
+      "at": 17.5,
+      "until": 25.5
+    },
+    {
+      "key": "choir",
+      "at": 29.5,
+      "until": 37.5
+    },
+    {
+      "key": "choir",
+      "at": 81.5,
+      "until": 84.5
+    },
+    {
+      "key": "choir",
+      "at": 91.5,
+      "until": 94.5
+    },
+    {
+      "key": "choir",
+      "at": 96.5,
+      "until": 99.5
+    },
+    {
+      "key": "choir",
+      "at": 118.5,
+      "until": 122.5
+    },
+    {
+      "key": "choir",
+      "at": 125.5,
+      "until": 139.5
+    },
+    {
+      "key": "choir",
+      "at": 141.5,
+      "until": 148.5
+    },
+    {
+      "key": "choir",
+      "at": 158.5,
+      "until": 166.5
+    },
+    {
+      "key": "choir",
+      "at": 174.5,
+      "until": 189.5
+    },
+    {
+      "key": "voice",
+      "at": 193.0,
+      "until": 270.0
+    },
+    {
+      "key": "choir",
+      "at": 214.5,
+      "until": 217.5
+    },
+    {
+      "key": "choir",
+      "at": 223.5,
+      "until": 229.5
+    },
+    {
+      "key": "choir",
+      "at": 237.5,
+      "until": 257.5
+    },
+    {
+      "key": "choir",
+      "at": 263.5,
+      "until": 266.5
+    },
+    {
+      "key": "voice",
+      "at": 279.5,
+      "until": 301.0
+    },
+    {
+      "key": "voice",
+      "at": 334.0,
+      "until": 338.0
+    },
+    {
+      "key": "double-bass",
+      "at": 339.0,
+      "until": 342.5
+    },
+    {
+      "key": "voice",
+      "at": 426.0,
+      "until": 563.0
+    },
+    {
+      "key": "voice",
+      "at": 567.0,
+      "until": 592.5
+    },
+    {
+      "key": "voice",
+      "at": 690.0,
+      "until": 702.0
+    },
+    {
+      "key": "choir",
+      "at": 770.5,
+      "until": 804.5
+    },
+    {
+      "key": "choir",
+      "at": 808.5,
+      "until": 811.5
+    },
+    {
+      "key": "voice",
+      "at": 878.0,
+      "until": 948.0
+    },
+    {
+      "key": "choir",
+      "at": 888.5,
+      "until": 891.5
+    },
+    {
+      "key": "choir",
+      "at": 893.5,
+      "until": 896.5
+    },
+    {
+      "key": "choir",
+      "at": 899.5,
+      "until": 902.5
+    },
+    {
+      "key": "choir",
+      "at": 913.5,
+      "until": 923.5
+    },
+    {
+      "key": "choir",
+      "at": 958.5,
+      "until": 977.5
+    }
+  ],
+  "skippedNoCatalogKey": [
+    "orchestra"
+  ]
+}

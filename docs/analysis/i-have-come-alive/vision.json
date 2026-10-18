@@ -1,0 +1,3551 @@
+{
+ "frames": [
+  {
+   "note": "wide arena dome and circular stage",
+   "players": [],
+   "time_s": 0,
+   "visible": true
+  },
+  {
+   "note": "wide arena dome and circular stage",
+   "players": [],
+   "time_s": 4,
+   "visible": true
+  },
+  {
+   "note": "titles: composed by Sami Yusuf, mode Rast",
+   "players": [],
+   "time_s": 5,
+   "visible": false
+  },
+  {
+   "note": "titles: composed by Sami Yusuf, mode Rast",
+   "players": [],
+   "time_s": 8,
+   "visible": false
+  },
+  {
+   "note": "medium tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 10,
+   "visible": true
+  },
+  {
+   "note": "medium tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 12,
+   "visible": true
+  },
+  {
+   "note": "medium baglama and bendir players",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 13,
+   "visible": true
+  },
+  {
+   "note": "medium tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 15,
+   "visible": true
+  },
+  {
+   "note": "medium tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 16,
+   "visible": true
+  },
+  {
+   "note": "medium traditional ensemble with oud and qanun",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 20,
+   "visible": true
+  },
+  {
+   "note": "medium tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 22,
+   "visible": true
+  },
+  {
+   "note": "medium tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 24,
+   "visible": true
+  },
+  {
+   "note": "medium traditional ensemble playing together",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 25,
+   "visible": true
+  },
+  {
+   "note": "medium tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 27,
+   "visible": true
+  },
+  {
+   "note": "medium tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 28,
+   "visible": true
+  },
+  {
+   "note": "close daf player striking frame drum",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 31,
+   "visible": true
+  },
+  {
+   "note": "medium tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 32,
+   "visible": true
+  },
+  {
+   "note": "close daf player striking frame drum",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 35,
+   "visible": true
+  },
+  {
+   "note": "close daf player striking frame drum",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 36,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 37,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 40,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 44,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 48,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 52,
+   "visible": true
+  },
+  {
+   "note": "medium percussionists playing bendir and daf",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 54,
+   "visible": true
+  },
+  {
+   "note": "medium kamancheh duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 56,
+   "visible": true
+  },
+  {
+   "note": "medium kamancheh duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 60,
+   "visible": true
+  },
+  {
+   "note": "medium baglama and percussion players",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 61,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 63,
+   "visible": true
+  },
+  {
+   "note": "medium kamancheh duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 64,
+   "visible": true
+  },
+  {
+   "note": "wide arena dome with whirling dervish projections",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 68,
+   "visible": true
+  },
+  {
+   "note": "medium kamancheh duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 72,
+   "visible": true
+  },
+  {
+   "note": "close kamancheh being played with bow",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 76,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 80,
+   "visible": true
+  },
+  {
+   "note": "medium traditional instruments and percussion section",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 84,
+   "visible": true
+  },
+  {
+   "note": "close tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 87,
+   "visible": true
+  },
+  {
+   "note": "close tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 88,
+   "visible": true
+  },
+  {
+   "note": "medium percussionists playing bendir and daf",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 89,
+   "visible": true
+  },
+  {
+   "note": "wide stage with Sami Yusuf seated at center",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 91,
+   "visible": true
+  },
+  {
+   "note": "wide stage with Sami Yusuf seated at center",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 92,
+   "visible": true
+  },
+  {
+   "note": "wide illuminated dome and stage",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 93,
+   "visible": true
+  },
+  {
+   "note": "wide illuminated dome and stage",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 96,
+   "visible": true
+  },
+  {
+   "note": "other overhead bird's-eye view of illuminated dome",
+   "players": [],
+   "time_s": 97,
+   "visible": false
+  },
+  {
+   "note": "other overhead bird's-eye view of illuminated dome",
+   "players": [],
+   "time_s": 100,
+   "visible": false
+  },
+  {
+   "note": "close lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 101,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 104,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 106,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 108,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing with expressive gestures",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 109,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing with expressive gestures",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 112,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 113,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 116,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 120,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 124,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 128,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing passionately",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 130,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing passionately",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 132,
+   "visible": true
+  },
+  {
+   "note": "wide dome with choir singing Persian chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 133,
+   "visible": true
+  },
+  {
+   "note": "wide stage with choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 136,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Persian verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 140,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing with expressive gestures",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 144,
+   "visible": true
+  },
+  {
+   "note": "wide stage with choir singing Persian chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 148,
+   "visible": true
+  },
+  {
+   "note": "medium male choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 152,
+   "visible": true
+  },
+  {
+   "note": "medium female choir singing with erhu accompaniment",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 154,
+   "visible": true
+  },
+  {
+   "note": "wide stage with choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 156,
+   "visible": true
+  },
+  {
+   "note": "medium male choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 160,
+   "visible": true
+  },
+  {
+   "note": "medium female choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 162,
+   "visible": true
+  },
+  {
+   "note": "close tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 164,
+   "visible": true
+  },
+  {
+   "note": "medium traditional instrumentalists playing accompaniment",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 166,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 168,
+   "visible": true
+  },
+  {
+   "note": "medium percussionists playing bendir and daf",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 170,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 172,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 176,
+   "visible": true
+  },
+  {
+   "note": "other overhead bird's-eye view of illuminated dome",
+   "players": [],
+   "time_s": 180,
+   "visible": false
+  },
+  {
+   "note": "close lead vocalist singing Azerbaijani verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 183,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Azerbaijani verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 184,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Azerbaijani verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 188,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 189,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Azerbaijani verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 191,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Azerbaijani verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 192,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Azerbaijani verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 196,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 198,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing passionately",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 199,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing passionately",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 200,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 203,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 204,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 207,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 208,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 211,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 212,
+   "visible": true
+  },
+  {
+   "note": "wide stage with choir singing Turkish chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 215,
+   "visible": true
+  },
+  {
+   "note": "wide stage with choir singing Turkish chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 216,
+   "visible": true
+  },
+  {
+   "note": "wide stage with choir singing Turkish chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 220,
+   "visible": true
+  },
+  {
+   "note": "medium female choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 223,
+   "visible": true
+  },
+  {
+   "note": "medium female choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 224,
+   "visible": true
+  },
+  {
+   "note": "medium male choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 227,
+   "visible": true
+  },
+  {
+   "note": "medium male choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 228,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist and sitar player on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 231,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist and sitar player on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 232,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing with sitar player",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 235,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing with sitar player",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 236,
+   "visible": true
+  },
+  {
+   "note": "medium female choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 239,
+   "visible": true
+  },
+  {
+   "note": "medium female choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 240,
+   "visible": true
+  },
+  {
+   "note": "medium male choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 241,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing with open arms",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 244,
+   "visible": true
+  },
+  {
+   "note": "medium kamancheh duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 247,
+   "visible": true
+  },
+  {
+   "note": "medium kamancheh duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 248,
+   "visible": true
+  },
+  {
+   "note": "medium traditional instrumentalists playing rhythm",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 251,
+   "visible": true
+  },
+  {
+   "note": "medium traditional instrumentalists playing rhythm",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 252,
+   "visible": true
+  },
+  {
+   "note": "medium kamancheh duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 255,
+   "visible": true
+  },
+  {
+   "note": "medium kamancheh duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 256,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 259,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 260,
+   "visible": true
+  },
+  {
+   "note": "medium kamancheh duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 265,
+   "visible": true
+  },
+  {
+   "note": "wide stage with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 266,
+   "visible": true
+  },
+  {
+   "note": "wide stage with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 268,
+   "visible": true
+  },
+  {
+   "note": "wide illuminated dome with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 270,
+   "visible": true
+  },
+  {
+   "note": "wide illuminated dome with orchestra playing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 272,
+   "visible": true
+  },
+  {
+   "note": "close tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 274,
+   "visible": true
+  },
+  {
+   "note": "medium percussion and qanun players",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 276,
+   "visible": true
+  },
+  {
+   "note": "medium stage with Sami Yusuf seated at center",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 279,
+   "visible": true
+  },
+  {
+   "note": "medium stage with Sami Yusuf seated at center",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 280,
+   "visible": true
+  },
+  {
+   "note": "medium traditional instrumentalists and percussion",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 282,
+   "visible": true
+  },
+  {
+   "note": "medium daf player in foreground before singer",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 284,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 286,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 288,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 290,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 292,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 294,
+   "visible": true
+  },
+  {
+   "note": "close female vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 295,
+   "visible": true
+  },
+  {
+   "note": "close female vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 296,
+   "visible": true
+  },
+  {
+   "note": "close female vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 300,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 303,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 304,
+   "visible": true
+  },
+  {
+   "note": "close split-screen vocal duet of singers",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 306,
+   "visible": true
+  },
+  {
+   "note": "close split-screen vocal duet of singers",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 308,
+   "visible": true
+  },
+  {
+   "note": "close split-screen vocal duet of singers",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 312,
+   "visible": true
+  },
+  {
+   "note": "medium female vocalist singing with ensemble accompaniment",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 313,
+   "visible": true
+  },
+  {
+   "note": "medium female vocalist singing with ensemble accompaniment",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 316,
+   "visible": true
+  },
+  {
+   "note": "medium female vocalist singing with ensemble accompaniment",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 320,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 323,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 324,
+   "visible": true
+  },
+  {
+   "note": "wide stage with lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 327,
+   "visible": true
+  },
+  {
+   "note": "wide stage with lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 328,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 330,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 332,
+   "visible": true
+  },
+  {
+   "note": "wide stage with lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 335,
+   "visible": true
+  },
+  {
+   "note": "wide stage with lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 336,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 339,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 340,
+   "visible": true
+  },
+  {
+   "note": "close female vocalist singing vocal ornamentation",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 343,
+   "visible": true
+  },
+  {
+   "note": "close female vocalist singing vocal ornamentation",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 344,
+   "visible": true
+  },
+  {
+   "note": "wide dome with choir singing Arabic chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 345,
+   "visible": true
+  },
+  {
+   "note": "wide dome with choir singing Arabic chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 348,
+   "visible": true
+  },
+  {
+   "note": "medium traditional instrumentalists playing rhythm",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 349,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Arabic chorus",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 351,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Arabic chorus",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 352,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist and choir singing together",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 353,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist and choir singing together",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 356,
+   "visible": true
+  },
+  {
+   "note": "close female vocalist singing Arabic chorus",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 357,
+   "visible": true
+  },
+  {
+   "note": "close female vocalist singing Arabic chorus",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 360,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Persian verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 361,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 363,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 364,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Persian verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 367,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Persian verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 368,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 371,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing with expansive gestures",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 372,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing with expansive gestures",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 376,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 380,
+   "visible": true
+  },
+  {
+   "note": "medium male choir singing response",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 383,
+   "visible": true
+  },
+  {
+   "note": "medium male choir singing response",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 384,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing with open arms",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 385,
+   "visible": true
+  },
+  {
+   "note": "wide stage with orchestra playing crescendo",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 386,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist directing the ensemble",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 388,
+   "visible": true
+  },
+  {
+   "note": "medium traditional instrumentalists and percussion",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 390,
+   "visible": true
+  },
+  {
+   "note": "close tanbur player performing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 392,
+   "visible": true
+  },
+  {
+   "note": "medium instrumentalists playing accompaniment",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 394,
+   "visible": true
+  },
+  {
+   "note": "medium male choir members seated",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 396,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum dynamically",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 398,
+   "visible": true
+  },
+  {
+   "note": "medium instrumental ensemble playing together",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 400,
+   "visible": true
+  },
+  {
+   "note": "other overhead bird's-eye view of illuminated dome",
+   "players": [],
+   "time_s": 402,
+   "visible": false
+  },
+  {
+   "note": "close female vocalist singing in artistic superimposition",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 404,
+   "visible": true
+  },
+  {
+   "note": "close female vocalist singing in artistic superimposition",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 408,
+   "visible": true
+  },
+  {
+   "note": "close female vocalist singing in artistic superimposition",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 412,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with female vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 416,
+   "visible": true
+  },
+  {
+   "note": "close female vocalist singing Arabic vocalise",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 418,
+   "visible": true
+  },
+  {
+   "note": "close female vocalist singing Arabic vocalise",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 420,
+   "visible": true
+  },
+  {
+   "note": "wide stage with choir singing Turkish chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 424,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist on stage with choir singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 428,
+   "visible": true
+  },
+  {
+   "note": "close male vocalist singing solo ornamentation",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 432,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Persian verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 436,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Persian verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 440,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 443,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Persian verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 444,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Persian verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 448,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 450,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing passionately",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 452,
+   "visible": true
+  },
+  {
+   "note": "wide stage with lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 454,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 456,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 460,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 461,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 464,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing passionately",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 468,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 470,
+   "visible": true
+  },
+  {
+   "note": "other overhead bird's-eye view of illuminated dome",
+   "players": [],
+   "time_s": 472,
+   "visible": false
+  },
+  {
+   "note": "wide stage with choir singing Persian chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 474,
+   "visible": true
+  },
+  {
+   "note": "wide stage with choir singing Persian chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 476,
+   "visible": true
+  },
+  {
+   "note": "wide stage with choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 478,
+   "visible": true
+  },
+  {
+   "note": "wide stage with choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 480,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Persian verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 482,
+   "visible": true
+  },
+  {
+   "note": "wide arena dome with whirling dervish projections",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 484,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Persian verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 486,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Persian verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 488,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 492,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with lead vocalist singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 496,
+   "visible": true
+  },
+  {
+   "note": "medium traditional instrumentalists playing accompaniment",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 498,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Persian verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 500,
+   "visible": true
+  },
+  {
+   "note": "wide stage with orchestra playing crescendo",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 504,
+   "visible": true
+  },
+  {
+   "note": "wide dome with choir singing Arabic chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 508,
+   "visible": true
+  },
+  {
+   "note": "medium stage with choir singing Arabic chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 512,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing Arabic chorus",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 514,
+   "visible": true
+  },
+  {
+   "note": "wide stage with choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 516,
+   "visible": true
+  },
+  {
+   "note": "close female vocalist singing Arabic chorus",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 518,
+   "visible": true
+  },
+  {
+   "note": "close female vocalist singing Arabic chorus",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 520,
+   "visible": true
+  },
+  {
+   "note": "wide stage with choir singing chorus",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 521,
+   "visible": true
+  },
+  {
+   "note": "medium percussionist playing tubular bells and percussion",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "orchestral-percussion",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 524,
+   "visible": true
+  },
+  {
+   "note": "medium percussionists playing frame drums dynamically",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 527,
+   "visible": true
+  },
+  {
+   "note": "medium percussionists playing frame drums dynamically",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 528,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with choir singing finale",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 529,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with choir singing finale",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 532,
+   "visible": true
+  },
+  {
+   "note": "medium female choir with erhu and tabla accompaniment",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 535,
+   "visible": true
+  },
+  {
+   "note": "medium female choir with erhu and tabla accompaniment",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 536,
+   "visible": true
+  },
+  {
+   "note": "medium male choir with traditional instruments accompaniment",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 539,
+   "visible": true
+  },
+  {
+   "note": "medium male choir with traditional instruments accompaniment",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 540,
+   "visible": true
+  },
+  {
+   "note": "medium female choir singing with erhu accompaniment",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 543,
+   "visible": true
+  },
+  {
+   "note": "medium female choir singing with erhu accompaniment",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 544,
+   "visible": true
+  },
+  {
+   "note": "wide stage and dome with choir singing finale",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 546,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing final Persian refrain",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 548,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 551,
+   "visible": true
+  },
+  {
+   "note": "medium traditional instrumentalists playing accompaniment",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 552,
+   "visible": true
+  },
+  {
+   "note": "medium male choir singing refrain",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 553,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing on stage",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 555,
+   "visible": true
+  },
+  {
+   "note": "medium female choir singing with erhu accompaniment",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 556,
+   "visible": true
+  },
+  {
+   "note": "medium male choir singing refrain",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 558,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist singing final note",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 560,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist singing with male choir",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 561,
+   "visible": true
+  },
+  {
+   "note": "medium traditional instrumentalists playing final rhythm",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 562,
+   "visible": true
+  },
+  {
+   "note": "medium lead vocalist cueing final crescendo",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 564,
+   "visible": true
+  },
+  {
+   "note": "close lead vocalist finishing the performance",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 565,
+   "visible": true
+  },
+  {
+   "note": "other overhead bird's-eye view of illuminated dome",
+   "players": [],
+   "time_s": 566,
+   "visible": false
+  },
+  {
+   "note": "other overhead bird's-eye view of illuminated dome",
+   "players": [],
+   "time_s": 568,
+   "visible": false
+  },
+  {
+   "note": "other overhead bird's-eye view of illuminated dome",
+   "players": [],
+   "time_s": 572,
+   "visible": false
+  },
+  {
+   "note": "other overhead bird's-eye view of illuminated dome",
+   "players": [],
+   "time_s": 576,
+   "visible": false
+  }
+ ]
+}

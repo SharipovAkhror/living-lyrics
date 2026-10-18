@@ -184,6 +184,70 @@ export type Lyrics = z.infer<typeof LyricsSchema>;
 
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/);
 
+/**
+ * One stretch of sung text: whose words, from which book, where it is heard.
+ * Order in `song.parts` is the order of first appearance. Omit `author` or `work`
+ * when the sources do not name them — the card then says «не установлено».
+ */
+export const PartSchema = z
+  .object({
+    id: z.string().regex(/^[a-z0-9-]+$/),
+    /** Short Russian name, ordinary case. Shown on the card and, quietly, under the song title. */
+    title: z.string().min(1),
+    /** Language of this stretch. Same ISO 639 codes as a line. */
+    lang: LANG,
+    /**
+     * Author of the sung words, when a source names one. `years` is the life span
+     * or the era the source actually gives («1098–1179», «ум. 1556», «XIII в.»).
+     * `original` is the name in its own script.
+     */
+    author: z
+      .object({
+        name: z.string().min(1),
+        years: z.string().min(1).optional(),
+        original: z.string().min(1).optional(),
+      })
+      .optional(),
+    /**
+     * The work and the book. `original` is the title in its own script, `ru` the Russian name.
+     * `lang` is the language of that title when it is not the language of the stretch
+     * (a Persian ghazal sung in an English rendering).
+     */
+    work: z
+      .object({
+        original: z.string().min(1).optional(),
+        ru: z.string().min(1).optional(),
+        lang: LANG.optional(),
+      })
+      .optional(),
+    /** Ghazal number, bayts, chapter, page, edition — as the source states them. */
+    ref: z.string().min(1).optional(),
+    /** A http(s) URL already written in sources.md. */
+    url: z
+      .string()
+      .regex(/^https?:\/\/\S+$/)
+      .optional(),
+    /** One sentence: how this stretch is heard in the recording. */
+    note: z.string().min(1),
+    /** Section ids where the stretch is heard. A vocal section covers every line in it. */
+    sections: z.array(z.string().min(1)).optional(),
+    /** Line ids, when only some lines of a section belong here. */
+    lines: z.array(z.string().min(1)).optional(),
+  })
+  .superRefine((part, ctx) => {
+    if ((part.sections?.length ?? 0) + (part.lines?.length ?? 0) === 0) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'нужны sections или lines: где часть звучит',
+        path: ['sections'],
+      });
+    }
+    if (part.work && !part.work.original && !part.work.ru) {
+      ctx.addIssue({ code: 'custom', message: 'у work нужно original или ru', path: ['work'] });
+    }
+  });
+export type Part = z.infer<typeof PartSchema>;
+
 export const SongSchema = z.object({
   $schema: z.string().optional(),
   slug: z.string().regex(/^[a-z0-9-]+$/),
@@ -248,6 +312,8 @@ export const SongSchema = z.object({
   credits: z.array(z.object({ role: z.string(), name: z.string() })).optional(),
   /** Open questions an agent or editor must close before the song is «verified». */
   review: z.array(z.string()).optional(),
+  /** Whose words each stretch is, in order of first hearing. See PartSchema. */
+  parts: z.array(PartSchema).min(1).optional(),
 });
 export type Song = z.infer<typeof SongSchema>;
 
