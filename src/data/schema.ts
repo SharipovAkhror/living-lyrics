@@ -157,8 +157,12 @@ export const VocalSectionSchema = SectionBase.extend({
 
 export const InstrumentalSectionSchema = SectionBase.extend({
   kind: z.literal('instrumental'),
-  /** Keys from src/instruments/catalog.ts. The first one is drawn large. */
-  instruments: z.array(z.string()).min(1),
+  /**
+   * Keys from src/instruments/catalog.ts. The first one is drawn large.
+   * An empty list is an empty stage (applause and bows): the scene must not invent an ensemble.
+   * Voice or choir stays first when the passage is a vocalise with instruments entering later.
+   */
+  instruments: z.array(z.string()),
   performers: z.array(z.string()).optional(),
   /** Maqam / mode / meter, if known. */
   mode: z.string().optional(),

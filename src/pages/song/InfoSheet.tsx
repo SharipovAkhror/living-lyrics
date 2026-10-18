@@ -43,7 +43,8 @@ export function InfoSheet({
         const name = instrument(k)?.name ?? k;
         if (!players.has(name)) players.set(name, new Set());
       }
-      s.performers?.forEach((p) => players.get(instrument(s.instruments[0])?.name ?? s.instruments[0])?.add(p));
+      const lead = s.instruments[0];
+      if (lead) s.performers?.forEach((p) => players.get(instrument(lead)?.name ?? lead)?.add(p));
     }
   }
   const perf = song.performance;

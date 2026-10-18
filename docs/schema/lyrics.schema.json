@@ -293,7 +293,6 @@
                 "const": "instrumental"
               },
               "instruments": {
-                "minItems": 1,
                 "type": "array",
                 "items": {
                   "type": "string"

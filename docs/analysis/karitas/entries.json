@@ -132,12 +132,6 @@
       "frames": 2
     },
     {
-      "id": "santur",
-      "why": "один план",
-      "shots": 1,
-      "frames": 1
-    },
-    {
       "id": "viola",
       "why": "один план",
       "shots": 0,
@@ -156,33 +150,57 @@
     {
       "id": "intro",
       "action": "unchanged",
+      "label": "Вступление",
+      "identity": null,
       "instruments": [
         "ensemble"
       ],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-1",
-      "action": "voice",
+      "action": "write",
+      "label": "Хор",
+      "identity": "choir",
       "instruments": [
-        "voice"
+        "choir"
       ],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 10,
+      "soloFrames": 1
     },
     {
       "id": "voice-2",
-      "action": "voice",
+      "action": "write",
+      "label": "Хор",
+      "identity": "choir",
       "instruments": [
-        "voice"
+        "choir",
+        "erhu"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "choir",
+          "at": 180.26
+        },
+        {
+          "key": "erhu",
+          "at": 190.8
+        }
+      ],
+      "performers": [],
+      "choirFrames": 5,
+      "soloFrames": 1
     },
     {
       "id": "instruments-1",
       "action": "write",
+      "label": "Инструментальный проигрыш",
+      "identity": null,
       "instruments": [
         "daf",
         "violin"
@@ -197,56 +215,150 @@
           "at": 275.7
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-3",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "violin"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 281.0
+        },
+        {
+          "key": "violin",
+          "at": 283.0
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 2
     },
     {
       "id": "voice-4",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "qanun",
+        "ney"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 305.0
+        },
+        {
+          "key": "qanun",
+          "at": 309.0
+        },
+        {
+          "key": "ney",
+          "at": 309.05
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-5",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "ney",
+        "qanun"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 319.0
+        },
+        {
+          "key": "ney",
+          "at": 325.0
+        },
+        {
+          "key": "qanun",
+          "at": 325.0
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-6",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "ney",
+        "qanun",
+        "violin"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 328.0
+        },
+        {
+          "key": "ney",
+          "at": 329.0
+        },
+        {
+          "key": "qanun",
+          "at": 329.0
+        },
+        {
+          "key": "violin",
+          "at": 350.0
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 1
     },
     {
       "id": "voice-7",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "violin"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 355.0
+        },
+        {
+          "key": "violin",
+          "at": 356.0
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "instruments-2",
       "action": "write",
+      "label": "Инструментальный проигрыш",
+      "identity": null,
       "instruments": [
         "ney",
         "violin",
@@ -266,20 +378,28 @@
           "at": 397.55
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-8",
       "action": "voice",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
         "voice"
       ],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "instruments-3",
       "action": "write",
+      "label": "Инструментальный проигрыш",
+      "identity": null,
       "instruments": [
         "violin",
         "oud"
@@ -294,20 +414,53 @@
           "at": 415.0
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-9",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "darbuka",
+        "ensemble",
+        "ney",
+        "riq"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 550.27
+        },
+        {
+          "key": "darbuka",
+          "at": 554.9
+        },
+        {
+          "key": "ensemble",
+          "at": 558.0
+        },
+        {
+          "key": "ney",
+          "at": 563.0
+        },
+        {
+          "key": "riq",
+          "at": 568.6
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 2
     },
     {
       "id": "instruments-4",
       "action": "write",
+      "label": "Инструментальный проигрыш",
+      "identity": null,
       "instruments": [
         "oud",
         "violin",
@@ -327,20 +480,38 @@
           "at": 646.2
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 2
     },
     {
       "id": "voice-10",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "qanun"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 687.0
+        },
+        {
+          "key": "qanun",
+          "at": 702.0
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 1
     },
     {
       "id": "instruments-5",
       "action": "write",
+      "label": "Инструментальный проигрыш",
+      "identity": null,
       "instruments": [
         "qanun"
       ],
@@ -350,20 +521,38 @@
           "at": 706.0
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-11",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "qanun"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 714.0
+        },
+        {
+          "key": "qanun",
+          "at": 715.05
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "instruments-6",
       "action": "write",
+      "label": "Инструментальный проигрыш",
+      "identity": null,
       "instruments": [
         "ney",
         "qanun"
@@ -378,20 +567,48 @@
           "at": 723.0
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-12",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "ney",
+        "qanun",
+        "violin"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 733.0
+        },
+        {
+          "key": "ney",
+          "at": 738.0
+        },
+        {
+          "key": "qanun",
+          "at": 738.0
+        },
+        {
+          "key": "violin",
+          "at": 742.05
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "instruments-7",
       "action": "write",
+      "label": "Инструментальный проигрыш",
+      "identity": null,
       "instruments": [
         "violin",
         "qanun"
@@ -406,20 +623,48 @@
           "at": 753.0
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-13",
-      "action": "voice",
+      "action": "write",
+      "label": "Хор",
+      "identity": "choir",
       "instruments": [
-        "voice"
+        "choir",
+        "darbuka",
+        "riq",
+        "violin"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "choir",
+          "at": 760.0
+        },
+        {
+          "key": "darbuka",
+          "at": 761.7
+        },
+        {
+          "key": "riq",
+          "at": 761.7
+        },
+        {
+          "key": "violin",
+          "at": 805.0
+        }
+      ],
+      "performers": [],
+      "choirFrames": 12,
+      "soloFrames": 0
     },
     {
       "id": "instruments-8",
       "action": "write",
+      "label": "Инструментальный проигрыш",
+      "identity": null,
       "instruments": [
         "violin"
       ],
@@ -429,20 +674,48 @@
           "at": 815.0
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-14",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "erhu",
+        "darbuka",
+        "violin"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 835.0
+        },
+        {
+          "key": "erhu",
+          "at": 837.0
+        },
+        {
+          "key": "darbuka",
+          "at": 853.95
+        },
+        {
+          "key": "violin",
+          "at": 860.0
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "instruments-9",
       "action": "write",
+      "label": "Инструментальный проигрыш",
+      "identity": null,
       "instruments": [
         "erhu"
       ],
@@ -452,43 +725,57 @@
           "at": 866.0
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-15",
       "action": "voice",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
         "voice"
       ],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-16",
-      "action": "voice",
-      "instruments": [
-        "voice"
-      ],
+      "action": "applause",
+      "label": "Аплодисменты",
+      "identity": "applause",
+      "instruments": [],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "instruments-10",
-      "action": "unchanged",
-      "instruments": [
-        "ensemble"
-      ],
+      "action": "applause",
+      "label": "Аплодисменты",
+      "identity": "applause",
+      "instruments": [],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 1,
+      "soloFrames": 0
     },
     {
       "id": "voice-17",
-      "action": "voice",
+      "action": "write",
+      "label": "Хор",
+      "identity": "choir",
       "instruments": [
-        "voice"
+        "choir"
       ],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 4,
+      "soloFrames": 0
     }
   ]
 }
