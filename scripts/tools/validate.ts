@@ -35,8 +35,9 @@ export const CPS_WARN = 20;
 
 /**
  * Words the karaoke translation must not use. One list, shared with
- * docs/methodology/06-translation.md. Matched as whole words, with inflections
- * for the longer ones. «сей» does not match «сейчас».
+ * docs/methodology/06-translation.md and docs/methodology/translation-standard.md.
+ * Matched as whole words, with inflections for the longer ones.
+ * «сей» does not match «сейчас». «является» does not match «являю» or «являть».
  */
 export const BANNED_RU: { name: string; re: RegExp }[] = [
   { name: 'сей', re: /(?<![\p{L}])сей(?![\p{L}])/giu },
@@ -44,6 +45,22 @@ export const BANNED_RU: { name: string; re: RegExp }[] = [
   { name: 'предвечный', re: /(?<![\p{L}])предвечн\p{L}*/giu },
   { name: 'сокровенный', re: /(?<![\p{L}])сокровенн\p{L}*/giu },
   { name: 'священный', re: /(?<![\p{L}])священн\p{L}*/giu },
+  { name: 'поистине', re: /(?<![\p{L}])поистине(?![\p{L}])/giu },
+  { name: 'воистину', re: /(?<![\p{L}])воистину(?![\p{L}])/giu },
+  { name: 'бесконечный', re: /(?<![\p{L}])бесконечн\p{L}*/giu },
+  { name: 'вселенная', re: /(?<![\p{L}])вселенн\p{L}*/giu },
+  { name: 'подлинный', re: /(?<![\p{L}])подлинн\p{L}*/giu },
+  { name: 'небытие', re: /(?<![\p{L}])небыти\p{L}*/giu },
+  { name: 'аннигиляция', re: /(?<![\p{L}])аннигиляц\p{L}*/giu },
+  { name: 'трансцендентный', re: /(?<![\p{L}])трансцендент\p{L}*/giu },
+  { name: 'мироздание', re: /(?<![\p{L}])мироздан\p{L}*/giu },
+  { name: 'сакральный', re: /(?<![\p{L}])сакральн\p{L}*/giu },
+  { name: 'невыразимый', re: /(?<![\p{L}])невыразим\p{L}*/giu },
+  { name: 'неизреченный', re: /(?<![\p{L}])неизреченн\p{L}*/giu },
+  { name: 'благоговейный', re: /(?<![\p{L}])благоговейн\p{L}*/giu },
+  { name: 'представляет собой', re: /представляет собой/giu },
+  { name: 'является', re: /(?<![\p{L}])является(?![\p{L}])/giu },
+  { name: 'являются', re: /(?<![\p{L}])являются(?![\p{L}])/giu },
 ];
 
 type Issue = { level: 'error' | 'warn'; where: string; msg: string };
