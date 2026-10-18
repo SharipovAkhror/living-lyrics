@@ -8,15 +8,15 @@
  "agree_tol": 0.1,
  "closer": {
   "words": {
-   "n": 259,
-   "mms": 130,
-   "second": 113,
+   "n": 258,
+   "mms": 128,
+   "second": 114,
    "tie": 16,
    "no_peak": 0
   },
   "lines": {
-   "n": 62,
-   "mms": 35,
+   "n": 61,
+   "mms": 34,
    "second": 19,
    "tie": 8,
    "no_peak": 0
@@ -25,8 +25,8 @@
    "en": {
     "words": {
      "n": 7,
-     "mms": 5,
-     "second": 2,
+     "mms": 4,
+     "second": 3,
      "tie": 0,
      "no_peak": 0
     },
@@ -72,8 +72,8 @@
    },
    "ar": {
     "words": {
-     "n": 103,
-     "mms": 50,
+     "n": 104,
+     "mms": 51,
      "second": 41,
      "tie": 12,
      "no_peak": 0
@@ -120,15 +120,15 @@
    },
    "de": {
     "words": {
-     "n": 88,
-     "mms": 43,
+     "n": 86,
+     "mms": 41,
      "second": 45,
      "tie": 0,
      "no_peak": 0
     },
     "lines": {
-     "n": 18,
-     "mms": 15,
+     "n": 17,
+     "mms": 14,
      "second": 3,
      "tie": 0,
      "no_peak": 0
@@ -139,8 +139,8 @@
    "i-have-come-alive": {
     "words": {
      "n": 81,
-     "mms": 47,
-     "second": 29,
+     "mms": 46,
+     "second": 30,
      "tie": 5,
      "no_peak": 0
     },
@@ -170,15 +170,15 @@
    },
    "one": {
     "words": {
-     "n": 162,
-     "mms": 75,
+     "n": 161,
+     "mms": 74,
      "second": 77,
      "tie": 10,
      "no_peak": 0
     },
     "lines": {
-     "n": 34,
-     "mms": 20,
+     "n": 33,
+     "mms": 19,
      "second": 8,
      "tie": 6,
      "no_peak": 0
@@ -190,7 +190,7 @@
   "en": {
    "words": 55,
    "third": 55,
-   "within_0_10": 25
+   "within_0_10": 24
   },
   "fa": {
    "words": 184,
@@ -205,7 +205,7 @@
   "ar": {
    "words": 298,
    "third": 298,
-   "within_0_10": 107
+   "within_0_10": 108
   },
   "az": {
    "words": 165,
@@ -213,8 +213,8 @@
    "within_0_10": 77
   },
   "la": {
-   "words": 65,
-   "third": 63,
+   "words": 59,
+   "third": 57,
    "within_0_10": 15
   },
   "de": {
@@ -264,14 +264,14 @@
    "offset": 0.0,
    "applied": false,
    "reason": "shift-under-0.02",
-   "hold_agree_before": 0.5772,
+   "hold_agree_before": 0.5691,
    "hold_agree_before_n": [
-    71,
+    70,
     123
    ],
-   "hold_agree_if_train_offset": 0.5935,
+   "hold_agree_if_train_offset": 0.5854,
    "hold_agree_if_train_offset_n": [
-    73,
+    72,
     123
    ],
    "key": "whisperx|ar"
