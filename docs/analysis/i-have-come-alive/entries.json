@@ -13,6 +13,17 @@
       "audio": false
     },
     {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "reason": "группа в титрах и два плана",
+      "credited": false,
+      "stable": false,
+      "shots80": 13,
+      "shots85": 2,
+      "audio": false
+    },
+    {
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
@@ -112,14 +123,7 @@
       "audio": false
     }
   ],
-  "check": [
-    {
-      "id": "bendir",
-      "why": "планов с уверенностью ≥ 0,85: 2 из 3, в титрах нет",
-      "shots": 2,
-      "frames": 22
-    }
-  ],
+  "check": [],
   "missingEngraving": [
     {
       "id": "orchestral-percussion",
@@ -144,6 +148,8 @@
     {
       "id": "inst-open",
       "action": "write",
+      "label": "Вступление",
+      "identity": null,
       "instruments": [
         "tanbur"
       ],
@@ -153,25 +159,60 @@
           "at": 8.9
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-open",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "tanbur",
+        "bendir",
+        "baglama",
+        "ensemble"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 10.6
+        },
+        {
+          "key": "tanbur",
+          "at": 10.95
+        },
+        {
+          "key": "bendir",
+          "at": 12.65
+        },
+        {
+          "key": "baglama",
+          "at": 12.95
+        },
+        {
+          "key": "ensemble",
+          "at": 20.0
+        }
+      ],
+      "performers": [
+        "Kutay Ozcan (баглама)"
+      ],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "inst-tanbur",
       "action": "write",
+      "label": "Танбур",
+      "identity": null,
       "instruments": [
         "tanbur",
-        "oud",
-        "qanun",
-        "ensemble"
+        "ensemble",
+        "daf",
+        "kamancheh"
       ],
       "entries": [
         {
@@ -179,27 +220,30 @@
           "at": 24.0
         },
         {
-          "key": "oud",
-          "at": 24.8
-        },
-        {
-          "key": "qanun",
-          "at": 24.8
-        },
-        {
           "key": "ensemble",
+          "at": 24.8
+        },
+        {
+          "key": "daf",
           "at": 30.8
+        },
+        {
+          "key": "kamancheh",
+          "at": 54.0
         }
       ],
       "performers": [
         "Сейед Али Джабери (танбур)",
-        "Selim Boyaci (уд)",
-        "Onur Cicin (канун)"
-      ]
+        "Mohammad Jaberi (даф)"
+      ],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "inst-bridge-a",
       "action": "write",
+      "label": "Проигрыш",
+      "identity": null,
       "instruments": [
         "tanbur",
         "baglama",
@@ -222,29 +266,41 @@
       "performers": [
         "Kutay Ozcan (баглама)",
         "Mohammad Jaberi (даф)"
-      ]
+      ],
+      "choirFrames": 0,
+      "soloFrames": 1
     },
     {
       "id": "voice-bridge",
       "action": "voice",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
         "voice"
       ],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "inst-bridge-b",
       "action": "unchanged",
+      "label": "Проигрыш",
+      "identity": null,
       "instruments": [
         "ensemble"
       ],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 1
     },
     {
       "id": "inst-mid",
       "action": "write",
+      "label": "Проигрыш",
+      "identity": null,
       "instruments": [
         "kamancheh",
         "baglama",
@@ -272,11 +328,15 @@
       "performers": [
         "Kutay Ozcan (баглама)",
         "Mohammad Jaberi (даф)"
-      ]
+      ],
+      "choirFrames": 0,
+      "soloFrames": 1
     },
     {
       "id": "inst-before-mawwal",
       "action": "write",
+      "label": "Проигрыш",
+      "identity": null,
       "instruments": [
         "daf",
         "baglama",
@@ -299,16 +359,22 @@
       "performers": [
         "Mohammad Jaberi (даф)",
         "Kutay Ozcan (баглама)"
-      ]
+      ],
+      "choirFrames": 0,
+      "soloFrames": 2
     },
     {
       "id": "inst-end",
       "action": "unchanged",
+      "label": "Окончание",
+      "identity": null,
       "instruments": [
         "ensemble"
       ],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     }
   ]
 }

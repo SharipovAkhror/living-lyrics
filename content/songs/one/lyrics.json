@@ -1462,10 +1462,21 @@
       "end": 332.165,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "violin"
       ],
       "flags": [
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 326.6
+        },
+        {
+          "key": "violin",
+          "at": 327.5
+        }
       ]
     },
     {
@@ -1637,10 +1648,21 @@
       "end": 367.051,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "violin"
       ],
       "flags": [
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 355.0
+        },
+        {
+          "key": "violin",
+          "at": 356.45
+        }
       ]
     },
     {
@@ -1802,8 +1824,8 @@
       "instruments": [
         "violin",
         "santur",
-        "darbuka",
-        "ensemble"
+        "ensemble",
+        "bendir"
       ],
       "note": "Инструментальный проигрыш.",
       "flags": [
@@ -1819,12 +1841,12 @@
           "at": 398.0
         },
         {
-          "key": "darbuka",
+          "key": "ensemble",
           "at": 400.85
         },
         {
-          "key": "ensemble",
-          "at": 402.5
+          "key": "bendir",
+          "at": 403.75
         }
       ]
     },
@@ -1986,8 +2008,8 @@
       "end": 476.2,
       "label": "Проигрыш",
       "instruments": [
-        "violin",
         "ney",
+        "violin",
         "daf"
       ],
       "note": "Короткий проигрыш между фразами.",
@@ -1996,11 +2018,11 @@
       ],
       "entries": [
         {
-          "key": "violin",
+          "key": "ney",
           "at": 464.67
         },
         {
-          "key": "ney",
+          "key": "violin",
           "at": 464.67
         },
         {
@@ -2370,10 +2392,26 @@
       "end": 632,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "daf",
+        "darbuka"
       ],
       "flags": [
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 622.0
+        },
+        {
+          "key": "daf",
+          "at": 622.0
+        },
+        {
+          "key": "darbuka",
+          "at": 626.0
+        }
       ]
     },
     {
@@ -2456,10 +2494,26 @@
       "end": 721,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "ney",
+        "darbuka"
       ],
       "flags": [
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 714.0
+        },
+        {
+          "key": "ney",
+          "at": 715.0
+        },
+        {
+          "key": "darbuka",
+          "at": 719.75
+        }
       ]
     },
     {
@@ -2926,24 +2980,21 @@
       "kind": "instrumental",
       "start": 764.339,
       "end": 786,
-      "label": "Голос",
-      "instruments": [
-        "voice"
-      ],
+      "label": "Аплодисменты",
+      "instruments": [],
       "flags": [
         "text-unverified"
-      ]
+      ],
+      "note": "Аплодисменты и поклоны, пения нет."
     },
     {
       "id": "inst-9",
       "kind": "instrumental",
       "start": 786,
       "end": 793,
-      "label": "Проигрыш",
-      "instruments": [
-        "ensemble"
-      ],
-      "note": "Короткий проигрыш между фразами.",
+      "label": "Аплодисменты",
+      "instruments": [],
+      "note": "Аплодисменты и поклоны, пения нет.",
       "flags": [
         "attribution-unverified"
       ]
@@ -2953,13 +3004,12 @@
       "kind": "instrumental",
       "start": 793,
       "end": 828.05,
-      "label": "Голос",
-      "instruments": [
-        "voice"
-      ],
+      "label": "Аплодисменты",
+      "instruments": [],
       "flags": [
         "text-unverified"
-      ]
+      ],
+      "note": "Аплодисменты и поклоны, пения нет."
     }
   ]
 }

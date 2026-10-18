@@ -29,11 +29,40 @@
       "end": 23.7,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "tanbur",
+        "bendir",
+        "baglama",
+        "ensemble"
       ],
       "flags": [
         "timing-draft",
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 10.6
+        },
+        {
+          "key": "tanbur",
+          "at": 10.95
+        },
+        {
+          "key": "bendir",
+          "at": 12.65
+        },
+        {
+          "key": "baglama",
+          "at": 12.95
+        },
+        {
+          "key": "ensemble",
+          "at": 20.0
+        }
+      ],
+      "performers": [
+        "Kutay Ozcan (баглама)"
       ]
     },
     {
@@ -44,14 +73,13 @@
       "label": "Танбур",
       "instruments": [
         "tanbur",
-        "oud",
-        "qanun",
-        "ensemble"
+        "ensemble",
+        "daf",
+        "kamancheh"
       ],
       "performers": [
         "Сейед Али Джабери (танбур)",
-        "Selim Boyaci (уд)",
-        "Onur Cicin (канун)"
+        "Mohammad Jaberi (даф)"
       ],
       "note": "Длинный проигрыш танбура перед первым куплетом.",
       "comment": "**Танбур** — длинногрифая лютня курдских и иранских суфиев (ахль-и хакк). Играют пальцами, без плектра, быстрыми ударами всей кистью.",
@@ -65,16 +93,16 @@
           "at": 24.0
         },
         {
-          "key": "oud",
-          "at": 24.8
-        },
-        {
-          "key": "qanun",
-          "at": 24.8
-        },
-        {
           "key": "ensemble",
+          "at": 24.8
+        },
+        {
+          "key": "daf",
           "at": 30.8
+        },
+        {
+          "key": "kamancheh",
+          "at": 54.0
         }
       ]
     },

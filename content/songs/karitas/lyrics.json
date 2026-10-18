@@ -22,9 +22,9 @@
       "kind": "instrumental",
       "start": 2,
       "end": 37.39,
-      "label": "Голос",
+      "label": "Хор",
       "instruments": [
-        "voice"
+        "choir"
       ],
       "flags": [
         "attribution-unverified",
@@ -996,14 +996,25 @@
       "kind": "instrumental",
       "start": 180.26,
       "end": 195,
-      "label": "Голос",
+      "label": "Хор",
       "instruments": [
-        "voice"
+        "choir",
+        "erhu"
       ],
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "choir",
+          "at": 180.26
+        },
+        {
+          "key": "erhu",
+          "at": 190.8
+        }
       ]
     },
     {
@@ -1549,12 +1560,23 @@
       "end": 291.12,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "violin"
       ],
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 281.0
+        },
+        {
+          "key": "violin",
+          "at": 283.0
+        }
       ]
     },
     {
@@ -1598,12 +1620,28 @@
       "end": 319,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "qanun",
+        "ney"
       ],
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 305.0
+        },
+        {
+          "key": "qanun",
+          "at": 309.0
+        },
+        {
+          "key": "ney",
+          "at": 309.05
+        }
       ]
     },
     {
@@ -1613,12 +1651,28 @@
       "end": 328,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "ney",
+        "qanun"
       ],
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 319.0
+        },
+        {
+          "key": "ney",
+          "at": 325.0
+        },
+        {
+          "key": "qanun",
+          "at": 325.0
+        }
       ]
     },
     {
@@ -1628,12 +1682,33 @@
       "end": 355,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "ney",
+        "qanun",
+        "violin"
       ],
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 328.0
+        },
+        {
+          "key": "ney",
+          "at": 329.0
+        },
+        {
+          "key": "qanun",
+          "at": 329.0
+        },
+        {
+          "key": "violin",
+          "at": 350.0
+        }
       ]
     },
     {
@@ -1643,12 +1718,23 @@
       "end": 363,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "violin"
       ],
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 355.0
+        },
+        {
+          "key": "violin",
+          "at": 356.0
+        }
       ]
     },
     {
@@ -2225,12 +2311,38 @@
       "end": 632,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "darbuka",
+        "ensemble",
+        "ney",
+        "riq"
       ],
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 550.27
+        },
+        {
+          "key": "darbuka",
+          "at": 554.9
+        },
+        {
+          "key": "ensemble",
+          "at": 558.0
+        },
+        {
+          "key": "ney",
+          "at": 563.0
+        },
+        {
+          "key": "riq",
+          "at": 568.6
+        }
       ]
     },
     {
@@ -2271,12 +2383,23 @@
       "end": 705,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "qanun"
       ],
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 687.0
+        },
+        {
+          "key": "qanun",
+          "at": 702.0
+        }
       ]
     },
     {
@@ -2307,12 +2430,23 @@
       "end": 721,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "qanun"
       ],
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 714.0
+        },
+        {
+          "key": "qanun",
+          "at": 715.05
+        }
       ]
     },
     {
@@ -2348,12 +2482,33 @@
       "end": 750,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "ney",
+        "qanun",
+        "violin"
       ],
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 733.0
+        },
+        {
+          "key": "ney",
+          "at": 738.0
+        },
+        {
+          "key": "qanun",
+          "at": 738.0
+        },
+        {
+          "key": "violin",
+          "at": 742.05
+        }
       ]
     },
     {
@@ -2387,14 +2542,35 @@
       "kind": "instrumental",
       "start": 760,
       "end": 813,
-      "label": "Голос",
+      "label": "Хор",
       "instruments": [
-        "voice"
+        "choir",
+        "darbuka",
+        "riq",
+        "violin"
       ],
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "choir",
+          "at": 760.0
+        },
+        {
+          "key": "darbuka",
+          "at": 761.7
+        },
+        {
+          "key": "riq",
+          "at": 761.7
+        },
+        {
+          "key": "violin",
+          "at": 805.0
+        }
       ]
     },
     {
@@ -2425,12 +2601,33 @@
       "end": 861,
       "label": "Голос",
       "instruments": [
-        "voice"
+        "voice",
+        "erhu",
+        "darbuka",
+        "violin"
       ],
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ],
+      "entries": [
+        {
+          "key": "voice",
+          "at": 835.0
+        },
+        {
+          "key": "erhu",
+          "at": 837.0
+        },
+        {
+          "key": "darbuka",
+          "at": 853.95
+        },
+        {
+          "key": "violin",
+          "at": 860.0
+        }
       ]
     },
     {
@@ -3097,26 +3294,23 @@
       "kind": "instrumental",
       "start": 942.13,
       "end": 953,
-      "label": "Голос",
-      "instruments": [
-        "voice"
-      ],
+      "label": "Аплодисменты",
+      "instruments": [],
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
-      ]
+      ],
+      "note": "Аплодисменты и поклоны, пения нет."
     },
     {
       "id": "instruments-10",
       "kind": "instrumental",
       "start": 953,
       "end": 961,
-      "label": "Инструментальный проигрыш",
-      "instruments": [
-        "ensemble"
-      ],
-      "note": "Проигрыш без пения.",
+      "label": "Аплодисменты",
+      "instruments": [],
+      "note": "Аплодисменты и поклоны, пения нет.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
@@ -3127,9 +3321,9 @@
       "kind": "instrumental",
       "start": 961,
       "end": 977.05,
-      "label": "Голос",
+      "label": "Хор",
       "instruments": [
-        "voice"
+        "choir"
       ],
       "flags": [
         "attribution-unverified",

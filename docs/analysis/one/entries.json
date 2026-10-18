@@ -35,17 +35,6 @@
       "audio": false
     },
     {
-      "id": "double-bass",
-      "name": "контрабас",
-      "catalogKey": "double-bass",
-      "reason": "устойчиво по видео",
-      "credited": false,
-      "stable": true,
-      "shots80": 5,
-      "shots85": 3,
-      "audio": true
-    },
-    {
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
@@ -125,6 +114,12 @@
   ],
   "check": [
     {
+      "id": "double-bass",
+      "why": "планов с уверенностью ≥ 0,85: 2 из 3, в титрах нет",
+      "shots": 2,
+      "frames": 5
+    },
+    {
       "id": "kamancheh",
       "why": "планов с уверенностью ≥ 0,85: 1 из 3, в титрах нет",
       "shots": 1,
@@ -149,15 +144,21 @@
     {
       "id": "voice-1",
       "action": "voice",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
         "voice"
       ],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "inst-1",
       "action": "write",
+      "label": "Проигрыш",
+      "identity": null,
       "instruments": [
         "oud",
         "santur",
@@ -177,34 +178,66 @@
           "at": 301.85
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-2",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "violin"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 326.6
+        },
+        {
+          "key": "violin",
+          "at": 327.5
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 3
     },
     {
       "id": "voice-3",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "violin"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 355.0
+        },
+        {
+          "key": "violin",
+          "at": 356.45
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 2
     },
     {
       "id": "inst-2",
       "action": "write",
+      "label": "Проигрыш",
+      "identity": null,
       "instruments": [
         "violin",
         "santur",
-        "darbuka",
-        "ensemble"
+        "ensemble",
+        "bendir"
       ],
       "entries": [
         {
@@ -216,31 +249,35 @@
           "at": 398.0
         },
         {
-          "key": "darbuka",
+          "key": "ensemble",
           "at": 400.85
         },
         {
-          "key": "ensemble",
-          "at": 402.5
+          "key": "bendir",
+          "at": 403.75
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 2
     },
     {
       "id": "inst-3",
       "action": "write",
+      "label": "Проигрыш",
+      "identity": null,
       "instruments": [
-        "violin",
         "ney",
+        "violin",
         "daf"
       ],
       "entries": [
         {
-          "key": "violin",
+          "key": "ney",
           "at": 464.67
         },
         {
-          "key": "ney",
+          "key": "violin",
           "at": 464.67
         },
         {
@@ -248,11 +285,15 @@
           "at": 472.6
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "inst-4",
       "action": "write",
+      "label": "Проигрыш",
+      "identity": null,
       "instruments": [
         "violin",
         "daf",
@@ -272,11 +313,15 @@
           "at": 510.0
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 2
     },
     {
       "id": "inst-5",
       "action": "write",
+      "label": "Проигрыш",
+      "identity": null,
       "instruments": [
         "daf"
       ],
@@ -286,20 +331,43 @@
           "at": 584.85
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-4",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "daf",
+        "darbuka"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 622.0
+        },
+        {
+          "key": "daf",
+          "at": 622.0
+        },
+        {
+          "key": "darbuka",
+          "at": 626.0
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "inst-6",
       "action": "write",
+      "label": "Проигрыш",
+      "identity": null,
       "instruments": [
         "darbuka",
         "daf",
@@ -319,20 +387,28 @@
           "at": 636.75
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 1
     },
     {
       "id": "voice-5",
       "action": "voice",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
         "voice"
       ],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 1
     },
     {
       "id": "inst-7",
       "action": "write",
+      "label": "Проигрыш",
+      "identity": null,
       "instruments": [
         "santur",
         "bendir",
@@ -352,20 +428,43 @@
           "at": 712.0
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 2
     },
     {
       "id": "voice-6",
-      "action": "voice",
+      "action": "write",
+      "label": "Голос",
+      "identity": "voice",
       "instruments": [
-        "voice"
+        "voice",
+        "ney",
+        "darbuka"
       ],
-      "entries": [],
-      "performers": []
+      "entries": [
+        {
+          "key": "voice",
+          "at": 714.0
+        },
+        {
+          "key": "ney",
+          "at": 715.0
+        },
+        {
+          "key": "darbuka",
+          "at": 719.75
+        }
+      ],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "inst-8",
       "action": "write",
+      "label": "Проигрыш",
+      "identity": null,
       "instruments": [
         "ney"
       ],
@@ -375,34 +474,42 @@
           "at": 721.0
         }
       ],
-      "performers": []
+      "performers": [],
+      "choirFrames": 1,
+      "soloFrames": 2
     },
     {
       "id": "voice-7",
-      "action": "voice",
-      "instruments": [
-        "voice"
-      ],
+      "action": "applause",
+      "label": "Аплодисменты",
+      "identity": "applause",
+      "instruments": [],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "inst-9",
-      "action": "unchanged",
-      "instruments": [
-        "ensemble"
-      ],
+      "action": "applause",
+      "label": "Аплодисменты",
+      "identity": "applause",
+      "instruments": [],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     },
     {
       "id": "voice-8",
-      "action": "voice",
-      "instruments": [
-        "voice"
-      ],
+      "action": "applause",
+      "label": "Аплодисменты",
+      "identity": "applause",
+      "instruments": [],
       "entries": [],
-      "performers": []
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
     }
   ]
 }
