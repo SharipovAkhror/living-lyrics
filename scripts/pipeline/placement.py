@@ -94,13 +94,33 @@ def ends_from_starts(starts: list[float | None], next_cue: float | None) -> list
     return ends
 
 
+def spans_inside(spans: list | None, section: tuple[float, float] | None, slack: float = 0.05) -> bool:
+    """Every timed word start lies inside the section, slack included.
+
+    Punctuation is not in the lettered structural check, and the validator warns
+    on every word. None spans are ignored. No section means there is nothing to
+    test. A start exactly on the slack boundary passes.
+    """
+    if section is None:
+        return True
+    lo = float(section[0]) - float(slack)
+    hi = float(section[1]) + float(slack)
+    for span in spans or []:
+        if span is None:
+            continue
+        start = float(span[0])
+        if start < lo - 1e-9 or start > hi + 1e-9:
+            return False
+    return True
+
+
 def judge(starts: list[float | None], ends: list[float | None], cue_start: float | None,
-          next_cue: float | None) -> dict:
+          next_cue: float | None, section: tuple[float, float] | None = None) -> dict:
     """Structure and |first start − cue|. `placed` needs both, and a cue."""
     if not starts or any(s is None or e is None for s, e in zip(starts, ends)):
         why = 'missing' if not starts or any(s is None for s in starts) else 'eaten'
         return {'structure_ok': False, 'structure': why, 'delta': None, 'near': False, 'placed': False}
-    ok, why = Cal.structural(starts, ends, next_cue)
+    ok, why = Cal.structural(starts, ends, next_cue, section)
     delta = None if cue_start is None or starts[0] is None else abs(float(starts[0]) - float(cue_start))
     near = delta is not None and round(delta, 3) <= CUE_TOL
     return {

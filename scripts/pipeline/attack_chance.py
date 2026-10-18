@@ -328,9 +328,17 @@ def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = No
             continue
         words = []
         adjusted = Q.apply_rule_times(line.get('words') or [], line.get('lang'), timing) or []
+        kept = []
         for word in adjusted:
             if not word.get('roman') or word.get('ctc_s') is None:
                 continue
+            kept.append(word)
+        prev_span = None
+        prev_roman = None
+        for index, word in enumerate(kept):
+            span = None
+            if word.get('ctc_e') is not None:
+                span = float(word['ctc_e']) - float(word['ctc_s'])
             words.append({
                 't': float(word['ctc_s']),
                 'ctc_e': None if word.get('ctc_e') is None else float(word['ctc_e']),
@@ -340,7 +348,17 @@ def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = No
                 'group': line.get('group') or 'solo',
                 'lang': line.get('lang') or '?',
                 'line': line['id'],
+                'w': word.get('w') or '',
+                'i': index,
+                'n': len(kept),
+                'prev_span': prev_span,
+                'prev_roman': prev_roman,
+                's': None if word.get('s') is None else float(word['s']),
+                'second_kind': word.get('second_kind'),
+                'third_kind': word.get('third_kind'),
             })
+            prev_span = span
+            prev_roman = word.get('roman')
         if not words:
             continue
         end = max(w['ctc_e'] if w['ctc_e'] is not None else w['t'] for w in words)
@@ -891,8 +909,9 @@ def _mode_of_line(modes: dict, line: dict) -> str:
     return mode if mode in ('one', 'two') else 'two'
 
 
-def _probe_line(words: list[dict], peaks: np.ndarray, group: str | None, mode: str,
-                refute: dict, share: float, prev: float | None) -> bool:
+def _probe_parts(words: list[dict], peaks: np.ndarray, group: str | None, mode: str,
+                 refute: dict, prev: float | None) -> tuple[list[dict], list[str | None]]:
+    """Proved-word rows and refutation flags. The share K is applied by the caller."""
     tol = 0.20 if group == 'choir' else 0.10
     align_words = []
     presnap: list[float | None] = []
@@ -911,16 +930,21 @@ def _probe_line(words: list[dict], peaks: np.ndarray, group: str | None, mode: s
         cursor = float(word['t'])
     proved = Q.prove_words(align_words, presnap, tol, witnesses=mode, agree_tol=SECOND_TOL)
     flags = [Q.word_refuted(word, peaks, refute) for word in align_words]
+    return proved, flags
+
+
+def _probe_line(words: list[dict], peaks: np.ndarray, group: str | None, mode: str,
+                refute: dict, share: float, prev: float | None) -> bool:
+    proved, flags = _probe_parts(words, peaks, group, mode, refute, prev)
     return Q.line_word_ok(proved, flags, share)
 
 
-def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: dict, share: float,
-                    shift: float = 0.0, shuffle: bool = False, primary: str | None = None) -> tuple[int, int]:
-    """Candidate lines that still pass after one shared shift, or after a rotation.
+def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: dict,
+                     shift: float = 0.0, shuffle: bool = False, primary: str | None = None) -> list[dict]:
+    """One row per candidate line: proved words and refutation flags under this probe.
 
-    The cue belongs to the real line and is not applied to the shifted first word.
-    The previous line contributes its real, unshifted start. Inside the line the
-    moved starts own the peaks. Witness clocks stay on the word they were measured for.
+    The same shift and the same previous-line start as `line_pass_count`. K is not
+    applied here, so one probe can be scored at every share.
     """
     prev: float | None = None
     incoming: list[float | None] = []
@@ -928,14 +952,13 @@ def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: d
         incoming.append(prev)
         if line.get('words'):
             prev = float(line['words'][-1]['t'])
-    hits = 0
-    n = 0
+    out = []
     for i, line in enumerate(lines):
         if not _line_candidate(line):
             continue
-        if primary is not None and P.primary_family(line.get('placed_by')) != primary:
+        family = P.primary_family(line.get('placed_by'))
+        if primary is not None and family != primary:
             continue
-        n += 1
         src = line['words']
         moved = []
         if shuffle:
@@ -949,9 +972,30 @@ def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: d
                 item = dict(word)
                 item['t'] = float(word['t']) + float(shift)
                 moved.append(item)
-        if _probe_line(moved, peaks, line.get('group'), _mode_of_line(modes, line), refute, share, incoming[i]):
-            hits += 1
-    return hits, n
+        proved, flags = _probe_parts(
+            moved, peaks, line.get('group'), _mode_of_line(modes, line), refute, incoming[i])
+        out.append({
+            'id': line.get('id'),
+            'lang': line.get('lang') or '?',
+            'song': line.get('song'),
+            'family': family,
+            'proved': proved,
+            'flags': flags,
+        })
+    return out
+
+
+def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: dict, share: float,
+                    shift: float = 0.0, shuffle: bool = False, primary: str | None = None) -> tuple[int, int]:
+    """Candidate lines that still pass after one shared shift, or after a rotation.
+
+    The cue belongs to the real line and is not applied to the shifted first word.
+    The previous line contributes its real, unshifted start. Inside the line the
+    moved starts own the peaks. Witness clocks stay on the word they were measured for.
+    """
+    parts = line_probe_parts(lines, peaks, modes, refute, shift=shift, shuffle=shuffle, primary=primary)
+    hits = sum(1 for item in parts if Q.line_word_ok(item['proved'], item['flags'], share))
+    return hits, len(parts)
 
 
 def measure_line_table(per_song: list[dict], modes: dict, refute: dict, primary: str | None = None) -> list[dict]:
@@ -1162,6 +1206,49 @@ def _public_line(row: dict) -> dict:
     }
 
 
+def collect_refutations(per_song: list[dict], refute: dict) -> list[dict]:
+    """Placed words the chosen cutoffs refute, with a place to listen. The cutoffs stay."""
+    import whisper_witness as W
+
+    rows = []
+    for song in per_song:
+        peaks = song['sets'][(WITNESS_HEIGHT, False)]
+        for line in song['lines']:
+            if not line.get('placed'):
+                continue
+            for word in line['words']:
+                why = Q.word_refuted(
+                    {'ctc_s': word['t'], 'second_s': word.get('second'), 'third_s': word.get('third')},
+                    peaks, refute)
+                if not why:
+                    continue
+                d2 = None if word.get('second') is None else round(float(word['second']) - float(word['t']), 3)
+                d3 = None if word.get('third') is None else round(float(word['third']) - float(word['t']), 3)
+                when = word.get('s')
+                if when is None:
+                    when = word.get('t')
+                rows.append(W.annotate({
+                    'song': song['slug'],
+                    'id': line['id'],
+                    'time': None if when is None else float(when),
+                    'w': word.get('w') or '',
+                    'i': word.get('i'),
+                    'n': word.get('n'),
+                    'prev_span': word.get('prev_span'),
+                    'prev_roman': word.get('prev_roman'),
+                    'why': why,
+                    'placed_by': line.get('placed_by'),
+                    'second': None if word.get('second') is None else float(word['second']),
+                    'third': None if word.get('third') is None else float(word['third']),
+                    'second_kind': word.get('second_kind'),
+                    'third_kind': word.get('third_kind'),
+                    'd2': d2,
+                    'd3': d3,
+                }))
+    rows.sort(key=lambda row: (str(row.get('song') or ''), float(row['time']) if row.get('time') is not None else 0.0, str(row.get('id') or '')))
+    return rows
+
+
 def _public_refute(row: dict) -> dict:
     out = {key: value for key, value in row.items() if key != 'by'}
     if out.get('rate') is not None:
@@ -1295,6 +1382,7 @@ def build_payload(slugs: list[str]) -> dict:
         'line_table': public_lines,
         'density': density,
         'candidates': public_rows,
+        '_refutations': collect_refutations(per_song, refute),
     }
 
 
@@ -1430,6 +1518,28 @@ def render_placement(slugs: list[str]) -> str:
     return '\n'.join(lines)
 
 
+def render_witness(slugs: list[str]) -> str:
+    """Whisper model comparison from the align summaries. Numbers come from the run."""
+    import whisper_witness as W
+
+    songs = []
+    for slug in slugs:
+        path = work_dir(slug) / 'align-report.json'
+        if not path.exists():
+            songs.append({'slug': slug, 'model': None, 'rows': [], 'missing': True})
+            continue
+        report = json.loads(path.read_text(encoding='utf-8'))
+        summary = report.get('summary') or {}
+        songs.append({
+            'slug': slug,
+            'model': summary.get('placement_model') or summary.get('stable_model'),
+            'proof_models': summary.get('proof_models') or {},
+            'budget_s': summary.get('whisper_budget_s'),
+            'rows': summary.get('whisper_witness') or [],
+        })
+    return W.render_witness(songs)
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     ap.add_argument('--choose', action='store_true', help='measure and write the bench table')
@@ -1438,6 +1548,7 @@ def main(argv: list[str] | None = None) -> int:
     if not args.choose:
         ap.error('нужен --choose')
     payload = build_payload(args.slugs)
+    refutations = payload.pop('_refutations', [])
     out_dir = ROOT / 'docs' / 'analysis' / 'bench'
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / 'attack-chance.json').write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding='utf-8')
@@ -1450,6 +1561,27 @@ def main(argv: list[str] | None = None) -> int:
         (out_dir / 'placement.md').write_text(render_placement(args.slugs), encoding='utf-8')
     except Exception as e:
         print(f'placement.md не записан ({e.__class__.__name__}: {e})')
+    try:
+        import whisper_witness as W
+        cut = (payload.get('chosen') or {}).get('refute') or {}
+        shift_rows = []
+        for slug in args.slugs:
+            path = work_dir(slug) / 'align-report.json'
+            if not path.exists():
+                continue
+            shift_rows.extend(W.window_rows_from_report(json.loads(path.read_text(encoding='utf-8')), slug))
+        (out_dir / 'refutation.md').write_text(
+            W.render_refutation(refutations, cut.get('both_far'), cut.get('only_far'))
+            + '\n'
+            + W.window_shift_paragraph(W.window_shift(shift_rows))
+            + '\n',
+            encoding='utf-8')
+    except Exception as e:
+        print(f'refutation.md не записан ({e.__class__.__name__}: {e})')
+    try:
+        (out_dir / 'whisper-witness.md').write_text(render_witness(args.slugs), encoding='utf-8')
+    except Exception as e:
+        print(f'whisper-witness.md не записан ({e.__class__.__name__}: {e})')
     chosen = payload['chosen']
     refute = chosen.get('refute') or {}
     print(f"правило {chosen.get('name')}: случайный проход строки {chosen.get('chance')}, "

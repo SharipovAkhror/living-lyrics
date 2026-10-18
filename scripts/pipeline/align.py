@@ -34,8 +34,13 @@ How it works:
    A cued line the first pass did not place is tried again, in order: MMS on the span
    from this cue to the next cue (several margins), MMS on an htdemucs_ft clip of that
    line while a time budget holds, stable-ts, then the second aligner. The first one
-   that passes structure and |Δ| ≤ 0.30 s is the placer. Its pre-snap start is the
-   primary clock. The other two clocks are the witnesses. The song stem stays htdemucs.
+   that passes structure and |Δ| ≤ 0.30 s is the placer. A word start outside the
+   line's section, slack 0.05 s, fails that step. Its pre-snap start is the
+   primary clock. The other two clocks are the witnesses. stable-ts measures every
+   Whisper model that finishes inside 90 minutes, on windows of lines MMS already
+   placed, and keeps each model's word starts. The largest of those places lines
+   that are still open. The proof witness is chosen later, per song and language,
+   by how many lines it proves. The song stem stays htdemucs.
    align.py does not decide the flag. It marks every line `timing-draft` and leaves
    `timing.status` at `draft`. qa_sync.py --apply clears the flag only for a placed line
    whose words the measured rule proves. The default, when no rule file exists, is an
@@ -54,8 +59,10 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
 import re
 import sys
+import time
 import unicodedata
 
 import numpy as np
@@ -66,6 +73,7 @@ import features as F
 import placement as P
 import qa_sync as Q
 import timing as T
+import whisper_witness as W
 from ctc import token_spans, viterbi
 from common import ROOT, dump_json, find_source, load_audio, load_json, song_dir, vocal_stem, work_dir
 
@@ -890,13 +898,24 @@ def seconds_from_engine(starts: list, roman: list[str], next_cue: float | None) 
     return out
 
 
-def _placement_attempt(by: str, seconds, roman, cue_start, next_cue, window) -> dict:
+def _section(unit: Unit) -> tuple[float, float]:
+    return (float(unit.sec['start']), float(unit.sec['end']))
+
+
+def _placement_attempt(by: str, seconds, roman, cue_start, next_cue, window,
+                       section: tuple[float, float] | None = None) -> dict:
     if not seconds:
         window_out = None if window is None else [round(float(window[0]), 2), round(float(window[1]), 2)]
         return {'by': by, 'placed': False, 'structure_ok': False, 'structure': 'missing',
                 'delta': None, 'near': False, 'window': window_out}
     starts, ends = P.lettered_pairs(seconds, roman)
-    judged = P.judge(starts, ends, cue_start, next_cue)
+    judged = P.judge(starts, ends, cue_start, next_cue, section)
+    # Lettered starts are in the structural check. Punctuation still has a time,
+    # and the validator warns on every word, so the full list is checked too.
+    if judged.get('placed') and not P.spans_inside(seconds, section):
+        judged['placed'] = False
+        judged['structure_ok'] = False
+        judged['structure'] = 'outside-section'
     judged['by'] = by
     judged['window'] = None if window is None else [round(float(window[0]), 2), round(float(window[1]), 2)]
     return judged
@@ -933,7 +952,7 @@ def rescue_mms_windows(lp: np.ndarray, units: list[Unit], conf: list[dict], pass
             if P.same_window(win, original):
                 continue
             seconds = star_seconds(lp, u, win[0], win[1])
-            attempt = _placement_attempt('mms-window', seconds, u.roman, cue_s, nxt, win)
+            attempt = _placement_attempt('mms-window', seconds, u.roman, cue_s, nxt, win, _section(u))
             if attempt['placed'] and seconds is not None:
                 _adopt(c, 'mms-window', seconds, attempt)
                 placed += 1
@@ -1020,7 +1039,7 @@ def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, di
                 seconds = star_seconds(clip, u, rel0, rel1)
                 if seconds:
                     seconds = [None if span is None else [span[0] + t0, span[1] + t0] for span in seconds]
-                attempt = _placement_attempt('mms-ft', seconds, u.roman, float(cue['start']), nxt, (t0, t1))
+                attempt = _placement_attempt('mms-ft', seconds, u.roman, float(cue['start']), nxt, (t0, t1), _section(u))
                 if attempt['placed'] and seconds is not None:
                     _adopt(c, 'mms-ft', seconds, attempt)
                     print(f"ft {u.id}: |Δ| {attempt['delta']}", flush=True)
@@ -1032,6 +1051,137 @@ def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, di
         info['error'] = f'{e.__class__.__name__}: {e}'
         print(f'htdemucs_ft пропущен ({info["error"]})', flush=True)
     return info
+
+
+def _witness_lines(units: list[Unit], conf: list[dict], cues: dict[str, dict],
+                   starts_by_id: dict) -> list[dict]:
+    """|stable − MMS| on lines an MMS placer already kept, plus |start − cue|.
+
+    The MMS time is the one that placed the line: the first window, a later window,
+    or the ft stem. A word both clocks missed is left out of the share.
+    """
+    rows = []
+    for u, c in zip(units, conf):
+        if P.primary_family(c.get('placed_by')) != 'mms':
+            continue
+        starts = starts_by_id.get(u.id)
+        if not starts or len(starts) != len(u.line['words']):
+            continue
+        chosen = c.get('chosen_seconds') or []
+        deltas = []
+        first = None
+        for rm, span, start in zip(u.roman, list(chosen) + [None] * len(u.roman), starts):
+            if not rm:
+                continue
+            if first is None and start is not None:
+                first = float(start)
+            if span is None or start is None:
+                continue
+            deltas.append(abs(float(start) - float(span[0])))
+        cue = cues.get(u.id)
+        cue_delta = None
+        if cue is not None and first is not None:
+            cue_delta = abs(first - float(cue['start']))
+        rows.append({'lang': u.line['lang'], 'deltas': deltas, 'cue_delta': cue_delta})
+    return rows
+
+
+def _whisper_budget_s() -> float:
+    """Seconds for the whole ladder. WHISPER_BUDGET_S overrides the default.
+
+    A missing or unusable value keeps the default. The cap is 100 minutes so the
+    separate 15 minute pass on unplaced lines still fits a 150 minute job.
+    """
+    raw = os.environ.get('WHISPER_BUDGET_S', '').strip()
+    if not raw:
+        return float(W.BUDGET_S)
+    try:
+        value = float(raw)
+    except ValueError:
+        return float(W.BUDGET_S)
+    if value < 60.0 or value > 100 * 60:
+        return float(W.BUDGET_S)
+    return value
+
+
+def run_whisper_witness(x: np.ndarray, jobs: list[dict], units: list[Unit], conf: list[dict],
+                        cues: dict[str, dict]) -> tuple[dict, dict]:
+    """Compare Whisper sizes on placed windows, then align the rest with the largest.
+
+    Small and medium always run. A larger model runs only when its estimate fits
+    the ladder budget (90 minutes unless WHISPER_BUDGET_S says otherwise). Every
+    model that finishes keeps its word starts. The largest one places lines that
+    are still open. It is not the proof witness. A model that does not finish
+    leaves no times. Alignment itself does not fail.
+    """
+    budget = _whisper_budget_s()
+    by_id = {j['id']: j for j in jobs}
+    placed_jobs = []
+    unplaced_jobs = []
+    for i, u in enumerate(units):
+        job = by_id.get(u.id)
+        if job is None:
+            continue
+        if conf[i].get('placed_by'):
+            placed_jobs.append(job)
+        elif _chain_line(u, cues):
+            unplaced_jobs.append(job)
+    held: dict[str, dict] = {}
+
+    def run_model(name: str, deadline):
+        try:
+            starts, info = engines.align_stable(x, placed_jobs, name, deadline)
+        except Exception as e:
+            return {'model': name, 'ran': False, 'complete': False, 'elapsed_s': 0.0,
+                    'lines': len(placed_jobs), 'placed': 0, 'error': f'{e.__class__.__name__}: {e}',
+                    'stopped': False, 'reason': None}
+        if not info.get('complete'):
+            starts = {}
+        else:
+            info['stats'] = W.agreement(_witness_lines(units, conf, cues, starts))
+        held[name] = starts
+        return info
+
+    if not placed_jobs:
+        # Nothing to compare. The chain can still try small on the lines still open.
+        chosen, rows = 'small', [{'model': 'small', 'ran': False, 'complete': False, 'elapsed_s': 0.0,
+                                 'reason': 'no-placed', 'lines': 0, 'placed': 0, 'error': None, 'stopped': False}]
+    else:
+        try:
+            chosen, rows = W.ladder(run_model, budget_s=budget, clock=time.monotonic)
+        except Exception as e:
+            print(f'лестница stable-ts не собрана ({e.__class__.__name__}: {e})', flush=True)
+            chosen, rows = None, [{'model': 'small', 'ran': False, 'complete': False, 'elapsed_s': 0.0,
+                                   'reason': f'{e.__class__.__name__}: {e}', 'lines': len(placed_jobs),
+                                   'placed': 0, 'error': f'{e.__class__.__name__}: {e}', 'stopped': False}]
+    third: dict = {}
+    if chosen and held.get(chosen):
+        third.update(held[chosen])
+    if chosen and unplaced_jobs:
+        try:
+            extra, extra_info = engines.align_stable(
+                x, unplaced_jobs, chosen, time.monotonic() + W.UNPLACED_BUDGET_S)
+        except Exception as e:
+            extra, extra_info = {}, {'complete': False, 'elapsed_s': 0.0, 'lines': len(unplaced_jobs),
+                                     'placed': 0, 'error': f'{e.__class__.__name__}: {e}', 'reason': None}
+        if not extra_info.get('complete'):
+            extra = {}
+            print(f'stable-ts {chosen}: непоставленные строки не домерены '
+                  f'({extra_info.get("error") or extra_info.get("reason") or "время"})', flush=True)
+        else:
+            third.update(extra)
+        for row in rows:
+            if row.get('model') == chosen:
+                row['unplaced'] = {
+                    'complete': bool(extra_info.get('complete')),
+                    'elapsed_s': extra_info.get('elapsed_s'),
+                    'lines': extra_info.get('lines'),
+                    'placed': extra_info.get('placed'),
+                    'error': extra_info.get('error'),
+                    'reason': extra_info.get('reason'),
+                }
+    print(f'постановка stable-ts: наибольшая домеренная {chosen or "нет"}, бюджет {budget:.0f} с', flush=True)
+    return third, {'model': chosen, 'budget_s': budget, 'rows': rows, 'clocks': held}
 
 
 def _mark_engine(c: dict, prefix: str, attempt: dict) -> None:
@@ -1062,10 +1212,10 @@ def adopt_engines(units: list[Unit], conf: list[dict], cues: dict[str, dict],
         s3 = third_starts.get(u.id)
         if s3 is not None and len(s3) == len(u.line['words']):
             seconds = seconds_from_engine(s3, u.roman, nxt)
-            attempt = _placement_attempt('stable-ts', seconds, u.roman, cue_s, nxt, window)
+            attempt = _placement_attempt('stable-ts', seconds, u.roman, cue_s, nxt, window, _section(u))
         else:
             seconds = None
-            attempt = _placement_attempt('stable-ts', None, u.roman, cue_s, nxt, window)
+            attempt = _placement_attempt('stable-ts', None, u.roman, cue_s, nxt, window, _section(u))
         _mark_engine(c, 'stable', attempt)
         if c.get('placed_by') is None and attempt['placed'] and seconds is not None:
             # _mark_engine already stored the attempt. Do not store it twice.
@@ -1075,10 +1225,10 @@ def adopt_engines(units: list[Unit], conf: list[dict], cues: dict[str, dict],
         s2 = second_starts.get(u.id)
         if s2 is not None and len(s2) == len(u.line['words']):
             seconds = seconds_from_engine(s2, u.roman, nxt)
-            attempt = _placement_attempt('second', seconds, u.roman, cue_s, nxt, window)
+            attempt = _placement_attempt('second', seconds, u.roman, cue_s, nxt, window, _section(u))
         else:
             seconds = None
-            attempt = _placement_attempt('second', None, u.roman, cue_s, nxt, window)
+            attempt = _placement_attempt('second', None, u.roman, cue_s, nxt, window, _section(u))
         _mark_engine(c, 'second', attempt)
         if c.get('placed_by') is None and attempt['placed'] and seconds is not None:
             c['attempts'].pop()
@@ -1296,19 +1446,22 @@ def main() -> None:
             if nxt_cue is not None:
                 next_cue = float(nxt_cue['start'])
                 break
-        structure_ok, structure = (False, 'missing') if missing else Cal.structural(starts, ends, next_cue)
-        cue = cues.get(u.id)
-        raw_drift = [None if w is None else w['f0'] / FPS for w in placed_words]
-        delta = line_drift(raw_drift, u.roman, None if cue is None else float(cue['start']))
-        near = delta is not None and round(delta, 3) <= Q.PROOF_CUE_TOL
-        score_ok = (not missing) and metric_value is not None and float(metric_value) >= threshold
-        status = placement_status(missing or r is None, score_ok, structure_ok, near, cue is not None)
+        section = (float(u.sec['start']), float(u.sec['end']))
         mms_seconds: list[list[float] | None] = []
         for w in placed_words:
             if w is None:
                 mms_seconds.append(None)
             else:
                 mms_seconds.append([w['f0'] / FPS, w['f1'] / FPS])
+        structure_ok, structure = (False, 'missing') if missing else Cal.structural(starts, ends, next_cue, section)
+        if structure_ok and not P.spans_inside(mms_seconds, section):
+            structure_ok, structure = False, 'outside-section'
+        cue = cues.get(u.id)
+        raw_drift = [None if w is None else w['f0'] / FPS for w in placed_words]
+        delta = line_drift(raw_drift, u.roman, None if cue is None else float(cue['start']))
+        near = delta is not None and round(delta, 3) <= Q.PROOF_CUE_TOL
+        score_ok = (not missing) and metric_value is not None and float(metric_value) >= threshold
+        status = placement_status(missing or r is None, score_ok, structure_ok, near, cue is not None)
         placed_now = status == 'good'
         conf.append({
             'scores': scores, 'score': score, 'gap': gap, 'agree': agree, 'status': status,
@@ -1372,12 +1525,7 @@ def main() -> None:
         jobs.append({'id': u.id, 'lang': u.line['lang'], 'script': u.line['script'],
                      'words': [w['w'] for w in u.line['words']], 't0': t0, 't1': t1})
     second_starts, second_name = engines.align_jobs(args.second, x, jobs)
-    third_starts: dict[str, list] = {}
-    if jobs:
-        try:
-            third_starts = engines.run_engine('stable-ts', x, jobs)
-        except Exception as e:
-            print(f'stable-ts недоступен ({e.__class__.__name__}: {e})')
+    third_starts, witness_info = run_whisper_witness(x, jobs, units, conf, cues)
     n_stable, n_second = adopt_engines(units, conf, cues, second_starts, third_starts, second_window)
     by_counts: dict[str, int] = {}
     for c in conf:
@@ -1466,6 +1614,15 @@ def main() -> None:
             for model_lang, model_starts in borrowed.items():
                 if wi < len(model_starts) and model_starts[wi] is not None:
                     borrow_times[model_lang] = round(float(model_starts[wi]), 3)
+            stable_models = {}
+            for model_name, by_line in (witness_info.get('clocks') or {}).items():
+                starts = by_line.get(u.id)
+                if not starts or wi >= len(starts) or starts[wi] is None:
+                    continue
+                stable_models[str(model_name)] = round(float(starts[wi]), 3)
+            placement_model = witness_info.get('model')
+            if placement_model and e3 is not None and placement_model not in stable_models:
+                stable_models[str(placement_model)] = round(float(e3), 3)
             tol = Q.CHOIR_TOL if T.group(u.sec, u.line) == 'choir' else ENGINE_AGREE
             engines_agree = None if slot2 is None or raw[wi] is None else bool(abs(slot2 - raw[wi]) <= tol)
             onset_ok = odt[wi] is not None
@@ -1484,6 +1641,7 @@ def main() -> None:
                               'clock_mms': None if mms_t is None else round(mms_t, 3),
                               'clock_second': None if e2 is None else round(float(e2), 3),
                               'clock_stable': None if e3 is None else round(float(e3), 3),
+                              'stable_models': stable_models,
                               'borrow': borrow_times,
                               'onset_dt': None if odt[wi] is None else round(odt[wi], 2), 'proven': proven})
         all_proven = letters_n > 0 and proven_n == letters_n
@@ -1550,6 +1708,7 @@ def main() -> None:
     placed_ids = {u.id for u, pub in zip(units, publish) if pub}
     locked = lock_written_cues(lyrics, cues, placed_ids, only)
     edge_fixes = T.fit_section_edges(lyrics)
+    pulled = T.pull_outside_starts(lyrics)
     by_written = {line['id']: line for _, line in T.vocal_lines(lyrics)}
     for rec in report_lines:
         line = by_written.get(rec['id'])
@@ -1592,7 +1751,13 @@ def main() -> None:
         'order_fixes': fixes,
         'cue_locks': locked,
         'section_edge_fixes': edge_fixes,
+        'outside_start_pulls': pulled,
         'third_engine': 'stable-ts',
+        'placement_model': witness_info.get('model'),
+        'stable_model': witness_info.get('model'),
+        'proof_models': {},
+        'whisper_budget_s': witness_info.get('budget_s'),
+        'whisper_witness': witness_info.get('rows') or [],
         'third_compared': sum(1 for w in ws_good if w.get('third_s') is not None and w.get('ctc_s') is not None),
         'placement': _placement_summary(report_lines, conf, units, ft_info),
     }
@@ -1608,6 +1773,11 @@ def main() -> None:
     }
     wd = work_dir(slug)
     (wd / 'align-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding='utf-8')
+    clock_path = ROOT / 'docs' / 'analysis' / slug / 'whisper-clocks.json'
+    clock_path.parent.mkdir(parents=True, exist_ok=True)
+    clock_path.write_text(
+        json.dumps(W.clock_cache(report, witness_info.get('model')), ensure_ascii=False, separators=(',', ':')),
+        encoding='utf-8')
 
     timing_note = (f'align.py {t_start:%Y-%m-%d}: времена слов записаны, все строки помечены timing-draft. '
                    f'Выравниватель уверен в {n_good} из {n}, не нашёл текст в {n_draft}. '
