@@ -912,6 +912,24 @@ def test_placement_chain() -> None:
     row = blocked['lines'][0]
     check('an excluded placer is not proved', (not row['pass']) and row['reason'] == 'primary-chance', str(row))
 
+    import align as Align
+    import shutil
+
+    from common import work_dir
+    stray = work_dir('no-such-song-ft')
+    unit = Align.Unit(
+        0, {'id': 's', 'start': 0.0, 'end': 4.0, 'voice': ''},
+        {'id': 'l1', 'words': [{'w': 'a', 's': 1.0, 'e': 1.2}]}, ['a'], {})
+    try:
+        missed = Align.rescue_ft(
+            'no-such-song-ft', [unit], [{'placed_by': None, 'attempts': []}],
+            {'l1': {'start': 1.0, 'end': 2.0}}, 10.0)
+    finally:
+        shutil.rmtree(stray, ignore_errors=True)
+    check('a missing mix does not abort alignment',
+          missed['ran'] is False and str(missed.get('error') or '').startswith('FileNotFoundError'),
+          str(missed))
+
 
 def main() -> int:
     test_viterbi()

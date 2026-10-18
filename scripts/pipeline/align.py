@@ -943,6 +943,20 @@ def rescue_mms_windows(lp: np.ndarray, units: list[Unit], conf: list[dict], pass
     return placed
 
 
+def _mix_path(slug: str):
+    """The original mix. The stem cache restores the four stems and not the mix.
+
+    `find_source` raises SystemExit, which is not an Exception. The caller still
+    has to catch that: a missing mix must not fail the alignment.
+    """
+    try:
+        return find_source(slug)
+    except SystemExit:
+        import decrypt_audio
+        decrypt_audio.main(slug)
+        return find_source(slug)
+
+
 def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, dict], duration: float) -> dict:
     """htdemucs_ft on the lines still open, one model load, inside the time budget.
 
@@ -969,10 +983,12 @@ def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, di
         print(f'htdemucs_ft: бюджет {P.FT_BUDGET_S:.0f} с не вместил ни одного отрезка, пропущено строк {len(skipped)}', flush=True)
         return info
     try:
+        # Resolve the mix before loading a model. A missing file must stay inside this handler.
+        mix_path = _mix_path(slug)
         import torch
         import torchaudio
 
-        mix = load_audio(find_source(slug), P.FT_RATE)
+        mix = load_audio(mix_path, P.FT_RATE)
         vocals, separated = P.separate_ft_clips(mix, [(a, b) for a, b, _ids in kept])
         info.update(separated)
         info['skipped_ids'] = list(dict.fromkeys(list(skipped) + list(info.get('skipped_ids') or [])))
@@ -1011,7 +1027,7 @@ def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, di
                 else:
                     c['attempts'].append(attempt)
         del model
-    except Exception as e:
+    except (Exception, SystemExit) as e:
         info['ran'] = False
         info['error'] = f'{e.__class__.__name__}: {e}'
         print(f'htdemucs_ft пропущен ({info["error"]})', flush=True)
