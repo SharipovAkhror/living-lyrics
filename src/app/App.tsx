@@ -48,6 +48,10 @@ export function App() {
   const settings = useSettings();
   const dark = useAppliedTheme(settings.theme);
 
+  useEffect(() => {
+    document.documentElement.dataset.motion = effectiveMotion(settings);
+  }, [settings]);
+
   let page: ReactNode;
   switch (route.name) {
     case 'library':

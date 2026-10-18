@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import { flushSync } from 'react-dom';
 
 export type Route =
   | { name: 'library' }
@@ -26,10 +27,20 @@ window.addEventListener('popstate', () => listeners.forEach((l) => l()));
 
 export function navigate(to: string, opts: { replace?: boolean } = {}) {
   if (to === location.pathname) return;
-  if (opts.replace) history.replaceState(null, '', to);
-  else history.pushState(null, '', to);
-  window.scrollTo(0, 0);
-  listeners.forEach((l) => l());
+  const apply = () => {
+    if (opts.replace) history.replaceState(null, '', to);
+    else history.pushState(null, '', to);
+    window.scrollTo(0, 0);
+    listeners.forEach((l) => l());
+  };
+  const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const off = document.documentElement.dataset.motion === 'off';
+  const start = (document as Document & { startViewTransition?: (cb: () => void) => void }).startViewTransition;
+  if (!reduced && !off && typeof start === 'function') {
+    start.call(document, () => flushSync(apply));
+    return;
+  }
+  apply();
 }
 
 export function useRoute(): Route {

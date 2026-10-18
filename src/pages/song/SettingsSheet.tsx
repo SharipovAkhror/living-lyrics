@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Group, Row, Segmented, Sheet, Slider, Switch } from '@/components/controls';
-import { Icon } from '@/icons/Icon';
+import { Group, Row, Segmented, Sheet, Slider, Switch } from '@/ui/controls';
+import { Icon } from '@/ui/icons';
 import { loadFontLabels, ORIGINAL_FONTS, PERSIAN_FONTS, TRANSLATION_FONTS, type FontFace } from '@/app/fontCatalog';
-import { setSettings, type InstrumentStyle, type LineEntrance, type MotionPref, type Settings, type TextAlign, type ThemePref } from '@/app/settings';
+import { effectiveMotion, setSettings, type InstrumentStyle, type LineEntrance, type MotionPref, type Settings, type TextAlign, type ThemePref } from '@/app/settings';
 import { EQ_FREQS, EQ_PRESETS, formatFreq, presetById } from '@/player/eq';
 import type { AudioEngine, EngineState } from '@/player/engine';
 import type { Song } from '@/data/schema';
@@ -55,6 +55,8 @@ export function SettingsSheet({
   has: { translit: boolean; alt: boolean; persian: boolean; arab: boolean };
 }) {
   const [page, setPage] = useState<Page>('home');
+  const [leaving, setLeaving] = useState<Page | null>(null);
+  const [dir, setDir] = useState<1 | -1>(1);
   const input = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -81,9 +83,31 @@ export function SettingsSheet({
     ]);
   }, [open, page]);
 
+  const go = (next: Page) => {
+    if (next === page) return;
+    const backward = next === 'home' || (page === 'eq' && next === 'sound');
+    setDir(backward ? -1 : 1);
+    if (effectiveMotion(settings) === 'off') {
+      setLeaving(null);
+      setPage(next);
+      return;
+    }
+    setLeaving(page);
+    setPage(next);
+  };
+
+  useEffect(() => {
+    if (!leaving) return;
+    const t = window.setTimeout(() => setLeaving(null), 440);
+    return () => window.clearTimeout(t);
+  }, [leaving, page]);
+
   const close = () => {
     onClose();
-    setTimeout(() => setPage('home'), 400);
+    window.setTimeout(() => {
+      setPage('home');
+      setLeaving(null);
+    }, 420);
   };
 
   const setEq = (patch: Partial<Pick<Settings, 'eqEnabled' | 'eqBands' | 'eqPreamp' | 'eqPreset'>>) => {
@@ -92,7 +116,8 @@ export function SettingsSheet({
     engine.setEffects(next.eqEnabled, next.eqBands, next.eqPreamp);
   };
 
-  const back = page === 'home' ? undefined : () => setPage(page === 'eq' ? 'sound' : 'home');
+  const back = page === 'home' ? undefined : () => go(page === 'eq' ? 'sound' : 'home');
+  const shown: Page[] = leaving && leaving !== page ? [leaving, page] : [page];
   const sourceLabel = state?.source === 'library' ? 'Запись из библиотеки' : state?.source === 'local' ? (state.localName ?? 'Свой файл') : 'Аудио не подключено';
   const persianName = PERSIAN_FONTS.find((f) => f.id === settings.fontPersian)?.name ?? '';
   const originalName = ORIGINAL_FONTS.find((f) => f.id === settings.fontOriginal)?.name ?? '';
@@ -100,30 +125,33 @@ export function SettingsSheet({
 
   return (
     <Sheet open={open} onClose={close} title={PAGE_TITLE[page]} size="large" onBack={back} backLabel={page === 'eq' ? 'Звук' : 'Настройки'}>
-      {page === 'home' && (
+      <div className={`set-stage${dir < 0 ? ' is-back' : ''}`}>
+        {shown.map((p) => (
+          <div key={p} className={`set-page${p === page ? ' is-enter' : ' is-leave'}`}>
+      {p === 'home' && (
         <nav className="set-nav" aria-label="Разделы настроек">
           <Group>
-            <Row title="Текст" detail={`${ALIGN_NAME[settings.textAlign]} · ${ENTER_NAME[settings.lineEntrance]}`} onClick={() => setPage('text')} chevron />
+            <Row title="Текст" detail={`${ALIGN_NAME[settings.textAlign]} · ${ENTER_NAME[settings.lineEntrance]}`} onClick={() => go('text')} chevron />
             <Row
               title="Шрифты"
               detail={[has.persian ? persianName : null, originalName, translationName].filter(Boolean).join(' · ')}
-              onClick={() => setPage('fonts')}
+              onClick={() => go('fonts')}
               chevron
             />
-            <Row title="Пояснения" detail={settings.showComment ? 'Показаны' : 'Скрыты'} onClick={() => setPage('comment')} chevron />
-            <Row title="Инструменты" detail={STYLE_NAME[settings.instrumentStyle]} onClick={() => setPage('instruments')} chevron />
+            <Row title="Пояснения" detail={settings.showComment ? 'Показаны' : 'Скрыты'} onClick={() => go('comment')} chevron />
+            <Row title="Инструменты" detail={STYLE_NAME[settings.instrumentStyle]} onClick={() => go('instruments')} chevron />
             <Row
               title="Звук"
               detail={`${String(settings.rate).replace('.', ',')}× · ${settings.eqEnabled ? (EQ_PRESETS.some((p) => p.id === settings.eqPreset) ? presetById(settings.eqPreset).name : 'Своя настройка') : 'эквалайзер выключен'}`}
-              onClick={() => setPage('sound')}
+              onClick={() => go('sound')}
               chevron
             />
-            <Row title="Оформление" detail={`${THEME_NAME[settings.theme]} · ${MOTION_NAME[settings.motion]}`} onClick={() => setPage('look')} chevron />
+            <Row title="Оформление" detail={`${THEME_NAME[settings.theme]} · ${MOTION_NAME[settings.motion]}`} onClick={() => go('look')} chevron />
           </Group>
         </nav>
       )}
 
-      {page === 'text' && (
+      {p === 'text' && (
         <>
           <Group header="Что показывать" footer="Оригинал показывается всегда — на том языке и тем письмом, которыми поют.">
             {has.arab && (
@@ -183,7 +211,7 @@ export function SettingsSheet({
         </>
       )}
 
-      {page === 'fonts' && (
+      {p === 'fonts' && (
         <Group footer="Арабский текст всегда шрифтом Мединского Мусхафа. Насталик — для тех, кто к нему привык.">
           {has.persian && (
             <FontPick
@@ -213,7 +241,7 @@ export function SettingsSheet({
         </Group>
       )}
 
-      {page === 'comment' && (
+      {p === 'comment' && (
         <Group footer="Длинное пояснение раскрывается сноской под стихом. На широком экране оно стоит справа.">
           <Row title="Показывать пояснения" detail="То, что не вошло в перевод">
             <Switch label="Пояснения" checked={settings.showComment} onChange={(v) => setSettings({ showComment: v })} />
@@ -224,7 +252,7 @@ export function SettingsSheet({
         </Group>
       )}
 
-      {page === 'instruments' && (
+      {p === 'instruments' && (
         <Group footer="На странице песни по умолчанию рисунок. Реалистичный вид — объём дафа и уда со светом и материалами; у остальных инструментов остаётся рисунок, пока для них нет модели. При уменьшении движения, без WebGL или на слабом устройстве остаётся рисунок.">
           <Choice label="Стиль" hint="Рисунок — гравюра линией. Реалистичный — та же сцена, объём со светом.">
             <Segmented
@@ -241,7 +269,7 @@ export function SettingsSheet({
         </Group>
       )}
 
-      {page === 'sound' && (
+      {p === 'sound' && (
         <>
           <Group header="Слушать" footer="Пауза после строки — чтобы разбирать текст по строке. «Воспроизвести» продолжает со следующей.">
             <Row title="Пауза после каждой строки">
@@ -301,7 +329,7 @@ export function SettingsSheet({
                 }}
               />
             </Row>
-            <Row title="Эквалайзер" detail={settings.eqEnabled ? presetById(settings.eqPreset).name : 'Выключен'} onClick={() => setPage('eq')} chevron />
+            <Row title="Эквалайзер" detail={settings.eqEnabled ? presetById(settings.eqPreset).name : 'Выключен'} onClick={() => go('eq')} chevron />
           </Group>
           <Group header="Запись" footer={state?.source === 'local' ? 'Свой файл хранится только на этом устройстве.' : 'Подойдут m4a, mp3, wav и flac. Файл останется только на этом устройстве.'}>
             <Row icon={<Icon name="music.note" size={20} />} title={sourceLabel} detail={state?.error ?? undefined} />
@@ -329,7 +357,7 @@ export function SettingsSheet({
         </>
       )}
 
-      {page === 'eq' && (
+      {p === 'eq' && (
         <>
           <Group
             footer={
@@ -397,7 +425,7 @@ export function SettingsSheet({
         </>
       )}
 
-      {page === 'look' && (
+      {p === 'look' && (
         <Group footer="Без анимации строки сменяются сразу. Небо всё равно следует секунде песни: это ход песни, не отдельное мерцание. Системное «Уменьшение движения» выключает переезды.">
           <Choice label="Тема">
             <Segmented
@@ -425,6 +453,9 @@ export function SettingsSheet({
           </Choice>
         </Group>
       )}
+          </div>
+        ))}
+      </div>
     </Sheet>
   );
 }

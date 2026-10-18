@@ -13,8 +13,8 @@ import { DRIVE_KEYS, DRIVE_LABELS, exampleDrive, type DriveKey } from '@/instrum
 import { canTry3d } from '@/instruments/render/support';
 import { InstrumentStage, type InstrumentStageHandle } from '@/scene/InstrumentStage';
 import { linkHandler } from '@/app/router';
-import { Slider } from '@/components/controls';
-import { Icon } from '@/icons/Icon';
+import { Slider } from '@/ui/controls';
+import { Icon } from '@/ui/icons';
 
 import '@/instruments/render/stage3d.css';
 
@@ -37,7 +37,7 @@ function Catalogue() {
   return (
     <div className="ig">
       <header className="ig-top">
-        <a className="btn btn-circle glass" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
+        <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
           <Icon name="chevron.left" size={20} weight={2.2} />
         </a>
       </header>

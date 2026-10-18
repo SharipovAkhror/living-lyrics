@@ -1,23 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { songs, LANG_NAMES, formatTime } from '@/data/library';
+import { songs, LANG_NAMES } from '@/data/library';
 import type { Song } from '@/data/schema';
 import { prefetchLyrics } from '@/app/prefetch';
 import { linkHandler } from '@/app/router';
 import { useSettings } from '@/app/settings';
 import { useAppliedTheme } from '@/app/theme';
-import { Icon } from '@/icons/Icon';
+import { Icon } from '@/ui/icons';
 import { Field } from '@/scene/Field';
-
-/** A stable second for a song's still sky, so the library does not animate three fields at once. */
-function stillT(slug: string) {
-  let h = 2166136261;
-  for (let i = 0; i < slug.length; i++) h = Math.imul(h ^ slug.charCodeAt(i), 16777619);
-  return (h >>> 0) % 180;
-}
-
-function originalScript(title: string | undefined) {
-  return !!title && /[\u0600-\u06FF]/.test(title);
-}
 
 function statusOf(song: Song) {
   if (song.audio.status === 'missing') return { text: 'Без аудио', tone: 'muted' as const };
@@ -29,6 +18,11 @@ function statusOf(song: Song) {
 export function LibraryPage() {
   const dark = useAppliedTheme(useSettings().theme);
   const [q, setQ] = useState('');
+  const wash = useMemo(() => {
+    const colors = songs.flatMap((s) => s.palette.field).filter((c): c is string => !!c);
+    return [0, 1, 2, 3].map((i) => colors[i % Math.max(colors.length, 1)] ?? '#3a2a22');
+  }, []);
+  const clock = useRef(() => performance.now() / 1000).current;
   const list = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return songs;
@@ -41,6 +35,7 @@ export function LibraryPage() {
 
   return (
     <div className="library">
+      <Field colors={wash} dark={dark} clock={clock} />
       <header className="lib-head">
         <div className="lib-titlebar">
           <h1 className="t-large-title">Песни</h1>
@@ -69,7 +64,7 @@ export function LibraryPage() {
       <ul className="lib-list">
         {list.map((song) => (
           <li key={song.slug}>
-            <SongBand song={song} dark={dark} />
+            <SongTile song={song} />
           </li>
         ))}
       </ul>
@@ -82,7 +77,7 @@ export function LibraryPage() {
 }
 
 /** Lyrics for a visible or pointed-at song, so the tap does not wait on that chunk. */
-function SongBand({ song, dark }: { song: Song; dark: boolean }) {
+function SongTile({ song }: { song: Song }) {
   const ref = useRef<HTMLAnchorElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -105,32 +100,29 @@ function SongBand({ song, dark }: { song: Song; dark: boolean }) {
   }, [song.slug]);
 
   const st = statusOf(song);
-  const origRtl = originalScript(song.titleOriginal);
   const warm = () => prefetchLyrics(song.slug);
   return (
     <a
       ref={ref}
-      className="lib-band"
+      className="lib-tile"
       href={`/song/${song.slug}`}
       onClick={linkHandler(`/song/${song.slug}`)}
       onPointerEnter={warm}
       onPointerDown={warm}
       onFocus={warm}
     >
-      <Field colors={song.palette.field} dark={dark} t={stillT(song.slug)} still />
-      <span className="lib-band-copy">
-        <span className="lib-band-title">{song.title}</span>
-        {song.titleOriginal ? (
-          <span className={`lib-band-orig${origRtl ? ' f-mushaf' : ''}`} dir={origRtl ? 'rtl' : 'ltr'}>
-            {song.titleOriginal}
-          </span>
-        ) : null}
-        <span className="lib-band-meta">
-          {song.artist}
-          {song.release?.year ? ` · ${song.release.year}` : ''} · {song.languages.map((l) => LANG_NAMES[l] ?? l).join(', ')} · {formatTime(song.duration)}
-        </span>
-        {st && <span className={`chip chip--${st.tone} t-caption1`}>{st.text}</span>}
+      <img
+        className="lib-tile-cover"
+        src={`/covers/${song.slug}/512.png`}
+        srcSet={`/covers/${song.slug}/512.png 512w, /covers/${song.slug}/1024.png 1024w`}
+        sizes="(min-width: 1100px) 240px, (min-width: 700px) 30vw, 46vw"
+        alt=""
+      />
+      <span className="lib-tile-cap glass glass--strong">
+        <span className="lib-tile-title">{song.title}</span>
+        <span className="lib-tile-artist">{song.artist}</span>
       </span>
+      {st && <span className={`chip chip--${st.tone} t-caption1`}>{st.text}</span>}
     </a>
   );
 }
