@@ -18,6 +18,7 @@ import { preloadInstruments } from '@/instruments/catalog';
 import { SettingsSheet } from './SettingsSheet';
 import { TextSheet } from './TextSheet';
 import { InfoSheet } from './InfoSheet';
+import { headerLine } from './parts';
 
 type SheetName = 'settings' | 'text' | 'info' | null;
 
@@ -264,7 +265,7 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
   if (!song || !engine) return <NotFound />;
 
   const ownerCue = timeline && owner >= 0 ? timeline.cues[owner] : null;
-  const sectionLabel = ownerCue ? ownerCue.section.label : song.artist;
+  const sectionLabel = headerLine(song, ownerCue);
   const comment = timeline && settings.showComment && owner >= 0 ? commentFor(timeline, owner) : null;
   const allLines = lyrics?.sections.flatMap((s) => (s.kind === 'vocal' ? s.lines : [])) ?? [];
   const arabScript = /[\u0600-\u06FF]/;
@@ -294,7 +295,7 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
           <div className="topbar-song">{song.title}</div>
           <div className="topbar-section">{sectionLabel}</div>
         </div>
-        <button className="btn btn-circle btn-quiet" onClick={() => setSheet('info')} aria-label="О песне: кто поёт и играет">
+        <button className="btn btn-circle btn-quiet" onClick={() => setSheet('info')} aria-label="О песне">
           <Icon name="info.circle" size={21} />
         </button>
       </header>
@@ -390,6 +391,8 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
         onClose={() => setSheet(null)}
         song={song}
         lyrics={lyrics}
+        showHarakat={settings.showHarakat}
+        fontPersian={settings.fontPersian}
         onSeek={(t) => {
           engine.seek(t);
           setSheet(null);

@@ -213,7 +213,9 @@ function check(slug: string): Issue[] {
   lyrics = parsed.data;
 
   if (song.slug !== slug) err('song.json', `slug "${song.slug}" ≠ folder "${slug}"`);
-  if (!existsSync(join(dir, 'sources.md'))) warn('sources.md', 'нет файла источников (sources.md)');
+  const sourcesPath = join(dir, 'sources.md');
+  const sourcesText = existsSync(sourcesPath) ? readFileSync(sourcesPath, 'utf8') : '';
+  if (!sourcesText) warn('sources.md', 'нет файла источников (sources.md)');
   const canonPath = join(dir, 'canon.md');
   const canon = existsSync(canonPath) ? letters(readFileSync(canonPath, 'utf8')) : null;
   if (!canon) warn('canon.md', 'нет оригиналов текста (canon.md): строки не с чем сверить (docs/methodology/04-text.md)');
@@ -394,7 +396,104 @@ function check(slug: string): Issue[] {
 
   for (const l of song.languages) if (!langsSeen.has(l)) warn('song.json', `язык ${l} указан в languages, но строк на нём нет`);
   for (const l of langsSeen) if (!song.languages.includes(l)) warn('song.json', `строки на языке ${l} есть, но он не указан в languages`);
+
+  checkParts(song, lyrics, sourcesText, err, warn);
   return issues;
+}
+
+/**
+ * `parts` names whose words each stretch is. Section and line ids must exist.
+ * Every vocal line belongs to exactly one part: a duplicate is an error, a gap is a warning.
+ * A part with no `author` is «не установлено», not a guess — the validator does not invent one.
+ */
+function checkParts(
+  song: Song,
+  lyrics: Lyrics,
+  sourcesText: string,
+  err: (where: string, msg: string) => void,
+  warn: (where: string, msg: string) => void,
+) {
+  const vocal: { id: string; sectionId: string; lang: string; start: number }[] = [];
+  const sectionIds = new Set<string>();
+  const lineIds = new Set<string>();
+  for (const s of lyrics.sections) {
+    sectionIds.add(s.id);
+    if (s.kind !== 'vocal') continue;
+    for (const line of s.lines) {
+      lineIds.add(line.id);
+      vocal.push({ id: line.id, sectionId: s.id, lang: line.lang, start: line.words[0]?.s ?? s.start });
+    }
+  }
+  const parts = song.parts;
+  if (!parts?.length) {
+    if (vocal.length) warn('song.json', 'нет поля parts: вокальные строки не входят в состав (docs/methodology/04-text.md)');
+    return;
+  }
+
+  const seen = new Set<string>();
+  const owner = new Map<string, string>();
+  const firstAt: number[] = [];
+  for (const part of parts) {
+    const where = `parts.${part.id}`;
+    if (seen.has(part.id)) err(where, 'id части повторяется');
+    seen.add(part.id);
+    for (const [label, text] of [
+      ['имени', part.title],
+      ['заметке', part.note],
+      ['ссылке', part.ref ?? ''],
+    ] as const) {
+      const shouted = text ? capsWords(text) : [];
+      if (shouted.length) warn(where, `в ${label} капс: ${shouted.join(', ')}`);
+    }
+    if (part.url && sourcesText && !sourcesText.includes(part.url)) warn(where, `url нет в sources.md: ${part.url}`);
+
+    let earliest = Infinity;
+    const langs = new Set<string>();
+    const claim = (lineId: string) => {
+      const prev = owner.get(lineId);
+      if (prev && prev !== part.id) err(where, `строка ${lineId} уже входит в часть ${prev}`);
+      else if (!prev) {
+        owner.set(lineId, part.id);
+        const line = vocal.find((l) => l.id === lineId);
+        if (line) {
+          langs.add(line.lang);
+          if (line.start < earliest) earliest = line.start;
+        }
+      }
+    };
+    for (const sid of part.sections ?? []) {
+      if (!sectionIds.has(sid)) {
+        err(where, `секции «${sid}» нет в lyrics.json`);
+        continue;
+      }
+      for (const line of vocal) if (line.sectionId === sid) claim(line.id);
+    }
+    for (const lid of part.lines ?? []) {
+      if (!lineIds.has(lid)) {
+        err(where, `строки «${lid}» нет в lyrics.json`);
+        continue;
+      }
+      claim(lid);
+    }
+    const covered = [...owner.values()].filter((id) => id === part.id).length;
+    if (covered === 0) warn(where, 'часть не покрывает ни одной вокальной строки');
+    if (langs.size && !langs.has(part.lang)) warn(where, `lang ${part.lang} не совпадает с языком строк (${[...langs].join(', ')})`);
+    firstAt.push(earliest);
+  }
+  for (let i = 1; i < firstAt.length; i++) {
+    if (firstAt[i] < firstAt[i - 1]) {
+      warn(`parts.${parts[i].id}`, 'части идут не по порядку первого звучания');
+      break;
+    }
+  }
+  const missing = vocal.filter((l) => !owner.has(l.id));
+  if (missing.length) {
+    const sample = missing
+      .slice(0, 8)
+      .map((l) => l.id)
+      .join(', ');
+    warn('parts', `не входят в состав (${missing.length}): ${sample}${missing.length > 8 ? '…' : ''}`);
+  }
 }
 
 function isCli() {
