@@ -109,13 +109,16 @@
             {
               "w": "alive",
               "s": 103.45,
-              "e": 104.72
+              "e": 104.42
             }
           ],
           "tr": {
             "ru": "я ожил"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-3",
@@ -124,18 +127,18 @@
           "words": [
             {
               "w": "I",
-              "s": 104.72,
-              "e": 104.76
+              "s": 104.42,
+              "e": 104.46
             },
             {
               "w": "once",
-              "s": 104.76,
-              "e": 105.03
+              "s": 104.46,
+              "e": 104.73
             },
             {
               "w": "wept",
-              "s": 105.04,
-              "e": 106.33
+              "s": 104.74,
+              "e": 106.03
             }
           ],
           "tr": {
@@ -143,8 +146,7 @@
           },
           "flags": [
             "timing-draft"
-          ],
-          "placedBy": "stable-ts"
+          ]
         },
         {
           "id": "english-4",
@@ -222,7 +224,10 @@
           "tr": {
             "ru": "ты зажёг огонь"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-6",
@@ -254,7 +259,10 @@
           "tr": {
             "ru": "я **ожил**"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-7",
@@ -286,7 +294,10 @@
           "tr": {
             "ru": "подними меня ещё **выше**"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-8",
@@ -359,7 +370,10 @@
             "ru": "я был в своём уме"
           },
           "comment": "Переложение бейта 3: «сказал — ты не безумен и этого дома не достоин». Безумие здесь условие войти, а не болезнь.",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-10",
@@ -390,7 +404,10 @@
           "tr": {
             "ru": "ты свёл меня с ума"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-11",
@@ -417,7 +434,10 @@
           "tr": {
             "ru": "ты наложил цепи"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-11b",
@@ -443,7 +463,10 @@
           "tr": {
             "ru": "мне на руки"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         }
       ]
     },
@@ -492,7 +515,10 @@
           "tr": {
             "ru": "ты зажёг огонь"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-13",
@@ -502,21 +528,21 @@
             {
               "w": "I",
               "s": 126.54,
-              "e": 126.67
+              "e": 126.62
             },
             {
               "w": "have",
-              "s": 126.67,
+              "s": 126.62,
               "e": 126.89
             },
             {
               "w": "come",
               "s": 126.89,
-              "e": 127.78
+              "e": 127.33
             },
             {
               "w": "alive",
-              "s": 127.78,
+              "s": 127.33,
               "e": 128.37
             }
           ],
@@ -526,7 +552,7 @@
           "flags": [
             "timing-draft"
           ],
-          "placedBy": "second"
+          "placedBy": "mms-ft"
         }
       ]
     },
@@ -570,7 +596,10 @@
           "tr": {
             "ru": "подними меня ещё выше"
           },
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "english-15",
@@ -601,7 +630,10 @@
           "tr": {
             "ru": "я ожил"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         }
       ]
     },
@@ -649,7 +681,10 @@
           },
           "translit": "Морде бодам, зенде шодам",
           "comment": "Газель Джалал ад-Дина Руми, XIII в., «Диван Шамса», № 1393. Размер по Ganjoor — раджаз. Редиф **шодам** (شدم): бейт кончается тем, чем говорящий стал.",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-1-2a",
@@ -984,7 +1019,10 @@
           "tr": {
             "ru": "Мой глаз сыт"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "turkish-2",
@@ -1010,7 +1048,10 @@
           "tr": {
             "ru": "душа моя крепка"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "turkish-3",
@@ -1041,7 +1082,10 @@
           "tr": {
             "ru": "во мне отвага льва"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "turkish-4",
@@ -1064,7 +1108,10 @@
             "ru": "я — сияющая **Венера**"
           },
           "comment": "Переложение бейта 2. **Захре** (زهره) — «желчь», то есть смелость, и **Зохре** — Венера. В турецкой строке остаётся Венера, Zühre.",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "turkish-5",
@@ -1095,7 +1142,10 @@
           "tr": {
             "ru": "сказал: «ты не безумен»"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "turkish-6",
@@ -1126,7 +1176,10 @@
           "tr": {
             "ru": "ты не достоин этого дома"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "turkish-7",
@@ -1152,7 +1205,10 @@
           "tr": {
             "ru": "я ушёл и стал безумцем"
           },
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         }
       ]
     },
@@ -1187,7 +1243,10 @@
             "ru": "я привязан к цепям"
           },
           "comment": "**Цепи** — обычный образ безумца в персидской поэзии: одержимого сажали на цепь. У Руми влюблённый надевает их сам.",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "turkish-9",
@@ -1514,7 +1573,10 @@
           },
           "translit": "‘Айнайа маль’ана",
           "comment": "Современное арабское переложение тех же бейтов Руми. Классической поэмы с этим текстом нет.",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-2",
@@ -1541,7 +1603,10 @@
             "ru": "как щедр этот взгляд"
           },
           "translit": "Акрим биха назра",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-3",
@@ -1568,7 +1633,10 @@
             "ru": "мой свет уходит вдаль"
           },
           "translit": "Дау’и ляху бу‘д",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-4",
@@ -1684,7 +1752,10 @@
             "ru": "меня настигло безумие"
           },
           "translit": "Усибту би-ль-джунун",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-8",
@@ -1711,7 +1782,10 @@
             "ru": "в странствии искусств"
           },
           "translit": "Фи рихляти ль-фунун",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-10",
@@ -1763,7 +1837,10 @@
             "ru": "и я не пьян"
           },
           "translit": "Ва ма ана сакран",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-12",
@@ -1816,7 +1893,10 @@
           },
           "translit": "Би-т-тараби шаб‘ан",
           "comment": "**Тараб** (طرب) — восторг слушателя, которого захватила музыка.",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-14",
@@ -1902,7 +1982,10 @@
             "ru": "а я глупец и туп"
           },
           "translit": "Баль ахмак балид",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-17",
@@ -1953,7 +2036,10 @@
             "ru": "сказали: «я — свеча»"
           },
           "translit": "Кыля ана шам‘а",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-20",
@@ -2011,7 +2097,10 @@
             "ru": "но я не шейх"
           },
           "translit": "Ва ма ана шайх",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-22",
@@ -2038,7 +2127,10 @@
             "ru": "и не ученик"
           },
           "translit": "Ва ля ана мурид",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-23",
@@ -2096,7 +2188,10 @@
           },
           "translit": "Убди ау у‘ид",
           "comment": "«Или». Строка говорит «являю или повторяю». То же место читают и как «ни становлюсь, ни пребываю».",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-25",
@@ -2123,7 +2218,10 @@
             "ru": "я не всё это"
           },
           "translit": "Ва ласту кулла зака",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-26",
@@ -2152,7 +2250,10 @@
           },
           "translit": "Баль хадим мути‘",
           "comment": "**Хадим** (خادم) — слуга. В бейте 8 Руми на этом месте **банде** (بنده).",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-29",
@@ -2184,7 +2285,10 @@
             "ru": "прежде я был мёртв"
           },
           "translit": "Кад кунту кабла майтан",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-30",
@@ -2217,7 +2321,10 @@
             "ru": "в моём смехе родник и влага"
           },
           "translit": "Фи дахкати наб‘ун ва рийй",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-31",
@@ -2484,7 +2591,10 @@
           "translit": "Фа-ахйа би-ль-муна ва амуту шаукан",
           "comment": "Строку приводит Абу-ль-Касим аль-Кушайри (ум. 1072) в «ар-Рисала», в главе о любви, после «وأنشدوا»: он цитирует, не сочиняет. В издании на с. 453 во втором полустишии есть «عليك». В этой строке его нет. Автор бейтов не назван.\n\n**Шаук** (شوق) — тоска влюблённого по встрече.",
           "voice": "Набила Маан",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "mawwal-2",
@@ -2518,7 +2628,10 @@
           },
           "translit": "Фа-кам ахйа ва кам амуту",
           "voice": "Набила Маан",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         }
       ]
     },
@@ -2618,7 +2731,10 @@
           },
           "translit": "Шокр конад кагаз-е то",
           "comment": "Игра слов: **шокр** (شکر) — «благодарность» и **шекар** (شکر) — «сахар» пишутся одинаково. Бумага, которой коснулся сахар, сама становится сладкой — так и говорящий, коснувшись любимого, становится ему подобным.",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-15-1b",
@@ -2650,7 +2766,10 @@
             "ru": "за твой сахар без меры"
           },
           "translit": "аз шекар-е би-хадд-е то",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-15-2",
@@ -2688,7 +2807,10 @@
             "ru": "он пришёл мне в объятия"
           },
           "translit": "Камад у дар бар-е ман",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-15-2b",
@@ -2756,7 +2878,10 @@
             "ru": "угрюмая земля благодарит"
           },
           "translit": "Шокр конад хак-е дожам",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-16-1b",
@@ -2798,7 +2923,10 @@
             "ru": "за склонённое небо"
           },
           "translit": "аз фалак-о чарх бе хам",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-16-2",
@@ -2836,7 +2964,10 @@
             "ru": "от его взгляда и круженья"
           },
           "translit": "Каз назар-о гардеш-е у",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-16-2b",
@@ -2863,7 +2994,10 @@
             "ru": "я стала принимать свет"
           },
           "translit": "нур-пазиранде шодам",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-17-1",
@@ -2896,7 +3030,10 @@
             "ru": "небо благодарит"
           },
           "translit": "Шокр конад чарх-е фалак",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-17-1b",
@@ -2980,7 +3117,10 @@
             "ru": "от его щедрости"
           },
           "translit": "Каз карам-о бахшеш-е у",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-17-2b",
@@ -3008,7 +3148,8 @@
           },
           "translit": "роушан бахшанде шодам",
           "flags": [
-            "text-unverified"
+            "text-unverified",
+            "timing-draft"
           ],
           "comment": "В изданиях здесь «روشن بخشنده», без союза, и «روشن و». В строке союза нет.",
           "placedBy": "mms-window"
@@ -3045,7 +3186,10 @@
           },
           "translit": "Шокр конад ареф-е хакк",
           "comment": "**Ариф** (عارف) — познавший истину.",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-18-1b",
@@ -3077,7 +3221,10 @@
             "ru": "мы всех опередили"
           },
           "translit": "каз хаме бордим сабак",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "lang": "fa",
@@ -3110,7 +3257,10 @@
           },
           "translit": "Бар зебар-е хафт табак",
           "comment": "Семь слоёв неба. Звезда следующего полустишия встаёт над ними.",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-18-2",
@@ -3213,7 +3363,10 @@
             "ru": "небом в двести слоёв стал"
           },
           "translit": "Чарх-е до сад тах шодам",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-19-3",
@@ -3245,7 +3398,10 @@
             "ru": "Венерой был — луной стал"
           },
           "translit": "Зохре бодам, мах шодам",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-19-4",
@@ -3282,7 +3438,10 @@
             "ru": "небом в двести слоёв стал"
           },
           "translit": "Чарх-е до сад тах шодам",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-19-5",
@@ -3386,7 +3545,10 @@
             "ru": "я от тебя, о славная луна"
           },
           "translit": "Аз то-ам эй шохре камар",
-          "placedBy": "mms-window"
+          "placedBy": "mms-window",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-20-1b",
@@ -3464,7 +3626,10 @@
             "ru": "от следа твоей улыбки"
           },
           "translit": "Каз асар-е ханде-йе то",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-20-2b",
@@ -3491,7 +3656,10 @@
             "ru": "я стал смеющимся садом"
           },
           "translit": "гольшан-е ханданде шодам",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-21-1",
@@ -3525,7 +3693,10 @@
           },
           "translit": "Баш чу шатрандж-е раван",
           "comment": "Макта, последний бейт. Фигура молчит, но каждым ходом говорит.",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-21-1b",
@@ -3562,7 +3733,10 @@
             "ru": "молчи — и весь будь речью"
           },
           "translit": "хамош-о ход джомле забан",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "lang": "fa",
@@ -3600,7 +3774,10 @@
           },
           "translit": "Каз рох-е ан шах-е джахан",
           "comment": "**Шах** — и царь, и шахматный король.",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "rumi-21-2",
@@ -3633,7 +3810,10 @@
             "ru": "стал счастлив и **благословен**"
           },
           "translit": "Фаррох-о фархонде шодам",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         }
       ]
     },
@@ -3678,7 +3858,10 @@
             "ru": "прежде я был мёртв"
           },
           "translit": "Кад кунту кабла майтан",
-          "placedBy": "mms-ft"
+          "placedBy": "mms-ft",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "coda-ar-2",
@@ -3711,7 +3894,10 @@
             "ru": "в моём смехе родник и влага"
           },
           "translit": "Фи дахкати наб‘ун ва рийй",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "coda-ar-3",
