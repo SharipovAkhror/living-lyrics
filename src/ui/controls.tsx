@@ -241,18 +241,22 @@ export function Sheet({
       >
         <div className="sheet-head">
           <div className="sheet-grabber" />
-          {onBack && (
-            <button type="button" className="btn btn-plain sheet-back" onClick={onBack}>
-              <Icon name="chevron.left" size={18} />
-              <span>{backLabel ?? 'Назад'}</span>
+          <div className="sheet-titlebar">
+            {onBack ? (
+              <button type="button" className="btn btn-plain sheet-back" onClick={onBack}>
+                <Icon name="chevron.left" size={18} />
+                <span>{backLabel ?? 'Назад'}</span>
+              </button>
+            ) : (
+              <span className="sheet-side" />
+            )}
+            <h2 id={titleId} key={title} className="sheet-title t-headline">
+              {title}
+            </h2>
+            <button type="button" className="btn btn-circle sheet-close" onClick={onClose} aria-label="Закрыть">
+              <Icon name="xmark" size={16} />
             </button>
-          )}
-          <h2 id={titleId} key={title} className="sheet-title t-headline">
-            {title}
-          </h2>
-          <button type="button" className="btn btn-circle sheet-close" onClick={onClose} aria-label="Закрыть">
-            <Icon name="xmark" size={16} />
-          </button>
+          </div>
         </div>
         <div ref={body} className="sheet-body">
           {children}

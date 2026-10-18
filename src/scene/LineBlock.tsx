@@ -72,16 +72,23 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
     const el = orig.current;
     const r = root.current;
     if (!el || !r || !stage.w) return;
-    // A short wide screen (the car) can give the line more of the stage. The phone path stays.
-    const deck = stage.w >= 640 && stage.h > 0 && stage.h <= 420;
-    const width = Math.min(stage.w - (deck ? 40 : 56), deck ? 980 : 720);
-    const arab = line.script === 'Arab' || line.script === 'Aran';
-    const maxH = Math.max(deck ? 56 : 72, stage.h * (hasSubs ? (arab ? 0.5 : 0.4) : deck ? 0.58 : 0.46));
-    // Design size on a 852px-tall phone: 33px Latin/Cyrillic, 40px Arabic and Persian. Scale with the window, never below 13.
+    // A short wide window (car, low landscape) must not shrink the line with the height.
+    // 30px Latin / 36px Arabic is the design size there; the fit may ease down only to 28 / 34.
     const vh = window.innerHeight || 852;
-    const design = (arab ? 40 : 33) * (vh / 852) * settings.textScale;
-    const upper = Math.max(13, design);
-    const lower = 13;
+    const vw = window.innerWidth || stage.w;
+    const car = vw >= 700 && vh <= 640;
+    const width = Math.min(stage.w - (car ? 36 : 56), car ? 1100 : 720);
+    const arab = line.script === 'Arab' || line.script === 'Aran';
+    const maxH = car
+      ? Math.max(64, stage.h * (hasSubs ? 0.62 : 0.74))
+      : Math.max(72, stage.h * (hasSubs ? (arab ? 0.5 : 0.4) : 0.46));
+    const floor = car ? (arab ? 34 : 28) : 13;
+    // Phone design size, scaled by the window: 33px Latin/Cyrillic, 40px Arabic and Persian, never below 13.
+    const design = car
+      ? Math.max(floor, (arab ? 36 : 30) * settings.textScale)
+      : (arab ? 40 : 33) * (vh / 852) * settings.textScale;
+    const upper = Math.max(floor, design);
+    const lower = floor;
     el.style.width = `${width}px`;
     let lo = lower;
     let hi = upper;
@@ -91,8 +98,14 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
       if (el.scrollHeight <= maxH && el.scrollWidth <= width + 1) lo = mid;
       else hi = mid;
     }
-    el.style.fontSize = `${Math.floor(lo)}px`;
-    fontPx.current = Math.floor(lo);
+    // lo is a size that already fits. Round it, then step back if the integer overflows.
+    let fitted = Math.min(upper, Math.max(lower, Math.round(lo)));
+    el.style.fontSize = `${fitted}px`;
+    if (el.scrollHeight > maxH + 1 || el.scrollWidth > width + 1) {
+      fitted = Math.min(upper, Math.max(lower, Math.floor(lo)));
+      el.style.fontSize = `${fitted}px`;
+    }
+    fontPx.current = fitted;
     widths.current = words.current.map((w) => w?.offsetWidth ?? 0);
     // The translation's share includes its top margin: total height minus the original's block.
     const mainH = main.current!.offsetHeight;

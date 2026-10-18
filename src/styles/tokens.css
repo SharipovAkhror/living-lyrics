@@ -70,6 +70,13 @@
   --lyric-tr: max(13px, calc(20 * 100dvh / 852));
   --lyric-note: max(13px, calc(17 * 100dvh / 852));
 
+  /* Thick sheet. 80 % white still left the player labels readable, so the light
+     fill is an opaque mix: 92 % white and 8 % of the song's darkest field stop. */
+  --sheet-fill: color-mix(in srgb, #fff 92%, var(--song-field, #c9b8a4));
+  --sheet-fallback: color-mix(in srgb, #fffaf6 94%, var(--song-field, #c9b8a4));
+  --sheet-blur: 40px;
+  --sheet-saturate: 160%;
+
   /* Spacing (8-pt grid with 4-pt half steps) */
   --sp-1: 4px;
   --sp-2: 8px;
@@ -190,6 +197,11 @@
     --material-thick: rgba(14, 12, 18, 0.88);
     --material-regular: rgba(20, 16, 24, 0.8);
     --material-thin: rgba(255, 255, 255, 0.12);
+    /* Opaque mix. 78 % alpha of the field still left the labels readable through a 40 px blur. */
+    --sheet-fill: color-mix(in srgb, var(--song-field, #221820) 78%, #07060c);
+    --sheet-fallback: color-mix(in srgb, var(--song-field, #221820) 88%, #07060c);
+    --sheet-blur: 40px;
+    --sheet-saturate: 160%;
   }
 }
 
@@ -229,6 +241,10 @@
   --material-thick: rgba(14, 12, 18, 0.88);
   --material-regular: rgba(20, 16, 24, 0.8);
   --material-thin: rgba(255, 255, 255, 0.12);
+  --sheet-fill: color-mix(in srgb, var(--song-field, #221820) 78%, #07060c);
+  --sheet-fallback: color-mix(in srgb, var(--song-field, #221820) 88%, #07060c);
+  --sheet-blur: 40px;
+  --sheet-saturate: 160%;
 }
 
 /* Accessibility: Reduce Transparency → frosted, nearly opaque surfaces. Increase Contrast → stronger edges. */
@@ -242,6 +258,19 @@
     --material-regular: var(--bg-elevated);
     --material-thin: var(--bg-elevated);
     --plate-tint: var(--bg-elevated);
+    --sheet-fill: var(--bg-elevated);
+    --sheet-fallback: var(--bg-elevated);
+  }
+}
+
+/* Short and wide (car, low landscape). Type is not a fraction of the height:
+   at 480 px that fraction was 18 px for the line and 13 px for the translation. */
+@media (min-width: 700px) and (max-height: 640px) {
+  :root {
+    --lyric-latin: 30px;
+    --lyric-arab: 36px;
+    --lyric-tr: 18px;
+    --lyric-note: 16px;
   }
 }
 @media (prefers-contrast: more) {

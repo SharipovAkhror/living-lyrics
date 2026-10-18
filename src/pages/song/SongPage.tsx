@@ -436,15 +436,14 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
                   onClick={placeMark}
                   disabled={!timeline}
                   aria-label="Не совпадает"
+                  title="Не совпадает"
                   aria-keyshortcuts="M"
                 >
-                  <span className="mark-btn-label" aria-hidden="true">
-                    Не совпадает
-                  </span>
-                  <kbd className="mark-kbd" aria-hidden="true">
-                    M
-                  </kbd>
+                  <Icon name="flag" size={18} />
                 </button>
+                <kbd className="mark-kbd" aria-hidden="true">
+                  M
+                </kbd>
               </div>
             }
           />
@@ -480,21 +479,21 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           </button>
         </div>
         <div className="utility">
-          <button className="util" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
+          <button className="util" aria-label="Перевод" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
             <Icon name="character.bubble" size={22} />
-            <span>Перевод</span>
+            <span className="util-label" aria-hidden="true">Перевод</span>
           </button>
-          <button className="util" aria-pressed={settings.showComment} onClick={() => setSettings({ showComment: !settings.showComment })}>
+          <button className="util" aria-label="Пояснение" aria-pressed={settings.showComment} onClick={() => setSettings({ showComment: !settings.showComment })}>
             <Icon name="book.closed" size={22} />
-            <span>Пояснение</span>
+            <span className="util-label" aria-hidden="true">Пояснение</span>
           </button>
-          <button className="util" onClick={() => setSheet('text')}>
+          <button className="util" aria-label="Весь текст" onClick={() => setSheet('text')}>
             <Icon name="list.bullet" size={22} />
-            <span>Весь текст</span>
+            <span className="util-label" aria-hidden="true">Весь текст</span>
           </button>
-          <button className="util" onClick={() => setSheet('settings')}>
+          <button className="util" aria-label="Настройки" onClick={() => setSheet('settings')}>
             <Icon name="slider.horizontal.3" size={22} />
-            <span>Настройки</span>
+            <span className="util-label" aria-hidden="true">Настройки</span>
           </button>
         </div>
       </footer>
