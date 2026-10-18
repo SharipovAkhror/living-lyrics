@@ -2,9 +2,550 @@
   "slug": "i-have-come-alive",
   "segments": [
     {
+      "id": "baglama",
+      "start": 11.5,
+      "end": 14.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "baglama",
+      "start": 59.5,
+      "end": 62.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "baglama",
+      "start": 82.5,
+      "end": 85.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "baglama",
+      "start": 164.5,
+      "end": 167.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "baglama",
+      "start": 249.5,
+      "end": 253.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "baglama",
+      "start": 280.5,
+      "end": 283.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "baglama",
+      "start": 347.5,
+      "end": 350.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "baglama",
+      "start": 388.5,
+      "end": 395.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "baglama",
+      "start": 398.5,
+      "end": 401.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "baglama",
+      "start": 537.5,
+      "end": 541.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "baglama",
+      "start": 560.5,
+      "end": 563.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "daf",
+      "start": 29.5,
+      "end": 37.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "daf",
+      "start": 52.5,
+      "end": 55.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "daf",
+      "start": 82.5,
+      "end": 85.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "daf",
+      "start": 87.5,
+      "end": 90.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "daf",
+      "start": 164.5,
+      "end": 171.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "daf",
+      "start": 249.5,
+      "end": 253.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "daf",
+      "start": 274.5,
+      "end": 277.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "daf",
+      "start": 280.5,
+      "end": 285.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "daf",
+      "start": 347.5,
+      "end": 350.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "daf",
+      "start": 388.5,
+      "end": 391.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "daf",
+      "start": 396.5,
+      "end": 399.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "daf",
+      "start": 525.5,
+      "end": 529.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "daf",
+      "start": 560.5,
+      "end": 563.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "erhu",
+      "start": 152.5,
+      "end": 155.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "erhu",
+      "start": 533.5,
+      "end": 537.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "erhu",
+      "start": 541.5,
+      "end": 545.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "erhu",
+      "start": 554.5,
+      "end": 557.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "kamancheh",
+      "start": 54.5,
+      "end": 65.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "kamancheh",
+      "start": 70.5,
+      "end": 77.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "kamancheh",
+      "start": 245.5,
+      "end": 249.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "kamancheh",
+      "start": 253.5,
+      "end": 257.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "kamancheh",
+      "start": 263.5,
+      "end": 266.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "kamancheh",
+      "start": 496.5,
+      "end": 499.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "kamancheh",
+      "start": 550.5,
+      "end": 553.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestral-percussion",
+      "start": 522.5,
+      "end": 525.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "oud",
+      "start": 18.5,
+      "end": 21.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "oud",
+      "start": 23.5,
+      "end": 26.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "qanun",
+      "start": 18.5,
+      "end": 21.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "qanun",
+      "start": 23.5,
+      "end": 26.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "qanun",
+      "start": 274.5,
+      "end": 277.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "sitar",
+      "start": 229.5,
+      "end": 237.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "sitar",
+      "start": 392.5,
+      "end": 395.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "sitar",
+      "start": 398.5,
+      "end": 401.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "tabla",
+      "start": 533.5,
+      "end": 537.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "tanbur",
+      "start": 8.5,
+      "end": 17.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "tanbur",
+      "start": 20.5,
+      "end": 33.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "tanbur",
+      "start": 85.5,
+      "end": 89.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "tanbur",
+      "start": 162.5,
+      "end": 165.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "tanbur",
+      "start": 272.5,
+      "end": 275.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "tanbur",
+      "start": 390.5,
+      "end": 393.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "tanbur",
+      "start": 496.5,
+      "end": 499.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "tanbur",
+      "start": 550.5,
+      "end": 553.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
       "id": "voice",
-      "start": 100.0,
-      "end": 165.0,
+      "start": 99.0,
+      "end": 169.5,
+      "sources": [
+        "audio",
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "voice",
+      "start": 171.0,
+      "end": 174.0,
       "sources": [
         "audio",
         "credits"
@@ -13,40 +554,33 @@
     },
     {
       "id": "voice",
-      "start": 182.0,
-      "end": 248.0,
+      "start": 181.5,
+      "end": 251.0,
       "sources": [
         "audio",
+        "vision",
         "credits"
       ],
       "review": ""
     },
     {
       "id": "voice",
-      "start": 285.0,
-      "end": 387.0,
+      "start": 284.5,
+      "end": 389.5,
       "sources": [
         "audio",
+        "vision",
         "credits"
       ],
       "review": ""
     },
     {
       "id": "voice",
-      "start": 403.0,
-      "end": 410.0,
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "review": ""
-    },
-    {
-      "id": "voice",
-      "start": 412.0,
+      "start": 402.5,
       "end": 566.0,
       "sources": [
         "audio",
+        "vision",
         "credits"
       ],
       "review": ""

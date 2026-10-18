@@ -2,6 +2,326 @@
   "slug": "one",
   "intervals": [
     {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 402.5,
+      "end": 405.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 408.5,
+      "end": 411.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 415.5,
+      "end": 421.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 439.5,
+      "end": 442.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 444.5,
+      "end": 447.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 635.5,
+      "end": 641.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 643.5,
+      "end": 646.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 648.5,
+      "end": 658.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 662.5,
+      "end": 669.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 691.5,
+      "end": 697.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 257.0,
+      "end": 260.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8645,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 332.0,
+      "end": 335.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9801,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 345.0,
+      "end": 348.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.6731,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 383.0,
+      "end": 387.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9695,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 481.0,
+      "end": 484.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9751,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 547.0,
+      "end": 551.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9507,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 582.0,
+      "end": 588.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.991,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 590.0,
+      "end": 607.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9657,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 615.0,
+      "end": 622.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9096,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 646.0,
+      "end": 656.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9778,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
       "id": "cello",
       "name": "виолончель",
       "catalogKey": "cello",
@@ -12,7 +332,7 @@
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.8691,
+      "audioConfidence": 0.868,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -21,16 +341,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 17.0,
-      "end": 25.0,
+      "start": 2.5,
+      "end": 9.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.931,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -38,16 +358,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 28.0,
-      "end": 31.0,
+      "start": 11.5,
+      "end": 17.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9989,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -55,16 +375,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 33.0,
-      "end": 37.0,
+      "start": 26.5,
+      "end": 54.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9887,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -72,235 +392,1088 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 40.0,
+      "start": 61.5,
+      "end": 65.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 72.5,
+      "end": 75.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 79.5,
+      "end": 82.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 88.5,
+      "end": 97.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 101.5,
+      "end": 105.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 114.5,
+      "end": 117.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 122.5,
+      "end": 125.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 131.5,
+      "end": 137.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 141.5,
+      "end": 153.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 158.5,
+      "end": 169.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 171.5,
+      "end": 185.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 197.5,
+      "end": 201.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 205.5,
+      "end": 209.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 211.5,
+      "end": 217.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 219.5,
+      "end": 237.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 239.5,
+      "end": 242.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 727.5,
+      "end": 761.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "clarinet",
+      "name": "кларнет",
+      "catalogKey": null,
+      "start": 115.0,
+      "end": 118.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8665,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "clarinet",
+      "name": "кларнет",
+      "catalogKey": null,
+      "start": 814.0,
+      "end": 817.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9136,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 346.5,
+      "end": 349.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 355.5,
+      "end": 358.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 401.5,
+      "end": 404.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 458.5,
+      "end": 465.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 471.5,
+      "end": 477.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 503.5,
+      "end": 514.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 516.5,
+      "end": 519.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 524.5,
+      "end": 527.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 532.5,
+      "end": 540.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 545.5,
+      "end": 550.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 557.5,
+      "end": 565.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 583.5,
+      "end": 613.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 615.5,
+      "end": 629.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 633.5,
+      "end": 641.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 643.5,
+      "end": 657.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 661.5,
+      "end": 669.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 732.5,
+      "end": 735.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 739.5,
+      "end": 742.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 745.5,
+      "end": 748.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 305.5,
+      "end": 309.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 369.5,
+      "end": 373.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 399.5,
+      "end": 402.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 450.5,
+      "end": 453.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 624.5,
+      "end": 634.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 639.5,
+      "end": 642.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 658.5,
+      "end": 662.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 715.5,
+      "end": 721.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 26.5,
+      "end": 37.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 71.0,
+      "end": 74.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8498,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 92.0,
+      "end": 99.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7778,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 114.0,
+      "end": 119.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8829,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 124.0,
+      "end": 127.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9178,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 189.5,
+      "end": 193.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 203.0,
+      "end": 218.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 0.8619,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 224.0,
+      "end": 230.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9122,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 239.0,
+      "end": 248.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8366,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 309.0,
+      "end": 312.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.862,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 319.0,
+      "end": 324.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9073,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 338.0,
+      "end": 342.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7039,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 350.0,
+      "end": 353.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.865,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 374.0,
+      "end": 377.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8778,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 408.0,
+      "end": 412.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7838,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 447.0,
+      "end": 451.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.921,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 482.5,
+      "end": 485.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 492.0,
+      "end": 496.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9158,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 578.0,
+      "end": 581.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7992,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 617.0,
+      "end": 625.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9899,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 49.0,
       "end": 54.0,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "audioConfidence": 0.9986,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 98.0,
-      "end": 105.0,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "audioConfidence": 0.9913,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 108.0,
-      "end": 140.0,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "audioConfidence": 0.9989,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 144.0,
-      "end": 148.0,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "audioConfidence": 0.9851,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 159.0,
-      "end": 164.0,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "audioConfidence": 0.984,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 167.0,
-      "end": 187.0,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "audioConfidence": 0.9907,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 189.0,
-      "end": 193.0,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "audioConfidence": 0.9886,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 197.0,
-      "end": 201.0,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "audioConfidence": 0.9939,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 206.0,
-      "end": 225.0,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "audioConfidence": 0.9972,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 228.0,
-      "end": 232.0,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "audioConfidence": 0.9074,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 235.0,
-      "end": 244.0,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "audioConfidence": 0.971,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 811.0,
-      "end": 816.0,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "audioConfidence": 0.9926,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 818.0,
-      "end": 828.0,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "audioConfidence": 0.9889,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "flute",
-      "name": "поперечная флейта",
-      "catalogKey": null,
-      "start": 268.0,
-      "end": 277.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.999,
+      "audioConfidence": 0.9242,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -309,14 +1482,159 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 280.0,
-      "end": 299.0,
+      "start": 65.0,
+      "end": 68.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
+      ],
+      "audioConfidence": 0.853,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 131.0,
+      "end": 134.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8668,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 187.0,
+      "end": 190.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8919,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 199.0,
+      "end": 202.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9063,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 219.0,
+      "end": 230.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8967,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 241.0,
+      "end": 246.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9565,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 265.5,
+      "end": 299.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
       ],
       "audioConfidence": 1.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 315.0,
+      "end": 325.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9963,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 328.0,
+      "end": 331.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9987,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 335.0,
+      "end": 343.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9807,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -326,13 +1644,13 @@
       "name": "поперечная флейта",
       "catalogKey": null,
       "start": 364.0,
-      "end": 367.0,
+      "end": 368.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9703,
+      "audioConfidence": 0.9944,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -341,14 +1659,14 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 425.0,
-      "end": 429.0,
+      "start": 371.0,
+      "end": 384.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9038,
+      "audioConfidence": 0.9745,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -357,104 +1675,217 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 713.0,
+      "start": 405.0,
+      "end": 411.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8277,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 417.0,
+      "end": 434.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9881,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 448.0,
+      "end": 457.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9971,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 465.0,
+      "end": 468.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9349,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 474.0,
+      "end": 478.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9938,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 483.0,
+      "end": 487.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9161,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 489.0,
+      "end": 493.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9662,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 506.0,
+      "end": 509.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9067,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 526.0,
+      "end": 529.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9647,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 553.0,
+      "end": 556.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9163,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 568.0,
+      "end": 578.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.991,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 671.0,
+      "end": 674.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9906,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 700.0,
       "end": 724.0,
-      "decision": "check",
-      "review": "",
+      "decision": "accept",
+      "review": "нет в титрах",
       "sources": [
-        "audio"
+        "audio",
+        "vision"
       ],
-      "audioConfidence": 0.9964,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.9995,
+      "visionConfidence": 0.95,
       "who": "",
-      "audioAlone": true
+      "audioAlone": false
     },
     {
-      "id": "guitar-acoustic",
-      "name": "акустическая гитара",
+      "id": "flute",
+      "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 247.0,
-      "end": 250.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.9538,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "guitar-acoustic",
-      "name": "акустическая гитара",
-      "catalogKey": null,
-      "start": 262.0,
-      "end": 266.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.9126,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "guitar-acoustic",
-      "name": "акустическая гитара",
-      "catalogKey": null,
-      "start": 509.0,
-      "end": 512.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.9901,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "guitar-acoustic",
-      "name": "акустическая гитара",
-      "catalogKey": null,
-      "start": 530.0,
-      "end": 533.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.914,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "guitar-acoustic",
-      "name": "акустическая гитара",
-      "catalogKey": null,
-      "start": 544.0,
-      "end": 547.0,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "audio"
-      ],
-      "audioConfidence": 0.9772,
-      "visionConfidence": 0.0,
-      "who": "",
-      "audioAlone": true
-    },
-    {
-      "id": "voice",
-      "name": "голос",
-      "catalogKey": "voice",
-      "start": 57.0,
-      "end": 92.0,
+      "start": 736.0,
+      "end": 739.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -466,27 +1897,75 @@
       "audioAlone": true
     },
     {
-      "id": "voice",
-      "name": "голос",
-      "catalogKey": "voice",
-      "start": 302.0,
-      "end": 356.0,
+      "id": "french-horn",
+      "name": "валторна",
+      "catalogKey": null,
+      "start": 639.0,
+      "end": 643.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9998,
+      "audioConfidence": 0.949,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
     },
     {
-      "id": "voice",
-      "name": "голос",
-      "catalogKey": "voice",
-      "start": 362.0,
-      "end": 391.0,
+      "id": "french-horn",
+      "name": "валторна",
+      "catalogKey": null,
+      "start": 823.0,
+      "end": 826.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7069,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 247.0,
+      "end": 254.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9953,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 261.0,
+      "end": 266.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9864,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 500.0,
+      "end": 515.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -498,11 +1977,11 @@
       "audioAlone": true
     },
     {
-      "id": "voice",
-      "name": "голос",
-      "catalogKey": "voice",
-      "start": 441.0,
-      "end": 464.0,
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 518.0,
+      "end": 526.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -514,17 +1993,1647 @@
       "audioAlone": true
     },
     {
-      "id": "voice",
-      "name": "голос",
-      "catalogKey": "voice",
-      "start": 475.0,
-      "end": 499.0,
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 528.0,
+      "end": 548.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9986,
+      "audioConfidence": 0.9981,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 673.0,
+      "end": 676.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8619,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 687.0,
+      "end": 692.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8676,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "kamancheh",
+      "name": "кяманча",
+      "catalogKey": "kamancheh",
+      "start": 491.5,
+      "end": 494.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "kamancheh",
+      "name": "кяманча",
+      "catalogKey": "kamancheh",
+      "start": 499.5,
+      "end": 505.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "kamancheh",
+      "name": "кяманча",
+      "catalogKey": "kamancheh",
+      "start": 546.5,
+      "end": 549.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "ney",
+      "name": "най",
+      "catalogKey": "ney",
+      "start": 464.5,
+      "end": 473.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "ney",
+      "name": "най",
+      "catalogKey": "ney",
+      "start": 495.5,
+      "end": 498.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "ney",
+      "name": "най",
+      "catalogKey": "ney",
+      "start": 710.5,
+      "end": 716.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "ney",
+      "name": "най",
+      "catalogKey": "ney",
+      "start": 719.5,
+      "end": 722.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 245.5,
+      "end": 249.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 301.5,
+      "end": 305.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 312.5,
+      "end": 315.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 322.5,
+      "end": 325.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 336.5,
+      "end": 345.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 350.5,
+      "end": 357.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 362.5,
+      "end": 365.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 368.5,
+      "end": 371.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 375.5,
+      "end": 378.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 394.5,
+      "end": 397.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 413.5,
+      "end": 417.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 426.5,
+      "end": 429.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 446.5,
+      "end": 449.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 451.5,
+      "end": 457.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 480.5,
+      "end": 493.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 498.5,
+      "end": 501.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 505.5,
+      "end": 509.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 538.5,
+      "end": 541.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 549.5,
+      "end": 553.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 556.5,
+      "end": 561.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 568.5,
+      "end": 573.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 578.5,
+      "end": 585.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 630.5,
+      "end": 637.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 641.5,
+      "end": 652.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 667.5,
+      "end": 670.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 672.5,
+      "end": 677.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 683.5,
+      "end": 686.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 696.5,
+      "end": 699.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 704.5,
+      "end": 707.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 714.5,
+      "end": 717.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "organ",
+      "name": "орган",
+      "catalogKey": null,
+      "start": 94.0,
+      "end": 97.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9467,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "organ",
+      "name": "орган",
+      "catalogKey": null,
+      "start": 206.0,
+      "end": 214.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8192,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "start": 249.5,
+      "end": 261.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "start": 343.5,
+      "end": 346.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "start": 499.5,
+      "end": 505.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "start": 508.5,
+      "end": 529.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "start": 535.5,
+      "end": 538.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "start": 542.5,
+      "end": 549.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "qanun",
+      "name": "канун",
+      "catalogKey": "qanun",
+      "start": 208.5,
+      "end": 211.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "qanun",
+      "name": "канун",
+      "catalogKey": "qanun",
+      "start": 223.5,
+      "end": 226.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "qanun",
+      "name": "канун",
+      "catalogKey": "qanun",
+      "start": 580.5,
+      "end": 583.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "riq",
+      "name": "рик",
+      "catalogKey": "riq",
+      "start": 305.5,
+      "end": 309.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 54.5,
+      "end": 57.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 60.5,
+      "end": 63.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 67.5,
+      "end": 70.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 73.5,
+      "end": 76.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 78.5,
+      "end": 81.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 126.5,
+      "end": 129.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 202.5,
+      "end": 206.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 236.5,
+      "end": 241.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 261.5,
+      "end": 265.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 276.5,
+      "end": 279.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 376.5,
+      "end": 379.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 396.5,
+      "end": 401.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 403.5,
+      "end": 414.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 419.5,
+      "end": 427.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 429.5,
+      "end": 437.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 677.5,
+      "end": 693.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 695.5,
+      "end": 705.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 736.5,
+      "end": 739.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "tanbur",
+      "name": "танбур",
+      "catalogKey": "tanbur",
+      "start": 309.5,
+      "end": 313.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "tanbur",
+      "name": "танбур",
+      "catalogKey": "tanbur",
+      "start": 315.5,
+      "end": 318.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "tanbur",
+      "name": "танбур",
+      "catalogKey": "tanbur",
+      "start": 335.5,
+      "end": 338.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "tanbur",
+      "name": "танбур",
+      "catalogKey": "tanbur",
+      "start": 572.5,
+      "end": 575.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 99.5,
+      "end": 102.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 109.5,
+      "end": 112.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 164.0,
+      "end": 167.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.6995,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 300.5,
+      "end": 303.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 308.5,
+      "end": 311.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 318.5,
+      "end": 321.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 326.5,
+      "end": 329.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 331.5,
+      "end": 337.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 347.5,
+      "end": 350.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 356.5,
+      "end": 361.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 381.5,
+      "end": 385.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 388.5,
+      "end": 393.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 427.5,
+      "end": 430.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 435.5,
+      "end": 441.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 445.5,
+      "end": 448.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 456.5,
+      "end": 459.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 463.5,
+      "end": 466.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 493.5,
+      "end": 500.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 504.5,
+      "end": 507.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 551.5,
+      "end": 557.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 565.5,
+      "end": 569.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 573.5,
+      "end": 577.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 606.0,
+      "end": 609.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.6903,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 642.0,
+      "end": 646.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8905,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 769.0,
+      "end": 772.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8038,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 779.0,
+      "end": 784.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9512,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 803.0,
+      "end": 807.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9586,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -533,17 +3642,152 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 560.0,
-      "end": 584.0,
+      "start": 0.0,
+      "end": 171.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 0.9999,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 173.0,
+      "end": 251.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 0.9998,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 302.0,
+      "end": 357.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 360.5,
+      "end": 391.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 393.5,
+      "end": 396.5,
       "decision": "check",
       "review": "",
       "sources": [
-        "audio"
+        "vision"
       ],
-      "audioConfidence": 0.9996,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
       "who": "",
-      "audioAlone": true
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 440.5,
+      "end": 466.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 473.0,
+      "end": 500.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 548.5,
+      "end": 551.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 555.5,
+      "end": 586.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
     },
     {
       "id": "voice",
@@ -556,7 +3800,7 @@
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9199,
+      "audioConfidence": 0.9531,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -565,14 +3809,111 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 737.0,
-      "end": 740.0,
+      "start": 668.5,
+      "end": 673.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 705.5,
+      "end": 709.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 720.5,
+      "end": 725.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 729.0,
+      "end": 774.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 778.0,
+      "end": 784.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9008,
+      "audioConfidence": 0.9083,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 803.0,
+      "end": 807.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9321,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 810.0,
+      "end": 828.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9999,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -583,16 +3924,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 17.0,
-      "end": 25.0,
+      "start": 2.5,
+      "end": 9.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.931,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -600,16 +3941,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 28.0,
-      "end": 31.0,
+      "start": 11.5,
+      "end": 17.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9989,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -617,16 +3958,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 33.0,
-      "end": 37.0,
+      "start": 26.5,
+      "end": 54.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9887,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -634,16 +3975,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 40.0,
-      "end": 54.0,
+      "start": 61.5,
+      "end": 65.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9986,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -651,16 +3992,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 98.0,
-      "end": 105.0,
+      "start": 72.5,
+      "end": 75.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9913,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -668,16 +4009,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 108.0,
-      "end": 140.0,
+      "start": 79.5,
+      "end": 82.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9989,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -685,16 +4026,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 144.0,
-      "end": 148.0,
+      "start": 88.5,
+      "end": 97.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9851,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -702,16 +4043,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 159.0,
-      "end": 164.0,
+      "start": 101.5,
+      "end": 105.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.984,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -719,16 +4060,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 167.0,
-      "end": 187.0,
+      "start": 114.5,
+      "end": 117.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9907,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -736,16 +4077,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 189.0,
-      "end": 193.0,
+      "start": 122.5,
+      "end": 125.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9886,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -753,16 +4094,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 197.0,
-      "end": 201.0,
+      "start": 131.5,
+      "end": 137.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9939,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -770,16 +4111,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 206.0,
-      "end": 225.0,
+      "start": 141.5,
+      "end": 153.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9972,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -787,16 +4128,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 228.0,
-      "end": 232.0,
+      "start": 158.5,
+      "end": 169.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9074,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -804,16 +4145,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 235.0,
-      "end": 244.0,
+      "start": 171.5,
+      "end": 185.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.971,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -821,16 +4162,16 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 811.0,
-      "end": 816.0,
+      "start": 197.5,
+      "end": 201.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9926,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -838,21 +4179,1106 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 818.0,
-      "end": 828.0,
+      "start": 205.5,
+      "end": 209.5,
       "decision": "accept",
       "review": "",
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
-      "audioConfidence": 0.9889,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 211.5,
+      "end": 217.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 219.5,
+      "end": 237.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 239.5,
+      "end": 242.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 727.5,
+      "end": 761.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 203.0,
+      "end": 218.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 0.8619,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 265.5,
+      "end": 299.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 700.0,
+      "end": 724.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 0.9995,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 245.5,
+      "end": 249.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 301.5,
+      "end": 305.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 312.5,
+      "end": 315.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 322.5,
+      "end": 325.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 336.5,
+      "end": 345.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 350.5,
+      "end": 357.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 362.5,
+      "end": 365.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 368.5,
+      "end": 371.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 375.5,
+      "end": 378.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 394.5,
+      "end": 397.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 413.5,
+      "end": 417.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 426.5,
+      "end": 429.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 446.5,
+      "end": 449.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 451.5,
+      "end": 457.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 480.5,
+      "end": 493.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 498.5,
+      "end": 501.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 505.5,
+      "end": 509.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 538.5,
+      "end": 541.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 549.5,
+      "end": 553.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 556.5,
+      "end": 561.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 568.5,
+      "end": 573.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 578.5,
+      "end": 585.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 630.5,
+      "end": 637.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 641.5,
+      "end": 652.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 667.5,
+      "end": 670.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 672.5,
+      "end": 677.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 683.5,
+      "end": 686.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 696.5,
+      "end": 699.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 704.5,
+      "end": 707.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 714.5,
+      "end": 717.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 0.0,
+      "end": 171.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 0.9999,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 173.0,
+      "end": 251.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 0.9998,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 302.0,
+      "end": 357.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 360.5,
+      "end": 391.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 440.5,
+      "end": 466.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 473.0,
+      "end": 500.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 555.5,
+      "end": 586.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 729.0,
+      "end": 774.0,
+      "decision": "accept",
+      "review": "нет в титрах",
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "audioConfidence": 1.0,
+      "visionConfidence": 0.9,
       "who": "",
       "audioAlone": false
     }
   ],
   "check": [
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 402.5,
+      "end": 405.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 408.5,
+      "end": 411.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 415.5,
+      "end": 421.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 439.5,
+      "end": 442.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 444.5,
+      "end": 447.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 635.5,
+      "end": 641.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 643.5,
+      "end": 646.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 648.5,
+      "end": 658.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 662.5,
+      "end": 669.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 691.5,
+      "end": 697.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 257.0,
+      "end": 260.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8645,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 332.0,
+      "end": 335.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9801,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 345.0,
+      "end": 348.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.6731,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 383.0,
+      "end": 387.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9695,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 481.0,
+      "end": 484.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9751,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 547.0,
+      "end": 551.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9507,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 582.0,
+      "end": 588.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.991,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 590.0,
+      "end": 607.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9657,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 615.0,
+      "end": 622.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9096,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "cello",
+      "name": "виолончель",
+      "catalogKey": "cello",
+      "start": 646.0,
+      "end": 656.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9778,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
     {
       "id": "cello",
       "name": "виолончель",
@@ -864,7 +5290,775 @@
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.8691,
+      "audioConfidence": 0.868,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "clarinet",
+      "name": "кларнет",
+      "catalogKey": null,
+      "start": 115.0,
+      "end": 118.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8665,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "clarinet",
+      "name": "кларнет",
+      "catalogKey": null,
+      "start": 814.0,
+      "end": 817.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9136,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 346.5,
+      "end": 349.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 355.5,
+      "end": 358.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 401.5,
+      "end": 404.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 458.5,
+      "end": 465.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 471.5,
+      "end": 477.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 503.5,
+      "end": 514.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 516.5,
+      "end": 519.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 524.5,
+      "end": 527.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 532.5,
+      "end": 540.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 545.5,
+      "end": 550.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 557.5,
+      "end": 565.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 583.5,
+      "end": 613.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 615.5,
+      "end": 629.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 633.5,
+      "end": 641.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 643.5,
+      "end": 657.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 661.5,
+      "end": 669.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 732.5,
+      "end": 735.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 739.5,
+      "end": 742.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "start": 745.5,
+      "end": 748.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 305.5,
+      "end": 309.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 369.5,
+      "end": 373.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 399.5,
+      "end": 402.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 450.5,
+      "end": 453.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 624.5,
+      "end": 634.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 639.5,
+      "end": 642.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 658.5,
+      "end": 662.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "start": 715.5,
+      "end": 721.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 26.5,
+      "end": 37.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 71.0,
+      "end": 74.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8498,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 92.0,
+      "end": 99.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7778,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 114.0,
+      "end": 119.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8829,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 124.0,
+      "end": 127.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9178,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 189.5,
+      "end": 193.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 224.0,
+      "end": 230.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9122,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 239.0,
+      "end": 248.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8366,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 309.0,
+      "end": 312.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.862,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 319.0,
+      "end": 324.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9073,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 338.0,
+      "end": 342.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7039,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 350.0,
+      "end": 353.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.865,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 374.0,
+      "end": 377.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8778,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 408.0,
+      "end": 412.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7838,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 447.0,
+      "end": 451.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.921,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 482.5,
+      "end": 485.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 492.0,
+      "end": 496.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9158,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 578.0,
+      "end": 581.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7992,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "start": 617.0,
+      "end": 625.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9899,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -873,14 +6067,14 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 268.0,
-      "end": 277.0,
+      "start": 49.0,
+      "end": 54.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.999,
+      "audioConfidence": 0.9242,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -889,14 +6083,142 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 280.0,
-      "end": 299.0,
+      "start": 65.0,
+      "end": 68.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 1.0,
+      "audioConfidence": 0.853,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 131.0,
+      "end": 134.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8668,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 187.0,
+      "end": 190.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8919,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 199.0,
+      "end": 202.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9063,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 219.0,
+      "end": 230.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8967,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 241.0,
+      "end": 246.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9565,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 315.0,
+      "end": 325.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9963,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 328.0,
+      "end": 331.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9987,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 335.0,
+      "end": 343.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9807,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -906,13 +6228,13 @@
       "name": "поперечная флейта",
       "catalogKey": null,
       "start": 364.0,
-      "end": 367.0,
+      "end": 368.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9703,
+      "audioConfidence": 0.9944,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -921,14 +6243,14 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 425.0,
-      "end": 429.0,
+      "start": 371.0,
+      "end": 384.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9038,
+      "audioConfidence": 0.9745,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -937,104 +6259,200 @@
       "id": "flute",
       "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 713.0,
-      "end": 724.0,
+      "start": 405.0,
+      "end": 411.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9964,
+      "audioConfidence": 0.8277,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
     },
     {
-      "id": "guitar-acoustic",
-      "name": "акустическая гитара",
+      "id": "flute",
+      "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 247.0,
-      "end": 250.0,
+      "start": 417.0,
+      "end": 434.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9538,
+      "audioConfidence": 0.9881,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
     },
     {
-      "id": "guitar-acoustic",
-      "name": "акустическая гитара",
+      "id": "flute",
+      "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 262.0,
-      "end": 266.0,
+      "start": 448.0,
+      "end": 457.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9126,
+      "audioConfidence": 0.9971,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
     },
     {
-      "id": "guitar-acoustic",
-      "name": "акустическая гитара",
+      "id": "flute",
+      "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 509.0,
-      "end": 512.0,
+      "start": 465.0,
+      "end": 468.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9901,
+      "audioConfidence": 0.9349,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
     },
     {
-      "id": "guitar-acoustic",
-      "name": "акустическая гитара",
+      "id": "flute",
+      "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 530.0,
-      "end": 533.0,
+      "start": 474.0,
+      "end": 478.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.914,
+      "audioConfidence": 0.9938,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
     },
     {
-      "id": "guitar-acoustic",
-      "name": "акустическая гитара",
+      "id": "flute",
+      "name": "поперечная флейта",
       "catalogKey": null,
-      "start": 544.0,
-      "end": 547.0,
+      "start": 483.0,
+      "end": 487.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9772,
+      "audioConfidence": 0.9161,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
     },
     {
-      "id": "voice",
-      "name": "голос",
-      "catalogKey": "voice",
-      "start": 57.0,
-      "end": 92.0,
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 489.0,
+      "end": 493.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9662,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 506.0,
+      "end": 509.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9067,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 526.0,
+      "end": 529.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9647,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 553.0,
+      "end": 556.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9163,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 568.0,
+      "end": 578.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.991,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 671.0,
+      "end": 674.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9906,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "start": 736.0,
+      "end": 739.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -1046,27 +6464,75 @@
       "audioAlone": true
     },
     {
-      "id": "voice",
-      "name": "голос",
-      "catalogKey": "voice",
-      "start": 302.0,
-      "end": 356.0,
+      "id": "french-horn",
+      "name": "валторна",
+      "catalogKey": null,
+      "start": 639.0,
+      "end": 643.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9998,
+      "audioConfidence": 0.949,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
     },
     {
-      "id": "voice",
-      "name": "голос",
-      "catalogKey": "voice",
-      "start": 362.0,
-      "end": 391.0,
+      "id": "french-horn",
+      "name": "валторна",
+      "catalogKey": null,
+      "start": 823.0,
+      "end": 826.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.7069,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 247.0,
+      "end": 254.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9953,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 261.0,
+      "end": 266.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9864,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 500.0,
+      "end": 515.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -1078,11 +6544,11 @@
       "audioAlone": true
     },
     {
-      "id": "voice",
-      "name": "голос",
-      "catalogKey": "voice",
-      "start": 441.0,
-      "end": 464.0,
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 518.0,
+      "end": 526.0,
       "decision": "check",
       "review": "",
       "sources": [
@@ -1094,17 +6560,1137 @@
       "audioAlone": true
     },
     {
-      "id": "voice",
-      "name": "голос",
-      "catalogKey": "voice",
-      "start": 475.0,
-      "end": 499.0,
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 528.0,
+      "end": 548.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9986,
+      "audioConfidence": 0.9981,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 673.0,
+      "end": 676.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8619,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "start": 687.0,
+      "end": 692.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8676,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "kamancheh",
+      "name": "кяманча",
+      "catalogKey": "kamancheh",
+      "start": 491.5,
+      "end": 494.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "kamancheh",
+      "name": "кяманча",
+      "catalogKey": "kamancheh",
+      "start": 499.5,
+      "end": 505.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "kamancheh",
+      "name": "кяманча",
+      "catalogKey": "kamancheh",
+      "start": 546.5,
+      "end": 549.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "ney",
+      "name": "най",
+      "catalogKey": "ney",
+      "start": 464.5,
+      "end": 473.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "ney",
+      "name": "най",
+      "catalogKey": "ney",
+      "start": 495.5,
+      "end": 498.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "ney",
+      "name": "най",
+      "catalogKey": "ney",
+      "start": 710.5,
+      "end": 716.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "ney",
+      "name": "най",
+      "catalogKey": "ney",
+      "start": 719.5,
+      "end": 722.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "organ",
+      "name": "орган",
+      "catalogKey": null,
+      "start": 94.0,
+      "end": 97.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9467,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "organ",
+      "name": "орган",
+      "catalogKey": null,
+      "start": 206.0,
+      "end": 214.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8192,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "start": 249.5,
+      "end": 261.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "start": 343.5,
+      "end": 346.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "start": 499.5,
+      "end": 505.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "start": 508.5,
+      "end": 529.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "start": 535.5,
+      "end": 538.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "start": 542.5,
+      "end": 549.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "qanun",
+      "name": "канун",
+      "catalogKey": "qanun",
+      "start": 208.5,
+      "end": 211.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "qanun",
+      "name": "канун",
+      "catalogKey": "qanun",
+      "start": 223.5,
+      "end": 226.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "qanun",
+      "name": "канун",
+      "catalogKey": "qanun",
+      "start": 580.5,
+      "end": 583.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "riq",
+      "name": "рик",
+      "catalogKey": "riq",
+      "start": 305.5,
+      "end": 309.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 54.5,
+      "end": 57.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 60.5,
+      "end": 63.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 67.5,
+      "end": 70.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 73.5,
+      "end": 76.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 78.5,
+      "end": 81.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 126.5,
+      "end": 129.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 202.5,
+      "end": 206.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 236.5,
+      "end": 241.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 261.5,
+      "end": 265.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 276.5,
+      "end": 279.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 376.5,
+      "end": 379.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 396.5,
+      "end": 401.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 403.5,
+      "end": 414.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 419.5,
+      "end": 427.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 429.5,
+      "end": 437.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 677.5,
+      "end": 693.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 695.5,
+      "end": 705.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "start": 736.5,
+      "end": 739.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "tanbur",
+      "name": "танбур",
+      "catalogKey": "tanbur",
+      "start": 309.5,
+      "end": 313.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "tanbur",
+      "name": "танбур",
+      "catalogKey": "tanbur",
+      "start": 315.5,
+      "end": 318.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "tanbur",
+      "name": "танбур",
+      "catalogKey": "tanbur",
+      "start": 335.5,
+      "end": 338.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "tanbur",
+      "name": "танбур",
+      "catalogKey": "tanbur",
+      "start": 572.5,
+      "end": 575.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 99.5,
+      "end": 102.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 109.5,
+      "end": 112.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 164.0,
+      "end": 167.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.6995,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 300.5,
+      "end": 303.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 308.5,
+      "end": 311.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 318.5,
+      "end": 321.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 326.5,
+      "end": 329.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 331.5,
+      "end": 337.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 347.5,
+      "end": 350.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 356.5,
+      "end": 361.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 381.5,
+      "end": 385.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 388.5,
+      "end": 393.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 427.5,
+      "end": 430.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 435.5,
+      "end": 441.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 445.5,
+      "end": 448.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 456.5,
+      "end": 459.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 463.5,
+      "end": 466.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 493.5,
+      "end": 500.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 504.5,
+      "end": 507.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.95,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 551.5,
+      "end": 557.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 565.5,
+      "end": 569.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 573.5,
+      "end": 577.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 606.0,
+      "end": 609.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.6903,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 642.0,
+      "end": 646.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8905,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 769.0,
+      "end": 772.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.8038,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 779.0,
+      "end": 784.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9512,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "start": 803.0,
+      "end": 807.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9586,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -1113,17 +7699,33 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 560.0,
-      "end": 584.0,
+      "start": 393.5,
+      "end": 396.5,
       "decision": "check",
       "review": "",
       "sources": [
-        "audio"
+        "vision"
       ],
-      "audioConfidence": 0.9996,
-      "visionConfidence": 0.0,
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
       "who": "",
-      "audioAlone": true
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 548.5,
+      "end": 551.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
     },
     {
       "id": "voice",
@@ -1136,7 +7738,7 @@
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9199,
+      "audioConfidence": 0.9531,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
@@ -1145,14 +7747,94 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 737.0,
-      "end": 740.0,
+      "start": 668.5,
+      "end": 673.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 705.5,
+      "end": 709.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 720.5,
+      "end": 725.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 778.0,
+      "end": 784.0,
       "decision": "check",
       "review": "",
       "sources": [
         "audio"
       ],
-      "audioConfidence": 0.9008,
+      "audioConfidence": 0.9083,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 803.0,
+      "end": 807.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9321,
+      "visionConfidence": 0.0,
+      "who": "",
+      "audioAlone": true
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 810.0,
+      "end": 828.0,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "audio"
+      ],
+      "audioConfidence": 0.9999,
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true

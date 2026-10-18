@@ -73,6 +73,16 @@ Francesca Thompson ни на одной открытой странице нет
 
 Зеркало [nasheedlyrics.com/karitas-lyrics-sami-yusuf](https://nasheedlyrics.com/karitas-lyrics-sami-yusuf/) повторяет титры пословно и источником не считается.
 
+## Адреса страниц
+
+Полные адреса тех же страниц, что уже названы в `canon.md`. Новых утверждений нет.
+
+- Газель Физули, tr.wikisource: https://tr.wikisource.org/wiki/%C3%96yle_ser-mestem_ki_idr%C3%A2k_etmezem_d%C3%BCny%C3%A2_nedir
+- Антифон Хильдегарды, International Society of Hildegard von Bingen Studies: https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html
+- Диван аш-Шуштари, с. 80: https://ablibrary.net/book_content/b/9579/80
+- Десять бейтов ан-Набулси, ar.wikisource: https://ar.wikisource.org/wiki/%D8%B9%D9%8A%D9%86%D9%8A_%D9%84%D8%BA%D9%8A%D8%B1_%D8%AC%D9%85%D8%A7%D9%84%D9%83%D9%85_%D9%84%D8%A7_%D8%AA%D9%86%D8%B8%D8%B1
+- Гарвардская страница о тех же бейтах и о бейте ат-Тилимсани: https://sites.harvard.edu/sulaymanibnqiddees/2023/09/01/my-eyes-only-see-your-beauty/
+
 ## Лады, как их описывает автор
 
 На странице исполнителя: от Bayati Shiraz и Rast к эолийскому. Ролик Facebook от 15 июля 2022 (736130174361646), страницу не открывали, в выдаче приписан Сами Юсуфу: начало в баяти-ширазе, затем нахаванд, отсылка к расту, эолийский лад Греции и Западной Европы, в коде — гармонический минор; кода — общее вступление, «не звук фьюжн». Пока страница не открыта, в текст о песне берём формулировку samiyusuf.art. Ролик от 26 июня 2022 (1404976556591841), тоже не открыт: слова Хильдегарды и Махаммада Физули, импровизации на эрху, уде, нае и скрипке, благодарность оркестру, хору и своей группе; эфир NTR 26 июня 2022, 19:15 CEST. Это не дата концерта 6 июня.

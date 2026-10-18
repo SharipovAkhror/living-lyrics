@@ -3,83 +3,813 @@
   "segments": [
     {
       "id": "choir",
-      "start": 2.0,
-      "end": 6.0,
+      "start": 0.5,
+      "end": 5.5,
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
       "review": ""
     },
     {
       "id": "choir",
-      "start": 9.0,
-      "end": 12.0,
+      "start": 8.5,
+      "end": 11.5,
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
       "review": ""
     },
     {
       "id": "choir",
-      "start": 20.0,
-      "end": 35.0,
+      "start": 17.5,
+      "end": 25.5,
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
       "review": ""
     },
     {
       "id": "choir",
-      "start": 127.0,
-      "end": 132.0,
+      "start": 29.5,
+      "end": 37.5,
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
       "review": ""
     },
     {
       "id": "choir",
-      "start": 194.0,
-      "end": 212.0,
+      "start": 81.5,
+      "end": 84.5,
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
       "review": ""
     },
     {
       "id": "choir",
-      "start": 777.0,
-      "end": 780.0,
+      "start": 91.5,
+      "end": 94.5,
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
       "review": ""
     },
     {
       "id": "choir",
-      "start": 899.0,
-      "end": 906.0,
+      "start": 96.5,
+      "end": 99.5,
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
       "review": ""
     },
     {
       "id": "choir",
-      "start": 961.0,
-      "end": 966.0,
+      "start": 118.5,
+      "end": 122.5,
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
       "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 125.5,
+      "end": 139.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 141.5,
+      "end": 148.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 158.5,
+      "end": 166.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 174.5,
+      "end": 189.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 214.5,
+      "end": 217.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 223.5,
+      "end": 229.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 237.5,
+      "end": 257.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 263.5,
+      "end": 266.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 770.5,
+      "end": 804.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 808.5,
+      "end": 811.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 888.5,
+      "end": 891.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 893.5,
+      "end": 896.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 899.5,
+      "end": 902.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 913.5,
+      "end": 923.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 958.5,
+      "end": 977.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "double-bass",
+      "start": 11.0,
+      "end": 16.0,
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "review": "нет в титрах"
+    },
+    {
+      "id": "double-bass",
+      "start": 339.0,
+      "end": 342.5,
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "review": "нет в титрах"
+    },
+    {
+      "id": "orchestra",
+      "start": -1.5,
+      "end": 1.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 25.5,
+      "end": 29.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 80.5,
+      "end": 85.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 149.5,
+      "end": 152.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 154.5,
+      "end": 157.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 222.5,
+      "end": 225.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 230.5,
+      "end": 233.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 238.5,
+      "end": 241.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 258.5,
+      "end": 261.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 266.5,
+      "end": 269.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 277.5,
+      "end": 285.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 294.5,
+      "end": 297.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 306.5,
+      "end": 309.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 320.5,
+      "end": 325.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 336.5,
+      "end": 353.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 358.5,
+      "end": 365.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 369.5,
+      "end": 373.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 378.5,
+      "end": 385.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 389.5,
+      "end": 397.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 402.5,
+      "end": 409.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 414.5,
+      "end": 426.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 442.5,
+      "end": 445.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 457.5,
+      "end": 461.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 465.5,
+      "end": 469.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 478.5,
+      "end": 481.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 497.5,
+      "end": 501.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 505.5,
+      "end": 513.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 526.5,
+      "end": 533.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 542.5,
+      "end": 561.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 569.5,
+      "end": 590.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 592.5,
+      "end": 598.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 608.5,
+      "end": 611.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 621.5,
+      "end": 625.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 658.5,
+      "end": 669.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 672.5,
+      "end": 689.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 693.5,
+      "end": 709.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 718.5,
+      "end": 721.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 731.5,
+      "end": 737.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 740.5,
+      "end": 749.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 762.5,
+      "end": 771.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 776.5,
+      "end": 779.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 786.5,
+      "end": 793.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 802.5,
+      "end": 809.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 818.5,
+      "end": 825.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 829.5,
+      "end": 853.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 882.5,
+      "end": 909.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 911.5,
+      "end": 914.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "orchestra",
+      "start": 922.5,
+      "end": 942.5,
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "voice",
+      "start": 7.0,
+      "end": 181.0,
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "review": "нет в титрах"
+    },
+    {
+      "id": "voice",
+      "start": 193.0,
+      "end": 270.0,
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "review": "нет в титрах"
+    },
+    {
+      "id": "voice",
+      "start": 279.5,
+      "end": 301.0,
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "review": "нет в титрах"
+    },
+    {
+      "id": "voice",
+      "start": 334.0,
+      "end": 338.0,
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "review": "нет в титрах"
+    },
+    {
+      "id": "voice",
+      "start": 426.0,
+      "end": 563.0,
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "review": "нет в титрах"
+    },
+    {
+      "id": "voice",
+      "start": 567.0,
+      "end": 592.5,
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "review": "нет в титрах"
+    },
+    {
+      "id": "voice",
+      "start": 690.0,
+      "end": 702.0,
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "review": "нет в титрах"
+    },
+    {
+      "id": "voice",
+      "start": 878.0,
+      "end": 948.0,
+      "sources": [
+        "audio",
+        "vision"
+      ],
+      "review": "нет в титрах"
     }
   ]
 }

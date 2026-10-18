@@ -72,3 +72,4 @@
 Издание Пфайффера: *Deutsche Mystiker des vierzehnten Jahrhunderts*, Bd. II, Leipzig, 1857, проповедь XCVI «Qui audit me», заголовок на с. 309, фраза о глазе на с. 312. https://archive.org/details/deutschemystiker02pfei
 
 Лингс: https://archive.org/details/sufi-poems-a-mediaeval-anthology-martin-lings , английский № 58 на с. 88, арабский на с. 89, примечание 97 на с. 100.
+Диван аш-Шуштари, изд. ал-Адуни, с. 28 — тот же адрес, что в `canon.md`, раздел 4: https://ablibrary.net/book_content/8758/28

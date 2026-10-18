@@ -1,0 +1,6924 @@
+{
+ "frames": [
+  {
+   "note": "wide orchestra on dark stage",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 0,
+   "visible": true
+  },
+  {
+   "note": "wide stage choir starts vocalizing",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 2,
+   "visible": true
+  },
+  {
+   "note": "wide stage choir vocalizing",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 4,
+   "visible": true
+  },
+  {
+   "note": "titles over wide stage",
+   "players": [],
+   "time_s": 6,
+   "visible": false
+  },
+  {
+   "note": "close Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 7,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 8,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 10,
+   "visible": true
+  },
+  {
+   "note": "medium violin player bowing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 12,
+   "visible": true
+  },
+  {
+   "note": "medium double bass player",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "double-bass",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 13,
+   "visible": true
+  },
+  {
+   "note": "medium violin player bowing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 15,
+   "visible": true
+  },
+  {
+   "note": "medium violin player bowing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 16,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 19,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 20,
+   "visible": true
+  },
+  {
+   "note": "medium viola player bowing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "viola",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 21,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 22,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 24,
+   "visible": true
+  },
+  {
+   "note": "wide stage Sami Yusuf center",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 27,
+   "visible": true
+  },
+  {
+   "note": "wide stage Sami Yusuf center",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 28,
+   "visible": true
+  },
+  {
+   "note": "medium string section bowing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 29,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 31,
+   "visible": true
+  },
+  {
+   "note": "medium double bass and violins",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "double-bass",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 32,
+   "visible": true
+  },
+  {
+   "note": "medium double bass and violins",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "double-bass",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 33,
+   "visible": true
+  },
+  {
+   "note": "close choir female singers",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 35,
+   "visible": true
+  },
+  {
+   "note": "close choir female singers",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 36,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 37,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 40,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 44,
+   "visible": true
+  },
+  {
+   "note": "medium guitar player plucking",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 45,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 47,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 48,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 52,
+   "visible": true
+  },
+  {
+   "note": "medium guitar player plucking",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 54,
+   "visible": true
+  },
+  {
+   "note": "wide stage Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 56,
+   "visible": true
+  },
+  {
+   "note": "wide stage Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 60,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 63,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 64,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 68,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing profile",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 72,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing profile",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 73,
+   "visible": true
+  },
+  {
+   "note": "medium double bass and daf",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "double-bass",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 76,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 79,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 80,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 82,
+   "visible": true
+  },
+  {
+   "note": "close choir singers singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 83,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 84,
+   "visible": true
+  },
+  {
+   "note": "medium double bass and daf",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "double-bass",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 85,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 88,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 90,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 92,
+   "visible": true
+  },
+  {
+   "note": "close choir singer female",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 93,
+   "visible": true
+  },
+  {
+   "note": "medium guitar player plucking",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 95,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 96,
+   "visible": true
+  },
+  {
+   "note": "medium ney player idle",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "ney",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 97,
+   "visible": true
+  },
+  {
+   "note": "close choir singer singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 98,
+   "visible": true
+  },
+  {
+   "note": "close solo singer vocalizing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 100,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 102,
+   "visible": true
+  },
+  {
+   "note": "close daf drum with rings",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 103,
+   "visible": true
+  },
+  {
+   "note": "close male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 104,
+   "visible": true
+  },
+  {
+   "note": "close male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 108,
+   "visible": true
+  },
+  {
+   "note": "medium guitar and traditional ensemble",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.75,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 110,
+   "visible": true
+  },
+  {
+   "note": "close male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 112,
+   "visible": true
+  },
+  {
+   "note": "medium male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 116,
+   "visible": true
+  },
+  {
+   "note": "medium choir and strings",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 120,
+   "visible": true
+  },
+  {
+   "note": "medium choir and strings",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 121,
+   "visible": true
+  },
+  {
+   "note": "close male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 123,
+   "visible": true
+  },
+  {
+   "note": "medium guitar and ensemble",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 124,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 127,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 128,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 129,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 132,
+   "visible": true
+  },
+  {
+   "note": "medium double bass and soloist",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "double-bass",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 133,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 136,
+   "visible": true
+  },
+  {
+   "note": "medium guitar player plucking",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 137,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 138,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 140,
+   "visible": true
+  },
+  {
+   "note": "medium guitar and ensemble",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 141,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 143,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 144,
+   "visible": true
+  },
+  {
+   "note": "close choir female singer singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 145,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 147,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 148,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra on stage",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 151,
+   "visible": true
+  },
+  {
+   "note": "medium qanun and ensemble",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 152,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 154,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra on stage",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 156,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 157,
+   "visible": true
+  },
+  {
+   "note": "close choir female singer singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 160,
+   "visible": true
+  },
+  {
+   "note": "close male soloist singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 161,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 163,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 164,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 165,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 168,
+   "visible": true
+  },
+  {
+   "note": "close male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 171,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 172,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 174,
+   "visible": true
+  },
+  {
+   "note": "medium guitar and choir",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 176,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf and musicians",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 179,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 180,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 182,
+   "visible": true
+  },
+  {
+   "note": "close choir singers singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 183,
+   "visible": true
+  },
+  {
+   "note": "close choir singers singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 184,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf and musicians",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 187,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf and musicians",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 188,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 190,
+   "visible": true
+  },
+  {
+   "note": "medium erhu player bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 191,
+   "visible": true
+  },
+  {
+   "note": "medium erhu player bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 192,
+   "visible": true
+  },
+  {
+   "note": "close male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 195,
+   "visible": true
+  },
+  {
+   "note": "close male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 196,
+   "visible": true
+  },
+  {
+   "note": "wide hall and audience",
+   "players": [],
+   "time_s": 199,
+   "visible": false
+  },
+  {
+   "note": "wide hall and audience",
+   "players": [],
+   "time_s": 200,
+   "visible": false
+  },
+  {
+   "note": "close male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 203,
+   "visible": true
+  },
+  {
+   "note": "close male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 204,
+   "visible": true
+  },
+  {
+   "note": "close violin players bowing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 207,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf seated listening",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 208,
+   "visible": true
+  },
+  {
+   "note": "close guitar hands plucking",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 211,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 212,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 215,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 216,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 219,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 220,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 223,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra on stage",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 224,
+   "visible": true
+  },
+  {
+   "note": "close choir singers singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 225,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 227,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 228,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 229,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra on stage",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 232,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 235,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 236,
+   "visible": true
+  },
+  {
+   "note": "medium double bass and darbuka",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "double-bass",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "darbuka",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 238,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 239,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra on stage",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 240,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 241,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 243,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 244,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 245,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 247,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 248,
+   "visible": true
+  },
+  {
+   "note": "close ney player idle listening",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 250,
+   "visible": true
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 252,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 253,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 255,
+   "visible": true
+  },
+  {
+   "note": "close choir female singer singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 256,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 258,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 260,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 261,
+   "visible": true
+  },
+  {
+   "note": "medium traditional ensemble",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 262,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 263,
+   "visible": true
+  },
+  {
+   "note": "close darbuka hands playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "darbuka",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 264,
+   "visible": true
+  },
+  {
+   "note": "close choir female singer singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 265,
+   "visible": true
+  },
+  {
+   "note": "wide hall and audience",
+   "players": [],
+   "time_s": 267,
+   "visible": false
+  },
+  {
+   "note": "wide orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 268,
+   "visible": true
+  },
+  {
+   "note": "close daf and bass drum",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "bass-drum",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 272,
+   "visible": true
+  },
+  {
+   "note": "medium traditional ensemble",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 274,
+   "visible": true
+  },
+  {
+   "note": "medium traditional ensemble",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 276,
+   "visible": true
+  },
+  {
+   "note": "close violin player bowing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 277,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 279,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 280,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf vocalizing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 281,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 283,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 284,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 286,
+   "visible": true
+  },
+  {
+   "note": "medium violin player bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 287,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 288,
+   "visible": true
+  },
+  {
+   "note": "wide hall and audience",
+   "players": [],
+   "time_s": 291,
+   "visible": false
+  },
+  {
+   "note": "wide hall and audience",
+   "players": [],
+   "time_s": 292,
+   "visible": false
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 296,
+   "visible": true
+  },
+  {
+   "note": "medium solo singer and violinist",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 299,
+   "visible": true
+  },
+  {
+   "note": "medium qanun player playing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 300,
+   "visible": true
+  },
+  {
+   "note": "medium qanun player playing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 304,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 308,
+   "visible": true
+  },
+  {
+   "note": "close qanun plectrum finger picks",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 309,
+   "visible": true
+  },
+  {
+   "note": "close female ney player blowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 310,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 312,
+   "visible": true
+  },
+  {
+   "note": "close female ney player blowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 315,
+   "visible": true
+  },
+  {
+   "note": "close female ney player blowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 316,
+   "visible": true
+  },
+  {
+   "note": "medium qanun player playing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 317,
+   "visible": true
+  },
+  {
+   "note": "medium guitar player plucking",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 318,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 320,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 322,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 324,
+   "visible": true
+  },
+  {
+   "note": "medium qanun and ney duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 325,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf gesturing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 328,
+   "visible": true
+  },
+  {
+   "note": "medium qanun and ney duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 329,
+   "visible": true
+  },
+  {
+   "note": "medium qanun and ney duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 332,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 336,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 338,
+   "visible": true
+  },
+  {
+   "note": "close female ney player blowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 339,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 340,
+   "visible": true
+  },
+  {
+   "note": "medium double bass player",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "double-bass",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 341,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 342,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 344,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 348,
+   "visible": true
+  },
+  {
+   "note": "close violin player bowing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 350,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 352,
+   "visible": true
+  },
+  {
+   "note": "medium double bass player",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "double-bass",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 355,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 356,
+   "visible": true
+  },
+  {
+   "note": "medium violin player bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 358,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 360,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 363,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 364,
+   "visible": true
+  },
+  {
+   "note": "medium traditional ensemble",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 366,
+   "visible": true
+  },
+  {
+   "note": "medium traditional ensemble",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 368,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 371,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 372,
+   "visible": true
+  },
+  {
+   "note": "close female ney player blowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 374,
+   "visible": true
+  },
+  {
+   "note": "close female ney player blowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 376,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 380,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 382,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 383,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 384,
+   "visible": true
+  },
+  {
+   "note": "close violin player bowing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 388,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 391,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 392,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf seated listening",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 394,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 396,
+   "visible": true
+  },
+  {
+   "note": "medium oud player playing solo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 398,
+   "visible": true
+  },
+  {
+   "note": "medium oud player playing solo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 400,
+   "visible": true
+  },
+  {
+   "note": "medium oud and kamancheh duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 402,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 404,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 408,
+   "visible": true
+  },
+  {
+   "note": "close violin player bowing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 409,
+   "visible": true
+  },
+  {
+   "note": "medium traditional ensemble",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 412,
+   "visible": true
+  },
+  {
+   "note": "medium oud and kamancheh duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 415,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 416,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 417,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 420,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 421,
+   "visible": true
+  },
+  {
+   "note": "close bass drum with stick",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "bass-drum",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 423,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 424,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 425,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 428,
+   "visible": true
+  },
+  {
+   "note": "close violin player bowing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 432,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble vocalizing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 434,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble vocalizing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 436,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 438,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 440,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 443,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 444,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 448,
+   "visible": true
+  },
+  {
+   "note": "medium male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 452,
+   "visible": true
+  },
+  {
+   "note": "medium male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 456,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 459,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 460,
+   "visible": true
+  },
+  {
+   "note": "close male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 462,
+   "visible": true
+  },
+  {
+   "note": "close male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 464,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 467,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 468,
+   "visible": true
+  },
+  {
+   "note": "medium male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 469,
+   "visible": true
+  },
+  {
+   "note": "medium male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 472,
+   "visible": true
+  },
+  {
+   "note": "medium male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 473,
+   "visible": true
+  },
+  {
+   "note": "medium male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 476,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 480,
+   "visible": true
+  },
+  {
+   "note": "close violin player next to singer",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 484,
+   "visible": true
+  },
+  {
+   "note": "medium male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 487,
+   "visible": true
+  },
+  {
+   "note": "medium male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 488,
+   "visible": true
+  },
+  {
+   "note": "medium violin and vocalist",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 490,
+   "visible": true
+  },
+  {
+   "note": "medium male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 492,
+   "visible": true
+  },
+  {
+   "note": "medium male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 496,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 499,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 500,
+   "visible": true
+  },
+  {
+   "note": "medium male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 503,
+   "visible": true
+  },
+  {
+   "note": "medium male vocal soloist singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 504,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 507,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 508,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble foreground qanun ney",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 510,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 512,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 515,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 516,
+   "visible": true
+  },
+  {
+   "note": "medium qanun and ney idle",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "qanun",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 518,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 520,
+   "visible": true
+  },
+  {
+   "note": "close qanun player singing along",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 521,
+   "visible": true
+  },
+  {
+   "note": "close qanun player singing along",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 524,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 528,
+   "visible": true
+  },
+  {
+   "note": "medium qanun player singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 530,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 532,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 536,
+   "visible": true
+  },
+  {
+   "note": "medium qanun player singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 537,
+   "visible": true
+  },
+  {
+   "note": "medium qanun player singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 540,
+   "visible": true
+  },
+  {
+   "note": "medium kamancheh player bowing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 543,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 544,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 545,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 548,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 549,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 550,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 552,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 553,
+   "visible": true
+  },
+  {
+   "note": "close darbuka hands playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "darbuka",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 555,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 556,
+   "visible": true
+  },
+  {
+   "note": "close qanun hands playing fast",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 558,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 559,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 560,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf and percussion",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 561,
+   "visible": true
+  },
+  {
+   "note": "medium ney player playing melody",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 563,
+   "visible": true
+  },
+  {
+   "note": "medium ney player playing melody",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 564,
+   "visible": true
+  },
+  {
+   "note": "close violin player bowing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 565,
+   "visible": true
+  },
+  {
+   "note": "close baglama player strumming",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 566,
+   "visible": true
+  },
+  {
+   "note": "medium ney player playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 567,
+   "visible": true
+  },
+  {
+   "note": "medium ney player playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 568,
+   "visible": true
+  },
+  {
+   "note": "medium percussion section riq darbuka",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "darbuka",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "riq",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 569,
+   "visible": true
+  },
+  {
+   "note": "wide hall from behind stage",
+   "players": [],
+   "time_s": 570,
+   "visible": false
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 571,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 572,
+   "visible": true
+  },
+  {
+   "note": "medium baglama and oud duo",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 573,
+   "visible": true
+  },
+  {
+   "note": "medium percussion section riq darbuka",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "darbuka",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "riq",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 574,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 576,
+   "visible": true
+  },
+  {
+   "note": "medium ney player playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 578,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble Sami Yusuf clapping",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 580,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 582,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 584,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 585,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 587,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 588,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 589,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 591,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 592,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 594,
+   "visible": true
+  },
+  {
+   "note": "medium violins and ney",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 595,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 596,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 597,
+   "visible": true
+  },
+  {
+   "note": "medium darbuka and riq players",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "darbuka",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "riq",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 599,
+   "visible": true
+  },
+  {
+   "note": "medium darbuka and riq players",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "darbuka",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "riq",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 600,
+   "visible": true
+  },
+  {
+   "note": "medium ney player playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 601,
+   "visible": true
+  },
+  {
+   "note": "medium ney player playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 604,
+   "visible": true
+  },
+  {
+   "note": "medium ney player seated",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 608,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 610,
+   "visible": true
+  },
+  {
+   "note": "medium ney player playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 612,
+   "visible": true
+  },
+  {
+   "note": "close ney finger work",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 614,
+   "visible": true
+  },
+  {
+   "note": "close ney player playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 616,
+   "visible": true
+  },
+  {
+   "note": "close ney player playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 620,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 621,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 623,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 624,
+   "visible": true
+  },
+  {
+   "note": "medium riq and darbuka players",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "riq",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "darbuka",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 626,
+   "visible": true
+  },
+  {
+   "note": "medium ney player playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 628,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 629,
+   "visible": true
+  },
+  {
+   "note": "wide hall and audience",
+   "players": [],
+   "time_s": 632,
+   "visible": false
+  },
+  {
+   "note": "close oud player plucking strings",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 634,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 636,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 637,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 639,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 640,
+   "visible": true
+  },
+  {
+   "note": "close oud player plucking strings",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 642,
+   "visible": true
+  },
+  {
+   "note": "close oud player plucking strings",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 644,
+   "visible": true
+  },
+  {
+   "note": "medium baglama player",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 648,
+   "visible": true
+  },
+  {
+   "note": "medium baglama player solo",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 650,
+   "visible": true
+  },
+  {
+   "note": "medium baglama player solo",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 652,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 655,
+   "visible": true
+  },
+  {
+   "note": "medium baglama player",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 656,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 660,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 661,
+   "visible": true
+  },
+  {
+   "note": "medium baglama player and guitar",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 663,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 664,
+   "visible": true
+  },
+  {
+   "note": "medium baglama player",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 667,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 668,
+   "visible": true
+  },
+  {
+   "note": "medium violin section foreground",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 669,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf gesturing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 672,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 674,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 676,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 678,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 680,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 681,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 684,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 686,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 688,
+   "visible": true
+  },
+  {
+   "note": "wide hall and audience",
+   "players": [],
+   "time_s": 691,
+   "visible": false
+  },
+  {
+   "note": "wide hall and audience",
+   "players": [],
+   "time_s": 692,
+   "visible": false
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 693,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 695,
+   "visible": true
+  },
+  {
+   "note": "wide hall and audience",
+   "players": [],
+   "time_s": 696,
+   "visible": false
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 698,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 700,
+   "visible": true
+  },
+  {
+   "note": "close hands playing qanun levers",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 702,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 704,
+   "visible": true
+  },
+  {
+   "note": "medium qanun player playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 706,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 708,
+   "visible": true
+  },
+  {
+   "note": "close qanun levers and strings",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 710,
+   "visible": true
+  },
+  {
+   "note": "medium qanun player playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 712,
+   "visible": true
+  },
+  {
+   "note": "medium qanun player playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 716,
+   "visible": true
+  },
+  {
+   "note": "close qanun plectrum picking strings",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 719,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 720,
+   "visible": true
+  },
+  {
+   "note": "medium ney and qanun players",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 723,
+   "visible": true
+  },
+  {
+   "note": "medium ney and qanun players",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 724,
+   "visible": true
+  },
+  {
+   "note": "medium ney player playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 727,
+   "visible": true
+  },
+  {
+   "note": "medium ney player playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 728,
+   "visible": true
+  },
+  {
+   "note": "medium ney player playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 732,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 733,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 736,
+   "visible": true
+  },
+  {
+   "note": "medium erhu ney qanun trio",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 738,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 742,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 743,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 744,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 746,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 748,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 749,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 750,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf smiling",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 752,
+   "visible": true
+  },
+  {
+   "note": "close qanun hands playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 753,
+   "visible": true
+  },
+  {
+   "note": "wide hall and audience",
+   "players": [],
+   "time_s": 754,
+   "visible": false
+  },
+  {
+   "note": "wide hall and audience",
+   "players": [],
+   "time_s": 756,
+   "visible": false
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 759,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 760,
+   "visible": true
+  },
+  {
+   "note": "medium darbuka and riq players",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "darbuka",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.85,
+     "instrument": "riq",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 762,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf seated",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 763,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 764,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 768,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble Sami Yusuf gesturing",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 770,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing Karitas",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 772,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing Karitas",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 776,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 778,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 780,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 783,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 784,
+   "visible": true
+  },
+  {
+   "note": "medium choir singers",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 786,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 788,
+   "visible": true
+  },
+  {
+   "note": "medium choir singers",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 790,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 792,
+   "visible": true
+  },
+  {
+   "note": "medium choir male female singers",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 794,
+   "visible": true
+  },
+  {
+   "note": "close choir female singer singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 796,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 799,
+   "visible": true
+  },
+  {
+   "note": "close choir singer female singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 800,
+   "visible": true
+  },
+  {
+   "note": "close choir singer female singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 803,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 804,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 805,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf seated",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 806,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 808,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 809,
+   "visible": true
+  },
+  {
+   "note": "close choir female singer singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 810,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 812,
+   "visible": true
+  },
+  {
+   "note": "medium guitar and qanun",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 814,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 815,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 816,
+   "visible": true
+  },
+  {
+   "note": "medium guitar player plucking",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 817,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf gesturing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 818,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 820,
+   "visible": true
+  },
+  {
+   "note": "medium guitar player plucking",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 821,
+   "visible": true
+  },
+  {
+   "note": "close violin bridge and bow",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 823,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 824,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf seated",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 825,
+   "visible": true
+  },
+  {
+   "note": "close guitar hands plucking",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 827,
+   "visible": true
+  },
+  {
+   "note": "close guitar hands plucking",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 828,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 830,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 831,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 832,
+   "visible": true
+  },
+  {
+   "note": "close guitar hands plucking",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 833,
+   "visible": true
+  },
+  {
+   "note": "wide hall from behind stage",
+   "players": [],
+   "time_s": 834,
+   "visible": false
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 835,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 836,
+   "visible": true
+  },
+  {
+   "note": "close erhu resonator and bow",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 837,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 840,
+   "visible": true
+  },
+  {
+   "note": "medium erhu player bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 842,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 844,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 845,
+   "visible": true
+  },
+  {
+   "note": "medium double bass player",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "double-bass",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 847,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 848,
+   "visible": true
+  },
+  {
+   "note": "close erhu resonator and bow",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 849,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 852,
+   "visible": true
+  },
+  {
+   "note": "close darbuka hands playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "darbuka",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 854,
+   "visible": true
+  },
+  {
+   "note": "medium erhu player holding bow",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 856,
+   "visible": true
+  },
+  {
+   "note": "medium guitar player plucking",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "guitar-acoustic",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 859,
+   "visible": true
+  },
+  {
+   "note": "medium violin section bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 860,
+   "visible": true
+  },
+  {
+   "note": "medium erhu player holding bow",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 861,
+   "visible": true
+  },
+  {
+   "note": "medium erhu player holding bow",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 864,
+   "visible": true
+  },
+  {
+   "note": "medium erhu player holding bow",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 865,
+   "visible": true
+  },
+  {
+   "note": "medium erhu player bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 866,
+   "visible": true
+  },
+  {
+   "note": "medium erhu player bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 868,
+   "visible": true
+  },
+  {
+   "note": "medium erhu player bowing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 871,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 872,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 873,
+   "visible": true
+  },
+  {
+   "note": "medium erhu player holding bow",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "erhu",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 874,
+   "visible": true
+  },
+  {
+   "note": "medium erhu ney qanun trio",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.8,
+     "instrument": "ney",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 876,
+   "visible": true
+  },
+  {
+   "note": "wide hall and audience",
+   "players": [],
+   "time_s": 879,
+   "visible": false
+  },
+  {
+   "note": "wide hall and audience",
+   "players": [],
+   "time_s": 880,
+   "visible": false
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 884,
+   "visible": true
+  },
+  {
+   "note": "medium Sami Yusuf listening",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 887,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 888,
+   "visible": true
+  },
+  {
+   "note": "close choir male singer singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 890,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 892,
+   "visible": true
+  },
+  {
+   "note": "close santur player playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "santur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 894,
+   "visible": true
+  },
+  {
+   "note": "close choir female singer singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 895,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 896,
+   "visible": true
+  },
+  {
+   "note": "close qanun hands playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 897,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 899,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 900,
+   "visible": true
+  },
+  {
+   "note": "close choir female singer singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 901,
+   "visible": true
+  },
+  {
+   "note": "close male soloist singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 903,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 904,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 905,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 907,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 908,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 911,
+   "visible": true
+  },
+  {
+   "note": "close violin player bowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "violin",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 912,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 913,
+   "visible": true
+  },
+  {
+   "note": "close choir female singer singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 915,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 916,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 917,
+   "visible": true
+  },
+  {
+   "note": "close choir female singer singing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 918,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 920,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 921,
+   "visible": true
+  },
+  {
+   "note": "medium choir singing",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 922,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 924,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 927,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 928,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 929,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 931,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 932,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 934,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 935,
+   "visible": true
+  },
+  {
+   "note": "medium riq player shaking tambourine",
+   "players": [
+    {
+     "confidence": 0.85,
+     "instrument": "riq",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 936,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 938,
+   "visible": true
+  },
+  {
+   "note": "close darbuka hands playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "darbuka",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 939,
+   "visible": true
+  },
+  {
+   "note": "medium daf player striking drum",
+   "players": [
+    {
+     "confidence": 0.8,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 940,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble final chord",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "orchestra",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 941,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf smiling at applause",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 943,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf smiling at applause",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 944,
+   "visible": true
+  },
+  {
+   "note": "wide hall audience applauding",
+   "players": [],
+   "time_s": 946,
+   "visible": false
+  },
+  {
+   "note": "close Sami Yusuf thanking musicians",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 948,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble applauding",
+   "players": [],
+   "time_s": 951,
+   "visible": true
+  },
+  {
+   "note": "wide stage ensemble applauding",
+   "players": [],
+   "time_s": 952,
+   "visible": true
+  },
+  {
+   "note": "close Sami Yusuf applauding musicians",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "voice",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 953,
+   "visible": true
+  },
+  {
+   "note": "audience applauding in hall",
+   "players": [],
+   "time_s": 955,
+   "visible": false
+  },
+  {
+   "note": "audience applauding in hall",
+   "players": [],
+   "time_s": 956,
+   "visible": false
+  },
+  {
+   "note": "black screen fade out",
+   "players": [],
+   "time_s": 959,
+   "visible": false
+  },
+  {
+   "note": "wide stage orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 960,
+   "visible": true
+  },
+  {
+   "note": "wide stage orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 964,
+   "visible": true
+  },
+  {
+   "note": "wide stage orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 968,
+   "visible": true
+  },
+  {
+   "note": "wide stage orchestra and choir",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 972,
+   "visible": true
+  },
+  {
+   "note": "wide stage end of video",
+   "players": [
+    {
+     "confidence": 0.75,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 976,
+   "visible": true
+  }
+ ]
+}
