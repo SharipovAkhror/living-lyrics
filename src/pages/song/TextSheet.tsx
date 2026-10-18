@@ -14,23 +14,43 @@ export function TextSheet({
   owner,
   settings,
   onPick,
+  error,
+  onRetry,
 }: {
   open: boolean;
   onClose: () => void;
-  timeline: Timeline;
+  timeline: Timeline | null;
   owner: number;
   settings: Settings;
   onPick: (cueIdx: number) => void;
+  /** Set when the text could not be loaded. The sheet offers a retry. */
+  error?: string | null;
+  onRetry?: () => void;
 }) {
   const list = useRef<HTMLOListElement>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || !timeline) return;
     const to = setTimeout(() => {
       list.current?.querySelector('.is-current')?.scrollIntoView({ block: 'center' });
     }, 60);
     return () => clearTimeout(to);
-  }, [open]);
+  }, [open, timeline]);
+
+  if (!timeline) {
+    return (
+      <Sheet open={open} onClose={onClose} title="Весь текст" size="large">
+        <div className="sheet-wait">
+          <p className="t-body secondary">{error ?? 'Текст ещё открывается'}</p>
+          {error && onRetry && (
+            <button type="button" className="btn btn-capsule btn-tinted" onClick={onRetry}>
+              Повторить
+            </button>
+          )}
+        </div>
+      </Sheet>
+    );
+  }
 
   let lastSection = '';
   return (

@@ -271,6 +271,16 @@ function nudgeMeasure() {
   });
 }
 
+/**
+ * The library does not need the verse faces. SongPage calls this once the sky is up,
+ * and a later change in the sheet loads the newly chosen files.
+ */
+export function enableSongFonts() {
+  if (typeof document === 'undefined') return;
+  document.documentElement.dataset.fonts = 'on';
+  void loadSelectedFonts(getSettings()).then(nudgeMeasure);
+}
+
 function boot() {
   if (typeof document === 'undefined') return;
   try {
@@ -281,7 +291,7 @@ function boot() {
   const sync = () => {
     const s = getSettings();
     applyFonts(s);
-    void loadSelectedFonts(s).then(nudgeMeasure);
+    if (document.documentElement.dataset.fonts === 'on') void loadSelectedFonts(s).then(nudgeMeasure);
   };
   sync();
   subscribeSettings(sync);

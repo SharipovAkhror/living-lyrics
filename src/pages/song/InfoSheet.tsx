@@ -22,6 +22,7 @@ export function InfoSheet({
   showHarakat,
   fontPersian,
   onSeek,
+  pendingNote,
 }: {
   open: boolean;
   onClose: () => void;
@@ -31,6 +32,8 @@ export function InfoSheet({
   fontPersian: FontPersian;
   /** Jump to a marked moment. Playback keeps its current play or pause state. */
   onSeek: (t: number) => void;
+  /** Shown while the line list is still on its way, or when it failed. */
+  pendingNote?: string | null;
 }) {
   const voices = new Set<string>();
   const players = new Map<string, Set<string>>();
@@ -64,6 +67,8 @@ export function InfoSheet({
           {song.featuring?.length ? ` · ${song.featuring.join(', ')}` : ''}
         </div>
       </div>
+
+      {pendingNote && <p className="sheet-wait t-footnote secondary">{pendingNote}</p>}
 
       <PartsSection
         song={song}

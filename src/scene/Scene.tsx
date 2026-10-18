@@ -6,14 +6,12 @@ import { effectiveMotion, type Settings } from '@/app/settings';
 import { showHarakatText } from '@/data/harakat';
 import { LineBlock, type BlockUpdater } from './LineBlock';
 import { InstBlock } from './InstBlock';
-import { Field } from './Field';
 import { WAIT_ROOM, blockHeight, blockState, compressStack, flowPosition, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
 
 interface Props {
   song: Song;
   timeline: Timeline;
   settings: Settings;
-  dark: boolean;
   /** Precomputed audio features for instrument motion. Null until loaded. */
   features: AudioFeatures | null;
   /** Current playback time. */
@@ -30,7 +28,7 @@ const INTRO = -1;
  * The stage. One clock read per frame computes the flow position, lays the mounted blocks out
  * around it and hands each block its distance and top; blocks style themselves imperatively.
  */
-export function Scene({ song, timeline, settings, dark, features, clock, onOwnerChange, onPick }: Props) {
+export function Scene({ song, timeline, settings, features, clock, onOwnerChange, onPick }: Props) {
   const stageRef = useRef<HTMLDivElement>(null);
   const plate = useRef<HTMLDivElement>(null);
   const intro = useRef<HTMLDivElement>(null);
@@ -176,7 +174,6 @@ export function Scene({ song, timeline, settings, dark, features, clock, onOwner
 
   return (
     <div className="scene" data-align={settings.textAlign} data-enter={entrance}>
-      <Field colors={song.palette.field} dark={dark} clock={clock} />
       <div ref={stageRef} className="scene-stage">
         <div ref={plate} className="flow-plate" aria-hidden style={{ visibility: 'hidden' }} />
         <div ref={intro} className="fb fb--intro" style={{ visibility: 'hidden' }}>

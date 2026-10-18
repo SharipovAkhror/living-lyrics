@@ -248,6 +248,7 @@ function Card({ info }: { info: InstrumentInfo }) {
         onPointerCancel={onPointerUp}
       >
         {svg ? <div className="ist-art" aria-hidden dangerouslySetInnerHTML={{ __html: html }} /> : null}
+        {!svg && hasArt(info.key) ? <span className="visually-hidden">Гравюра открывается</span> : null}
         {!hasArt(info.key) ? <span className="ig-noart t-footnote">Гравюры пока нет — сцена покажет ансамбль</span> : null}
       </div>
       {armed ? (

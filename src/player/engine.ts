@@ -17,6 +17,7 @@ import {
 } from './background';
 import { EQ_FREQS } from './eq';
 import { loadAudio, removeAudio, saveAudio } from './fileStore';
+import { preloadMode, readNetHint, type PreloadMode } from './preload';
 
 export type SourceKind = 'library' | 'local' | 'silent';
 
@@ -28,6 +29,10 @@ export interface EngineState {
   ready: boolean;
   error?: string;
   effects: boolean;
+  /** The element has data ahead of the playhead, so a tap can start at once. */
+  canPlay: boolean;
+  /** Play was asked for and the element does not yet have data ahead. Honest wait, not a frozen icon. */
+  buffering: boolean;
 }
 
 type Listener = () => void;
@@ -55,6 +60,10 @@ export class AudioEngine {
   private filters: BiquadFilterNode[] = [];
   private preamp: GainNode | null = null;
   private quality: 'high' | 'saver' = 'high';
+  /** What to put on the element the next time a source is attached. */
+  private preload: PreloadMode = 'none';
+  /** play() was called and has not reached audible playback yet. */
+  private pendingPlay = false;
   private rate = 1;
   private volume = 1;
   private normalize = true;
@@ -81,7 +90,15 @@ export class AudioEngine {
   constructor(opts: EngineOptions) {
     this.opts = opts;
     this.el = this.makeElement();
-    this.state = { playing: false, source: 'silent', duration: opts.duration, ready: true, effects: false };
+    this.state = {
+      playing: false,
+      source: 'silent',
+      duration: opts.duration,
+      ready: true,
+      effects: false,
+      canPlay: false,
+      buffering: false,
+    };
     this.bindPageLifecycle();
     this.bindAudioSession();
   }
@@ -152,7 +169,8 @@ export class AudioEngine {
 
   private makeElement() {
     const el = new Audio();
-    el.preload = 'auto';
+    // Nothing is fetched until setSource applies the situational preload.
+    el.preload = 'none';
     // Same-origin files do not need CORS. The attribute is set so the equalizer can
     // read the element later without reloading it.
     el.crossOrigin = 'anonymous';
@@ -161,23 +179,37 @@ export class AudioEngine {
     this.listen(el, 'play', () => {
       this.resync();
       this.patch({ playing: true });
+      this.syncBuffering();
     });
     this.listen(el, 'pause', () => {
+      this.pendingPlay = false;
       this.resync();
-      this.patch({ playing: false });
+      this.patch({ playing: false, buffering: false });
     });
     this.listen(el, 'seeked', () => this.resync());
     this.listen(el, 'timeupdate', () => this.resync());
     this.listen(el, 'ratechange', () => this.resync());
     this.listen(el, 'loadedmetadata', () => {
       if (Number.isFinite(el.duration) && el.duration > 0) this.patch({ duration: el.duration, ready: true, error: undefined });
+      this.syncBuffering();
+    });
+    this.listen(el, 'waiting', () => this.syncBuffering());
+    this.listen(el, 'stalled', () => this.syncBuffering());
+    this.listen(el, 'canplay', () => {
+      if (!this.state.canPlay) this.patch({ canPlay: true });
+      this.syncBuffering();
+    });
+    this.listen(el, 'playing', () => {
+      this.pendingPlay = false;
+      this.syncBuffering();
     });
     this.listen(el, 'error', () => {
       this.bridge = null;
+      this.pendingPlay = false;
       if (this.state.source === 'silent') return;
-      this.patch({ error: 'Не удалось загрузить аудио.', ready: false });
+      this.patch({ error: this.audioErrorMessage(), ready: false, buffering: false, canPlay: false });
     });
-    this.listen(el, 'ended', () => this.patch({ playing: false }));
+    this.listen(el, 'ended', () => this.patch({ playing: false, buffering: false }));
     this.mount(el);
     return el;
   }
@@ -253,6 +285,8 @@ export class AudioEngine {
     const wasPlaying = this.state.playing;
     if (t > 0.05) this.bridge = t;
     const el = this.el;
+    // Hint first. Setting src with preload=none does not fetch; load() does, even then.
+    el.preload = this.preload;
     el.src = url;
     const restore = () => {
       if (el !== this.el) return;
@@ -263,8 +297,51 @@ export class AudioEngine {
       if (wasPlaying) void el.play().catch(() => this.patch({ playing: false }));
     };
     el.addEventListener('loadedmetadata', restore, { once: true });
-    el.load();
-    this.patch({ source: kind, localName, ready: false, error: undefined });
+    if (this.preload !== 'none') el.load();
+    this.patch({ source: kind, localName, ready: false, error: undefined, canPlay: false, buffering: false });
+  }
+
+  /**
+   * Change how far ahead the open recording is fetched. Does not reload a song
+   * that is already playing: a reload would drop the lock-screen session.
+   */
+  setPreload(mode: PreloadMode) {
+    this.preload = mode;
+    if (this.el.preload === mode) return;
+    this.el.preload = mode;
+    if (mode !== 'auto' || this.state.source === 'silent' || !this.el.src || this.state.playing) return;
+    // A metadata load that already finished will not grow by itself. Ask again only at the start.
+    if (this.el.readyState < 3 && this.el.currentTime < 0.05 && this.el.networkState === 0) this.el.load();
+  }
+
+  /** Load the current recording again. Playback stays paused until the reader taps. */
+  retry() {
+    this.pendingPlay = false;
+    if (this.state.source === 'local' && this.localUrl) {
+      this.setSource('local', this.localUrl, this.state.localName);
+      return;
+    }
+    const lib = this.libraryUrl();
+    if (lib) {
+      this.setPreload(preloadMode('play', readNetHint(navigator)));
+      this.setSource('library', lib);
+      return;
+    }
+    this.patch({ error: 'Нет записи для этой песни.', ready: false, buffering: false });
+  }
+
+  private audioErrorMessage() {
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) return 'Нет сети. Проверьте соединение и повторите.';
+    return 'Не удалось загрузить запись.';
+  }
+
+  /** Buffering is true only while sound was asked for and the element has nothing ahead of the playhead. */
+  private syncBuffering() {
+    const el = this.el;
+    const asked = this.pendingPlay || (this.state.playing && !el.paused);
+    const on = this.state.source !== 'silent' && asked && el.readyState < 3 && !el.error;
+    if (on === this.state.buffering) return;
+    this.patch({ buffering: on });
   }
 
   private useLocal(blob: Blob, name: string) {
@@ -375,14 +452,20 @@ export class AudioEngine {
     if (this.state.source === 'silent') {
       if (this.silentTime >= this.state.duration - 0.05) this.silentTime = 0;
       this.anchorPerf = performance.now();
-      this.patch({ playing: true });
+      this.patch({ playing: true, buffering: false });
       this.tickSilent();
       return;
     }
+    // Stream from the first buffered seconds. preload=auto does not mean "download the file, then start".
+    this.setPreload('auto');
+    this.pendingPlay = true;
+    this.syncBuffering();
     if (this.ctx?.state === 'suspended') await this.ctx.resume();
     try {
       await this.el.play();
     } catch {
+      this.pendingPlay = false;
+      this.syncBuffering();
       this.patch({ playing: false });
     }
   }
@@ -430,6 +513,7 @@ export class AudioEngine {
     // A reload may ignore the write until metadata arrives. Keep painting the requested time.
     this.bridge = Math.abs(this.el.currentTime - clamped) > 0.75 ? clamped : null;
     this.resync();
+    this.syncBuffering();
   }
 
   skip(delta: number) {
