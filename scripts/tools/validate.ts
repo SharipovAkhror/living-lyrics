@@ -415,7 +415,85 @@ function check(slug: string): Issue[] {
   for (const l of langsSeen) if (!song.languages.includes(l)) warn('song.json', `строки на языке ${l} есть, но он не указан в languages`);
 
   checkParts(song, lyrics, sourcesText, err, warn);
+  checkRouteFiles(slug, lyrics, err, warn);
   return issues;
+}
+
+/**
+ * Stage files the route now requires: official cue times without cue text,
+ * and a translation dossier that names every sung line.
+ * A missing file is a warning. Cue text committed into the repo is an error.
+ */
+function checkRouteFiles(
+  slug: string,
+  lyrics: Lyrics,
+  err: (where: string, msg: string) => void,
+  warn: (where: string, msg: string) => void,
+) {
+  const vocalIds: string[] = [];
+  for (const section of lyrics.sections) {
+    if (section.kind !== 'vocal') continue;
+    for (const line of section.lines) vocalIds.push(line.id);
+  }
+  const cuePath = join(root, 'docs/analysis', slug, 'cues.json');
+  if (!existsSync(cuePath)) {
+    if (vocalIds.length) warn('cues.json', 'нет docs/analysis/<slug>/cues.json: время строк по официальным субтитрам (docs/methodology/04-text.md)');
+  } else {
+    let json: unknown;
+    try {
+      json = JSON.parse(readFileSync(cuePath, 'utf8'));
+    } catch (e) {
+      err('cues.json', String(e));
+      json = null;
+    }
+    if (Array.isArray(json)) {
+      const allowed = new Set(['line', 'cue', 'lang', 'start', 'end']);
+      const seen = new Set<string>();
+      for (const item of json) {
+        if (!item || typeof item !== 'object') {
+          err('cues.json', 'реплика не объект');
+          continue;
+        }
+        const record = item as Record<string, unknown>;
+        const extra = Object.keys(record).filter((key) => !allowed.has(key));
+        if (extra.length) err('cues.json', `лишние поля (${extra.join(', ')}): текста реплики в файле быть не должно`);
+        const line = record.line;
+        if (typeof line !== 'string' || !line) {
+          err('cues.json', 'у реплики нет line');
+          continue;
+        }
+        if (seen.has(line)) err('cues.json', `реплика ${line} повторяется`);
+        seen.add(line);
+        if (typeof record.cue !== 'number' || typeof record.start !== 'number' || typeof record.end !== 'number') {
+          err('cues.json', `реплика ${line}: cue, start и end — числа`);
+        } else if (!(record.start < record.end)) err('cues.json', `реплика ${line}: start не меньше end`);
+        if (typeof record.lang !== 'string' || !record.lang.trim()) err('cues.json', `реплика ${line}: нет lang`);
+      }
+      const missing = vocalIds.filter((id) => !seen.has(id));
+      if (missing.length) {
+        warn('cues.json', `нет реплики (${missing.length}): ${missing.slice(0, 8).join(', ')}${missing.length > 8 ? '…' : ''}`);
+      }
+      const extraIds = [...seen].filter((id) => !vocalIds.includes(id));
+      if (extraIds.length) warn('cues.json', `id нет среди вокальных строк: ${extraIds.slice(0, 8).join(', ')}`);
+    } else if (json !== null) err('cues.json', 'файл не массив');
+  }
+
+  const dossierPath = join(root, 'docs/analysis/translation', `${slug}.md`);
+  if (!existsSync(dossierPath)) {
+    if (vocalIds.length) warn('translation', `нет docs/analysis/translation/${slug}.md (docs/methodology/06-translation.md)`);
+    return;
+  }
+  const dossier = readFileSync(dossierPath, 'utf8');
+  if (!dossier.includes('Источник') || !dossier.includes('Принято')) {
+    warn('translation', 'в досье нет «Источник» или «Принято»');
+  }
+  const missing = vocalIds.filter((id) => {
+    const escaped = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return !new RegExp(`(^|[^a-z0-9-])${escaped}([^a-z0-9-]|$)`).test(dossier);
+  });
+  if (missing.length) {
+    warn('translation', `нет id строк (${missing.length}): ${missing.slice(0, 8).join(', ')}${missing.length > 8 ? '…' : ''}`);
+  }
 }
 
 /**

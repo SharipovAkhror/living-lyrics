@@ -40,6 +40,7 @@ writeFileSync(join(dir, 'lyrics.json'), lyrics.endsWith('\n') ? lyrics : lyrics 
 writeFileSync(join(dir, 'sources.md'), fill('sources.md', false));
 writeFileSync(join(dir, 'canon.md'), fill('canon.md', false));
 console.log(`content/songs/${slug}/ создана по docs/methodology/templates/.`);
+console.log('В sources.md запишите адрес официального видео или строку «Файл: имя.m4a». «Файл: нет» источником не считается.');
 console.log('Команда:');
 console.log(`  npm run song-status -- ${slug}`);
 console.log('Дальше: docs/methodology/01-intake.md');

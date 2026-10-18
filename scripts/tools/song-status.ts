@@ -2,7 +2,7 @@
  * Where a song is on the onboarding route, and the single next command.
  *   npm run song-status -- <slug>
  *
- * The route is docs/methodology/README.md. This script only reads the song folder.
+ * The route is docs/methodology/README.md. Reads the song folder and docs/analysis.
  */
 import { spawnSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
@@ -13,7 +13,72 @@ import { INSTRUMENTS } from '../../src/instruments/list.ts';
 import { ARABIC_SCRIPTS, CPS_OK, letters, readingCps } from './validate.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const slug = process.argv.slice(2).find((a) => !a.startsWith('--'));
+
+/** First YouTube video in a citation, as a watch URL. Empty when there is none. */
+function youtubeUrl(text: string) {
+  const match = text.match(/(?:youtube\.com\/(?:watch\?[^\s)]*?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{6,})/i);
+  return match ? `https://www.youtube.com/watch?v=${match[1]}` : '';
+}
+
+/** Line id as a whole token. `fuzuli-f1` does not match `fuzuli-f1-1`. */
+function idInText(id: string, text: string) {
+  const escaped = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`(^|[^a-z0-9-])${escaped}([^a-z0-9-]|$)`).test(text);
+}
+
+const CUE_KEYS = new Set(['line', 'cue', 'lang', 'start', 'end']);
+
+/** Empty string when the cue file has only line, cue, lang, start and end. */
+function cueProblem(json: unknown) {
+  if (!Array.isArray(json)) return 'cues.json не массив';
+  const seen = new Set<string>();
+  for (const item of json) {
+    if (!item || typeof item !== 'object') return 'в cues.json есть не объект';
+    const record = item as Record<string, unknown>;
+    const extra = Object.keys(record).filter((key) => !CUE_KEYS.has(key));
+    if (extra.length) return `в cues.json лишние поля (${extra.join(', ')}): текста реплики быть не должно`;
+    const { line, cue, lang, start, end } = record;
+    if (typeof line !== 'string' || !line) return 'у реплики нет line';
+    if (seen.has(line)) return `реплика ${line} повторяется`;
+    seen.add(line);
+    if (typeof cue !== 'number' || typeof start !== 'number' || typeof end !== 'number') {
+      return `реплика ${line}: cue, start и end — числа`;
+    }
+    if (typeof lang !== 'string' || !lang.trim()) return `реплика ${line}: нет lang`;
+    if (!(start < end)) return `реплика ${line}: start не меньше end`;
+  }
+  return '';
+}
+
+function selfCheck() {
+  const failures: string[] = [];
+  const check = (ok: boolean, message: string) => {
+    if (!ok) failures.push(message);
+  };
+  check(
+    youtubeUrl('дорожка https://www.youtube.com/watch?v=xWwMzfGVikA') === 'https://www.youtube.com/watch?v=xWwMzfGVikA',
+    'youtube url',
+  );
+  check(youtubeUrl('https://youtu.be/BcSnZ-RuwyI') === 'https://www.youtube.com/watch?v=BcSnZ-RuwyI', 'short url');
+  check(!youtubeUrl('https://ganjoor.net/hafez'), 'not youtube');
+  check(!idInText('fuzuli-f1', 'fuzuli-f1-1'), 'id prefix');
+  check(idInText('fuzuli-f1-1', 'Строки: fuzuli-f1-1, fuzuli-f1-2'), 'id exact');
+  check(cueProblem([{ line: 'a', cue: 1, lang: 'en', start: 0, end: 1, text: 'нет' }]).includes('лишние'), 'cue text');
+  check(cueProblem([{ line: 'a', cue: 1, lang: 'en', start: 0, end: 1 }]) === '', 'cue ok');
+  check(cueProblem([{ line: 'a', cue: 1, lang: 'en', start: 2, end: 1 }]).includes('start'), 'cue order');
+  if (failures.length) {
+    console.error(failures.join('\n'));
+    process.exit(1);
+  }
+  console.log('song-status self-check ok');
+}
+
+if (process.argv.includes('--self-check')) {
+  selfCheck();
+  process.exit(0);
+}
+
+const slugArg = process.argv.slice(2).find((a) => !a.startsWith('--'));
 const instrumentKeys = new Set(INSTRUMENTS.map((i) => i.key));
 const TEMPLATE = '<!-- пустой шаблон';
 
@@ -44,11 +109,12 @@ function fail(message: string): never {
   process.exit(1);
 }
 
-if (!slug) {
+if (!slugArg) {
   const songs = readdirSync(join(root, 'content/songs')).filter((name) => !name.startsWith('.'));
   fail(`Укажите песню.\n  npm run song-status -- <slug>\nСейчас в библиотеке: ${songs.join(', ') || 'пусто'}`);
 }
-if (!/^[a-z0-9-]+$/.test(slug)) fail('slug — только строчные латинские буквы, цифры и дефис');
+if (!/^[a-z0-9-]+$/.test(slugArg)) fail('slug — только строчные латинские буквы, цифры и дефис');
+const slug = slugArg;
 
 const dir = join(root, 'content/songs', slug);
 if (!existsSync(dir)) {
@@ -104,6 +170,174 @@ for (const section of lyrics.sections) {
 }
 const flagCount = [...flags.values()].reduce((sum, n) => sum + n, 0);
 const review = song.review ?? [];
+const lineIds = lines.map((line) => line.id);
+
+function mentioned(phrase: string) {
+  return review.some((item) => item.includes(phrase));
+}
+
+/** One failed download is recorded in review. song-status must not ask for the same command again. */
+const videoStopped = mentioned('официальное видео: yt-dlp 429') || mentioned('официальное видео: просит войти');
+const subsStopped = mentioned('официальные субтитры: yt-dlp 429') || mentioned('официальные субтитры: пусто');
+const backWait = mentioned('обратный перевод: ждёт Gemini');
+const officialUrl = youtubeUrl(sources) || youtubeUrl(song.audio.provenance?.ref ?? '');
+
+function walkFiles(dir: string, depth: number, hit: (name: string) => boolean): boolean {
+  if (depth < 0 || !existsSync(dir)) return false;
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isDirectory()) {
+      if (walkFiles(join(dir, entry.name), depth - 1, hit)) return true;
+    } else if (hit(entry.name)) return true;
+  }
+  return false;
+}
+
+const workDir = join(root, 'work', slug);
+const subsOnDisk = walkFiles(workDir, 3, (name) => /\.(vtt|srt|json3)$/i.test(name));
+const videoOnDisk = walkFiles(workDir, 1, (name) => /^video\./i.test(name) && !name.endsWith('.json'));
+
+function loadCues(): { rows: { line: string }[] | null; problem: string } {
+  const path = join(root, 'docs/analysis', slug, 'cues.json');
+  if (!existsSync(path)) return { rows: null, problem: '' };
+  try {
+    const json = JSON.parse(readText(path)) as unknown;
+    const problem = cueProblem(json);
+    if (problem) return { rows: null, problem };
+    return { rows: json as { line: string }[], problem: '' };
+  } catch {
+    return { rows: null, problem: 'cues.json не читается' };
+  }
+}
+
+const cuesLoaded = loadCues();
+const cueIds = new Set((cuesLoaded.rows ?? []).map((row) => row.line));
+const missingCues = lineIds.filter((id) => !cueIds.has(id));
+const extraCues = [...cueIds].filter((id) => !lineIds.includes(id));
+
+let cuesState = 'нет';
+let cuesDetail = '';
+if (lines.length === 0) {
+  cuesState = 'рано';
+  cuesDetail = 'строк ещё нет: реплики пишутся после id в lyrics.json';
+} else if (cuesLoaded.problem) {
+  cuesDetail = cuesLoaded.problem;
+} else if (!cuesLoaded.rows) {
+  if (subsStopped) {
+    cuesState = 'отложено';
+    cuesDetail = 'в review отмечено, что официальные субтитры не скачались; повторно yt-dlp не запускать';
+  } else {
+    cuesDetail = subsOnDisk ? 'субтитры лежат в work, cues.json ещё нет' : `нет docs/analysis/${slug}/cues.json`;
+  }
+} else if (extraCues.length || missingCues.length) {
+  cuesDetail = [missingCues.length ? `нет реплики: ${missingCues.length}` : '', extraCues.length ? `чужие id: ${extraCues.length}` : '']
+    .filter(Boolean)
+    .join(', ');
+} else {
+  cuesState = 'да';
+  cuesDetail = `${cuesLoaded.rows.length} реплик, без текста`;
+}
+
+function partCoverage() {
+  const vocal: { id: string; sectionId: string }[] = [];
+  for (const section of lyrics.sections) {
+    if (section.kind !== 'vocal') continue;
+    for (const line of section.lines) vocal.push({ id: line.id, sectionId: section.id });
+  }
+  const owner = new Map<string, string>();
+  const dup: string[] = [];
+  for (const part of song.parts ?? []) {
+    const claim = (id: string) => {
+      const prev = owner.get(id);
+      if (prev && prev !== part.id) dup.push(id);
+      else if (!prev) owner.set(id, part.id);
+    };
+    for (const sid of part.sections ?? []) {
+      for (const line of vocal) if (line.sectionId === sid) claim(line.id);
+    }
+    for (const lid of part.lines ?? []) claim(lid);
+  }
+  return { missing: vocal.filter((line) => !owner.has(line.id)).map((line) => line.id), dup };
+}
+
+const partsCov = partCoverage();
+let partsState = lines.length === 0 ? 'рано' : 'нет';
+let partsDetail = lines.length === 0 ? 'строк ещё нет' : '';
+if (lines.length) {
+  if (!song.parts?.length) partsDetail = 'нет поля parts';
+  else if (partsCov.dup.length) partsDetail = `строка в двух частях: ${partsCov.dup.length}`;
+  else if (partsCov.missing.length) partsDetail = `не входят в состав: ${partsCov.missing.length}`;
+  else {
+    partsState = 'да';
+    partsDetail = `частей ${song.parts.length}, все строки входят`;
+  }
+}
+
+const dossierPath = join(root, 'docs/analysis/translation', `${slug}.md`);
+const dossier = readText(dossierPath);
+const missingDossier = lineIds.filter((id) => !idInText(id, dossier));
+
+function backNoted() {
+  if (dossier.includes('Обратный перевод')) return true;
+  const dir = join(root, 'docs/analysis/translation');
+  if (!existsSync(dir)) return false;
+  for (const name of readdirSync(dir)) {
+    if (!/^review-.*\.md$/.test(name)) continue;
+    const text = readText(join(dir, name));
+    if (!text.includes('Обратный перевод')) continue;
+    if (text.includes(slug) || (song.title.length >= 3 && text.includes(song.title))) return true;
+  }
+  return false;
+}
+
+let dossierState = lines.length === 0 ? 'рано' : 'нет';
+let dossierDetail = lines.length === 0 ? 'строк ещё нет' : '';
+if (lines.length) {
+  if (!dossier) dossierDetail = `нет docs/analysis/translation/${slug}.md`;
+  else if (!dossier.includes('Источник') || !dossier.includes('Принято')) dossierDetail = 'в досье нет «Источник» или «Принято»';
+  else if (missingDossier.length) dossierDetail = `нет id строк: ${missingDossier.length}`;
+  else if (backWait) {
+    dossierState = 'ждёт';
+    dossierDetail = 'текст досье есть; обратный перевод ждёт Gemini и записан в review';
+  } else if (!backNoted()) dossierDetail = 'нет пометы обратного перевода';
+  else {
+    dossierState = 'да';
+    dossierDetail = 'все id, источник, принято, обратный перевод отмечен';
+  }
+}
+
+const visionPath = join(root, 'docs/analysis', slug, 'vision.json');
+const fusionOk = existsSync(join(root, 'docs/analysis', slug, 'fusion.json'));
+const entriesOk = existsSync(join(root, 'docs/analysis', slug, 'entries.md'));
+let visionFrames = 0;
+let visionProblem = '';
+if (existsSync(visionPath)) {
+  try {
+    const vision = JSON.parse(readText(visionPath)) as { frames?: unknown };
+    visionFrames = Array.isArray(vision.frames) ? vision.frames.length : 0;
+    if (!visionFrames) visionProblem = 'vision.json без кадров';
+  } catch {
+    visionProblem = 'vision.json не читается';
+  }
+}
+
+let videoState = 'нет';
+let videoDetail = '';
+if (visionFrames > 0 && fusionOk && entriesOk && !visionProblem) {
+  videoState = 'да';
+  videoDetail = `кадров ${visionFrames}, сведение и вступления есть`;
+} else if (!visionFrames && (videoStopped || (!videoOnDisk && !officialUrl))) {
+  videoState = 'отложено';
+  videoDetail = videoStopped
+    ? 'в review отмечено, что официальное видео не скачалось; повторно yt-dlp не запускать'
+    : `нет ссылки на официальное видео и нет work/${slug}/video.*`;
+} else if (visionProblem) videoDetail = visionProblem;
+else if (!visionFrames) videoDetail = videoOnDisk ? 'видео лежит в work, vision.json ещё нет' : 'нет vision.json';
+else if (!fusionOk) videoDetail = 'нет fusion.json';
+else videoDetail = 'нет entries.md';
+
+function closed(state: string) {
+  return state === 'да' || state === 'отложено' || state === 'ждёт';
+}
 
 /** A url, or a line `Файл: name.m4a`. `Файл: нет` is not a citation. */
 function citesWork(text: string) {
@@ -268,22 +502,15 @@ const rows: Row[] = [
             ? `не найдены в canon.md: ${missingCanon.length}`
             : 'все строки есть в canon.md',
   },
-  {
-    n: '5',
-    name: 'тайм-коды',
-    state: timingReady ? 'да' : pipeline ? 'черновик' : 'отложено',
-    detail: timingReady
-      ? `${song.timing.status}, ${song.timing.method}`
-      : pipeline
-        ? `timing.status = ${song.timing.status}`
-        : `timing.status = ${song.timing.status}; конвейера .github/workflows/pipeline.yml на ветке нет`,
-  },
+  { n: '4б', name: 'состав', state: partsState, detail: partsDetail },
+  { n: '4в', name: 'реплики', state: cuesState, detail: cuesDetail },
   {
     n: '6',
     name: 'перевод',
     state: lines.length === 0 ? 'рано' : translationReady ? 'да' : 'нет',
     detail: lines.length === 0 ? 'строк ещё нет' : slow.length ? `быстрее ${CPS_OK} зн/с: ${slow.length}` : 'скорость в норме',
   },
+  { n: '6б', name: 'досье', state: dossierState, detail: dossierDetail },
   {
     n: '7',
     name: 'пояснения',
@@ -301,11 +528,22 @@ const rows: Row[] = [
     state: translitReady ? 'да' : 'нет',
     detail: noTranslit.length ? `без translit: ${noTranslit.length}` : 'арабское письмо закрыто',
   },
+  { n: '9б', name: 'видео', state: videoState, detail: videoDetail },
   {
     n: '9',
     name: 'инструменты',
     state: instrumentsReady ? 'да' : 'нет',
     detail: instrumentsReady ? 'ключи есть в каталоге' : `нет в каталоге: ${[...new Set(unknownInstruments)].join(', ')}`,
+  },
+  {
+    n: '5',
+    name: 'тайм-коды',
+    state: timingReady ? 'да' : pipeline ? 'черновик' : 'отложено',
+    detail: timingReady
+      ? `${song.timing.status}, ${song.timing.method}`
+      : pipeline
+        ? `timing.status = ${song.timing.status}`
+        : `timing.status = ${song.timing.status}; конвейера .github/workflows/pipeline.yml на ветке нет`,
   },
   { n: '10', name: 'сцена', state: 'да', detail: 'код под песню не нужен: поток строк сам' },
   {
@@ -323,7 +561,19 @@ const rows: Row[] = [
   { n: '12', name: 'публикация', state: 'рано', detail: 'после того как строки 1–11 закрыты' },
 ];
 
+function ytInvoke(format: string, output: string, url: string) {
+  return `python -m yt_dlp --no-playlist --js-runtimes node --extractor-args "youtube:player_client=tv,web_embedded" -f ${format} -o "${output}" "${url}"`;
+}
+
 function audioNext(): Next {
+  if (!sourceFile && !plain && !enc && officialUrl && !videoStopped) {
+    return {
+      row: '2',
+      file: 'docs/methodology/02-audio.md',
+      command: ytInvoke('140', `work/${slug}/source.m4a`, officialUrl),
+      because: `Одна попытка на машине владельца: звук дорожки 140 того же ролика, что и видео. Каталог work/ в git не входит. Если ответ 429, допишите в review ровно: официальное видео: yt-dlp 429. Если просит войти — официальное видео: просит войти. Повторять команду, менять клиент и брать другой ролик не нужно: дальше файл присылает владелец. Когда source.m4a лежит в work/${slug}, song-status даст process_audio.py. Видео 360p эта команда не качает.`,
+    };
+  }
   if (python && ffmpeg && sourceFile) {
     return {
       row: '2',
@@ -345,7 +595,9 @@ function audioNext(): Next {
       row: '2',
       file: 'docs/methodology/02-audio.md',
       command: `npm run song-status -- ${slug}`,
-      because: `Скопируйте файл владельца в work/${slug}/source.m4a. Ссылку на YouTube не скачивайте: облако её не достанет, а эта команда её не качает. Когда файл лежит в work, song-status даст process_audio.py.`,
+      because: videoStopped
+        ? `Скачивание официального видео остановлено фразой в review. Положите файл владельца в work/${slug}/source.m4a и запустите команду снова.`
+        : `Положите файл владельца в work/${slug}/source.m4a или запишите ссылку на официальное видео в sources.md. Чужой ролик не берите. Когда файл лежит в work, song-status даст process_audio.py.`,
     };
   }
   const missingTool = !python && !ffmpeg ? 'нет ни Python, ни ffmpeg' : !ffmpeg ? 'нет ffmpeg' : 'нет Python';
@@ -353,8 +605,9 @@ function audioNext(): Next {
     row: '2',
     file: 'docs/methodology/02-audio.md',
     command: `npm run song-status -- ${slug}`,
-    because:
-      `Команды, которая достанет запись, нет (${missingTool}). Файл присылает владелец: положите его в work/${slug}/source.m4a. С YouTube не скачивайте. Раздел «Скачать» в 02-audio.md для агента не действует. Когда файл лежит в work и в системе есть и Python, и ffmpeg, эта команда сменится на process_audio.py.`,
+    because: videoStopped
+      ? `Скачивание остановлено фразой в review (${missingTool}). Положите файл владельца в work/${slug}/source.m4a. scripts/pipeline/fetch_audio.sh не запускать.`
+      : `Обработать файл нечем (${missingTool}). Если ссылка на официальное видео уже в sources.md, команду yt-dlp печатает эта стадия на машине, где есть Python. Иначе положите файл владельца в work/${slug}/source.m4a. scripts/pipeline/fetch_audio.sh не запускать: он берёт другую дорожку. Когда файл лежит в work и есть и Python, и ffmpeg, эта команда сменится на process_audio.py.`,
   };
 }
 
@@ -387,11 +640,122 @@ function timingNext(): Next {
 
 function publishNext(): Next {
   const status = song.timing.status;
+  const paths = [`content/songs/${slug}`, `content/audio-enc/${slug}`];
+  if (existsSync(join(root, 'docs/analysis', slug))) paths.push(`docs/analysis/${slug}`);
+  if (existsSync(dossierPath)) paths.push(`docs/analysis/translation/${slug}.md`);
   return {
     row: '12',
     file: 'docs/methodology/12-publish.md',
-    command: `git add content/songs/${slug} content/audio-enc/${slug}`,
-    because: `Коммит в свою ветку. В main не сливать. Открытый m4a не добавлять. Сообщение: Add ${song.title}: text, translation, commentary, timing (${status}). work/ не коммитить.`,
+    command: `git add ${paths.join(' ')}`,
+    because: `Коммит в свою ветку. В main не сливать. Открытый m4a не добавлять. Сообщение: Add ${song.title}: text, translation, commentary, timing (${status}). work/ не коммитить. Прослушивание владельцем этой командой не запускается.`,
+  };
+}
+
+function partsNext(): Next {
+  const sample = partsCov.missing.slice(0, 8).map((id) => `  ${id}`).join('\n');
+  return {
+    row: '4б',
+    file: 'docs/methodology/04-text.md',
+    command: `npm run validate -- ${slug}`,
+    because: !song.parts?.length
+      ? 'Заполните song.json → parts по разделу «Состав песни» в 04-text.md. Только то, что назвали canon.md и sources.md. Чего источник не назвал, не пишите: карточка сама скажет «не установлено». Состав можно вести параллельно с переводом и видео, когда строки уже лежат.'
+      : partsCov.dup.length
+        ? `Строка входит в две части (${partsCov.dup.slice(0, 8).join(', ')}). Одна вокальная строка — одна часть.`
+        : `Эти строки не входят в состав:\n${sample}\nДобавьте их в sections или lines нужной части.`,
+  };
+}
+
+function cuesNext(): Next {
+  if (cuesLoaded.problem || extraCues.length || missingCues.length) {
+    const sample = missingCues.slice(0, 8).map((id) => `  ${id}`).join('\n');
+    return {
+      row: '4в',
+      file: 'docs/methodology/04-text.md',
+      command: `npm run song-status -- ${slug}`,
+      because: `Поправьте docs/analysis/${slug}/cues.json. В каждом объекте только line, cue, lang, start, end. Текста реплики нет. Каждая вокальная строка — одна реплика.${sample ? `\n${sample}` : ''}`,
+    };
+  }
+  if (subsOnDisk) {
+    return {
+      row: '4в',
+      file: 'docs/methodology/04-text.md',
+      command: `npm run song-status -- ${slug}`,
+      because: `Субтитры уже лежат в work/${slug}. В git их не кладите. Напишите docs/analysis/${slug}/cues.json по разделу «Если официальные субтитры уже лежат» в 04-text.md: время и id, без текста. timing.status остаётся draft. npm run draft-timing не запускайте.`,
+    };
+  }
+  if (officialUrl) {
+    return {
+      row: '4в',
+      file: 'docs/methodology/04-text.md',
+      command: `yt-dlp --skip-download --write-subs --sub-langs "ar,fa,tr,az,he,hi,la,de,en" --convert-subs vtt -o "work/${slug}/subs" "${officialUrl}"`,
+      because:
+        'Одна попытка, звук не качается. Если ответ пустой, 429 или страница с проверкой, остановитесь и допишите в review ровно одну фразу: официальные субтитры: yt-dlp 429 или официальные субтитры: пусто. Повторять команду не нужно. Автосубтитры в эталон не идут.',
+    };
+  }
+  return {
+    row: '4в',
+    file: 'docs/methodology/04-text.md',
+    command: `npm run song-status -- ${slug}`,
+    because:
+      'Ссылки на официальное видео в sources.md нет, поэтому субтитры скачать нечем. Допишите в review ровно: официальные субтитры: пусто. Либо положите файл субтитров от владельца в work/' +
+      slug +
+      '/subs и соберите cues.json.',
+  };
+}
+
+function dossierNext(): Next {
+  if (!dossier || missingDossier.length || !dossier.includes('Источник') || !dossier.includes('Принято')) {
+    const sample = missingDossier.slice(0, 8).map((id) => `  ${id}`).join('\n');
+    return {
+      row: '6б',
+      file: 'docs/methodology/06-translation.md',
+      command: `npm run song-status -- ${slug}`,
+      because: !dossier
+        ? `Создайте docs/analysis/translation/${slug}.md по разделу «Досье» в 06-translation.md и по образцу docs/analysis/translation/karitas.md. Текст той песни не копируйте. Стандарт — docs/methodology/translation-standard.md. Чего не открыли — «требует проверки».`
+        : `Допишите досье. Нет id:\n${sample}\nУ блока есть «Источник» и «Принято».`,
+    };
+  }
+  return {
+    row: '6б',
+    file: 'docs/methodology/06-translation.md',
+    command: `npm run song-status -- ${slug}`,
+    because:
+      'Обратный перевод делает другая модель, её вызывает Claude · Lead. Grok ответ не выдумывает. Когда проверка записана, добавьте в досье заголовок «Обратный перевод» и решения по замечаниям. Если Gemini сейчас недоступен, допишите в review ровно: обратный перевод: ждёт Gemini — и остановитесь, команду не повторяйте.',
+  };
+}
+
+function videoNext(): Next {
+  const py = python || 'python';
+  if (!visionFrames && videoOnDisk) {
+    return {
+      row: '9б',
+      file: 'docs/methodology/09-instruments.md',
+      command: `npm run song-status -- ${slug}`,
+      because: `Видео лежит в work/${slug}. Просмотр запускает Claude · Lead, не Grok. Задание — scripts/instrument_id/prompts/watch-video.md, путь видео подставьте вместо {{VIDEO}}:\n  agy -p "<текст watch-video.md>" --model gemini-3.8-flash-high --output-format json --json-schema scripts/instrument_id/schema/vision.json --print-timeout 2350s\nОтвет structured_output запишите в docs/analysis/${slug}/vision.json. Расход: python ops/usage/collect.py --run <json agy> --task "watch-video ${slug}". Если вы не Claude · Lead, напишите в отчёте, что видео ждёт просмотра, и agy не вызывайте.`,
+    };
+  }
+  if (!visionFrames && officialUrl && !videoStopped) {
+    return {
+      row: '9б',
+      file: 'docs/methodology/09-instruments.md',
+      command: ytInvoke('18', `work/${slug}/video.mp4`, officialUrl),
+      because:
+        'Одна попытка, тот же ролик, что и звук: формат 18 — это 360p. Если 429 или вход — те же фразы review, что в стадии 2. Повторно не запускать. Файл в git не класть.',
+    };
+  }
+  if (visionFrames && !fusionOk) {
+    return {
+      row: '9б',
+      file: 'docs/methodology/09-instruments.md',
+      command: `${py} scripts/instrument_id/run.py fuse ${slug}`,
+      because: 'Сведение титров, кадров и звука, если звук уже распознан. Одного звука для инструмента недостаточно. Дальше снова song-status.',
+    };
+  }
+  return {
+    row: '9б',
+    file: 'docs/methodology/09-instruments.md',
+    command: `${py} scripts/instrument_id/run.py entries ${slug} --write`,
+    because: `Пишет docs/analysis/${slug}/entries.md и поля instruments, entries, performers. Правило — «титры и чёткий кадр» или «три плана», оно же в 09-instruments.md. Строки и время слов не трогает. Если features.json нет, атака не уточняется, команда всё равно эта. Потом npm run validate -- ${slug}.`,
   };
 }
 
@@ -403,15 +767,23 @@ if (!sourcesReady) {
     command: `npm run song-status -- ${slug}`,
     because:
       languageStub && !!sources && !sources.includes(TEMPLATE) && citesWork(sources)
-        ? 'В song.json замените язык-заглушку en на языки, которые реально поются. Когда код уже верный, пункт review про заглушку перепишите. С YouTube ничего не скачивайте.'
-        : 'Заполните sources.md: адрес https:// или строка «Файл: имя.расширение» (например «Файл: recording.m4a»). «Файл: нет» источником не считается. Строку «пустой шаблон» удалите. В song.json замените язык-заглушку en на языки, которые реально поются. С YouTube ничего не скачивайте.',
+        ? 'В song.json замените язык-заглушку en на языки, которые реально поются. Когда код уже верный, пункт review про заглушку перепишите. Ссылку на официальное видео запишите в sources.md целиком: скачивание печатает стадия записи, одну попытку, тот же ролик.'
+        : 'Заполните sources.md: адрес https:// официального видео или строка «Файл: имя.расширение» (например «Файл: recording.m4a»). «Файл: нет» источником не считается. Строку «пустой шаблон» удалите. В song.json замените язык-заглушку en на языки, которые реально поются. Чужой ролик не записывайте.',
   };
-} else if (!audioReady && ((plain && !enc) || Boolean(python && ffmpeg))) {
+} else if (plain && !enc) {
+  next = {
+    row: '2',
+    file: 'docs/methodology/02-audio.md',
+    command: `npm run audio:encrypt -- ${slug}`,
+    because:
+      'Открытый high.m4a уже лежит в public/audio, шифра content/audio-enc ещё нет. В репозиторий коммитится только шифр. Нужен AUDIO_KEY в .env.local (64 шестнадцатеричных знака). Пока шифра нет, к тексту и остальным стадиям эта команда не переходит. Повторно process_audio.py не запускать.',
+  };
+} else if (!audioReady && (Boolean(python && ffmpeg) || (Boolean(officialUrl) && !videoStopped && !sourceFile))) {
   next = audioNext();
 } else if (!audioReady && !textReady) {
   const missingTool = !python && !ffmpeg ? 'нет ни Python, ни ffmpeg' : !ffmpeg ? 'нет ffmpeg' : 'нет Python';
   next = textNext(
-    `Записи ещё нет (${missingTool}), скачивать её нечем и не нужно. Файл потом положите в work/${slug}/source.m4a. Пока его нет, соберите текст.\n`,
+    `Записи ещё нет (${missingTool}). Если в sources.md есть ссылка на официальное видео, стадия записи даст одну команду yt-dlp на машине владельца. Пока файла нет, соберите текст. Секунды не ставьте.\n`,
   );
 } else if (!audioReady) {
   next = audioNext();
@@ -431,11 +803,17 @@ if (!sourcesReady) {
   };
 } else if (!textReady) {
   if (!structureReady) {
-    rows[2] = { n: '3', name: 'структура', state: 'отложено', detail: 'границы не выдуманы: нет ни Python с ffmpeg, ни конвейера на ветке' };
+    const structure = rows.find((row) => row.name === 'структура');
+    if (structure) {
+      structure.state = 'отложено';
+      structure.detail = 'границы не выдуманы: нет ни Python с ffmpeg, ни конвейера на ветке';
+    }
   }
   next = textNext();
-} else if (!timingReady && pipeline) {
-  next = timingNext();
+} else if (!closed(partsState)) {
+  next = partsNext();
+} else if (!closed(cuesState)) {
+  next = cuesNext();
 } else if (!translationReady) {
   const sample = slow.slice(0, 5).map((line) => `  ${line.id} — ${line.cps.toFixed(0)} зн/с при ${line.sung.toFixed(1)} с`).join('\n');
   next = {
@@ -444,8 +822,10 @@ if (!sourcesReady) {
     command: `npm run validate -- ${slug}`,
     because: slow.length
       ? `Сократите перевод, пока скорость не станет ≤ ${CPS_OK} зн/с. Считает строка как поётся (конец последнего слова минус начало первого), не пауза после неё:\n${sample}`
-      : 'У вокальной строки пустой перевод.',
+      : 'У вокальной строки пустой перевод. Смысл — по docs/methodology/translation-standard.md. Досье — следующая строка, когда скорость уже в норме.',
   };
+} else if (!closed(dossierState)) {
+  next = dossierNext();
 } else if (!commentsReady) {
   const sample = [
     ...fragmentsWithoutComment.slice(0, 4).map((fragment) => `  фрагмент «${short(fragment.title)}» — секция ${fragment.sectionId}`),
@@ -455,7 +835,7 @@ if (!sourcesReady) {
     row: '7',
     file: 'docs/methodology/07-comment.md',
     command: `npm run song-status -- ${slug}`,
-    because: `Одно пояснение на фрагмент канона: автор, форма, контекст. Место — первая секция фрагмента или её первая строка. Строке с em пояснение не нужно, ей нужна пара **…** в переводе. Пустое пояснение ради галочки не пишите. У проигрыша — note, одно-два спокойных предложения. Секция только с voice или choir ничего не требует.\n${sample}\nПояснение отдельной строки пишите, только если перевод не передал термин, игру слов или аллюзию. Такие строки машина не ищет: это чек-лист в файле стадии.`,
+    because: `Одно пояснение на фрагмент канона: автор, форма, контекст. Место — первая секция фрагмента или её первая строка. Строке с em пояснение не нужно, ей нужна пара **…** в переводе. Пустое пояснение ради галочки не пишите. У проигрыша — note, одно-два спокойных предложения. Секция только с voice или choir ничего не требует. Если рядом с voice или choir стоит другой ключ, note нужен: это уже не секция только из голоса.\n${sample}\nПояснение отдельной строки пишите, только если перевод не передал термин, игру слов или аллюзию. Такие строки машина не ищет: это чек-лист в файле стадии.`,
   };
 } else if (!translitReady) {
   const sample = noTranslit.slice(0, 5).map((line) => `  ${line.id}`).join('\n');
@@ -465,6 +845,8 @@ if (!sourcesReady) {
     command: `npm run validate -- ${slug}`,
     because: `Для арабского письма заполните translit кириллицей, как поётся:\n${sample}`,
   };
+} else if (!closed(videoState)) {
+  next = videoNext();
 } else if (!instrumentsReady) {
   next = {
     row: '9',
@@ -472,6 +854,8 @@ if (!sourcesReady) {
     command: `npm run validate -- ${slug}`,
     because: `Ключей нет в src/instruments/list.ts: ${[...new Set(unknownInstruments)].join(', ')}. Новый инструмент — запись в каталоге и гравюра по рецепту стадии 9, не отдельный модуль песни. Пока инструмент не опознан, ставьте ensemble и флаг attribution-unverified.`,
   };
+} else if (!timingReady && pipeline) {
+  next = timingNext();
 } else if (!qaReady) {
   const flagText = [...flags.entries()].map(([name, n]) => `${name} ${n}`).join(', ');
   const questions = review.slice(0, 3).map((item) => `  — ${short(item)}`).join('\n');
@@ -486,7 +870,10 @@ if (!sourcesReady) {
     row: '5',
     file: 'docs/methodology/05-alignment.md',
     command: `npm run song-status -- ${slug}`,
-    because: 'Текст, перевод и пояснения закрыты, но время слов всё ещё черновик, а конвейера на ветке нет. Публиковать рано: пословную заливку сайт при draft не включает. Когда появится .github/workflows/pipeline.yml, эта команда сменится на задание jobs/' + slug + '.json. Секунды руками не ставьте.',
+    because:
+      'Текст, перевод и пояснения закрыты, но время слов всё ещё черновик, а конвейера на ветке нет. Публиковать рано: пословную заливку сайт при draft не включает. Задание jobs/' +
+      slug +
+      '.json не создавайте: файла .github/workflows/pipeline.yml нет, пустой пуш ничего не посчитает. Когда файл появится, эта команда сменится на задание. Секунды руками не ставьте.',
   };
 } else if (!coverReady) {
   next = {
@@ -496,7 +883,11 @@ if (!sourcesReady) {
     because: `Обложка — квадрат палитры и знака, без названия и исполнителя. Нужны public/covers/${slug}/96.png, 192.png, 512.png и 1024.png. Команда собирает обложки всех песен.`,
   };
 } else {
-  rows[rows.length - 1] = { n: '12', name: 'публикация', state: 'да', detail: 'можно коммитить' };
+  const publish = rows.find((row) => row.name === 'публикация');
+  if (publish) {
+    publish.state = 'да';
+    publish.detail = 'можно коммитить';
+  }
   next = publishNext();
 }
 
