@@ -1275,12 +1275,28 @@
       "end": 303.383,
       "label": "Проигрыш",
       "instruments": [
-        "ensemble"
+        "oud",
+        "santur",
+        "violin"
       ],
       "note": "Инструментальный проигрыш.",
       "comment": "Строй пьесы — ми-бемоль, с отсылкой к макаму **нахаванд**.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "oud",
+          "at": 251.0
+        },
+        {
+          "key": "santur",
+          "at": 262.75
+        },
+        {
+          "key": "violin",
+          "at": 301.85
+        }
       ]
     },
     {
@@ -1784,11 +1800,32 @@
       "end": 442.276,
       "label": "Проигрыш",
       "instruments": [
+        "violin",
+        "santur",
+        "darbuka",
         "ensemble"
       ],
       "note": "Инструментальный проигрыш.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 389.81
+        },
+        {
+          "key": "santur",
+          "at": 398.0
+        },
+        {
+          "key": "darbuka",
+          "at": 400.85
+        },
+        {
+          "key": "ensemble",
+          "at": 402.5
+        }
       ]
     },
     {
@@ -1949,11 +1986,27 @@
       "end": 476.2,
       "label": "Проигрыш",
       "instruments": [
-        "ensemble"
+        "violin",
+        "ney",
+        "daf"
       ],
       "note": "Короткий проигрыш между фразами.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 464.67
+        },
+        {
+          "key": "ney",
+          "at": 464.67
+        },
+        {
+          "key": "daf",
+          "at": 472.6
+        }
       ]
     },
     {
@@ -2114,11 +2167,27 @@
       "end": 560.667,
       "label": "Проигрыш",
       "instruments": [
-        "ensemble"
+        "violin",
+        "daf",
+        "oud"
       ],
       "note": "Инструментальный проигрыш.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 498.02
+        },
+        {
+          "key": "daf",
+          "at": 504.7
+        },
+        {
+          "key": "oud",
+          "at": 510.0
+        }
       ]
     },
     {
@@ -2281,11 +2350,17 @@
       "end": 622,
       "label": "Проигрыш",
       "instruments": [
-        "ensemble"
+        "daf"
       ],
       "note": "Инструментальный проигрыш.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "daf",
+          "at": 584.85
+        }
       ]
     },
     {
@@ -2308,11 +2383,27 @@
       "end": 671,
       "label": "Проигрыш",
       "instruments": [
-        "ensemble"
+        "darbuka",
+        "daf",
+        "bendir"
       ],
       "note": "Инструментальный проигрыш.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "darbuka",
+          "at": 632.75
+        },
+        {
+          "key": "daf",
+          "at": 634.1
+        },
+        {
+          "key": "bendir",
+          "at": 636.75
+        }
       ]
     },
     {
@@ -2335,11 +2426,27 @@
       "end": 714,
       "label": "Проигрыш",
       "instruments": [
-        "ensemble"
+        "santur",
+        "bendir",
+        "ney"
       ],
       "note": "Инструментальный проигрыш.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "santur",
+          "at": 679.0
+        },
+        {
+          "key": "bendir",
+          "at": 692.75
+        },
+        {
+          "key": "ney",
+          "at": 712.0
+        }
       ]
     },
     {
@@ -2362,11 +2469,17 @@
       "end": 729.384,
       "label": "Проигрыш",
       "instruments": [
-        "ensemble"
+        "ney"
       ],
       "note": "Короткий проигрыш между фразами.",
       "flags": [
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "ney",
+          "at": 721.0
+        }
       ]
     },
     {
