@@ -13,7 +13,10 @@ from __future__ import annotations
 import time
 
 MODELS = ('small', 'medium', 'large-v3-turbo', 'large-v3')
-BUDGET_S = 70 * 60
+# One song owns the 150 minute job. 90 minutes is enough for large-v3 to finish
+# after the times measured on run 39102852010 (70 minutes skipped it on
+# I Have Come Alive by about 7 seconds) and still leaves that job under 120.
+BUDGET_S = 90 * 60
 UNPLACED_BUDGET_S = 15 * 60
 # Encoder-bound: turbo is not much cheaper than large-v3. Factors are against medium.
 FACTOR_AFTER_MEDIUM = {'large-v3-turbo': 2.2, 'large-v3': 2.8}
@@ -345,17 +348,38 @@ def _lang_table(stats: dict | None) -> list[str]:
     return lines
 
 
+def _budget_minutes(songs: list[dict]) -> int | None:
+    """The ladder budget, when every song in the report used the same one."""
+    values = []
+    for song in songs:
+        raw = song.get('budget_s')
+        if raw is None:
+            continue
+        values.append(int(round(float(raw) / 60.0)))
+    if not values or any(value != values[0] for value in values):
+        return None
+    return values[0]
+
+
 def render_witness(songs: list[dict]) -> str:
-    """Model comparison. `songs` items are `{slug, model, rows}` from the align summary."""
+    """Model comparison. `songs` items are `{slug, model, rows, budget_s}` from the align summary."""
+    minutes = _budget_minutes(songs)
+    if minutes is None:
+        budget_sentence = 'Берётся наибольшая модель, которая целиком уложилась в бюджет песни.'
+    else:
+        budget_sentence = f'Берётся наибольшая модель, которая целиком уложилась в {minutes} минут.'
+    intro = (
+        'stable-ts выравнивает известный текст. На раннере сравниваются модели Whisper `small`, `medium`, '
+        '`large-v3-turbo` и `large-v3`, только по окнам строк, которые к этому моменту уже поставил MMS '
+        '(первое окно, другое окно или ft). ' + budget_sentence + ' '
+        'Согласие — доля слов, где |stable-ts − MMS| округляется не дальше 0,10 с. Реплика — |начало строки '
+        'stable-ts − реплика|. «Рабочий» значит не меньше 8 слов, доля не ниже половины и медиана не выше 0,10 с. '
+        'Это чтение таблицы. Модель оно не выбирает, и пределы 15 % и 5 % из-за него не двигаются.'
+    )
     lines = [
         '# Свидетель Whisper',
         '',
-        'stable-ts выравнивает известный текст. На раннере сравниваются модели Whisper `small`, `medium`, '
-        '`large-v3-turbo` и `large-v3`, только по окнам строк, которые к этому моменту уже поставил MMS '
-        '(первое окно, другое окно или ft). Берётся наибольшая модель, которая целиком уложилась в 70 минут. '
-        'Согласие — доля слов, где |stable-ts − MMS| округляется не дальше 0,10 с. Реплика — |начало строки '
-        'stable-ts − реплика|. «Рабочий» значит не меньше 8 слов, доля не ниже половины и медиана не выше 0,10 с. '
-        'Это чтение таблицы. Модель оно не выбирает, и пределы 15 % и 5 % из-за него не двигаются.',
+        intro,
         '',
     ]
     focus = ('az', 'la', 'de')

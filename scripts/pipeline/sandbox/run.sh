@@ -26,6 +26,7 @@
 # features and instruments need all four htdemucs stems. They do not edit lyrics.json.
 #
 # Environment: AUDIO_KEY, ALIGN_ARGS / QA_ARGS (extra options), WHISPER_MODEL (large-v3-turbo),
+# WHISPER_BUDGET_S (ladder seconds; default 90 minutes),
 # SEPARATOR_MODEL (htdemucs | htdemucs_ft | an audio-separator model file, see separate.py),
 # FORCE=1 (separate again even if a stem exists).
 # Exit code: 0 — done, the check passed; 1 — done, qa found lines off; 2 — a stage failed.

@@ -1008,6 +1008,32 @@ def test_whisper_witness() -> None:
     def finish(name, seconds):
         return {'model': name, 'complete': True, 'elapsed_s': seconds, 'ran': True, 'lines': 3, 'placed': 3}
 
+    check('the ladder budget is ninety minutes', W.BUDGET_S == 90 * 60, str(W.BUDGET_S))
+
+    # Run 39102852010, I Have Come Alive placed windows: small 261 s, medium 812 s,
+    # large-v3-turbo 1308 s. 70 minutes does not start large-v3. 90 minutes does,
+    # and the deadline slice is at least 30 minutes.
+    measured = {'small': 261.0, 'medium': 812.0, 'large-v3-turbo': 1308.0, 'large-v3': 1600.0}
+
+    def reply_measured(name, deadline):
+        return finish(name, measured[name])
+
+    t[0] = 0.0
+    state = {'calls': [], 'reply': reply_measured}
+    chosen, rows = W.ladder(advancing(state), budget_s=70 * 60, clock=clock)
+    check('seventy minutes skips large-v3 after the measured times',
+          chosen == 'large-v3-turbo' and any(r.get('model') == 'large-v3' and r.get('reason') == 'budget' for r in rows),
+          str([(r.get('model'), r.get('reason')) for r in rows]))
+
+    t[0] = 0.0
+    state = {'calls': [], 'reply': reply_measured}
+    chosen, _rows = W.ladder(advancing(state), budget_s=90 * 60, clock=clock)
+    large_deadline = [dl for name, dl in state['calls'] if name == 'large-v3']
+    used = 261.0 + 812.0 + 1308.0
+    slice_s = (large_deadline[0] - used) if large_deadline and large_deadline[0] is not None else 0.0
+    check('ninety minutes starts large-v3 with at least thirty minutes',
+          chosen == 'large-v3' and slice_s >= 30 * 60, str(slice_s))
+
     # All four finish inside a wide budget: the largest one is the witness.
     t[0] = 0.0
     state = {'calls': [], 'reply': lambda name, deadline: finish(name, 10.0)}

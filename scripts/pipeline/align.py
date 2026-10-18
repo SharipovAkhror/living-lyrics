@@ -37,7 +37,7 @@ How it works:
    that passes structure and |Δ| ≤ 0.30 s is the placer. A word start outside the
    line's section, slack 0.05 s, fails that step. Its pre-snap start is the
    primary clock. The other two clocks are the witnesses. stable-ts uses the largest
-   Whisper model that finishes inside 70 minutes, measured on windows of lines MMS
+   Whisper model that finishes inside 90 minutes, measured on windows of lines MMS
    already placed. The song stem stays htdemucs.
    align.py does not decide the flag. It marks every line `timing-draft` and leaves
    `timing.status` at `draft`. qa_sync.py --apply clears the flag only for a placed line
@@ -57,6 +57,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
 import re
 import sys
 import time
@@ -1083,14 +1084,34 @@ def _witness_lines(units: list[Unit], conf: list[dict], cues: dict[str, dict],
     return rows
 
 
+def _whisper_budget_s() -> float:
+    """Seconds for the whole ladder. WHISPER_BUDGET_S overrides the default.
+
+    A missing or unusable value keeps the default. The cap is 100 minutes so the
+    separate 15 minute pass on unplaced lines still fits a 150 minute job.
+    """
+    raw = os.environ.get('WHISPER_BUDGET_S', '').strip()
+    if not raw:
+        return float(W.BUDGET_S)
+    try:
+        value = float(raw)
+    except ValueError:
+        return float(W.BUDGET_S)
+    if value < 60.0 or value > 100 * 60:
+        return float(W.BUDGET_S)
+    return value
+
+
 def run_whisper_witness(x: np.ndarray, jobs: list[dict], units: list[Unit], conf: list[dict],
                         cues: dict[str, dict]) -> tuple[dict, dict]:
     """Compare Whisper sizes on placed windows, then align the rest with the winner.
 
     Small and medium always run. A larger model runs only when its estimate fits
-    the 70 minute budget. The chosen clocks are the witness and the stable-ts placer.
-    A model that does not finish leaves no times. Alignment itself does not fail.
+    the ladder budget (90 minutes unless WHISPER_BUDGET_S says otherwise). The
+    chosen clocks are the witness and the stable-ts placer. A model that does not
+    finish leaves no times. Alignment itself does not fail.
     """
+    budget = _whisper_budget_s()
     by_id = {j['id']: j for j in jobs}
     placed_jobs = []
     unplaced_jobs = []
@@ -1124,7 +1145,7 @@ def run_whisper_witness(x: np.ndarray, jobs: list[dict], units: list[Unit], conf
                                  'reason': 'no-placed', 'lines': 0, 'placed': 0, 'error': None, 'stopped': False}]
     else:
         try:
-            chosen, rows = W.ladder(run_model, budget_s=W.BUDGET_S, clock=time.monotonic)
+            chosen, rows = W.ladder(run_model, budget_s=budget, clock=time.monotonic)
         except Exception as e:
             print(f'лестница stable-ts не собрана ({e.__class__.__name__}: {e})', flush=True)
             chosen, rows = None, [{'model': 'small', 'ran': False, 'complete': False, 'elapsed_s': 0.0,
@@ -1156,8 +1177,8 @@ def run_whisper_witness(x: np.ndarray, jobs: list[dict], units: list[Unit], conf
                     'error': extra_info.get('error'),
                     'reason': extra_info.get('reason'),
                 }
-    print(f'свидетель stable-ts: выбрана {chosen or "нет"}', flush=True)
-    return third, {'model': chosen, 'budget_s': W.BUDGET_S, 'rows': rows}
+    print(f'свидетель stable-ts: выбрана {chosen or "нет"}, бюджет {budget:.0f} с', flush=True)
+    return third, {'model': chosen, 'budget_s': budget, 'rows': rows}
 
 
 def _mark_engine(c: dict, prefix: str, attempt: dict) -> None:
@@ -1720,6 +1741,7 @@ def main() -> None:
         'outside_start_pulls': pulled,
         'third_engine': 'stable-ts',
         'stable_model': witness_info.get('model'),
+        'whisper_budget_s': witness_info.get('budget_s'),
         'whisper_witness': witness_info.get('rows') or [],
         'third_compared': sum(1 for w in ws_good if w.get('third_s') is not None and w.get('ctc_s') is not None),
         'placement': _placement_summary(report_lines, conf, units, ft_info),

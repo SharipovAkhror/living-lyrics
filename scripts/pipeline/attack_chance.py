@@ -1507,6 +1507,7 @@ def render_witness(slugs: list[str]) -> str:
         songs.append({
             'slug': slug,
             'model': summary.get('stable_model'),
+            'budget_s': summary.get('whisper_budget_s'),
             'rows': summary.get('whisper_witness') or [],
         })
     return W.render_witness(songs)
