@@ -1277,6 +1277,7 @@
       "instruments": [
         "oud",
         "santur",
+        "flute",
         "violin"
       ],
       "note": "Инструментальный проигрыш.",
@@ -1292,6 +1293,10 @@
         {
           "key": "santur",
           "at": 262.75
+        },
+        {
+          "key": "flute",
+          "at": 267.0
         },
         {
           "key": "violin",
@@ -2466,6 +2471,7 @@
       "instruments": [
         "santur",
         "bendir",
+        "flute",
         "ney"
       ],
       "note": "Инструментальный проигрыш.",
@@ -2482,6 +2488,10 @@
           "at": 692.75
         },
         {
+          "key": "flute",
+          "at": 711.0
+        },
+        {
           "key": "ney",
           "at": 712.0
         }
@@ -2495,6 +2505,7 @@
       "label": "Голос",
       "instruments": [
         "voice",
+        "flute",
         "ney",
         "darbuka"
       ],
@@ -2504,6 +2515,10 @@
       "entries": [
         {
           "key": "voice",
+          "at": 714.0
+        },
+        {
+          "key": "flute",
           "at": 714.0
         },
         {

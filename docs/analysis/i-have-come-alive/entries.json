@@ -59,7 +59,7 @@
     {
       "id": "orchestral-percussion",
       "name": "оркестровая перкуссия",
-      "catalogKey": null,
+      "catalogKey": "orchestral-percussion",
       "reason": "титры и кадр",
       "credited": true,
       "stable": false,
@@ -92,7 +92,7 @@
     {
       "id": "sitar",
       "name": "ситар",
-      "catalogKey": null,
+      "catalogKey": "sitar",
       "reason": "титры и кадр",
       "credited": true,
       "stable": false,
@@ -103,7 +103,7 @@
     {
       "id": "tabla",
       "name": "табла",
-      "catalogKey": null,
+      "catalogKey": "tabla",
       "reason": "титры и кадр",
       "credited": true,
       "stable": false,
@@ -124,26 +124,7 @@
     }
   ],
   "check": [],
-  "missingEngraving": [
-    {
-      "id": "orchestral-percussion",
-      "name": "оркестровая перкуссия",
-      "shots": 1,
-      "where": "coda-persian 524"
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "shots": 2,
-      "where": "turkish-chorus-2 231; inst-before-mawwal 394"
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "shots": 1,
-      "where": "coda-persian 535"
-    }
-  ],
+  "missingEngraving": [],
   "sections": [
     {
       "id": "inst-open",
@@ -340,7 +321,8 @@
       "instruments": [
         "daf",
         "baglama",
-        "tanbur"
+        "tanbur",
+        "sitar"
       ],
       "entries": [
         {
@@ -354,11 +336,16 @@
         {
           "key": "tanbur",
           "at": 390.2
+        },
+        {
+          "key": "sitar",
+          "at": 394.0
         }
       ],
       "performers": [
         "Mohammad Jaberi (даф)",
-        "Kutay Ozcan (баглама)"
+        "Kutay Ozcan (баглама)",
+        "Asad Khan (ситар)"
       ],
       "choirFrames": 0,
       "soloFrames": 2

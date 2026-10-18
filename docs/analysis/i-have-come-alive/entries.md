@@ -11,11 +11,11 @@
 | `daf` | `daf` | титры и кадр, устойчиво по видео | 4 | нет |
 | `erhu` | `erhu` | титры и кадр, устойчиво по видео | 3 | нет |
 | `kamancheh` | `kamancheh` | титры и кадр, устойчиво по видео | 6 | нет |
-| `orchestral-percussion` | нет | титры и кадр | 1 | нет |
+| `orchestral-percussion` | `orchestral-percussion` | титры и кадр | 1 | нет |
 | `oud` | `oud` | титры и кадр | 0 | нет |
 | `qanun` | `qanun` | титры и кадр | 0 | нет |
-| `sitar` | нет | титры и кадр | 0 | нет |
-| `tabla` | нет | титры и кадр | 0 | нет |
+| `sitar` | `sitar` | титры и кадр | 0 | нет |
+| `tabla` | `tabla` | титры и кадр | 0 | нет |
 | `tanbur` | `tanbur` | титры и кадр, устойчиво по видео | 7 | нет |
 
 ## Секции
@@ -29,7 +29,7 @@
 | `voice-bridge` | 172 | 174 | голос, как было |
 | `inst-bridge-b` | 174 | 183.39 | как было: `ensemble` |
 | `inst-mid` | 246.7 | 286.3 | `kamancheh` 246.7 (кадр 247), `baglama` 250.7 (кадр 251), `daf` 250.7 (кадр 251), `ensemble` 274; свёрнуты в ансамбль: tanbur (0.9), qanun (0.8). Заметность: kamancheh 4.25, baglama 2.4, daf 4.05. Исполнители: Kutay Ozcan (баглама); Mohammad Jaberi (даф) |
-| `inst-before-mawwal` | 385.89 | 404.08 | `daf` 389.2 (кадр 390), `baglama` 390, `tanbur` 390.2 (кадр 392). Заметность: daf 1.7, baglama 2.4, tanbur 0.9. Исполнители: Mohammad Jaberi (даф); Kutay Ozcan (баглама) |
+| `inst-before-mawwal` | 385.89 | 404.08 | `daf` 389.2 (кадр 390), `baglama` 390, `tanbur` 390.2 (кадр 392), `sitar` 394. Заметность: daf 1.7, baglama 2.4, tanbur 0.9, sitar 1.6. Исполнители: Mohammad Jaberi (даф); Kutay Ozcan (баглама); Asad Khan (ситар) |
 | `inst-end` | 565.09 | 580.06 | как было: `ensemble` |
 
 ## Приняты, в проигрыш не попали
@@ -39,8 +39,10 @@
 | id | гравюра | планов ≥ 0,85 |
 |---|---|---|
 | `erhu` | `erhu` | 3 |
+| `orchestral-percussion` | `orchestral-percussion` | 1 |
 | `oud` | `oud` | 0 |
 | `qanun` | `qanun` | 0 |
+| `tabla` | `tabla` | 0 |
 
 ## Проверить
 
@@ -48,8 +50,4 @@
 
 ## Нужна гравюра
 
-| id | где звучит | планов |
-|---|---|---|
-| `orchestral-percussion` | coda-persian 524 | 1 |
-| `sitar` | turkish-chorus-2 231; inst-before-mawwal 394 | 2 |
-| `tabla` | coda-persian 535 | 1 |
+У всего, что принято, гравюра есть.

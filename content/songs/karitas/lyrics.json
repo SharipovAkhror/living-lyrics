@@ -2580,7 +2580,8 @@
       "end": 835,
       "label": "Инструментальный проигрыш",
       "instruments": [
-        "violin"
+        "violin",
+        "guitar-classical"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
@@ -2591,6 +2592,10 @@
         {
           "key": "violin",
           "at": 815.0
+        },
+        {
+          "key": "guitar-classical",
+          "at": 817.0
         }
       ]
     },
@@ -2604,6 +2609,7 @@
         "voice",
         "erhu",
         "darbuka",
+        "guitar-classical",
         "violin"
       ],
       "flags": [
@@ -2623,6 +2629,10 @@
         {
           "key": "darbuka",
           "at": 853.95
+        },
+        {
+          "key": "guitar-classical",
+          "at": 859.0
         },
         {
           "key": "violin",

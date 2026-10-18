@@ -37,7 +37,7 @@
     {
       "id": "flute",
       "name": "поперечная флейта",
-      "catalogKey": null,
+      "catalogKey": "flute",
       "reason": "устойчиво по видео",
       "credited": false,
       "stable": true,
@@ -132,14 +132,7 @@
       "frames": 2
     }
   ],
-  "missingEngraving": [
-    {
-      "id": "flute",
-      "name": "поперечная флейта",
-      "shots": 6,
-      "where": "inst-1 267; inst-1 276; inst-1 286; inst-1 294; inst-7 711; voice-6 719"
-    }
-  ],
+  "missingEngraving": [],
   "sections": [
     {
       "id": "voice-1",
@@ -162,6 +155,7 @@
       "instruments": [
         "oud",
         "santur",
+        "flute",
         "violin"
       ],
       "entries": [
@@ -172,6 +166,10 @@
         {
           "key": "santur",
           "at": 262.75
+        },
+        {
+          "key": "flute",
+          "at": 267.0
         },
         {
           "key": "violin",
@@ -412,6 +410,7 @@
       "instruments": [
         "santur",
         "bendir",
+        "flute",
         "ney"
       ],
       "entries": [
@@ -422,6 +421,10 @@
         {
           "key": "bendir",
           "at": 692.75
+        },
+        {
+          "key": "flute",
+          "at": 711.0
         },
         {
           "key": "ney",
@@ -439,12 +442,17 @@
       "identity": "voice",
       "instruments": [
         "voice",
+        "flute",
         "ney",
         "darbuka"
       ],
       "entries": [
         {
           "key": "voice",
+          "at": 714.0
+        },
+        {
+          "key": "flute",
           "at": 714.0
         },
         {
