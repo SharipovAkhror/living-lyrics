@@ -96,7 +96,7 @@
           "words": [
             {
               "w": "I",
-              "s": 100.91,
+              "s": 100.92,
               "e": 101.07
             },
             {
@@ -114,9 +114,6 @@
             "ru": "Я был мёртв"
           },
           "comment": "Английские строки — переложение первого бейта газели **Руми** № 1393 из «Дивана Шамса». В оригинале: «мурде бодам, зенде шодам».",
-          "flags": [
-            "timing-draft"
-          ],
           "placedBy": "mms"
         },
         {
@@ -143,10 +140,7 @@
           "tr": {
             "ru": "я ожил"
           },
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "english-3",
@@ -252,10 +246,7 @@
           "tr": {
             "ru": "ты зажёг огонь"
           },
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "english-6",
@@ -287,10 +278,7 @@
           "tr": {
             "ru": "я **ожил**"
           },
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "english-7",
@@ -322,10 +310,7 @@
           "tr": {
             "ru": "подними меня ещё **выше**"
           },
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "english-8",
@@ -398,10 +383,7 @@
             "ru": "я был в своём уме"
           },
           "comment": "Переложение бейта 3: «сказал — ты не безумен и этого дома не достоин». Безумие здесь условие войти, а не болезнь.",
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "english-10",
@@ -432,10 +414,7 @@
           "tr": {
             "ru": "ты свёл меня с ума"
           },
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "english-11",
@@ -462,10 +441,7 @@
           "tr": {
             "ru": "ты наложил цепи"
           },
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "english-11b",
@@ -491,10 +467,7 @@
           "tr": {
             "ru": "мне на руки"
           },
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         }
       ]
     },
@@ -543,10 +516,7 @@
           "tr": {
             "ru": "ты зажёг огонь"
           },
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "english-13",
@@ -624,10 +594,7 @@
           "tr": {
             "ru": "подними меня ещё выше"
           },
-          "placedBy": "mms-window",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms-window"
         },
         {
           "id": "english-15",
@@ -658,10 +625,7 @@
           "tr": {
             "ru": "я ожил"
           },
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         }
       ]
     },
@@ -709,10 +673,7 @@
           },
           "translit": "Морде бодам, зенде шодам",
           "comment": "Газель Джалал ад-Дина Руми, XIII в., «Диван Шамса», № 1393. Размер по Ganjoor — раджаз. Редиф **шодам** (شدم): бейт кончается тем, чем говорящий стал.",
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "rumi-1-2a",
@@ -1642,7 +1603,7 @@
             {
               "w": "نَظْرَةً",
               "s": 289.74,
-              "e": 290.51
+              "e": 290.5
             }
           ],
           "tr": {
@@ -1658,7 +1619,7 @@
           "words": [
             {
               "w": "ضَوْئِي",
-              "s": 290.51,
+              "s": 290.5,
               "e": 290.99
             },
             {
@@ -1819,10 +1780,7 @@
             "ru": "в странствии искусств"
           },
           "translit": "Фи рихляти ль-фунун",
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "arabic-10",
@@ -2234,10 +2192,7 @@
             "ru": "я не всё это"
           },
           "translit": "Ва ласту кулла зака",
-          "placedBy": "mms-window",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms-window"
         },
         {
           "id": "arabic-26",
@@ -2331,10 +2286,7 @@
             "ru": "в моём смехе родник и влага"
           },
           "translit": "Фи дахкати наб‘ун ва рийй",
-          "placedBy": "mms-window",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms-window"
         },
         {
           "id": "arabic-31",
@@ -2655,10 +2607,7 @@
           },
           "translit": "Фа-кам ахйа ва кам амуту",
           "voice": "Набила Маан",
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         }
       ]
     },
@@ -2758,10 +2707,7 @@
           },
           "translit": "Шокр конад кагаз-е то",
           "comment": "Игра слов: **шокр** (شکر) — «благодарность» и **шекар** (شکر) — «сахар» пишутся одинаково. Бумага, которой коснулся сахар, сама становится сладкой — так и говорящий, коснувшись любимого, становится ему подобным.",
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "rumi-15-1b",
@@ -3082,9 +3028,6 @@
           },
           "translit": "аз малек-о мольк-о малак",
           "comment": "Три однокоренных слова: **малик** (مَلِک) — царь, **мульк** (مُلک) — царство, **малак** (مَلَک) — ангел. Благодарность поднимается: бумага, земля, небо, познавший истину.",
-          "flags": [
-            "timing-draft"
-          ],
           "placedBy": "mms"
         },
         {
@@ -3188,10 +3131,7 @@
           },
           "translit": "Шокр конад ареф-е хакк",
           "comment": "**Ариф** (عارف) — познавший истину.",
-          "placedBy": "mms-window",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms-window"
         },
         {
           "id": "rumi-18-1b",
@@ -3391,10 +3331,7 @@
             "ru": "Венерой был — луной стал"
           },
           "translit": "Зохре бодам, мах шодам",
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "rumi-19-4",
@@ -3577,9 +3514,6 @@
             "ru": "взгляни в меня и в себя"
           },
           "translit": "дар ман-о дар ход бенгар",
-          "flags": [
-            "timing-draft"
-          ],
           "placedBy": "mms"
         },
         {
@@ -3674,10 +3608,7 @@
           },
           "translit": "Баш чу шатрандж-е раван",
           "comment": "Макта, последний бейт. Фигура молчит, но каждым ходом говорит.",
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "rumi-21-1b",
@@ -3830,10 +3761,7 @@
             "ru": "прежде я был мёртв"
           },
           "translit": "Кад кунту кабла майтан",
-          "placedBy": "mms-ft",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms-ft"
         },
         {
           "id": "coda-ar-2",
@@ -3866,10 +3794,7 @@
             "ru": "в моём смехе родник и влага"
           },
           "translit": "Фи дахкати наб‘ун ва рийй",
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "coda-ar-3",
@@ -3896,7 +3821,10 @@
             "ru": "вижу царство любви"
           },
           "translit": "Мамляката ль-‘ишк ара",
-          "placedBy": "mms"
+          "placedBy": "mms",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "coda-ar-4",

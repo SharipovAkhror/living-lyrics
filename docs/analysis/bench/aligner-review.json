@@ -190,22 +190,22 @@
   "en": {
    "words": 52,
    "third": 52,
-   "within_0_10": 11
+   "within_0_10": 31
   },
   "fa": {
    "words": 184,
    "third": 184,
-   "within_0_10": 58
+   "within_0_10": 105
   },
   "tr": {
    "words": 55,
    "third": 55,
-   "within_0_10": 3
+   "within_0_10": 19
   },
   "ar": {
    "words": 292,
    "third": 292,
-   "within_0_10": 40
+   "within_0_10": 58
   },
   "az": {
    "words": 165,
@@ -213,8 +213,8 @@
    "within_0_10": 25
   },
   "la": {
-   "words": 59,
-   "third": 57,
+   "words": 61,
+   "third": 59,
    "within_0_10": 4
   },
   "de": {
@@ -226,7 +226,7 @@
  "stable_models": [
   {
    "song": "i-have-come-alive",
-   "model": "large-v3"
+   "model": "large-v3-turbo"
   },
   {
    "song": "karitas",
