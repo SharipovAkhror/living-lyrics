@@ -1,0 +1,34 @@
+{
+  "updated": "2026-10-18T10:54:53Z",
+  "grok": {
+    "plan": "SuperGrok Heavy",
+    "today": 178282571,
+    "week": 462358919,
+    "todayByTask": {
+      "t1-sync": 133558422,
+      "t7b-recognizer": 44724149
+    },
+    "limit": "xAI не сообщает лимит подписки: виден только расход"
+  },
+  "gemini": {
+    "plan": "Google AI Pro",
+    "quota": {
+      "gemini": {
+        "weeklyRemaining": 98.15,
+        "weeklyResetIn": "147h 52m",
+        "fiveHourRemaining": 94.14,
+        "fiveHourResetIn": "4h 0m",
+        "at": "2026-10-18T10:54:05Z"
+      },
+      "claude-gpt": {
+        "weeklyRemaining": 100.0,
+        "weeklyResetIn": "",
+        "fiveHourRemaining": 100.0,
+        "fiveHourResetIn": "",
+        "at": "2026-10-18T10:54:05Z"
+      }
+    },
+    "runsToday": 0,
+    "secondsToday": 0
+  }
+}
