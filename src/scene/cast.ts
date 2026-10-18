@@ -7,6 +7,8 @@
  * the whole section, so a new entrance fades in its own place and a seek paints the same
  * frame. Presence is 0 before the entrance and after the exit; the slot stays.
  * A short wide page uses the same roster. Its chrome lives in CSS.
+ * `ensemble` is kept only when fewer than two other instruments are in the roster.
+ * It never sits between named instruments and never takes one of their places.
  * A passage whose keys are only `voice` and `choir` holds those engravings for the whole
  * section: no invented orchestra and no fake turn-taking.
  * An empty key list and no entries is an empty stage (applause). It is not ensemble.
@@ -116,6 +118,17 @@ function timings(motion: MotionPref) {
 }
 
 /**
+ * `ensemble` is a stand-in. Once two named instruments are in the roster it drops out,
+ * so it cannot sit between them or spend one of their places.
+ */
+export function stageRoster<T extends { key: string }>(spans: T[]): T[] {
+  let named = 0;
+  for (const s of spans) if (s.key !== 'ensemble') named++;
+  if (named < 2) return spans;
+  return spans.filter((s) => s.key !== 'ensemble');
+}
+
+/**
  * Plates to mount at `t`. `boxWidth` is the stage box in CSS px. The roster does not change with `t`.
  */
 function byProminence(spans: Span[]) {
@@ -127,7 +140,7 @@ function byProminence(spans: Span[]) {
 }
 
 export function castAt(section: CastSection, t: number, boxWidth: number, motion: MotionPref = 'full'): CastMember[] {
-  const spans = byProminence(scheduleOf(section));
+  const spans = stageRoster(byProminence(scheduleOf(section)));
   if (!spans.length) return [];
   const { enter, lead, exit } = timings(motion);
   const fadeIn = (at: number) => smooth((t - (at - lead)) / enter);

@@ -4,6 +4,7 @@
  * Exit code 1 on any failure.
  */
 import { CHIP, LAYOUT_MODES, layoutInstruments, type Layout, type LayoutMode, type Rect, type Slot } from '../../src/instruments/layout.ts';
+import { castAt } from '../../src/scene/cast.ts';
 
 let failures = 0;
 const fail = (where: string, msg: string) => {
@@ -183,6 +184,30 @@ const asUniform = layoutInstruments(5, { w: 1440, h: 820 }, { uniform: true });
 if (asUniform.mode !== 'prominence' || asUniform.slots.length !== 4 || asUniform.slots.some((s) => s.kind === 'more')) {
   fail('uniform', `${asUniform.mode} shown ${asUniform.slots.length}`);
 }
+
+// `ensemble` only when fewer than two instruments are named. It must not spend a named slot.
+const between = {
+  start: 0,
+  end: 40,
+  instruments: ['violin', 'ensemble', 'santur', 'bendir'],
+  entries: [
+    { key: 'violin', at: 1 },
+    { key: 'ensemble', at: 2 },
+    { key: 'santur', at: 3 },
+    { key: 'bendir', at: 4 },
+  ],
+};
+const wideCast = castAt(between, 10, 1440).map((m) => m.key).join(',');
+if (wideCast !== 'violin,santur,bendir') fail('ensemble wide', wideCast);
+const phoneCast = castAt(between, 1.2, 390).map((m) => m.key).join(',');
+if (phoneCast !== 'violin,santur,bendir') fail('ensemble phone', phoneCast);
+if (castAt(between, 1.2, 390).some((m) => m.key === 'santur' && m.presence > 0.02)) fail('ensemble phone', 'later plate is already visible');
+const kept = castAt({ start: 0, end: 20, instruments: ['ney', 'ensemble'] }, 10, 800).map((m) => m.key).join(',');
+if (kept !== 'ney,ensemble') fail('ensemble with one', kept);
+const alone = castAt({ start: 0, end: 10, instruments: ['ensemble'] }, 5, 800).map((m) => m.key).join(',');
+if (alone !== 'ensemble') fail('ensemble alone', alone);
+const none = castAt({ start: 0, end: 10, instruments: [] }, 5, 800);
+if (none.length) fail('empty stage', none.map((m) => m.key).join(','));
 
 // Table: what the automatic choice does on typical screens
 const screens: [string, number, number][] = [
