@@ -27,6 +27,12 @@ export interface InstrumentStageProps {
   performers?: string[];
   /** Layout mode from the data (`layout` of an instrumental section); omitted or 'auto' lets the engine choose. */
   mode?: LayoutMode | 'auto' | string;
+  /** Accepted by the stage. Equal rows are not used; prominence is the automatic layout. */
+  uniform?: boolean;
+  /** At most this many plates. What does not fit is left out. */
+  maxShown?: number;
+  /** Cast presence 0…1 aligned with `keys`, for the first paint. Later frames come from `pose`. */
+  presences?: number[];
   /** Draw-in progress 0…1 (contours, then hatching), a pure function of time. */
   progress: number;
   /** Presence 0…1: plates fade and settle in (and out) with it. */
@@ -109,7 +115,7 @@ function applyPlate(el: HTMLElement, drive: InstrumentDrive, time: number, opaci
 }
 
 export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStageProps>(function InstrumentStage(
-  { keys, performers, mode, progress, presence, size, energy = 0, time, drives, echoes, preserve = false, className, onLayout },
+  { keys, performers, mode, uniform = false, maxShown, presences, progress, presence, size, energy = 0, time, drives, echoes, preserve = false, className, onLayout },
   ref,
 ) {
   const list = keys.length ? keys : ['ensemble'];
@@ -126,9 +132,11 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
         mode: mode && mode !== 'auto' ? (mode as LayoutMode) : 'auto',
         aspects: list.map(instrumentAspect),
         lines,
+        uniform,
+        maxShown,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [n, size.w, size.h, mode, list.join(), lines],
+    [n, size.w, size.h, mode, list.join(), lines, uniform, maxShown],
   );
   useEffect(() => onLayout?.(layout), [layout, onLayout]);
 
@@ -326,7 +334,9 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
       if (!drive || !Number.isFinite(index)) return;
       const slotOpacity = Number(el.dataset.opacity ?? '1');
       const castP = frame.plates?.[index] ?? 1;
-      applyPlate(el, drive, frame.time, blockP * castP * (Number.isFinite(slotOpacity) ? slotOpacity : 1));
+      const opacity = blockP * castP * (Number.isFinite(slotOpacity) ? slotOpacity : 1);
+      applyPlate(el, drive, frame.time, opacity);
+      el.toggleAttribute('aria-hidden', opacity < 0.02);
     });
     const session = sessionRef.current;
     if (!session || !frame.drives) return;
@@ -424,11 +434,13 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
         }
         const d = clamp01(clamp01(progress) * (1 + drawStagger * (n - 1)) - drawStagger * slot.index);
         const key = list[slot.index];
+        const castP = presences?.[slot.index] ?? 1;
         return (
           <Plate
             key={`${slot.index}-${key}`}
             slot={slot}
-            presence={pi}
+            presence={pi * castP}
+            hidden={castP < 0.02}
             draw={easeOut(d)}
             hatch={clamp01((d - 0.45) / 0.55)}
             energy={energy}
@@ -475,6 +487,7 @@ function EchoPlate({ slot, index, svg, idSuffix, instrumentKey }: { slot: Slot; 
 function Plate({
   slot,
   presence,
+  hidden = false,
   draw,
   hatch,
   energy,
@@ -487,6 +500,7 @@ function Plate({
 }: {
   slot: Slot;
   presence: number;
+  hidden?: boolean;
   draw: number;
   hatch: number;
   energy: number;
@@ -511,7 +525,7 @@ function Plate({
   } as CSSProperties;
   const { label, art } = slot;
   return (
-    <figure className={`ist-plate ist-plate--${slot.role} ist-t-${label.tier}`} style={style} data-opacity={slot.opacity ?? 1}>
+    <figure className={`ist-plate ist-plate--${slot.role} ist-t-${label.tier}`} style={style} data-opacity={slot.opacity ?? 1} aria-hidden={hidden || undefined}>
       <Art
         svg={svg}
         suffix={idSuffix}
@@ -568,9 +582,9 @@ function Chip({ slot, presence, names }: { slot: Slot; presence: number; names: 
       className="ist-chip"
       style={{ left: slot.x, top: slot.y, width: slot.w, height: slot.h, zIndex: slot.z, opacity: presence }}
       title={names.join(', ')}
-      aria-label={`И ещё: ${names.join(', ')}`}
+      aria-label={`Ещё ${slot.more}: ${names.join(', ')}`}
     >
-      +{slot.more}
+      ещё {slot.more}
     </div>
   );
 }

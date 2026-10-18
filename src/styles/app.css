@@ -34,12 +34,18 @@
 
 /* ===================== Song page ===================== */
 .song {
-  /* Time row, rail, transport ring and the labelled tasks. The mismatch key sits on the time row. */
-  --player-h: 286px;
-  --chrome-top: calc(env(safe-area-inset-top) + 64px);
-  --player-bottom: calc(env(safe-area-inset-bottom) + 10px);
+  /* Time row, rail, transport ring and the labelled tasks. The safe area is counted once, inside the player. */
+  --safe-t: env(safe-area-inset-top);
+  --safe-b: env(safe-area-inset-bottom);
+  --player-h: calc(228px + var(--safe-b));
+  --chrome-top: calc(var(--safe-t) + 52px);
+  --player-bottom: 0px;
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: var(--bg);
   overscroll-behavior: none;
@@ -95,7 +101,7 @@
   -webkit-user-select: none;
 }
 .song.has-comment .scene-stage {
-  bottom: calc(var(--player-bottom) + var(--player-h) + 64px);
+  bottom: calc(var(--player-h) + 76px);
 }
 /* The 286px reserve is taller than the player. On a low window that empty band
    was the whole stage, and the plates had nowhere to stand. */
@@ -524,7 +530,7 @@
   top: 0;
   left: 0;
   right: 0;
-  padding: calc(env(safe-area-inset-top) + 8px) 16px 8px;
+  padding: calc(var(--safe-t, env(safe-area-inset-top)) + 8px) 16px 8px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -569,7 +575,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 18px 20px calc(8px + env(safe-area-inset-bottom));
+  padding: 8px 16px calc(8px + var(--safe-b, env(safe-area-inset-bottom)));
   background: linear-gradient(to top, color-mix(in srgb, var(--bg) 94%, transparent) 0%, color-mix(in srgb, var(--bg) 72%, transparent) 62%, transparent);
   transition: opacity var(--dur-3) var(--ease-out);
 }
@@ -577,33 +583,37 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 340px;
+  max-width: 280px;
   margin: 0 auto;
-  padding: 2px 4px 0;
+  padding: 0;
+}
+.transport .btn-plain {
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
 }
 .btn-lg-hit {
-  min-width: 56px;
-  min-height: 56px;
+  min-width: 44px;
+  min-height: 44px;
 }
 .utility {
   display: flex;
   justify-content: space-around;
-  padding: 2px 0 6px;
+  padding: 0 0 2px;
 }
 .util {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   min-width: 64px;
-  min-height: 48px;
-  padding: 4px 6px;
+  min-height: 44px;
+  padding: 2px 6px;
   border: 0;
   border-radius: 14px;
   background: none;
-  color: color-mix(in srgb, var(--ink) 62%, transparent);
-  font: 500 12px/1.15 var(--font-ui);
+  color: color-mix(in srgb, var(--ink) 58%, transparent);
+  font: 500 13px/1.15 var(--font-ui);
+  white-space: nowrap;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: color var(--dur-1);
@@ -629,11 +639,11 @@
   gap: 8px;
   min-width: 44px;
   min-height: 44px;
-  padding: 0 10px;
-  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
-  border-radius: 10px;
-  background: transparent;
-  color: color-mix(in srgb, var(--ink) 72%, transparent);
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  color: color-mix(in srgb, var(--ink) 66%, transparent);
   font: 500 14px/1 var(--font-ui);
   cursor: pointer;
   touch-action: manipulation;
@@ -749,13 +759,25 @@
 .comment {
   position: absolute;
   z-index: 4;
-  left: 20px;
-  right: 20px;
-  bottom: calc(var(--player-h) - 8px);
-  max-width: 40rem;
+  left: 16px;
+  right: 16px;
+  bottom: calc(var(--player-h) + 8px);
   margin: 0;
-  border-top: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
-  background: linear-gradient(to top, color-mix(in srgb, var(--bg) 88%, transparent), color-mix(in srgb, var(--bg) 55%, transparent));
+  padding: 4px 16px 6px;
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--glass-edge));
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--bg-elevated) 90%, var(--accent));
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 color-mix(in srgb, #fff 32%, transparent);
+  color: var(--ink);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .comment {
+    background: color-mix(in srgb, var(--accent) 14%, color-mix(in srgb, var(--bg-elevated) 68%, transparent));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+  }
 }
 .comment-head {
   display: flex;
@@ -763,7 +785,7 @@
   gap: 8px;
   width: 100%;
   min-height: 44px;
-  padding: 6px 0;
+  padding: 8px 0;
   border: 0;
   background: none;
   text-align: start;
@@ -784,19 +806,39 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+}
+.comment-chevron {
+  flex: none;
+  margin-inline-start: auto;
+  color: color-mix(in srgb, var(--ink) 55%, transparent);
+  transition: transform var(--dur-2) var(--ease-out);
+}
+.comment:not(.is-open) .comment-chevron {
+  transform: rotate(180deg);
+}
+.comment-fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur-2) var(--ease-out);
+}
+.comment.is-open .comment-fold {
+  grid-template-rows: 1fr;
 }
 .comment-body {
+  min-height: 0;
   max-height: 32dvh;
-  overflow: auto;
-  padding: 0 0 12px;
+  overflow: hidden;
+  padding: 0;
   overscroll-behavior: contain;
   font-family: var(--font-tr);
   font-size: 15px;
   line-height: 1.5;
   color: color-mix(in srgb, var(--ink) 78%, transparent);
 }
-.comment:not(.is-open) .comment-body {
-  display: none;
+.comment.is-open .comment-body {
+  overflow: auto;
+  padding-bottom: 8px;
 }
 .comment-body p {
   margin: 0 0 10px;
@@ -825,7 +867,7 @@
   cursor: pointer;
 }
 
-/* Wide screens: commentary docks to the right as a column. */
+/* Wide screens: the player stays a column. The comment becomes a card on the right once there is height for it. */
 @media (min-width: 800px) {
   .player {
     left: 28px;
@@ -835,37 +877,42 @@
   }
 }
 
-@media (min-width: 1100px) {
+@media (min-width: 1100px) and (min-height: 641px) {
   .song.has-comment .scene-stage {
     right: 392px;
-    bottom: calc(var(--player-bottom) + var(--player-h) + 12px);
+    bottom: calc(var(--player-h) + 16px);
   }
   .comment {
     left: auto;
-    right: 28px;
+    right: 20px;
     top: calc(var(--chrome-top) + 8px);
-    bottom: calc(var(--player-h) + 8px);
+    bottom: auto;
     width: 340px;
-    max-width: none;
+    height: auto;
+    max-height: calc(100dvh - var(--chrome-top) - var(--player-h) - 28px);
     display: flex;
     flex-direction: column;
-    border-top: 0;
-    border-left: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
-    padding-left: 18px;
-    background: none;
+    padding: 8px 18px 16px;
   }
   .comment-head {
     pointer-events: none;
+    cursor: default;
   }
   .comment-preview,
   .comment-chevron {
     display: none;
   }
-  .comment:not(.is-open) .comment-body,
+  .comment-fold {
+    grid-template-rows: 1fr;
+    flex: 0 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    transition: none;
+  }
   .comment-body {
-    display: block;
-    max-height: none;
-    flex: 1;
+    max-height: calc(100dvh - var(--chrome-top) - var(--player-h) - 140px);
+    height: auto;
+    overflow: auto;
   }
   .song.has-comment .player {
     right: auto;
@@ -874,6 +921,141 @@
   .song.has-comment .hint {
     left: 64px;
     right: 456px;
+  }
+}
+
+/* Short landscape: the car screen. Lyrics stay large, the comment is a footnote, controls share one row each. */
+@media (min-width: 700px) and (max-height: 640px) {
+  .song {
+    --chrome-top: calc(var(--safe-t) + 44px);
+    --player-h: calc(152px + var(--safe-b));
+  }
+  .topbar {
+    padding-top: calc(var(--safe-t) + 4px);
+    padding-bottom: 2px;
+  }
+  .topbar-section {
+    display: none;
+  }
+  .scene-stage {
+    bottom: calc(var(--player-h) + 8px);
+  }
+  .song.has-comment .scene-stage {
+    right: 0;
+    bottom: calc(var(--player-h) + 68px);
+  }
+  .player,
+  .song.has-comment .player {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    padding: 4px 8px calc(4px + var(--safe-b));
+  }
+  .comment {
+    left: 12px;
+    right: 12px;
+    top: auto;
+    bottom: calc(var(--player-h) + 6px);
+    width: auto;
+    display: block;
+    padding: 2px 16px 4px;
+  }
+  .comment.is-open {
+    max-height: 38%;
+  }
+  .comment-head {
+    pointer-events: auto;
+    cursor: pointer;
+    min-height: 44px;
+  }
+  .comment-preview {
+    display: block;
+  }
+  .comment-chevron {
+    display: block;
+  }
+  .comment-fold {
+    display: grid;
+    grid-template-rows: 0fr;
+    flex: none;
+    transition: grid-template-rows var(--dur-2) var(--ease-out);
+  }
+  .comment.is-open .comment-fold {
+    grid-template-rows: 1fr;
+  }
+  .comment-body {
+    max-height: 22dvh;
+  }
+  .scrub {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+  }
+  .scrub-top,
+  .scrub-meta {
+    display: contents;
+  }
+  .scrub-now {
+    order: 1;
+  }
+  .scrub-track {
+    order: 2;
+    flex: 1;
+    min-width: 0;
+    height: 44px;
+  }
+  .scrub-remain {
+    order: 3;
+  }
+  .mark-bar {
+    order: 4;
+    min-height: 44px;
+  }
+  .mark-kbd {
+    display: none;
+  }
+  .transport {
+    max-width: 240px;
+    margin: 0 auto;
+  }
+  .player .btn-xl {
+    width: 52px;
+    height: 52px;
+  }
+  .utility {
+    gap: 4px;
+  }
+  .util {
+    flex-direction: row;
+    gap: 6px;
+    min-width: 0;
+    flex: 1;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .fb-tr {
+    font-size: clamp(18px, 1.1vw + 12px, 24px);
+  }
+  .fb-inst-note {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comment-fold,
+  .comment-chevron {
+    transition: none;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .comment {
+    background: var(--bg-elevated);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 

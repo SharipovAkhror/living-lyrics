@@ -349,12 +349,18 @@ def build_payload(slugs: list[str]) -> dict:
         'la_es': {**la_es, 'model': cards['es']['id'], 'license': cards['es']['license'], 'card': cards['es']['card'],
                   'decision': 'not-adopted-no-native-singing'},
     }
+    stable_models = []
+    for song in songs:
+        name = (song['report'].get('summary') or {}).get('stable_model')
+        if name:
+            stable_models.append({'song': song['slug'], 'model': name})
     return {
         'songs': list(slugs),
         'strong_height': STRONG,
         'agree_tol': AGREE,
         'closer': {'words': closer_words, 'lines': closer_lines, 'by_lang': by_lang, 'by_song': by_song},
         'third': third_by_lang,
+        'stable_models': stable_models,
         'groups': groups,
         'bias': bias,
         'adopt': adopt,
@@ -365,6 +371,14 @@ def build_payload(slugs: list[str]) -> dict:
 def _counts_row(name: str, kind: str, counts: dict) -> str:
     return (f"| {name} | {kind} | {counts['n']} | {counts['mms']} | {counts['second']} | "
             f"{counts['tie']} | {counts['no_peak']} |")
+
+
+def _model_sentence(models: list) -> str:
+    named = [f"{item.get('song')} — `{item.get('model')}`" for item in models if item.get('model')]
+    if not named:
+        return 'Непоставленные строки ставит наибольшая домеренная модель. Свидетеля доказательства выбирают отдельно.'
+    return ('Непоставленные строки ставит наибольшая домеренная модель: ' + ', '.join(named) + '. '
+            'Свидетеля доказательства эта модель не назначает.')
 
 
 def render_md(payload: dict) -> str:
@@ -420,8 +434,9 @@ def render_md(payload: dict) -> str:
         '',
         '## Третий свидетель на поставленных словах',
         '',
-        'stable-ts, известный текст, модель small. Согласие — |его начало − MMS| ≤ 0,10 с, без требования атаки. '
-        'Это не случайный проход и не выбранное правило.',
+        'stable-ts, известный текст. Согласие — |его начало − MMS| ≤ 0,10 с, без требования атаки. '
+        'Это не случайный проход и не выбранное правило. '
+        + (_model_sentence(payload.get('stable_models') or [])),
         '',
         '| язык | слов | есть время | в пределах 0,10 с |',
         '|---|---:|---:|---:|',

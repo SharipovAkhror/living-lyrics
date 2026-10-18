@@ -68,14 +68,20 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
   const castSig = useRef('');
   const frameRef = useRef<StagePose | null>(null);
 
-  // A short window used to force a 160px drawing into a much shorter stage. The flex
-  // column then crushed it, and on a commented passage the plates left the frame.
-  // The box is the height the stage actually has; a tall phone still keeps the 0.72 share.
+  // A short wide screen (the car) gives the drawings the height and keeps the note short.
+  // The box never asks for more height than the stage has: a 160px floor used to be crushed
+  // by the flex column on a low window, and the plates left the frame.
   const room = Math.max(0, stage.h);
-  const tight = room > 0 && room < 300;
-  const fullH = Math.round(Math.min(tight ? room : room * 0.72, 620));
-  const textH = section.note ? (tight ? 36 : 96) : section.mode ? (tight ? 28 : 64) : tight ? 20 : 44;
-  const stageSize = { w: Math.max(200, Math.min(stage.w - 24, 1040)), h: Math.max(64, fullH - textH) };
+  const shortStage = room > 0 && room <= 420 && stage.w >= 640;
+  const tight = room > 0 && room < 300 && !shortStage;
+  const fullH = shortStage ? Math.round(room * 0.92) : Math.round(Math.min(tight ? room : room * 0.72, 620));
+  const textH = shortStage
+    ? section.note ? 52 : section.mode ? 36 : 28
+    : section.note ? (tight ? 36 : 96) : section.mode ? (tight ? 28 : 64) : tight ? 20 : 44;
+  const stageSize = {
+    w: Math.max(200, Math.min(stage.w - (shortStage ? 16 : 24), 1040)),
+    h: Math.max(64, Math.min(fullH - textH, room > 0 ? room : fullH)),
+  };
   const compactH = useRef(56);
   const [cast, setCast] = useState<CastMember[]>(() => castAt(section, section.start, stageSize.w, motion));
   const heroes = cast.filter((m) => m.place === 'hero');
@@ -87,10 +93,12 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
     register(cue.idx, call, { main: 0, sub: 0, compact: compactH.current, full: fullH });
   });
 
+  // Pose after every commit, including the commit that mounts the stage. On a wide box the
+  // roster does not change, so a cast-only effect would leave the first frame at presence 0.
   useLayoutEffect(() => {
     const frame = frameRef.current;
-    if (frame) stageRef.current?.pose(frame);
-  }, [cast, heroes.length, echoes.length]);
+    if (frame && anim.presence > 0.02) stageRef.current?.pose(frame);
+  });
 
   const updater = useRef<BlockUpdater>(() => {});
   const call = useRef<BlockUpdater>((t, d, top, wait) => updater.current(t, d, top, wait)).current;
@@ -148,6 +156,7 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
             keys={heroes.map((m) => m.key)}
             echoes={echoes.map((m) => ({ key: m.key }))}
             performers={heroes.map((m) => (m.source >= 0 ? credited[m.source] ?? '' : ''))}
+            presences={heroes.map((m) => m.presence)}
             mode={section.layout ?? 'auto'}
             progress={1}
             presence={anim.presence}

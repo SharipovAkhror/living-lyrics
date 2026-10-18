@@ -205,3 +205,51 @@ def fit_section_edges(lyrics: dict) -> int:
                 w['e'] = trimmed
                 fixes += 1
     return fixes
+
+
+def pull_outside_starts(lyrics: dict, slack: float = 0.05) -> int:
+    """Pull a word that already starts past its section back inside the slack.
+
+    fit_section_edges trims an end only when the start is still before the
+    section end, and it never moves a section. A start that is already past
+    that end would stay there and the validator would warn. This pulls such a
+    start back to the edge and keeps the end inside the same slack. The first
+    word of a line is left: its start is the cue lock. Section bounds and the
+    word text stay. A start already inside is not moved.
+    """
+    fixes = 0
+    for sec in lyrics.get('sections') or []:
+        if sec.get('kind') != 'vocal':
+            continue
+        lo = float(sec['start']) - slack
+        hi = float(sec['end']) + slack
+        for line in sec.get('lines') or []:
+            words = line.get('words') or []
+            for i, w in enumerate(words):
+                s, e = float(w['s']), float(w['e'])
+                ns, ne = s, e
+                if i > 0 and ns < lo:
+                    ns = lo
+                if i > 0 and ns > hi:
+                    ns = max(lo, hi - 0.02)
+                if ne > hi:
+                    ne = hi
+                if ne < ns + 0.02:
+                    ne = min(hi, ns + 0.02)
+                    if ne < ns + 0.02:
+                        ns = max(lo, ne - 0.02)
+                ns, ne = r2(ns), r2(ne)
+                if ne > hi + 1e-9:
+                    ne = r2(ne - 0.01)
+                if ns > hi + 1e-9:
+                    ns = r2(max(lo, ne - 0.02))
+                if ne <= ns:
+                    ne = r2(ns + 0.02)
+                    if ne > hi + 1e-9:
+                        ne = r2(hi)
+                        ns = r2(max(lo, ne - 0.02))
+                if abs(ns - s) < 0.001 and abs(ne - e) < 0.001:
+                    continue
+                w['s'], w['e'] = ns, ne
+                fixes += 1
+    return fixes

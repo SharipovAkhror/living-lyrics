@@ -6,14 +6,13 @@
  * `entries`. The roster is capped (3 under 1000 CSS px, 4 on a wide box) and reserved for
  * the whole section, so a new entrance fades in its own place and a seek paints the same
  * frame. Presence is 0 before the entrance and after the exit; the slot stays.
+ * A short wide page uses the same roster. Its chrome lives in CSS.
  * A passage whose keys are only `voice` and `choir` holds those engravings for the whole
  * section: no invented orchestra and no fake turn-taking.
  * An empty key list and no entries is an empty stage (applause). It is not ensemble.
  */
 import type { MotionPref } from '@/app/settings';
 import { prominenceLimit } from '@/instruments/layout';
-
-export const NARROW_MAX = 560;
 
 export interface CastSection {
   start: number;
@@ -33,8 +32,8 @@ export interface CastMember {
   /** 0…1 plate presence at the queried time, including the handoff. */
   presence: number;
   /**
-   * `hero` is laid out. `echo` is the plate a narrow screen is replacing:
-   * it is drawn in the hero's rectangle and only fades, so two captions never sit side by side.
+   * `hero` is laid out in its own place. `echo` would fade inside the hero's rectangle;
+   * the cast does not emit it, so a new entrance never shares a caption with the previous one.
    */
   place: 'hero' | 'echo';
   /** Voice or choir: breathe, don't strike. */

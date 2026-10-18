@@ -5,6 +5,8 @@
  * Every instrument sits on a plate: the drawing (fitted to its viewBox aspect, never stretched)
  * with a caption under it (or beside it in `stack`). The engine picks a mode from the count and the box,
  * never lets a drawing fall below a readable size. What does not fit is left out: there is no «+N» chip.
+ * Automatic layout is prominence on every screen, including the short wide car page.
+ * That page's chrome (lyric, comment, player) is CSS, not a second instrument layout.
  * Rules in prose: docs/methodology/09-instruments.md.
  */
 
@@ -69,7 +71,7 @@ export interface Layout {
   mode: LayoutMode;
   box: Size;
   slots: Slot[];
-  /** Indices of instruments not drawn (they are counted in the chip). */
+  /** Indices of instruments not drawn. */
   hidden: number[];
   /** Smallest drawing side among the visible instruments, px. */
   minArt: number;
@@ -86,10 +88,17 @@ export interface LayoutOptions {
   aspects?: number[];
   /** Caption lines under each drawing: 1 (name), 2 (name + native name), 3 (+ performer). Default 2. */
   lines?: number;
-  /** Readable minimum side of a drawing, px. Default: 20 % of the short side, clamped to 84…150. */
+  /** Readable minimum side of a drawing, px. Default is `readableMin`. */
   minArt?: number;
   /** Largest drawing side, px. Default 540. */
   maxArt?: number;
+  /**
+   * Accepted so an older caller can still pass it. It does not change the layout:
+   * the stage is prominence, and equal rows are not drawn.
+   */
+  uniform?: boolean;
+  /** Show at most this many plates. What does not fit is left out. */
+  maxShown?: number;
 }
 
 /* ---------- Caption metrics (keep in sync with src/styles/instruments.css) ---------- */
@@ -102,6 +111,7 @@ export const LABEL_METRICS: Record<LabelTier, { name: number; nameLH: number; su
 /** A drawing at least this big gets the tier's captions. */
 const TIER_MIN: Record<LabelTier, number> = { l: 240, m: 140, s: 0 };
 const TIERS: LabelTier[] = ['l', 'm', 's'];
+/** Old chip size. The engine does not draw a chip; tests still read the constant. */
 export const CHIP = { w: 56, h: 34 };
 
 export function labelHeight(tier: LabelTier, lines: number) {
@@ -634,8 +644,8 @@ function measure(b: Built) {
 }
 
 /**
- * Lay out `count` instruments (1…8 and more) in a box of `box.w × box.h` CSS px.
- * The first instrument is the lead: modes that have a main place give it to the first.
+ * Lay out `count` instruments in a box of `box.w × box.h` CSS px.
+ * The first instrument is the lead. Automatic layout is one prominence row.
  */
 export function layoutInstruments(count: number, box: Size, opts: LayoutOptions = {}): Layout {
   const n = Math.max(1, Math.floor(count));
@@ -649,6 +659,8 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
   const threshold = opts.minArt ?? readableMin(c.box);
   const aspect = c.box.w / c.box.h;
   const all = Array.from({ length: n }, (_, i) => i);
+  const limit = Math.max(1, Math.min(n, opts.maxShown != null && opts.maxShown > 0 ? Math.floor(opts.maxShown) : n));
+  void opts.uniform;
 
   const result = (mode: LayoutMode, b: Built, visible: number, fallback: boolean): Layout => ({
     mode,
@@ -664,8 +676,8 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
   // Extras are not drawn. Prominence also keeps to the box cap.
   const wanted = opts.mode && opts.mode !== 'auto' ? opts.mode : null;
   if (wanted) {
-    const cap = wanted === 'prominence' ? Math.min(n, prominenceLimit(c.box.w)) : n;
-    for (let k = cap; k >= 1; k--) {
+    const shown = wanted === 'prominence' ? Math.min(limit, prominenceLimit(c.box.w)) : limit;
+    for (let k = shown; k >= 1; k--) {
       if (!ALLOWED[wanted](k) && !(wanted === 'single' && k === 1)) continue;
       const b = build(wanted, c, all.slice(0, k), n - k);
       if (b && (k === 1 || measure(b).min >= threshold)) return result(wanted, b, k, false);
@@ -673,8 +685,8 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
   }
 
   // Automatic: one row, largest first, never more than the cap, and never a chip.
-  const cap = Math.min(n, prominenceLimit(c.box.w));
-  for (let k = cap; k >= 1; k--) {
+  const autoCap = Math.min(limit, prominenceLimit(c.box.w));
+  for (let k = autoCap; k >= 1; k--) {
     const b = prominence(c, all.slice(0, k));
     if (!b) continue;
     if (k > 1 && measure(b).min < threshold) continue;
@@ -682,7 +694,7 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
   }
 
   // Legacy sweep kept for an explicit mode that could not be placed above.
-  for (let k = n; k >= 1; k--) {
+  for (let k = limit; k >= 1; k--) {
     const more = n - k;
     let best: { mode: LayoutMode; b: Built; score: number } | null = null;
     for (const mode of LAYOUT_MODES) {

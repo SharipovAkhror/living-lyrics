@@ -13,7 +13,7 @@ Rules (also docs/methodology/09-instruments.md, «Что попадает в д�
    not counted, and neither is the same instrument within 8 s: that is one shot.
 
 2. An instrumental section lists the admitted instruments that are seen in it.
-   Order is the first clear frame. More than four drawings: keep the three most
+   Order is the first clear frame. More than eight drawings: keep the seven most
    prominent (clear-frame count times mean confidence; ties break on mean confidence,
    then earlier time, then id) and fold the rest into ensemble. entries[].at is that
    frame, moved back to an attack on the matching stem when one falls within the
@@ -44,9 +44,9 @@ STABLE_SHOTS = 3
 # A named percussion group lowers the bar from three shots to two. Still ≥ 0.85, still ≥ 8 s.
 GROUP_SHOTS = 2
 SHOT_GAP = 8.0
-MAX_DRAWINGS = 4
-# When more than four drawings would be needed, this many stay themselves.
-PROMINENT_KEEP = 3
+MAX_DRAWINGS = 8
+# When more than eight drawings would be needed, this many stay themselves.
+PROMINENT_KEEP = 7
 ATTACK_LEAD = 2.0
 # A 100 ms rise on the 0…1 stem envelope. About a clear note on `other` and a
 # moderate hit on `drums` across these recordings; the same number for every song.
@@ -480,9 +480,9 @@ def _candidates(present: list[dict], start: float, end: float) -> list[dict]:
 
 
 def _select_drawings(drawable: list[dict]) -> tuple[list[dict], list[dict]]:
-    """Keep every drawing up to four. Above that, the three most prominent stay.
+    """Keep every drawing up to eight. Above that, the seven most prominent stay.
 
-    Voice and choir are not in this list: they are the section, not one of the three.
+    Voice and choir are not in this list: they are the section, not one of the seven.
     Chosen rows stay in time order. Ties: higher mean confidence, then earlier, then id.
     """
     if len(drawable) <= MAX_DRAWINGS:
@@ -755,7 +755,7 @@ def render_markdown(result: dict, lyrics_sections: list[dict]) -> str:
         "Один кадр сюда не попадает. Кадр из `vision-review.json` и тот же план (ближе 8 с) не считаются. "
         "Звук отмечен, где он совпал, и решение не меняет. "
         "`until` нет: склейка камеры — не уход инструмента. "
-        "Если гравюр больше четырёх, остаются три самых заметных, остальные — ансамбль.",
+        "Если гравюр больше восьми, остаются семь самых заметных, остальные — ансамбль.",
         "",
         "## Присутствие",
         "",
@@ -1175,17 +1175,30 @@ def test_rules() -> None:
         many_frames.extend(_frame(index * 10 + step, "close", iid, 0.95) for step in (0, 12, 24))
     capped = plan({"frames": many_frames}, [], [_inst("break", 0, 90)], None, None, names, data)
     written = next(section for section in capped["sections"] if section["action"] == "write")
-    check(len(written["instruments"]) == 4 and written["instruments"][-1] == "ensemble", f"не больше четырёх, хвост — ансамбль: {written['instruments']}")
-    check("daf" in written["folded"], "при равной заметности остаётся ранний, пятый свёрнут")
+    check(len(written["instruments"]) == 5 and "ensemble" not in written["instruments"] and not written["folded"], f"пять равных остаются собой: {written['instruments']}")
+
+    nine_ids = ("violin", "ney", "oud", "qanun", "flute", "santur", "bendir", "darbuka", "daf")
+    nine_frames = []
+    for index, iid in enumerate(nine_ids):
+        nine_frames.extend(_frame(index * 10 + step, "close", iid, 0.95) for step in (0, 12, 24))
+    nine = plan({"frames": nine_frames}, [], [_inst("break", 0, 160)], None, None, names, data)
+    nine_row = next(section for section in nine["sections"] if section["action"] == "write")
+    check(
+        len(nine_row["instruments"]) == 8 and nine_row["instruments"][-1] == "ensemble" and set(nine_row["folded"]) == {"darbuka", "daf"},
+        f"девять равных — семь ранних и ансамбль: {nine_row['instruments']} / {nine_row['folded']}",
+    )
 
     # A later instrument with more clear frames outranks the early ones.
     loud = []
-    for index, iid in enumerate(("violin", "ney", "oud", "qanun")):
+    for index, iid in enumerate(("violin", "ney", "oud", "qanun", "flute", "santur", "bendir", "darbuka")):
         loud.extend(_frame(index * 10 + step, "close", iid, 0.86) for step in (0, 12, 24))
-    loud.extend(_frame(t, "close", "daf", 0.95) for t in (50, 62, 74, 86, 98, 110))
-    prominent = plan({"frames": loud}, [], [_inst("break", 0, 130)], None, None, names, data)
+    loud.extend(_frame(t, "close", "daf", 0.95) for t in (90, 102, 114, 126, 138, 150))
+    prominent = plan({"frames": loud}, [], [_inst("break", 0, 180)], None, None, names, data)
     picked = next(section for section in prominent["sections"] if section["action"] == "write")
-    check("daf" in picked["instruments"] and "oud" in picked["folded"] and "qanun" in picked["folded"], f"заметный поздний остаётся: {picked['instruments']} / {picked['folded']}")
+    check(
+        "daf" in picked["instruments"] and "ensemble" in picked["instruments"] and set(picked["folded"]) == {"bendir", "darbuka"} and len(picked["instruments"]) == 8,
+        f"заметный поздний остаётся, два поздних слабых свёрнуты: {picked['instruments']} / {picked['folded']}",
+    )
     check(picked["instruments"].index("daf") > picked["instruments"].index("violin"), "порядок вступлений всё равно по времени")
 
     voice = plan(

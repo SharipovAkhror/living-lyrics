@@ -154,7 +154,8 @@
         "tanbur",
         "bendir",
         "baglama",
-        "ensemble"
+        "oud",
+        "qanun"
       ],
       "entries": [
         {
@@ -174,12 +175,18 @@
           "at": 12.95
         },
         {
-          "key": "ensemble",
+          "key": "oud",
+          "at": 20.0
+        },
+        {
+          "key": "qanun",
           "at": 20.0
         }
       ],
       "performers": [
-        "Kutay Ozcan (баглама)"
+        "Kutay Ozcan (баглама)",
+        "Selim Boyaci (уд)",
+        "Onur Cicin (канун)"
       ],
       "choirFrames": 0,
       "soloFrames": 0
@@ -191,9 +198,11 @@
       "identity": null,
       "instruments": [
         "tanbur",
-        "ensemble",
+        "oud",
+        "qanun",
         "daf",
-        "kamancheh"
+        "kamancheh",
+        "baglama"
       ],
       "entries": [
         {
@@ -201,7 +210,11 @@
           "at": 24.0
         },
         {
-          "key": "ensemble",
+          "key": "oud",
+          "at": 24.8
+        },
+        {
+          "key": "qanun",
           "at": 24.8
         },
         {
@@ -211,11 +224,18 @@
         {
           "key": "kamancheh",
           "at": 54.0
+        },
+        {
+          "key": "baglama",
+          "at": 59.9
         }
       ],
       "performers": [
         "Сейед Али Джабери (танбур)",
-        "Mohammad Jaberi (даф)"
+        "Selim Boyaci (уд)",
+        "Onur Cicin (канун)",
+        "Mohammad Jaberi (даф)",
+        "Kutay Ozcan (баглама)"
       ],
       "choirFrames": 0,
       "soloFrames": 0
@@ -286,7 +306,8 @@
         "kamancheh",
         "baglama",
         "daf",
-        "ensemble"
+        "tanbur",
+        "qanun"
       ],
       "entries": [
         {
@@ -302,13 +323,18 @@
           "at": 250.7
         },
         {
-          "key": "ensemble",
+          "key": "tanbur",
           "at": 274.0
+        },
+        {
+          "key": "qanun",
+          "at": 275.65
         }
       ],
       "performers": [
         "Kutay Ozcan (баглама)",
-        "Mohammad Jaberi (даф)"
+        "Mohammad Jaberi (даф)",
+        "Onur Cicin (канун)"
       ],
       "choirFrames": 0,
       "soloFrames": 1

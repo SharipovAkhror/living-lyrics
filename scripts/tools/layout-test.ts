@@ -163,6 +163,27 @@ for (const L of [wide5, mid5, phone5]) {
   });
 }
 
+// Car screens share the prominence row. Width under 1000 keeps three; a wider short screen keeps four when they fit.
+const cars: [string, number, number, number][] = [
+  ['машина 800×480', 800, 480, 3],
+  ['машина 960×540', 960, 540, 3],
+  ['машина 1024×600', 1024, 600, 4],
+  ['машина 1280×480', 1280, 480, 4],
+];
+for (const [name, w, h, cap] of cars) {
+  const L = layoutInstruments(5, { w, h });
+  if (L.mode !== 'prominence') fail(name, `mode ${L.mode}`);
+  if (L.slots.some((s) => s.kind === 'more')) fail(name, 'chip drawn');
+  if (L.slots.length < 1 || L.slots.length > cap) fail(name, `shown ${L.slots.length}, cap ${cap}`);
+  if (L.slots.length > 1 && L.minArt < L.threshold - EPS) fail(name, `below readable ${L.minArt} < ${L.threshold}`);
+  const bottoms = L.slots.map((s) => s.y + s.art.y + s.art.h);
+  if (Math.max(...bottoms) - Math.min(...bottoms) > 0.2) fail(name, 'art bottoms are not aligned');
+}
+const asUniform = layoutInstruments(5, { w: 1440, h: 820 }, { uniform: true });
+if (asUniform.mode !== 'prominence' || asUniform.slots.length !== 4 || asUniform.slots.some((s) => s.kind === 'more')) {
+  fail('uniform', `${asUniform.mode} shown ${asUniform.slots.length}`);
+}
+
 // Table: what the automatic choice does on typical screens
 const screens: [string, number, number][] = [
   ['iPhone, портрет', 390, 600],
@@ -171,6 +192,10 @@ const screens: [string, number, number][] = [
   ['iPad', 820, 900],
   ['ноутбук', 1200, 700],
   ['большой экран', 1600, 820],
+  ['машина', 800, 480],
+  ['машина', 960, 540],
+  ['машина', 1024, 600],
+  ['машина', 1280, 480],
 ];
 console.log('\nАвтоматический выбор (режим · наименьшая гравюра, px · не показано):');
 console.log(['экран'.padEnd(26), ...Array.from({ length: 8 }, (_, i) => String(i + 1).padEnd(19))].join(''));

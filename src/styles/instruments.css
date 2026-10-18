@@ -202,7 +202,7 @@
   letter-spacing: 0.06px;
 }
 
-/* «+N» chip for instruments that did not fit */
+/* «ещё N» chip for instruments that did not fit */
 .ist-chip {
   position: absolute;
   display: flex;
@@ -216,8 +216,10 @@
     0 6px 16px -8px rgba(20, 20, 40, 0.3),
     inset 0 0 0 0.5px var(--glass-edge);
   color: var(--label);
-  font-size: var(--t-subhead);
+  font-size: 13px;
   font-weight: 600;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 

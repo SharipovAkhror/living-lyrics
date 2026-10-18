@@ -1,6 +1,6 @@
 # Вступления по видео: i-have-come-alive
 
-Считает `python scripts/instrument_id/run.py entries`. Присутствие — титры и чёткий кадр, либо три разнесённых плана. Группа «ударные» в титрах снижает порог до двух планов с уверенностью не ниже 0,85. Один кадр сюда не попадает. Кадр из `vision-review.json` и тот же план (ближе 8 с) не считаются. Звук отмечен, где он совпал, и решение не меняет. `until` нет: склейка камеры — не уход инструмента. Если гравюр больше четырёх, остаются три самых заметных, остальные — ансамбль.
+Считает `python scripts/instrument_id/run.py entries`. Присутствие — титры и чёткий кадр, либо три разнесённых плана. Группа «ударные» в титрах снижает порог до двух планов с уверенностью не ниже 0,85. Один кадр сюда не попадает. Кадр из `vision-review.json` и тот же план (ближе 8 с) не считаются. Звук отмечен, где он совпал, и решение не меняет. `until` нет: склейка камеры — не уход инструмента. Если гравюр больше восьми, остаются семь самых заметных, остальные — ансамбль.
 
 ## Присутствие
 
@@ -23,12 +23,12 @@
 | секция | с | по | что записано |
 |---|---|---|---|
 | `inst-open` | 0 | 10.6 | `tanbur` 8.9 (кадр 10). Заметность: tanbur 0.85 |
-| `voice-open` | 10.6 | 23.7 | `voice` 10.6, `tanbur` 10.95 (кадр 12), `bendir` 12.65 (кадр 13), `baglama` 12.95 (кадр 13), `ensemble` 20; свёрнуты в ансамбль: oud (0.8), qanun (0.8). Заметность: tanbur 3.4, bendir 0.85, baglama 0.85. Исполнители: Kutay Ozcan (баглама) |
-| `inst-tanbur` | 23.7 | 100.81 | `tanbur` 24, `ensemble` 24.8 (кадр 25), `daf` 30.8 (кадр 31), `kamancheh` 54 (кадр 56); свёрнуты в ансамбль: oud (0.8), qanun (0.8), baglama (1.6). Заметность: tanbur 5.2, daf 5.25, kamancheh 4.35. Исполнители: Сейед Али Джабери (танбур); Mohammad Jaberi (даф) |
+| `voice-open` | 10.6 | 23.7 | `voice` 10.6, `tanbur` 10.95 (кадр 12), `bendir` 12.65 (кадр 13), `baglama` 12.95 (кадр 13), `oud` 20, `qanun` 20. Заметность: tanbur 3.4, bendir 0.85, baglama 0.85, oud 0.8, qanun 0.8. Исполнители: Kutay Ozcan (баглама); Selim Boyaci (уд); Onur Cicin (канун) |
+| `inst-tanbur` | 23.7 | 100.81 | `tanbur` 24, `oud` 24.8 (кадр 25), `qanun` 24.8 (кадр 25), `daf` 30.8 (кадр 31), `kamancheh` 54 (кадр 56), `baglama` 59.9 (кадр 61). Заметность: tanbur 5.2, oud 0.8, qanun 0.8, daf 5.25, kamancheh 4.35, baglama 1.6. Исполнители: Сейед Али Джабери (танбур); Selim Boyaci (уд); Onur Cicin (канун); Mohammad Jaberi (даф); Kutay Ozcan (баглама) |
 | `inst-bridge-a` | 163.95 | 172 | `tanbur` 163.95 (кадр 164), `baglama` 164.55 (кадр 166), `daf` 165.75 (кадр 166). Заметность: tanbur 0.9, baglama 0.8, daf 1.6. Исполнители: Kutay Ozcan (баглама); Mohammad Jaberi (даф) |
 | `voice-bridge` | 172 | 174 | голос, как было |
 | `inst-bridge-b` | 174 | 183.39 | как было: `ensemble` |
-| `inst-mid` | 246.7 | 286.3 | `kamancheh` 246.7 (кадр 247), `baglama` 250.7 (кадр 251), `daf` 250.7 (кадр 251), `ensemble` 274; свёрнуты в ансамбль: tanbur (0.9), qanun (0.8). Заметность: kamancheh 4.25, baglama 2.4, daf 4.05. Исполнители: Kutay Ozcan (баглама); Mohammad Jaberi (даф) |
+| `inst-mid` | 246.7 | 286.3 | `kamancheh` 246.7 (кадр 247), `baglama` 250.7 (кадр 251), `daf` 250.7 (кадр 251), `tanbur` 274, `qanun` 275.65 (кадр 276). Заметность: kamancheh 4.25, baglama 2.4, daf 4.05, tanbur 0.9, qanun 0.8. Исполнители: Kutay Ozcan (баглама); Mohammad Jaberi (даф); Onur Cicin (канун) |
 | `inst-before-mawwal` | 385.89 | 404.08 | `daf` 389.2 (кадр 390), `baglama` 390, `tanbur` 390.2 (кадр 392), `sitar` 394. Заметность: daf 1.7, baglama 2.4, tanbur 0.9, sitar 1.6. Исполнители: Mohammad Jaberi (даф); Kutay Ozcan (баглама); Asad Khan (ситар) |
 | `inst-end` | 565.09 | 580.06 | как было: `ensemble` |
 
@@ -40,8 +40,6 @@
 |---|---|---|
 | `erhu` | `erhu` | 3 |
 | `orchestral-percussion` | `orchestral-percussion` | 1 |
-| `oud` | `oud` | 0 |
-| `qanun` | `qanun` | 0 |
 | `tabla` | `tabla` | 0 |
 
 ## Проверить
