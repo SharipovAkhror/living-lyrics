@@ -145,3 +145,63 @@ def fit_sections(lyrics: dict, duration: float, good: set[str]) -> list[str]:
         if left and right:
             set_flag(s, 'timing-draft', False)
     return notes
+
+
+def _end_not_past(value: float, limit: float) -> float:
+    """A section end on the file's 0.01 s grid that does not pass `limit`."""
+    rounded = r2(min(value, limit))
+    if rounded <= limit + 1e-9:
+        return rounded
+    hundredths = int(round(limit * 100))
+    cand = hundredths / 100.0
+    if cand > limit + 1e-9:
+        cand = (hundredths - 1) / 100.0
+    return cand
+
+
+def fit_section_edges(lyrics: dict) -> int:
+    """Cover a word that runs past its vocal section, without moving a start or a text.
+
+    The validator warns when a word ends more than 0.05 s after the section. The end
+    moves forward to that word, and may touch the next section's start. A word that
+    would pass the next section is cut back to the boundary instead. Returns how many
+    ends changed.
+    """
+    secs = lyrics.get('sections') or []
+    fixes = 0
+    for i, sec in enumerate(secs):
+        if sec.get('kind') != 'vocal':
+            continue
+        limit = float(secs[i + 1]['start']) if i + 1 < len(secs) else float('inf')
+        words = [w for line in sec.get('lines') or [] for w in line.get('words') or []]
+        if not words:
+            continue
+        end = float(sec['end'])
+        over = [w for w in words if float(w['e']) > end + 0.05 + 1e-9]
+        if not over:
+            continue
+        if limit > end + 1e-9:
+            extend_to = end
+            for w in over:
+                extend_to = max(extend_to, min(float(w['e']), limit))
+            if extend_to > end + 0.005:
+                new_end = _end_not_past(extend_to, limit)
+                if new_end > end + 0.005:
+                    sec['end'] = new_end
+                    end = float(sec['end'])
+                    fixes += 1
+        for w in words:
+            if float(w['e']) <= end + 0.05 + 1e-9:
+                continue
+            start = float(w['s'])
+            if end <= start:
+                continue
+            trimmed = r2(end)
+            if trimmed <= start or trimmed > end + 0.05 + 1e-9:
+                trimmed = end
+            if trimmed <= start:
+                continue
+            if abs(trimmed - float(w['e'])) >= 0.001:
+                w['e'] = trimmed
+                fixes += 1
+    return fixes

@@ -21,8 +21,11 @@ selects. Different weights from MMS_FA, so the mistakes are largely independent.
 
 A second MMS (mms-1b-all, or ctc-forced-aligner's copy of the MMS_FA weights) is not an independent
 opinion and is not called. Azerbaijani, Latin, medieval German and Ottoman Turkish have no
-WhisperX checkpoint here; those lines stay unproven. A language tagged `de` uses the modern German
-model and is not relabelled as medieval German.
+WhisperX checkpoint here; `preferred` does not substitute one. A borrowed model is a separate
+probe (`BORROW_FOR`) and is adopted only after a cue measurement says it is not worse than on
+its own language. stable-ts is a third witness (known-text Whisper alignment), not a replacement
+for the second. A language tagged `de` uses the modern German model and is not relabelled as
+medieval German.
 """
 from __future__ import annotations
 
@@ -198,18 +201,24 @@ class WhisperX:
 
     def word_starts(self, x: np.ndarray, jobs: list[dict]) -> dict[str, list[float | None]]:
         out: dict[str, list[float | None]] = {}
-        by_lang: dict[str, list[dict]] = {}
+        grouped: dict[tuple, list[dict]] = {}
         for j in jobs:
+            forced = j.get('hf_model')
+            if forced:
+                grouped.setdefault(('hf', forced), []).append(j)
+                continue
             if j['lang'] in WHISPERX_TORCH or j['lang'] in WHISPERX_HF:
-                by_lang.setdefault(j['lang'], []).append(j)
-        for lang, js in by_lang.items():
+                grouped.setdefault(('lang', j['lang']), []).append(j)
+        for key, js in grouped.items():
             try:
-                if lang in WHISPERX_TORCH:
-                    part = self._torch(x, lang, js)
+                if key[0] == 'hf':
+                    part = self._hf(x, js[0].get('lang') or 'tr', js, model_id=key[1])
+                elif key[1] in WHISPERX_TORCH:
+                    part = self._torch(x, key[1], js)
                 else:
-                    part = self._hf(x, lang, js)
+                    part = self._hf(x, key[1], js)
             except Exception as e:
-                print(f'{self.name}: {lang} не загрузился ({e.__class__.__name__}: {e})')
+                print(f'{self.name}: {key[1]} не загрузился ({e.__class__.__name__}: {e})')
                 continue
             out.update(part)
             gc.collect()
@@ -240,10 +249,10 @@ class WhisperX:
         print(f'{self.name}: {lang} ({bundle_name}) — {len(jobs)} строк', flush=True)
         return out
 
-    def _hf(self, x: np.ndarray, lang: str, jobs: list[dict]) -> dict[str, list[float | None]]:
+    def _hf(self, x: np.ndarray, lang: str, jobs: list[dict], model_id: str | None = None) -> dict[str, list[float | None]]:
         import torch
 
-        model_id = WHISPERX_HF[lang]
+        model_id = model_id or WHISPERX_HF[lang]
         proc = _load_processor(model_id)
         model = _ctc_class().from_pretrained(model_id).eval()
         raw_vocab = proc.tokenizer.get_vocab()
@@ -342,7 +351,191 @@ def _one_line(torch, model, proc, x: np.ndarray, job: dict, vocab: dict[str, int
     return align_window(lp, tokens, owner, len(job['words']), blank, a / SR, (b - a) / SR)
 
 
-ENGINES = {'whisperx': WhisperX}
+# Azerbaijani q is [g] and k is [k]. Turkish CTC has no ə or x, so those letters move to the
+# nearest letter the Turkish model was trained to emit. q goes to g, not to k.
+AZ_TR_MAP = str.maketrans({'ə': 'e', 'Ə': 'E', 'x': 'h', 'X': 'H', 'q': 'g', 'Q': 'G'})
+# Latin into an Italian Common Voice alphabet: æ/œ are one vowel, y and j are not Italian
+# letters, k is written c, w is v, x is s.
+LA_IT_MAP = str.maketrans({
+    'æ': 'e', 'Æ': 'E', 'œ': 'e', 'Œ': 'E',
+    'y': 'i', 'Y': 'I', 'j': 'i', 'J': 'I',
+    'k': 'c', 'K': 'C', 'w': 'v', 'W': 'V', 'x': 's', 'X': 'S',
+})
+# Latin y is a vowel. Spanish writes the glide with u rather than v.
+LA_ES_MAP = str.maketrans({
+    'æ': 'e', 'Æ': 'E', 'œ': 'e', 'Œ': 'E',
+    'k': 'c', 'K': 'C', 'w': 'u', 'W': 'U', 'y': 'i', 'Y': 'I',
+})
+
+BORROW_MODELS = {
+    'tr': {
+        'id': 'mpoyraz/wav2vec2-xls-r-300m-cv7-turkish',
+        'license': 'CC-BY-4.0',
+        'card': 'Common Voice 7, Turkish',
+    },
+    'it': {
+        'id': 'jonatasgrosman/wav2vec2-large-xlsr-53-italian',
+        'license': 'Apache-2.0',
+        'card': 'Common Voice 6.1, Italian',
+    },
+    'es': {
+        'id': 'jonatasgrosman/wav2vec2-large-xlsr-53-spanish',
+        'license': 'Apache-2.0',
+        'card': 'Common Voice 6.1, Spanish',
+    },
+}
+
+# Probes keyed by the sung language. The inner key is the model language. None is an identity map.
+# These are not `preferred`: a line stays without a second aligner until the review adopts the probe.
+BORROW_FOR = {
+    'tr': (('tr', None),),
+    'az': (('tr', AZ_TR_MAP),),
+    'la': (('it', LA_IT_MAP), ('es', LA_ES_MAP)),
+}
+
+# Whisper's language codes. Medieval German is absent on purpose. Copied from bench_align so this
+# module does not import the bench.
+WHISPER_LANG = {
+    'en': 'en', 'tr': 'tr', 'ar': 'ar', 'fa': 'fa', 'az': 'az', 'de': 'de',
+    'la': 'la', 'es': 'es', 'fr': 'fr', 'it': 'it',
+}
+
+
+def map_word(word: str, table) -> str:
+    """Rewrite letters for a borrowed checkpoint. An empty table leaves the word as sung."""
+    if not table:
+        return word
+    return word.translate(table)
+
+
+def _norm_token(text: str) -> str:
+    text = unicodedata.normalize('NFC', text).casefold()
+    return ''.join(ch for ch in text if ch.isalnum())
+
+
+def match_word_starts(words: list[str], aligned, t0: float) -> list[float | None]:
+    """Pair Whisper's word starts with the known words, in order.
+
+    Punctuation-only input words stay None. A Whisper token that merges several known words
+    times the first of them. Anything left unmatched stays None.
+    """
+    starts: list[float | None] = [None] * len(words)
+    targets = [_norm_token(w) for w in words]
+    pieces = []
+    for seg in getattr(aligned, 'segments', None) or []:
+        pieces.extend(getattr(seg, 'words', None) or [])
+    if not pieces:
+        pieces = list(getattr(aligned, 'words', None) or [])
+    got = []
+    for word in pieces:
+        token = _norm_token(getattr(word, 'word', '') or str(word))
+        start = getattr(word, 'start', None)
+        if token and start is not None:
+            got.append((token, float(start)))
+    idxs = [i for i, token in enumerate(targets) if token]
+    if got and len(got) == len(idxs):
+        for i, (_, start) in zip(idxs, got):
+            starts[i] = t0 + start
+        return starts
+    cursor = 0
+    for token, start in got:
+        while cursor < len(targets) and not targets[cursor]:
+            cursor += 1
+        if cursor >= len(targets):
+            break
+        if targets[cursor] == token or token.startswith(targets[cursor]) or targets[cursor].startswith(token):
+            starts[cursor] = t0 + start
+            cursor += 1
+            continue
+        acc = ''
+        k = cursor
+        end = cursor
+        matched = False
+        while k < len(targets) and len(acc) < len(token):
+            if targets[k]:
+                acc += targets[k]
+                end = k + 1
+            k += 1
+            if acc == token:
+                starts[cursor] = t0 + start
+                cursor = end
+                matched = True
+                break
+        if not matched:
+            continue
+    return starts
+
+
+class StableTs:
+    """Known-text Whisper alignment (stable-ts, model small). A third clock, not a second MMS.
+
+    One model for every language Whisper names, including Azerbaijani and Latin. A line it
+    cannot align is left out. Weights are not written into the repository.
+    """
+
+    name = 'stable-ts'
+
+    def __init__(self) -> None:
+        _threads()
+
+    def close(self) -> None:
+        gc.collect()
+
+    def word_starts(self, x: np.ndarray, jobs: list[dict]) -> dict[str, list[float | None]]:
+        import stable_whisper
+
+        model = stable_whisper.load_model('small', device='cpu')
+        out: dict[str, list[float | None]] = {}
+        try:
+            for j in jobs:
+                lang = WHISPER_LANG.get(j.get('lang') or '')
+                text = ' '.join(w for w in j['words'] if str(w).strip())
+                if not lang or not text.strip():
+                    continue
+                a = max(0, int(float(j['t0']) * SR))
+                b = min(len(x), int(float(j['t1']) * SR))
+                if b - a < int(0.2 * SR):
+                    continue
+                seg = np.ascontiguousarray(x[a:b])
+                try:
+                    result = _stable_align(model, seg, text, lang)
+                    starts = match_word_starts(j['words'], result, a / SR)
+                except Exception as e:
+                    print(f'{self.name} {j["id"]}: {e.__class__.__name__}: {e}', flush=True)
+                    continue
+                if any(s is not None for s in starts) and len(starts) == len(j['words']):
+                    out[j['id']] = starts
+        finally:
+            del model
+            gc.collect()
+        placed = sum(1 for starts in out.values() if any(s is not None for s in starts))
+        print(f'{self.name}: поставлено {placed}/{len(jobs)} строк', flush=True)
+        return out
+
+
+def _stable_call(model, audio, text: str, lang: str):
+    try:
+        return model.align(audio, text, language=lang, original_split=True)
+    except TypeError:
+        return model.align(audio, text, language=lang)
+
+
+def _stable_align(model, seg: np.ndarray, text: str, lang: str):
+    """Numpy first. Some builds want a path, so a short clip is the fallback."""
+    try:
+        return _stable_call(model, seg, text, lang)
+    except Exception:
+        import soundfile
+
+        from common import work_dir
+
+        path = work_dir('_stable') / 'clip.wav'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        soundfile.write(str(path), seg, SR)
+        return _stable_call(model, str(path), text, lang)
+
+
+ENGINES = {'whisperx': WhisperX, 'stable-ts': StableTs}
 
 
 def run_engine(name: str, x: np.ndarray, jobs: list[dict]) -> dict[str, list[float | None]]:

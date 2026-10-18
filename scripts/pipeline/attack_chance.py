@@ -9,19 +9,24 @@ docs/analysis/bench/attack-chance.json and attack-chance.md.
 
 Singing puts an attack on almost every note. If those attacks sit about 0.2 s
 apart, a time 0.15 s off the true start is still within 0.10 s of some attack,
-and the attack test does not prove the word. When that chance is above 15 %,
-a tighter rule is chosen: a smaller tolerance (the choir stays twice the solo),
-a higher onset peak, an attack only where the level also rises, or a required
-second aligner. The current 0.10 s / 0.20 s rule stays when it is already at
-or under 15 %. Among rules that qualify, the one that still proves the most
-words on the placed lines wins.
+and the attack test does not prove the word.
+
+The first candidates are the witness rules. `attack-h0.7-one` is a strong attack
+(height 0.7, solo 0.10 s, choir 0.20 s) plus at least one independent clock
+(the calibrated second aligner, or stable-ts) within 0.10 s of the probe.
+`attack-h0.7-two` needs both clocks. The one-witness rule is kept when its
+chance is already at or under 15 %. Otherwise the two-witness rule is tried.
+Only if both are over 15 % does the older grid run: a smaller tolerance, a
+higher peak, an energy rise, or a required second aligner. The plain 0.10 s /
+height 0.5 rule does not override a witness rule that already qualifies.
 
 The chance test shifts placed-line word starts by ±0.15, ±0.25 and ±0.4 s and
-rotates starts inside each line. It asks only whether the probe time is within
-the rule's tolerance of some attack (and of the second aligner, when the rule
-requires one). It does not give the probe the previous word's ownership: the
-question is how often a wrong time hits an attack at all. The true-proof rate
-uses qa_sync.prove_words, ownership included.
+rotates starts inside each line. The witness clocks stay where they were
+measured. A probe passes when it is within tolerance of some attack and, for a
+witness rule, of enough of those fixed clocks. The shuffle keeps each word's
+clocks and takes the next word's start. The true-proof rate uses
+qa_sync.prove_words, ownership included. Bias and adoption come from
+aligner-review.json and are copied onto the chosen rule.
 
 Exit 2 when a song has no stem or no align report, or when no rule keeps the
 chance at or under 15 %. qa must not run on an unmeasured rule.
@@ -75,6 +80,22 @@ def iter_rules() -> list[dict]:
     return rules
 
 
+def witness_rules() -> list[dict]:
+    """Strong attack plus one independent clock, then both. Measured before the older grid."""
+    base = {
+        'tol': 0.10,
+        'choir_tol': 0.20,
+        'peak_height': 0.7,
+        'require_rise': False,
+        'require_second': False,
+        'agree_tol': SECOND_TOL,
+    }
+    return [
+        dict(base, name='attack-h0.7-one', witnesses='one'),
+        dict(base, name='attack-h0.7-two', witnesses='two'),
+    ]
+
+
 def median_interval(peaks: np.ndarray) -> float | None:
     if len(peaks) < 2:
         return None
@@ -117,7 +138,19 @@ def hit_count(records: list[dict], peaks: np.ndarray, shift: float, rule: dict) 
             continue
         times = np.array([float(r['t']) + shift for r in rows], dtype=float)
         mask = _near_mask(times, peaks, tol)
-        if rule.get('require_second'):
+        mode = rule.get('witnesses')
+        if mode in ('one', 'two'):
+            agree = float(rule.get('agree_tol', SECOND_TOL))
+
+            def column(key: str) -> np.ndarray:
+                return np.array([np.nan if r.get(key) is None else float(r[key]) for r in rows])
+
+            sec = column('second')
+            third = column('third')
+            sec_ok = np.isfinite(sec) & (np.abs(sec - times) <= agree + 1e-12)
+            third_ok = np.isfinite(third) & (np.abs(third - times) <= agree + 1e-12)
+            mask = mask & (sec_ok & third_ok if mode == 'two' else (sec_ok | third_ok))
+        elif rule.get('require_second'):
             seconds = np.array([np.nan if r.get('second') is None else float(r['second']) for r in rows])
             mask = mask & np.isfinite(seconds) & (np.abs(seconds - times) <= SECOND_TOL)
         hits += int(mask.sum())
@@ -183,12 +216,17 @@ def true_proof(lines: list[dict], peaks: np.ndarray, rule: dict) -> tuple[int, i
                 'ctc_s': word['t'],
                 'ctc_e': word.get('ctc_e'),
                 'second_s': word.get('second'),
+                'third_s': word.get('third'),
             })
             owned = None if prev is None else prev + tol
             dt = Q.nearest_attack(float(word['t']), peaks, owned)
             presnap.append(dt)
             prev = float(word['t'])
-        for word in Q.prove_words(align_words, presnap, tol, require_second=bool(rule.get('require_second'))):
+        for word in Q.prove_words(
+                align_words, presnap, tol,
+                require_second=bool(rule.get('require_second')),
+                witnesses=rule.get('witnesses'),
+                agree_tol=float(rule.get('agree_tol', SECOND_TOL))):
             total += 1
             if word['path'] != 'fail':
                 proved += 1
@@ -200,6 +238,14 @@ def choose(rows: list[dict]) -> dict:
     def eligible(row: dict) -> bool:
         chance = row.get('chance')
         return chance is not None and float(chance) <= LIMIT + 1e-12
+
+    for name, why in (('attack-h0.7-one', 'witness-one'), ('attack-h0.7-two', 'witness-two')):
+        row = next((item for item in rows if item.get('name') == name), None)
+        if row is not None and eligible(row):
+            out = dict(row)
+            out['within_limit'] = True
+            out['why'] = why
+            return out
 
     current = next((row for row in rows if is_current(row)), None)
     if current is not None and eligible(current):
@@ -248,19 +294,22 @@ def _ru(x: float | None, nd: int = 3) -> str:
     return f'{float(x):.{nd}f}'.replace('.', ',')
 
 
-def placed_lines(report: dict) -> list[dict]:
+def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = None) -> list[dict]:
     lines = []
+    timing = {'bias': bias or {}, 'adopt': adopt or {}}
     for line in report.get('lines') or []:
         if line.get('status') != 'good':
             continue
         words = []
-        for word in line.get('words') or []:
+        adjusted = Q.apply_rule_times(line.get('words') or [], line.get('lang'), timing) or []
+        for word in adjusted:
             if not word.get('roman') or word.get('ctc_s') is None:
                 continue
             words.append({
                 't': float(word['ctc_s']),
                 'ctc_e': None if word.get('ctc_e') is None else float(word['ctc_e']),
                 'second': None if word.get('second_s') is None else float(word['second_s']),
+                'third': None if word.get('third_s') is None else float(word['third_s']),
                 'roman': word['roman'],
                 'group': line.get('group') or 'solo',
                 'lang': line.get('lang') or '?',
@@ -287,7 +336,7 @@ def evaluate(lines: list[dict], peak_sets: dict[tuple[float, bool], np.ndarray])
     shuffled = shuffled_records(lines)
     rows = []
     flat = _flat(lines)
-    for rule in iter_rules():
+    for rule in witness_rules() + iter_rules():
         peaks = peak_sets[(float(rule['peak_height']), bool(rule['require_rise']))]
         rates = chance_of(flat, peaks, rule, shuffled)
         proved, total = true_proof(lines, peaks, rule)
@@ -330,6 +379,15 @@ def choose_measured(rows: list[dict]) -> dict:
 
 
 def _why_ru(chosen: dict, current_chance: float | None) -> str:
+    if chosen.get('why') == 'witness-one':
+        return (f"Сильная атака (сила 0,7) и согласие хотя бы одного независимого выравнивателя "
+                f"в пределах 0,10 с дают случайный проход {_ru(chosen.get('chance'), 3)}. "
+                f"Это не выше 15 %, поэтому согласие обоих не требуется. "
+                f"Доля доказанных слов {_ru(chosen.get('true_rate'), 3)}.")
+    if chosen.get('why') == 'witness-two':
+        return (f"Согласие одного независимого выравнивателя даёт случайный проход выше 15 %. "
+                f"Выбрано согласие обоих при сильной атаке: случайный проход {_ru(chosen.get('chance'), 3)}, "
+                f"доля доказанных слов {_ru(chosen.get('true_rate'), 3)}.")
     if chosen.get('why') == 'current':
         return (f"Допуск 0,10 с (хор 0,20 с) и сила пика 0,5 уже дают случайный проход "
                 f"{_ru(chosen.get('chance'), 3)}. Он не выше 15 %, ужесточение не нужно.")
@@ -446,7 +504,7 @@ def render_md(payload: dict) -> str:
         'Показаны правило, которое уже стоит в коде, выбранное и те, что уложились в 15 %. '
         'Полный перебор — в `attack-chance.json`.',
         '',
-        '| правило | допуск | сила | подъём | второй | худшая доля | доказано слов |',
+        '| правило | допуск | сила | подъём | второй / свидетели | худшая доля | доказано слов |',
         '|---|---:|---:|---|---|---:|---:|',
     ]
     show = []
@@ -458,11 +516,30 @@ def render_md(payload: dict) -> str:
         mark = ' ←' if row['name'] == chosen.get('name') else ''
         lines.append(
             f"| {row['name']}{mark} | {_ru(row['tol'], 2)} | {_ru(row['peak_height'], 1)} | "
-            f"{'да' if row.get('require_rise') else 'нет'} | {'да' if row.get('require_second') else 'нет'} | "
+            f"{'да' if row.get('require_rise') else 'нет'} | {_witness_cell(row)} | "
             f"{_ru(row.get('chance'), 3)} | {_ru(row.get('true_rate'), 3)} |"
         )
     lines.append('')
     return '\n'.join(lines)
+
+
+def _witness_cell(row: dict) -> str:
+    if row.get('witnesses') == 'one':
+        return 'один'
+    if row.get('witnesses') == 'two':
+        return 'оба'
+    return 'да' if row.get('require_second') else 'нет'
+
+
+def load_review() -> dict:
+    path = ROOT / 'docs' / 'analysis' / 'bench' / 'aligner-review.json'
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return data if isinstance(data, dict) else {}
 
 
 def _peak_sets(sig: Q.Signals) -> dict[tuple[float, bool], np.ndarray]:
@@ -477,6 +554,14 @@ def _peak_sets(sig: Q.Signals) -> dict[tuple[float, bool], np.ndarray]:
 def build_payload(slugs: list[str]) -> dict:
     import features as F
 
+    review = load_review()
+    bias = {}
+    for key, value in (review.get('bias') or {}).items():
+        try:
+            bias[str(key)] = float(value)
+        except (TypeError, ValueError):
+            continue
+    adopt = {str(k): str(v) for k, v in (review.get('adopt') or {}).items() if isinstance(v, str) and v}
     per_song = []
     for slug in slugs:
         report_path = work_dir(slug) / 'align-report.json'
@@ -487,7 +572,7 @@ def build_payload(slugs: list[str]) -> dict:
             raise SystemExit(f'{slug}: нет вокального стема')
         report = json.loads(report_path.read_text(encoding='utf-8'))
         sig = Q.Signals(load_audio(audio, F.SR))
-        lines = placed_lines(report)
+        lines = placed_lines(report, bias, adopt)
         per_song.append({'slug': slug, 'lines': lines, 'sets': _peak_sets(sig), 'base': Q.onset_peak_times(sig)})
     # One rule is chosen on the pooled placed lines, not on the first song alone.
     pooled: list[dict] = []
@@ -500,11 +585,15 @@ def build_payload(slugs: list[str]) -> dict:
         chosen = choose([])
     else:
         chosen = choose_measured(rows)
+    chosen['bias'] = bias
+    chosen['adopt'] = adopt
     current = next((row for row in rows if is_current(row)), None)
     density = []
     slices = []
     base_rule = next(rule for rule in iter_rules() if is_current(rule))
-    chosen_rule = {k: chosen[k] for k in ('name', 'tol', 'choir_tol', 'peak_height', 'require_rise', 'require_second') if k in chosen}
+    chosen_rule = {k: chosen[k] for k in (
+        'name', 'tol', 'choir_tol', 'peak_height', 'require_rise', 'require_second', 'witnesses', 'agree_tol',
+    ) if k in chosen}
     for song in per_song:
         density.extend(density_table(song['slug'], song['lines'], song['base']))
         flat = _flat(song['lines'])
@@ -547,7 +636,7 @@ def _evaluate_pooled(per_song: list[dict]) -> list[dict]:
     Peaks stay per song: a word is compared only with attacks in its own recording.
     """
     rows = []
-    for rule in iter_rules():
+    for rule in witness_rules() + iter_rules():
         hit_num = {f'{mag:.2f}': [0, 0] for mag in SHIFTS}
         hit_num['shuffle'] = [0, 0]
         proved = 0

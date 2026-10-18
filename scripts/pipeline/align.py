@@ -33,11 +33,14 @@ How it works:
      slid into a gap.
    align.py does not decide the flag. It marks every line `timing-draft` and leaves
    `timing.status` at `draft`. qa_sync.py --apply clears the flag only for a placed line
-   whose words are proved: an attack within 0.10 s (0.20 s choir), or, for a vowel,
-   legato or melisma with no attack within 0.30 s, a second aligner within 0.10 s.
-   The song becomes `aligned` only when every group that exists is at least 80 % proved.
+   whose words the measured rule proves. The default, when no rule file exists, is an
+   attack within 0.10 s (0.20 s choir), or, for a vowel, legato or melisma with no
+   attack within 0.30 s, a second aligner within 0.10 s. The song becomes `aligned`
+   only when every group that exists is at least 80 % proved.
 
-Writes lyrics.json (word s/e and the timing-draft flag; section bounds only with --move-sections),
+Writes lyrics.json (word s/e and the timing-draft flag; a vocal section end may move
+forward, or a word end may be cut, so a word does not sit past the section. Starts are
+not moved. Other section bounds change only with --move-sections),
 song.json timing (status stays draft), work/<slug>/align-report.json and work/<slug>/timing.json.
 `--dry-run` writes only the two work files.
 """
@@ -380,6 +383,47 @@ def cue_window(start: float, end: float, prev: tuple[float, float] | None, nxt: 
     if t1 < t0 + 0.40:
         t1 = min(float(duration), t0 + 0.40)
     return t0, t1
+
+
+def borrow_jobs(units: list, cues: dict[str, dict], duration: float) -> tuple[list[dict], list[tuple[str, str, str]]]:
+    """Cue-window probes for languages that may borrow a checkpoint.
+
+    Every cued Turkish, Azerbaijani and Latin line is included, placed or not. The native
+    Turkish probe uses the same window and the same model as the Azerbaijani one, with an
+    identity letter map. Italian and Spanish are Common Voice wav2vec2 models, not the
+    torchaudio VoxPopuli bundles `it` and `es` would otherwise select. The job id is the
+    line id plus the model language. Returns jobs and (line id, model language, job id).
+    """
+    jobs: list[dict] = []
+    meta: list[tuple[str, str, str]] = []
+    vocal = [(u, cues.get(u.id)) for u in units]
+    for i, (u, cue) in enumerate(vocal):
+        if cue is None:
+            continue
+        specs = engines.BORROW_FOR.get(u.line.get('lang') or '')
+        if not specs:
+            continue
+        prev = next((vocal[j][1] for j in range(i - 1, -1, -1) if vocal[j][1] is not None), None)
+        nxt = next((vocal[j][1] for j in range(i + 1, len(vocal)) if vocal[j][1] is not None), None)
+        prev_t = None if prev is None else (float(prev['start']), float(prev['end']))
+        nxt_t = None if nxt is None else (float(nxt['start']), float(nxt['end']))
+        t0, t1 = cue_window(float(cue['start']), float(cue['end']), prev_t, nxt_t,
+                            float(u.sec['start']), float(u.sec['end']), duration)
+        words = [w['w'] for w in u.line['words']]
+        for model_lang, table in specs:
+            model = engines.BORROW_MODELS[model_lang]
+            jid = f'{u.id}\t{model_lang}'
+            jobs.append({
+                'id': jid,
+                'lang': model_lang,
+                'hf_model': model['id'],
+                'script': u.line.get('script'),
+                'words': [engines.map_word(w, table) for w in words],
+                't0': t0,
+                't1': t1,
+            })
+            meta.append((u.id, model_lang, jid))
+    return jobs, meta
 
 
 def placement_status(missing: bool, score_ok: bool, structure_ok: bool, near: bool, has_cue: bool) -> str:
@@ -966,6 +1010,33 @@ def main() -> None:
                      'words': [w['w'] for w in u.line['words']], 't0': t0, 't1': t1})
     second_starts, second_name = engines.align_jobs(args.second, x, jobs)
 
+    # Third witness: stable-ts on the same placed lines and the same windows. A failure
+    # leaves the column empty. It does not fail the alignment.
+    third_starts: dict[str, list] = {}
+    if jobs:
+        try:
+            third_starts = engines.run_engine('stable-ts', x, jobs)
+        except Exception as e:
+            print(f'stable-ts недоступен ({e.__class__.__name__}: {e})')
+
+    # Borrowed checkpoints on every cued line of tr, az and la. The cue window, not the
+    # phrase the first aligner already placed, so a language is not graded only on the
+    # lines MMS kept. Adoption is decided later, on these times, not here.
+    borrow_by_line: dict[str, dict[str, list]] = {}
+    probe_jobs, probe_meta = borrow_jobs(units, cues, duration)
+    if probe_jobs:
+        try:
+            probed = engines.run_engine('whisperx', x, probe_jobs)
+        except Exception as e:
+            print(f'проба чужой модели недоступна ({e.__class__.__name__}: {e})')
+            probed = {}
+        for line_id, model_lang, jid in probe_meta:
+            got = probed.get(jid)
+            n_words = next(len(u.line['words']) for u in units if u.id == line_id)
+            if got is None or len(got) != n_words:
+                continue
+            borrow_by_line.setdefault(line_id, {})[model_lang] = got
+
     # The sync check on the final times, line by line.
     qa = Q.check_lines(sig, [[{'w': w['w'], 's': t[0], 'e': t[1]} for w, t in zip(u.line['words'], ws)] for u, ws in zip(units, times)],
                        [u.sec['id'] for u in units])
@@ -976,10 +1047,21 @@ def main() -> None:
         s2 = second_starts.get(u.id)
         if s2 is not None and len(s2) != len(u.line['words']):
             s2 = None
+        s3 = third_starts.get(u.id)
+        if s3 is not None and len(s3) != len(u.line['words']):
+            s3 = None
+        borrowed = borrow_by_line.get(u.id) or {}
         words_out, proven_n, letters_n = [], 0, 0
         for wi, (w, rm, t, sc) in enumerate(zip(u.line['words'], u.roman, ws, scores)):
             has_letters = bool(rm)
             e2 = float(s2[wi]) if (s2 and s2[wi] is not None) else None
+            e3 = float(s3[wi]) if (s3 and s3[wi] is not None) else None
+            borrow_times = {}
+            # `times` above is every line's (start, end) pairs and is written after this
+            # loop. A loop variable here would replace that list with one model's starts.
+            for model_lang, model_starts in borrowed.items():
+                if wi < len(model_starts) and model_starts[wi] is not None:
+                    borrow_times[model_lang] = round(float(model_starts[wi]), 3)
             tol = Q.CHOIR_TOL if T.group(u.sec, u.line) == 'choir' else ENGINE_AGREE
             engines_agree = None if e2 is None or raw[wi] is None else bool(abs(e2 - raw[wi]) <= tol)
             onset_ok = odt[wi] is not None
@@ -993,6 +1075,8 @@ def main() -> None:
                               'score': sc, 'ctc_s': None if raw[wi] is None else round(raw[wi], 3),
                               'ctc_e': None if raw_e[wi] is None else round(raw_e[wi], 3),
                               'second_s': None if e2 is None else round(e2, 2),
+                              'third_s': None if e3 is None else round(e3, 3),
+                              'borrow': borrow_times,
                               'onset_dt': None if odt[wi] is None else round(odt[wi], 2), 'proven': proven})
         all_proven = letters_n > 0 and proven_n == letters_n
         if status == 'good' and q['verdict'] == 'ok':
@@ -1038,6 +1122,7 @@ def main() -> None:
     fixes = T.enforce_order(lyrics)
     placed_ids = {u.id for u, pub in zip(units, publish) if pub}
     locked = lock_written_cues(lyrics, cues, placed_ids, only)
+    edge_fixes = T.fit_section_edges(lyrics)
     by_written = {line['id']: line for _, line in T.vocal_lines(lyrics)}
     for rec in report_lines:
         line = by_written.get(rec['id'])
@@ -1079,6 +1164,9 @@ def main() -> None:
         'cue_median': round(float(np.median(cue_deltas)), 3) if cue_deltas else None,
         'order_fixes': fixes,
         'cue_locks': locked,
+        'section_edge_fixes': edge_fixes,
+        'third_engine': 'stable-ts',
+        'third_compared': sum(1 for w in ws_good if w.get('third_s') is not None and w.get('ctc_s') is not None),
     }
     report = {
         'slug': slug, 'created': t_start.isoformat(timespec='seconds'), 'audio': audio.name, 'stem': is_stem,
