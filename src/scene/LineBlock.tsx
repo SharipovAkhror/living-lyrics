@@ -72,11 +72,13 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
     const el = orig.current;
     const r = root.current;
     if (!el || !r || !stage.w) return;
-    const width = Math.min(stage.w - 56, 720);
-    const maxH = Math.max(90, stage.h * (hasSubs ? 0.3 : 0.38));
+    // A short wide screen (the car) can give the line more of the stage. The phone path stays.
+    const deck = stage.w >= 640 && stage.h > 0 && stage.h <= 420;
+    const width = Math.min(stage.w - (deck ? 40 : 56), deck ? 980 : 720);
+    const maxH = Math.max(deck ? 72 : 90, stage.h * (hasSubs ? (deck ? 0.48 : 0.3) : deck ? 0.64 : 0.38));
     const arab = line.script === 'Arab';
     const nast = fClass === 'f-nastaliq';
-    const upper = Math.min(arab ? (nast ? 64 : 76) : 68, width * (arab ? 0.13 : 0.115)) * settings.textScale;
+    const upper = Math.min(arab ? (nast ? (deck ? 72 : 64) : deck ? 84 : 76) : deck ? 76 : 68, width * (arab ? (deck ? 0.16 : 0.13) : deck ? 0.14 : 0.115)) * settings.textScale;
     const lower = 20 * settings.textScale;
     el.style.width = `${width}px`;
     let lo = lower;

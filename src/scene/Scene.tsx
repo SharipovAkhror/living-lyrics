@@ -102,7 +102,8 @@ export function Scene({ song, timeline, settings, dark, features, clock, onOwner
       }
       const a = Math.floor(pos);
       const f = pos - a;
-      const centerY = stage.h * 0.36;
+      const deck = stage.w >= 640 && stage.h <= 420;
+      const centerY = stage.h * (deck ? 0.42 : 0.36);
       const waits = new Map<number, number>();
       for (const k of list) waits.set(k, wordSync ? waitHint(timeline, k, t) : 0);
       const room = (k: number) => (waits.get(k) ?? 0) * WAIT_ROOM;
