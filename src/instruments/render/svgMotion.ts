@@ -12,8 +12,8 @@ export function svgMotionVars(drive: InstrumentDrive, time: number): Record<stri
   const amp = Math.min(3.2, drive.sustain * 1.05 + drive.pulse * 2.35);
   const wave = Math.cos(time * 6.5);
   const skin = 1 + skinWeight(drive, time) * 0.055;
-  // One sine, three samples a third of a turn apart, so a flock can sing out of phase.
-  // CSS cannot recover a shifted sine from a single sample. Seeking writes the same trio.
+  // One sine, three samples a third of a turn apart. CSS cannot shift a single sample.
+  // Seeking writes the same trio. The microphone uses the first sample.
   const breathAt = (phase: number) => drive.breath * (0.28 + 0.72 * (0.5 + 0.5 * Math.sin(time * 1.55 + phase)));
   const breath = breathAt(0);
   const jingle = jingleShift(drive, time, 0) * 2.2;

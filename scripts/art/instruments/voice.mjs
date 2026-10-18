@@ -1,44 +1,83 @@
-import { Art, P, medallion } from '../lib.mjs';
-import { birdCovers, drawBird, drawBranch, drawBud, drawLeaf, drawRose, drawSong, drawThorn, swayStyle } from '../birds.mjs';
+import { Art, P, circle, ellipse, ellipseArc, fillHatch, medallion, rect, shade, f } from '../lib.mjs';
 
-// Solo voice: a nightingale on a rose cane. In Persian and Turkic poetry the
-// nightingale sings to the rose (gul-o-bulbul); the plate is that sign of song,
-// not a portrait. No person is drawn.
-//
-// The cane pivots a fraction of a degree from its root on --breath-o. The bird
-// swells at the breast and opens the lower mandible a little more on the same
-// sample. At rest the bill is already open and the sound lines are already there.
-
-const ROOT = P(348, 328);
-const BIRD = { x: 232, y: 232, s: 1.28, face: -1, kind: 'nightingale', phase: 'o' };
-
-const CANE = [
-  P(124, 236),
-  P(176, 244),
-  P(224, 246),
-  P(272, 274),
-  P(314, 304),
-  ROOT,
-];
+// Voice: a mid-century studio microphone, not a named model and with no lettering.
+// Round grille, short body, a shock-mount ring on four bands, a short stand.
+// Proportions are a composite silhouette. Nothing here is traced from a product.
+const CX = 200;
+const HEAD = { x: CX, y: 128, r: 66 };
+const BODY = { x: CX - 28, y: 186, w: 56, h: 108, r: 12 };
 
 export default function voice() {
   const a = new Art('voice');
+  const head = circle(HEAD.x, HEAD.y, HEAD.r);
+  const mesh = circle(HEAD.x, HEAD.y, HEAD.r - 8);
+  const body = rect(BODY.x, BODY.y, BODY.w, BODY.h, BODY.r);
+  const meshBox = { x: HEAD.x - HEAD.r, y: HEAD.y - HEAD.r, w: HEAD.r * 2, h: HEAD.r * 2 };
+  const neck = rect(CX - 18, 176, 36, 28, 6);
+
   a.add(medallion());
-  a.add(`<g style="${swayStyle(ROOT, 'o', 0.65)}">`);
+
+  // Stand and foot stay still. The coupler at the top of the pole is the sway pivot.
+  const pole = rect(CX - 7, 286, 14, 54, 3);
   a.begin();
-  drawBranch(a, CANE, [3.6, 5.2, 6.8, 8.2, 10, 11.5]);
-  drawBranch(a, [P(150, 250), P(112, 200), P(88, 152)], [2.4, 1.8, 1.3]);
-  drawThorn(a, P(272, 274), P(7, -6));
-  drawThorn(a, P(176, 250), P(-5, -7));
-  drawLeaf(a, 58, 124, 26, 200);
-  drawLeaf(a, 168, 258, 30, 120);
-  drawLeaf(a, 292, 292, 32, 150);
-  drawLeaf(a, 330, 316, 24, 40);
-  a.hidden(birdCovers(BIRD));
-  drawRose(a, 84, 108, 0.84, -8);
-  drawBud(a, 52, 162, 0.55, -18);
-  const { beak } = drawBird(a, BIRD);
-  drawSong(a, beak, -1);
+  a.fillin(pole);
+  a.path(pole, 'd', 1.35);
+  a.add(shade({ shape: pole, box: { x: CX - 8, y: 284, w: 18, h: 58 }, angle: 90, spacing: 1.6, width: 0.4, light: P(-6, 0) }));
+  a.hidden(body);
+  const base = `M${CX - 68} 342A68 15 0 0 0 ${CX + 68} 342L${CX + 60} 354A60 11 0 0 1 ${CX - 60} 354Z`;
+  a.fillin(base);
+  a.path(base, 'd', 1.35);
+  a.path(ellipse(CX, 342, 68, 15), 'd', 1.15);
+  a.add(shade({ shape: base, box: { x: CX - 72, y: 330, w: 144, h: 30 }, angle: 6, spacing: 2.4, width: 0.4, light: P(-12, -6) }));
+
+  // Fixed ring. The microphone covers the part that passes behind the body.
+  a.begin();
+  a.path(ellipse(CX, 246, 96, 38), 'd', 1.55);
+  a.path(ellipse(CX, 246, 88, 32), 'd', 0.75);
+  a.hidden([head, body, neck]);
+
+  // About 1.4° in the mount. At rest the variable is 0, so the microphone stands straight.
+  a.add(`<g style="transform-box:view-box;transform-origin:${CX / 4}% ${286 / 4}%;transform:rotate(calc(var(--breath-o, 0) * 1.4deg))">`);
+
+  a.fillin(neck);
+  a.path(neck, 'd', 1.2);
+  a.fillin(body);
+  a.path(body, 'd', 1.55);
+  a.add(shade({ shape: body, box: { x: BODY.x - 2, y: BODY.y, w: BODY.w + 4, h: BODY.h }, angle: 86, spacing: 2.2, width: 0.42, light: P(-14, -4) }));
+  a.path(`M${BODY.x + 3} ${BODY.y + BODY.h - 16}H${BODY.x + BODY.w - 3}`, 'd', 0.8);
+
+  a.fillin(head);
+  a.add(fillHatch({ shape: mesh, box: meshBox, angle: 90, spacing: 5.6, width: 0.46 }));
+  a.path(head, 'd', 1.65);
+  a.path(mesh, 'd', 0.8);
+  a.path(circle(HEAD.x, HEAD.y, HEAD.r * 0.55), 'd', 0.55);
+  // The right rim turns away: one arc, so the head is a ball and not a flat disc.
+  a.path(ellipseArc(HEAD.x, HEAD.y, HEAD.r - 11, HEAD.r - 11, -1.05, 1.05), 'd', 0.7);
+
+  // Straps from the ring to the body. Two strokes each, so they read at card size.
+  const straps = [
+    [CX - 88, 232, BODY.x, 220],
+    [CX + 88, 232, BODY.x + BODY.w, 220],
+    [CX - 74, 274, BODY.x + 4, BODY.y + BODY.h - 14],
+    [CX + 74, 274, BODY.x + BODY.w - 4, BODY.y + BODY.h - 14],
+  ];
+  let band = '';
+  for (const [x0, y0, x1, y1] of straps) {
+    const dx = x1 - x0;
+    const dy = y1 - y0;
+    const len = Math.hypot(dx, dy) || 1;
+    const ox = (-dy / len) * 1.6;
+    const oy = (dx / len) * 1.6;
+    for (const s of [-1, 1]) {
+      const ax = x0 + ox * s;
+      const ay = y0 + oy * s;
+      const bx = x1 + ox * s;
+      const by = y1 + oy * s;
+      band += `M${f(ax)} ${f(ay)}L${f(bx)} ${f(by)}`;
+    }
+  }
+  a.path(band, 'd', 0.85);
+
   a.add('</g>');
   return a.done('Голос');
 }
