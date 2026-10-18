@@ -1,15 +1,15 @@
 {
-  "updated": "2026-10-18T12:44:39Z",
+  "updated": "2026-10-18T13:24:39Z",
   "grok": {
     "plan": "SuperGrok Heavy",
-    "today": 250011719,
-    "week": 534088067,
+    "today": 266577828,
+    "week": 550654176,
     "todayByTask": {
       "t1-sync": 146349684,
       "t7b-recognizer": 44724149,
       "t13-parts": 16085307,
       "t7c-sources": 29878255,
-      "t7d-entries": 12974324
+      "t7d-entries": 29540433
     },
     "limit": "xAI не сообщает лимит подписки: виден только расход"
   },
@@ -18,17 +18,17 @@
     "quota": {
       "gemini": {
         "weeklyRemaining": 97.73,
-        "weeklyResetIn": "146h 2m",
+        "weeklyResetIn": "145h 22m",
         "fiveHourRemaining": 92.66,
-        "fiveHourResetIn": "2h 10m",
-        "at": "2026-10-18T12:44:19Z"
+        "fiveHourResetIn": "1h 30m",
+        "at": "2026-10-18T13:24:19Z"
       },
       "claude-gpt": {
         "weeklyRemaining": 100.0,
         "weeklyResetIn": "",
         "fiveHourRemaining": 100.0,
         "fiveHourResetIn": "",
-        "at": "2026-10-18T12:44:19Z"
+        "at": "2026-10-18T13:24:19Z"
       }
     },
     "runsToday": 3,
