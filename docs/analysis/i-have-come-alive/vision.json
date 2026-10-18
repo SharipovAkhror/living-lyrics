@@ -1,0 +1,2667 @@
+{
+ "frames": [
+  {
+   "note": "wide arena shot, dome projection",
+   "players": [],
+   "time_s": 0,
+   "visible": false
+  },
+  {
+   "note": "wide arena shot, title caption",
+   "players": [],
+   "time_s": 4,
+   "visible": false
+  },
+  {
+   "note": "dome projection of whirling dervish",
+   "players": [],
+   "time_s": 8,
+   "visible": false
+  },
+  {
+   "note": "medium shot, tanbur playing, balaban held idle",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "balaban",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 10,
+   "visible": true
+  },
+  {
+   "note": "medium shot, tanbur playing, balaban held idle",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "balaban",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 12,
+   "visible": true
+  },
+  {
+   "note": "cut to baglama, bendir, qanun, oud",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 13,
+   "visible": true
+  },
+  {
+   "note": "medium shot, tanbur playing, balaban held idle",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "balaban",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 16,
+   "visible": true
+  },
+  {
+   "note": "plucked strings and percussion group",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 20,
+   "visible": true
+  },
+  {
+   "note": "tanbur playing, balaban held idle",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "balaban",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 24,
+   "visible": true
+  },
+  {
+   "note": "wide ensemble view",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "orchestral-percussion",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 25,
+   "visible": true
+  },
+  {
+   "note": "tanbur playing, balaban held idle",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "balaban",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 28,
+   "visible": true
+  },
+  {
+   "note": "tanbur playing, balaban raised to mouth",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "balaban",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 32,
+   "visible": true
+  },
+  {
+   "note": "balaban starts playing solo melody",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "balaban",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 33,
+   "visible": true
+  },
+  {
+   "note": "close-up of daf player",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 36,
+   "visible": true
+  },
+  {
+   "note": "wide arena shot, dome projection",
+   "players": [],
+   "time_s": 40,
+   "visible": false
+  },
+  {
+   "note": "wide arena shot",
+   "players": [],
+   "time_s": 44,
+   "visible": false
+  },
+  {
+   "note": "wide arena shot",
+   "players": [],
+   "time_s": 48,
+   "visible": false
+  },
+  {
+   "note": "wide arena shot",
+   "players": [],
+   "time_s": 52,
+   "visible": false
+  },
+  {
+   "note": "bendir and daf playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 54,
+   "visible": true
+  },
+  {
+   "note": "two kamancheh players bowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 56,
+   "visible": true
+  },
+  {
+   "note": "two kamancheh players bowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 60,
+   "visible": true
+  },
+  {
+   "note": "kamancheh players bowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 64,
+   "visible": true
+  },
+  {
+   "note": "wide arena shot, dome projection",
+   "players": [],
+   "time_s": 68,
+   "visible": false
+  },
+  {
+   "note": "kamancheh players bowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 72,
+   "visible": true
+  },
+  {
+   "note": "tight close-up of kamancheh bowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 76,
+   "visible": true
+  },
+  {
+   "note": "wide arena shot",
+   "players": [],
+   "time_s": 80,
+   "visible": false
+  },
+  {
+   "note": "rhythm and strings ensemble",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "orchestral-percussion",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 84,
+   "visible": true
+  },
+  {
+   "note": "close-up of tanbur player",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 88,
+   "visible": true
+  },
+  {
+   "note": "stage view, tabla and sitar playing",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 92,
+   "visible": true
+  },
+  {
+   "note": "wide arena shot",
+   "players": [],
+   "time_s": 96,
+   "visible": false
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 100,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 104,
+   "visible": true
+  },
+  {
+   "note": "stage shot, singer with tabla and sitar",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 108,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 112,
+   "visible": true
+  },
+  {
+   "note": "stage shot, singer with tabla and sitar",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 116,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 120,
+   "visible": true
+  },
+  {
+   "note": "stage shot, singer with tabla and sitar",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 124,
+   "visible": true
+  },
+  {
+   "note": "stage shot, singer with tabla and sitar",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 128,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 132,
+   "visible": true
+  },
+  {
+   "note": "stage shot, ensemble playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 136,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing Persian verse",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 140,
+   "visible": true
+  },
+  {
+   "note": "medium shot, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 144,
+   "visible": true
+  },
+  {
+   "note": "stage shot, choir joins chorus",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 148,
+   "visible": true
+  },
+  {
+   "note": "male choir singing, ney held idle",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 152,
+   "visible": true
+  },
+  {
+   "note": "female choir singing, erhu player bowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 154,
+   "visible": true
+  },
+  {
+   "note": "choir and traditional ensemble",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 156,
+   "visible": true
+  },
+  {
+   "note": "male choir singing, ney held idle",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 160,
+   "visible": true
+  },
+  {
+   "note": "close-up of tanbur player",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 164,
+   "visible": true
+  },
+  {
+   "note": "stage shot, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 168,
+   "visible": true
+  },
+  {
+   "note": "wide arena shot, dome projection",
+   "players": [],
+   "time_s": 172,
+   "visible": false
+  },
+  {
+   "note": "wide arena shot",
+   "players": [],
+   "time_s": 176,
+   "visible": false
+  },
+  {
+   "note": "overhead dome shot",
+   "players": [],
+   "time_s": 180,
+   "visible": false
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing Turkish section",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 184,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 188,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 192,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 196,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 200,
+   "visible": true
+  },
+  {
+   "note": "stage shot, singer with tabla and sitar",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 204,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 208,
+   "visible": true
+  },
+  {
+   "note": "stage shot, singer with tabla and sitar",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 212,
+   "visible": true
+  },
+  {
+   "note": "rear stage shot, dome view",
+   "players": [],
+   "time_s": 216,
+   "visible": false
+  },
+  {
+   "note": "stage shot, choir singing Turkish chorus",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 220,
+   "visible": true
+  },
+  {
+   "note": "close-up of female choir singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 224,
+   "visible": true
+  },
+  {
+   "note": "close-up of male choir singing, ney held idle",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 228,
+   "visible": true
+  },
+  {
+   "note": "stage shot, Sami Yusuf and choir singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 232,
+   "visible": true
+  },
+  {
+   "note": "Sami Yusuf singing, sitar playing in foreground",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 236,
+   "visible": true
+  },
+  {
+   "note": "choir singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 240,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 244,
+   "visible": true
+  },
+  {
+   "note": "two kamancheh players bowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 248,
+   "visible": true
+  },
+  {
+   "note": "instrumental ensemble section",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "orchestral-percussion",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 252,
+   "visible": true
+  },
+  {
+   "note": "two kamancheh players bowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 256,
+   "visible": true
+  },
+  {
+   "note": "wide arena floor shot",
+   "players": [],
+   "time_s": 260,
+   "visible": false
+  },
+  {
+   "note": "wide arena shot",
+   "players": [],
+   "time_s": 264,
+   "visible": false
+  },
+  {
+   "note": "wide arena shot",
+   "players": [],
+   "time_s": 268,
+   "visible": false
+  },
+  {
+   "note": "dome projection of whirling dervish",
+   "players": [],
+   "time_s": 272,
+   "visible": false
+  },
+  {
+   "note": "percussion and qanun",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "orchestral-percussion",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 276,
+   "visible": true
+  },
+  {
+   "note": "sitar and tabla playing on stage",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 280,
+   "visible": true
+  },
+  {
+   "note": "close-up of daf player",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 284,
+   "visible": true
+  },
+  {
+   "note": "Sami Yusuf starts Arabic mawwal intro",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 288,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 292,
+   "visible": true
+  },
+  {
+   "note": "solo female singer singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 296,
+   "visible": true
+  },
+  {
+   "note": "solo female singer singing Arabic mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 300,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 304,
+   "visible": true
+  },
+  {
+   "note": "split screen, female soloist and Sami Yusuf singing duet",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 308,
+   "visible": true
+  },
+  {
+   "note": "split screen, female soloist and Sami Yusuf singing duet",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 312,
+   "visible": true
+  },
+  {
+   "note": "female soloist singing with traditional ensemble accompaniment",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "balaban",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 316,
+   "visible": true
+  },
+  {
+   "note": "female soloist singing, balaban and strings playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "balaban",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 320,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 324,
+   "visible": true
+  },
+  {
+   "note": "stage shot, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 328,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 332,
+   "visible": true
+  },
+  {
+   "note": "stage shot, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 336,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 340,
+   "visible": true
+  },
+  {
+   "note": "female singer vocalise",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 344,
+   "visible": true
+  },
+  {
+   "note": "wide arena shot, dome projection",
+   "players": [],
+   "time_s": 348,
+   "visible": false
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 352,
+   "visible": true
+  },
+  {
+   "note": "female choir and Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 356,
+   "visible": true
+  },
+  {
+   "note": "solo female singer",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 360,
+   "visible": true
+  },
+  {
+   "note": "stage shot, Sami Yusuf singing Persian section",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 364,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 368,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 372,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 376,
+   "visible": true
+  },
+  {
+   "note": "medium shot, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 380,
+   "visible": true
+  },
+  {
+   "note": "male choir singing, ney held idle",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "ney",
+     "playing": false,
+     "who": ""
+    }
+   ],
+   "time_s": 384,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 388,
+   "visible": true
+  },
+  {
+   "note": "close-up of tanbur player",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 392,
+   "visible": true
+  },
+  {
+   "note": "close-up of male choir singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 396,
+   "visible": true
+  },
+  {
+   "note": "stage shot, rhythm and string ensemble",
+   "players": [
+    {
+     "confidence": 0.9,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 400,
+   "visible": true
+  },
+  {
+   "note": "overhead dome shot",
+   "players": [],
+   "time_s": 404,
+   "visible": false
+  },
+  {
+   "note": "female singer vocalise",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 408,
+   "visible": true
+  },
+  {
+   "note": "female singer vocalise",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 412,
+   "visible": true
+  },
+  {
+   "note": "wide arena shot",
+   "players": [],
+   "time_s": 416,
+   "visible": false
+  },
+  {
+   "note": "female singer vocalise",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 420,
+   "visible": true
+  },
+  {
+   "note": "choir vocalise, sitar and tabla playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 424,
+   "visible": true
+  },
+  {
+   "note": "choir vocalise, sitar and tabla playing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 428,
+   "visible": true
+  },
+  {
+   "note": "solo male choir singer, mawwal",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 432,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing Persian section",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 436,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 440,
+   "visible": true
+  },
+  {
+   "note": "stage shot, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 444,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 448,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 452,
+   "visible": true
+  },
+  {
+   "note": "stage shot, Sami Yusuf singing with ensemble",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 456,
+   "visible": true
+  },
+  {
+   "note": "stage shot, Sami Yusuf singing with ensemble",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 460,
+   "visible": true
+  },
+  {
+   "note": "wide arena shot",
+   "players": [],
+   "time_s": 464,
+   "visible": false
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 468,
+   "visible": true
+  },
+  {
+   "note": "overhead dome shot",
+   "players": [],
+   "time_s": 472,
+   "visible": false
+  },
+  {
+   "note": "wide arena shot, choir singing",
+   "players": [],
+   "time_s": 476,
+   "visible": false
+  },
+  {
+   "note": "ensemble and choir singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 480,
+   "visible": true
+  },
+  {
+   "note": "dome projection of whirling dervish",
+   "players": [],
+   "time_s": 484,
+   "visible": false
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 488,
+   "visible": true
+  },
+  {
+   "note": "wide arena shot",
+   "players": [],
+   "time_s": 492,
+   "visible": false
+  },
+  {
+   "note": "wide arena shot",
+   "players": [],
+   "time_s": 496,
+   "visible": false
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 500,
+   "visible": true
+  },
+  {
+   "note": "stage shot, Sami Yusuf singing with rhythm section",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 504,
+   "visible": true
+  },
+  {
+   "note": "dome projection of whirling dervish",
+   "players": [],
+   "time_s": 508,
+   "visible": false
+  },
+  {
+   "note": "stage shot, choir chorus and ensemble",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 512,
+   "visible": true
+  },
+  {
+   "note": "stage shot, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 516,
+   "visible": true
+  },
+  {
+   "note": "solo female singer",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 520,
+   "visible": true
+  },
+  {
+   "note": "percussionist playing tubular chimes",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "orchestral-percussion",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 524,
+   "visible": true
+  },
+  {
+   "note": "daf, bendir, and choir",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 528,
+   "visible": true
+  },
+  {
+   "note": "wide arena shot",
+   "players": [],
+   "time_s": 532,
+   "visible": false
+  },
+  {
+   "note": "stage left, Sami Yusuf, female choir, tabla, erhu",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tabla",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 536,
+   "visible": true
+  },
+  {
+   "note": "stage right, male choir, sitar, baglama, oud, percussion",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "baglama",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "oud",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "bendir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "daf",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 540,
+   "visible": true
+  },
+  {
+   "note": "female choir, erhu player bowing, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 544,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 548,
+   "visible": true
+  },
+  {
+   "note": "traditional ensemble section, kamancheh, balaban, tanbur, qanun",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "kamancheh",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "tanbur",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "balaban",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "qanun",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 552,
+   "visible": true
+  },
+  {
+   "note": "female choir singing, erhu player bowing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "erhu",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 556,
+   "visible": true
+  },
+  {
+   "note": "singer close-up, Sami Yusuf singing",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 560,
+   "visible": true
+  },
+  {
+   "note": "stage shot, Sami Yusuf and choir concluding song",
+   "players": [
+    {
+     "confidence": 0.95,
+     "instrument": "voice",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.95,
+     "instrument": "choir",
+     "playing": true,
+     "who": ""
+    },
+    {
+     "confidence": 0.9,
+     "instrument": "sitar",
+     "playing": true,
+     "who": ""
+    }
+   ],
+   "time_s": 564,
+   "visible": true
+  },
+  {
+   "note": "overhead dome shot, finale",
+   "players": [],
+   "time_s": 568,
+   "visible": false
+  },
+  {
+   "note": "overhead dome shot, audience applause",
+   "players": [],
+   "time_s": 572,
+   "visible": false
+  },
+  {
+   "note": "overhead dome shot, lights fading",
+   "players": [],
+   "time_s": 576,
+   "visible": false
+  },
+  {
+   "note": "overhead dome shot, end of video",
+   "players": [],
+   "time_s": 580,
+   "visible": false
+  }
+ ]
+}
