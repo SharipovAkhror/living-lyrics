@@ -68,6 +68,9 @@
 .ist-art {
   position: absolute;
   color: var(--ist-ink);
+  /* Brightness only. A zero-blur drop-shadow would stamp a second copy of the line, so the
+     halo is written as an inline filter when it is actually on (applyPlate). */
+  filter: brightness(var(--life, 1));
 }
 .ist-art svg {
   display: block;
@@ -97,8 +100,13 @@
 .ist-t-s .ist-art svg {
   filter: drop-shadow(0 0 0.35px currentColor);
 }
-/* Pose is the plate's variables (--str-x, --skin, --sway, …), written each frame from (drive, time).
-   No infinite animation: a seek to the same second is the same picture. */
+/* Pose is the plate's variables (--str-x, --skin, --sway, --life, --hit, …), written each frame
+   from (drive, time). No infinite animation: a seek to the same second is the same picture.
+   Life is a brightness filter. The halo and the hit flash are drop-shadows in the song colour.
+   The hit also scales the drawing, at most to 1.04. Only transform, opacity and filter move. */
+.scene .ist-art {
+  will-change: transform, filter;
+}
 .ist-art .str {
   transform: translate(var(--str-x, 0), var(--str-y, 0));
 }
@@ -126,7 +134,7 @@
 /* The 3D plate already leans in the model. Rotating its box would also move the scissor. */
 .ist-art:not(.is-3d) {
   transform-origin: 50% 62%;
-  transform: rotate(var(--sway, 0deg));
+  transform: rotate(var(--sway, 0deg)) scale(var(--hit, 1));
 }
 
 /* Caption */
@@ -234,6 +242,8 @@
     --jingle: 0px;
     --bow: 0px;
     --sway: 0deg;
+    --hit: 1;
+    --flash: 0;
   }
 }
 

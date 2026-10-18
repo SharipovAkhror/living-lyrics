@@ -2,10 +2,13 @@
  * Who is on the instrument stage at a playback time. Pure: the same inputs are the same cast,
  * so a seek paints the same plates. No DOM.
  *
- * Order of the plates is prominence: `instruments` first, then keys that exist only in
- * `entries`. The roster is capped (3 under 1000 CSS px, 4 on a wide box) and reserved for
- * the whole section, so a new entrance fades in its own place and a seek paints the same
- * frame. Presence is 0 before the entrance and after the exit; the slot stays.
+ * The roster is prominence order, capped by the box (four on a phone and a wide box, three
+ * on a medium one). Every place is filled from the moment the roster begins, not when the
+ * player enters. The roster changes only at a section boundary, and not when the previous
+ * change was under eight seconds ago: a short section keeps the plates already standing.
+ * An instrument shared with the previous roster keeps its place in the order and does not enter again.
+ * A hole is closed, so a plate to the right of an empty slot can shift left.
+ * `playAt` is the musical entrance. Before it the plate is only dim; that lives in `plateLife`.
  * A short wide page uses the same roster. Its chrome lives in CSS.
  * `ensemble` is kept only when fewer than two other instruments are in the roster.
  * It never sits between named instruments and never takes one of their places.
@@ -27,11 +30,13 @@ export interface CastMember {
   key: string;
   /** Index into `instruments` for the performer line. −1 when the key exists only in `entries`. */
   source: number;
-  /** Entrance, seconds. Passed to `driveAt` as the draw-in start. */
+  /** When this plate joined the standing roster. The cascade starts here, not at the musical entrance. */
   at: number;
+  /** Musical entrance (`entries`). Before this the plate stands dim and still. */
+  playAt: number;
   /** When the plate has left. */
   until: number;
-  /** 0…1 plate presence at the queried time, including the handoff. */
+  /** 0…1 plate presence at the queried time. The cascade, not the musical entrance. */
   presence: number;
   /**
    * `hero` is laid out in its own place. `echo` would fade inside the hero's rectangle;
@@ -111,10 +116,14 @@ export function scheduleOf(section: CastSection): Span[] {
   }));
 }
 
-function timings(motion: MotionPref) {
-  if (motion === 'off') return { enter: 0.04, lead: 0, exit: 0.04 };
-  if (motion === 'calm') return { enter: 0.5, lead: 0.1, exit: 0.4 };
-  return { enter: 0.74, lead: 0.16, exit: 0.5 };
+/** A roster is not replaced again until this many seconds after the last replacement. */
+export const CAST_HOLD_S = 8;
+
+function plateMotion(motion: MotionPref) {
+  // The last of four plates finishes its fade near one second (0.1×3 + 0.7).
+  if (motion === 'off') return { enter: 0.05, stagger: 0 };
+  if (motion === 'calm') return { enter: 0.7, stagger: 0.08 };
+  return { enter: 0.7, stagger: 0.1 };
 }
 
 /**
@@ -129,7 +138,7 @@ export function stageRoster<T extends { key: string }>(spans: T[]): T[] {
 }
 
 /**
- * Plates to mount at `t`. `boxWidth` is the stage box in CSS px. The roster does not change with `t`.
+ * Plates in prominence order. `boxWidth` does not change who is inside one section.
  */
 function byProminence(spans: Span[]) {
   return [...spans].sort((a, b) => {
@@ -139,17 +148,111 @@ function byProminence(spans: Span[]) {
   });
 }
 
-export function castAt(section: CastSection, t: number, boxWidth: number, motion: MotionPref = 'full'): CastMember[] {
-  const spans = stageRoster(byProminence(scheduleOf(section)));
-  if (!spans.length) return [];
-  const { enter, lead, exit } = timings(motion);
-  const fadeIn = (at: number) => smooth((t - (at - lead)) / enter);
-  const fadeOut = (until: number) => smooth((until + exit * 0.15 - t) / exit);
-  return spans.slice(0, prominenceLimit(boxWidth)).map((s) => ({
-    ...s,
-    presence: Math.min(fadeIn(s.at), fadeOut(s.until)),
-    place: 'hero' as const,
-  }));
+function uniqueKeys(keys: string[]) {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const key of keys) {
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(key);
+  }
+  return out;
+}
+
+/** The plates this section would stand on its own, most prominent first. */
+export function desiredKeys(section: CastSection, limit: number): string[] {
+  return uniqueKeys(stageRoster(byProminence(scheduleOf(section))).map((s) => s.key)).slice(0, Math.max(0, limit));
+}
+
+/** Musical entrance. A key with no `entries` row stands from the section start: the time is not invented later. */
+export function playTime(section: CastSection, key: string): number {
+  const entry = section.entries?.find((e) => e.key === key);
+  if (entry) return entry.at;
+  return section.start;
+}
+
+interface Standing {
+  keys: string[];
+  joined: Map<string, number>;
+  playAt: Map<string, number>;
+  changedAt: number;
+}
+
+/**
+ * Walk the sections in order. A different roster is taken only when the previous change
+ * was at least {@link CAST_HOLD_S} seconds earlier. A key shared with the roster already
+ * standing keeps its slot and is not entered again. A newcomer fills the first free slot.
+ * An empty slot is then closed, so a plate that stood to the right of a hole can shift left:
+ * the row has no spacers. A key that leaves is forgotten, so a later return is a new entrance.
+ */
+export function standingKeys(sections: CastSection[], limit: number): Standing {
+  let keys: string[] = [];
+  const joined = new Map<string, number>();
+  const playAt = new Map<string, number>();
+  let changedAt = Number.NEGATIVE_INFINITY;
+  for (const section of sections) {
+    const next = desiredKeys(section, limit);
+    const same = keys.length === next.length && keys.every((key, i) => key === next[i]);
+    if (keys.length && (same || section.start - changedAt < CAST_HOLD_S)) continue;
+    const slots: (string | null)[] = keys.map((key) => (next.includes(key) ? key : null));
+    for (const key of next) {
+      if (keys.includes(key)) continue;
+      const hole = slots.indexOf(null);
+      if (hole >= 0) slots[hole] = key;
+      else if (slots.length < limit) slots.push(key);
+    }
+    keys = slots.filter((key): key is string => key != null).slice(0, limit);
+    changedAt = section.start;
+    for (const key of joined.keys()) {
+      if (!keys.includes(key)) {
+        joined.delete(key);
+        playAt.delete(key);
+      }
+    }
+    for (const key of keys) {
+      if (joined.has(key)) continue;
+      joined.set(key, section.start);
+      playAt.set(key, playTime(section, key));
+    }
+  }
+  return { keys, joined, playAt, changedAt };
+}
+
+/**
+ * Plates to mount at `t`. `boxWidth` is the stage box in CSS px.
+ * `earlier` is every instrumental section that starts before this one, in time order.
+ * The roster does not change with `t`.
+ */
+export function castAt(
+  section: CastSection,
+  t: number,
+  boxWidth: number,
+  motion: MotionPref = 'full',
+  earlier: CastSection[] = [],
+): CastMember[] {
+  const limit = prominenceLimit(boxWidth);
+  const standing = standingKeys([...earlier, section], limit);
+  if (!standing.keys.length) return [];
+  const { enter, stagger } = plateMotion(motion);
+  const listed = section.instruments;
+  return standing.keys.map((key, slot) => {
+    const joined = standing.joined.get(key) ?? section.start;
+    const playAt = standing.playAt.get(key) ?? section.start;
+    const source = listed.indexOf(key);
+    // Past the end of this section the block is no longer the current one. Inside it, a plate
+    // only fades in (the cascade). It does not fade out while its neighbours are still playing.
+    const presence = t >= section.end ? 0 : smooth((t - joined - slot * stagger) / enter);
+    return {
+      key,
+      source,
+      at: joined,
+      playAt,
+      until: section.end,
+      presence,
+      place: 'hero' as const,
+      calm: isVoiceKey(key),
+    };
+  });
 }
 
 export function castSignature(members: CastMember[]) {

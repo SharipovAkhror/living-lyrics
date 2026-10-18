@@ -3,7 +3,7 @@
  * second writes the same variables. The 3D pose (pose.ts) uses the same phase, so the first
  * string, the skin and the jingles agree across the two looks.
  */
-import type { InstrumentDrive } from '@/instruments/animation';
+import { HIT_SCALE, type InstrumentDrive } from '@/instruments/animation';
 import { jingleShift, skinWeight, sway } from './pose';
 
 const RAD = 180 / Math.PI;
@@ -37,5 +37,10 @@ export function svgMotionVars(drive: InstrumentDrive, time: number): Record<stri
     '--jingle': `${jingle.toFixed(3)}px`,
     '--bow': `${bow.toFixed(2)}px`,
     '--sway': `${(sway(drive).z * RAD).toFixed(3)}deg`,
+    '--life': (drive.life ?? 1).toFixed(3),
+    '--halo': (drive.halo ?? 0).toFixed(3),
+    '--flash': (drive.hit ?? 0).toFixed(3),
+    // 1…1.04. Reduced motion leaves `hit` at 0, so the scale stays 1.
+    '--hit': (1 + HIT_SCALE * (drive.hit ?? 0)).toFixed(4),
   };
 }

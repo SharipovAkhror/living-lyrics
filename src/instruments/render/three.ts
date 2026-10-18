@@ -24,7 +24,7 @@ import type { InstrumentDrive, InstrumentRenderer } from '@/instruments/animatio
  * "realistic", and the song stage always asks for materials. The hatch stays callable.
  */
 export type VolumeLook = 'engraving' | 'materials';
-import { jingleShift, skinWeight, stringWeight, sway } from './pose';
+import { hitScale, jingleShift, skinWeight, stringWeight, sway } from './pose';
 
 import './stage3d.css';
 
@@ -189,6 +189,8 @@ interface ViewModel {
   yaw: number;
   pitch: number;
   presence: number;
+  /** Root scale before the hit impulse. Captured once so the impulse does not accumulate. */
+  restScale: { x: number; y: number; z: number } | null;
 }
 
 type PassMode = 'hatch' | 'line' | number;
@@ -502,10 +504,14 @@ function applyPose(THREE: THREE, model: ViewModel, drive: InstrumentDrive, time:
   model.root.rotation.y = THREE.MathUtils.degToRad(model.turn) + model.yaw;
   model.root.rotation.x = model.pitch + lean.x;
   model.root.rotation.z = -THREE.MathUtils.degToRad(model.rotate) + lean.z;
+  if (!model.restScale) model.restScale = { x: model.root.scale.x || 1, y: model.root.scale.y || 1, z: model.root.scale.z || 1 };
+  const hit = hitScale(drive);
+  model.root.scale.set(model.restScale.x * hit, model.restScale.y * hit, model.restScale.z * hit);
+  const shade = drive.life ?? 1;
   model.uniforms.uDraw.value = drive.draw;
   model.uniforms.uHatch.value = drive.hatch;
-  model.uniforms.uOpacity.value = model.presence;
-  for (const mat of model.pbr) mat.opacity = model.presence * drive.draw;
+  model.uniforms.uOpacity.value = model.presence * shade;
+  for (const mat of model.pbr) mat.opacity = model.presence * shade * drive.draw;
 }
 
 function readInk(THREE: THREE, el: HTMLElement) {
@@ -798,6 +804,7 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
       yaw: 0,
       pitch: 0,
       presence: 1,
+      restScale: null,
     };
     applyStyle(root, style);
     return model;

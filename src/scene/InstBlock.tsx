@@ -38,15 +38,16 @@ function frameFor(members: CastMember[], features: AudioFeatures | null, t: numb
   const echoes = members.filter((m) => m.place === 'echo');
   return {
     time: t,
-    drives: heroes.map((m) => stageDrive(features, m.key, m.at, m.calm, t, motion)),
+    drives: heroes.map((m) => stageDrive(features, m.key, m.playAt, m.calm, t, motion)),
     plates: heroes.map((m) => m.presence),
-    echoes: echoes.map((m) => ({ drive: stageDrive(features, m.key, m.at, m.calm, t, motion), presence: m.presence })),
+    echoes: echoes.map((m) => ({ drive: stageDrive(features, m.key, m.playAt, m.calm, t, motion), presence: m.presence })),
   };
 }
 
 /**
  * An instrumental passage in the flow. Ahead of time it is a compact line ("Дальше — уд, канун"),
- * on stage it opens into the engravings, one arrival at a time, with who plays and when the voice returns.
+ * on stage the section's three or four engravings are already standing. The one that is playing
+ * brightens and moves; the others stay dim until their entrance. Who plays, and when the voice returns, stays under the drawings.
  * A passage that is only voice or choir keeps that engraving and does not invent an orchestra.
  */
 function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features, register, onPick }: Props) {
@@ -83,7 +84,9 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
     h: Math.max(64, Math.min(fullH - textH, room > 0 ? room : fullH)),
   };
   const compactH = useRef(56);
-  const [cast, setCast] = useState<CastMember[]>(() => castAt(section, section.start, stageSize.w, motion));
+  // Sections that already stood. Shared plates keep their slot and skip the cascade.
+  const earlier = timeline.cues.flatMap((c) => (c.kind === 'inst' && c.start < cue.start ? [c.section] : []));
+  const [cast, setCast] = useState<CastMember[]>(() => castAt(section, section.start, stageSize.w, motion, earlier));
   const heroes = cast.filter((m) => m.place === 'hero');
   const echoes = cast.filter((m) => m.place === 'echo');
 
@@ -117,7 +120,7 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
       full.current.style.opacity = clamp01(p * 1.6 - 0.4).toFixed(3);
       full.current.style.transform = `scale(${(0.94 + 0.06 * p).toFixed(4)})`;
     }
-    const members = castAt(section, t, stageSize.w, motion);
+    const members = castAt(section, t, stageSize.w, motion, earlier);
     const sig = castSignature(members);
     const frame = frameFor(members, features, t, motion);
     frameRef.current = frame;

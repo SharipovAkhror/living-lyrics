@@ -6,7 +6,8 @@
  * with a caption under it (or beside it in `stack`). The engine picks a mode from the count and the box,
  * never lets a drawing fall below a readable size. What does not fit is left out: there is no «+N» chip.
  * Automatic layout is prominence on every screen, including the short wide car page.
- * That page's chrome (lyric, comment, player) is CSS, not a second instrument layout.
+ * A phone (narrow box) keeps three in one row, or four in two rows of two. The car page's
+ * chrome (lyric, comment, player) is CSS, not a second instrument layout.
  * Rules in prose: docs/methodology/09-instruments.md.
  */
 
@@ -121,10 +122,12 @@ export function labelHeight(tier: LabelTier, lines: number) {
 
 /** Default readable minimum for a box. */
 export function readableMin(box: Size) {
-  // The phone keeps a stricter floor so a companion that would be a smudge drops out.
+  // The phone shows three or four, so the floor is a recognisable medallion, not a reason to drop to one.
   // A wider stage can hold the smaller steps (about 0.65 of the lead) in a low row.
-  const floor = box.w < 560 ? 84 : 56;
-  return Math.round(Math.min(150, Math.max(floor, Math.min(box.w, box.h) * 0.2)));
+  const phone = box.w < 560;
+  const floor = phone ? 44 : 56;
+  const share = phone ? 0.11 : 0.2;
+  return Math.round(Math.min(150, Math.max(floor, Math.min(box.w, box.h) * share)));
 }
 
 /* ---------- Plate fitting ---------- */
@@ -496,10 +499,11 @@ function grid(c: Ctx, idx: number[], more: number): Built {
 export const PROMINENCE_SCALE = [1, 0.8, 0.7, 0.65];
 
 /**
- * How many plates a box may hold. Under 1000 CSS px (phone and medium) the cap is 3;
- * a wide box holds 4. The phone then drops to the lead alone when the others are not readable.
+ * How many plates a box may hold. A phone (under 560 CSS px) holds four: three in a row,
+ * or two rows of two. Under 1000 the car and other medium boxes hold three. A wide box holds four.
  */
 export function prominenceLimit(width: number) {
+  if (width < 560) return 4;
   return width < 1000 ? 3 : 4;
 }
 
@@ -523,14 +527,60 @@ function prominencePlate(aspect: number, lines: number, maxSide: number, tier: L
   };
 }
 
-/** Plates in a row, art bottoms on one line, even gaps, scale by rank. */
+/**
+ * Four plates on a phone: two rows of two. Each row shares an art baseline.
+ * Rank still sets the drawing size, and the lead stays the first plate.
+ */
+function phoneQuad(c: Ctx, idx: number[]): Built | null {
+  if (idx.length !== 4) return null;
+  const scales = idx.map((_, i) => PROMINENCE_SCALE[Math.min(i, PROMINENCE_SCALE.length - 1)]);
+  const tierFor = (side: number): LabelTier => (side >= TIER_MIN.l ? 'l' : side >= TIER_MIN.m ? 'm' : 's');
+  const rowOf = (plates: Plate[], a: number, b: number) => {
+    const pa = plates[a];
+    const pb = plates[b];
+    const yRelA = -(pa.art.y + pa.art.h);
+    const yRelB = -(pb.art.y + pb.art.h);
+    const top = Math.min(yRelA, yRelB);
+    const bottom = Math.max(yRelA + pa.h, yRelB + pb.h);
+    return { yRel: [yRelA, yRelB] as const, top, height: bottom - top, width: pa.w + c.gap + pb.w };
+  };
+  const placed = (lead: number) => {
+    const tier = tierFor(lead);
+    const plates = idx.map((i, j) => prominencePlate(c.aspects[i], c.lines, Math.max(1, lead * scales[j]), tier, true));
+    const r0 = rowOf(plates, 0, 1);
+    const r1 = rowOf(plates, 2, 3);
+    const width = Math.max(r0.width, r1.width);
+    const height = r0.height + c.gap + r1.height;
+    return { plates, r0, r1, width, height, ok: width <= c.box.w + 0.01 && height <= c.box.h + 0.01 };
+  };
+  if (!placed(8).ok) return null;
+  const lead = search(8, c.maxArt, (v) => placed(v).ok);
+  const g = placed(lead);
+  if (!g.ok) return null;
+  const oy = (c.box.h - g.height) / 2;
+  const placeRow = (row: ReturnType<typeof rowOf>, which: [number, number], y: number, slots: Slot[]) => {
+    let x = (c.box.w - row.width) / 2;
+    which.forEach((j, k) => {
+      const p = g.plates[j];
+      slots.push(instrumentSlot(idx[j], j === 0 ? 'main' : 'side', x, y + row.yRel[k] - row.top, p, 4 - j));
+      x += p.w + c.gap;
+    });
+  };
+  const slots: Slot[] = [];
+  placeRow(g.r0, [0, 1], oy, slots);
+  placeRow(g.r1, [2, 3], oy + g.r0.height + c.gap, slots);
+  return { slots, visibility: 1 };
+}
+
+/** Plates in a row, art bottoms on one line, even gaps, scale by rank. Four on a phone stack into two rows. */
 function prominence(c: Ctx, idx: number[]): Built | null {
+  if (idx.length === 4 && c.box.w < 560) return phoneQuad(c, idx);
   const n = idx.length;
   if (!n) return null;
   const scales = idx.map((_, i) => PROMINENCE_SCALE[Math.min(i, PROMINENCE_SCALE.length - 1)]);
   const tierFor = (side: number): LabelTier => (side >= TIER_MIN.l ? 'l' : side >= TIER_MIN.m ? 'm' : 's');
-  // A low wide row (the stage above the player on a short window) spends its height on the drawing.
-  const compact = c.box.w >= 560 && c.box.h < 200;
+  // A low wide row spends its height on the drawing. A phone row does the same so three still fit.
+  const compact = c.box.w < 560 || (c.box.w >= 560 && c.box.h < 200);
   const placed = (lead: number) => {
     const tier = tierFor(lead);
     const plates = idx.map((i, j) => prominencePlate(c.aspects[i], c.lines, Math.max(1, lead * scales[j]), tier, compact));
