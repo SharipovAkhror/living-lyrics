@@ -36,6 +36,11 @@ def main(argv: list[str] | None = None) -> None:
     watch.add_argument("--backend", default="agy", choices=("agy", "gemini-api"))
     fuse = sub.add_parser("fuse")
     fuse.add_argument("slug")
+    entries = sub.add_parser("entries")
+    entries.add_argument("slug", nargs="?")
+    entries.add_argument("--write", action="store_true")
+    entries.add_argument("--all", action="store_true")
+    entries.add_argument("--selftest", action="store_true")
     sub.add_parser("openset")
     sub.add_parser("anchors")
     sub.add_parser("stems")
@@ -88,6 +93,9 @@ def main(argv: list[str] | None = None) -> None:
     elif args.cmd == "fuse":
         from fuse import write_fusion
         write_fusion(args.slug)
+    elif args.cmd == "entries":
+        from entries import main as entries_main
+        entries_main(args)
     elif args.cmd == "openset":
         from openset import evaluate
         evaluate()
@@ -105,7 +113,9 @@ def main(argv: list[str] | None = None) -> None:
         write_report()
     elif args.cmd == "selftest":
         from selftest import main as selftest_main
+        from entries import selftest as entries_selftest
         selftest_main()
+        entries_selftest()
     elif args.cmd == "vision-selftest":
         from watch import vision_selftest
         from report import write_report
