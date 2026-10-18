@@ -993,6 +993,7 @@
         "choir",
         "erhu"
       ],
+      "note": "Хор с начала секции. Эрху вступает через десять секунд.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -1556,6 +1557,7 @@
         "voice",
         "violin"
       ],
+      "note": "Голос, и через две секунды скрипка.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -1617,6 +1619,7 @@
         "qanun",
         "ney"
       ],
+      "note": "Голос четыре секунды один, потом канун и най в одну и ту же секунду.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -1648,6 +1651,7 @@
         "ney",
         "qanun"
       ],
+      "note": "Голос; най и канун входят вместе только с шестой секунды.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -1680,6 +1684,7 @@
         "qanun",
         "violin"
       ],
+      "note": "Най и канун почти сразу за голосом. Скрипка — в последние секунды секции.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -1714,6 +1719,7 @@
         "voice",
         "violin"
       ],
+      "note": "Голос и скрипка: она на секунду позже.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -2314,6 +2320,7 @@
         "riq",
         "oud"
       ],
+      "note": "За голосом по очереди дарбука, канун, най, скрипка, баглама, рик и уд.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -2395,6 +2402,7 @@
         "voice",
         "qanun"
       ],
+      "note": "Почти вся секция — один голос. Канун только в последние три секунды.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -2442,6 +2450,7 @@
         "voice",
         "qanun"
       ],
+      "note": "Голос, и через секунду канун.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -2496,6 +2505,7 @@
         "qanun",
         "violin"
       ],
+      "note": "Голос, через пять секунд най и канун, ещё через четыре — скрипка.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -2558,6 +2568,7 @@
         "riq",
         "violin"
       ],
+      "note": "Хор, с первых секунд дарбука и рик. Скрипка входит много позже, уже к концу.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -2621,6 +2632,7 @@
         "guitar-classical",
         "violin"
       ],
+      "note": "Голос и почти сразу эрху. Дарбука позже; классическая гитара и скрипка — в последние две секунды.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
