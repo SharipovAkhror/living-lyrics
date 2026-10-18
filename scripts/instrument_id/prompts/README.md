@@ -5,7 +5,7 @@ Gemini 3.8 Flash работает через Antigravity CLI владельца 
 ## Концерт целиком: `watch-video.md`
 
 1. Видео: `work/<slug>/video.mp4`, 360p со звуком, в git не попадает. Источник — официальное видео той же записи, что и аудио: тогда время видео совпадает со временем файла. Скачать на машине владельца:
-   `python -m yt_dlp --js-runtimes node --extractor-args "youtube:player_client=tv,web_embedded" -f 18 -o work/<slug>/video.mp4 <url>`.
+   `python -m yt_dlp --no-update --no-playlist --js-runtimes node --extractor-args "youtube:player_client=tv,web_embedded" -f 18 -o work/<slug>/video.mp4 <url>`.
    Если YouTube просит войти — не обходить: владелец присылает файл своим ботом.
 2. Запуск из корня репозитория (подставить путь вместо `{{VIDEO}}`):
    `agy -p "<текст watch-video.md>" --model gemini-3.8-flash-high --output-format json --json-schema scripts/instrument_id/schema/vision.json --print-timeout 2350s`.
