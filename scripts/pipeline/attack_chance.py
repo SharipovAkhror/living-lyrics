@@ -29,10 +29,12 @@ and a strong attack sits on that clock but not on MMS. The cutoffs start at
 
 A line is proved when its start is within 0.30 s of the cue, no word is
 refuted, and at least K of its words are proved (at least two). K is the
-smallest share whose line chance is at or under 5 %. The line chance shifts
-every MMS start inside the line by the same ±0.15, ±0.25 or ±0.4 s, and
-rotates starts inside the line. The cue is not retested on the shifted start.
-Witness clocks stay put. One-word lines are left out of that rate.
+smallest share whose line chance is at or under 5 % for every aligner that
+placed a line. The line chance shifts that placer's starts inside the line by
+the same ±0.15, ±0.25 or ±0.4 s, and rotates them. The cue is not retested on
+the shifted start. Witness clocks stay put. One-word lines are left out of
+that rate. A placer still over 5 % at K = 1 is excluded from proof; the others
+may still pass.
 
 Exit 2 when a song has no stem or no align report, when a required slice stays
 over 15 %, or when no K keeps the line chance at or under 5 %. qa must not run
@@ -46,6 +48,7 @@ import sys
 
 import numpy as np
 
+import placement as P
 import qa_sync as Q
 from common import ROOT, load_audio, vocal_stem, work_dir
 
@@ -341,11 +344,15 @@ def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = No
         if not words:
             continue
         end = max(w['ctc_e'] if w['ctc_e'] is not None else w['t'] for w in words)
+        placed_by = line.get('placed_by')
+        if not placed_by and good:
+            placed_by = 'mms'
         lines.append({
             'id': line['id'],
             'lang': line.get('lang') or '?',
             'group': line.get('group') or 'solo',
             'placed': good,
+            'placed_by': placed_by,
             'cue_start': None if line.get('cue_start') is None else float(line['cue_start']),
             'ctc_start': None if line.get('ctc_start') is None else float(line['ctc_start']),
             'span': (min(w['t'] for w in words) - 0.05, end + 0.05),
@@ -519,10 +526,14 @@ def render_md(payload: dict) -> str:
         'Предложенные пороги 0,20 с и 0,30 с. Они ужесточаются, только если эта пара опровергает больше 15 % поставленных слов.',
         '',
         'Строка-кандидат — поставленная строка соло или хора, у которой есть реплика и не меньше двух слов. '
-        'Случайный проход строки сдвигает все начала MMS внутри строки на одно и то же ±0,15, ±0,25 или ±0,40 с '
-        'и отдельно перемешивает их. Реплика при сдвиге заново не проверяется: она уже выполнена у поставленной строки. '
+        'Случайный проход строки считается отдельно для каждого постановщика: сдвигаются его начала, '
+        'на одно и то же ±0,15, ±0,25 или ±0,40 с, и отдельно перемешиваются. '
+        'Свидетели — остальные выравниватели, не он сам, и при сдвиге остаются на месте. '
+        'Реплика при сдвиге заново не проверяется: она уже выполнена у поставленной строки. '
         'Строка проходит пробу, если ни одно слово не опровергнуто и доказано не меньше доли K (не меньше двух слов). '
-        'Предел строки 5 %. Берётся наименьшее K, которое в него укладывается: у него больше всего доказанных строк.',
+        'Предел строки 5 % у каждого постановщика, у которого есть строки. '
+        'Берётся наименьшее K, которое удерживает всех таких постановщиков: у него больше всего доказанных строк. '
+        'Постановщик, который и при K = 1,00 выше 5 %, из доказательства исключается. Остальные при этом могут пройти.',
         '',
         _why_ru(chosen, payload.get('current_chance')),
         '',
@@ -591,6 +602,23 @@ def render_md(payload: dict) -> str:
         cells = ' | '.join(str((row.get('by_song') or {}).get(song, 0)) for song in songs)
         mark = ' ←' if chosen.get('line_share') is not None and abs(float(row['k']) - float(chosen['line_share'])) < 1e-9 else ''
         lines.append(f"| {_ru(row['k'], 2)}{mark} | {_ru(row.get('chance'), 3)} | {cells} | {row.get('proved', 0)} |")
+    lines += [
+        '',
+        '## Постановщики',
+        '',
+        'Проход строки — отдельно у того, кто поставил строку. Окна MMS и стем htdemucs_ft — один постановщик, `mms`. '
+        'Исключённый постановщик в доказанные строки не входит: его проход на K = 1,00 всё ещё выше 5 %.',
+        '',
+        '| постановщик | кандидатов | доказано | проход | исключён |',
+        '|---|---:|---:|---:|---|',
+    ]
+    for row in chosen.get('primaries') or []:
+        lines.append(
+            f"| {row.get('name')} | {row.get('candidates', 0)} | {row.get('proved', 0)} | "
+            f"{_ru(row.get('chance'), 3)} | {'да' if row.get('blocked') else 'нет'} |"
+        )
+    if not chosen.get('primaries'):
+        lines.append('| — | 0 | 0 | — | — |')
     lines += [
         '',
         '## Плотность атак',
@@ -887,7 +915,7 @@ def _probe_line(words: list[dict], peaks: np.ndarray, group: str | None, mode: s
 
 
 def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: dict, share: float,
-                    shift: float = 0.0, shuffle: bool = False) -> tuple[int, int]:
+                    shift: float = 0.0, shuffle: bool = False, primary: str | None = None) -> tuple[int, int]:
     """Candidate lines that still pass after one shared shift, or after a rotation.
 
     The cue belongs to the real line and is not applied to the shifted first word.
@@ -904,6 +932,8 @@ def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: d
     n = 0
     for i, line in enumerate(lines):
         if not _line_candidate(line):
+            continue
+        if primary is not None and P.primary_family(line.get('placed_by')) != primary:
             continue
         n += 1
         src = line['words']
@@ -924,7 +954,7 @@ def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: d
     return hits, n
 
 
-def measure_line_table(per_song: list[dict], modes: dict, refute: dict) -> list[dict]:
+def measure_line_table(per_song: list[dict], modes: dict, refute: dict, primary: str | None = None) -> list[dict]:
     cut = _refute_cut(float(refute.get('both_far', 0.20)), float(refute.get('only_far', 0.30)))
     rows = []
     for share in LINE_SHARES:
@@ -937,13 +967,13 @@ def measure_line_table(per_song: list[dict], modes: dict, refute: dict) -> list[
             lines = song['all_lines']
             for mag in SHIFTS:
                 for sign in (mag, -mag):
-                    h, n = line_pass_count(lines, peaks, modes, cut, share, shift=sign)
+                    h, n = line_pass_count(lines, peaks, modes, cut, share, shift=sign, primary=primary)
                     shift_hits[mag][0] += h
                     shift_hits[mag][1] += n
-            h, n = line_pass_count(lines, peaks, modes, cut, share, shuffle=True)
+            h, n = line_pass_count(lines, peaks, modes, cut, share, shuffle=True, primary=primary)
             shuf[0] += h
             shuf[1] += n
-            h, n = line_pass_count(lines, peaks, modes, cut, share)
+            h, n = line_pass_count(lines, peaks, modes, cut, share, primary=primary)
             true_hits[0] += h
             true_hits[1] += n
             by_song[song['slug']] = h
@@ -983,6 +1013,129 @@ def choose_k(rows: list[dict]) -> dict:
     out = dict(ranked[0])
     out['within_limit'] = False
     return out
+
+
+PRIMARY_FAMILIES = ('mms', 'stable-ts', 'second')
+
+
+def measure_primary_tables(per_song: list[dict], modes: dict, refute: dict) -> dict[str, list[dict]]:
+    """One K grid per placer. MMS windows and the ft stem are the MMS clock."""
+    return {name: measure_line_table(per_song, modes, refute, primary=name) for name in PRIMARY_FAMILIES}
+
+
+def _row_at(rows: list[dict], share: float) -> dict:
+    return next(row for row in rows if abs(float(row['k']) - float(share)) < 1e-9)
+
+
+def choose_with_primaries(tables: dict[str, list[dict]]) -> dict:
+    """Smallest K whose every used placer is at or under 5 %, preferring more proved lines.
+
+    A placer with no candidates is unused. A placer still over 5 % at K = 1 is
+    removed and the choice repeats. If none remain, the measurement fails closed.
+    """
+    active = {name: rows for name, rows in tables.items()}
+    blocked: list[str] = []
+    while active:
+        best = None
+        shares = [float(row['k']) for row in next(iter(active.values()))]
+        for share in shares:
+            per = []
+            proved = 0
+            candidates = 0
+            by_song: dict[str, int] = {}
+            chances = []
+            ok = True
+            used = 0
+            for name, rows in active.items():
+                row = _row_at(rows, share)
+                n = int(row.get('candidates') or 0)
+                chance = row.get('chance')
+                per.append({
+                    'name': name,
+                    'chance': chance,
+                    'proved': int(row.get('proved') or 0),
+                    'candidates': n,
+                    'blocked': False,
+                    'by_song': row.get('by_song') or {},
+                    'shifts': row.get('shifts') or {},
+                })
+                if n == 0:
+                    continue
+                used += 1
+                proved += int(row.get('proved') or 0)
+                candidates += n
+                for song, hits in (row.get('by_song') or {}).items():
+                    by_song[song] = by_song.get(song, 0) + int(hits)
+                if chance is None or float(chance) > LINE_LIMIT + 1e-12:
+                    ok = False
+                else:
+                    chances.append(float(chance))
+            if used == 0 or not ok:
+                continue
+            item = {
+                'k': share,
+                'chance': max(chances) if chances else None,
+                'proved': proved,
+                'candidates': candidates,
+                'by_song': by_song,
+                'primaries': per,
+                'within_limit': True,
+                'shifts': {},
+            }
+            if best is None or (proved, -share) > (int(best['proved']), -float(best['k'])):
+                best = item
+        if best is not None:
+            best['blocked_primaries'] = list(blocked)
+            best['primaries'] = list(best['primaries']) + _blocked_at(tables, blocked)
+            return best
+        worst_name = None
+        worst_chance = -1.0
+        for name, rows in active.items():
+            row = _row_at(rows, 1.0)
+            if int(row.get('candidates') or 0) == 0:
+                continue
+            chance = 1.0 if row.get('chance') is None else float(row['chance'])
+            if chance > worst_chance:
+                worst_chance = chance
+                worst_name = name
+        if worst_name is None or worst_chance <= LINE_LIMIT + 1e-12:
+            break
+        blocked.append(worst_name)
+        del active[worst_name]
+    return {
+        'k': None, 'chance': None, 'proved': 0, 'candidates': 0, 'by_song': {}, 'shifts': {},
+        'primaries': _blocked_at(tables, blocked), 'blocked_primaries': blocked, 'within_limit': False,
+    }
+
+
+def _blocked_at(tables: dict[str, list[dict]], blocked: list[str]) -> list[dict]:
+    """The K = 1 row of a placer that never got under 5 %. That chance is why it was excluded."""
+    out = []
+    for name in blocked:
+        rows = tables.get(name) or []
+        row = _row_at(rows, 1.0) if rows else {}
+        out.append({
+            'name': name,
+            'chance': row.get('chance'),
+            'proved': int(row.get('proved') or 0),
+            'candidates': int(row.get('candidates') or 0),
+            'blocked': True,
+            'by_song': row.get('by_song') or {},
+            'shifts': row.get('shifts') or {},
+        })
+    return out
+
+
+def _public_primary(row: dict) -> dict:
+    return {
+        'name': row.get('name'),
+        'chance': _round(row.get('chance')),
+        'proved': int(row.get('proved') or 0),
+        'candidates': int(row.get('candidates') or 0),
+        'blocked': bool(row.get('blocked')),
+        'by_song': row.get('by_song') or {},
+        'shifts': {key: _round(value) for key, value in (row.get('shifts') or {}).items()},
+    }
 
 
 def _public_scope(scope: dict) -> dict:
@@ -1058,8 +1211,36 @@ def build_payload(slugs: list[str]) -> dict:
     refute_rows = measure_refute(per_song)
     refute = choose_refute(refute_rows)
     modes = {(row['song'], row['lang']): row['witnesses'] for row in scopes if row.get('witnesses') in ('one', 'two')}
-    line_rows = measure_line_table(per_song, modes, refute)
-    picked = choose_k(line_rows)
+    primary_tables = measure_primary_tables(per_song, modes, refute)
+    picked = choose_with_primaries(primary_tables)
+    blocked = set(picked.get('blocked_primaries') or [])
+    line_rows = []
+    for share in LINE_SHARES:
+        proved = 0
+        candidates = 0
+        by_song: dict[str, int] = {}
+        chances = []
+        for name, table in primary_tables.items():
+            if name in blocked:
+                continue
+            row = _row_at(table, share)
+            n = int(row.get('candidates') or 0)
+            if n == 0:
+                continue
+            proved += int(row.get('proved') or 0)
+            candidates += n
+            for song, hits in (row.get('by_song') or {}).items():
+                by_song[song] = by_song.get(song, 0) + int(hits)
+            if row.get('chance') is not None:
+                chances.append(float(row['chance']))
+        line_rows.append({
+            'k': share,
+            'chance': None if not chances else max(chances),
+            'proved': proved,
+            'candidates': candidates,
+            'by_song': by_song,
+            'shifts': {},
+        })
     public_scopes = [_public_scope(row) for row in scopes]
     public_lines = [_public_line(row) for row in line_rows]
     public_refute = _public_refute(refute)
@@ -1081,6 +1262,8 @@ def build_payload(slugs: list[str]) -> dict:
         'line_chance': _round(picked.get('chance')),
         'line_limit': LINE_LIMIT,
         'chance': _round(picked.get('chance')),
+        'primaries': [_public_primary(row) for row in (picked.get('primaries') or [])],
+        'blocked_primaries': list(picked.get('blocked_primaries') or []),
         'true_proved': picked.get('proved') or 0,
         'true_total': picked.get('candidates') or 0,
         'true_rate': None if not picked.get('candidates') else _round((picked.get('proved') or 0) / picked['candidates']),
@@ -1158,6 +1341,95 @@ def _evaluate_pooled(per_song: list[dict]) -> list[dict]:
     return rows
 
 
+def render_placement(slugs: list[str]) -> str:
+    """The placement chain, from each song's align report. Rules are not changed here."""
+    lines = [
+        '# Постановка',
+        '',
+        'Первый проход — MMS в окне реплики. Строка поставлена, когда структурные проверки пройдены '
+        'и начало не дальше 0,30 с от реплики. Таблица ниже — строки соло и хора, которые этот проход не поставил. '
+        '«Нет пути» — выравниватель не справился. «Структура» — путь есть, но проверки не пройдены. '
+        '«|Δ| > 0,3» — структура пройдена, а начало дальше 0,30 с. '
+        'Окно, ft, stable-ts и второй выравниватель — кто из цепочки сам прошёл бы те же две проверки. '
+        'Берётся первый. Спор реплики и трёх часов — отдельная таблица: правила из-за неё не меняются.',
+        '',
+    ]
+    for slug in slugs:
+        path = work_dir(slug) / 'align-report.json'
+        lines.append(f'## {slug}')
+        lines.append('')
+        if not path.exists():
+            lines.append('Отчёта выравнивания нет.')
+            lines.append('')
+            continue
+        report = json.loads(path.read_text(encoding='utf-8'))
+        place = (report.get('summary') or {}).get('placement') or {}
+        by = place.get('by') or {}
+        if by:
+            bits = ', '.join(f'{name} — {n}' for name, n in sorted(by.items()))
+            lines.append(f'Кто поставил строки соло и хора: {bits}.')
+        else:
+            lines.append('Поставленных строк соло и хора нет.')
+        lines.append('')
+        lines.append('| язык | MMS не поставил | нет пути | структура | из них далеко | только \\|Δ\\| > 0,3 | окно | ft | stable структура | stable ≤ 0,3 | stable поставил бы | второй структура | второй ≤ 0,3 | второй поставил бы |')
+        lines.append('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|')
+        for row in place.get('unplaced') or []:
+            lines.append(
+                f"| {row.get('lang')} | {row.get('unplaced', 0)} | {row.get('missing', 0)} | {row.get('structure', 0)} | "
+                f"{row.get('structure_far', 0)} | {row.get('delta', 0)} | {row.get('window_placed', 0)} | {row.get('ft_placed', 0)} | "
+                f"{row.get('stable_structure', 0)} | {row.get('stable_near', 0)} | {row.get('stable_placed', 0)} | "
+                f"{row.get('second_structure', 0)} | {row.get('second_near', 0)} | {row.get('second_placed', 0)} |"
+            )
+        if not place.get('unplaced'):
+            lines.append('| — | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |')
+        lines.append('')
+        disputes = place.get('dispute') or []
+        lines.append(f"Строк, где MMS стоит от реплики дальше 0,30 с и не дальше 0,70 с: {place.get('dispute_n', len(disputes))}. "
+                     f"Все три часа согласны между собой (≤ 0,10 с): {place.get('dispute_agree', 0)}. "
+                     f"И при этом на сильной атаке: {place.get('dispute_attack', 0)}.")
+        lines.append('')
+        lines.append('| id | язык | группа | реплика | MMS | второй | stable-ts | \\|Δ\\| | разброс | согласны | атака | до атаки |')
+        lines.append('|---|---|---|---:|---:|---:|---:|---:|---:|---|---|---:|')
+        shown = [row for row in disputes if row.get('attack')]
+        for row in shown:
+            lines.append(
+                f"| {row.get('id')} | {row.get('lang')} | {row.get('group')} | {_ru(row.get('cue'), 3)} | "
+                f"{_ru(row.get('mms'), 3)} | {_ru(row.get('second'), 3)} | {_ru(row.get('stable'), 3)} | "
+                f"{_ru(row.get('delta'), 3)} | {_ru(row.get('span'), 3)} | {'да' if row.get('agree') else 'нет'} | "
+                f"{'да' if row.get('attack') else 'нет'} | {_ru(row.get('attack_dt'), 3)} |"
+            )
+        if not shown:
+            lines.append('| — | — | — | — | — | — | — | — | — | нет | нет | — |')
+        lines.append('')
+        choir = place.get('choir') or {}
+        if choir:
+            lines.append('Хор. «Финал» — строки `eckhart-f-*`. Остальные хоровые строки — куплеты. Вместе это группа хора.')
+            lines.append('')
+            lines.append('| часть | строк | поставлено | медиана \\|Δ\\| MMS | спор 0,3–0,7 | трое согласны | на атаке | промежуток реплик, медиана | минимум |')
+            lines.append('|---|---:|---:|---:|---:|---:|---:|---:|---:|')
+            for key, label in (('all', 'хор'), ('verses', 'куплеты'), ('finale', 'финал')):
+                part = choir.get(key) or {}
+                counts = part.get('by') or {}
+                who = ', '.join(f'{name} {n}' for name, n in sorted(counts.items())) or '—'
+                lines.append(
+                    f"| {label} | {part.get('n', 0)} | {part.get('placed', 0)} ({who}) | {_ru(part.get('median_mms_delta'), 3)} | "
+                    f"{part.get('dispute', 0)} | {part.get('dispute_agree', 0)} | {part.get('dispute_attack', 0)} | "
+                    f"{_ru(part.get('cue_gap_median'), 3)} | {_ru(part.get('cue_gap_min'), 3)} |"
+                )
+            lines.append('')
+        ft = place.get('ft') or {}
+        skipped = ft.get('skipped_ids') or []
+        lines.append(
+            f"htdemucs_ft: запущен {'да' if ft.get('ran') else 'нет'}, отрезков {ft.get('clips', 0)}, "
+            f"пропущено оценкой бюджета {len(skipped)}, не отделено на ходу {ft.get('skipped', 0)}, "
+            f"заняло {_ru(ft.get('elapsed_s'), 1)} с из {_ru(ft.get('budget_s'), 0)} с."
+            + (f" Причина: {ft.get('error')}." if ft.get('error') else '')
+        )
+        lines.append('')
+    lines.append('')
+    return '\n'.join(lines)
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     ap.add_argument('--choose', action='store_true', help='measure and write the bench table')
@@ -1169,12 +1441,23 @@ def main(argv: list[str] | None = None) -> int:
     out_dir = ROOT / 'docs' / 'analysis' / 'bench'
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / 'attack-chance.json').write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding='utf-8')
-    (out_dir / 'attack-chance.md').write_text(render_md(payload), encoding='utf-8')
+    # A report renderer must not cancel qa. The json above is what qa reads.
+    try:
+        (out_dir / 'attack-chance.md').write_text(render_md(payload), encoding='utf-8')
+    except Exception as e:
+        print(f'attack-chance.md не записан ({e.__class__.__name__}: {e})')
+    try:
+        (out_dir / 'placement.md').write_text(render_placement(args.slugs), encoding='utf-8')
+    except Exception as e:
+        print(f'placement.md не записан ({e.__class__.__name__}: {e})')
     chosen = payload['chosen']
     refute = chosen.get('refute') or {}
     print(f"правило {chosen.get('name')}: случайный проход строки {chosen.get('chance')}, "
           f"доказано строк {chosen.get('true_proved')} из {chosen.get('true_total')}, "
           f"within_limit {chosen.get('within_limit')}")
+    for row in chosen.get('primaries') or []:
+        print(f"постановщик {row.get('name')}: проход {row.get('chance')}, "
+              f"{row.get('proved')} из {row.get('candidates')}, исключён {row.get('blocked')}")
     print(f"опровергнуто {refute.get('refuted')} из {refute.get('words')} "
           f"(оба дальше {refute.get('both_far')} с, один дальше {refute.get('only_far')} с, "
           f"within_cap {refute.get('within_cap')})")

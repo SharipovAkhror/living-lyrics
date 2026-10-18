@@ -796,6 +796,158 @@ def test_bench_summary() -> None:
     check('a missing start is not a zero', got['by_lang']['tr']['median'] == 0.2, str(got['by_lang']['tr']))
 
 
+def test_placement_chain() -> None:
+    import attack_chance as A
+    import placement as P
+
+    check('an MMS window is the MMS placer', P.primary_family('mms-window') == 'mms' and P.primary_family('mms-ft') == 'mms')
+    check('stable-ts and the second aligner are their own placers',
+          P.primary_family('stable-ts') == 'stable-ts' and P.primary_family('second') == 'second')
+    t0, t1 = P.span_to_next(10.0, 12.0, 14.0, 100.0, 0.8, 0.0)
+    check('a rescue window runs from this cue to the next', abs(t0 - 9.2) < 1e-9 and abs(t1 - 14.0) < 1e-9, f'{t0},{t1}')
+    check('the same window is recognised', P.same_window((1.0, 2.0), (1.04, 2.04)))
+    check('a different window is not', not P.same_window((1.0, 2.0), (1.2, 2.0)))
+    ends = P.ends_from_starts([1.0, None], 1.2)
+    check('a last end before the next cue stops at that cue', ends[0] == 1.2 and ends[1] is None, str(ends))
+    past = P.ends_from_starts([1.5], 1.2)
+    check('a start past the next cue is not pulled back', past[0] is not None and past[0] > 1.2 + 0.05, str(past))
+    held = P.judge([1.0, 1.5], [1.5, 2.0], 1.0, 3.0)
+    check('structure and 0.00 s places the line', held['placed'] and held['structure'] == 'ok', str(held))
+    edge = P.judge([1.30, 1.80], [1.80, 2.20], 1.00, 3.0)
+    check('exactly 0.30 s still places the line', edge['placed'] and edge['delta'] == 0.3, str(edge))
+    over = P.judge([1.31, 1.80], [1.80, 2.20], 1.00, 3.0)
+    check('0.31 s does not place the line', (not over['placed']) and over['structure_ok'] and over['delta'] == 0.31, str(over))
+    short = P.judge([1.0, 1.04, 1.08], [1.04, 1.08, 1.30], 1.0, 3.0)
+    check('two short gaps fail structure', (not short['placed']) and short['structure'] == 'short', str(short))
+    winner = P.first_placed([
+        {'by': 'second', 'placed': True},
+        {'by': 'stable-ts', 'placed': False},
+        {'by': 'mms-window', 'placed': True},
+    ])
+    check('the earliest chain step wins', winner is not None and winner['by'] == 'mms-window', str(winner))
+    check('stable-ts leaves MMS as a witness',
+          P.witness_slots('stable-ts', 1.0, 2.0, 3.0) == (1.0, 'mms', 2.0, 'whisperx'))
+    check('the second aligner leaves MMS and stable-ts as witnesses',
+          P.witness_slots('second', 1.0, 2.0, 3.0) == (1.0, 'mms', 3.0, 'stable-ts'))
+    check('an MMS window leaves the other two as witnesses',
+          P.witness_slots('mms-ft', 1.0, 2.0, 3.0) == (2.0, 'whisperx', 3.0, 'stable-ts'))
+    band = P.dispute_row('eckhart-f-02', 'de', 'choir', 1.0, 1.5, 1.52, 1.48, np.array([1.50]))
+    check('three clocks within 0.10 s on an attack are a dispute',
+          band is not None and band['agree'] and band['attack'] and abs(band['delta'] - 0.5) < 1e-9, str(band))
+    off = P.dispute_row('x', 'de', 'choir', 1.0, 1.2, 1.2, 1.2, np.array([1.2]))
+    check('0.20 s is outside the dispute band', off is None, str(off))
+    quiet = P.dispute_row('x', 'de', 'choir', 1.0, 1.5, 1.52, 1.48, np.array([9.0]))
+    check('agreement without an attack is not the listening row',
+          quiet is not None and quiet['agree'] and not quiet['attack'], str(quiet))
+    summary = P.summarize_unplaced([
+        {'lang': 'de', 'mms_placed': False, 'mms_missing': True, 'stable_placed': True, 'stable_near': True,
+         'stable_structure': False},
+        {'lang': 'de', 'mms_placed': True},
+        {'lang': 'de', 'mms_placed': False, 'mms_missing': False, 'mms_structure_ok': True, 'mms_delta': 0.44,
+         'second_placed': False, 'second_near': True, 'second_structure': True},
+    ])
+    de = summary[0]
+    check('unplaced lines split into no path and a far start',
+          de['unplaced'] == 2 and de['missing'] == 1 and de['delta'] == 1 and de['stable_placed'] == 1
+          and de['second_near'] == 1 and de['second_structure'] == 1, str(de))
+    kept, skipped = P.fit_budget([(0.0, 200.0, ['big']), (300.0, 310.0, ['small'])], 720.0, rtf=4.0)
+    check('a span past the budget is skipped and a later short one is kept',
+          skipped == ['big'] and [ids for _a, _b, ids in kept] == [['small']], str((kept, skipped)))
+
+    def grid(chance: float, proved: int, n: int) -> list[dict]:
+        rows = []
+        for i, share in enumerate(A.LINE_SHARES):
+            rows.append({
+                'k': share, 'chance': chance, 'proved': max(0, proved - i), 'candidates': n,
+                'by_song': {'s': max(0, proved - i)}, 'shifts': {'0.15': chance},
+            })
+        return rows
+
+    picked = A.choose_with_primaries({
+        'mms': grid(0.01, 40, 40),
+        'stable-ts': grid(0.20, 2, 4),
+        'second': grid(0.0, 0, 0),
+    })
+    check('a placer over 5 % at every K is excluded',
+          picked['within_limit'] and picked['k'] == 0.25 and picked['blocked_primaries'] == ['stable-ts']
+          and picked['proved'] == 40, str({k: picked[k] for k in ('k', 'proved', 'blocked_primaries', 'within_limit', 'chance')}))
+    names = {row['name']: row for row in picked['primaries']}
+    check('the excluded placer keeps the chance that blocked it',
+          names['stable-ts']['blocked'] and abs(float(names['stable-ts']['chance']) - 0.20) < 1e-12, str(names['stable-ts']))
+
+    biased = Q.apply_rule_times(
+        [{'second_s': 1.20, 'second_kind': 'mms'}, {'second_s': 1.20, 'second_kind': 'whisperx'}],
+        'tr', {'bias': {'whisperx|tr': 0.05}, 'adopt': {}})
+    check('a witness that is MMS is not shifted by the whisper bias', abs(biased[0]['second_s'] - 1.20) < 1e-12, str(biased[0]))
+    check('a whisper witness still takes the bias', abs(biased[1]['second_s'] - 1.15) < 1e-12, str(biased[1]))
+
+    line = {
+        'id': 'l', 'placed': True, 'group': 'solo', 'lang': 'en', 'song': 's', 'placed_by': 'mms',
+        'cue_start': 1.0, 'ctc_start': 1.0,
+        'words': [
+            {'t': 1.0, 'roman': 'ba', 'second': 1.0, 'third': 1.0, 'ctc_e': 1.2},
+            {'t': 2.0, 'roman': 'ka', 'second': 2.0, 'third': 2.0, 'ctc_e': 2.2},
+        ],
+    }
+    attacks = np.array([1.0, 2.0])
+    modes = {('s', 'en'): 'one'}
+    refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    _hit, n_mms = A.line_pass_count([line], attacks, modes, refute, 1.0, primary='mms')
+    _miss, n_stable = A.line_pass_count([line], attacks, modes, refute, 1.0, primary='stable-ts')
+    check('line chance for one placer ignores the other', n_mms == 1 and n_stable == 0, f'{n_mms}/{n_stable}')
+
+    _, sig = _bursts()
+    sec = {'id': 's', 'kind': 'vocal', 'voice': 'Сами Юсуф', 'start': 0.0, 'end': 4.0}
+    lyric = {'id': 'drift', 'lang': 'en', 'words': [{'w': 'a', 's': t, 'e': t + 0.1} for t in (1.0, 2.0, 3.0)]}
+    rec = {
+        'id': 'drift', 'status': 'good', 'text': 'a a a', 'placed_by': 'stable-ts', 'second': 'whisperx',
+        'words': [{'w': 'a', 'roman': 'a', 'ctc_s': c, 'second_s': c, 'third_s': c, 'second_kind': 'mms'}
+                  for c in (1.0, 2.0, 3.0)],
+    }
+    rule = {'name': 'line-0.25', 'tol': 0.10, 'choir_tol': 0.20, 'peak_height': 0.5,
+            'require_rise': False, 'require_second': False, 'line_share': 0.25, 'scopes': [],
+            'blocked_primaries': ['stable-ts']}
+    blocked = Q.build_proof(sig, [(sec, lyric)], [{'verdict': 'ok'}], {'lines': [rec]},
+                            {'drift': {'line': 'drift', 'start': 1.0, 'end': 3.2}}, word_rule=rule)
+    row = blocked['lines'][0]
+    check('an excluded placer is not proved', (not row['pass']) and row['reason'] == 'primary-chance', str(row))
+
+    import align as Align
+    import shutil
+
+    from common import work_dir
+    stray = work_dir('no-such-song-ft')
+    unit = Align.Unit(
+        0, {'id': 's', 'start': 0.0, 'end': 4.0, 'voice': ''},
+        {'id': 'l1', 'words': [{'w': 'a', 's': 1.0, 'e': 1.2}]}, ['a'], {})
+    try:
+        missed = Align.rescue_ft(
+            'no-such-song-ft', [unit], [{'placed_by': None, 'attempts': []}],
+            {'l1': {'start': 1.0, 'end': 2.0}}, 10.0)
+    finally:
+        shutil.rmtree(stray, ignore_errors=True)
+    check('a missing mix does not abort alignment',
+          missed['ran'] is False and str(missed.get('error') or '').startswith('FileNotFoundError'),
+          str(missed))
+    text = A.render_md({
+        'songs': ['s'],
+        'current_chance': 0.2,
+        'chosen': {
+            'name': 'line-0.25', 'chance': 0.01, 'true_proved': 1, 'true_total': 2, 'line_share': 0.25,
+            'refute': {'both_far': 0.2, 'only_far': 0.3, 'both_agree': 0.1, 'attack_tol': 0.1,
+                       'refuted': 0, 'words': 4, 'rate': 0.0, 'witnesses': 0, 'attack': 0,
+                       'within_cap': True, 'by': []},
+            'primaries': [{'name': 'mms', 'candidates': 2, 'proved': 1, 'chance': 0.01, 'blocked': False}],
+        },
+        'scopes': [], 'refute_grid': [],
+        'line_table': [{'k': 0.25, 'chance': 0.01, 'proved': 1, 'by_song': {'s': 1}}],
+        'density': [],
+        'candidates': [{'name': 'tol-0.10', 'tol': 0.1, 'peak_height': 0.5, 'require_rise': False,
+                        'require_second': False, 'chance': 0.01, 'true_rate': 0.5}],
+    })
+    check('the word-rule grid still renders beside the line table', 'tol-0.10' in text and 'постановщик' in text, text[-180:])
+
+
 def main() -> int:
     test_viterbi()
     test_star_absorbs_a_hold()
@@ -816,6 +968,7 @@ def main() -> int:
     test_bias_and_witnesses()
     test_attack_chance()
     test_line_rule()
+    test_placement_chain()
     test_calibration()
     test_bench_summary()
     test_harakat()
