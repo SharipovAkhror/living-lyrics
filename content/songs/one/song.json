@@ -100,5 +100,70 @@
       "role": "Ансамбль",
       "name": "ансамбль Сами Юсуфа"
     }
+  ],
+  "parts": [
+    {
+      "id": "eckhart",
+      "title": "Проповедь Экхарта",
+      "lang": "de",
+      "author": {
+        "name": "Майстер Экхарт"
+      },
+      "work": {
+        "original": "Qui audit me",
+        "ru": "проповедь XCVI",
+        "lang": "de"
+      },
+      "ref": "Пфайффер, Deutsche Mystiker des vierzehnten Jahrhunderts, т. II, Лейпциг, 1857; заголовок с. 309, фраза о глазе с. 312. Номер в счёте Квинта не установлен",
+      "url": "https://archive.org/details/deutschemystiker02pfei",
+      "note": "В открытии три строки без циркумфлексов, в финале фраза об одном глазе, и по эталону это средневерхненемецкий.",
+      "sections": [
+        "eckhart-1",
+        "eckhart-2",
+        "eckhart-final"
+      ]
+    },
+    {
+      "id": "shushtari-lings",
+      "title": "Фрагмент Шуштари",
+      "lang": "ar",
+      "author": {
+        "name": "Абу-ль-Хасан аш-Шуштари"
+      },
+      "work": {
+        "original": "Sufi Poems: A Mediaeval Anthology",
+        "lang": "en"
+      },
+      "ref": "№ 58, арабский текст с. 89, английский с. 88, примечание 97 с. 100",
+      "url": "https://archive.org/details/sufi-poems-a-mediaeval-anthology-martin-lings",
+      "note": "Лингс относит строки аш-Шуштари со слов шейха аль-Алави, а в диване их нет.",
+      "sections": [
+        "shushtari-1",
+        "shushtari-2"
+      ]
+    },
+    {
+      "id": "shushtari-qasida",
+      "title": "Касыда Шуштари",
+      "lang": "ar",
+      "author": {
+        "name": "Абу-ль-Хасан аш-Шуштари"
+      },
+      "work": {
+        "original": "سقيت كأس الهوى قديما",
+        "lang": "ar"
+      },
+      "ref": "пять бейтов, мухаллаʻ басит, изд. Мухаммад ал-Адуни и Саид Абу-ль-Фуюд, с. 28",
+      "url": "https://ablibrary.net/book_content/8758/28",
+      "note": "После первых четырёх полустиший поются пятый бейт, затем третий и четвёртый, потом Найд с «يا من» трижды, а повтор — только первые четыре.",
+      "sections": [
+        "qasida-cup",
+        "qasida-path",
+        "qasida-najd-1",
+        "qasida-najd-2",
+        "qasida-najd-3",
+        "qasida-reprise"
+      ]
+    }
   ]
 }
