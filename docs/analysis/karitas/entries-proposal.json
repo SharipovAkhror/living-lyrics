@@ -1,0 +1,46 @@
+{
+  "slug": "karitas",
+  "entries": [
+    {
+      "key": "choir",
+      "at": 2.0,
+      "until": 6.0
+    },
+    {
+      "key": "choir",
+      "at": 9.0,
+      "until": 12.0
+    },
+    {
+      "key": "choir",
+      "at": 20.0,
+      "until": 35.0
+    },
+    {
+      "key": "choir",
+      "at": 127.0,
+      "until": 132.0
+    },
+    {
+      "key": "choir",
+      "at": 194.0,
+      "until": 212.0
+    },
+    {
+      "key": "choir",
+      "at": 777.0,
+      "until": 780.0
+    },
+    {
+      "key": "choir",
+      "at": 899.0,
+      "until": 906.0
+    },
+    {
+      "key": "choir",
+      "at": 961.0,
+      "until": 966.0
+    }
+  ],
+  "skippedNoCatalogKey": []
+}

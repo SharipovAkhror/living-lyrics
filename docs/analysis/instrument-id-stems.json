@@ -1,5 +1,5 @@
 {
-  "choice": "stem",
+  "choice": "mix",
   "songs": [
     {
       "slug": "i-have-come-alive",
@@ -8,28 +8,20 @@
           "section": "voice-open",
           "catalogKey": "voice",
           "stem": "vocals",
-          "mixSaid": [
-            "flute"
-          ],
+          "mixSaid": [],
           "stemSaid": [],
-          "mixWrong": [
-            "flute"
-          ],
+          "mixWrong": [],
           "stemWrong": []
         },
         {
           "section": "inst-tanbur",
           "catalogKey": "tanbur",
           "stem": "other",
-          "mixSaid": [
-            "flute"
-          ],
+          "mixSaid": [],
           "stemSaid": [
             "guitar-acoustic"
           ],
-          "mixWrong": [
-            "flute"
-          ],
+          "mixWrong": [],
           "stemWrong": [
             "guitar-acoustic"
           ]
@@ -46,10 +38,10 @@
       ],
       "status": "ok",
       "wrongAnchors": {
-        "mix": 2,
+        "mix": 0,
         "stem": 1
       },
-      "better": "stem"
+      "better": "mix"
     },
     {
       "slug": "karitas",
@@ -59,13 +51,17 @@
           "catalogKey": "voice",
           "stem": "vocals",
           "mixSaid": [
-            "voice"
+            "choir"
           ],
           "stemSaid": [
-            "voice"
+            "choir"
           ],
-          "mixWrong": [],
-          "stemWrong": []
+          "mixWrong": [
+            "choir"
+          ],
+          "stemWrong": [
+            "choir"
+          ]
         },
         {
           "section": "voice-2",
@@ -100,9 +96,7 @@
           "mixSaid": [
             "flute"
           ],
-          "stemSaid": [
-            "voice"
-          ],
+          "stemSaid": [],
           "mixWrong": [
             "flute"
           ],
@@ -113,12 +107,9 @@
           "catalogKey": "voice",
           "stem": "vocals",
           "mixSaid": [
-            "flute",
-            "voice"
+            "flute"
           ],
-          "stemSaid": [
-            "voice"
-          ],
+          "stemSaid": [],
           "mixWrong": [
             "flute"
           ],
@@ -129,12 +120,9 @@
           "catalogKey": "voice",
           "stem": "vocals",
           "mixSaid": [
-            "flute",
-            "voice"
+            "flute"
           ],
-          "stemSaid": [
-            "voice"
-          ],
+          "stemSaid": [],
           "mixWrong": [
             "flute"
           ],
@@ -144,13 +132,9 @@
           "section": "voice-7",
           "catalogKey": "voice",
           "stem": "vocals",
-          "mixSaid": [
-            "flute"
-          ],
+          "mixSaid": [],
           "stemSaid": [],
-          "mixWrong": [
-            "flute"
-          ],
+          "mixWrong": [],
           "stemWrong": []
         },
         {
@@ -184,12 +168,9 @@
           "stem": "vocals",
           "mixSaid": [
             "flute",
-            "guitar-acoustic",
-            "voice"
+            "guitar-acoustic"
           ],
-          "stemSaid": [
-            "voice"
-          ],
+          "stemSaid": [],
           "mixWrong": [
             "flute",
             "guitar-acoustic"
@@ -229,16 +210,20 @@
           "catalogKey": "voice",
           "stem": "vocals",
           "mixSaid": [
+            "choir",
             "flute",
             "voice"
           ],
           "stemSaid": [
-            "voice"
+            "choir"
           ],
           "mixWrong": [
+            "choir",
             "flute"
           ],
-          "stemWrong": []
+          "stemWrong": [
+            "choir"
+          ]
         },
         {
           "section": "voice-14",
@@ -270,12 +255,8 @@
           "section": "voice-16",
           "catalogKey": "voice",
           "stem": "vocals",
-          "mixSaid": [
-            "voice"
-          ],
-          "stemSaid": [
-            "voice"
-          ],
+          "mixSaid": [],
+          "stemSaid": [],
           "mixWrong": [],
           "stemWrong": []
         },
@@ -284,19 +265,24 @@
           "catalogKey": "voice",
           "stem": "vocals",
           "mixSaid": [
+            "choir",
             "voice"
           ],
           "stemSaid": [
-            "voice"
+            "choir"
           ],
-          "mixWrong": [],
-          "stemWrong": []
+          "mixWrong": [
+            "choir"
+          ],
+          "stemWrong": [
+            "choir"
+          ]
         }
       ],
       "status": "ok",
       "wrongAnchors": {
-        "mix": 12,
-        "stem": 0
+        "mix": 13,
+        "stem": 3
       },
       "better": "stem"
     },
@@ -323,9 +309,7 @@
           "mixSaid": [
             "voice"
           ],
-          "stemSaid": [
-            "voice"
-          ],
+          "stemSaid": [],
           "mixWrong": [],
           "stemWrong": []
         },
@@ -337,9 +321,7 @@
             "flute",
             "voice"
           ],
-          "stemSaid": [
-            "voice"
-          ],
+          "stemSaid": [],
           "mixWrong": [
             "flute"
           ],
@@ -352,7 +334,9 @@
           "mixSaid": [
             "voice"
           ],
-          "stemSaid": [],
+          "stemSaid": [
+            "voice"
+          ],
           "mixWrong": [],
           "stemWrong": []
         },
@@ -360,9 +344,7 @@
           "section": "voice-5",
           "catalogKey": "voice",
           "stem": "vocals",
-          "mixSaid": [
-            "voice"
-          ],
+          "mixSaid": [],
           "stemSaid": [],
           "mixWrong": [],
           "stemWrong": []
@@ -385,9 +367,7 @@
           "catalogKey": "voice",
           "stem": "vocals",
           "mixSaid": [],
-          "stemSaid": [
-            "voice"
-          ],
+          "stemSaid": [],
           "mixWrong": [],
           "stemWrong": []
         },
@@ -397,20 +377,22 @@
           "stem": "vocals",
           "mixSaid": [],
           "stemSaid": [
+            "choir",
             "voice"
           ],
           "mixWrong": [],
-          "stemWrong": []
+          "stemWrong": [
+            "choir"
+          ]
         }
       ],
       "status": "ok",
       "wrongAnchors": {
         "mix": 3,
-        "stem": 0
+        "stem": 1
       },
       "better": "stem"
     }
   ],
-  "note": "Сравнение только на вырезанных якорях, не дольше 20 с. Стем ни на одной песне не хуже и в сумме называет чужой класс реже. Задание тогда разделяет песню целиком и в решение идут стемы.",
-  "published": "stem"
+  "note": "Сравнение только на вырезанных якорях, не дольше 20 с. Смесь остаётся основной: стем не лучше в сумме или хуже хотя бы на одной песне."
 }

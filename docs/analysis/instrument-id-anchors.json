@@ -28,10 +28,8 @@
           "note": "Длинный проигрыш танбура перед первым куплетом.",
           "source": "content/songs/i-have-come-alive/lyrics.json",
           "said": [
-            "cello",
             "flute",
-            "guitar-acoustic",
-            "trumpet"
+            "piano"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -47,19 +45,17 @@
           "note": "",
           "source": "content/songs/i-have-come-alive/lyrics.json",
           "said": [
-            "voice"
+            "flute"
           ],
-          "acceptedRight": [
-            "voice"
-          ],
+          "acceptedRight": [],
           "acceptedWrong": [],
-          "verdict": "correct"
+          "verdict": "abstain"
         }
       ]
     },
     {
       "slug": "karitas",
-      "failures": 0,
+      "failures": 3,
       "anchors": [
         {
           "section": "voice-1",
@@ -71,11 +67,14 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
+            "choir",
             "voice"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "choir"
+          ],
+          "verdict": "fail"
         },
         {
           "section": "voice-2",
@@ -87,7 +86,8 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "voice"
+            "choir",
+            "flute"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -119,7 +119,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "voice"
+            "flute"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -135,7 +135,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "voice"
+            "flute"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -151,7 +151,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "voice"
+            "flute"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -180,7 +180,9 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
-          "said": [],
+          "said": [
+            "flute"
+          ],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"
@@ -195,7 +197,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "voice"
+            "flute"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -211,7 +213,8 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "voice"
+            "flute",
+            "guitar-acoustic"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -227,7 +230,8 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "voice"
+            "flute",
+            "guitar-acoustic"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -243,7 +247,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "voice"
+            "flute"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -259,11 +263,15 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
+            "choir",
+            "flute",
             "voice"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "choir"
+          ],
+          "verdict": "fail"
         },
         {
           "section": "voice-14",
@@ -274,7 +282,9 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
-          "said": [],
+          "said": [
+            "flute"
+          ],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"
@@ -289,7 +299,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
-            "voice"
+            "flute"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -304,9 +314,7 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
-          "said": [
-            "voice"
-          ],
+          "said": [],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"
@@ -321,17 +329,20 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [
+            "choir",
             "voice"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "choir"
+          ],
+          "verdict": "fail"
         }
       ]
     },
     {
       "slug": "one",
-      "failures": 0,
+      "failures": 1,
       "anchors": [
         {
           "section": "voice-1",
@@ -343,7 +354,7 @@
           "note": "",
           "source": "content/songs/one/lyrics.json",
           "said": [
-            "voice"
+            "guitar-acoustic"
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
@@ -375,6 +386,7 @@
           "note": "",
           "source": "content/songs/one/lyrics.json",
           "said": [
+            "flute",
             "voice"
           ],
           "acceptedRight": [],
@@ -420,7 +432,9 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/one/lyrics.json",
-          "said": [],
+          "said": [
+            "flute"
+          ],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"
@@ -434,9 +448,7 @@
           "label": "Голос",
           "note": "",
           "source": "content/songs/one/lyrics.json",
-          "said": [
-            "voice"
-          ],
+          "said": [],
           "acceptedRight": [],
           "acceptedWrong": [],
           "verdict": "abstain"
@@ -451,11 +463,13 @@
           "note": "",
           "source": "content/songs/one/lyrics.json",
           "said": [
-            "voice"
+            "choir"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "choir"
+          ],
+          "verdict": "fail"
         }
       ]
     }

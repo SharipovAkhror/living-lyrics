@@ -3,18 +3,8 @@
   "segments": [
     {
       "id": "voice",
-      "start": 99.0,
-      "end": 167.0,
-      "sources": [
-        "audio",
-        "credits"
-      ],
-      "review": ""
-    },
-    {
-      "id": "voice",
-      "start": 171.0,
-      "end": 174.0,
+      "start": 100.0,
+      "end": 165.0,
       "sources": [
         "audio",
         "credits"
@@ -24,7 +14,7 @@
     {
       "id": "voice",
       "start": 182.0,
-      "end": 251.0,
+      "end": 248.0,
       "sources": [
         "audio",
         "credits"
@@ -34,7 +24,7 @@
     {
       "id": "voice",
       "start": 285.0,
-      "end": 388.0,
+      "end": 387.0,
       "sources": [
         "audio",
         "credits"
@@ -44,6 +34,16 @@
     {
       "id": "voice",
       "start": 403.0,
+      "end": 410.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "voice",
+      "start": 412.0,
       "end": 566.0,
       "sources": [
         "audio",

@@ -1,4 +1,85 @@
 {
   "slug": "karitas",
-  "segments": []
+  "segments": [
+    {
+      "id": "choir",
+      "start": 2.0,
+      "end": 6.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 9.0,
+      "end": 12.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 20.0,
+      "end": 35.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 127.0,
+      "end": 132.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 194.0,
+      "end": 212.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 777.0,
+      "end": 780.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 899.0,
+      "end": 906.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 961.0,
+      "end": 966.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
+    }
+  ]
 }
