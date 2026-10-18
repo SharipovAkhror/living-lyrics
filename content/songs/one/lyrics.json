@@ -1822,7 +1822,8 @@
       "instruments": [
         "violin",
         "santur",
-        "ensemble",
+        "darbuka",
+        "daf",
         "bendir"
       ],
       "note": "Инструментальный проигрыш.",
@@ -1839,8 +1840,12 @@
           "at": 398.0
         },
         {
-          "key": "ensemble",
+          "key": "darbuka",
           "at": 400.85
+        },
+        {
+          "key": "daf",
+          "at": 402.5
         },
         {
           "key": "bendir",

@@ -7,7 +7,7 @@ import { instrument } from '@/instruments/catalog';
 import { blockState, clamp01, entranceOpacity, type Measure } from './flow';
 import type { BlockUpdater } from './LineBlock';
 import { InstrumentStage, assignPerformers, type InstrumentStageHandle, type StagePose } from './InstrumentStage';
-import { NARROW_MAX, castAt, castSignature, isVoicePassage, type CastMember } from './cast';
+import { castAt, castCap, castSignature, isVoicePassage, type CastMember } from './cast';
 import { stageDrive } from './stageDrive';
 
 interface Props {
@@ -68,10 +68,17 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
   const castSig = useRef('');
   const frameRef = useRef<StagePose | null>(null);
 
-  const fullH = Math.round(Math.min(stage.h * 0.72, 620));
-  const textH = section.note ? 96 : section.mode ? 64 : 44;
-  const stageSize = { w: Math.max(200, Math.min(stage.w - 24, 1040)), h: Math.max(160, fullH - textH) };
-  const narrow = stageSize.w < NARROW_MAX;
+  // A short wide screen (the car) gives the drawings the height, and keeps the note to two short lines.
+  const shortStage = stage.h > 0 && stage.h <= 420 && stage.w >= 640;
+  const fullH = shortStage ? Math.round(stage.h * 0.92) : Math.round(Math.min(stage.h * 0.72, 620));
+  const textH = shortStage ? (section.note ? 52 : section.mode ? 36 : 28) : section.note ? 96 : section.mode ? 64 : 44;
+  const stageSize = {
+    w: Math.max(200, Math.min(stage.w - (shortStage ? 16 : 24), 1040)),
+    h: Math.max(shortStage ? 120 : 160, fullH - textH),
+  };
+  const cap = castCap(stageSize.w);
+  const narrow = cap === 1;
+  const manual = section.layout != null;
   const compactH = useRef(56);
   const [cast, setCast] = useState<CastMember[]>(() => castAt(section, section.start, stageSize.w, motion));
   const heroes = cast.filter((m) => m.place === 'hero');
@@ -83,10 +90,12 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
     register(cue.idx, call, { main: 0, sub: 0, compact: compactH.current, full: fullH });
   });
 
+  // Pose after every commit, including the commit that mounts the stage. On a wide box the
+  // roster does not change, so a cast-only effect would leave the first frame at presence 0.
   useLayoutEffect(() => {
     const frame = frameRef.current;
-    if (frame) stageRef.current?.pose(frame);
-  }, [cast, heroes.length, echoes.length]);
+    if (frame && anim.presence > 0.02) stageRef.current?.pose(frame);
+  });
 
   const updater = useRef<BlockUpdater>(() => {});
   const call = useRef<BlockUpdater>((t, d, top, wait) => updater.current(t, d, top, wait)).current;
@@ -144,7 +153,10 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
             keys={heroes.map((m) => m.key)}
             echoes={echoes.map((m) => ({ key: m.key }))}
             performers={heroes.map((m) => (m.source >= 0 ? credited[m.source] ?? '' : ''))}
+            presences={heroes.map((m) => m.presence)}
             mode={narrow ? 'single' : (section.layout ?? 'auto')}
+            uniform={!narrow && !manual}
+            maxShown={cap}
             progress={1}
             presence={anim.presence}
             energy={0}

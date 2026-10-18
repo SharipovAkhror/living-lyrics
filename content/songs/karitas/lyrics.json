@@ -2304,9 +2304,12 @@
       "instruments": [
         "voice",
         "darbuka",
-        "ensemble",
+        "qanun",
         "ney",
-        "riq"
+        "violin",
+        "baglama",
+        "riq",
+        "oud"
       ],
       "flags": [
         "attribution-unverified",
@@ -2323,7 +2326,7 @@
           "at": 554.9
         },
         {
-          "key": "ensemble",
+          "key": "qanun",
           "at": 558.0
         },
         {
@@ -2331,8 +2334,20 @@
           "at": 563.0
         },
         {
+          "key": "violin",
+          "at": 565.0
+        },
+        {
+          "key": "baglama",
+          "at": 566.0
+        },
+        {
           "key": "riq",
           "at": 568.6
+        },
+        {
+          "key": "oud",
+          "at": 573.0
         }
       ]
     },

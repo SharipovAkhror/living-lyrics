@@ -5,7 +5,8 @@
  * Order follows `entries` by `at`. Without entries the section is split into equal slices,
  * one per key, and they are not shown all at the first instant. A narrow box keeps a single
  * large plate — the latest entrance — and lets the previous one fade in that same place.
- * A wide box keeps every instrument that has entered and not yet left.
+ * A wider box reserves a place for everyone who will enter. A newcomer fades in there;
+ * the others do not move. How many places are drawn is `castCap` (1, 4 or 8).
  * A passage whose keys are only `voice` and `choir` holds those engravings for the whole
  * section: no invented orchestra and no fake turn-taking.
  * An empty key list and no entries is an empty stage (applause). It is not ensemble.
@@ -13,6 +14,15 @@
 import type { MotionPref } from '@/app/settings';
 
 export const NARROW_MAX = 560;
+/** Below this stage width the scene shows at most four plates. Wider boxes may show eight. */
+export const MEDIUM_MAX = 880;
+
+/** Plates the scene may draw. The layout can still fold some into the chip when the box is short. */
+export function castCap(boxWidth: number): number {
+  if (boxWidth < NARROW_MAX) return 1;
+  if (boxWidth < MEDIUM_MAX) return 4;
+  return 8;
+}
 
 export interface CastSection {
   start: number;
@@ -130,15 +140,14 @@ export function castAt(section: CastSection, t: number, boxWidth: number, motion
   const voiceGroup = spans.every((s) => s.calm && s.at === spans[0].at && s.until === spans[0].until);
   if (voiceGroup) {
     const shown = narrow ? spans.slice(0, 1) : spans;
-    return shown
-      .map((s) => ({ ...s, presence: Math.min(fadeIn(s.at), fadeOut(s.until)), place: 'hero' as const }))
-      .filter((m) => m.presence > 0.02);
+    const members = shown.map((s) => ({ ...s, presence: Math.min(fadeIn(s.at), fadeOut(s.until)), place: 'hero' as const }));
+    // The phone drops an empty plate. A wide box keeps the roster, so the places do not jump.
+    return narrow ? members.filter((m) => m.presence > 0.02) : members;
   }
 
   if (!narrow) {
     return spans
       .map((s) => ({ ...s, presence: Math.min(fadeIn(s.at), fadeOut(s.until)), place: 'hero' as const }))
-      .filter((m) => m.presence > 0.02)
       .sort((a, b) => {
         const as = a.source < 0 ? 1000 + a.at : a.source;
         const bs = b.source < 0 ? 1000 + b.at : b.source;

@@ -4,7 +4,8 @@
  *
  * Every instrument sits on a plate: the drawing (fitted to its viewBox aspect, never stretched)
  * with a caption under it (or beside it in `stack`). The engine picks a mode from the count and the box,
- * never lets a drawing fall below a readable size, and groups what does not fit into a «+N» chip.
+ * never lets a drawing fall below a readable size, and groups what does not fit into an «ещё N» chip.
+ * `uniform` (the song stage) uses equal rows instead of the decorative modes. The gallery keeps `auto`.
  * Rules in prose: docs/methodology/09-instruments.md.
  */
 
@@ -89,6 +90,13 @@ export interface LayoutOptions {
   minArt?: number;
   /** Largest drawing side, px. Default 540. */
   maxArt?: number;
+  /**
+   * Song stage: one or two even rows, same scale, even gaps, no rotation or overlap.
+   * Ignored when a section asks for a mode. The gallery does not set this.
+   */
+  uniform?: boolean;
+  /** Show at most this many plates. The rest stay in the chip. Unset shows as many as fit. */
+  maxShown?: number;
 }
 
 /* ---------- Caption metrics (keep in sync with src/styles/instruments.css) ---------- */
@@ -102,6 +110,8 @@ export const LABEL_METRICS: Record<LabelTier, { name: number; nameLH: number; su
 const TIER_MIN: Record<LabelTier, number> = { l: 240, m: 140, s: 0 };
 const TIERS: LabelTier[] = ['l', 'm', 's'];
 export const CHIP = { w: 56, h: 34 };
+/** Wider chip so «ещё N» fits on the song stage. Gallery modes keep `CHIP`. */
+const EVEN_CHIP = { w: 78, h: 36 };
 
 export function labelHeight(tier: LabelTier, lines: number) {
   const m = LABEL_METRICS[tier];
@@ -211,19 +221,19 @@ function instrumentSlot(index: number, role: Slot['role'], x: number, y: number,
   return { index, kind: 'instrument', role, x, y, w: p.w, h: p.h, z, art: p.art, label: p.label, ...extra };
 }
 
-function chipSlot(x: number, y: number, more: number, z: number): Slot {
+function chipSlot(x: number, y: number, more: number, z: number, size: Size = CHIP): Slot {
   return {
     index: -1,
     kind: 'more',
     role: 'more',
     x,
     y,
-    w: CHIP.w,
-    h: CHIP.h,
+    w: size.w,
+    h: size.h,
     z,
     more,
     art: { x: 0, y: 0, w: 0, h: 0 },
-    label: { x: 0, y: 0, w: CHIP.w, h: CHIP.h, align: 'center', tier: 's' },
+    label: { x: 0, y: 0, w: size.w, h: size.h, align: 'center', tier: 's' },
   };
 }
 
@@ -497,6 +507,61 @@ function grid(c: Ctx, idx: number[], more: number): Built {
   return { slots, visibility: 1 };
 }
 
+/**
+ * Equal plates in one or two rows. Places are a grid: a later plate fades into a cell
+ * that was empty, it does not push the others. One row wins when its drawing stays
+ * within 88 % of the two-row drawing. Returns null when the plates do not fit.
+ */
+function evenRows(c: Ctx, idx: number[], more: number): Built | null {
+  const count = idx.length + (more ? 1 : 0);
+  if (idx.length < 1 || count < 2) return null;
+  const chip = EVEN_CHIP;
+  const place = (rows: number) => {
+    const cols = Math.ceil(count / rows);
+    if (cols < 1 || (rows === 2 && count < 3)) return null;
+    const gap = c.gap;
+    const cw = (c.box.w - (cols - 1) * gap) / cols;
+    const ch = (c.box.h - (rows - 1) * gap) / rows;
+    if (cw < chip.w || ch < 64) return null;
+    const probe = idx.map((i) => plateBelow(cw, ch, c.aspects[i], c.lines, c.maxArt));
+    const side = Math.min(...probe.map((p) => p.side));
+    if (!(side > 0)) return null;
+    const ps = idx.map((i) => plateBelow(cw, ch, c.aspects[i], c.lines, Math.min(c.maxArt, side * Math.max(1, c.aspects[i]))));
+    if (ps.some((p) => p.w > cw + 0.5 || p.h > ch + 0.5)) return null;
+    const pw = Math.max(...ps.map((p) => p.w), more ? chip.w : 0);
+    const ph = Math.max(...ps.map((p) => p.h), more ? chip.h : 0);
+    const usedW = cols * pw + (cols - 1) * gap;
+    const usedH = rows * ph + (rows - 1) * gap;
+    if (usedW > c.box.w + 1 || usedH > c.box.h + 1) return null;
+    const ox = (c.box.w - usedW) / 2;
+    const oy = (c.box.h - usedH) / 2;
+    const slots: Slot[] = [];
+    for (let j = 0; j < count; j++) {
+      const row = Math.floor(j / cols);
+      const inRow = Math.min(cols, count - row * cols);
+      const col = j - row * cols;
+      const x = ox + ((cols - inRow) * (pw + gap)) / 2 + col * (pw + gap);
+      const y = oy + row * (ph + gap);
+      if (j < idx.length) {
+        const p = ps[j];
+        const pad = LABEL_METRICS[p.label.tier].pad;
+        const plate = { ...p, w: pw, art: { ...p.art, x: (pw - p.art.w) / 2 }, label: { ...p.label, w: pw - 2 * pad } };
+        slots.push(instrumentSlot(idx[j], 'cell', x, y, plate, 1));
+      } else {
+        const cx = Math.min(Math.max(0, x + (pw - chip.w) / 2), c.box.w - chip.w);
+        const cy = Math.min(Math.max(0, y + (ph - chip.h) / 2), c.box.h - chip.h);
+        slots.push(chipSlot(cx, cy, more, 1, chip));
+      }
+    }
+    return { side, slots };
+  };
+  const one = place(1);
+  const two = place(2);
+  const pick = !one ? two : !two ? one : one.side >= two.side * 0.88 ? one : two;
+  if (!pick) return null;
+  return { slots: pick.slots, visibility: 1 };
+}
+
 /* ---------- Choice ---------- */
 
 /** How many instruments each mode is made for (inclusive). Shared with the validator. */
@@ -584,6 +649,7 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
   const threshold = opts.minArt ?? readableMin(c.box);
   const aspect = c.box.w / c.box.h;
   const all = Array.from({ length: n }, (_, i) => i);
+  const cap = Math.max(1, Math.min(n, opts.maxShown != null && opts.maxShown > 0 ? Math.floor(opts.maxShown) : n));
 
   const result = (mode: LayoutMode, b: Built, visible: number, fallback: boolean): Layout => ({
     mode,
@@ -597,8 +663,16 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
 
   // A requested mode is honoured when it can show the instruments readably (extras go to the chip).
   const wanted = opts.mode && opts.mode !== 'auto' ? opts.mode : null;
+  // The song stage asks for equal rows. A section that names a mode still gets that mode.
+  if (opts.uniform && !wanted) {
+    for (let k = cap; k >= 1; k--) {
+      const b = k === 1 ? single(c, all.slice(0, 1), n - 1) : evenRows(c, all.slice(0, k), n - k);
+      if (b && measure(b).min >= threshold) return result(k === 1 ? 'single' : 'grid', b, k, false);
+    }
+    return result('single', single(c, [0], n - 1), 1, false);
+  }
   if (wanted) {
-    for (let k = n; k >= 1; k--) {
+    for (let k = cap; k >= 1; k--) {
       if (!ALLOWED[wanted](k) && !(wanted === 'single' && k === 1)) continue;
       const b = build(wanted, c, all.slice(0, k), n - k);
       if (b && measure(b).min >= threshold) return result(wanted, b, k, false);
@@ -606,7 +680,7 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
   }
 
   // Automatic: the best readable mode for all instruments; failing that, fewer instruments and a chip.
-  for (let k = n; k >= 1; k--) {
+  for (let k = cap; k >= 1; k--) {
     const more = n - k;
     let best: { mode: LayoutMode; b: Built; score: number } | null = null;
     for (const mode of LAYOUT_MODES) {

@@ -289,7 +289,7 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
 
       <header className="topbar">
         <a className="btn btn-circle btn-quiet" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
-          <Icon name="chevron.left" size={20} weight={2.2} />
+          <Icon name="chevron.left" size={20} weight={1.75} />
         </a>
         <div className="topbar-title">
           <div className="topbar-song">{song.title}</div>
@@ -305,9 +305,11 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
           <button className="comment-head" onClick={() => setSettings({ commentOpen: !settings.commentOpen })} aria-expanded={settings.commentOpen}>
             <span className="comment-kicker">Пояснение</span>
             <span className="comment-preview">{settings.commentOpen ? '' : (settings.showHarakat ? comment.text : stripHarakat(comment.text)).replace(/\*+/g, '')}</span>
-            <Icon name={settings.commentOpen ? 'chevron.down' : 'chevron.up'} size={15} weight={2.2} className="comment-chevron" />
+            <Icon name="chevron.down" size={18} weight={1.75} className="comment-chevron" />
           </button>
-          <RichText key={comment.from.idx} text={comment.text} showHarakat={settings.showHarakat} className="comment-body" />
+          <div className="comment-fold">
+            <RichText key={comment.from.idx} text={comment.text} showHarakat={settings.showHarakat} className="comment-body" />
+          </div>
         </aside>
       )}
 
@@ -356,13 +358,13 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
         )}
         <div className="transport">
           <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)">
-            <Icon name="backward" size={26} />
+            <Icon name="backward" size={22} />
           </button>
           <button className="btn btn-circle btn-xl btn-ring" onClick={togglePlay} aria-label={playing ? 'Пауза' : 'Воспроизвести'}>
             <Icon name={playing ? 'pause' : 'play'} size={26} style={playing ? undefined : { marginLeft: 3 }} />
           </button>
           <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)">
-            <Icon name="forward" size={26} />
+            <Icon name="forward" size={22} />
           </button>
         </div>
         <div className="utility">
@@ -371,7 +373,7 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
             <span>Перевод</span>
           </button>
           <button className="util" aria-pressed={settings.showComment} onClick={() => setSettings({ showComment: !settings.showComment })}>
-            <Icon name="book.closed" size={21} />
+            <Icon name="book.closed" size={22} />
             <span>Пояснение</span>
           </button>
           <button className="util" onClick={() => setSheet('text')}>
