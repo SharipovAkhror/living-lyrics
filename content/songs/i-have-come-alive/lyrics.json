@@ -33,7 +33,8 @@
         "tanbur",
         "bendir",
         "baglama",
-        "ensemble"
+        "oud",
+        "qanun"
       ],
       "flags": [
         "timing-draft",
@@ -57,12 +58,18 @@
           "at": 12.95
         },
         {
-          "key": "ensemble",
+          "key": "oud",
+          "at": 20.0
+        },
+        {
+          "key": "qanun",
           "at": 20.0
         }
       ],
       "performers": [
-        "Kutay Ozcan (баглама)"
+        "Kutay Ozcan (баглама)",
+        "Selim Boyaci (уд)",
+        "Onur Cicin (канун)"
       ]
     },
     {
@@ -73,13 +80,18 @@
       "label": "Танбур",
       "instruments": [
         "tanbur",
-        "ensemble",
+        "oud",
+        "qanun",
         "daf",
-        "kamancheh"
+        "kamancheh",
+        "baglama"
       ],
       "performers": [
         "Сейед Али Джабери (танбур)",
-        "Mohammad Jaberi (даф)"
+        "Selim Boyaci (уд)",
+        "Onur Cicin (канун)",
+        "Mohammad Jaberi (даф)",
+        "Kutay Ozcan (баглама)"
       ],
       "note": "Длинный проигрыш танбура перед первым куплетом.",
       "comment": "**Танбур** — длинногрифая лютня курдских и иранских суфиев (ахль-и хакк). Играют пальцами, без плектра, быстрыми ударами всей кистью.",
@@ -93,7 +105,11 @@
           "at": 24.0
         },
         {
-          "key": "ensemble",
+          "key": "oud",
+          "at": 24.8
+        },
+        {
+          "key": "qanun",
           "at": 24.8
         },
         {
@@ -103,6 +119,10 @@
         {
           "key": "kamancheh",
           "at": 54.0
+        },
+        {
+          "key": "baglama",
+          "at": 59.9
         }
       ]
     },
@@ -1553,7 +1573,8 @@
         "kamancheh",
         "baglama",
         "daf",
-        "ensemble"
+        "tanbur",
+        "qanun"
       ],
       "note": "Инструменты между турецким и арабским.",
       "flags": [
@@ -1574,13 +1595,18 @@
           "at": 250.7
         },
         {
-          "key": "ensemble",
+          "key": "tanbur",
           "at": 274.0
+        },
+        {
+          "key": "qanun",
+          "at": 275.65
         }
       ],
       "performers": [
         "Kutay Ozcan (баглама)",
-        "Mohammad Jaberi (даф)"
+        "Mohammad Jaberi (даф)",
+        "Onur Cicin (канун)"
       ]
     },
     {
