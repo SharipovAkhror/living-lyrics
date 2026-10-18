@@ -445,6 +445,12 @@ def test_calibration() -> None:
     check('end slack of 0.05 passes', ok, why)
     ok, why = C.structural([0.0], [0.02], None)
     check('the last word is not checked for length', ok, why)
+    ok, why = C.structural([10.05], [10.20], None, (0.0, 10.0))
+    check('a start on the section slack passes', ok and why == 'ok', why)
+    ok, why = C.structural([10.06], [10.20], None, (0.0, 10.0))
+    check('a start 0.06 s past the section fails', (not ok) and why == 'outside-section', why)
+    ok, why = C.structural([0.0, 0.20, 0.40], [0.02, 0.22, 0.42], None, None)
+    check('no section keeps the old structure check', ok and why == 'ok', why)
 
     def row(score: float, delta: float | None, structure: bool = True, lang: str = 'en', word_min: float | None = None) -> dict:
         return {'letter': score, 'word_mean': score, 'word_min': score if word_min is None else word_min,
@@ -566,6 +572,22 @@ def test_section_edges() -> None:
         ]},
     ]}
     check('a word inside the 0.05 s margin is left alone', T.fit_section_edges(inside) == 0 and inside['sections'][0]['end'] == 10.0)
+    outside = {'sections': [
+        {'kind': 'vocal', 'id': 'fuzuli-4b', 'start': 138.48, 'end': 180.26, 'lines': [
+            {'id': 'fuzuli-f8-1', 'words': [
+                {'w': 'ger', 's': 171.47, 'e': 171.93},
+                {'w': 'nedir.', 's': 180.91, 'e': 186.3},
+            ]},
+        ]},
+        {'kind': 'instrumental', 'id': 'voice-2', 'start': 180.26, 'end': 195.0, 'lines': []},
+    ]}
+    n = T.pull_outside_starts(outside)
+    words = outside['sections'][0]['lines'][0]['words']
+    check('the cue word is not pulled', n >= 1 and words[0]['s'] == 171.47 and words[0]['w'] == 'ger', str(words[0]))
+    check('a start past the section is pulled inside the slack',
+          words[1]['w'] == 'nedir.' and words[1]['s'] <= 180.31 and words[1]['e'] <= 180.31
+          and words[1]['e'] > words[1]['s'], str(words[1]))
+    check('pulling a start does not move the section', outside['sections'][0]['end'] == 180.26 and outside['sections'][1]['start'] == 180.26)
 
 
 def test_bias_and_witnesses() -> None:
@@ -946,6 +968,135 @@ def test_placement_chain() -> None:
                         'require_second': False, 'chance': 0.01, 'true_rate': 0.5}],
     })
     check('the word-rule grid still renders beside the line table', 'tol-0.10' in text and 'постановщик' in text, text[-180:])
+    check('a start on the section boundary is inside', P.spans_inside([[180.31, 180.5], None], (138.48, 180.26)))
+    check('a start 0.06 s past the section is outside', not P.spans_inside([[180.32, 180.5]], (138.48, 180.26)))
+    check('no section does not reject a start', P.spans_inside([[200.0, 201.0]], None))
+    held_section = P.judge([1.0, 1.5], [1.5, 2.0], 1.0, 3.0, (0.0, 4.0))
+    check('a section that contains the starts still places the line', held_section['placed'], str(held_section))
+    out_section = P.judge([10.06], [10.40], 10.0, None, (0.0, 10.0))
+    check('judge rejects a start outside the section',
+          (not out_section['placed']) and out_section['structure'] == 'outside-section', str(out_section))
+
+    import align as Align
+
+    past = Align._placement_attempt(
+        'mms-window', [[180.91, 186.3]], ['nedir'], 180.91, None, (170.0, 187.0), (138.48, 180.26))
+    check('the chain does not place a word that starts past its section',
+          (not past['placed']) and past['structure'] == 'outside-section', str(past))
+    boundary = Align._placement_attempt(
+        'mms-window', [[180.31, 180.40]], ['kavga'], 180.31, None, (170.0, 181.0), (138.48, 180.26))
+    check('the chain places a start exactly 0.05 s past the section end',
+          boundary['placed'] and boundary['structure'] == 'ok', str(boundary))
+
+
+def test_whisper_witness() -> None:
+    import whisper_witness as W
+
+    t = [0.0]
+
+    def clock() -> float:
+        return t[0]
+
+    def advancing(elapsed: dict):
+        def run(name, deadline):
+            elapsed['calls'].append((name, deadline))
+            info = elapsed['reply'](name, deadline)
+            t[0] += float(info.get('elapsed_s') or 0.0)
+            return info
+        return run
+
+    def finish(name, seconds):
+        return {'model': name, 'complete': True, 'elapsed_s': seconds, 'ran': True, 'lines': 3, 'placed': 3}
+
+    # All four finish inside a wide budget: the largest one is the witness.
+    t[0] = 0.0
+    state = {'calls': [], 'reply': lambda name, deadline: finish(name, 10.0)}
+    chosen, rows = W.ladder(advancing(state), budget_s=100000.0, clock=clock)
+    check('the largest finished model is the witness', chosen == 'large-v3' and len(rows) == 4, str([r['model'] for r in rows]))
+
+    # Medium takes most of the budget, so the larger estimates do not fit.
+    t[0] = 0.0
+    state = {'calls': [], 'reply': lambda name, deadline: finish(name, 1000.0 if name == 'medium' else 10.0)}
+    chosen, rows = W.ladder(advancing(state), budget_s=1600.0, clock=clock)
+    names = [r['model'] for r in rows]
+    skipped = [r for r in rows if r.get('reason') == 'budget']
+    check('a model whose estimate exceeds the budget is skipped',
+          chosen == 'medium' and [r['model'] for r in skipped] == ['large-v3-turbo', 'large-v3']
+          and [name for name, _dl in state['calls']] == ['small', 'medium'], str(names))
+
+    # An unfinished larger model does not replace the last one that finished, and a bigger one is not started.
+    t[0] = 0.0
+    def reply(name, deadline):
+        if name == 'large-v3-turbo':
+            return {'model': name, 'complete': False, 'elapsed_s': 30.0, 'ran': True, 'stopped': True}
+        return finish(name, 10.0)
+    state = {'calls': [], 'reply': reply}
+    chosen, rows = W.ladder(advancing(state), budget_s=100000.0, clock=clock)
+    check('an unfinished model does not replace the last finished one',
+          chosen == 'medium' and 'large-v3' not in [name for name, _dl in state['calls']], str(chosen))
+
+    # Medium itself did not finish: small remains, and nothing larger is tried.
+    t[0] = 1000.0
+    seen = []
+
+    def run_medium(name, deadline):
+        seen.append((name, deadline))
+        if name == 'medium':
+            return {'model': name, 'complete': False, 'elapsed_s': 5.0, 'ran': True, 'stopped': True}
+        return finish(name, 5.0)
+
+    chosen, _rows = W.ladder(run_medium, budget_s=4200.0, clock=clock)
+    check('medium that does not finish leaves small',
+          chosen == 'small' and seen[0] == ('small', None) and seen[1][1] == 5200.0 and len(seen) == 2, str(seen))
+
+    stats = W.agreement([
+        {'lang': 'az', 'deltas': [0.02, 0.04, 0.20, 0.05, 0.01, 0.03, 0.08, 0.09], 'cue_delta': 0.10},
+        {'lang': 'la', 'deltas': [0.01, 0.02], 'cue_delta': 0.20},
+        {'lang': 'de', 'deltas': [0.40] * 8, 'cue_delta': 0.50},
+    ])
+    check('eight close words read as a working witness', stats['by_lang']['az']['reading'] == 'рабочий', str(stats['by_lang']['az']))
+    check('two words are too few to call', stats['by_lang']['la']['reading'] == 'мало слов', str(stats['by_lang']['la']))
+    check('a far median is not a working witness', stats['by_lang']['de']['reading'] == 'не рабочий', str(stats['by_lang']['de']))
+
+    def refuted(**kw):
+        base = {
+            'i': 1, 'n': 3, 'prev_span': 1.2, 'prev_roman': 'aa',
+            'why': 'witnesses-agree-elsewhere', 'd2': 0.40, 'd3': 0.45,
+            'second': 1.4, 'third': 1.45, 'second_kind': 'whisperx', 'third_kind': 'stable-ts',
+        }
+        base.update(kw)
+        return W.annotate(base)
+
+    mid = refuted()
+    check('a middle word after a long hold is a melisma',
+          mid['position'] == 'середина' and mid['after'] == 'мелизм' and mid['shared'] is not None and mid['shared'] > 0, str(mid))
+    first = W.annotate({'i': 0, 'n': 3, 'prev_span': None, 'prev_roman': None, 'why': 'witness-attack',
+                        'd2': 0.50, 'd3': None, 'second': 1.5, 'third': None, 'second_kind': 'whisperx'})
+    check('a first word with one clock has no shared shift',
+          first['position'] == 'первое' and first['after'] == 'нет' and first['shared'] is None and first['side'] == 'whisperx', str(first))
+    last = W.annotate({'i': 2, 'n': 3, 'prev_span': 0.50, 'prev_roman': 'ab', 'why': 'witnesses-agree-elsewhere',
+                       'd2': 0.20, 'd3': 0.22, 'second': 2.0, 'third': 2.02})
+    check('a vowel onset of half a second is a long vowel', last['position'] == 'последнее' and last['after'] == 'долгая гласная', str(last))
+    only = W.annotate({'i': 0, 'n': 1, 'prev_span': None, 'prev_roman': None, 'why': 'witness-attack', 'd2': None, 'd3': 0.4, 'second': None, 'third': 1.4})
+    check('a one-word line is marked as the only word', only['position'] == 'единственное', str(only))
+    apart = W.shared_shift(0.40, 0.55)
+    check('witnesses more than 0.10 s apart do not share a shift', apart is None, str(apart))
+
+    systematic = [refuted() for _ in range(3)] + [
+        refuted(d2=-0.40, d3=-0.42, prev_span=0.10, prev_roman='ba') for _ in range(2)]
+    check('a shared later shift after a melisma is reported', 'мелизма' in W.conclusion(systematic), W.conclusion(systematic))
+    mixed = [refuted() for _ in range(2)] + [refuted(d2=-0.40, d3=-0.45) for _ in range(3)]
+    check('a split shift is not called a cause', 'не видно' in W.conclusion(mixed), W.conclusion(mixed))
+    table = W.render_refutation([refuted(song='karitas', id='fuzuli-f8-1', time=180.91, w='nedir.', placed_by='mms-window')], 0.20, 0.30)
+    check('the listening table keeps the word and the time', 'nedir.' in table and '3:00,91' in table and '0,20' in table, table[:240])
+
+    import engines
+    starts, info = engines.align_stable(
+        np.zeros(800, dtype=np.float32),
+        [{'id': 'a', 'lang': 'en', 'words': ['hi'], 't0': 0.0, 't1': 0.5}],
+        'not-a-whisper-model')
+    check('a missing whisper model does not abort alignment',
+          starts == {} and info['complete'] is False and bool(info.get('error')), str(info.get('error')))
 
 
 def main() -> int:
@@ -969,6 +1120,7 @@ def main() -> int:
     test_attack_chance()
     test_line_rule()
     test_placement_chain()
+    test_whisper_witness()
     test_calibration()
     test_bench_summary()
     test_harakat()

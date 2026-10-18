@@ -466,11 +466,96 @@ def match_word_starts(words: list[str], aligned, t0: float) -> list[float | None
     return starts
 
 
-class StableTs:
-    """Known-text Whisper alignment (stable-ts, model small). A third clock, not a second MMS.
+def align_stable(x: np.ndarray, jobs: list[dict], model_name: str = 'small',
+                 deadline: float | None = None) -> tuple[dict[str, list[float | None]], dict]:
+    """Known-text alignment on one Whisper model. A failure returns no starts.
 
-    One model for every language Whisper names, including Azerbaijani and Latin. A line it
-    cannot align is left out. Weights are not written into the repository.
+    `deadline` is an absolute `time.monotonic` time. Crossing it discards whatever
+    this call already aligned: a partial model is not a witness and not a placer.
+    `large-v3-turbo` falls back to the name `turbo` when the installed package is
+    older. Weights are not written into the repository. This does not raise.
+    """
+    import time
+
+    info = {
+        'model': model_name, 'loaded': None, 'ran': False, 'complete': False,
+        'elapsed_s': 0.0, 'lines': len(jobs), 'placed': 0, 'error': None,
+        'stopped': False, 'reason': None, 'estimate_s': None,
+    }
+    started = time.monotonic()
+    model = None
+    out: dict[str, list[float | None]] = {}
+    try:
+        if not jobs:
+            info['ran'] = True
+            info['complete'] = True
+            info['reason'] = 'empty'
+            return {}, info
+        import stable_whisper
+
+        _threads()
+        loaded = model_name
+        try:
+            model = stable_whisper.load_model(model_name, device='cpu')
+        except Exception as e:
+            if model_name != 'large-v3-turbo':
+                raise
+            print(f'stable-ts large-v3-turbo не открылась ({e.__class__.__name__}: {e}), пробую turbo', flush=True)
+            model = stable_whisper.load_model('turbo', device='cpu')
+            loaded = 'turbo'
+        info['loaded'] = loaded
+        info['ran'] = True
+        for j in jobs:
+            if deadline is not None and time.monotonic() > float(deadline):
+                info['stopped'] = True
+                info['complete'] = False
+                info['reason'] = 'deadline'
+                out = {}
+                break
+            lang = WHISPER_LANG.get(j.get('lang') or '')
+            text = ' '.join(w for w in j['words'] if str(w).strip())
+            if not lang or not text.strip():
+                continue
+            a = max(0, int(float(j['t0']) * SR))
+            b = min(len(x), int(float(j['t1']) * SR))
+            if b - a < int(0.2 * SR):
+                continue
+            seg = np.ascontiguousarray(x[a:b])
+            try:
+                result = _stable_align(model, seg, text, lang)
+                starts = match_word_starts(j['words'], result, a / SR)
+            except Exception as e:
+                print(f'stable-ts {j["id"]}: {e.__class__.__name__}: {e}', flush=True)
+                continue
+            if any(s is not None for s in starts) and len(starts) == len(j['words']):
+                out[j['id']] = starts
+        else:
+            info['complete'] = True
+        info['placed'] = sum(1 for starts in out.values() if any(s is not None for s in starts))
+    except Exception as e:
+        info['error'] = f'{e.__class__.__name__}: {e}'
+        info['complete'] = False
+        out = {}
+        print(f'stable-ts {model_name}: {info["error"]}', flush=True)
+    finally:
+        if model is not None:
+            del model
+        gc.collect()
+        info['elapsed_s'] = round(time.monotonic() - started, 1)
+    if info.get('stopped'):
+        print(f'stable-ts {model_name}: остановлена по времени, частичный результат сброшен', flush=True)
+    elif info.get('complete'):
+        print(f"stable-ts {info.get('loaded') or model_name}: поставлено {info['placed']}/{len(jobs)} "
+              f"за {info['elapsed_s']:.0f} с", flush=True)
+    return out, info
+
+
+class StableTs:
+    """Known-text Whisper alignment. A third clock, not a second MMS.
+
+    The engine entry point stays on `small`, so a bench call does not pick a model.
+    align.py chooses the model through `align_stable`. One model for every language
+    Whisper names, including Azerbaijani and Latin. A line it cannot align is left out.
     """
 
     name = 'stable-ts'
@@ -482,35 +567,10 @@ class StableTs:
         gc.collect()
 
     def word_starts(self, x: np.ndarray, jobs: list[dict]) -> dict[str, list[float | None]]:
-        import stable_whisper
-
-        model = stable_whisper.load_model('small', device='cpu')
-        out: dict[str, list[float | None]] = {}
-        try:
-            for j in jobs:
-                lang = WHISPER_LANG.get(j.get('lang') or '')
-                text = ' '.join(w for w in j['words'] if str(w).strip())
-                if not lang or not text.strip():
-                    continue
-                a = max(0, int(float(j['t0']) * SR))
-                b = min(len(x), int(float(j['t1']) * SR))
-                if b - a < int(0.2 * SR):
-                    continue
-                seg = np.ascontiguousarray(x[a:b])
-                try:
-                    result = _stable_align(model, seg, text, lang)
-                    starts = match_word_starts(j['words'], result, a / SR)
-                except Exception as e:
-                    print(f'{self.name} {j["id"]}: {e.__class__.__name__}: {e}', flush=True)
-                    continue
-                if any(s is not None for s in starts) and len(starts) == len(j['words']):
-                    out[j['id']] = starts
-        finally:
-            del model
-            gc.collect()
-        placed = sum(1 for starts in out.values() if any(s is not None for s in starts))
-        print(f'{self.name}: поставлено {placed}/{len(jobs)} строк', flush=True)
-        return out
+        starts, info = align_stable(x, jobs, 'small', None)
+        if not info.get('complete'):
+            return {}
+        return starts
 
 
 def _stable_call(model, audio, text: str, lang: str):

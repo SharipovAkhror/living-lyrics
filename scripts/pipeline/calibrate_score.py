@@ -36,7 +36,8 @@ FALLBACK_METRIC = 'letter'
 FALLBACK_THRESHOLD = 0.30
 
 
-def structural(starts: list[float | None], ends: list[float | None], next_cue: float | None) -> tuple[bool, str]:
+def structural(starts: list[float | None], ends: list[float | None], next_cue: float | None,
+               section: tuple[float, float] | None = None) -> tuple[bool, str]:
     """Score-free checks on the lettered words of one line, in order.
 
     `starts` and `ends` are seconds. None is a lettered word the path did not
@@ -44,6 +45,9 @@ def structural(starts: list[float | None], ends: list[float | None], next_cue: f
     one frame and the hold sits on the star, so a short CTC spike is not an
     eaten word. A short run is two consecutive gaps between starts. The line
     end is the last letter's end, and it may not run past the next cue.
+    When `section` is (start, end), every lettered start must sit inside that
+    section, with the same 0.05 s slack the validator uses. A start on the
+    slack boundary passes. No section keeps the older checks only.
     """
     if not starts:
         return False, 'empty'
@@ -65,6 +69,12 @@ def structural(starts: list[float | None], ends: list[float | None], next_cue: f
             run = 0
     if next_cue is not None and ends and ends[-1] is not None and float(ends[-1]) > float(next_cue) + END_SLACK:
         return False, 'past-next'
+    if section is not None:
+        lo = float(section[0]) - END_SLACK
+        hi = float(section[1]) + END_SLACK
+        for s in placed:
+            if s < lo - 1e-9 or s > hi + 1e-9:
+                return False, 'outside-section'
     return True, 'ok'
 
 
