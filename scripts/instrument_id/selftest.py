@@ -6,7 +6,7 @@ import json
 
 import numpy as np
 
-from anchors import _boundary_bleed, labels_on_anchor
+from anchors import DISPUTE, _boundary_bleed, labels_on_anchor, score_slug, vision_disputes_voice
 from fuse import fuse_payload
 from paths import ROOT, SONGS
 from predict import smooth
@@ -45,6 +45,11 @@ def test_taxonomy() -> None:
     check(match_ids("тар") == ["tar"], "тар отдельным словом")
     check(match_ids("классическая гитара") == ["guitar-classical"], "классическая гитара")
     check("tar" not in match_ids("это гитара фламенко"), "тар не находится внутри гитары")
+    bar = data["heldOutRecording"]
+    check(
+        bar["minPrecision"] == 0.8 and bar["minRecall"] == 0.3 and bar["minSupport"] == 8,
+        f"порог чужой записи {bar}",
+    )
 
 
 def test_credits() -> None:
@@ -180,6 +185,51 @@ def test_anchor_listen() -> None:
     check(_boundary_bleed(23.7, 100.814, 99.0, 167.0), "голос у края длинной секции не валит якорь")
     check(not _boundary_bleed(23.7, 100.814, 30.0, 80.0), "чужой класс внутри секции остаётся")
     check(not _boundary_bleed(172.0, 174.0, 171.0, 174.0), "короткий якорь, покрытый принятым классом, остаётся")
+    voice = {"start": 2.0, "end": 37.39, "id": "voice", "catalogKey": "voice"}
+    choir = {
+        "time_s": 4.0, "visible": True, "note": "choir vocalizing",
+        "players": [{"instrument": "choir", "playing": True, "who": "", "confidence": 0.9}],
+    }
+    check(vision_disputes_voice(voice, [choir]), "хор в окне спорит с якорем голоса")
+    silent = {
+        "time_s": 6.0, "visible": True, "note": "choir in frame",
+        "players": [{"instrument": "choir", "playing": False, "who": "", "confidence": 0.7}],
+    }
+    check(vision_disputes_voice(voice, [silent]), "хор в кадре спорит, даже если не играет")
+    noted = {
+        "time_s": 8.0, "visible": True, "note": "close choir male singer",
+        "players": [{"instrument": "voice", "playing": True, "who": "", "confidence": 0.9}],
+    }
+    check(vision_disputes_voice(voice, [noted]), "хор в подписи кадра спорит с якорем голоса")
+    applause_anchor = {"start": 793.0, "end": 828.05, "id": "voice", "catalogKey": "voice"}
+    applause = {"time_s": 800.0, "visible": True, "note": "audience applauding", "players": []}
+    check(vision_disputes_voice(applause_anchor, [applause]), "аплодисменты спорят с якорем голоса")
+    claps = {"time_s": 797.0, "visible": True, "note": "medium Sami Yusuf clapping to audience", "players": []}
+    check(vision_disputes_voice(applause_anchor, [claps]), "хлопки спорят с якорем голоса")
+    bow = {
+        "time_s": 10.0, "visible": True, "note": "violin bowing",
+        "players": [{"instrument": "violin", "playing": True, "who": "", "confidence": 0.9}],
+    }
+    check(not vision_disputes_voice(voice, [bow]), "смычок не считается аплодисментами")
+    outside = {
+        "time_s": 100.0, "visible": True, "note": "choir singing",
+        "players": [{"instrument": "choir", "playing": True, "who": "", "confidence": 0.8}],
+    }
+    check(not vision_disputes_voice(voice, [outside]), "хор вне окна якорь не снимает")
+    hidden = {**choir, "visible": False}
+    check(not vision_disputes_voice(voice, [hidden]), "невидимый кадр не спорит")
+    tanbur = {"start": 23.7, "end": 100.8, "id": "tanbur", "catalogKey": "tanbur"}
+    check(not vision_disputes_voice(tanbur, [choir]), "не голосовой якорь не снимается")
+    scored = score_slug(
+        "karitas",
+        data,
+        frames=[choir],
+    )
+    voice_rows = [row for row in scored["anchors"] if row["catalogKey"] == "voice" and row["start"] == 2.0]
+    check(len(voice_rows) == 1 and voice_rows[0]["verdict"] == DISPUTE, f"спорный якорь не провал: {voice_rows}")
+    check(voice_rows[0]["verdict"] != "fail" and scored["failures"] == sum(
+        1 for row in scored["anchors"] if row["verdict"] == "fail"
+    ), "спор с видео не входит в чужие принятые")
 
 
 def main() -> None:

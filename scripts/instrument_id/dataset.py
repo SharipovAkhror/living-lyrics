@@ -162,6 +162,53 @@ def extract() -> tuple[Path, Path]:
     return tiny_root, irmas_root
 
 
+def _assign_extra_splits(pending: list[dict], minimum: int) -> None:
+    """Hold out whole recordings. Train stays at or above `minimum` clips.
+
+    Test is the largest recording that can leave without dropping the rest
+    under the minimum. A Commons performance wins a tie against a sample
+    library. A second recording becomes val on the same rule. Clips of one
+    recording never land in two splits. IRMAS keeps the hash split.
+    """
+    by_group: dict[str, list[dict]] = {}
+    for row in pending:
+        by_group.setdefault(row["group"], []).append(row)
+        row["split"] = "train"
+
+    def preference(group: str) -> tuple:
+        members = by_group[group]
+        commons = 0 if members[0].get("source") == "commons" else 1
+        return (commons, -len(members), group)
+
+    def choose(groups: set[str]) -> str | None:
+        total = sum(len(by_group[group]) for group in groups)
+        options = [group for group in groups if total - len(by_group[group]) >= minimum]
+        if not options:
+            return None
+        return sorted(options, key=preference)[0]
+
+    groups = set(by_group)
+    held = choose(groups)
+    if held is not None:
+        groups.remove(held)
+        for row in by_group[held]:
+            row["split"] = "test"
+        val = choose(groups)
+        if val is not None:
+            for row in by_group[val]:
+                row["split"] = "val"
+    counts: dict[str, int] = {}
+    names: dict[str, set[str]] = {}
+    for row in pending:
+        counts[row["split"]] = counts.get(row["split"], 0) + 1
+        names.setdefault(row["split"], set()).add(row["group"].rsplit(":", 1)[-1])
+    parts = []
+    for split in ("train", "val", "test"):
+        if counts.get(split):
+            parts.append(f"{split} {counts[split]} ({', '.join(sorted(names[split]))})")
+    print(f"  доли {pending[0]['id']}: " + "; ".join(parts))
+
+
 def _hash_split(group: str, seed: int) -> str:
     digest = hashlib.sha256(f"{seed}:{group}".encode("utf-8")).hexdigest()
     x = int(digest[:8], 16) / 0xFFFFFFFF
@@ -307,12 +354,15 @@ def _extra_rows(data: dict) -> list[dict]:
         if csv_path.is_file():
             with csv_path.open(encoding="utf-8", newline="") as handle:
                 for record in csv.DictReader(handle):
-                    name = f"{record['recording']}-{float(record['start']):.1f}.wav"
+                    name = (record.get("file") or "").strip() or f"{record['recording']}-{float(record['start']):.1f}.wav"
                     meta_by_name[name] = record
         pending = []
         recordings = set()
         for wav in sorted(folder.glob("*.wav")):
-            meta = meta_by_name.get(wav.name, {})
+            meta = meta_by_name.get(wav.name)
+            # A wav without a manifest row, or with a doubt flag, does not train.
+            if not meta or (meta.get("flag") or "").strip():
+                continue
             recording = meta.get("recording") or wav.stem
             license_name = meta.get("license") or "не записана"
             group = f"extra:{folder.name}:{recording}"
@@ -321,15 +371,17 @@ def _extra_rows(data: dict) -> list[dict]:
                 "path": str(wav),
                 "id": folder.name,
                 "group": group,
-                "split": _hash_split(group, int(data["seed"])),
+                "split": "train",
                 "source": meta.get("source") or "commons",
                 "license": license_name,
                 "optimistic": False,
-                "note": "клип из манифеста; группа — запись, не окно",
+                "note": "клип из манифеста; группа — запись, не окно; запись целиком в одной доле",
             })
-        if len(pending) < int(data["minExamples"]) or len(recordings) < 3:
+        minimum = int(data["minExamples"])
+        if len(pending) < minimum or len(recordings) < 3:
             print(f"extra {folder.name}: клипов {len(pending)}, записей {len(recordings)} — в голову не берём")
             continue
+        _assign_extra_splits(pending, minimum)
         rows.extend(pending)
     return rows
 

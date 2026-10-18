@@ -1,0 +1,408 @@
+{
+  "slug": "one",
+  "present": [
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 8,
+      "shots85": 8,
+      "audio": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 23,
+      "shots85": 22,
+      "audio": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 8,
+      "shots85": 8,
+      "audio": false
+    },
+    {
+      "id": "double-bass",
+      "name": "контрабас",
+      "catalogKey": "double-bass",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 5,
+      "shots85": 3,
+      "audio": true
+    },
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "catalogKey": null,
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 6,
+      "shots85": 6,
+      "audio": true
+    },
+    {
+      "id": "ney",
+      "name": "най",
+      "catalogKey": "ney",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 4,
+      "shots85": 4,
+      "audio": false
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 9,
+      "shots85": 7,
+      "audio": false
+    },
+    {
+      "id": "qanun",
+      "name": "канун",
+      "catalogKey": "qanun",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 3,
+      "shots85": 3,
+      "audio": false
+    },
+    {
+      "id": "santur",
+      "name": "сантур",
+      "catalogKey": "santur",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 17,
+      "shots85": 17,
+      "audio": false
+    },
+    {
+      "id": "tanbur",
+      "name": "танбур",
+      "catalogKey": "tanbur",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 3,
+      "shots85": 3,
+      "audio": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 20,
+      "shots85": 20,
+      "audio": false
+    }
+  ],
+  "check": [
+    {
+      "id": "kamancheh",
+      "why": "планов с уверенностью ≥ 0,85: 1 из 3, в титрах нет",
+      "shots": 1,
+      "frames": 4
+    },
+    {
+      "id": "riq",
+      "why": "один план",
+      "shots": 0,
+      "frames": 2
+    }
+  ],
+  "missingEngraving": [
+    {
+      "id": "flute",
+      "name": "поперечная флейта",
+      "shots": 6,
+      "where": "inst-1 267; inst-1 276; inst-1 286; inst-1 294; inst-7 711; voice-6 719"
+    }
+  ],
+  "sections": [
+    {
+      "id": "voice-1",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "inst-1",
+      "action": "write",
+      "instruments": [
+        "oud",
+        "santur",
+        "violin"
+      ],
+      "entries": [
+        {
+          "key": "oud",
+          "at": 251.0
+        },
+        {
+          "key": "santur",
+          "at": 262.75
+        },
+        {
+          "key": "violin",
+          "at": 301.85
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-2",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "voice-3",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "inst-2",
+      "action": "write",
+      "instruments": [
+        "violin",
+        "santur",
+        "darbuka",
+        "ensemble"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 389.81
+        },
+        {
+          "key": "santur",
+          "at": 398.0
+        },
+        {
+          "key": "darbuka",
+          "at": 400.85
+        },
+        {
+          "key": "ensemble",
+          "at": 402.5
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "inst-3",
+      "action": "write",
+      "instruments": [
+        "violin",
+        "ney",
+        "daf"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 464.67
+        },
+        {
+          "key": "ney",
+          "at": 464.67
+        },
+        {
+          "key": "daf",
+          "at": 472.6
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "inst-4",
+      "action": "write",
+      "instruments": [
+        "violin",
+        "daf",
+        "oud"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 498.02
+        },
+        {
+          "key": "daf",
+          "at": 504.7
+        },
+        {
+          "key": "oud",
+          "at": 510.0
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "inst-5",
+      "action": "write",
+      "instruments": [
+        "daf"
+      ],
+      "entries": [
+        {
+          "key": "daf",
+          "at": 584.85
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-4",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "inst-6",
+      "action": "write",
+      "instruments": [
+        "darbuka",
+        "daf",
+        "bendir"
+      ],
+      "entries": [
+        {
+          "key": "darbuka",
+          "at": 632.75
+        },
+        {
+          "key": "daf",
+          "at": 634.1
+        },
+        {
+          "key": "bendir",
+          "at": 636.75
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-5",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "inst-7",
+      "action": "write",
+      "instruments": [
+        "santur",
+        "bendir",
+        "ney"
+      ],
+      "entries": [
+        {
+          "key": "santur",
+          "at": 679.0
+        },
+        {
+          "key": "bendir",
+          "at": 692.75
+        },
+        {
+          "key": "ney",
+          "at": 712.0
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-6",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "inst-8",
+      "action": "write",
+      "instruments": [
+        "ney"
+      ],
+      "entries": [
+        {
+          "key": "ney",
+          "at": 721.0
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-7",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "inst-9",
+      "action": "unchanged",
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "voice-8",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    }
+  ]
+}

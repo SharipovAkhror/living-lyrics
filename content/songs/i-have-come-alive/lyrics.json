@@ -8,12 +8,18 @@
       "end": 10.6,
       "label": "Вступление",
       "instruments": [
-        "ensemble"
+        "tanbur"
       ],
       "note": "Инструменты до первого голоса.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "tanbur",
+          "at": 8.9
+        }
       ]
     },
     {
@@ -38,16 +44,38 @@
       "label": "Танбур",
       "instruments": [
         "tanbur",
+        "oud",
+        "qanun",
         "ensemble"
       ],
       "performers": [
-        "Сейед Али Джабери (танбур)"
+        "Сейед Али Джабери (танбур)",
+        "Selim Boyaci (уд)",
+        "Onur Cicin (канун)"
       ],
       "note": "Длинный проигрыш танбура перед первым куплетом.",
       "comment": "**Танбур** — длинногрифая лютня курдских и иранских суфиев (ахль-и хакк). Играют пальцами, без плектра, быстрыми ударами всей кистью.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "tanbur",
+          "at": 24.0
+        },
+        {
+          "key": "oud",
+          "at": 24.8
+        },
+        {
+          "key": "qanun",
+          "at": 24.8
+        },
+        {
+          "key": "ensemble",
+          "at": 30.8
+        }
       ]
     },
     {
@@ -947,12 +975,32 @@
       "end": 172,
       "label": "Проигрыш",
       "instruments": [
-        "ensemble"
+        "tanbur",
+        "baglama",
+        "daf"
       ],
       "note": "Короткий проигрыш.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "tanbur",
+          "at": 163.95
+        },
+        {
+          "key": "baglama",
+          "at": 164.55
+        },
+        {
+          "key": "daf",
+          "at": 165.75
+        }
+      ],
+      "performers": [
+        "Kutay Ozcan (баглама)",
+        "Mohammad Jaberi (даф)"
       ]
     },
     {
@@ -1509,12 +1557,37 @@
       "end": 286.302,
       "label": "Проигрыш",
       "instruments": [
+        "kamancheh",
+        "baglama",
+        "daf",
         "ensemble"
       ],
       "note": "Инструменты между турецким и арабским.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "kamancheh",
+          "at": 246.7
+        },
+        {
+          "key": "baglama",
+          "at": 250.7
+        },
+        {
+          "key": "daf",
+          "at": 250.7
+        },
+        {
+          "key": "ensemble",
+          "at": 274.0
+        }
+      ],
+      "performers": [
+        "Kutay Ozcan (баглама)",
+        "Mohammad Jaberi (даф)"
       ]
     },
     {
@@ -2476,12 +2549,32 @@
       "end": 404.084,
       "label": "Проигрыш",
       "instruments": [
-        "ensemble"
+        "daf",
+        "baglama",
+        "tanbur"
       ],
       "note": "Инструменты перед маввалем.",
       "flags": [
         "timing-draft",
         "attribution-unverified"
+      ],
+      "entries": [
+        {
+          "key": "daf",
+          "at": 389.2
+        },
+        {
+          "key": "baglama",
+          "at": 390.0
+        },
+        {
+          "key": "tanbur",
+          "at": 390.2
+        }
+      ],
+      "performers": [
+        "Mohammad Jaberi (даф)",
+        "Kutay Ozcan (баглама)"
       ]
     },
     {

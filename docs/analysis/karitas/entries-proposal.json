@@ -4,32 +4,22 @@
     {
       "key": "choir",
       "at": 0.5,
-      "until": 5.5
-    },
-    {
-      "key": "voice",
-      "at": 7.0,
-      "until": 181.0
+      "until": 6.0
     },
     {
       "key": "choir",
       "at": 8.5,
-      "until": 11.5
-    },
-    {
-      "key": "double-bass",
-      "at": 11.0,
-      "until": 16.0
+      "until": 12.0
     },
     {
       "key": "choir",
       "at": 17.5,
-      "until": 25.5
+      "until": 37.5
     },
     {
-      "key": "choir",
-      "at": 29.5,
-      "until": 37.5
+      "key": "voice",
+      "at": 35.5,
+      "until": 124.5
     },
     {
       "key": "choir",
@@ -57,6 +47,11 @@
       "until": 139.5
     },
     {
+      "key": "voice",
+      "at": 137.0,
+      "until": 179.0
+    },
+    {
       "key": "choir",
       "at": 141.5,
       "until": 148.5
@@ -72,9 +67,9 @@
       "until": 189.5
     },
     {
-      "key": "voice",
-      "at": 193.0,
-      "until": 270.0
+      "key": "choir",
+      "at": 194.0,
+      "until": 212.0
     },
     {
       "key": "choir",
@@ -85,6 +80,11 @@
       "key": "choir",
       "at": 223.5,
       "until": 229.5
+    },
+    {
+      "key": "voice",
+      "at": 227.5,
+      "until": 266.0
     },
     {
       "key": "choir",
@@ -98,33 +98,18 @@
     },
     {
       "key": "voice",
-      "at": 279.5,
-      "until": 301.0
+      "at": 290.0,
+      "until": 300.5
     },
     {
       "key": "voice",
-      "at": 334.0,
-      "until": 338.0
-    },
-    {
-      "key": "double-bass",
-      "at": 339.0,
-      "until": 342.5
+      "at": 426.5,
+      "until": 444.5
     },
     {
       "key": "voice",
-      "at": 426.0,
-      "until": 563.0
-    },
-    {
-      "key": "voice",
-      "at": 567.0,
-      "until": 592.5
-    },
-    {
-      "key": "voice",
-      "at": 690.0,
-      "until": 702.0
+      "at": 446.0,
+      "until": 550.5
     },
     {
       "key": "choir",
@@ -135,11 +120,6 @@
       "key": "choir",
       "at": 808.5,
       "until": 811.5
-    },
-    {
-      "key": "voice",
-      "at": 878.0,
-      "until": 948.0
     },
     {
       "key": "choir",
@@ -153,8 +133,13 @@
     },
     {
       "key": "choir",
-      "at": 899.5,
-      "until": 902.5
+      "at": 899.0,
+      "until": 906.0
+    },
+    {
+      "key": "voice",
+      "at": 908.0,
+      "until": 942.0
     },
     {
       "key": "choir",

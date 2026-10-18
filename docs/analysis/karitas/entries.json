@@ -1,0 +1,494 @@
+{
+  "slug": "karitas",
+  "present": [
+    {
+      "id": "baglama",
+      "name": "баглама",
+      "catalogKey": "baglama",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 4,
+      "shots85": 4,
+      "audio": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 18,
+      "shots85": 5,
+      "audio": false
+    },
+    {
+      "id": "darbuka",
+      "name": "дарбука",
+      "catalogKey": "darbuka",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 9,
+      "shots85": 8,
+      "audio": false
+    },
+    {
+      "id": "erhu",
+      "name": "эрху",
+      "catalogKey": "erhu",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 4,
+      "shots85": 4,
+      "audio": false
+    },
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "catalogKey": null,
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 12,
+      "shots85": 4,
+      "audio": true
+    },
+    {
+      "id": "ney",
+      "name": "най",
+      "catalogKey": "ney",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 15,
+      "shots85": 13,
+      "audio": false
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 7,
+      "shots85": 5,
+      "audio": false
+    },
+    {
+      "id": "qanun",
+      "name": "канун",
+      "catalogKey": "qanun",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 17,
+      "shots85": 11,
+      "audio": false
+    },
+    {
+      "id": "riq",
+      "name": "рик",
+      "catalogKey": "riq",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 5,
+      "shots85": 5,
+      "audio": false
+    },
+    {
+      "id": "violin",
+      "name": "скрипка",
+      "catalogKey": "violin",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 26,
+      "shots85": 23,
+      "audio": false
+    }
+  ],
+  "check": [
+    {
+      "id": "double-bass",
+      "why": "уверенность ниже 0,85, в титрах нет",
+      "shots": 0,
+      "frames": 10
+    },
+    {
+      "id": "kamancheh",
+      "why": "уверенность ниже 0,85, в титрах нет",
+      "shots": 0,
+      "frames": 3
+    },
+    {
+      "id": "bass-drum",
+      "why": "планов с уверенностью ≥ 0,85: 2 из 3, в титрах нет",
+      "shots": 2,
+      "frames": 2
+    },
+    {
+      "id": "santur",
+      "why": "один план",
+      "shots": 1,
+      "frames": 1
+    },
+    {
+      "id": "viola",
+      "why": "один план",
+      "shots": 0,
+      "frames": 1
+    }
+  ],
+  "missingEngraving": [
+    {
+      "id": "guitar-acoustic",
+      "name": "акустическая гитара",
+      "shots": 4,
+      "where": "hildegard-2 211; instruments-8 817; instruments-8 827; voice-14 859"
+    }
+  ],
+  "sections": [
+    {
+      "id": "intro",
+      "action": "unchanged",
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "voice-1",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "voice-2",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "instruments-1",
+      "action": "write",
+      "instruments": [
+        "daf",
+        "violin"
+      ],
+      "entries": [
+        {
+          "key": "daf",
+          "at": 272.0
+        },
+        {
+          "key": "violin",
+          "at": 275.7
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-3",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "voice-4",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "voice-5",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "voice-6",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "voice-7",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "instruments-2",
+      "action": "write",
+      "instruments": [
+        "ney",
+        "violin",
+        "oud"
+      ],
+      "entries": [
+        {
+          "key": "ney",
+          "at": 373.35
+        },
+        {
+          "key": "violin",
+          "at": 388.0
+        },
+        {
+          "key": "oud",
+          "at": 397.55
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-8",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "instruments-3",
+      "action": "write",
+      "instruments": [
+        "violin",
+        "oud"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 409.0
+        },
+        {
+          "key": "oud",
+          "at": 415.0
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-9",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "instruments-4",
+      "action": "write",
+      "instruments": [
+        "oud",
+        "violin",
+        "baglama"
+      ],
+      "entries": [
+        {
+          "key": "oud",
+          "at": 633.2
+        },
+        {
+          "key": "violin",
+          "at": 638.05
+        },
+        {
+          "key": "baglama",
+          "at": 646.2
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-10",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "instruments-5",
+      "action": "write",
+      "instruments": [
+        "qanun"
+      ],
+      "entries": [
+        {
+          "key": "qanun",
+          "at": 706.0
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-11",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "instruments-6",
+      "action": "write",
+      "instruments": [
+        "ney",
+        "qanun"
+      ],
+      "entries": [
+        {
+          "key": "ney",
+          "at": 723.0
+        },
+        {
+          "key": "qanun",
+          "at": 723.0
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-12",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "instruments-7",
+      "action": "write",
+      "instruments": [
+        "violin",
+        "qanun"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 750.0
+        },
+        {
+          "key": "qanun",
+          "at": 753.0
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-13",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "instruments-8",
+      "action": "write",
+      "instruments": [
+        "violin"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 815.0
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-14",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "instruments-9",
+      "action": "write",
+      "instruments": [
+        "erhu"
+      ],
+      "entries": [
+        {
+          "key": "erhu",
+          "at": 866.0
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-15",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "voice-16",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "instruments-10",
+      "action": "unchanged",
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "voice-17",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    }
+  ]
+}

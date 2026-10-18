@@ -83,8 +83,8 @@
     },
     {
       "key": "voice",
-      "at": 99.0,
-      "until": 169.5
+      "at": 99.5,
+      "until": 165.0
     },
     {
       "key": "erhu",
@@ -108,13 +108,13 @@
     },
     {
       "key": "voice",
-      "at": 171.0,
-      "until": 174.0
+      "at": 166.5,
+      "until": 169.5
     },
     {
       "key": "voice",
       "at": 181.5,
-      "until": 251.0
+      "until": 248.0
     },
     {
       "key": "kamancheh",

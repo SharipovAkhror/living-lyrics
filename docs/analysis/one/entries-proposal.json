@@ -2,11 +2,6 @@
   "slug": "one",
   "entries": [
     {
-      "key": "voice",
-      "at": 0.0,
-      "until": 171.0
-    },
-    {
       "key": "choir",
       "at": 2.5,
       "until": 9.5
@@ -14,12 +9,17 @@
     {
       "key": "choir",
       "at": 11.5,
-      "until": 17.5
+      "until": 25.0
     },
     {
       "key": "choir",
       "at": 26.5,
       "until": 54.5
+    },
+    {
+      "key": "voice",
+      "at": 56.5,
+      "until": 92.0
     },
     {
       "key": "choir",
@@ -39,27 +39,12 @@
     {
       "key": "choir",
       "at": 88.5,
-      "until": 97.5
-    },
-    {
-      "key": "choir",
-      "at": 101.5,
       "until": 105.5
     },
     {
       "key": "choir",
-      "at": 114.5,
-      "until": 117.5
-    },
-    {
-      "key": "choir",
-      "at": 122.5,
-      "until": 125.5
-    },
-    {
-      "key": "choir",
-      "at": 131.5,
-      "until": 137.5
+      "at": 108.0,
+      "until": 140.0
     },
     {
       "key": "choir",
@@ -69,72 +54,47 @@
     {
       "key": "choir",
       "at": 158.5,
-      "until": 169.5
+      "until": 187.0
     },
     {
       "key": "choir",
-      "at": 171.5,
-      "until": 185.5
-    },
-    {
-      "key": "voice",
-      "at": 173.0,
-      "until": 251.0
+      "at": 189.0,
+      "until": 193.0
     },
     {
       "key": "choir",
-      "at": 197.5,
+      "at": 197.0,
       "until": 201.5
-    },
-    {
-      "key": "double-bass",
-      "at": 203.0,
-      "until": 218.0
     },
     {
       "key": "choir",
       "at": 205.5,
-      "until": 209.5
-    },
-    {
-      "key": "choir",
-      "at": 211.5,
-      "until": 217.5
-    },
-    {
-      "key": "choir",
-      "at": 219.5,
-      "until": 237.5
-    },
-    {
-      "key": "choir",
-      "at": 239.5,
-      "until": 242.5
+      "until": 244.0
     },
     {
       "key": "voice",
       "at": 302.0,
-      "until": 357.0
+      "until": 356.0
     },
     {
       "key": "voice",
-      "at": 360.5,
+      "at": 365.5,
       "until": 391.0
     },
     {
       "key": "voice",
       "at": 440.5,
-      "until": 466.0
+      "until": 464.0
     },
     {
       "key": "voice",
-      "at": 473.0,
-      "until": 500.0
+      "at": 475.0,
+      "until": 499.0
     },
     {
       "key": "voice",
-      "at": 555.5,
-      "until": 586.0
+      "at": 560.0,
+      "until": 584.0
     },
     {
       "key": "choir",
@@ -142,9 +102,14 @@
       "until": 761.5
     },
     {
-      "key": "voice",
-      "at": 729.0,
-      "until": 774.0
+      "key": "choir",
+      "at": 811.0,
+      "until": 816.0
+    },
+    {
+      "key": "choir",
+      "at": 818.0,
+      "until": 828.0
     }
   ],
   "skippedNoCatalogKey": [
