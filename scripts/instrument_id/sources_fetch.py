@@ -32,10 +32,15 @@ UA = "LivingLyricsInstrumentId/1.0 (https://github.com/SharipovAkhror/living-lyr
 MIN_CLIPS = 15
 MIN_RECORDINGS = 3
 CLIP_SEC = 2.0
-HOP_SEC = 3.0
+# Non-overlapping windows. A coarser hop left three-recording classes under the
+# trainer's 15-clip train gate after one recording was held out.
+HOP_SEC = 2.0
 HOP_TIGHT = 2.0
-MAX_CLIPS_PER_RECORDING = 6
-MAX_CLIPS_TIGHT = 8
+MAX_CLIPS_PER_RECORDING = 10
+MAX_CLIPS_TIGHT = 10
+# Andy's file is 68 s. Sixteen windows keep train at or above 15 after the
+# Houssem performance is held out. The open-string file is too short to do that.
+CAP_OVERRIDE = {"andy-r-jordan": 16}
 MAX_BYTES = 40_000_000
 FIELDS = ["url", "license", "author", "recording", "start", "end", "source", "file", "flag"]
 ERHU_API = "https://zenodo.org/api/records/4320991"
@@ -220,6 +225,10 @@ def _allowed_page(instrument: str, page: dict) -> str:
     return ""
 
 
+def _cap(recording: str, default: int) -> int:
+    return CAP_OVERRIDE.get(recording, default)
+
+
 def _clips(duration: float, hop: float, cap: int) -> list[tuple[float, float]]:
     if duration < CLIP_SEC:
         return []
@@ -325,10 +334,14 @@ def _commons(instrument: str) -> list[dict]:
         if not _cache_raw(page["url"], raw):
             continue
         downloaded.append((page, recording, raw))
-        rows.extend(_rows_from_raw(instrument, page, recording, raw, HOP_SEC, MAX_CLIPS_PER_RECORDING, per_recording))
+        rows.extend(_rows_from_raw(
+            instrument, page, recording, raw, HOP_SEC, _cap(recording, MAX_CLIPS_PER_RECORDING), per_recording,
+        ))
     recordings = {row["recording"] for row in rows}
-    if len(rows) < MIN_CLIPS and len(recordings) >= MIN_RECORDINGS:
-        print("  добор шагом 2 с, не больше 8 клипов с записи", flush=True)
+    # A second pass only helps when the first hop left gaps. At 2 s the windows
+    # already touch, so a tighter hop would not add a new slice.
+    if len(rows) < MIN_CLIPS and len(recordings) >= MIN_RECORDINGS and HOP_SEC > HOP_TIGHT:
+        print("  добор шагом 2 с", flush=True)
         per_recording = {}
         rows = []
         audio_root = WORK / "extra" / instrument
@@ -336,7 +349,9 @@ def _commons(instrument: str) -> list[dict]:
             for wav in audio_root.glob("*.wav"):
                 wav.unlink()
         for page, recording, raw in downloaded:
-            rows.extend(_rows_from_raw(instrument, page, recording, raw, HOP_TIGHT, MAX_CLIPS_TIGHT, per_recording))
+            rows.extend(_rows_from_raw(
+                instrument, page, recording, raw, HOP_TIGHT, _cap(recording, MAX_CLIPS_TIGHT), per_recording,
+            ))
     return rows
 
 
@@ -347,6 +362,11 @@ SFZ_NOTES = (
     "Samples/sus/erhu_g5_sus_rr1.wav",
     "Samples/sus/erhu_c6_sus_rr1.wav",
     "Samples/sus/erhu_f5_sus_rr1.wav",
+    # Four more rr1 pitches, names taken from the public git tree of Samples/sus.
+    "Samples/sus/erhu_b5_sus_rr1.wav",
+    "Samples/sus/erhu_a6_sus_rr1.wav",
+    "Samples/sus/erhu_d6_sus_rr1.wav",
+    "Samples/sus/erhu_e6_sus_rr1.wav",
 )
 
 
@@ -391,8 +411,37 @@ def _erhu_sfz() -> list[dict]:
     return rows
 
 
+def _wav_seconds(blob: bytes) -> float | None:
+    """Duration from a wav header. The data chunk size is enough; the samples are not read."""
+    if len(blob) < 44 or blob[:4] != b"RIFF" or blob[8:12] != b"WAVE":
+        return None
+    pos = 12
+    rate = channels = width = None
+    data_size = None
+    while pos + 8 <= len(blob):
+        chunk = blob[pos:pos + 4]
+        size = int.from_bytes(blob[pos + 4:pos + 8], "little")
+        pos += 8
+        if chunk == b"fmt " and pos + 16 <= len(blob):
+            channels = int.from_bytes(blob[pos + 2:pos + 4], "little")
+            rate = int.from_bytes(blob[pos + 4:pos + 8], "little")
+            width = int.from_bytes(blob[pos + 14:pos + 16], "little")
+        elif chunk == b"data":
+            data_size = size
+            break
+        pos += size + (size & 1)
+    if not rate or not channels or not width or data_size is None:
+        return None
+    return data_size / (rate * channels * (width / 8))
+
+
+# English technique folders in ErhuPT. Short hits and pizzicato are not the bowed class.
+ERHU_BOWED = ("detache", "diangong", "legato", "tremolo", "trill", "vibrato")
+ERHU_PER_FOLDER = 2
+
+
 def _erhu_zenodo() -> list[dict]:
-    """Unlabeled players stay one recording. Short technique bursts under 2 s are skipped."""
+    """Unlabeled players stay one recording. One or two long bowed notes per technique."""
     zip_path = WORK / "data" / "ErhuPT.zip"
     zip_path.parent.mkdir(parents=True, exist_ok=True)
     meta = json.loads(_get(ERHU_API))
@@ -430,12 +479,25 @@ def _erhu_zenodo() -> list[dict]:
         by_dir.setdefault(str(Path(name).parent), []).append(name)
     raw_root = WORK / "sources-raw" / "erhu"
     raw_root.mkdir(parents=True, exist_ok=True)
-    rows = []
+    picked: list[str] = []
     for folder in sorted(by_dir):
-        if len(rows) >= MAX_CLIPS_PER_RECORDING:
-            break
-        name = sorted(by_dir[folder])[0]
-        dest = raw_root / "probe.wav"
+        path = folder.replace("\\", "/")
+        leaf = path.rsplit("/", 1)[-1].lower()
+        if "11 classes" not in path or not any(token in leaf for token in ERHU_BOWED):
+            continue
+        found = 0
+        for name in sorted(by_dir[folder]):
+            if len(picked) >= MAX_CLIPS_PER_RECORDING or found >= ERHU_PER_FOLDER:
+                break
+            with archive.open(name) as handle:
+                seconds = _wav_seconds(handle.read(4096))
+            if seconds is None or seconds < CLIP_SEC:
+                continue
+            picked.append(name)
+            found += 1
+    rows = []
+    dest = raw_root / "probe.wav"
+    for name in picked:
         dest.write_bytes(archive.read(name))
         try:
             duration = probe_duration(dest)
@@ -461,9 +523,9 @@ def _erhu_zenodo() -> list[dict]:
             "file": file_name,
             "flag": "",
         })
-    if (raw_root / "probe.wav").is_file():
-        (raw_root / "probe.wav").unlink()
-    print(f"  erhupt: клипов {len(rows)} из разных папок техник", flush=True)
+    if dest.is_file():
+        dest.unlink()
+    print(f"  erhupt: клипов {len(rows)} из долгих смычковых приёмов", flush=True)
     return rows
 
 
@@ -494,7 +556,14 @@ def _note(instrument: str, rows: list[dict]) -> str:
         if instrument == "oud":
             return "Третья запись — открытые струны уда (User:Bottomline), два клипа. Остальные клипы — Andy R. Jordan и Houssem bettaibi."
         if instrument == "erhu":
-            return "Zhang Peijian — один человек. ErhuPT — исполнители в файлах не подписаны. Третья группа — CC0-ноты дешёвого эрху, имя скрипача в readme не указано. Сведение Antti Luode в голову не входит."
+            return (
+                "Zhang Peijian — один человек. Десять клипов — из «二泉映月»; «江河水» тот же исполнитель "
+                "и в нарезку не вошла, потолок записи уже был заполнен. "
+                "ErhuPT — исполнители в файлах не подписаны; взяты долгие смычковые приёмы, "
+                "короткие удары и пиццикато не брали. "
+                "Третья группа — десять CC0-нот дешёвого эрху, имя скрипача в readme не указано. "
+                "Сведение Antti Luode в голову не входит."
+            )
         if instrument == "choir":
             return "Kantorei St. Michael помечена review и в счёт не входит. Четыре хора: Childrenschorussa, храм «Света Троица» в Пловдиве, Ensemble Morales, Harmonica."
         return ""

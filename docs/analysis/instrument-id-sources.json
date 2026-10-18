@@ -1,7 +1,7 @@
 [
   {
     "id": "oud",
-    "clips": 18,
+    "clips": 28,
     "recordings": 3,
     "enough": true,
     "note": "Третья запись — открытые струны уда (User:Bottomline), два клипа. Остальные клипы — Andy R. Jordan и Houssem bettaibi."
@@ -57,10 +57,10 @@
   },
   {
     "id": "setar",
-    "clips": 7,
-    "recordings": 2,
+    "clips": 6,
+    "recordings": 1,
     "enough": false,
-    "note": "Принятых клипов 7, записей 2, с флагом 5. Jacqke — один демонстратор ладов."
+    "note": "Принятых клипов 6, записей 1, с флагом 6. Jacqke — один демонстратор ладов."
   },
   {
     "id": "tanbur",
@@ -85,20 +85,20 @@
   },
   {
     "id": "duduk",
-    "clips": 17,
+    "clips": 29,
     "recordings": 3,
     "enough": true
   },
   {
     "id": "erhu",
-    "clips": 17,
+    "clips": 29,
     "recordings": 3,
     "enough": true,
-    "note": "Zhang Peijian — один человек. ErhuPT — исполнители в файлах не подписаны. Третья группа — CC0-ноты дешёвого эрху, имя скрипача в readme не указано. Сведение Antti Luode в голову не входит."
+    "note": "Zhang Peijian — один человек. Десять клипов — из «二泉映月»; «江河水» тот же исполнитель и в нарезку не вошла, потолок записи уже был заполнен. ErhuPT — исполнители в файлах не подписаны; взяты долгие смычковые приёмы, короткие удары и пиццикато не брали. Третья группа — десять CC0-нот дешёвого эрху, имя скрипача в readme не указано. Сведение Antti Luode в голову не входит."
   },
   {
     "id": "choir",
-    "clips": 22,
+    "clips": 38,
     "recordings": 4,
     "enough": true,
     "note": "Kantorei St. Michael помечена review и в счёт не входит. Четыре хора: Childrenschorussa, храм «Света Троица» в Пловдиве, Ensemble Morales, Harmonica."
@@ -136,6 +136,6 @@
     "clips": 301,
     "recordings": "irmas 301",
     "enough": true,
-    "note": "уже в голове"
+    "note": "уже в голове из IRMAS, отдельный набор не собирали. Веса некоммерческие из-за CC BY-NC-SA 4.0."
   }
 ]

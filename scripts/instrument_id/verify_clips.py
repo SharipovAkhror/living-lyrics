@@ -140,6 +140,8 @@ def main() -> None:
 
 # Flags from the 2026-10-18 spot check. A flagged row stays in the manifest and
 # does not train. Thresholds were read off clip-features.json, not guessed first.
+# A window that is mostly under the silence floor is not a note. The second
+# line caught diangong_m_013: silence 0.64 and rms 0.008, under the recording median.
 RECORDING_FLAG = {
     "antti-luode": "ensemble",
     "iran-persian": "voice",
@@ -154,6 +156,7 @@ def apply_flags() -> None:
 
     features = json.loads((WORK / "clip-features.json").read_text(encoding="utf-8"))
     silence = {row["file"]: row["silence"] for row in features}
+    rms = {row["file"]: row["rms"] for row in features}
     manifest = Path(__file__).resolve().parent / "sources"
     for csv_path in sorted(manifest.glob("*.csv")):
         with csv_path.open(encoding="utf-8", newline="") as handle:
@@ -168,8 +171,11 @@ def apply_flags() -> None:
             row.setdefault("flag", "")
             if (row.get("flag") or "").strip():
                 continue
+            name = row.get("file") or ""
             reason = RECORDING_FLAG.get(row.get("recording") or "")
-            if not reason and silence.get(row.get("file") or "", 0) >= 0.70:
+            if not reason and silence.get(name, 0) >= 0.70:
+                reason = "silence"
+            elif not reason and silence.get(name, 0) >= 0.60 and rms.get(name, 1) < 0.01:
                 reason = "silence"
             if reason:
                 row["flag"] = reason
