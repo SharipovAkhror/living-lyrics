@@ -649,6 +649,135 @@ def test_attack_chance() -> None:
     check('attacks every 0.2 s have that median gap', abs((A.median_interval(dense) or 0) - 0.2) < 1e-9)
 
 
+def test_line_rule() -> None:
+    import attack_chance as A
+
+    check('one of two meets a half', Q.share_met(1, 2, 0.50))
+    check('one of three meets 0.33', Q.share_met(1, 3, 0.33))
+    check('one of four misses 0.33', not Q.share_met(1, 4, 0.33))
+
+    slices = [
+        {'song': 'one', 'lang': '*', 'words': 160, 'one': 0.206, 'two': 0.02},
+        {'song': 'one', 'lang': 'ar', 'words': 84, 'one': 0.161, 'two': 0.02},
+        {'song': 'one', 'lang': 'de', 'words': 76, 'one': 0.257, 'two': 0.03},
+        {'song': 'ihca', 'lang': '*', 'words': 250, 'one': 0.066, 'two': 0.01},
+        {'song': 'ihca', 'lang': 'en', 'words': 44, 'one': 0.159, 'two': 0.02},
+        {'song': 'ihca', 'lang': 'tr', 'words': 47, 'one': 0.032, 'two': 0.01},
+        {'song': 'ihca', 'lang': 'xx', 'words': 10, 'one': 0.50, 'two': 0.40},
+    ]
+    scopes, ok = A.assign_scopes(slices)
+    by = {(row['song'], row['lang']): row for row in scopes}
+    check('ONE needs both witnesses', ok and by[('one', '*')]['witnesses'] == 'two', str(by[('one', '*')]))
+    check('ONE Arabic needs both witnesses', by[('one', 'ar')]['witnesses'] == 'two')
+    check('ONE German needs both witnesses', by[('one', 'de')]['witnesses'] == 'two')
+    check('IHCA keeps one witness', by[('ihca', '*')]['witnesses'] == 'one' and by[('ihca', '*')]['why'] == 'slice-one')
+    check('IHCA English needs both on its own sample', by[('ihca', 'en')]['witnesses'] == 'two')
+    check('IHCA Turkish keeps one witness', by[('ihca', 'tr')]['witnesses'] == 'one')
+    short = by[('ihca', 'xx')]
+    check('a short language inherits the song', short['witnesses'] == 'one' and short['why'] == 'song-fallback', str(short))
+    check('the inherited chance is the song chance', abs(short['chance'] - 0.066) < 1e-12, str(short['chance']))
+    over = [dict(row) for row in slices]
+    over[2] = dict(over[2], two=0.20)
+    _, over_ok = A.assign_scopes(over)
+    check('a slice over 15 % on both rules is not within the limit', not over_ok)
+
+    rule = {'scopes': [
+        {'song': 'ihca', 'lang': 'en', 'witnesses': 'two'},
+        {'song': 'ihca', 'lang': '*', 'witnesses': 'one'},
+    ]}
+    check('a language scope wins', Q.witnesses_for(rule, 'ihca', 'en') == 'two')
+    check('a missing language uses the song scope', Q.witnesses_for(rule, 'ihca', 'fa') == 'one')
+
+    refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    peaks = np.array([1.40])
+    both = {'ctc_s': 1.0, 'second_s': 1.40, 'third_s': 1.45}
+    check('both clocks that agree far from MMS refute the word',
+          Q.word_refuted(both, peaks, refute) == 'witnesses-agree-elsewhere')
+    split = {'ctc_s': 1.0, 'second_s': 1.05, 'third_s': 1.40}
+    check('clocks that do not agree are not a refutation', Q.word_refuted(split, peaks, refute) is None)
+    close = {'ctc_s': 1.0, 'second_s': 1.05}
+    check('one clock close to MMS is not a refutation', Q.word_refuted(close, peaks, refute) is None)
+    lone = {'ctc_s': 1.0, 'second_s': 1.40}
+    check('one far clock with an attack MMS lacks refutes the word',
+          Q.word_refuted(lone, np.array([1.40]), refute) == 'witness-attack')
+    check('a peak at both times is not a single-witness refutation',
+          Q.word_refuted(lone, np.array([1.0, 1.40]), refute) is None)
+    check('no clock is not a refutation', Q.word_refuted({'ctc_s': 1.0}, peaks, refute) is None)
+    check('both clocks refute even when MMS has an attack',
+          Q.word_refuted(both, np.array([1.0, 1.40]), refute) == 'witnesses-agree-elsewhere')
+
+    cue = dict(cue_start=1.0, ctc_line_start=1.0)
+    words = [
+        {'roman': 'ba', 'ctc_s': 1.0, 'second_s': 1.02, 'third_s': 1.03},
+        {'roman': 'ka', 'ctc_s': 1.4, 'second_s': 1.42, 'third_s': 1.41},
+        {'roman': 'da', 'ctc_s': 1.8, 'second_s': 1.82, 'third_s': 1.81},
+        {'roman': 'ga', 'ctc_s': 2.2, 'second_s': 2.22, 'third_s': 2.21},
+    ]
+    half = Q.proof_line(True, 'good', True, [0.02, 0.02, 0.50, 0.50], words, True,
+                        witnesses='one', line_share=0.50, refute=refute, peaks=peaks, **cue)
+    check('half the words prove the line', half['pass'], str(half))
+    refused = [
+        words[0], words[1],
+        {'roman': 'da', 'ctc_s': 1.8, 'second_s': 2.30, 'third_s': 2.35},
+        words[3],
+    ]
+    blocked = Q.proof_line(True, 'good', True, [0.02, 0.02, 0.02, 0.02], refused, True,
+                           witnesses='one', line_share=0.50, refute=refute, peaks=np.array([2.30]), **cue)
+    check('one refuted word fails the line', (not blocked['pass']) and blocked['reason'] == 'word-refuted', str(blocked))
+    few = Q.proof_line(True, 'good', True, [0.02, 0.50, 0.50, 0.50], words, True,
+                       witnesses='one', line_share=0.25, refute=refute, peaks=peaks, **cue)
+    check('fewer than two proved words fails', (not few['pass']) and few['reason'] == 'word-share', str(few))
+    every = Q.proof_line(True, 'good', True, [0.02, 0.02, 0.50, 0.50], words, True,
+                         witnesses='one', line_share=1.0, refute=refute, peaks=peaks, **cue)
+    check('K of 1 still needs every word', (not every['pass']) and every['reason'] == 'word-share', str(every))
+
+    grid = [
+        {'both_far': 0.15, 'only_far': 0.20, 'refuted': 20, 'words': 100},
+        {'both_far': 0.20, 'only_far': 0.30, 'refuted': 10, 'words': 100},
+        {'both_far': 0.20, 'only_far': 0.40, 'refuted': 8, 'words': 100},
+        {'both_far': 0.30, 'only_far': 0.30, 'refuted': 5, 'words': 100},
+        {'both_far': 0.30, 'only_far': 0.40, 'refuted': 2, 'words': 100},
+    ]
+    kept = A.choose_refute(grid)
+    check('the proposal stays when it refutes under 15 %',
+          kept['both_far'] == 0.20 and kept['only_far'] == 0.30 and kept['within_cap'], str(kept))
+    steep = [dict(row) for row in grid]
+    steep[1] = dict(steep[1], refuted=40, rate=0.40)
+    steep[2] = dict(steep[2], refuted=30, rate=0.30)
+    stepped = A.choose_refute(steep)
+    check('a proposal over 15 % steps up to the least strict pair under the cap',
+          stepped['both_far'] == 0.30 and stepped['only_far'] == 0.30 and stepped['within_cap'], str(stepped))
+
+    loose = A.choose_k([
+        {'k': 0.50, 'chance': 0.08, 'proved': 40},
+        {'k': 0.75, 'chance': 0.04, 'proved': 20},
+    ])
+    check('the K under 5 % is kept', loose['k'] == 0.75 and loose['within_limit'], str(loose))
+    tight = A.choose_k([
+        {'k': 0.50, 'chance': 0.04, 'proved': 40},
+        {'k': 0.75, 'chance': 0.02, 'proved': 20},
+    ])
+    check('the lower K with more lines wins when both are under 5 %', tight['k'] == 0.50, str(tight))
+
+    line = {
+        'id': 'l', 'placed': True, 'group': 'solo', 'lang': 'en', 'song': 's',
+        'cue_start': 1.0, 'ctc_start': 1.0,
+        'words': [
+            {'t': 1.0, 'roman': 'ba', 'second': 1.0, 'third': 1.0, 'ctc_e': 1.2},
+            {'t': 2.0, 'roman': 'ka', 'second': 2.0, 'third': 2.0, 'ctc_e': 2.2},
+        ],
+    }
+    attacks = np.array([1.0, 2.0])
+    modes = {('s', 'en'): 'one'}
+    hit, n = A.line_pass_count([line], attacks, modes, refute, 1.0, shift=0.0)
+    check('the unshifted line passes', hit == 1 and n == 1, f'{hit}/{n}')
+    miss, n = A.line_pass_count([line], attacks, modes, refute, 1.0, shift=0.15)
+    check('a 0.15 s shift that drops the line is a line miss', miss == 0 and n == 1, f'{miss}/{n}')
+    short_line = dict(line, words=line['words'][:1], ctc_start=1.0)
+    _, short_n = A.line_pass_count([short_line], attacks, modes, refute, 1.0)
+    check('a one-word line is outside the line chance', short_n == 0)
+
+
 def test_bench_summary() -> None:
     import bench_align as B
 
@@ -686,6 +815,7 @@ def main() -> int:
     test_section_edges()
     test_bias_and_witnesses()
     test_attack_chance()
+    test_line_rule()
     test_calibration()
     test_bench_summary()
     test_harakat()

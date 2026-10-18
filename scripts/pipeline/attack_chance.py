@@ -11,25 +11,32 @@ Singing puts an attack on almost every note. If those attacks sit about 0.2 s
 apart, a time 0.15 s off the true start is still within 0.10 s of some attack,
 and the attack test does not prove the word.
 
-The first candidates are the witness rules. `attack-h0.7-one` is a strong attack
-(height 0.7, solo 0.10 s, choir 0.20 s) plus at least one independent clock
-(the calibrated second aligner, or stable-ts) within 0.10 s of the probe.
-`attack-h0.7-two` needs both clocks. The one-witness rule is kept when its
-chance is already at or under 15 %. Otherwise the two-witness rule is tried.
-Only if both are over 15 % does the older grid run: a smaller tolerance, a
-higher peak, an energy rise, or a required second aligner. The plain 0.10 s /
-height 0.5 rule does not override a witness rule that already qualifies.
+The word rule is chosen per song and per language, not on the pooled words.
+For each pair with at least 30 placed words, `attack-h0.7-one` (a strong attack
+plus one independent clock within 0.10 s) is kept when its own chance is at or
+under 15 %. Otherwise `attack-h0.7-two` (both clocks) is kept when that chance
+is at or under 15 %. A language with fewer than 30 words inherits the song's
+decision. If a required slice is over 15 % on both, the measurement fails and
+qa does not run. The older tolerance grid is still scored and stored. It does
+not become the rule, and it does not rescue a slice that missed both witness
+tests.
 
-The chance test shifts placed-line word starts by ±0.15, ±0.25 and ±0.4 s and
-rotates starts inside each line. The witness clocks stay where they were
-measured. A probe passes when it is within tolerance of some attack and, for a
-witness rule, of enough of those fixed clocks. The shuffle keeps each word's
-clocks and takes the next word's start. The true-proof rate uses
-qa_sync.prove_words, ownership included. Bias and adoption come from
-aligner-review.json and are copied onto the chosen rule.
+A word is refuted, separately from being unproved, when both clocks agree with
+each other and both sit far from MMS, or when the only clock is far from MMS
+and a strong attack sits on that clock but not on MMS. The cutoffs start at
+0.20 s and 0.30 s. They step stricter only when that pair refutes more than
+15 % of placed words. Missing the cap does not by itself fail the run.
 
-Exit 2 when a song has no stem or no align report, or when no rule keeps the
-chance at or under 15 %. qa must not run on an unmeasured rule.
+A line is proved when its start is within 0.30 s of the cue, no word is
+refuted, and at least K of its words are proved (at least two). K is the
+smallest share whose line chance is at or under 5 %. The line chance shifts
+every MMS start inside the line by the same ±0.15, ±0.25 or ±0.4 s, and
+rotates starts inside the line. The cue is not retested on the shifted start.
+Witness clocks stay put. One-word lines are left out of that rate.
+
+Exit 2 when a song has no stem or no align report, when a required slice stays
+over 15 %, or when no K keeps the line chance at or under 5 %. qa must not run
+on an unmeasured rule.
 """
 from __future__ import annotations
 
@@ -47,6 +54,14 @@ SHIFTS = (0.15, 0.25, 0.40)
 HEIGHTS = (0.5, 0.7, 0.9, 1.2)
 TOLS = (0.10, 0.08, 0.06, 0.05, 0.04)
 SECOND_TOL = Q.SECOND_WORD_TOL
+MIN_WORDS = 30
+LINE_LIMIT = 0.05
+LINE_SHARES = (0.25, 0.33, 0.40, 0.50, 0.60, 0.67, 0.75, 0.80, 0.90, 1.00)
+REFUTE_CAP = 0.15
+REFUTE_PROPOSAL = (0.20, 0.30)
+REFUTE_STEPS = ((0.20, 0.30), (0.20, 0.40), (0.30, 0.30), (0.30, 0.40))
+REFUTE_GRID = tuple((both_far, only_far) for both_far in (0.15, 0.20, 0.30) for only_far in (0.20, 0.30, 0.40))
+WITNESS_HEIGHT = 0.7
 
 
 def is_current(rule: dict) -> bool:
@@ -294,11 +309,19 @@ def _ru(x: float | None, nd: int = 3) -> str:
     return f'{float(x):.{nd}f}'.replace('.', ',')
 
 
-def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = None) -> list[dict]:
+def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = None,
+                 only_good: bool = True) -> list[dict]:
+    """Word rows in report order. `only_good` keeps placed lines, which is the word-chance pool.
+
+    The line measurement asks for every line that has a pre-snap start, including
+    ones that were not placed, so peak ownership can cross them the way qa does.
+    `placed` records the original status. A line with no lettered start is left out.
+    """
     lines = []
     timing = {'bias': bias or {}, 'adopt': adopt or {}}
     for line in report.get('lines') or []:
-        if line.get('status') != 'good':
+        good = line.get('status') == 'good'
+        if only_good and not good:
             continue
         words = []
         adjusted = Q.apply_rule_times(line.get('words') or [], line.get('lang'), timing) or []
@@ -322,6 +345,9 @@ def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = No
             'id': line['id'],
             'lang': line.get('lang') or '?',
             'group': line.get('group') or 'solo',
+            'placed': good,
+            'cue_start': None if line.get('cue_start') is None else float(line['cue_start']),
+            'ctc_start': None if line.get('ctc_start') is None else float(line['ctc_start']),
             'span': (min(w['t'] for w in words) - 0.05, end + 0.05),
             'words': words,
         })
@@ -379,6 +405,17 @@ def choose_measured(rows: list[dict]) -> dict:
 
 
 def _why_ru(chosen: dict, current_chance: float | None) -> str:
+    if chosen.get('why') == 'per-slice':
+        share = chosen.get('line_share')
+        if not chosen.get('within_limit'):
+            return ('Свидетели смотрятся отдельно по каждой песне и каждому языку, где слов не меньше 30. '
+                    'Где слов меньше, решение берётся по песне. '
+                    'Либо у такой пары оба правила свидетелей выше 15 %, либо ни одна доля строки '
+                    'не держит случайный проход строки не выше 5 %. Проверка на этом правиле не запускается.')
+        return (f"Свидетели выбраны по песне и языку. Строка доказана, когда её начало не дальше 0,3 с от реплики, "
+                f"ни одно слово не опровергнуто и доказано не меньше {_ru(share, 2)} её слов (не меньше двух). "
+                f"Случайный проход строки {_ru(chosen.get('chance'), 3)}. "
+                f"Доказано строк {chosen.get('true_proved', '—')} из {chosen.get('true_total', '—')} кандидатов.")
     if chosen.get('why') == 'witness-one':
         return (f"Сильная атака (сила 0,7) и согласие хотя бы одного независимого выравнивателя "
                 f"в пределах 0,10 с дают случайный проход {_ru(chosen.get('chance'), 3)}. "
@@ -453,22 +490,108 @@ def _records_to_lines(records: list[dict]) -> list[dict]:
     return list(lines.values())
 
 
+def _why_label(why: str | None) -> str:
+    return {
+        'slice-one': 'один, по языку',
+        'slice-two': 'оба, по языку',
+        'song-fallback': 'как у песни',
+        'over-limit': 'выше 15 %',
+    }.get(why or '', why or '—')
+
+
 def render_md(payload: dict) -> str:
     chosen = payload['chosen']
+    songs = list(payload.get('songs') or [])
     lines = [
-        '# Случайный проход атаки',
+        '# Случайный проход атаки и строки',
         '',
-        'Замер на вокальном стеме, только по поставленным строкам, после выравнивания всех песен задания и до проверки. '
-        'Плотность — медиана промежутка между атаками при силе пика 0,5. '
-        'Случайный проход — доля начал, которые после сдвига всё ещё оказываются не дальше допуска от какой-нибудь атаки '
-        '(для правила с обязательным вторым выравнивателем — ещё и не дальше 0,10 с от его начала). '
-        'Перемешивание — каждое слово получает начало следующего слова той же строки. '
-        'В зачёт идёт худшая из этих долей. Предел 15 %. Доля доказанных — слова поставленных строк, которые проходят полное доказательство, включая путь без атаки.',
+        'Замер на вокальном стеме после выравнивания всех песен задания и до проверки. '
+        'Правило слова выбирается по каждой паре песня/язык, где поставленных слов не меньше 30. '
+        'Где слов меньше, пара берёт решение песни. '
+        'Один свидетель — сильная атака (сила 0,7, соло 0,10 с, хор 0,20 с) и хотя бы один независимый выравниватель в пределах 0,10 с. '
+        'Оба свидетеля — та же атака и оба выравнивателя. '
+        'Случайный проход слова — худшая доля из сдвигов ±0,15, ±0,25, ±0,40 с и перемешивания начал внутри строки. '
+        'Часы свидетелей при сдвиге остаются на месте. Предел слова 15 %.',
+        '',
+        'Опровержение — отдельный счёт. Слово опровергнуто, если оба свидетеля, у которых есть время, согласны между собой '
+        '(не дальше 0,10 с) и оба дальше выбранного порога от MMS, либо единственный свидетель дальше своего порога '
+        'и рядом с его временем есть сильная атака, которой нет у MMS. Нет свидетеля — не опровержение. '
+        'Предложенные пороги 0,20 с и 0,30 с. Они ужесточаются, только если эта пара опровергает больше 15 % поставленных слов.',
+        '',
+        'Строка-кандидат — поставленная строка соло или хора, у которой есть реплика и не меньше двух слов. '
+        'Случайный проход строки сдвигает все начала MMS внутри строки на одно и то же ±0,15, ±0,25 или ±0,40 с '
+        'и отдельно перемешивает их. Реплика при сдвиге заново не проверяется: она уже выполнена у поставленной строки. '
+        'Строка проходит пробу, если ни одно слово не опровергнуто и доказано не меньше доли K (не меньше двух слов). '
+        'Предел строки 5 %. Берётся наименьшее K, которое в него укладывается: у него больше всего доказанных строк.',
         '',
         _why_ru(chosen, payload.get('current_chance')),
         '',
-        f"Правило: `{chosen.get('name')}`. Случайный проход {_ru(chosen.get('chance'), 3)}. "
-        f"Доказано слов {chosen.get('true_proved', '—')} из {chosen.get('true_total', '—')}.",
+        f"Правило: `{chosen.get('name')}`. Случайный проход строки {_ru(chosen.get('chance'), 3)}. "
+        f"Доказано строк {chosen.get('true_proved', '—')} из {chosen.get('true_total', '—')}.",
+        '',
+        '## Свидетели по песне и языку',
+        '',
+        '«Один» и «оба» — собственный случайный проход этой пары. '
+        '«Проход правила» — проход того режима, который реально применён. '
+        'У языка короче 30 слов это проход песни, а не его собственный.',
+        '',
+        '| песня | язык | слов | один | оба | правило | проход правила | почему |',
+        '|---|---|---:|---:|---:|---|---:|---|',
+    ]
+    for row in payload.get('scopes') or []:
+        mode = {'one': 'один', 'two': 'оба'}.get(row.get('witnesses') or '', '—')
+        lines.append(
+            f"| {row['song']} | {row['lang']} | {row['words']} | {_ru(row.get('one_chance'), 3)} | "
+            f"{_ru(row.get('two_chance'), 3)} | {mode} | {_ru(row.get('chance'), 3)} | {_why_label(row.get('why'))} |"
+        )
+    refute = chosen.get('refute') or {}
+    lines += [
+        '',
+        '## Опровержение слова',
+        '',
+        f"Выбрано: оба свидетеля дальше {_ru(refute.get('both_far'), 2)} с от MMS при согласии ≤ {_ru(refute.get('both_agree'), 2)} с, "
+        f"единственный свидетель дальше {_ru(refute.get('only_far'), 2)} с и сильная атака у него, а не у MMS "
+        f"(окно атаки {_ru(refute.get('attack_tol'), 2)} с). "
+        f"Опровергнуто {refute.get('refuted', '—')} из {refute.get('words', '—')} "
+        f"({_ru(refute.get('rate'), 3)}). "
+        f"Из них оба свидетеля в стороне: {refute.get('witnesses', 0)}, единственный свидетель с атакой: {refute.get('attack', 0)}. "
+        + ('Пара уложилась в 15 %.' if refute.get('within_cap') else 'Пара не уложилась в 15 %; взята самая строгая из сетки.'),
+        '',
+        '| оба дальше | один дальше | опровергнуто | слов | доля |',
+        '|---:|---:|---:|---:|---:|',
+    ]
+    for row in payload.get('refute_grid') or []:
+        mark = ''
+        if (refute.get('both_far') is not None and abs(float(row['both_far']) - float(refute['both_far'])) < 1e-9
+                and abs(float(row['only_far']) - float(refute['only_far'])) < 1e-9):
+            mark = ' ←'
+        lines.append(
+            f"| {_ru(row['both_far'], 2)}{mark} | {_ru(row['only_far'], 2)} | {row['refuted']} | {row['words']} | {_ru(row.get('rate'), 3)} |"
+        )
+    lines += [
+        '',
+        '| песня | язык | слов | опровергнуто | оба свидетеля | один свидетель |',
+        '|---|---|---:|---:|---:|---:|',
+    ]
+    for row in refute.get('by') or []:
+        lines.append(
+            f"| {row['song']} | {row['lang']} | {row['words']} | {row['refuted']} | {row['witnesses']} | {row['attack']} |"
+        )
+    lines += [
+        '',
+        '## Доля строки',
+        '',
+        'Случайный проход строки — худшая из долей ±0,15, ±0,25, ±0,40 с и перемешивания. '
+        'Доказано — строки, которые проходят правило на своих временах.',
+        '',
+        '| K | проход строки | ' + ' | '.join(songs) + ' | всего |',
+        '|---:|---:|' + '---:|' * len(songs) + '---:|',
+    ]
+    for row in payload.get('line_table') or []:
+        cells = ' | '.join(str((row.get('by_song') or {}).get(song, 0)) for song in songs)
+        mark = ' ←' if chosen.get('line_share') is not None and abs(float(row['k']) - float(chosen['line_share'])) < 1e-9 else ''
+        lines.append(f"| {_ru(row['k'], 2)}{mark} | {_ru(row.get('chance'), 3)} | {cells} | {row.get('proved', 0)} |")
+    lines += [
         '',
         '## Плотность атак',
         '',
@@ -482,26 +605,9 @@ def render_md(payload: dict) -> str:
         )
     lines += [
         '',
-        '## Случайный проход по песням и языкам',
+        '## Кандидаты по сумме слов',
         '',
-        'Базовое правило — допуск 0,10 с, хор 0,20 с, сила пика 0,5. '
-        'Рядом то же для выбранного правила, если оно другое.',
-        '',
-        '| песня | язык | слов | ±0,15 | ±0,25 | ±0,40 | перемешивание | худшая | правило |',
-        '|---|---|---:|---:|---:|---:|---:|---:|---|',
-    ]
-    for row in payload.get('by_slice') or []:
-        rates = row['rates']
-        lines.append(
-            f"| {row['song']} | {row['lang']} | {row['words']} | {_ru(rates.get('0.15'), 3)} | "
-            f"{_ru(rates.get('0.25'), 3)} | {_ru(rates.get('0.40'), 3)} | {_ru(rates.get('shuffle'), 3)} | "
-            f"{_ru(rates.get('chance'), 3)} | {row['rule']} |"
-        )
-    lines += [
-        '',
-        '## Кандидаты',
-        '',
-        'Показаны правило, которое уже стоит в коде, выбранное и те, что уложились в 15 %. '
+        'Это прежний перебор на всех поставленных словах вместе. Он в файл пишется и решение по песне и языку не подменяет. '
         'Полный перебор — в `attack-chance.json`.',
         '',
         '| правило | допуск | сила | подъём | второй / свидетели | худшая доля | доказано слов |',
@@ -509,13 +615,12 @@ def render_md(payload: dict) -> str:
     ]
     show = []
     for row in payload.get('candidates') or []:
-        if row['name'] == chosen.get('name') or is_current(row) or (row.get('chance') is not None and row['chance'] <= LIMIT):
+        if is_current(row) or row.get('witnesses') in ('one', 'two') or (row.get('chance') is not None and row['chance'] <= LIMIT):
             show.append(row)
-    show.sort(key=lambda row: (0 if row['name'] == chosen.get('name') else 1, -(row.get('true_rate') or 0)))
+    show.sort(key=lambda row: (0 if row.get('witnesses') in ('one', 'two') else 1, row.get('chance') if row.get('chance') is not None else 9))
     for row in show:
-        mark = ' ←' if row['name'] == chosen.get('name') else ''
         lines.append(
-            f"| {row['name']}{mark} | {_ru(row['tol'], 2)} | {_ru(row['peak_height'], 1)} | "
+            f"| {row['name']} | {_ru(row['tol'], 2)} | {_ru(row['peak_height'], 1)} | "
             f"{'да' if row.get('require_rise') else 'нет'} | {_witness_cell(row)} | "
             f"{_ru(row.get('chance'), 3)} | {_ru(row.get('true_rate'), 3)} |"
         )
@@ -551,6 +656,370 @@ def _peak_sets(sig: Q.Signals) -> dict[tuple[float, bool], np.ndarray]:
     return sets
 
 
+def _slice_chance(records: list[dict], peaks: np.ndarray, rule: dict) -> float | None:
+    if not records:
+        return None
+    shuffled = shuffled_records(_records_to_lines(records))
+    return chance_of(records, peaks, rule, shuffled)['chance']
+
+
+def _pick_mode(one: float | None, two: float | None) -> tuple[str | None, float | None, str]:
+    if one is not None and float(one) <= LIMIT + 1e-12:
+        return 'one', float(one), 'slice-one'
+    if two is not None and float(two) <= LIMIT + 1e-12:
+        return 'two', float(two), 'slice-two'
+    return None, None, 'over-limit'
+
+
+def measure_scope_rows(per_song: list[dict]) -> list[dict]:
+    """Unrounded one-witness and two-witness chance for each song and language."""
+    one_rule, two_rule = witness_rules()
+    rows = []
+    for song in per_song:
+        peaks = song['sets'][(WITNESS_HEIGHT, False)]
+        flat = _flat(song['lines'])
+        by_lang: dict[str, list[dict]] = {}
+        for word in flat:
+            by_lang.setdefault(word['lang'], []).append(word)
+        groups = [('*', flat)] + sorted(by_lang.items())
+        for lang, recs in groups:
+            rows.append({
+                'song': song['slug'],
+                'lang': lang,
+                'words': len(recs),
+                'one': _slice_chance(recs, peaks, one_rule),
+                'two': _slice_chance(recs, peaks, two_rule),
+            })
+    return rows
+
+
+def assign_scopes(slices: list[dict]) -> tuple[list[dict], bool]:
+    """Witness mode per song and language. False when a required slice stays over 15 %.
+
+    A language with at least MIN_WORDS placed words is judged on its own chance.
+    A shorter language inherits the song row, even when its own chance is lower.
+    """
+    if not slices:
+        return [], False
+    by_song: dict[str, dict[str, dict]] = {}
+    for row in slices:
+        by_song.setdefault(row['song'], {})[row['lang']] = row
+    out = []
+    ok = True
+    for song, langs in by_song.items():
+        song_row = langs.get('*')
+        song_mode, song_chance, song_why = _pick_mode(
+            None if song_row is None else song_row.get('one'),
+            None if song_row is None else song_row.get('two'),
+        )
+        if song_mode is None:
+            ok = False
+        for lang, row in langs.items():
+            n = int(row.get('words') or 0)
+            one = row.get('one')
+            two = row.get('two')
+            if lang == '*':
+                mode, chance, why = song_mode, song_chance, song_why
+            elif n >= MIN_WORDS:
+                mode, chance, why = _pick_mode(one, two)
+                if mode is None:
+                    ok = False
+            else:
+                mode = song_mode
+                chance = song_chance
+                why = 'song-fallback' if song_mode else 'over-limit'
+                if mode is None:
+                    ok = False
+            out.append({
+                'song': song,
+                'lang': lang,
+                'words': n,
+                'witnesses': mode,
+                'chance': chance,
+                'one_chance': one,
+                'two_chance': two,
+                'why': why,
+            })
+    return out, ok
+
+
+def _refute_cut(both_far: float, only_far: float) -> dict:
+    return {'both_agree': 0.10, 'both_far': both_far, 'only_far': only_far, 'attack_tol': 0.10}
+
+
+def measure_refute(per_song: list[dict]) -> list[dict]:
+    """How many placed words each cutoff refutes. Peaks are height 0.7, with no ownership."""
+    rows = []
+    for both_far, only_far in REFUTE_GRID:
+        cut = _refute_cut(both_far, only_far)
+        refuted = words = 0
+        both_n = only_n = 0
+        by: dict[tuple[str, str], dict] = {}
+        for song in per_song:
+            peaks = song['sets'][(WITNESS_HEIGHT, False)]
+            for line in song['lines']:
+                lang = line.get('lang') or '?'
+                bucket = by.setdefault((song['slug'], lang), {'words': 0, 'refuted': 0, 'witnesses': 0, 'attack': 0})
+                for word in line['words']:
+                    words += 1
+                    bucket['words'] += 1
+                    why = Q.word_refuted(
+                        {'ctc_s': word['t'], 'second_s': word.get('second'), 'third_s': word.get('third')},
+                        peaks, cut)
+                    if not why:
+                        continue
+                    refuted += 1
+                    bucket['refuted'] += 1
+                    if why == 'witnesses-agree-elsewhere':
+                        both_n += 1
+                        bucket['witnesses'] += 1
+                    else:
+                        only_n += 1
+                        bucket['attack'] += 1
+        rows.append({
+            'both_far': both_far,
+            'only_far': only_far,
+            'refuted': refuted,
+            'words': words,
+            'rate': None if words == 0 else refuted / words,
+            'witnesses': both_n,
+            'attack': only_n,
+            'by': [{'song': song, 'lang': lang, **counts} for (song, lang), counts in sorted(by.items())],
+        })
+    return rows
+
+
+def choose_refute(rows: list[dict]) -> dict:
+    """Keep 0.20 s / 0.30 s unless that pair refutes more than 15 % of placed words.
+
+    A looser pair is reported and never chosen. Above the cap, take the least
+    strict pair that is at least this strict on both axes and still under the cap.
+    If none is, keep 0.30 s / 0.40 s and record the miss. The run does not fail
+    on the refutation cap alone.
+    """
+    def find(both_far: float, only_far: float) -> dict:
+        for row in rows:
+            if abs(float(row['both_far']) - both_far) < 1e-9 and abs(float(row['only_far']) - only_far) < 1e-9:
+                return row
+        return {'both_far': both_far, 'only_far': only_far, 'refuted': 0, 'words': 0, 'rate': 0.0,
+                'witnesses': 0, 'attack': 0, 'by': []}
+
+    def rate_of(row: dict) -> float:
+        n = int(row.get('words') or 0)
+        if n <= 0:
+            return 0.0
+        if row.get('rate') is not None:
+            return float(row['rate'])
+        return int(row.get('refuted') or 0) / n
+
+    proposal = find(*REFUTE_PROPOSAL)
+    picked = proposal
+    within = rate_of(proposal) <= REFUTE_CAP + 1e-12
+    if not within:
+        picked = None
+        for both_far, only_far in REFUTE_STEPS:
+            if both_far + 1e-12 < REFUTE_PROPOSAL[0] or only_far + 1e-12 < REFUTE_PROPOSAL[1]:
+                continue
+            row = find(both_far, only_far)
+            if int(row.get('words') or 0) > 0 and rate_of(row) <= REFUTE_CAP + 1e-12:
+                picked = row
+                within = True
+                break
+        if picked is None:
+            picked = find(0.30, 0.40)
+            within = rate_of(picked) <= REFUTE_CAP + 1e-12
+    out = dict(picked)
+    out['both_agree'] = 0.10
+    out['attack_tol'] = 0.10
+    out['within_cap'] = within
+    out['cap'] = REFUTE_CAP
+    out['rate'] = None if int(out.get('words') or 0) == 0 else rate_of(out)
+    return out
+
+
+def _line_candidate(line: dict) -> bool:
+    """A placed solo or choir line with a cue and at least two lettered words.
+
+    A one-word line can never meet the minimum of two proved words, so it is
+    left out of both the numerator and the denominator of the line chance.
+    An uncued line cannot be proved either, and is left out for the same reason.
+    """
+    if not line.get('placed') or line.get('group') not in ('solo', 'choir'):
+        return False
+    words = line.get('words') or []
+    if len(words) < 2:
+        return False
+    cue = line.get('cue_start')
+    start = line.get('ctc_start')
+    if cue is None or start is None:
+        return False
+    return round(abs(float(start) - float(cue)), 3) <= Q.PROOF_CUE_TOL
+
+
+def _mode_of_line(modes: dict, line: dict) -> str:
+    song = line.get('song')
+    lang = line.get('lang') or '?'
+    mode = modes.get((song, lang)) or modes.get((song, '*'))
+    return mode if mode in ('one', 'two') else 'two'
+
+
+def _probe_line(words: list[dict], peaks: np.ndarray, group: str | None, mode: str,
+                refute: dict, share: float, prev: float | None) -> bool:
+    tol = 0.20 if group == 'choir' else 0.10
+    align_words = []
+    presnap: list[float | None] = []
+    cursor = prev
+    for word in words:
+        item = {
+            'roman': word.get('roman') or 'x',
+            'ctc_s': float(word['t']),
+            'ctc_e': word.get('ctc_e'),
+            'second_s': word.get('second'),
+            'third_s': word.get('third'),
+        }
+        align_words.append(item)
+        owned = None if cursor is None else cursor + tol
+        presnap.append(Q.nearest_attack(float(word['t']), peaks, owned))
+        cursor = float(word['t'])
+    proved = Q.prove_words(align_words, presnap, tol, witnesses=mode, agree_tol=SECOND_TOL)
+    flags = [Q.word_refuted(word, peaks, refute) for word in align_words]
+    return Q.line_word_ok(proved, flags, share)
+
+
+def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: dict, share: float,
+                    shift: float = 0.0, shuffle: bool = False) -> tuple[int, int]:
+    """Candidate lines that still pass after one shared shift, or after a rotation.
+
+    The cue belongs to the real line and is not applied to the shifted first word.
+    The previous line contributes its real, unshifted start. Inside the line the
+    moved starts own the peaks. Witness clocks stay on the word they were measured for.
+    """
+    prev: float | None = None
+    incoming: list[float | None] = []
+    for line in lines:
+        incoming.append(prev)
+        if line.get('words'):
+            prev = float(line['words'][-1]['t'])
+    hits = 0
+    n = 0
+    for i, line in enumerate(lines):
+        if not _line_candidate(line):
+            continue
+        n += 1
+        src = line['words']
+        moved = []
+        if shuffle:
+            rotated = src[1:] + src[:1]
+            for word, donor in zip(src, rotated):
+                item = dict(word)
+                item['t'] = float(donor['t'])
+                moved.append(item)
+        else:
+            for word in src:
+                item = dict(word)
+                item['t'] = float(word['t']) + float(shift)
+                moved.append(item)
+        if _probe_line(moved, peaks, line.get('group'), _mode_of_line(modes, line), refute, share, incoming[i]):
+            hits += 1
+    return hits, n
+
+
+def measure_line_table(per_song: list[dict], modes: dict, refute: dict) -> list[dict]:
+    cut = _refute_cut(float(refute.get('both_far', 0.20)), float(refute.get('only_far', 0.30)))
+    rows = []
+    for share in LINE_SHARES:
+        shift_hits = {mag: [0, 0] for mag in SHIFTS}
+        shuf = [0, 0]
+        true_hits = [0, 0]
+        by_song = {}
+        for song in per_song:
+            peaks = song['sets'][(WITNESS_HEIGHT, False)]
+            lines = song['all_lines']
+            for mag in SHIFTS:
+                for sign in (mag, -mag):
+                    h, n = line_pass_count(lines, peaks, modes, cut, share, shift=sign)
+                    shift_hits[mag][0] += h
+                    shift_hits[mag][1] += n
+            h, n = line_pass_count(lines, peaks, modes, cut, share, shuffle=True)
+            shuf[0] += h
+            shuf[1] += n
+            h, n = line_pass_count(lines, peaks, modes, cut, share)
+            true_hits[0] += h
+            true_hits[1] += n
+            by_song[song['slug']] = h
+        rates = {}
+        for mag, (h, n) in shift_hits.items():
+            rates[f'{mag:.2f}'] = None if n == 0 else h / n
+        rates['shuffle'] = None if shuf[1] == 0 else shuf[0] / shuf[1]
+        nums = [v for v in rates.values() if v is not None]
+        rows.append({
+            'k': share,
+            'chance': None if not nums else max(nums),
+            'proved': true_hits[0],
+            'candidates': true_hits[1],
+            'by_song': by_song,
+            'shifts': rates,
+        })
+    return rows
+
+
+def choose_k(rows: list[dict]) -> dict:
+    """The K under 5 % with the most proved lines, which is the smallest such K.
+
+    A higher share only removes lines, so chance and the true count do not rise
+    with K. If none is at or under 5 %, the measurement fails closed.
+    """
+    eligible = [row for row in rows if row.get('chance') is not None and float(row['chance']) <= LINE_LIMIT + 1e-12]
+    if eligible:
+        eligible.sort(key=lambda row: (-int(row.get('proved') or 0), float(row['k'])))
+        out = dict(eligible[0])
+        out['within_limit'] = True
+        return out
+    ranked = [row for row in rows if row.get('chance') is not None]
+    if not ranked:
+        return {'k': None, 'chance': None, 'proved': 0, 'candidates': 0, 'by_song': {}, 'shifts': {},
+                'within_limit': False}
+    ranked.sort(key=lambda row: (float(row['chance']), float(row['k'])))
+    out = dict(ranked[0])
+    out['within_limit'] = False
+    return out
+
+
+def _public_scope(scope: dict) -> dict:
+    return {
+        'song': scope['song'],
+        'lang': scope['lang'],
+        'words': scope['words'],
+        'witnesses': scope.get('witnesses'),
+        'chance': _round(scope.get('chance')),
+        'one_chance': _round(scope.get('one_chance')),
+        'two_chance': _round(scope.get('two_chance')),
+        'why': scope.get('why'),
+    }
+
+
+def _public_line(row: dict) -> dict:
+    return {
+        'k': row.get('k'),
+        'chance': _round(row.get('chance')),
+        'proved': row.get('proved') or 0,
+        'candidates': row.get('candidates') or 0,
+        'by_song': row.get('by_song') or {},
+        'shifts': {key: _round(value) for key, value in (row.get('shifts') or {}).items()},
+    }
+
+
+def _public_refute(row: dict) -> dict:
+    out = {key: value for key, value in row.items() if key != 'by'}
+    if out.get('rate') is not None:
+        out['rate'] = _round(out['rate'])
+    by = []
+    for item in row.get('by') or []:
+        by.append(dict(item))
+    out['by'] = by
+    return out
+
+
 def build_payload(slugs: list[str]) -> dict:
     import features as F
 
@@ -572,60 +1041,76 @@ def build_payload(slugs: list[str]) -> dict:
             raise SystemExit(f'{slug}: нет вокального стема')
         report = json.loads(report_path.read_text(encoding='utf-8'))
         sig = Q.Signals(load_audio(audio, F.SR))
-        lines = placed_lines(report, bias, adopt)
-        per_song.append({'slug': slug, 'lines': lines, 'sets': _peak_sets(sig), 'base': Q.onset_peak_times(sig)})
-    # One rule is chosen on the pooled placed lines, not on the first song alone.
-    pooled: list[dict] = []
-    for song in per_song:
-        pooled.extend(song['lines'])
-    # Peak sets differ per recording. A candidate's chance is the worst song-pooled
-    # rate: each song is scored on its own peaks, then the hits are summed.
+        all_lines = placed_lines(report, bias, adopt, only_good=False)
+        for line in all_lines:
+            line['song'] = slug
+        lines = [line for line in all_lines if line.get('placed')]
+        per_song.append({
+            'slug': slug, 'lines': lines, 'all_lines': all_lines,
+            'sets': _peak_sets(sig), 'base': Q.onset_peak_times(sig),
+        })
+    # The pooled grid stays in the file as context. The decision is the per-slice
+    # witness mode plus the line share, not the winner of that grid.
     rows = _evaluate_pooled(per_song)
-    if not pooled:
-        chosen = choose([])
-    else:
-        chosen = choose_measured(rows)
-    chosen['bias'] = bias
-    chosen['adopt'] = adopt
     current = next((row for row in rows if is_current(row)), None)
+    scope_rows = measure_scope_rows(per_song)
+    scopes, scopes_ok = assign_scopes(scope_rows)
+    refute_rows = measure_refute(per_song)
+    refute = choose_refute(refute_rows)
+    modes = {(row['song'], row['lang']): row['witnesses'] for row in scopes if row.get('witnesses') in ('one', 'two')}
+    line_rows = measure_line_table(per_song, modes, refute)
+    picked = choose_k(line_rows)
+    public_scopes = [_public_scope(row) for row in scopes]
+    public_lines = [_public_line(row) for row in line_rows]
+    public_refute = _public_refute(refute)
+    public_grid = [_public_refute(row) for row in refute_rows]
+    share = picked.get('k')
+    chosen = {
+        'name': 'unmeasured' if share is None else f'line-{float(share):.2f}',
+        'tol': 0.10,
+        'choir_tol': 0.20,
+        'peak_height': WITNESS_HEIGHT,
+        'require_rise': False,
+        'require_second': False,
+        'witnesses': None,
+        'agree_tol': SECOND_TOL,
+        'scopes': public_scopes,
+        'refute': public_refute,
+        'line_share': share,
+        'line_min_words': 2,
+        'line_chance': _round(picked.get('chance')),
+        'line_limit': LINE_LIMIT,
+        'chance': _round(picked.get('chance')),
+        'true_proved': picked.get('proved') or 0,
+        'true_total': picked.get('candidates') or 0,
+        'true_rate': None if not picked.get('candidates') else _round((picked.get('proved') or 0) / picked['candidates']),
+        'shifts': {key: _round(value) for key, value in (picked.get('shifts') or {}).items()},
+        'within_limit': bool(scopes_ok and picked.get('within_limit')),
+        'why': 'per-slice',
+        'bias': bias,
+        'adopt': adopt,
+    }
     density = []
-    slices = []
-    base_rule = next(rule for rule in iter_rules() if is_current(rule))
-    chosen_rule = {k: chosen[k] for k in (
-        'name', 'tol', 'choir_tol', 'peak_height', 'require_rise', 'require_second', 'witnesses', 'agree_tol',
-    ) if k in chosen}
     for song in per_song:
         density.extend(density_table(song['slug'], song['lines'], song['base']))
-        flat = _flat(song['lines'])
-        by_lang: dict[str, list[dict]] = {}
-        for word in flat:
-            by_lang.setdefault(word['lang'], []).append(word)
-        groups = [('*', flat)] + sorted(by_lang.items())
-        for lang, recs in groups:
-            for rule in (base_rule, chosen_rule):
-                if rule.get('name') == base_rule['name'] and chosen_rule.get('name') == base_rule['name'] and rule is not base_rule:
-                    continue
-                peaks = song['sets'][(float(rule['peak_height']), bool(rule.get('require_rise')))]
-                slices.append({
-                    'song': song['slug'],
-                    'lang': lang,
-                    'words': len(recs),
-                    'rule': rule['name'],
-                    'rates': slice_rates(recs, peaks, rule),
-                })
     public_rows = []
     for row in rows:
         public_rows.append({k: v for k, v in row.items() if not k.startswith('_')})
     return {
         'limit': LIMIT,
+        'line_limit': LINE_LIMIT,
+        'min_words': MIN_WORDS,
         'shifts': list(SHIFTS),
         'songs': list(slugs),
         'placed_lines': sum(len(song['lines']) for song in per_song),
         'placed_words': sum(len(line['words']) for song in per_song for line in song['lines']),
         'current_chance': None if current is None else current.get('chance'),
+        'scopes_ok': scopes_ok,
         'chosen': chosen,
+        'scopes': public_scopes,
+        'refute_grid': public_grid,
+        'line_table': public_lines,
         'density': density,
-        'by_slice': slices,
         'candidates': public_rows,
     }
 
@@ -686,8 +1171,16 @@ def main(argv: list[str] | None = None) -> int:
     (out_dir / 'attack-chance.json').write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding='utf-8')
     (out_dir / 'attack-chance.md').write_text(render_md(payload), encoding='utf-8')
     chosen = payload['chosen']
-    print(f"правило {chosen.get('name')}: случайный проход {chosen.get('chance')}, "
-          f"доказано {chosen.get('true_rate')}, within_limit {chosen.get('within_limit')}")
+    refute = chosen.get('refute') or {}
+    print(f"правило {chosen.get('name')}: случайный проход строки {chosen.get('chance')}, "
+          f"доказано строк {chosen.get('true_proved')} из {chosen.get('true_total')}, "
+          f"within_limit {chosen.get('within_limit')}")
+    print(f"опровергнуто {refute.get('refuted')} из {refute.get('words')} "
+          f"(оба дальше {refute.get('both_far')} с, один дальше {refute.get('only_far')} с, "
+          f"within_cap {refute.get('within_cap')})")
+    for scope in chosen.get('scopes') or []:
+        if scope.get('lang') == '*':
+            print(f"{scope['song']}: {scope.get('witnesses')} проход {scope.get('chance')} ({scope.get('why')})")
     if not chosen.get('within_limit'):
         return 2
     have = set(payload.get('songs') or [])
