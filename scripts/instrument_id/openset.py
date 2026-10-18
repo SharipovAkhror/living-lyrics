@@ -129,12 +129,18 @@ def evaluate() -> dict:
     blob = np.load(EMB_PATH, allow_pickle=False)
     if any(str(p) != row["path"] for p, row in zip(blob["paths"].tolist(), rows)):
         raise SystemExit("embeddings.npz не совпадает с индексом")
-    counts: dict[str, int] = {}
-    for row in rows:
-        if row["split"] == "train":
-            counts[row["id"]] = counts.get(row["id"], 0) + 1
-    minimum = int(data["minExamples"])
-    classes = [item["id"] for item in data["instruments"] if counts.get(item["id"], 0) >= minimum]
+    meta_path = WEIGHTS / "meta.json"
+    if meta_path.is_file():
+        # The shipped head. A class that failed the held-out recording is not here,
+        # even when its clip count cleared minExamples.
+        classes = list(json.loads(meta_path.read_text(encoding="utf-8"))["classes"])
+    else:
+        counts: dict[str, int] = {}
+        for row in rows:
+            if row["split"] == "train":
+                counts[row["id"]] = counts.get(row["id"], 0) + 1
+        minimum = int(data["minExamples"])
+        classes = [item["id"] for item in data["instruments"] if counts.get(item["id"], 0) >= minimum]
     x, y, split, group, ids = _pack(rows, blob["features"], classes)
     per_class = []
     methods = ("softmax", "mahalanobis", "knn")

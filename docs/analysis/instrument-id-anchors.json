@@ -2,7 +2,8 @@
   "songs": [
     {
       "slug": "i-have-come-alive",
-      "failures": 0,
+      "failures": 2,
+      "disputed": 0,
       "anchors": [
         {
           "section": "voice-open",
@@ -15,8 +16,14 @@
           "source": "content/songs/i-have-come-alive/lyrics.json",
           "said": [],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "baglama",
+            "oud",
+            "qanun",
+            "tanbur"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "inst-tanbur",
@@ -31,9 +38,16 @@
             "flute",
             "piano"
           ],
-          "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedRight": [
+            "tanbur"
+          ],
+          "acceptedWrong": [
+            "baglama",
+            "daf",
+            "kamancheh"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-bridge",
@@ -47,15 +61,19 @@
           "said": [
             "flute"
           ],
-          "acceptedRight": [],
+          "acceptedRight": [
+            "voice"
+          ],
           "acceptedWrong": [],
-          "verdict": "abstain"
+          "disputed": false,
+          "verdict": "correct"
         }
       ]
     },
     {
       "slug": "karitas",
-      "failures": 3,
+      "failures": 9,
+      "disputed": 6,
       "anchors": [
         {
           "section": "voice-1",
@@ -70,11 +88,16 @@
             "choir",
             "voice"
           ],
-          "acceptedRight": [],
-          "acceptedWrong": [
-            "choir"
+          "acceptedRight": [
+            "voice"
           ],
-          "verdict": "fail"
+          "acceptedWrong": [
+            "choir",
+            "double-bass",
+            "orchestra"
+          ],
+          "disputed": true,
+          "verdict": "подпись секции спорит с видео"
         },
         {
           "section": "voice-2",
@@ -90,8 +113,11 @@
             "flute"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "choir"
+          ],
+          "disputed": true,
+          "verdict": "подпись секции спорит с видео"
         },
         {
           "section": "voice-3",
@@ -105,9 +131,14 @@
           "said": [
             "voice"
           ],
-          "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedRight": [
+            "voice"
+          ],
+          "acceptedWrong": [
+            "orchestra"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-4",
@@ -122,8 +153,11 @@
             "flute"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "orchestra"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-5",
@@ -138,8 +172,11 @@
             "flute"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "orchestra"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-6",
@@ -153,9 +190,15 @@
           "said": [
             "flute"
           ],
-          "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedRight": [
+            "voice"
+          ],
+          "acceptedWrong": [
+            "double-bass",
+            "orchestra"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-7",
@@ -168,8 +211,11 @@
           "source": "content/songs/karitas/lyrics.json",
           "said": [],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "orchestra"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-8",
@@ -184,8 +230,11 @@
             "flute"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "orchestra"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-9",
@@ -199,9 +248,14 @@
           "said": [
             "flute"
           ],
-          "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedRight": [
+            "voice"
+          ],
+          "acceptedWrong": [
+            "orchestra"
+          ],
+          "disputed": true,
+          "verdict": "подпись секции спорит с видео"
         },
         {
           "section": "voice-10",
@@ -216,9 +270,14 @@
             "flute",
             "guitar-acoustic"
           ],
-          "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedRight": [
+            "voice"
+          ],
+          "acceptedWrong": [
+            "orchestra"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-11",
@@ -235,6 +294,7 @@
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
+          "disputed": false,
           "verdict": "abstain"
         },
         {
@@ -250,8 +310,11 @@
             "flute"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "orchestra"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-13",
@@ -269,9 +332,11 @@
           ],
           "acceptedRight": [],
           "acceptedWrong": [
-            "choir"
+            "choir",
+            "orchestra"
           ],
-          "verdict": "fail"
+          "disputed": true,
+          "verdict": "подпись секции спорит с видео"
         },
         {
           "section": "voice-14",
@@ -286,8 +351,11 @@
             "flute"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "orchestra"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-15",
@@ -303,6 +371,7 @@
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
+          "disputed": false,
           "verdict": "abstain"
         },
         {
@@ -315,9 +384,12 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [],
-          "acceptedRight": [],
+          "acceptedRight": [
+            "voice"
+          ],
           "acceptedWrong": [],
-          "verdict": "abstain"
+          "disputed": true,
+          "verdict": "подпись секции спорит с видео"
         },
         {
           "section": "voice-17",
@@ -336,13 +408,15 @@
           "acceptedWrong": [
             "choir"
           ],
-          "verdict": "fail"
+          "disputed": true,
+          "verdict": "подпись секции спорит с видео"
         }
       ]
     },
     {
       "slug": "one",
-      "failures": 1,
+      "failures": 4,
+      "disputed": 2,
       "anchors": [
         {
           "section": "voice-1",
@@ -356,9 +430,14 @@
           "said": [
             "guitar-acoustic"
           ],
-          "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedRight": [
+            "voice"
+          ],
+          "acceptedWrong": [
+            "orchestra"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-2",
@@ -372,9 +451,12 @@
           "said": [
             "voice"
           ],
-          "acceptedRight": [],
+          "acceptedRight": [
+            "voice"
+          ],
           "acceptedWrong": [],
-          "verdict": "abstain"
+          "disputed": false,
+          "verdict": "correct"
         },
         {
           "section": "voice-3",
@@ -389,9 +471,14 @@
             "flute",
             "voice"
           ],
-          "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedRight": [
+            "voice"
+          ],
+          "acceptedWrong": [
+            "orchestra"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-4",
@@ -407,6 +494,7 @@
           ],
           "acceptedRight": [],
           "acceptedWrong": [],
+          "disputed": false,
           "verdict": "abstain"
         },
         {
@@ -420,8 +508,11 @@
           "source": "content/songs/one/lyrics.json",
           "said": [],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "orchestra"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-6",
@@ -436,8 +527,12 @@
             "flute"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [],
-          "verdict": "abstain"
+          "acceptedWrong": [
+            "flute",
+            "orchestra"
+          ],
+          "disputed": false,
+          "verdict": "fail"
         },
         {
           "section": "voice-7",
@@ -449,9 +544,12 @@
           "note": "",
           "source": "content/songs/one/lyrics.json",
           "said": [],
-          "acceptedRight": [],
+          "acceptedRight": [
+            "voice"
+          ],
           "acceptedWrong": [],
-          "verdict": "abstain"
+          "disputed": true,
+          "verdict": "подпись секции спорит с видео"
         },
         {
           "section": "voice-8",
@@ -466,13 +564,12 @@
             "choir"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [
-            "choir"
-          ],
-          "verdict": "fail"
+          "acceptedWrong": [],
+          "disputed": true,
+          "verdict": "подпись секции спорит с видео"
         }
       ]
     }
   ],
-  "note": "Окно 23,7–62 с в I Have Come Alive, названное соло танбура, лежит внутри секции inst-tanbur 23,7–100,814 с. Отдельной границы 62 с в lyrics.json нет, поэтому якорь — вся секция. Чужое «принято», которое задевает только край секции короче 3 с, не считается провалом: это соседний отрезок, а не класс на теле якоря."
+  "note": "Окно 23,7–62 с в I Have Come Alive, названное соло танбура, лежит внутри секции inst-tanbur 23,7–100,814 с. Отдельной границы 62 с в lyrics.json нет, поэтому якорь — вся секция. Чужое «принято», которое задевает только край секции короче 3 с, не считается провалом: это соседний отрезок, а не класс на теле якоря. Якорь голоса не идёт в оценку, если в этом окне vision.json видит хор, публику или аплодисменты: подпись секции спорит с видео. Секции в content/ эта проверка не меняет."
 }

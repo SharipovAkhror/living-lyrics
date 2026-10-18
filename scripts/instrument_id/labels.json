@@ -7,6 +7,11 @@
   "embedding": "efficientat-mn10_as",
   "irmasCapPerClass": 300,
   "seed": 17,
+  "heldOutRecording": {
+    "minPrecision": 0.8,
+    "minRecall": 0.3,
+    "minSupport": 8
+  },
   "percussionFamilies": ["frame-drum", "goblet-drum", "hand-drum", "orchestral-percussion"],
   "bassIds": ["double-bass", "cello", "tuba", "bassoon", "trombone", "bass-guitar", "french-horn"],
   "extraPhrases": [

@@ -14,6 +14,17 @@ def _pct(value: float | None) -> str:
     return f"{value * 100:.1f} %"
 
 
+def _num(value: float) -> str:
+    text = f"{value:.3f}".rstrip("0").rstrip(".")
+    return text.replace(".", ",")
+
+
+def _metrics_meta() -> dict:
+    if not METRICS_PATH.is_file():
+        return {}
+    return json.loads(METRICS_PATH.read_text(encoding="utf-8")).get("meta") or {}
+
+
 def _song_block(slug: str) -> list[str]:
     path = ROOT / "docs" / "analysis" / slug / "instrument-id.json"
     lines = [f"### {slug}", ""]
@@ -162,12 +173,15 @@ def _anchor_block() -> list[str]:
         "",
         "Отрезок берётся из инструментальной секции `lyrics.json`, где назван ключ каталога, кроме голого ансамбля. Это тест, не обучение.",
         "Провал — только чужой класс в принятых решениях. Отказ и список «проверить» провалом не считаются.",
+        "Якорь голоса не идёт в оценку, если в этом окне `vision.json` видит хор, публику или аплодисменты. Такой якорь помечен: подпись секции спорит с видео.",
         "",
     ]
     for song in payload.get("songs", []):
         lines.append(f"### {song['slug']}")
         lines.append("")
-        lines.append(f"Чужих принятых: {song['failures']}.")
+        disputed = song.get("disputed")
+        extra = f" Подпись секции спорит с видео: {disputed}." if disputed else ""
+        lines.append(f"Чужих принятых: {song['failures']}.{extra}")
         lines.append("")
         lines.append("| с | по | якорь | вердикт | что сказал звук |")
         lines.append("|---|---|---|---|---|")
@@ -188,16 +202,37 @@ def _sources_block() -> list[str]:
         lines.append("")
         return lines
     rows = json.loads(path.read_text(encoding="utf-8"))
-    lines.append("Цель на класс: не меньше 15 клипов из 3 разных записей. Чего не набралось, в голову не входит.")
+    meta = _metrics_meta()
+    head = set(meta.get("classes") or [])
+    bar = meta.get("heldOutRecording") or {}
+    if bar:
+        lines.append(
+            "Цель на класс: не меньше 15 клипов из 3 разных записей. "
+            f"Свой класс дополнительно держит чужую запись: точность не ниже {_num(float(bar['minPrecision']))}, "
+            f"полнота не ниже {_num(float(bar['minRecall']))}, опора не меньше {bar['minSupport']} окон. "
+            "Колонка «в голове» — обученная голова, не только счётчик клипов."
+        )
+    else:
+        lines.append("Цель на класс: не меньше 15 клипов из 3 разных записей. Чего не набралось, в голову не входит.")
     lines.append("")
     lines.append("| класс | клипов | записей | в голове |")
     lines.append("|---|---|---|---|")
     for row in rows:
+        inside = row["id"] in head if head else bool(row.get("enough"))
         lines.append(
             f"| {row['id']} | {row.get('clips', '—')} | {row.get('recordings', '—')} | "
-            f"{'да' if row.get('enough') else 'нет'} |"
+            f"{'да' if inside else 'нет'} |"
         )
     lines.append("")
+    for item in meta.get("heldOut") or []:
+        mark = "прошёл" if item.get("passed") else "не прошёл, в голову не входит"
+        recording = ", ".join(item.get("recordings") or []) or "—"
+        lines.append(
+            f"- {item['id']}: чужая запись {recording} — {mark}. "
+            f"Точность {_num(float(item['precision']))}, полнота {_num(float(item['recall']))}, опора {item['support']}."
+        )
+    if meta.get("heldOut"):
+        lines.append("")
     for row in rows:
         note = (row.get("note") or "").strip()
         if note and not row.get("enough"):
@@ -270,7 +305,8 @@ def write_report() -> None:
             "## Что обучено",
             "",
             f"Энкодер `{meta['embedding']}`, размер признака {meta['featureDim']}, окно {meta['windowSec']} с, шаг на песне {meta['hopSec']} с.",
-            f"Классов в голове: {len(meta['classes'])}. Мало примеров и поэтому вне головы: {', '.join(meta['fewExamples']) or 'нет'}.",
+            f"Классов в голове: {len(meta['classes'])}. Мало примеров и поэтому вне головы: {', '.join(meta['fewExamples']) or 'нет'}. "
+            f"Чужая запись не пройдена и поэтому вне головы: {', '.join(row['id'] for row in meta.get('heldOut') or [] if not row.get('passed')) or 'нет'}.",
             f"Обучение / проверка / тест: {meta['counts']['train']} / {meta['counts']['val']} / {meta['counts']['test']}.",
             meta["split"],
             "",
@@ -355,6 +391,8 @@ def write_report() -> None:
         "## Чего модель по звуку не знает",
         "",
         "Класс без 15 клипов из 3 записей в голову не входит. "
+        "Свой класс, который на чужой записи не держит точность 0,8 и полноту 0,3 при опоре от 8 окон, тоже не входит. "
+        "Классы TinySOL и IRMAS вторым условием не режутся: их доля не откладывает исполнителя. "
         "Чужой звук закрытая голова может уверенно назвать ближайшим знакомым классом: порог softmax это не лечит. "
         "Такой ответ не становится решением, если его не подтвердил второй источник. "
         "Кадр концерта — второй источник, и только если владелец положил файл видео.",

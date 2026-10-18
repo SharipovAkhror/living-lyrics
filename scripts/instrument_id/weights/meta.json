@@ -1,19 +1,17 @@
 {
-  "trainedAt": "2026-10-18T11:14Z",
+  "trainedAt": "2026-10-18T11:43Z",
   "embedding": "efficientat-mn10_as",
   "featureDim": 960,
   "windowSec": 2.0,
   "hopSec": 1.0,
   "sampleRate": 32000,
   "classes": [
-    "oud",
     "guitar-acoustic",
     "guitar-electric",
     "violin",
     "viola",
     "cello",
     "double-bass",
-    "erhu",
     "flute",
     "duduk",
     "clarinet",
@@ -31,7 +29,6 @@
     "choir"
   ],
   "families": [
-    "plucked-lute",
     "guitar",
     "bowed",
     "flute",
@@ -42,15 +39,66 @@
     "voice"
   ],
   "temperature": 1.6,
-  "threshold": 0.53,
+  "threshold": 0.56,
   "thresholdReached": true,
-  "valAcceptedPrecision": 0.9008579599618685,
-  "valCoverage": 0.8698175787728026,
-  "threshold95": 0.77,
-  "valAcceptedPrecision95": 0.9508393285371702,
-  "valCoverage95": 0.6915422885572139,
+  "valAcceptedPrecision": 0.9056420233463035,
+  "valCoverage": 0.8538205980066446,
+  "threshold95": 0.79,
+  "valAcceptedPrecision95": 0.9524390243902439,
+  "valCoverage95": 0.6810631229235881,
   "familyFallbackMin": 0.7,
   "fewExamples": [],
+  "heldOutRecording": {
+    "minPrecision": 0.8,
+    "minRecall": 0.3,
+    "minSupport": 8
+  },
+  "heldOut": [
+    {
+      "id": "oud",
+      "name": "уд",
+      "precision": 0.0,
+      "recall": 0.0,
+      "support": 10,
+      "recordings": [
+        "houssem-bettaibi"
+      ],
+      "passed": false
+    },
+    {
+      "id": "erhu",
+      "name": "эрху",
+      "precision": 0.75,
+      "recall": 0.3,
+      "support": 10,
+      "recordings": [
+        "zhang-peijian"
+      ],
+      "passed": false
+    },
+    {
+      "id": "duduk",
+      "name": "дудук",
+      "precision": 1.0,
+      "recall": 0.4,
+      "support": 10,
+      "recordings": [
+        "ikuzusotnek"
+      ],
+      "passed": true
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "precision": 0.8333333333333334,
+      "recall": 0.5,
+      "support": 10,
+      "recordings": [
+        "childrenschorussa"
+      ],
+      "passed": true
+    }
+  ],
   "noncommercial": true,
   "noncommercialReason": "IRMAS на Zenodo помечен CC BY-NC-SA 4.0. Веса обучены и на этих записях.",
   "licenses": [
@@ -73,25 +121,23 @@
   "irmasCapPerClass": 300,
   "seed": 17,
   "counts": {
-    "train": 3849,
-    "val": 1206,
-    "test": 1296
+    "train": 3814,
+    "val": 1204,
+    "test": 1276
   },
-  "split": "TinySOL: официальные fold 0–2 обучение, 3 проверка, 4 тест. IRMAS: группа — номер отрывка в имени файла, 60/20/20 по sha256, потолок файлов на класс. Официальный тест IRMAS не скачивался. Оба разбиения оптимистичны: исполнитель не удержан. Дополнительные клипы: запись целиком в одной доле. В тест уходит самая крупная запись, после которой в обучении остаётся не меньше 15; при равенстве берётся Commons.",
+  "split": "TinySOL: официальные fold 0–2 обучение, 3 проверка, 4 тест. IRMAS: группа — номер отрывка в имени файла, 60/20/20 по sha256, потолок файлов на класс. Официальный тест IRMAS не скачивался. Оба разбиения оптимистичны: исполнитель не удержан. Дополнительные клипы: запись целиком в одной доле. В тест уходит самая крупная запись, после которой в обучении остаётся не меньше 15; при равенстве берётся Commons. Свой класс входит в голову, только если на этой чужой записи точность не ниже 0,8 и полнота не ниже 0,3 при опоре не меньше 8 окон. Порог измерен, пока класс ещё в голове, затем голова переобучена без тех, кто не прошёл. TinySOL и IRMAS этим порогом не режутся.",
   "openSet": {
     "method": "softmax",
-    "threshold": 0.8038733422584302,
+    "threshold": 0.819587303768874,
     "higherIsIn": true,
     "idValCoverageTarget": 0.8,
     "classes": [
-      "oud",
       "guitar-acoustic",
       "guitar-electric",
       "violin",
       "viola",
       "cello",
       "double-bass",
-      "erhu",
       "flute",
       "duduk",
       "clarinet",

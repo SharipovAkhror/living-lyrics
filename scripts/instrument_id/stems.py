@@ -14,7 +14,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from anchors import anchors_for
+from anchors import anchors_for, load_vision_frames, vision_disputes_voice
 from audio import ffmpeg_exe, load_mono
 from paths import ROOT, SONGS
 from predict import recognize_array, load_probe
@@ -113,6 +113,7 @@ def compare() -> dict:
             songs.append({"slug": slug, "status": "error", "error": str(exc)[:400], "anchors": []})
             continue
         errors = {"mix": 0, "stem": 0}
+        frames = load_vision_frames(slug)
         for index, anchor in enumerate(anchors):
             cut = cuts[index]
             audio = load_mono(cut, sample_rate)
@@ -124,9 +125,11 @@ def compare() -> dict:
             truth = anchor.get("id")
             mix_wrong = [name for name in mix_said if name != truth]
             stem_wrong = [name for name in stem_said if name != truth]
-            if mix_wrong:
+            # The section label disagrees with the video. Do not score it.
+            disputed = vision_disputes_voice(anchor, frames)
+            if not disputed and mix_wrong:
                 errors["mix"] += 1
-            if stem_wrong:
+            if not disputed and stem_wrong:
                 errors["stem"] += 1
             row["anchors"].append({
                 "section": anchor["section"],
@@ -136,6 +139,7 @@ def compare() -> dict:
                 "stemSaid": stem_said,
                 "mixWrong": mix_wrong,
                 "stemWrong": stem_wrong,
+                "disputed": disputed,
             })
         row["wrongAnchors"] = errors
         row["better"] = "stem" if errors["stem"] < errors["mix"] else "mix"

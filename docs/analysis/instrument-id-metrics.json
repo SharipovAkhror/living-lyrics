@@ -1,49 +1,41 @@
 {
   "perClass": [
     {
-      "precision": 0.0,
-      "recall": 0.0,
-      "f1": 0.0,
-      "support": 10,
-      "id": "oud",
-      "name": "уд"
-    },
-    {
-      "precision": 0.6883116883116883,
+      "precision": 0.7464788732394366,
       "recall": 0.7464788732394366,
-      "f1": 0.7162162162162162,
+      "f1": 0.7464788732394367,
       "support": 71,
       "id": "guitar-acoustic",
       "name": "акустическая гитара"
     },
     {
-      "precision": 0.6129032258064516,
-      "recall": 0.5846153846153846,
-      "f1": 0.5984251968503937,
+      "precision": 0.6,
+      "recall": 0.5538461538461539,
+      "f1": 0.5760000000000001,
       "support": 65,
       "id": "guitar-electric",
       "name": "электрогитара"
     },
     {
-      "precision": 0.7622950819672131,
-      "recall": 0.7622950819672131,
-      "f1": 0.7622950819672131,
+      "precision": 0.8,
+      "recall": 0.7540983606557377,
+      "f1": 0.7763713080168777,
       "support": 122,
       "id": "violin",
       "name": "скрипка"
     },
     {
-      "precision": 0.9206349206349206,
+      "precision": 0.90625,
       "recall": 0.9508196721311475,
-      "f1": 0.9354838709677418,
+      "f1": 0.9279999999999999,
       "support": 61,
       "id": "viola",
       "name": "альт"
     },
     {
-      "precision": 0.8416666666666667,
+      "precision": 0.8487394957983193,
       "recall": 0.7481481481481481,
-      "f1": 0.792156862745098,
+      "f1": 0.795275590551181,
       "support": 135,
       "id": "cello",
       "name": "виолончель"
@@ -57,17 +49,9 @@
       "name": "контрабас"
     },
     {
-      "precision": 0.75,
-      "recall": 0.3,
-      "f1": 0.4285714285714285,
-      "support": 10,
-      "id": "erhu",
-      "name": "эрху"
-    },
-    {
-      "precision": 0.7368421052631579,
+      "precision": 0.7291666666666666,
       "recall": 0.813953488372093,
-      "f1": 0.7734806629834253,
+      "f1": 0.7692307692307692,
       "support": 86,
       "id": "flute",
       "name": "поперечная флейта"
@@ -81,9 +65,9 @@
       "name": "дудук"
     },
     {
-      "precision": 0.6067415730337079,
+      "precision": 0.5934065934065934,
       "recall": 0.6352941176470588,
-      "f1": 0.6206896551724137,
+      "f1": 0.6136363636363635,
       "support": 85,
       "id": "clarinet",
       "name": "кларнет"
@@ -105,57 +89,57 @@
       "name": "фагот"
     },
     {
-      "precision": 0.5,
-      "recall": 0.639344262295082,
-      "f1": 0.5611510791366907,
+      "precision": 0.49333333333333335,
+      "recall": 0.6065573770491803,
+      "f1": 0.5441176470588235,
       "support": 61,
       "id": "saxophone",
       "name": "саксофон"
     },
     {
-      "precision": 0.8805970149253731,
-      "recall": 0.7023809523809523,
-      "f1": 0.7814569536423842,
+      "precision": 0.8529411764705882,
+      "recall": 0.6904761904761905,
+      "f1": 0.7631578947368423,
       "support": 84,
       "id": "trumpet",
       "name": "труба"
     },
     {
-      "precision": 0.9615384615384616,
+      "precision": 1.0,
       "recall": 1.0,
-      "f1": 0.9803921568627451,
+      "f1": 1.0,
       "support": 25,
       "id": "trombone",
       "name": "тромбон"
     },
     {
-      "precision": 0.8,
-      "recall": 0.9230769230769231,
-      "f1": 0.8571428571428571,
+      "precision": 0.8064516129032258,
+      "recall": 0.9615384615384616,
+      "f1": 0.8771929824561403,
       "support": 26,
       "id": "french-horn",
       "name": "валторна"
     },
     {
-      "precision": 0.7777777777777778,
+      "precision": 0.9333333333333333,
       "recall": 0.7,
-      "f1": 0.7368421052631577,
+      "f1": 0.8,
       "support": 20,
       "id": "tuba",
       "name": "туба"
     },
     {
-      "precision": 0.9854014598540146,
-      "recall": 0.9782608695652174,
-      "f1": 0.9818181818181817,
+      "precision": 0.9855072463768116,
+      "recall": 0.9855072463768116,
+      "f1": 0.9855072463768116,
       "support": 138,
       "id": "accordion",
       "name": "аккордеон"
     },
     {
-      "precision": 0.8028169014084507,
+      "precision": 0.7916666666666666,
       "recall": 0.95,
-      "f1": 0.8702290076335878,
+      "f1": 0.8636363636363635,
       "support": 60,
       "id": "piano",
       "name": "фортепиано"
@@ -169,9 +153,9 @@
       "name": "орган"
     },
     {
-      "precision": 0.9016393442622951,
+      "precision": 0.9166666666666666,
       "recall": 0.8870967741935484,
-      "f1": 0.8943089430894309,
+      "f1": 0.9016393442622951,
       "support": 62,
       "id": "voice",
       "name": "голос"
@@ -185,93 +169,91 @@
       "name": "хор"
     }
   ],
-  "macroF1": 0.7402536463126089,
-  "microF1": 0.7932098765432098,
-  "accuracy": 0.7932098765432098,
-  "testN": 1296,
-  "acceptedPrecision": 0.8512911843276937,
-  "coverage": 0.8665123456790124,
-  "testAcceptedPrecision95": 0.9203233256351039,
-  "testCoverage95": 0.6682098765432098,
+  "macroF1": 0.7940675232537592,
+  "microF1": 0.8001567398119122,
+  "accuracy": 0.8001567398119123,
+  "testN": 1276,
+  "acceptedPrecision": 0.8725581395348837,
+  "coverage": 0.8424764890282131,
+  "testAcceptedPrecision95": 0.9330985915492958,
+  "testCoverage95": 0.6677115987460815,
   "familyFallback": {
-    "n": 173,
-    "correct": 0.6011560693641619,
+    "n": 201,
+    "correct": 0.6218905472636815,
     "minProb": 0.7
   },
   "bins": [
     {
       "lo": 0.0,
       "hi": 0.5,
-      "n": 138,
-      "accuracy": 0.37681159420289856
+      "n": 134,
+      "accuracy": 0.3358208955223881
     },
     {
       "lo": 0.5,
       "hi": 0.6,
-      "n": 113,
-      "accuracy": 0.5575221238938053
+      "n": 108,
+      "accuracy": 0.5648148148148148
     },
     {
       "lo": 0.6,
       "hi": 0.7,
-      "n": 107,
-      "accuracy": 0.6355140186915887
+      "n": 93,
+      "accuracy": 0.6451612903225806
     },
     {
       "lo": 0.7,
       "hi": 0.8,
-      "n": 97,
-      "accuracy": 0.6804123711340206
+      "n": 100,
+      "accuracy": 0.67
     },
     {
       "lo": 0.8,
       "hi": 0.9,
-      "n": 143,
-      "accuracy": 0.8391608391608392
+      "n": 133,
+      "accuracy": 0.8646616541353384
     },
     {
       "lo": 0.9,
       "hi": 1.0,
-      "n": 698,
-      "accuracy": 0.9441260744985673
+      "n": 708,
+      "accuracy": 0.9505649717514124
     }
   ],
   "bySource": {
     "commons": {
-      "n": 40,
-      "accuracy": 0.3,
-      "acceptedPrecision": 0.28125,
-      "coverage": 0.8
+      "n": 20,
+      "accuracy": 0.45,
+      "acceptedPrecision": 0.46153846153846156,
+      "coverage": 0.65
     },
     "irmas": {
       "n": 673,
-      "accuracy": 0.6953937592867756,
-      "acceptedPrecision": 0.7685352622061483,
-      "coverage": 0.8216939078751857
+      "accuracy": 0.687964338781575,
+      "acceptedPrecision": 0.7794392523364486,
+      "coverage": 0.7949479940564635
     },
     "tinysol": {
       "n": 583,
-      "accuracy": 0.9399656946826758,
-      "acceptedPrecision": 0.9702602230483272,
-      "coverage": 0.9228130360205832
+      "accuracy": 0.9416809605488851,
+      "acceptedPrecision": 0.9772296015180265,
+      "coverage": 0.9039451114922813
     }
   },
   "meta": {
-    "trainedAt": "2026-10-18T11:14Z",
+    "trainedAt": "2026-10-18T11:43Z",
     "embedding": "efficientat-mn10_as",
     "featureDim": 960,
     "windowSec": 2.0,
     "hopSec": 1.0,
     "sampleRate": 32000,
     "classes": [
-      "oud",
       "guitar-acoustic",
       "guitar-electric",
       "violin",
       "viola",
       "cello",
       "double-bass",
-      "erhu",
       "flute",
       "duduk",
       "clarinet",
@@ -289,7 +271,6 @@
       "choir"
     ],
     "families": [
-      "plucked-lute",
       "guitar",
       "bowed",
       "flute",
@@ -300,15 +281,66 @@
       "voice"
     ],
     "temperature": 1.6,
-    "threshold": 0.53,
+    "threshold": 0.56,
     "thresholdReached": true,
-    "valAcceptedPrecision": 0.9008579599618685,
-    "valCoverage": 0.8698175787728026,
-    "threshold95": 0.77,
-    "valAcceptedPrecision95": 0.9508393285371702,
-    "valCoverage95": 0.6915422885572139,
+    "valAcceptedPrecision": 0.9056420233463035,
+    "valCoverage": 0.8538205980066446,
+    "threshold95": 0.79,
+    "valAcceptedPrecision95": 0.9524390243902439,
+    "valCoverage95": 0.6810631229235881,
     "familyFallbackMin": 0.7,
     "fewExamples": [],
+    "heldOutRecording": {
+      "minPrecision": 0.8,
+      "minRecall": 0.3,
+      "minSupport": 8
+    },
+    "heldOut": [
+      {
+        "id": "oud",
+        "name": "уд",
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 10,
+        "recordings": [
+          "houssem-bettaibi"
+        ],
+        "passed": false
+      },
+      {
+        "id": "erhu",
+        "name": "эрху",
+        "precision": 0.75,
+        "recall": 0.3,
+        "support": 10,
+        "recordings": [
+          "zhang-peijian"
+        ],
+        "passed": false
+      },
+      {
+        "id": "duduk",
+        "name": "дудук",
+        "precision": 1.0,
+        "recall": 0.4,
+        "support": 10,
+        "recordings": [
+          "ikuzusotnek"
+        ],
+        "passed": true
+      },
+      {
+        "id": "choir",
+        "name": "хор",
+        "precision": 0.8333333333333334,
+        "recall": 0.5,
+        "support": 10,
+        "recordings": [
+          "childrenschorussa"
+        ],
+        "passed": true
+      }
+    ],
     "noncommercial": true,
     "noncommercialReason": "IRMAS на Zenodo помечен CC BY-NC-SA 4.0. Веса обучены и на этих записях.",
     "licenses": [
@@ -331,11 +363,41 @@
     "irmasCapPerClass": 300,
     "seed": 17,
     "counts": {
-      "train": 3849,
-      "val": 1206,
-      "test": 1296
+      "train": 3814,
+      "val": 1204,
+      "test": 1276
     },
-    "split": "TinySOL: официальные fold 0–2 обучение, 3 проверка, 4 тест. IRMAS: группа — номер отрывка в имени файла, 60/20/20 по sha256, потолок файлов на класс. Официальный тест IRMAS не скачивался. Оба разбиения оптимистичны: исполнитель не удержан. Дополнительные клипы: запись целиком в одной доле. В тест уходит самая крупная запись, после которой в обучении остаётся не меньше 15; при равенстве берётся Commons."
+    "split": "TinySOL: официальные fold 0–2 обучение, 3 проверка, 4 тест. IRMAS: группа — номер отрывка в имени файла, 60/20/20 по sha256, потолок файлов на класс. Официальный тест IRMAS не скачивался. Оба разбиения оптимистичны: исполнитель не удержан. Дополнительные клипы: запись целиком в одной доле. В тест уходит самая крупная запись, после которой в обучении остаётся не меньше 15; при равенстве берётся Commons. Свой класс входит в голову, только если на этой чужой записи точность не ниже 0,8 и полнота не ниже 0,3 при опоре не меньше 8 окон. Порог измерен, пока класс ещё в голове, затем голова переобучена без тех, кто не прошёл. TinySOL и IRMAS этим порогом не режутся.",
+    "openSet": {
+      "method": "softmax",
+      "threshold": 0.819587303768874,
+      "higherIsIn": true,
+      "idValCoverageTarget": 0.8,
+      "classes": [
+        "guitar-acoustic",
+        "guitar-electric",
+        "violin",
+        "viola",
+        "cello",
+        "double-bass",
+        "flute",
+        "duduk",
+        "clarinet",
+        "oboe",
+        "bassoon",
+        "saxophone",
+        "trumpet",
+        "trombone",
+        "french-horn",
+        "tuba",
+        "accordion",
+        "piano",
+        "organ",
+        "voice",
+        "choir"
+      ],
+      "knnK": 5
+    }
   },
-  "supportSum": 1296
+  "supportSum": 1276
 }

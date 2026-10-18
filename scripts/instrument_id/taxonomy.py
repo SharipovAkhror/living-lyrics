@@ -122,6 +122,7 @@ def drawing_gaps(data: dict | None = None) -> list[dict]:
 def write_doc(path: Path | None = None) -> Path:
     data = load()
     path = path or TAXONOMY_PATH
+    bar = data["heldOutRecording"]
     families = {item["id"]: item for item in data["families"]}
     lines = [
         "# Таксономия инструментов",
@@ -130,8 +131,11 @@ def write_doc(path: Path | None = None) -> Path:
         "(`python scripts/instrument_id/taxonomy.py --write-doc`) и расходится с ним только если его забыли пересобрать.",
         "",
         f"Классов: {len(data['instruments'])}. Семейств: {len(data['families'])}.",
-        "В голову распознавания попадает только класс, у которого в обучающей выборке не меньше",
-        f"{data['minExamples']} примеров. Остальные остаются в таксономии: модель по ним молчит",
+        "В голову распознавания попадает класс, у которого в обучающей выборке не меньше",
+        f"{data['minExamples']} примеров. Свой класс из манифеста дополнительно проверяется на записи,",
+        f"которой не было в обучении: точность не ниже {str(bar['minPrecision']).replace('.', ',')}, "
+        f"полнота не ниже {str(bar['minRecall']).replace('.', ',')}, опора не меньше {bar['minSupport']} окон.",
+        "Классы TinySOL и IRMAS этой проверкой не режутся. Остальные остаются в таксономии: модель по ним молчит",
         "или, если уверена семья, отдаёт имя семьи («лютня», «смычковые», «рамочный барабан»), а не чужой инструмент.",
         "",
         "Ключ каталога сайта (`src/instruments/list.ts`) стоит только там, где гравюра изображает именно этот класс.",
@@ -177,14 +181,15 @@ def write_doc(path: Path | None = None) -> Path:
         lines.append(f"- {families[fam_id]['name']}: {', '.join(names)}.")
     lines += [
         "",
-        "Какие классы с гравюрой уже в голове, а какие молчат, пока нет 15 клипов из 3 записей,",
-        "написано в разделе «Наши инструменты» файла `docs/analysis/instrument-id-eval.md`.",
+        "Какие классы с гравюрой уже в голове, а какие молчат, пока нет 15 клипов из 3 записей",
+        "или пока чужая запись не держит порог, написано в разделе «Наши инструменты»",
+        "файла `docs/analysis/instrument-id-eval.md`.",
         "Голос в обучающем IRMAS есть. Ансамбль отдельным классом головы не является.",
         "",
         "## Как добавить инструмент",
         "",
         "1. Дописать объект в `labels.json`: `id`, `name`, `family` из списка семей, `catalogKey` или `null`, `names` (как класс называют в титрах и на кадре).",
-        "2. Собрать примеры без ключа, как в `docs/methodology/09-instruments.md`: манифест `scripts/instrument_id/sources/<id>.csv`, звук только в `work/instrument_id/extra/<id>/`. Класс без 15 клипов из 3 записей в голову не входит.",
+        "2. Собрать примеры без ключа, как в `docs/methodology/09-instruments.md`: манифест `scripts/instrument_id/sources/<id>.csv`, звук только в `work/instrument_id/extra/<id>/`. Класс без 15 клипов из 3 записей в голову не входит. Свой класс, который на чужой записи не держит порог `heldOutRecording`, тоже не входит.",
         "3. Переобучить одной командой из `docs/methodology/09-instruments.md` и прочитать новый отчёт.",
         "4. Пересобрать эту страницу: `python scripts/instrument_id/taxonomy.py --write-doc`.",
         "",

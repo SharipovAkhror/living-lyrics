@@ -6,82 +6,52 @@
   "chosen": "softmax",
   "summary": {
     "softmax": {
-      "classes": 23,
+      "classes": 21,
       "goalMet": 0,
-      "meanOodRejection": 0.44177024445244845,
-      "meanIdCoverage": 0.783680145116492
+      "meanOodRejection": 0.44121014222385974,
+      "meanIdCoverage": 0.7795163251988536
     },
     "mahalanobis": {
-      "classes": 23,
+      "classes": 21,
       "goalMet": 0,
-      "meanOodRejection": 0.3797709204332139,
-      "meanIdCoverage": 0.8190379926678597
+      "meanOodRejection": 0.34163414406489595,
+      "meanIdCoverage": 0.823432590207746
     },
     "knn": {
-      "classes": 23,
+      "classes": 21,
       "goalMet": 0,
-      "meanOodRejection": 0.430736920276672,
-      "meanIdCoverage": 0.8104087399503276
+      "meanOodRejection": 0.3853277464858942,
+      "meanIdCoverage": 0.8206157055205733
     }
   },
   "perClass": [
     {
-      "id": "oud",
-      "name": "уд",
-      "oodN": 28,
-      "idTestN": 1286,
-      "softmax": {
-        "goal": false,
-        "threshold": 0.8163179259679447,
-        "idCoverage": 0.7853810264385692,
-        "oodRejection": 0.07142857142857142,
-        "oodAcceptedAsOther": 0.9285714285714286,
-        "valMetGoal": false
-      },
-      "mahalanobis": {
-        "goal": false,
-        "threshold": 1159.151772735321,
-        "idCoverage": 0.8203732503888025,
-        "oodRejection": 0.7857142857142857,
-        "oodAcceptedAsOther": 0.2142857142857143,
-        "valMetGoal": false
-      },
-      "knn": {
-        "goal": false,
-        "threshold": 33.00850442964641,
-        "idCoverage": 0.8094867807153966,
-        "oodRejection": 1.0,
-        "oodAcceptedAsOther": 0.0,
-        "valMetGoal": false
-      }
-    },
-    {
       "id": "guitar-acoustic",
       "name": "акустическая гитара",
       "oodN": 302,
-      "idTestN": 1225,
+      "idTestN": 1205,
       "softmax": {
         "goal": false,
-        "threshold": 0.8120907548280246,
-        "idCoverage": 0.7755102040816326,
-        "oodRejection": 0.547945205479452,
-        "oodAcceptedAsOther": 0.452054794520548,
+        "threshold": 0.8233998157904396,
+        "idCoverage": 0.7759336099585062,
+        "oodRejection": 0.5136986301369864,
+        "oodAcceptedAsOther": 0.48630136986301364,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1160.1174446342498,
-        "idCoverage": 0.8106122448979591,
-        "oodRejection": 0.6506849315068494,
-        "oodAcceptedAsOther": 0.34931506849315064,
+        "threshold": 1159.3291698471958,
+        "idCoverage": 0.8199170124481328,
+        "oodRejection": 0.684931506849315,
+        "oodAcceptedAsOther": 0.31506849315068497,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 33.109724817524516,
-        "idCoverage": 0.8081632653061225,
-        "oodRejection": 0.7191780821917808,
-        "oodAcceptedAsOther": 0.2808219178082192,
+        "threshold": 33.156797364664065,
+        "idCoverage": 0.820746887966805,
+        "oodRejection": 0.7671232876712328,
+        "oodAcceptedAsOther": 0.23287671232876717,
         "valMetGoal": false
       }
     },
@@ -89,29 +59,29 @@
       "id": "guitar-electric",
       "name": "электрогитара",
       "oodN": 302,
-      "idTestN": 1231,
+      "idTestN": 1211,
       "softmax": {
         "goal": false,
-        "threshold": 0.8292927600315858,
-        "idCoverage": 0.7782290820471162,
-        "oodRejection": 0.5625,
-        "oodAcceptedAsOther": 0.4375,
+        "threshold": 0.8457137365490309,
+        "idCoverage": 0.772914946325351,
+        "oodRejection": 0.575,
+        "oodAcceptedAsOther": 0.42500000000000004,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1154.5227817037999,
-        "idCoverage": 0.8025995125913891,
+        "threshold": 1151.8561920119785,
+        "idCoverage": 0.8084227910817506,
         "oodRejection": 0.51875,
         "oodAcceptedAsOther": 0.48124999999999996,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 32.941815233536374,
-        "idCoverage": 0.7977254264825345,
-        "oodRejection": 0.575,
-        "oodAcceptedAsOther": 0.42500000000000004,
+        "threshold": 32.964215072295694,
+        "idCoverage": 0.8084227910817506,
+        "oodRejection": 0.5875,
+        "oodAcceptedAsOther": 0.4125,
         "valMetGoal": false
       }
     },
@@ -119,27 +89,27 @@
       "id": "violin",
       "name": "скрипка",
       "oodN": 585,
-      "idTestN": 1174,
+      "idTestN": 1154,
       "softmax": {
         "goal": false,
-        "threshold": 0.8300507083617016,
-        "idCoverage": 0.7896081771720613,
-        "oodRejection": 0.24381625441696114,
-        "oodAcceptedAsOther": 0.7561837455830389,
+        "threshold": 0.8295308102754717,
+        "idCoverage": 0.7972270363951474,
+        "oodRejection": 0.2508833922261484,
+        "oodAcceptedAsOther": 0.7491166077738516,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1170.0572788721245,
-        "idCoverage": 0.8168654173764907,
-        "oodRejection": 0.23674911660777384,
-        "oodAcceptedAsOther": 0.7632508833922261,
+        "threshold": 1168.2467101443572,
+        "idCoverage": 0.8232235701906413,
+        "oodRejection": 0.2332155477031802,
+        "oodAcceptedAsOther": 0.7667844522968198,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 32.85586677258144,
-        "idCoverage": 0.803236797274276,
+        "threshold": 32.88389019382571,
+        "idCoverage": 0.8162911611785095,
         "oodRejection": 0.26501766784452296,
         "oodAcceptedAsOther": 0.734982332155477,
         "valMetGoal": false
@@ -149,27 +119,27 @@
       "id": "viola",
       "name": "альт",
       "oodN": 309,
-      "idTestN": 1235,
+      "idTestN": 1215,
       "softmax": {
         "goal": false,
-        "threshold": 0.8046251916775136,
-        "idCoverage": 0.7886639676113361,
-        "oodRejection": 0.2603550295857988,
-        "oodAcceptedAsOther": 0.7396449704142012,
+        "threshold": 0.8157259027764094,
+        "idCoverage": 0.7901234567901234,
+        "oodRejection": 0.26627218934911245,
+        "oodAcceptedAsOther": 0.7337278106508875,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1156.8026194357824,
-        "idCoverage": 0.8161943319838056,
+        "threshold": 1153.923856465648,
+        "idCoverage": 0.8205761316872427,
         "oodRejection": 0.03550295857988166,
         "oodAcceptedAsOther": 0.9644970414201184,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 32.88943286252644,
-        "idCoverage": 0.7967611336032389,
+        "threshold": 32.91209760115622,
+        "idCoverage": 0.8098765432098766,
         "oodRejection": 0.0,
         "oodAcceptedAsOther": 1.0,
         "valMetGoal": false
@@ -179,27 +149,27 @@
       "id": "cello",
       "name": "виолончель",
       "oodN": 592,
-      "idTestN": 1161,
+      "idTestN": 1141,
       "softmax": {
         "goal": false,
-        "threshold": 0.8330420753680131,
-        "idCoverage": 0.7898363479758829,
-        "oodRejection": 0.2847457627118644,
-        "oodAcceptedAsOther": 0.7152542372881356,
+        "threshold": 0.8409254097432958,
+        "idCoverage": 0.7879053461875548,
+        "oodRejection": 0.3016949152542373,
+        "oodAcceptedAsOther": 0.6983050847457627,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1156.0458428784236,
-        "idCoverage": 0.7967269595176572,
+        "threshold": 1153.9056392520802,
+        "idCoverage": 0.8028045574057844,
         "oodRejection": 0.41694915254237286,
         "oodAcceptedAsOther": 0.5830508474576271,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 32.98240710011009,
-        "idCoverage": 0.7967269595176572,
+        "threshold": 33.01225223268804,
+        "idCoverage": 0.8080631025416302,
         "oodRejection": 0.3016949152542373,
         "oodAcceptedAsOther": 0.6983050847457627,
         "valMetGoal": false
@@ -209,59 +179,29 @@
       "id": "double-bass",
       "name": "контрабас",
       "oodN": 309,
-      "idTestN": 1234,
+      "idTestN": 1214,
       "softmax": {
         "goal": false,
-        "threshold": 0.7991078706489316,
-        "idCoverage": 0.7876823338735819,
+        "threshold": 0.8182713401643507,
+        "idCoverage": 0.7825370675453048,
         "oodRejection": 0.3333333333333333,
         "oodAcceptedAsOther": 0.6666666666666667,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1154.187856562897,
-        "idCoverage": 0.813614262560778,
-        "oodRejection": 0.38095238095238093,
-        "oodAcceptedAsOther": 0.6190476190476191,
+        "threshold": 1151.257123786071,
+        "idCoverage": 0.8196046128500823,
+        "oodRejection": 0.3945578231292517,
+        "oodAcceptedAsOther": 0.6054421768707483,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 33.03156534916681,
-        "idCoverage": 0.8022690437601296,
+        "threshold": 33.061876706651795,
+        "idCoverage": 0.8138385502471169,
         "oodRejection": 0.3741496598639456,
         "oodAcceptedAsOther": 0.6258503401360545,
-        "valMetGoal": false
-      }
-    },
-    {
-      "id": "erhu",
-      "name": "эрху",
-      "oodN": 29,
-      "idTestN": 1286,
-      "softmax": {
-        "goal": false,
-        "threshold": 0.8119301830433617,
-        "idCoverage": 0.7838258164852255,
-        "oodRejection": 0.8888888888888888,
-        "oodAcceptedAsOther": 0.11111111111111116,
-        "valMetGoal": false
-      },
-      "mahalanobis": {
-        "goal": false,
-        "threshold": 1162.9412988563438,
-        "idCoverage": 0.8164852255054432,
-        "oodRejection": 0.8888888888888888,
-        "oodAcceptedAsOther": 0.11111111111111116,
-        "valMetGoal": false
-      },
-      "knn": {
-        "goal": false,
-        "threshold": 32.87490070437559,
-        "idCoverage": 0.8032659409020217,
-        "oodRejection": 0.8888888888888888,
-        "oodAcceptedAsOther": 0.11111111111111116,
         "valMetGoal": false
       }
     },
@@ -269,27 +209,27 @@
       "id": "flute",
       "name": "поперечная флейта",
       "oodN": 420,
-      "idTestN": 1210,
+      "idTestN": 1190,
       "softmax": {
         "goal": false,
-        "threshold": 0.8380801708891471,
-        "idCoverage": 0.7636363636363637,
-        "oodRejection": 0.47540983606557374,
-        "oodAcceptedAsOther": 0.5245901639344263,
+        "threshold": 0.8430905846469277,
+        "idCoverage": 0.7655462184873949,
+        "oodRejection": 0.46994535519125685,
+        "oodAcceptedAsOther": 0.5300546448087431,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1165.2740216860616,
-        "idCoverage": 0.8140495867768595,
-        "oodRejection": 0.453551912568306,
-        "oodAcceptedAsOther": 0.5464480874316939,
+        "threshold": 1157.4497084288269,
+        "idCoverage": 0.8168067226890756,
+        "oodRejection": 0.45901639344262296,
+        "oodAcceptedAsOther": 0.540983606557377,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 32.9932111589385,
-        "idCoverage": 0.8090909090909091,
+        "threshold": 32.98083582910851,
+        "idCoverage": 0.8176470588235294,
         "oodRejection": 0.4972677595628415,
         "oodAcceptedAsOther": 0.5027322404371585,
         "valMetGoal": false
@@ -299,27 +239,27 @@
       "id": "duduk",
       "name": "дудук",
       "oodN": 29,
-      "idTestN": 1286,
+      "idTestN": 1266,
       "softmax": {
         "goal": false,
-        "threshold": 0.7977270271742479,
-        "idCoverage": 0.7978227060653188,
-        "oodRejection": 0.4666666666666667,
-        "oodAcceptedAsOther": 0.5333333333333333,
+        "threshold": 0.804199423004283,
+        "idCoverage": 0.7938388625592417,
+        "oodRejection": 0.5333333333333333,
+        "oodAcceptedAsOther": 0.4666666666666667,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1161.3234078500195,
-        "idCoverage": 0.8157076205287714,
+        "threshold": 1157.980284143424,
+        "idCoverage": 0.8199052132701422,
         "oodRejection": 0.6,
         "oodAcceptedAsOther": 0.4,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 32.88671656823141,
-        "idCoverage": 0.7993779160186625,
+        "threshold": 32.880194111249764,
+        "idCoverage": 0.8088467614533965,
         "oodRejection": 0.7333333333333333,
         "oodAcceptedAsOther": 0.2666666666666667,
         "valMetGoal": false
@@ -329,29 +269,29 @@
       "id": "clarinet",
       "name": "кларнет",
       "oodN": 426,
-      "idTestN": 1211,
+      "idTestN": 1191,
       "softmax": {
         "goal": false,
-        "threshold": 0.8532791271834116,
-        "idCoverage": 0.7786952931461602,
-        "oodRejection": 0.5621890547263682,
-        "oodAcceptedAsOther": 0.43781094527363185,
+        "threshold": 0.8570691973966545,
+        "idCoverage": 0.7774979009235936,
+        "oodRejection": 0.5174129353233831,
+        "oodAcceptedAsOther": 0.48258706467661694,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1170.7040166154868,
-        "idCoverage": 0.8084227910817506,
-        "oodRejection": 0.16417910447761194,
-        "oodAcceptedAsOther": 0.835820895522388,
+        "threshold": 1168.3492944421164,
+        "idCoverage": 0.8144416456759026,
+        "oodRejection": 0.17412935323383086,
+        "oodAcceptedAsOther": 0.8258706467661692,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 32.97111539340446,
-        "idCoverage": 0.8018166804293972,
-        "oodRejection": 0.24378109452736318,
-        "oodAcceptedAsOther": 0.7562189054726368,
+        "threshold": 32.99013900886792,
+        "idCoverage": 0.8110831234256927,
+        "oodRejection": 0.24875621890547264,
+        "oodAcceptedAsOther": 0.7512437810945274,
         "valMetGoal": false
       }
     },
@@ -359,27 +299,27 @@
       "id": "oboe",
       "name": "гобой",
       "oodN": 107,
-      "idTestN": 1273,
+      "idTestN": 1253,
       "softmax": {
         "goal": false,
-        "threshold": 0.8068880204408216,
-        "idCoverage": 0.7871170463472114,
-        "oodRejection": 0.5283018867924528,
-        "oodAcceptedAsOther": 0.4716981132075472,
+        "threshold": 0.8178545266418172,
+        "idCoverage": 0.7837190742218675,
+        "oodRejection": 0.4716981132075472,
+        "oodAcceptedAsOther": 0.5283018867924528,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1152.292955148736,
-        "idCoverage": 0.8106834249803614,
+        "threshold": 1149.8989023374434,
+        "idCoverage": 0.816440542697526,
         "oodRejection": 0.0,
         "oodAcceptedAsOther": 1.0,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 32.89213331781995,
-        "idCoverage": 0.8020424194815396,
+        "threshold": 32.90072544692105,
+        "idCoverage": 0.810853950518755,
         "oodRejection": 0.0,
         "oodAcceptedAsOther": 1.0,
         "valMetGoal": false
@@ -389,27 +329,27 @@
       "id": "bassoon",
       "name": "фагот",
       "oodN": 126,
-      "idTestN": 1270,
+      "idTestN": 1250,
       "softmax": {
         "goal": false,
-        "threshold": 0.8140190550315615,
-        "idCoverage": 0.7803149606299212,
-        "oodRejection": 0.5333333333333333,
-        "oodAcceptedAsOther": 0.4666666666666667,
+        "threshold": 0.8219149561116168,
+        "idCoverage": 0.7792,
+        "oodRejection": 0.5466666666666666,
+        "oodAcceptedAsOther": 0.45333333333333337,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1153.6457077269824,
-        "idCoverage": 0.8118110236220473,
+        "threshold": 1150.7816156345164,
+        "idCoverage": 0.8168,
         "oodRejection": 0.10666666666666667,
         "oodAcceptedAsOther": 0.8933333333333333,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 32.95207050709527,
-        "idCoverage": 0.8023622047244094,
+        "threshold": 32.97473278908565,
+        "idCoverage": 0.8112,
         "oodRejection": 0.0,
         "oodAcceptedAsOther": 1.0,
         "valMetGoal": false
@@ -419,27 +359,27 @@
       "id": "saxophone",
       "name": "саксофон",
       "oodN": 401,
-      "idTestN": 1235,
+      "idTestN": 1215,
       "softmax": {
         "goal": false,
-        "threshold": 0.8607209826343557,
-        "idCoverage": 0.794331983805668,
-        "oodRejection": 0.46543778801843316,
-        "oodAcceptedAsOther": 0.5345622119815668,
+        "threshold": 0.877590315942296,
+        "idCoverage": 0.7720164609053498,
+        "oodRejection": 0.4792626728110599,
+        "oodAcceptedAsOther": 0.5207373271889402,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1174.5521980501646,
-        "idCoverage": 0.8161943319838056,
-        "oodRejection": 0.2534562211981567,
-        "oodAcceptedAsOther": 0.7465437788018433,
+        "threshold": 1172.5726477638118,
+        "idCoverage": 0.8222222222222222,
+        "oodRejection": 0.25806451612903225,
+        "oodAcceptedAsOther": 0.7419354838709677,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 32.97118919241556,
-        "idCoverage": 0.7951417004048583,
+        "threshold": 32.98736330811982,
+        "idCoverage": 0.8049382716049382,
         "oodRejection": 0.31336405529953915,
         "oodAcceptedAsOther": 0.6866359447004609,
         "valMetGoal": false
@@ -449,27 +389,27 @@
       "id": "trumpet",
       "name": "труба",
       "oodN": 397,
-      "idTestN": 1212,
+      "idTestN": 1192,
       "softmax": {
         "goal": false,
-        "threshold": 0.818087281545103,
-        "idCoverage": 0.7920792079207921,
+        "threshold": 0.8327186504081723,
+        "idCoverage": 0.7843959731543624,
         "oodRejection": 0.3812154696132597,
         "oodAcceptedAsOther": 0.6187845303867403,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1167.8087258661924,
-        "idCoverage": 0.816006600660066,
+        "threshold": 1165.168174600923,
+        "idCoverage": 0.8221476510067114,
         "oodRejection": 0.2983425414364641,
         "oodAcceptedAsOther": 0.7016574585635359,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 32.89466216698658,
-        "idCoverage": 0.7937293729372937,
+        "threshold": 32.91582066197991,
+        "idCoverage": 0.8036912751677853,
         "oodRejection": 0.43646408839779005,
         "oodAcceptedAsOther": 0.56353591160221,
         "valMetGoal": false
@@ -479,27 +419,27 @@
       "id": "trombone",
       "name": "тромбон",
       "oodN": 117,
-      "idTestN": 1271,
+      "idTestN": 1251,
       "softmax": {
         "goal": false,
-        "threshold": 0.800012891519315,
-        "idCoverage": 0.7875688434303698,
-        "oodRejection": 0.43103448275862066,
-        "oodAcceptedAsOther": 0.5689655172413793,
+        "threshold": 0.8214876611892122,
+        "idCoverage": 0.7753796962430056,
+        "oodRejection": 0.41379310344827586,
+        "oodAcceptedAsOther": 0.5862068965517242,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1162.410851987733,
-        "idCoverage": 0.8135326514555468,
+        "threshold": 1159.796994476117,
+        "idCoverage": 0.8193445243804957,
         "oodRejection": 0.10344827586206896,
         "oodAcceptedAsOther": 0.896551724137931,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 33.04703376716557,
-        "idCoverage": 0.8040912667191188,
+        "threshold": 33.074713966525024,
+        "idCoverage": 0.8129496402877698,
         "oodRejection": 0.017241379310344827,
         "oodAcceptedAsOther": 0.9827586206896551,
         "valMetGoal": false
@@ -509,27 +449,27 @@
       "id": "french-horn",
       "name": "валторна",
       "oodN": 134,
-      "idTestN": 1270,
+      "idTestN": 1250,
       "softmax": {
         "goal": false,
-        "threshold": 0.8087249169484024,
-        "idCoverage": 0.7818897637795276,
-        "oodRejection": 0.4057971014492754,
-        "oodAcceptedAsOther": 0.5942028985507246,
+        "threshold": 0.8270313795138798,
+        "idCoverage": 0.7744,
+        "oodRejection": 0.42028985507246375,
+        "oodAcceptedAsOther": 0.5797101449275363,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1166.3160664851416,
-        "idCoverage": 0.8125984251968504,
+        "threshold": 1164.1862134245437,
+        "idCoverage": 0.8184,
         "oodRejection": 0.014492753623188406,
         "oodAcceptedAsOther": 0.9855072463768116,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 33.04886182733127,
-        "idCoverage": 0.8015748031496063,
+        "threshold": 33.07459955758435,
+        "idCoverage": 0.8112,
         "oodRejection": 0.0,
         "oodAcceptedAsOther": 1.0,
         "valMetGoal": false
@@ -539,27 +479,27 @@
       "id": "tuba",
       "name": "туба",
       "oodN": 108,
-      "idTestN": 1276,
+      "idTestN": 1256,
       "softmax": {
         "goal": false,
-        "threshold": 0.8070363059187509,
-        "idCoverage": 0.7884012539184952,
+        "threshold": 0.805744570315906,
+        "idCoverage": 0.7921974522292994,
         "oodRejection": 0.41818181818181815,
         "oodAcceptedAsOther": 0.5818181818181818,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1159.5404571653737,
-        "idCoverage": 0.8181818181818182,
+        "threshold": 1157.1621682631226,
+        "idCoverage": 0.8240445859872612,
         "oodRejection": 0.38181818181818183,
         "oodAcceptedAsOther": 0.6181818181818182,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 33.026009250264984,
-        "idCoverage": 0.79858934169279,
+        "threshold": 33.0017401193232,
+        "idCoverage": 0.8057324840764332,
         "oodRejection": 0.3090909090909091,
         "oodAcceptedAsOther": 0.6909090909090909,
         "valMetGoal": false
@@ -569,27 +509,27 @@
       "id": "accordion",
       "name": "аккордеон",
       "oodN": 689,
-      "idTestN": 1158,
+      "idTestN": 1138,
       "softmax": {
         "goal": false,
-        "threshold": 0.7712108510629412,
-        "idCoverage": 0.7849740932642487,
-        "oodRejection": 0.5920245398773006,
-        "oodAcceptedAsOther": 0.40797546012269936,
+        "threshold": 0.7985949754869619,
+        "idCoverage": 0.7671353251318102,
+        "oodRejection": 0.6012269938650306,
+        "oodAcceptedAsOther": 0.39877300613496935,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1105.3237069580455,
-        "idCoverage": 0.7884283246977547,
+        "threshold": 1103.1528421582677,
+        "idCoverage": 0.7952548330404218,
         "oodRejection": 0.18404907975460122,
         "oodAcceptedAsOther": 0.8159509202453987,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 32.78340182852093,
-        "idCoverage": 0.7901554404145078,
+        "threshold": 32.80278122547222,
+        "idCoverage": 0.8014059753954306,
         "oodRejection": 0.12269938650306748,
         "oodAcceptedAsOther": 0.8773006134969326,
         "valMetGoal": false
@@ -599,29 +539,29 @@
       "id": "piano",
       "name": "фортепиано",
       "oodN": 302,
-      "idTestN": 1236,
+      "idTestN": 1216,
       "softmax": {
         "goal": false,
-        "threshold": 0.8149137217969122,
-        "idCoverage": 0.7734627831715211,
-        "oodRejection": 0.48,
-        "oodAcceptedAsOther": 0.52,
+        "threshold": 0.8301204786288934,
+        "idCoverage": 0.7664473684210527,
+        "oodRejection": 0.5266666666666666,
+        "oodAcceptedAsOther": 0.4733333333333334,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1163.3813228945264,
-        "idCoverage": 0.8122977346278317,
-        "oodRejection": 0.4266666666666667,
-        "oodAcceptedAsOther": 0.5733333333333333,
+        "threshold": 1158.7654176211672,
+        "idCoverage": 0.8141447368421053,
+        "oodRejection": 0.43333333333333335,
+        "oodAcceptedAsOther": 0.5666666666666667,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 33.05500151112578,
-        "idCoverage": 0.7985436893203883,
-        "oodRejection": 0.7133333333333334,
-        "oodAcceptedAsOther": 0.2866666666666666,
+        "threshold": 33.05855143533104,
+        "idCoverage": 0.8075657894736842,
+        "oodRejection": 0.72,
+        "oodAcceptedAsOther": 0.28,
         "valMetGoal": false
       }
     },
@@ -629,29 +569,29 @@
       "id": "organ",
       "name": "орган",
       "oodN": 300,
-      "idTestN": 1252,
+      "idTestN": 1232,
       "softmax": {
         "goal": false,
-        "threshold": 0.8294179620472935,
-        "idCoverage": 0.7763578274760383,
+        "threshold": 0.8178919821388757,
+        "idCoverage": 0.7905844155844156,
         "oodRejection": 0.6209677419354839,
         "oodAcceptedAsOther": 0.3790322580645161,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1174.1418535431358,
-        "idCoverage": 0.8091054313099042,
-        "oodRejection": 0.5241935483870968,
-        "oodAcceptedAsOther": 0.47580645161290325,
+        "threshold": 1156.5364391424002,
+        "idCoverage": 0.8043831168831169,
+        "oodRejection": 0.5483870967741935,
+        "oodAcceptedAsOther": 0.4516129032258065,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 32.97298868926492,
-        "idCoverage": 0.7939297124600639,
-        "oodRejection": 0.6532258064516129,
-        "oodAcceptedAsOther": 0.3467741935483871,
+        "threshold": 32.998675738507835,
+        "idCoverage": 0.8027597402597403,
+        "oodRejection": 0.6612903225806451,
+        "oodAcceptedAsOther": 0.33870967741935487,
         "valMetGoal": false
       }
     },
@@ -659,29 +599,29 @@
       "id": "voice",
       "name": "голос",
       "oodN": 301,
-      "idTestN": 1234,
+      "idTestN": 1214,
       "softmax": {
         "goal": false,
-        "threshold": 0.8145499626767266,
-        "idCoverage": 0.773095623987034,
-        "oodRejection": 0.5,
-        "oodAcceptedAsOther": 0.5,
+        "threshold": 0.8297873855205167,
+        "idCoverage": 0.7635914332784185,
+        "oodRejection": 0.4810126582278481,
+        "oodAcceptedAsOther": 0.5189873417721519,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1164.2303758673406,
-        "idCoverage": 0.8160453808752026,
-        "oodRejection": 0.7025316455696202,
-        "oodAcceptedAsOther": 0.2974683544303798,
+        "threshold": 1146.3160796596956,
+        "idCoverage": 0.8113673805601318,
+        "oodRejection": 0.7215189873417721,
+        "oodAcceptedAsOther": 0.2784810126582279,
         "valMetGoal": false
       },
       "knn": {
         "goal": false,
-        "threshold": 33.53567965224088,
-        "idCoverage": 0.8476499189627229,
-        "oodRejection": 0.8860759493670886,
-        "oodAcceptedAsOther": 0.11392405063291144,
+        "threshold": 33.64744419357406,
+        "idCoverage": 0.8616144975288303,
+        "oodRejection": 0.879746835443038,
+        "oodAcceptedAsOther": 0.120253164556962,
         "valMetGoal": true
       }
     },
@@ -689,27 +629,27 @@
       "id": "choir",
       "name": "хор",
       "oodN": 38,
-      "idTestN": 1286,
+      "idTestN": 1266,
       "softmax": {
         "goal": false,
-        "threshold": 0.8112779216965986,
-        "idCoverage": 0.786158631415241,
-        "oodRejection": 0.10714285714285714,
-        "oodAcceptedAsOther": 0.8928571428571429,
+        "threshold": 0.8326832865065705,
+        "idCoverage": 0.7772511848341233,
+        "oodRejection": 0.14285714285714285,
+        "oodAcceptedAsOther": 0.8571428571428572,
         "valMetGoal": false
       },
       "mahalanobis": {
         "goal": false,
-        "threshold": 1772.619953166485,
-        "idCoverage": 0.9813374805598756,
+        "threshold": 1760.068941614923,
+        "idCoverage": 0.9818325434439179,
         "oodRejection": 0.6071428571428571,
         "oodAcceptedAsOther": 0.3928571428571429,
         "valMetGoal": true
       },
       "knn": {
         "goal": false,
-        "threshold": 39.56303990036487,
-        "idCoverage": 0.9836702954898912,
+        "threshold": 39.42731179558772,
+        "idCoverage": 0.9842022116903634,
         "oodRejection": 0.8571428571428571,
         "oodAcceptedAsOther": 0.1428571428571429,
         "valMetGoal": true

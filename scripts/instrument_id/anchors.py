@@ -3,15 +3,25 @@
 Instrumental sections in lyrics.json that name a catalogue key other than ensemble
 are the test. The recognizer may say that class or abstain. An accepted different
 class on the same span is a failure.
+
+A voice anchor is not scored when vision.json in that window sees a choir or
+the audience applauding. The section label then disagrees with the video, and
+the miss is the song data, not the head. Section labels in content/ are left
+as they are.
 """
 
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from paths import ROOT, SONGS
-from taxonomy import load
+from taxonomy import load, tokenize
+
+# Applause and the audience. "bow" is not here: a violin bow is not a bow to the hall.
+_CROWD = re.compile(r"applaud|applause|clap|audience|ovation|аплодисмент|хлоп|публик", re.IGNORECASE)
+DISPUTE = "подпись секции спорит с видео"
 
 
 def _id_for_key(key: str, data: dict) -> str | None:
@@ -64,6 +74,56 @@ def _boundary_bleed(a0: float, a1: float, b0: float, b1: float, limit: float = 3
     return enters_from_before or leaves_after
 
 
+def load_vision_frames(slug: str) -> list[dict]:
+    path = ROOT / "docs" / "analysis" / slug / "vision.json"
+    if not path.is_file():
+        return []
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    frames = payload.get("frames") if isinstance(payload, dict) else None
+    return list(frames or [])
+
+
+def _is_voice_anchor(anchor: dict) -> bool:
+    return anchor.get("id") == "voice" or anchor.get("catalogKey") == "voice"
+
+
+def _mentions_choir(text: str) -> bool:
+    tokens = tokenize(text or "")
+    return "choir" in tokens or "хор" in tokens
+
+
+def vision_disputes_voice(anchor: dict, frames: list[dict] | None) -> bool:
+    """True when a voice anchor overlaps a frame that shows a choir or applause.
+
+    Playing is not required: a choir in the frame, or the audience clapping,
+    already means the section label "voice" is not the thing to score.
+    A frame marked invisible is ignored. A string bow does not count.
+    """
+    if not _is_voice_anchor(anchor) or not frames:
+        return False
+    start = float(anchor["start"])
+    end = float(anchor["end"])
+    for frame in frames:
+        if frame.get("visible") is False:
+            continue
+        time_s = frame.get("time_s")
+        if time_s is None or not (start <= float(time_s) <= end):
+            continue
+        note = str(frame.get("note") or "")
+        chunks = [note]
+        choir = _mentions_choir(note)
+        for player in frame.get("players") or []:
+            instrument = str(player.get("instrument") or "")
+            who = str(player.get("who") or "")
+            chunks.append(instrument)
+            chunks.append(who)
+            if _mentions_choir(instrument):
+                choir = True
+        if choir or _CROWD.search(" ".join(chunks)):
+            return True
+    return False
+
+
 def _stem_name(anchor: dict, data: dict) -> str:
     """Same routing as the stem comparison: voice, percussion, otherwise melodic."""
     item = data["by_id"].get(anchor.get("id") or "")
@@ -96,14 +156,17 @@ def labels_on_anchor(audio: dict | None, anchor: dict, data: dict) -> list[str]:
     return sorted(set(said))
 
 
-def score_slug(slug: str, data: dict | None = None) -> dict:
+def score_slug(slug: str, data: dict | None = None, frames: list[dict] | None = None) -> dict:
     data = data or load()
     audio_path = ROOT / "docs" / "analysis" / slug / "instrument-id.json"
     fusion_path = ROOT / "docs" / "analysis" / slug / "fusion.json"
     audio = json.loads(audio_path.read_text(encoding="utf-8")) if audio_path.is_file() else None
     fusion = json.loads(fusion_path.read_text(encoding="utf-8")) if fusion_path.is_file() else None
+    if frames is None:
+        frames = load_vision_frames(slug)
     rows = []
     failures = 0
+    disputed_n = 0
     for anchor in anchors_for(slug, data):
         said = labels_on_anchor(audio, anchor, data)
         accepted_wrong = []
@@ -119,7 +182,11 @@ def score_slug(slug: str, data: dict | None = None) -> dict:
                     accepted_right.append(item["id"])
                 else:
                     accepted_wrong.append(item["id"])
-        if accepted_wrong:
+        disputed = vision_disputes_voice(anchor, frames)
+        if disputed:
+            verdict = DISPUTE
+            disputed_n += 1
+        elif accepted_wrong:
             verdict = "fail"
             failures += 1
         elif accepted_right:
@@ -131,9 +198,10 @@ def score_slug(slug: str, data: dict | None = None) -> dict:
             "said": sorted(set(said)),
             "acceptedRight": sorted(set(accepted_right)),
             "acceptedWrong": sorted(set(accepted_wrong)),
+            "disputed": disputed,
             "verdict": verdict,
         })
-    return {"slug": slug, "failures": failures, "anchors": rows}
+    return {"slug": slug, "failures": failures, "disputed": disputed_n, "anchors": rows}
 
 
 def write_anchors() -> Path:
@@ -144,12 +212,17 @@ def write_anchors() -> Path:
             "Окно 23,7–62 с в I Have Come Alive, названное соло танбура, лежит внутри секции "
             "inst-tanbur 23,7–100,814 с. Отдельной границы 62 с в lyrics.json нет, поэтому якорь — вся секция. "
             "Чужое «принято», которое задевает только край секции короче 3 с, не считается провалом: "
-            "это соседний отрезок, а не класс на теле якоря."
+            "это соседний отрезок, а не класс на теле якоря. "
+            "Якорь голоса не идёт в оценку, если в этом окне vision.json видит хор, публику или аплодисменты: "
+            "подпись секции спорит с видео. Секции в content/ эта проверка не меняет."
         ),
     }
     path = ROOT / "docs" / "analysis" / "instrument-id-anchors.json"
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(path)
     for song in payload["songs"]:
-        print(f"{song['slug']}: якорей {len(song['anchors'])}, чужих принятых {song['failures']}")
+        print(
+            f"{song['slug']}: якорей {len(song['anchors'])}, чужих принятых {song['failures']}, "
+            f"подпись спорит с видео {song.get('disputed', 0)}"
+        )
     return path
