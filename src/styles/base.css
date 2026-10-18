@@ -68,24 +68,35 @@ a {
 .t-callout { font-size: var(--t-callout); line-height: 21px; letter-spacing: -0.31px; }
 .t-subhead { font-size: var(--t-subhead); line-height: 20px; letter-spacing: -0.23px; }
 .t-footnote { font-size: var(--t-footnote); line-height: 18px; letter-spacing: -0.08px; }
-.t-caption1 { font-size: var(--t-caption1); line-height: 16px; letter-spacing: 0; }
-.t-caption2 { font-size: var(--t-caption2); line-height: 13px; letter-spacing: 0.06px; }
+.t-caption1 { font-size: var(--t-caption1); line-height: 18px; letter-spacing: 0; }
+.t-caption2 { font-size: var(--t-caption2); line-height: 18px; letter-spacing: 0.06px; }
 .secondary { color: var(--label-2); }
 .tertiary { color: var(--label-3); }
 
-/* ---------- Paper surfaces. Sheets and a few raised controls, without a glass rim. ---------- */
+/* ---------- Soft glass. Blur where the browser has it; a denser fill otherwise. ---------- */
 .glass {
-  position: relative;
   isolation: isolate;
-  background: var(--glass-tint);
+  background: var(--glass-fallback);
   box-shadow:
     var(--glass-shadow),
-    inset 0 0 0 0.5px var(--glass-edge);
+    var(--glass-rim),
+    var(--glass-rim-low);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  }
 }
 .glass--strong {
-  background: var(--glass-tint-strong);
+  background: var(--glass-fallback);
 }
-/* Clear variant: over rich media. Adds its own 35 % dimming in dark scenes, per HIG. */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass--strong {
+    background: var(--glass-tint-strong);
+  }
+}
 .glass--clear {
   background: rgba(255, 255, 255, 0.12);
 }
@@ -121,9 +132,12 @@ a {
   -webkit-user-select: none;
   transition:
     transform var(--dur-3) var(--ease-spring),
-    background-color var(--dur-2) var(--ease-out),
-    color var(--dur-2) var(--ease-out),
-    opacity var(--dur-2) var(--ease-out);
+    background-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out),
+    opacity var(--dur-1) var(--ease-out);
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.96);
 }
 .btn:disabled {
   opacity: 0.35;
@@ -158,23 +172,33 @@ a {
   color: var(--ink);
   background: transparent;
 }
+.btn-quiet {
+  background: var(--glass-bg);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .btn-quiet {
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  }
+}
 .btn-quiet:active:not(:disabled) {
   transform: scale(0.96);
-  opacity: 0.6;
+  background: color-mix(in srgb, var(--ink) 14%, var(--glass-bg));
 }
-/* Play: one ring in the song colour. It is not filled, so it does not compete with the line. */
+/* The one strong control: a round fill in the song colour. */
 .btn-ring {
-  border: 1.5px solid var(--accent);
-  color: var(--accent);
-  background: transparent;
+  border: 0;
+  color: var(--on-accent);
+  background: var(--accent);
+  box-shadow: 0 12px 28px -14px color-mix(in srgb, var(--accent) 80%, black);
 }
 .btn-ring:active:not(:disabled) {
   transform: scale(0.96);
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  background: color-mix(in srgb, var(--accent) 86%, white);
 }
 .btn-plain:active:not(:disabled) {
-  transform: scale(0.9);
-  opacity: 0.6;
+  transform: scale(0.96);
+  opacity: 0.72;
 }
 
 /* Kept for any older call site. The song uses .btn-ring. */
@@ -224,13 +248,24 @@ a {
   }
 }
 
-/* ---------- Reduce Motion ---------- */
+/* ---------- Reduce Motion: fades only, no travel and no spring. ---------- */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    transition-duration: 1ms !important;
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+  .sheet-root,
+  .sheet-backdrop,
+  .set-page,
+  .comment-body,
+  .sky-leave,
+  .tl-row,
+  .group {
+    transition-property: opacity !important;
+    transition-duration: 200ms !important;
+    animation: none !important;
   }
 }

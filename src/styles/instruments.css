@@ -197,9 +197,9 @@
 }
 .ist-t-s .ist-native,
 .ist-t-s .ist-perf {
-  font-size: 11px;
-  line-height: 14px;
-  letter-spacing: 0.06px;
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: 0;
 }
 
 /* «ещё N» chip for instruments that did not fit */
@@ -258,14 +258,24 @@
 }
 .ig-top {
   position: sticky;
-  top: 0;
+  top: calc(env(safe-area-inset-top) + 8px);
   z-index: 3;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-3);
-  padding: calc(env(safe-area-inset-top) + 8px) 0 8px;
-  background: linear-gradient(var(--bg) 70%, transparent);
+  margin-top: calc(env(safe-area-inset-top) + 8px);
+  padding: 6px 8px;
+  border-radius: var(--r-lg);
+  background: var(--glass-fallback);
+  box-shadow: var(--glass-shadow), var(--glass-rim), var(--glass-rim-low);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .ig-top {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  }
 }
 .ig-head {
   margin: var(--sp-2) 4px var(--sp-6);
@@ -306,9 +316,16 @@
   flex-direction: column;
   height: 100%;
   border-radius: var(--r-xl);
-  background: var(--bg-elevated);
-  box-shadow: inset 0 0 0 0.5px var(--separator);
+  background: var(--glass-fallback);
+  box-shadow: var(--glass-shadow), var(--glass-rim), var(--glass-rim-low);
   overflow: hidden;
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .ig-card {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  }
 }
 .ig-card-art {
   position: relative;
