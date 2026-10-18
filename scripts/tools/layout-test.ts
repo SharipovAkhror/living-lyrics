@@ -32,11 +32,10 @@ function check(L: Layout, n: number, aspects: number[], where: string) {
   const inst = slots.filter((s) => s.kind === 'instrument');
   const chip = slots.find((s) => s.kind === 'more');
 
-  // Every instrument is either drawn once or counted in the chip
+  // Every instrument is either drawn once or left out. There is no «+N» chip.
   const seen = inst.map((s) => s.index).concat(L.hidden).sort((a, b) => a - b);
   if (seen.join() !== Array.from({ length: n }, (_, i) => i).join()) fail(where, `instruments drawn/hidden: ${seen.join()}`);
-  if (L.hidden.length && (!chip || chip.more !== L.hidden.length)) fail(where, `chip missing or wrong count`);
-  if (!L.hidden.length && chip) fail(where, `chip without hidden instruments`);
+  if (chip) fail(where, '«+N» chip is drawn');
   if (L.hidden.length && L.hidden.some((h, i) => h !== n - L.hidden.length + i)) fail(where, 'hidden instruments are not the last ones');
 
   for (const s of slots) {
@@ -141,8 +140,28 @@ for (const [w, h, n, mode] of honoured) {
   if (L.mode !== mode || L.fallback) fail(`${w}×${h} n=${n}`, `requested ${mode}, got ${L.mode}${L.fallback ? ' (fallback)' : ''}`);
 }
 const single3 = layoutInstruments(3, { w: 1200, h: 700 }, { mode: 'single' });
-if (single3.hidden.length !== 2) fail('single with 3', 'the other two should be in the chip');
+if (single3.hidden.length !== 2) fail('single with 3', 'the other two should be left out');
+if (single3.slots.some((s) => s.kind === 'more')) fail('single with 3', 'chip drawn');
 if (CHIP.w <= 0) fail('chip', 'size');
+
+// Prominence: cap, rank, shared baseline, no chip.
+const wide5 = layoutInstruments(5, { w: 1440, h: 820 });
+if (wide5.mode !== 'prominence' || wide5.slots.length !== 4 || wide5.hidden.length !== 1) fail('wide n=5', `${wide5.mode} shown ${wide5.slots.length} hidden ${wide5.hidden.length}`);
+const mid5 = layoutInstruments(5, { w: 800, h: 480 });
+if (mid5.mode !== 'prominence' || mid5.slots.length !== 3 || mid5.hidden.length !== 2) fail('medium n=5', `${mid5.mode} shown ${mid5.slots.length}`);
+const phone5 = layoutInstruments(5, { w: 390, h: 600 });
+if (phone5.mode !== 'prominence' || phone5.slots.length > 3 || phone5.slots.length < 1) fail('phone n=5', `shown ${phone5.slots.length}`);
+if (phone5.slots.length > 1 && phone5.minArt < phone5.threshold - EPS) fail('phone n=5', 'companions below readable size');
+for (const L of [wide5, mid5, phone5]) {
+  const bottoms = L.slots.map((s) => s.y + s.art.y + s.art.h);
+  if (Math.max(...bottoms) - Math.min(...bottoms) > 0.2) fail(L.mode, 'art bottoms are not aligned');
+  const lead = Math.max(L.slots[0].art.w, L.slots[0].art.h);
+  L.slots.forEach((s, i) => {
+    const scale = [1, 0.8, 0.7, 0.65][i];
+    const side = Math.max(s.art.w, s.art.h);
+    if (Math.abs(side / lead - scale) > 0.04) fail('scale', `#${i} ${side / lead} ≠ ${scale}`);
+  });
+}
 
 // Table: what the automatic choice does on typical screens
 const screens: [string, number, number][] = [
@@ -153,7 +172,7 @@ const screens: [string, number, number][] = [
   ['ноутбук', 1200, 700],
   ['большой экран', 1600, 820],
 ];
-console.log('\nАвтоматический выбор (режим · наименьшая гравюра, px · спрятано в «+N»):');
+console.log('\nАвтоматический выбор (режим · наименьшая гравюра, px · не показано):');
 console.log(['экран'.padEnd(26), ...Array.from({ length: 8 }, (_, i) => String(i + 1).padEnd(19))].join(''));
 for (const [name, w, h] of screens) {
   const row = [`${name} ${w}×${h}`.padEnd(26)];

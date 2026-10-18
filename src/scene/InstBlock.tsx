@@ -7,7 +7,7 @@ import { instrument } from '@/instruments/catalog';
 import { blockState, clamp01, entranceOpacity, type Measure } from './flow';
 import type { BlockUpdater } from './LineBlock';
 import { InstrumentStage, assignPerformers, type InstrumentStageHandle, type StagePose } from './InstrumentStage';
-import { NARROW_MAX, castAt, castSignature, isVoicePassage, type CastMember } from './cast';
+import { castAt, castSignature, isVoicePassage, type CastMember } from './cast';
 import { stageDrive } from './stageDrive';
 
 interface Props {
@@ -68,10 +68,14 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
   const castSig = useRef('');
   const frameRef = useRef<StagePose | null>(null);
 
-  const fullH = Math.round(Math.min(stage.h * 0.72, 620));
-  const textH = section.note ? 96 : section.mode ? 64 : 44;
-  const stageSize = { w: Math.max(200, Math.min(stage.w - 24, 1040)), h: Math.max(160, fullH - textH) };
-  const narrow = stageSize.w < NARROW_MAX;
+  // A short window used to force a 160px drawing into a much shorter stage. The flex
+  // column then crushed it, and on a commented passage the plates left the frame.
+  // The box is the height the stage actually has; a tall phone still keeps the 0.72 share.
+  const room = Math.max(0, stage.h);
+  const tight = room > 0 && room < 300;
+  const fullH = Math.round(Math.min(tight ? room : room * 0.72, 620));
+  const textH = section.note ? (tight ? 36 : 96) : section.mode ? (tight ? 28 : 64) : tight ? 20 : 44;
+  const stageSize = { w: Math.max(200, Math.min(stage.w - 24, 1040)), h: Math.max(64, fullH - textH) };
   const compactH = useRef(56);
   const [cast, setCast] = useState<CastMember[]>(() => castAt(section, section.start, stageSize.w, motion));
   const heroes = cast.filter((m) => m.place === 'hero');
@@ -144,7 +148,7 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
             keys={heroes.map((m) => m.key)}
             echoes={echoes.map((m) => ({ key: m.key }))}
             performers={heroes.map((m) => (m.source >= 0 ? credited[m.source] ?? '' : ''))}
-            mode={narrow ? 'single' : (section.layout ?? 'auto')}
+            mode={section.layout ?? 'auto'}
             progress={1}
             presence={anim.presence}
             energy={0}
