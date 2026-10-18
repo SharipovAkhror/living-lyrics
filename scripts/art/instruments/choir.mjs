@@ -1,130 +1,150 @@
-import { Art, P, smooth, line, circle, shade, fillHatch, medallion, poly, rosette, rect, f } from '../lib.mjs';
+import { Art, P, smooth, shade, medallion, f, rot } from '../lib.mjs';
+import { drawHead, headOutline } from './voice.mjs';
 
-// Choir: a large choirbook open on a lectern, as choirs sang from in cathedrals: two pages of chant
-// on four-line staves with square notes, an illuminated initial, ribbon markers, brass corners on the boards,
-// and the turned column and feet of the lectern. A sign for choral singing rather than a portrait of singers.
+// Choir: five adult singers in two rows, not a book. Faces are the solo head,
+// smaller. Nobody is a portrait. Hair length varies; clothes stay plain robes.
+// The plate lifts together on --breath-o (one phase: the stage has a single
+// variable). Mouths already open at rest and scale from the upper lip. Air dots
+// sit only outside the outer mouths, so they do not land on a neighbour.
+
+const BREATH = 'var(--breath-o, 0)';
+
+function bust(cx, top, hem, shoulder, hip) {
+  return smooth([
+    P(cx - shoulder * 0.28, top),
+    P(cx - shoulder, top + shoulder * 0.62),
+    P(cx - hip, hem),
+    P(cx - hip * 0.2, hem + 5),
+    P(cx + hip * 0.35, hem + 2),
+    P(cx + hip, hem - 8),
+    P(cx + shoulder * 0.92, top + shoulder * 0.5),
+    P(cx + shoulder * 0.22, top + 2),
+  ], true, 0.28);
+}
+
+function bodyOf(p) {
+  const top = p.cy + 0.42 * p.H;
+  return bust(p.cx, top, p.hem, 0.5 * p.H, 0.62 * p.H);
+}
+
+function neckOf(p) {
+  const top = p.cy + 0.22 * p.H;
+  const bot = p.cy + 0.62 * p.H;
+  const w = 0.12 * p.H;
+  return smooth([
+    P(p.cx - w, top),
+    P(p.cx - w * 0.82, bot),
+    P(p.cx + w * 0.82, bot),
+    P(p.cx + w, top),
+  ], true, 0.3);
+}
+
+function drawPerson(a, p) {
+  const body = bodyOf(p);
+  const neck = neckOf(p);
+  const head = headOutline(p.cx, p.cy, p.H, p.turn);
+  a.begin();
+  a.fillin(neck);
+  a.path(neck, 'd', 0.85);
+  a.hidden([head, body]);
+  a.fillin(body);
+  a.path(body, 'd', p.front ? 1.35 : 1.15);
+  if (p.front) {
+    const top = p.cy + 0.42 * p.H;
+    a.add(shade({
+      shape: body,
+      box: { x: p.cx - 0.7 * p.H, y: top, w: 1.4 * p.H, h: p.hem - top },
+      angle: 64,
+      spacing: 6.2,
+      width: 0.38,
+      light: P(-14, -10),
+    }));
+    a.path(smooth([
+      P(p.cx - 0.06 * p.H, top + 6),
+      P(p.cx - 0.02 * p.H, (top + p.hem) / 2),
+      P(p.cx + 0.02 * p.H, p.hem - 18),
+    ], false, 0.35), 'h', 0.5);
+  }
+  drawHead(a, {
+    cx: p.cx,
+    cy: p.cy,
+    H: p.H,
+    turn: p.turn,
+    hair: p.hair,
+    detail: p.H >= 76,
+    breath: !!p.breath,
+    hatch: p.front ? 1.45 : 0,
+  });
+}
+
+function folder(x, y, tilt) {
+  const w = 44;
+  const h = 56;
+  const c = P(x, y);
+  const corners = [P(0, 0), P(w, 1), P(w - 2, h), P(-3, h - 1)].map((p) => rot(P(x + p.x, y + p.y), c, tilt));
+  const d = corners.map((p, i) => `${i ? 'L' : 'M'}${f(p.x)} ${f(p.y)}`).join('') + 'Z';
+  let staff = '';
+  for (let i = 0; i < 5; i++) {
+    const y0 = 14 + i * 4.2;
+    const a = rot(P(x + 6, y + y0), c, tilt);
+    const b = rot(P(x + w - 7, y + y0), c, tilt);
+    staff += `M${f(a.x)} ${f(a.y)}L${f(b.x)} ${f(b.y)}`;
+  }
+  let notes = '';
+  const marks = [P(16, 28), P(24, 22), P(32, 30)];
+  for (const m of marks) {
+    const q = rot(P(x + m.x, y + m.y), c, tilt);
+    notes += `<ellipse class="h" cx="${f(q.x)}" cy="${f(q.y)}" rx="2.3" ry="1.6" fill="currentColor" stroke="none" transform="rotate(${f(tilt)} ${f(q.x)} ${f(q.y)})"/>`;
+  }
+  const thumb = smooth([
+    P(x + 2, y + 24), P(x - 7, y + 30), P(x - 6, y + 40), P(x + 3, y + 38), P(x + 5, y + 28),
+  ].map((p) => rot(p, c, tilt)), true, 0.28);
+  return { d, staff, notes, thumb };
+}
+
+const BACK = [
+  { cx: 152, cy: 108, H: 58, turn: -1, hair: 'short', hem: 250, front: false },
+  { cx: 250, cy: 104, H: 60, turn: -1, hair: 'shoulder', hem: 246, front: false },
+];
+
+const FRONT = [
+  { cx: 108, cy: 168, H: 74, turn: -1, hair: 'short', hem: 338, front: true, breath: true },
+  { cx: 200, cy: 180, H: 80, turn: -1, hair: 'shoulder', hem: 352, front: true, breath: false },
+  { cx: 292, cy: 166, H: 74, turn: 1, hair: 'short', hem: 336, front: true, breath: true },
+];
+
 export default function choir() {
   const a = new Art('choir');
-  const yb = 250; // bottom edge of the pages
-  const yt = 90; // top edge
-  const halfW = (v) => 148 - 18 * v;
-  const lift = (u) => 11 * (1 - Math.exp(-Math.abs(u) * 6));
-  const S = (u, v) => P(200 + u * halfW(v), yb - v * (yb - yt) - lift(u));
-  const curveV = (v, u0, u1, n = 24) => smooth(Array.from({ length: n + 1 }, (_, i) => S(u0 + ((u1 - u0) * i) / n, v)), false, 0.5);
-  const curveU = (u, v0, v1) => line(S(u, v0), S(u, v1));
-  const page = (side) => {
-    const pts = [];
-    for (let i = 0; i <= 20; i++) pts.push(S(side * (i / 20), 0));
-    for (let i = 0; i <= 20; i++) pts.push(S(side, i / 20));
-    for (let i = 20; i >= 0; i--) pts.push(S(side * (i / 20), 1));
-    return poly(pts);
-  };
-
   a.add(medallion());
+  a.add(`<g style="transform:translate(0px, calc(${BREATH} * -1.6px))">`);
 
-  // Lectern: slanted board under the book, turned column, three feet
-  const board = poly([P(42, 258), P(358, 258), P(350, 270), P(50, 270)]);
-  a.path(board, 'd', 1.2);
-  a.add(fillHatch({ shape: board, box: { x: 40, y: 254, w: 320, h: 20 }, angle: 0, spacing: 1.4, width: 0.42 }));
-  const colR = [P(208, 270), P(209, 276), P(205, 282), P(205, 300), P(209, 306), P(209, 312), P(205, 318), P(206, 340), P(212, 348), P(214, 352)];
-  const colL = colR.slice().reverse().map((p) => P(400 - p.x, p.y));
-  const col = smooth(colR, false, 0.5) + 'L' + smooth(colL, false, 0.5).slice(1);
-  a.fillin(col + 'Z');
-  a.path(col, 'd', 1.2);
-  a.add(shade({ shape: col + 'Z', box: { x: 182, y: 268, w: 36, h: 88 }, angle: 90, spacing: 1.3, width: 0.45, light: P(-6, 0) }));
-  a.path(`M191 282L209 282M191 300L209 300M191 318L209 318`, 'h', 0.6);
-  a.path(`M186 352Q160 356 132 368M214 352Q240 356 268 368M200 354L200 372`, 'd', 1.2);
-  a.path(`M132 368l-6 1M268 368l6 1M200 372l0 4`, 'd', 1.6);
+  const frontCover = FRONT.flatMap((p) => [headOutline(p.cx, p.cy, p.H, p.turn), bodyOf(p)]);
+  a.begin();
+  for (const p of BACK) drawPerson(a, p);
+  a.hidden(frontCover);
 
-  // Boards (covers) slightly larger than the pages, with brass corners
-  const coverL = poly([P(200, yb + 7), P(44, yb + 7), P(58, yt - 4), P(200, yt + 2)]);
-  const coverR = poly([P(200, yb + 7), P(356, yb + 7), P(342, yt - 4), P(200, yt + 2)]);
-  a.path(coverL + coverR, 'd', 1.1);
-  a.path(line(P(46, yb + 10), P(354, yb + 10)), 'd', 0.8);
-  let corners = '';
-  for (const [x, y, sx] of [[44, yb + 7, 1], [356, yb + 7, -1], [58, yt - 4, 1], [342, yt - 4, -1]]) {
-    const dy = y > 200 ? -1 : 1;
-    corners += `M${x} ${y}L${x + sx * 16} ${y}L${x + sx * 4} ${y + dy * 13}Z` + circle(x + sx * 6, y + dy * 4, 1.6);
+  const center = FRONT[1];
+  a.begin();
+  drawPerson(a, FRONT[0]);
+  drawPerson(a, FRONT[2]);
+  a.hidden([headOutline(center.cx, center.cy, center.H, center.turn), bodyOf(center)]);
+  drawPerson(a, center);
+
+  a.add(`<g style="transform:translate(0px, calc(${BREATH} * -1.2px))">`);
+  for (const spec of [
+    { x: 78, y: 228, tilt: 8 },
+    { x: 268, y: 224, tilt: -10 },
+  ]) {
+    const book = folder(spec.x, spec.y, spec.tilt);
+    a.fillin(book.d);
+    a.path(book.d, 'd', 1.15);
+    a.path(book.staff, 'h', 0.45);
+    a.add(book.notes);
+    a.fillin(book.thumb);
+    a.path(book.thumb, 'd', 0.9);
   }
-  a.path(corners, 'd', 0.8);
+  a.add('</g>');
 
-  // Text block: stacked page edges along the bottom and the outer sides
-  let edges = '';
-  for (let k = 1; k <= 4; k++) {
-    const d = k * 1.5;
-    for (const side of [-1, 1]) {
-      const pts = Array.from({ length: 21 }, (_, i) => S(side * (i / 20), 0)).map((p) => P(p.x + side * d * 0.4, p.y + d));
-      edges += smooth(pts, false, 0.5);
-      edges += line(P(S(side, 0).x + side * d * 0.4, S(side, 0).y + d), P(S(side, 1).x + side * d * 0.5, S(side, 1).y + d * 0.4));
-    }
-  }
-  a.path(edges, 'h', 0.45);
-
-  // Pages
-  for (const side of [-1, 1]) {
-    const pg = page(side);
-    a.fillin(pg);
-    a.path(pg, 'd', 1.3);
-  }
-  // Gutter shading near the spine
-  for (const side of [-1, 1]) {
-    a.add(shade({ shape: page(side), box: { x: 200 + (side < 0 ? -40 : 0), y: yt - 4, w: 40, h: yb - yt + 20 }, angle: 90, spacing: 1.4, width: 0.4, light: P(side * 14, 0) }));
-  }
-  a.path(curveU(0, 0, 1), 'd', 0.9);
-
-  // Staves of four lines, square notes, text under each staff
-  const rnd = (i) => {
-    const x = Math.sin(i * 12.9898) * 43758.5453;
-    return x - Math.floor(x);
-  };
-  let staves = '';
-  let notes = '';
-  let words = '';
-  const staffV = [0.86, 0.66, 0.46, 0.26];
-  const dv = 0.025;
-  let seed = 1;
-  for (const side of [-1, 1]) {
-    const u0 = side < 0 ? -0.9 : 0.1;
-    const u1 = side < 0 ? -0.1 : 0.9;
-    staffV.forEach((v0, si) => {
-      const start = side < 0 && si === 0 ? u0 + 0.2 : u0; // room for the initial
-      for (let k = 0; k < 4; k++) staves += curveV(v0 + k * dv, start, u1, 18);
-      // Notes: a melody walking over lines and spaces; some stacked as two-note neumes
-      let pos = 3;
-      const n = Math.round((u1 - start) / 0.062);
-      for (let i = 0; i < n; i++) {
-        const u = start + 0.04 + i * 0.062 + (rnd(seed++) - 0.5) * 0.01;
-        pos = Math.max(0, Math.min(6, pos + Math.round((rnd(seed++) - 0.5) * 3)));
-        const v = v0 + (pos * dv) / 2;
-        const c = S(u, v);
-        const w = 3.6;
-        const h = 3;
-        notes += rect(c.x - w / 2, c.y - h / 2, w, h);
-        if (rnd(seed++) > 0.72 && pos < 5) {
-          const c2 = S(u, v + dv);
-          notes += rect(c2.x - w / 2, c2.y - h / 2, w, h) + line(P(c.x + w / 2, c.y), P(c2.x + w / 2, c2.y));
-        }
-      }
-      // Words of the text under the staff
-      let u = start + 0.01;
-      while (u < u1 - 0.06) {
-        const len = 0.05 + rnd(seed++) * 0.1;
-        const e = Math.min(u + len, u1 - 0.02);
-        words += smooth([S(u, v0 - 0.045), S((u + e) / 2, v0 - 0.045), S(e, v0 - 0.045)], false, 0.5);
-        u = e + 0.025;
-      }
-    });
-  }
-  a.path(staves, 'd', 0.55);
-  a.add(`<path class="h" d="${notes}" fill="currentColor" stroke="none" opacity=".9"/>`);
-  a.path(words, 'h', 0.9);
-  // Illuminated initial on the left page: a framed square with a rosette
-  const ic = S(-0.79, staffV[0] + 0.03);
-  a.path(rect(ic.x - 14, ic.y - 15, 28, 28), 'd', 0.9);
-  a.add(rosette(ic.x, ic.y - 1, 11, 8, { width: 0.6 }));
-
-  // Ribbon markers from the spine, hanging over the bottom edge
-  a.path(`M198 ${yb - 4}C196 ${yb + 14} 190 ${yb + 30} 186 ${yb + 44}L183 ${yb + 38}L180 ${yb + 46}C184 ${yb + 32} 190 ${yb + 14} 194 ${yb - 4}`, 'd', 0.8);
-  a.path(`M203 ${yb - 4}C206 ${yb + 12} 212 ${yb + 24} 218 ${yb + 34}L220 ${yb + 28}L224 ${yb + 35}C218 ${yb + 22} 212 ${yb + 10} 207 ${yb - 4}`, 'd', 0.8);
+  a.add('</g>');
   return a.done('Хор');
 }
