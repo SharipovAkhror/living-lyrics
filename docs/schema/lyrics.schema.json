@@ -167,6 +167,16 @@
                     "voice": {
                       "type": "string"
                     },
+                    "placedBy": {
+                      "type": "string",
+                      "enum": [
+                        "mms",
+                        "mms-window",
+                        "mms-ft",
+                        "stable-ts",
+                        "second"
+                      ]
+                    },
                     "fx": {
                       "type": "string",
                       "enum": [

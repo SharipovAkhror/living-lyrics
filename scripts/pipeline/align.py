@@ -31,6 +31,11 @@ How it works:
      on the cue. Copying the file's s/e is not that: those times may be an older
      aligner (shushtari-s2 sat at 489.82 while the cue is 486.296). They are not
      slid into a gap.
+   A cued line the first pass did not place is tried again, in order: MMS on the span
+   from this cue to the next cue (several margins), MMS on an htdemucs_ft clip of that
+   line while a time budget holds, stable-ts, then the second aligner. The first one
+   that passes structure and |Δ| ≤ 0.30 s is the placer. Its pre-snap start is the
+   primary clock. The other two clocks are the witnesses. The song stem stays htdemucs.
    align.py does not decide the flag. It marks every line `timing-draft` and leaves
    `timing.status` at `draft`. qa_sync.py --apply clears the flag only for a placed line
    whose words the measured rule proves. The default, when no rule file exists, is an
@@ -58,10 +63,11 @@ import numpy as np
 import calibrate_score as Cal
 import engines
 import features as F
+import placement as P
 import qa_sync as Q
 import timing as T
 from ctc import token_spans, viterbi
-from common import ROOT, dump_json, load_audio, load_json, song_dir, vocal_stem, work_dir
+from common import ROOT, dump_json, find_source, load_audio, load_json, song_dir, vocal_stem, work_dir
 
 ISO3 = {'ar': 'ara', 'fa': 'fas', 'az': 'aze', 'tr': 'tur', 'ota': 'ota', 'en': 'eng', 'la': 'lat', 'de': 'deu', 'gmh': 'deu',
         'es': 'spa', 'ur': 'urd', 'hi': 'hin', 'ru': 'rus', 'uz': 'uzb', 'fr': 'fra', 'it': 'ita'}
@@ -144,6 +150,45 @@ class Unit:
 
 # ---------------------------------------------------------------- audio → letter posteriors
 
+def _mms_model():
+    """One MMS_FA load. A clip must call this itself and must not use the song cache."""
+    import os
+
+    import torch
+    from torchaudio.pipelines import MMS_FA
+
+    torch.set_num_threads(os.cpu_count() or 4)
+    return MMS_FA.get_model(with_star=False).eval()
+
+
+def emissions_array(x: np.ndarray, model=None) -> np.ndarray:
+    """Log posteriors for one waveform. No cache: a clip must not replace the song file."""
+    import torch
+
+    own = model is None
+    if own:
+        model = _mms_model()
+    hop = 320
+    chunk, ctx = int(CHUNK_S * F.SR) // hop * hop, int(CTX_S * F.SR) // hop * hop
+    parts = []
+    with torch.inference_mode():
+        for c in range(0, len(x), chunk or 1):
+            a, b = max(0, c - ctx), min(len(x), c + chunk + ctx)
+            if b <= a:
+                break
+            em, _ = model(torch.from_numpy(x[a:b]).unsqueeze(0))
+            em = em[0].numpy()
+            off = (c - a) // hop
+            keep = (min(chunk, len(x) - c)) // hop
+            parts.append(em[off:off + keep])
+            if own:
+                print(f'emission {c / F.SR:6.0f} / {len(x) / F.SR:.0f} s', flush=True)
+    if not parts:
+        width = 28
+        return np.zeros((0, width), np.float32)
+    return np.concatenate(parts).astype(np.float32)
+
+
 def emissions(slug: str, audio, x: np.ndarray) -> np.ndarray:
     """Log posteriors (frames × 28 letters incl. blank) for the whole file, cached per audio file."""
     cache = work_dir(slug) / 'align-emission.npy'
@@ -153,27 +198,7 @@ def emissions(slug: str, audio, x: np.ndarray) -> np.ndarray:
     if cache.exists() and meta_path.exists() and json.loads(meta_path.read_text()) == meta:
         print(f'emission: cache {cache.name}')
         return np.load(cache)
-
-    import os
-
-    import torch
-    from torchaudio.pipelines import MMS_FA
-
-    torch.set_num_threads(os.cpu_count() or 4)
-    model = MMS_FA.get_model(with_star=False).eval()
-    hop = 320
-    chunk, ctx = int(CHUNK_S * F.SR) // hop * hop, int(CTX_S * F.SR) // hop * hop
-    parts = []
-    with torch.inference_mode():
-        for c in range(0, len(x), chunk):
-            a, b = max(0, c - ctx), min(len(x), c + chunk + ctx)
-            em, _ = model(torch.from_numpy(x[a:b]).unsqueeze(0))
-            em = em[0].numpy()
-            off = (c - a) // hop
-            keep = (min(chunk, len(x) - c)) // hop
-            parts.append(em[off:off + keep])
-            print(f'emission {c / F.SR:6.0f} / {len(x) / F.SR:.0f} s', flush=True)
-    lp = np.concatenate(parts).astype(np.float32)
+    lp = emissions_array(x)
     np.save(cache, lp)
     meta_path.write_text(json.dumps(meta))
     return lp
@@ -812,6 +837,364 @@ def fit_drafts(times: list[list], is_draft: list[bool], duration: float) -> None
         i = j + 1
 
 
+def _next_cue_start(units: list[Unit], cues: dict[str, dict], i: int) -> float | None:
+    for nxt in units[i + 1:]:
+        cue = cues.get(nxt.id)
+        if cue is not None:
+            return float(cue['start'])
+    return None
+
+
+def _chain_line(unit: Unit, cues: dict[str, dict]) -> bool:
+    """Solo and choir lines with a cue. A duet is outside the song gate."""
+    if cues.get(unit.id) is None:
+        return False
+    return T.group(unit.sec, unit.line) != 'other'
+
+
+def star_seconds(lp: np.ndarray, unit: Unit, t0: float, t1: float) -> list[list[float] | None] | None:
+    """Word [start, end] seconds on the whole-file axis, or None when the text does not fit."""
+    a = max(0, int(float(t0) * FPS))
+    b = min(len(lp), int(float(t1) * FPS))
+    if b <= a:
+        return None
+    placed = align_stars(lp[a:b], [unit])
+    if not placed:
+        return None
+    out: list[list[float] | None] = []
+    for w in placed[0]['words']:
+        if w is None:
+            out.append(None)
+        else:
+            out.append([(a + int(w['f0'])) / FPS, (a + int(w['f1']) + 1) / FPS])
+    return out
+
+
+def seconds_from_engine(starts: list, roman: list[str], next_cue: float | None) -> list[list[float] | None]:
+    """Start-only clocks need ends before the structural check. Punctuation stays empty."""
+    index = []
+    letter_starts: list[float | None] = []
+    for i, (start, rm) in enumerate(zip(starts, roman)):
+        if not rm:
+            continue
+        index.append(i)
+        letter_starts.append(None if start is None else float(start))
+    letter_ends = P.ends_from_starts(letter_starts, next_cue)
+    out: list[list[float] | None] = [None] * len(roman)
+    for i, start, end in zip(index, letter_starts, letter_ends):
+        if start is None or end is None:
+            continue
+        if end < start:
+            end = start + 0.02
+        out[i] = [float(start), float(end)]
+    return out
+
+
+def _placement_attempt(by: str, seconds, roman, cue_start, next_cue, window) -> dict:
+    if not seconds:
+        window_out = None if window is None else [round(float(window[0]), 2), round(float(window[1]), 2)]
+        return {'by': by, 'placed': False, 'structure_ok': False, 'structure': 'missing',
+                'delta': None, 'near': False, 'window': window_out}
+    starts, ends = P.lettered_pairs(seconds, roman)
+    judged = P.judge(starts, ends, cue_start, next_cue)
+    judged['by'] = by
+    judged['window'] = None if window is None else [round(float(window[0]), 2), round(float(window[1]), 2)]
+    return judged
+
+
+def _adopt(c: dict, by: str, seconds: list, attempt: dict) -> None:
+    c['placed_by'] = by
+    c['chosen_seconds'] = [None if w is None else [float(w[0]), float(w[1])] for w in seconds]
+    c['status'] = 'good'
+    c['structure_ok'] = True
+    c['structure'] = attempt.get('structure') or 'ok'
+    c['attempts'].append(attempt)
+
+
+def _copy_spans(seconds: list | None) -> list | None:
+    if seconds is None:
+        return None
+    return [None if w is None else [float(w[0]), float(w[1])] for w in seconds]
+
+
+def rescue_mms_windows(lp: np.ndarray, units: list[Unit], conf: list[dict], passes: list[dict],
+                       cues: dict[str, dict], duration: float) -> int:
+    """MMS again, from this cue to the next, on lines the first window did not place."""
+    placed = 0
+    for i, (u, c, p) in enumerate(zip(units, conf, passes)):
+        if c.get('placed_by') is not None or not _chain_line(u, cues):
+            continue
+        cue = cues[u.id]
+        cue_s, cue_e = float(cue['start']), float(cue['end'])
+        nxt = _next_cue_start(units, cues, i)
+        original = (float(p['window'][0]), float(p['window'][1]))
+        for lead, tail in P.WINDOW_MARGINS:
+            win = P.span_to_next(cue_s, cue_e, nxt, duration, lead, tail)
+            if P.same_window(win, original):
+                continue
+            seconds = star_seconds(lp, u, win[0], win[1])
+            attempt = _placement_attempt('mms-window', seconds, u.roman, cue_s, nxt, win)
+            if attempt['placed'] and seconds is not None:
+                _adopt(c, 'mms-window', seconds, attempt)
+                placed += 1
+                print(f"окно {u.id}: {win[0]:.2f}–{win[1]:.2f} с, |Δ| {attempt['delta']}", flush=True)
+                break
+            c['attempts'].append(attempt)
+    return placed
+
+
+def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, dict], duration: float) -> dict:
+    """htdemucs_ft on the lines still open, one model load, inside the time budget.
+
+    The song stem and its emission cache stay as they are. A failure leaves the lines unplaced.
+    """
+    info = {'ran': False, 'clips': 0, 'skipped': 0, 'elapsed_s': 0.0, 'budget_s': P.FT_BUDGET_S,
+            'skipped_ids': [], 'error': None}
+    open_rows = []
+    for i, u in enumerate(units):
+        if conf[i].get('placed_by') is not None or not _chain_line(u, cues):
+            continue
+        cue = cues[u.id]
+        nxt = _next_cue_start(units, cues, i)
+        t0, t1 = P.span_to_next(float(cue['start']), float(cue['end']), nxt, duration, 0.30, 0.0)
+        open_rows.append((t0, t1, u.id))
+    if not open_rows:
+        return info
+    merged = P.merge_spans(open_rows)
+    kept, skipped = P.fit_budget(merged, P.FT_BUDGET_S)
+    info['skipped_ids'] = skipped
+    info['skipped'] = len(skipped)
+    if not kept:
+        info['error'] = 'budget'
+        print(f'htdemucs_ft: бюджет {P.FT_BUDGET_S:.0f} с не вместил ни одного отрезка, пропущено строк {len(skipped)}', flush=True)
+        return info
+    try:
+        import torch
+        import torchaudio
+
+        mix = load_audio(find_source(slug), P.FT_RATE)
+        vocals, separated = P.separate_ft_clips(mix, [(a, b) for a, b, _ids in kept])
+        info.update(separated)
+        info['skipped_ids'] = list(dict.fromkeys(list(skipped) + list(info.get('skipped_ids') or [])))
+        info['ran'] = True
+        del mix
+        model = _mms_model()
+        id_to_i = {u.id: i for i, u in enumerate(units)}
+        for (t0, t1, ids), vocal in zip(kept, vocals):
+            if vocal is None:
+                for lid in ids:
+                    c = conf[id_to_i[lid]]
+                    if c.get('placed_by') is not None:
+                        continue
+                    c['attempts'].append({'by': 'mms-ft', 'placed': False, 'structure_ok': False,
+                                          'structure': 'missing', 'delta': None, 'near': False, 'window': None})
+                continue
+            wave = torchaudio.functional.resample(torch.from_numpy(np.ascontiguousarray(vocal)), P.FT_RATE, F.SR)
+            clip = emissions_array(wave.numpy().astype(np.float32), model)
+            for lid in ids:
+                i = id_to_i[lid]
+                u, c = units[i], conf[i]
+                if c.get('placed_by') is not None:
+                    continue
+                cue = cues[u.id]
+                nxt = _next_cue_start(units, cues, i)
+                win = P.span_to_next(float(cue['start']), float(cue['end']), nxt, duration, 0.30, 0.0)
+                rel0 = max(0.0, win[0] - t0)
+                rel1 = max(rel0 + 0.40, min(t1, win[1]) - t0)
+                seconds = star_seconds(clip, u, rel0, rel1)
+                if seconds:
+                    seconds = [None if span is None else [span[0] + t0, span[1] + t0] for span in seconds]
+                attempt = _placement_attempt('mms-ft', seconds, u.roman, float(cue['start']), nxt, (t0, t1))
+                if attempt['placed'] and seconds is not None:
+                    _adopt(c, 'mms-ft', seconds, attempt)
+                    print(f"ft {u.id}: |Δ| {attempt['delta']}", flush=True)
+                else:
+                    c['attempts'].append(attempt)
+        del model
+    except Exception as e:
+        info['ran'] = False
+        info['error'] = f'{e.__class__.__name__}: {e}'
+        print(f'htdemucs_ft пропущен ({info["error"]})', flush=True)
+    return info
+
+
+def _mark_engine(c: dict, prefix: str, attempt: dict) -> None:
+    c[f'{prefix}_would'] = bool(attempt.get('placed'))
+    c[f'{prefix}_near'] = bool(attempt.get('near'))
+    c[f'{prefix}_structure'] = bool(attempt.get('structure_ok'))
+    c['attempts'].append(attempt)
+
+
+def adopt_engines(units: list[Unit], conf: list[dict], cues: dict[str, dict],
+                  second_starts: dict, third_starts: dict, second_window: dict) -> tuple[int, int]:
+    """stable-ts, then the second aligner, only where MMS has not placed the line.
+
+    Both clocks are judged on every still-open line, including one a window or the
+    ft stem already placed, so the report can say what they would have done.
+    """
+    n_stable = n_second = 0
+    for i, u in enumerate(units):
+        c = conf[i]
+        if not _chain_line(u, cues):
+            continue
+        if c.get('placed_by') == 'mms':
+            continue
+        cue = cues[u.id]
+        cue_s = float(cue['start'])
+        nxt = _next_cue_start(units, cues, i)
+        window = second_window.get(u.id)
+        s3 = third_starts.get(u.id)
+        if s3 is not None and len(s3) == len(u.line['words']):
+            seconds = seconds_from_engine(s3, u.roman, nxt)
+            attempt = _placement_attempt('stable-ts', seconds, u.roman, cue_s, nxt, window)
+        else:
+            seconds = None
+            attempt = _placement_attempt('stable-ts', None, u.roman, cue_s, nxt, window)
+        _mark_engine(c, 'stable', attempt)
+        if c.get('placed_by') is None and attempt['placed'] and seconds is not None:
+            # _mark_engine already stored the attempt. Do not store it twice.
+            c['attempts'].pop()
+            _adopt(c, 'stable-ts', seconds, attempt)
+            n_stable += 1
+        s2 = second_starts.get(u.id)
+        if s2 is not None and len(s2) == len(u.line['words']):
+            seconds = seconds_from_engine(s2, u.roman, nxt)
+            attempt = _placement_attempt('second', seconds, u.roman, cue_s, nxt, window)
+        else:
+            seconds = None
+            attempt = _placement_attempt('second', None, u.roman, cue_s, nxt, window)
+        _mark_engine(c, 'second', attempt)
+        if c.get('placed_by') is None and attempt['placed'] and seconds is not None:
+            c['attempts'].pop()
+            _adopt(c, 'second', seconds, attempt)
+            n_second += 1
+    return n_stable, n_second
+
+
+def assemble_times(units: list[Unit], conf: list[dict], cues: dict[str, dict], duration: float):
+    """Published times, and the pre-snap primary starts beside them.
+
+    A placed line publishes the placer. Anything else with a cue is shifted onto the cue.
+    """
+    times: list[list[list[float]]] = []
+    ctc_starts: list[list[float | None]] = []
+    ctc_ends: list[list[float | None]] = []
+    publish: list[bool] = []
+    for u, c in zip(units, conf):
+        n = len(u.roman)
+        primary = c.get('chosen_seconds') if c.get('placed_by') else c.get('mms_seconds')
+        if primary is None:
+            primary = [None] * n
+        if len(primary) < n:
+            primary = list(primary) + [None] * (n - len(primary))
+        raw = [None if w is None else float(w[0]) for w in primary[:n]]
+        raw_e = [None if w is None else float(w[1]) for w in primary[:n]]
+        ctc_starts.append(raw)
+        ctc_ends.append(raw_e)
+        cue = cues.get(u.id)
+        drift = line_drift(raw, u.roman, None if cue is None else float(cue['start']))
+        keep = keep_cue_time(c['status'], cue is not None, drift)
+        use_aligner = (not keep) and c['status'] != 'draft'
+        publish.append(use_aligner)
+        if use_aligner:
+            times.append([None if w is None else [float(w[0]), float(w[1])] for w in primary[:n]])
+        else:
+            copied = [[float(w['s']), float(w['e'])] for w in u.line['words']]
+            if cue is not None:
+                shift_block(copied, float(cue['start']))
+            times.append(copied)
+    fit_drafts(times, [c['status'] == 'draft' and not keep_cue_time(c['status'], u.id in cues)
+                       for u, c in zip(units, conf)], duration)
+    for ws in times:
+        for j, w in enumerate(ws):
+            if w is None:
+                prev = next((ws[k] for k in range(j - 1, -1, -1) if ws[k] is not None), None)
+                nxt = next((ws[k] for k in range(j + 1, len(ws)) if ws[k] is not None), None)
+                t = prev[1] if prev else (nxt[0] - 0.01 if nxt else 0.0)
+                ws[j] = [t, t + 0.01]
+    return times, ctc_starts, ctc_ends, publish
+
+
+def _placement_summary(report_lines: list[dict], conf: list[dict], units: list[Unit], ft_info: dict) -> dict:
+    """Why the first MMS pass missed, who placed the line, and the 0.30–0.70 s disputes."""
+    by_id = {u.id: c for u, c in zip(units, conf)}
+    rows = []
+    for rec in report_lines:
+        if rec.get('group') == 'other':
+            continue
+        c = by_id.get(rec['id']) or {}
+        attempts = c.get('attempts') or []
+        rows.append({
+            'lang': rec.get('lang'),
+            'mms_placed': c.get('placed_by') == 'mms',
+            'mms_missing': bool(rec.get('mms_missing')),
+            'mms_structure_ok': bool(rec.get('mms_structure_ok')),
+            'mms_delta': rec.get('mms_delta'),
+            'second_placed': bool(c.get('second_would')),
+            'second_near': bool(c.get('second_near')),
+            'second_structure': bool(c.get('second_structure')),
+            'stable_placed': bool(c.get('stable_would')),
+            'stable_near': bool(c.get('stable_near')),
+            'stable_structure': bool(c.get('stable_structure')),
+            'window_placed': any(a.get('by') == 'mms-window' and a.get('placed') for a in attempts),
+            'ft_placed': any(a.get('by') == 'mms-ft' and a.get('placed') for a in attempts),
+        })
+    disputes = [rec['dispute'] for rec in report_lines if rec.get('dispute')]
+    choir = [rec for rec in report_lines if rec.get('group') == 'choir']
+    finale_ids = {rec['id'] for rec in choir if str(rec['id']).startswith('eckhart-f-')}
+    finale = [rec for rec in choir if rec['id'] in finale_ids]
+    verses = [rec for rec in choir if rec['id'] not in finale_ids]
+
+    def pack(lines: list[dict]) -> dict:
+        counts: dict[str, int] = {}
+        for rec in lines:
+            name = rec.get('placed_by')
+            if name:
+                counts[name] = counts.get(name, 0) + 1
+        deltas = [float(rec['mms_delta']) for rec in lines if rec.get('mms_delta') is not None]
+        ids = {rec['id'] for rec in lines}
+        band = [row for row in disputes if row.get('id') in ids]
+        starts = sorted(float(rec['cue_start']) for rec in lines if rec.get('cue_start') is not None)
+        gaps = [round(b - a, 3) for a, b in zip(starts, starts[1:])]
+        return {
+            'n': len(lines),
+            'placed': sum(counts.values()),
+            'by': counts,
+            'median_mms_delta': None if not deltas else round(float(np.median(deltas)), 3),
+            'dispute': len(band),
+            'dispute_agree': sum(1 for row in band if row.get('agree')),
+            'dispute_attack': sum(1 for row in band if row.get('attack')),
+            'cue_gap_median': None if not gaps else round(float(np.median(gaps)), 3),
+            'cue_gap_min': None if not gaps else round(min(gaps), 3),
+            'cue_gaps': gaps,
+        }
+
+    by: dict[str, int] = {}
+    for rec in report_lines:
+        if rec.get('group') == 'other' or not rec.get('placed_by'):
+            continue
+        by[rec['placed_by']] = by.get(rec['placed_by'], 0) + 1
+    return {
+        'by': by,
+        'unplaced': P.summarize_unplaced(rows),
+        'dispute': disputes,
+        'dispute_n': len(disputes),
+        'dispute_agree': sum(1 for row in disputes if row.get('agree')),
+        'dispute_attack': sum(1 for row in disputes if row.get('attack')),
+        'choir': {'all': pack(choir), 'verses': pack(verses), 'finale': pack(finale)},
+        'ft': ft_info or {'ran': False},
+    }
+
+
+def _clock_round(value: float | None, kind: str | None) -> float | None:
+    """Whisper stays at two decimals, as the report always stored it. MMS and stable-ts keep three."""
+    if value is None:
+        return None
+    if kind in ('mms', 'stable-ts'):
+        return round(float(value), 3)
+    return round(float(value), 2)
+
+
 # ---------------------------------------------------------------- main
 
 def main() -> None:
@@ -904,59 +1287,92 @@ def main() -> None:
         near = delta is not None and round(delta, 3) <= Q.PROOF_CUE_TOL
         score_ok = (not missing) and metric_value is not None and float(metric_value) >= threshold
         status = placement_status(missing or r is None, score_ok, structure_ok, near, cue is not None)
+        mms_seconds: list[list[float] | None] = []
+        for w in placed_words:
+            if w is None:
+                mms_seconds.append(None)
+            else:
+                mms_seconds.append([w['f0'] / FPS, w['f1'] / FPS])
+        placed_now = status == 'good'
         conf.append({
             'scores': scores, 'score': score, 'gap': gap, 'agree': agree, 'status': status,
             'structure_ok': structure_ok, 'structure': structure,
             'metric': metric_name, 'metric_value': metric_value, 'threshold': threshold,
+            'mms_seconds': mms_seconds,
+            'chosen_seconds': _copy_spans(mms_seconds) if placed_now else None,
+            'placed_by': 'mms' if placed_now else None,
+            'mms_missing': bool(missing or r is None),
+            'mms_structure_ok': bool(structure_ok),
+            'mms_structure': structure,
+            'mms_delta': None if delta is None else round(float(delta), 3),
+            'attempts': [],
+            'stable_would': False, 'stable_near': False, 'stable_structure': False,
+            'second_would': False, 'second_near': False, 'second_structure': False,
         })
 
-    # Word times (seconds). Aligner times are published only for a placed line, which is
-    # already within 0.30 s of the cue. Anything else that has a cue is shifted so its
-    # first word starts on the cue. Copying the stored s/e left shushtari-s2 at 489.82
-    # while the cue is 486.296. A draft with no cue is still fitted between neighbours.
-    times: list[list[list[float] | None]] = []
-    ctc_starts: list[list[float | None]] = []
-    ctc_ends: list[list[float | None]] = []
-    publish: list[bool] = []
-    for u, p, c in zip(units, passes, conf):
-        placed: list[list[float] | None] = [None] * len(u.roman)
-        if p['res'] is not None:
-            for wi, w in enumerate(p['res']['words']):
-                if w is not None:
-                    placed[wi] = [w['f0'] / FPS, w['f1'] / FPS]
-        raw = [None if w is None else w[0] for w in placed]
-        ctc_starts.append(raw)
-        ctc_ends.append([None if w is None else w[1] for w in placed])
-        cue = cues.get(u.id)
-        drift = line_drift(raw, u.roman, None if cue is None else float(cue['start']))
-        keep = keep_cue_time(c['status'], cue is not None, drift)
-        use_aligner = (not keep) and c['status'] != 'draft'
-        publish.append(use_aligner)
-        if use_aligner:
-            times.append([None if w is None else [w[0], w[1]] for w in placed])
-        else:
-            copied = [[w['s'], w['e']] for w in u.line['words']]
-            if cue is not None:
-                shift_block(copied, float(cue['start']))
-            times.append(copied)
-    fit_drafts(times, [c['status'] == 'draft' and not keep_cue_time(c['status'], u.id in cues)
-                       for u, c in zip(units, conf)], duration)
+    # Lines the first MMS pass already placed keep that pass. The chain runs only
+    # where it did not. Their witness window stays the pre-snap phrase, so a line
+    # that was already placed is not re-measured on a wider span.
+    orig_good = {u.id for u, c in zip(units, conf) if c['status'] == 'good'}
+    n_window = rescue_mms_windows(lp, units, conf, passes, cues, duration)
+    ft_info = rescue_ft(slug, units, conf, cues, duration)
 
-    # Words without letters (punctuation): a 10 ms slot right after the previous word.
-    for ws in times:
-        for j, w in enumerate(ws):
-            if w is None:
-                prev = next((ws[k] for k in range(j - 1, -1, -1) if ws[k] is not None), None)
-                nxt = next((ws[k] for k in range(j + 1, len(ws)) if ws[k] is not None), None)
-                t = prev[1] if prev else (nxt[0] - 0.01 if nxt else 0.0)
-                ws[j] = [t, t + 0.01]
-
-    # Word starts move to the nearest clear vocal onset (see snap_onsets); ends follow the voice.
-    # The second aligner needs the phrase from before that move.
-    sig = Q.Signals(x)
+    # Phrase for the original good lines, before any snap and before a later aligner
+    # is allowed to place what MMS missed. Newly placed lines are not a fence yet:
+    # a neighbour that was not good on the first pass is still fenced by its cue.
+    times, ctc_starts, ctc_ends, publish = assemble_times(units, conf, cues, duration)
     phrase = [(ws[0][0], ws[-1][1]) for ws in times]
-    # Snap and voice-end extension only where the aligner time is the one we publish.
-    # A cue we kept must stay the cue, not an onset near it.
+    jobs = []
+    second_window: dict[str, tuple[float, float]] = {}
+    fence_start: list[float | None] = []
+    fence_end: list[float | None] = []
+    for u, span in zip(units, phrase):
+        cue = cues.get(u.id)
+        if u.id in orig_good:
+            fence_start.append(span[0])
+            fence_end.append(span[1])
+        elif cue is not None:
+            fence_start.append(float(cue['start']))
+            fence_end.append(float(cue['end']))
+        else:
+            fence_start.append(None)
+            fence_end.append(None)
+    for i, u in enumerate(units):
+        if T.group(u.sec, u.line) == 'other':
+            continue
+        cue = cues.get(u.id)
+        if u.id in orig_good or (cue is None and conf[i]['status'] == 'good'):
+            span = phrase[i]
+            prev_end = next((fence_end[j] for j in range(i - 1, -1, -1) if fence_end[j] is not None), None)
+            next_start = next((fence_start[j] for j in range(i + 1, len(fence_start)) if fence_start[j] is not None), None)
+            t0, t1 = second_span(span[0], span[1], float(u.sec['start']), float(u.sec['end']), duration,
+                                 prev_end, next_start)
+        elif cue is not None:
+            t0, t1 = P.span_to_next(float(cue['start']), float(cue['end']), _next_cue_start(units, cues, i),
+                                    duration, CUE_LEAD, 0.0)
+        else:
+            continue
+        second_window[u.id] = (t0, t1)
+        jobs.append({'id': u.id, 'lang': u.line['lang'], 'script': u.line['script'],
+                     'words': [w['w'] for w in u.line['words']], 't0': t0, 't1': t1})
+    second_starts, second_name = engines.align_jobs(args.second, x, jobs)
+    third_starts: dict[str, list] = {}
+    if jobs:
+        try:
+            third_starts = engines.run_engine('stable-ts', x, jobs)
+        except Exception as e:
+            print(f'stable-ts недоступен ({e.__class__.__name__}: {e})')
+    n_stable, n_second = adopt_engines(units, conf, cues, second_starts, third_starts, second_window)
+    by_counts: dict[str, int] = {}
+    for c in conf:
+        if c.get('placed_by'):
+            by_counts[c['placed_by']] = by_counts.get(c['placed_by'], 0) + 1
+    print(f"цепочка: окно {n_window}, ft {by_counts.get('mms-ft', 0)}, stable-ts {n_stable}, "
+          f"второй {n_second}; поставлено {sum(by_counts.values())}", flush=True)
+
+    # Rebuild after the chain. Snap runs once, on the placer's times.
+    times, ctc_starts, ctc_ends, publish = assemble_times(units, conf, cues, duration)
+    sig = Q.Signals(x)
     onset_dt = snap_onsets(sig, times, units, publish)
     flat = [(w, pub) for ws, pub in zip(times, publish) for w in ws]
     for j, (w, measured) in enumerate(flat):
@@ -968,9 +1384,6 @@ def main() -> None:
         while e + F.HOP <= limit and active(e):
             e += F.HOP
         w[1] = max(w[1], min(e, limit))
-
-    # Snap can walk a start that was 0.30 s from the cue out to 0.40 s. Pull the
-    # published line back by the excess so the written first word stays inside.
     for ws, u, pub in zip(times, units, publish):
         if not pub:
             continue
@@ -978,46 +1391,6 @@ def main() -> None:
         if cue is None:
             continue
         clamp_block(ws, float(cue['start']), Q.CUE_TOL)
-
-    # Second opinion on solo and choir lines the cue window placed confidently. The window is
-    # the measured phrase, padded, but cut at the neighbouring line: a good neighbour by its
-    # aligner edge, any other neighbour by its cue. Draft word times are not used. A duet or
-    # a tutti stays out.
-    jobs = []
-    second_window: dict[str, tuple[float, float]] = {}
-    fence_start: list[float | None] = []
-    fence_end: list[float | None] = []
-    for u, c, span in zip(units, conf, phrase):
-        cue = cues.get(u.id)
-        if c['status'] == 'good':
-            fence_start.append(span[0])
-            fence_end.append(span[1])
-        elif cue is not None:
-            fence_start.append(float(cue['start']))
-            fence_end.append(float(cue['end']))
-        else:
-            fence_start.append(None)
-            fence_end.append(None)
-    for i, (u, c, span) in enumerate(zip(units, conf, phrase)):
-        if c['status'] != 'good' or T.group(u.sec, u.line) == 'other':
-            continue
-        prev_end = next((fence_end[j] for j in range(i - 1, -1, -1) if fence_end[j] is not None), None)
-        next_start = next((fence_start[j] for j in range(i + 1, len(fence_start)) if fence_start[j] is not None), None)
-        t0, t1 = second_span(span[0], span[1], float(u.sec['start']), float(u.sec['end']), duration,
-                             prev_end, next_start)
-        second_window[u.id] = (t0, t1)
-        jobs.append({'id': u.id, 'lang': u.line['lang'], 'script': u.line['script'],
-                     'words': [w['w'] for w in u.line['words']], 't0': t0, 't1': t1})
-    second_starts, second_name = engines.align_jobs(args.second, x, jobs)
-
-    # Third witness: stable-ts on the same placed lines and the same windows. A failure
-    # leaves the column empty. It does not fail the alignment.
-    third_starts: dict[str, list] = {}
-    if jobs:
-        try:
-            third_starts = engines.run_engine('stable-ts', x, jobs)
-        except Exception as e:
-            print(f'stable-ts недоступен ({e.__class__.__name__}: {e})')
 
     # Borrowed checkpoints on every cued line of tr, az and la. The cue window, not the
     # phrase the first aligner already placed, so a language is not graded only on the
@@ -1041,6 +1414,15 @@ def main() -> None:
     qa = Q.check_lines(sig, [[{'w': w['w'], 's': t[0], 'e': t[1]} for w, t in zip(u.line['words'], ws)] for u, ws in zip(units, times)],
                        [u.sec['id'] for u in units])
 
+    def _first_value(values, roman) -> float | None:
+        if not values:
+            return None
+        for value, rm in zip(values, roman):
+            if rm and value is not None:
+                return float(value)
+        return None
+
+    dispute_peaks = Q.onset_peak_times(sig, min_height=0.7)
     report_lines, good, placed = [], set(), set()
     for u, p, ws, c, raw, raw_e, odt, q, pub in zip(units, passes, times, conf, ctc_starts, ctc_ends, onset_dt, qa, publish):
         status, scores, score, gap, agree = c['status'], c['scores'], c['score'], c['gap'], c['agree']
@@ -1051,11 +1433,17 @@ def main() -> None:
         if s3 is not None and len(s3) != len(u.line['words']):
             s3 = None
         borrowed = borrow_by_line.get(u.id) or {}
+        mms_seconds = c.get('mms_seconds') or []
         words_out, proven_n, letters_n = [], 0, 0
         for wi, (w, rm, t, sc) in enumerate(zip(u.line['words'], u.roman, ws, scores)):
             has_letters = bool(rm)
             e2 = float(s2[wi]) if (s2 and s2[wi] is not None) else None
             e3 = float(s3[wi]) if (s3 and s3[wi] is not None) else None
+            mms_t = None
+            if wi < len(mms_seconds) and mms_seconds[wi] is not None:
+                mms_t = float(mms_seconds[wi][0])
+            # The placer's pre-snap start is already `raw`. The other two clocks are the witnesses.
+            slot2, kind2, slot3, kind3 = P.witness_slots(c.get('placed_by'), mms_t, e2, e3)
             borrow_times = {}
             # `times` above is every line's (start, end) pairs and is written after this
             # loop. A loop variable here would replace that list with one model's starts.
@@ -1063,7 +1451,7 @@ def main() -> None:
                 if wi < len(model_starts) and model_starts[wi] is not None:
                     borrow_times[model_lang] = round(float(model_starts[wi]), 3)
             tol = Q.CHOIR_TOL if T.group(u.sec, u.line) == 'choir' else ENGINE_AGREE
-            engines_agree = None if e2 is None or raw[wi] is None else bool(abs(e2 - raw[wi]) <= tol)
+            engines_agree = None if slot2 is None or raw[wi] is None else bool(abs(slot2 - raw[wi]) <= tol)
             onset_ok = odt[wi] is not None
             # Report note only. The line flag is qa_sync.proof_line.
             proven = (status == 'good' and q['verdict'] == 'ok' and engines_agree is True
@@ -1074,8 +1462,12 @@ def main() -> None:
             words_out.append({'w': w['w'], 'roman': rm, 's': round(t[0], 2), 'e': round(t[1], 2), 'draft_s': w['s'],
                               'score': sc, 'ctc_s': None if raw[wi] is None else round(raw[wi], 3),
                               'ctc_e': None if raw_e[wi] is None else round(raw_e[wi], 3),
-                              'second_s': None if e2 is None else round(e2, 2),
-                              'third_s': None if e3 is None else round(e3, 3),
+                              'second_s': _clock_round(slot2, kind2),
+                              'third_s': _clock_round(slot3, kind3),
+                              'second_kind': kind2, 'third_kind': kind3,
+                              'clock_mms': None if mms_t is None else round(mms_t, 3),
+                              'clock_second': None if e2 is None else round(float(e2), 3),
+                              'clock_stable': None if e3 is None else round(float(e3), 3),
                               'borrow': borrow_times,
                               'onset_dt': None if odt[wi] is None else round(odt[wi], 2), 'proven': proven})
         all_proven = letters_n > 0 and proven_n == letters_n
@@ -1089,6 +1481,15 @@ def main() -> None:
             placed.add(u.id)
         cue = cues.get(u.id)
         ctc_line = next((t for t, rm in zip(raw, u.roman) if rm and t is not None), None)
+        mms_line = _first_value([None if span is None else span[0] for span in mms_seconds], u.roman)
+        second_line = _first_value(s2, u.roman) if s2 else None
+        stable_line = _first_value(s3, u.roman) if s3 else None
+        group = T.group(u.sec, u.line)
+        dispute = None
+        if group != 'other':
+            dispute = P.dispute_row(u.id, u.line['lang'], group,
+                                    None if cue is None else float(cue['start']),
+                                    mms_line, second_line, stable_line, dispute_peaks)
         report_lines.append({
             'id': u.id, 'section': u.sec['id'], 'lang': u.line['lang'], 'text': T.line_text(u.line),
             'solo': T.is_solo(u.sec, u.line), 'group': T.group(u.sec, u.line), 'second': second_name.get(u.id),
@@ -1103,22 +1504,32 @@ def main() -> None:
             'cue_start': None if cue is None else round(float(cue['start']), 3),
             'cue_end': None if cue is None else round(float(cue['end']), 3),
             'ctc_start': None if ctc_line is None else round(ctc_line, 3),
-            'time_source': 'aligner' if pub else ('cue' if cue is not None else 'draft'),
+            'time_source': c['placed_by'] if pub and c.get('placed_by') else ('cue' if cue is not None else 'draft'),
+            'placed_by': c.get('placed_by'),
+            'mms_start': None if mms_line is None else round(mms_line, 3),
+            'mms_delta': c.get('mms_delta'),
+            'mms_missing': bool(c.get('mms_missing')),
+            'mms_structure_ok': bool(c.get('mms_structure_ok')),
             'score': round(score, 3), 'gap': round(gap, 3),
             'metric': c['metric'], 'metric_value': None if c['metric_value'] is None else round(float(c['metric_value']), 4),
             'structure_ok': c['structure_ok'], 'structure': c['structure'],
+            'dispute': dispute,
             'words': words_out,
         })
 
     # Times are written for every requested line. The flag stays on: qa_sync.py --apply is the
     # only step that may clear timing-draft, and only for a line it can prove.
     level_of = {r['id']: r['level'] for r in report_lines}
-    for u, ws in zip(units, times):
+    for u, ws, pub, c in zip(units, times, publish, conf):
         if only and u.id not in only:
             continue
         for w, t in zip(u.line['words'], ws):
             w['s'], w['e'] = T.r2(t[0]), T.r2(t[1])
         T.set_flag(u.line, 'timing-draft', True)
+        if pub and c.get('placed_by'):
+            u.line['placedBy'] = c['placed_by']
+        else:
+            u.line.pop('placedBy', None)
     fixes = T.enforce_order(lyrics)
     placed_ids = {u.id for u, pub in zip(units, publish) if pub}
     locked = lock_written_cues(lyrics, cues, placed_ids, only)
@@ -1167,6 +1578,7 @@ def main() -> None:
         'section_edge_fixes': edge_fixes,
         'third_engine': 'stable-ts',
         'third_compared': sum(1 for w in ws_good if w.get('third_s') is not None and w.get('ctc_s') is not None),
+        'placement': _placement_summary(report_lines, conf, units, ft_info),
     }
     report = {
         'slug': slug, 'created': t_start.isoformat(timespec='seconds'), 'audio': audio.name, 'stem': is_stem,

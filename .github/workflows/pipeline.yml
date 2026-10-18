@@ -14,7 +14,11 @@
 # After every align and before qa, the run writes docs/analysis/bench/aligner-review.json
 # (who is closer to a strong attack, the second aligner's shift, borrowed models) and then
 # measures the per-song witness rule, word refutations and the line share
-# (docs/analysis/bench/attack-chance.json). qa reads that rule.
+# (docs/analysis/bench/attack-chance.json). A cued line the first MMS pass missed is placed
+# by the first later step that still passes structure and 0.30 s: another MMS window, an
+# htdemucs_ft clip of that line, stable-ts, then the second aligner. Line chance is measured
+# per placer. A placer still over 5 % at K = 1 is excluded from proof; the run continues
+# when the others fit. qa reads that rule and does not prove an excluded placer.
 # A failed measurement does not fall through to the 0.10 s attack test.
 # optional "align" and "qa" — lists of extra options for align.py / qa_sync.py, e.g. {"qa": ["--fix"]}.
 # Needs the repository secret AUDIO_KEY (Settings → Secrets and variables → Actions).

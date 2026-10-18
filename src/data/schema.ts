@@ -125,6 +125,8 @@ export const LineSchema = z.object({
   comment: z.string().optional(),
   /** Who sings this line, when it differs from the section voice. */
   voice: z.string().optional(),
+  /** Which aligner placed the line. Omitted when the line stays on the cue. */
+  placedBy: z.enum(['mms', 'mms-window', 'mms-ft', 'stable-ts', 'second']).optional(),
   fx: FX.optional(),
   flags: z.array(FLAG).optional(),
 });

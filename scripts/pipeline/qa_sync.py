@@ -39,6 +39,7 @@ from pathlib import Path
 import numpy as np
 
 import features as F
+import placement as P
 import timing as T
 from common import ROOT, dump_json, load_audio, load_json, song_dir, vocal_stem, work_dir
 
@@ -216,6 +217,11 @@ def load_word_rule() -> dict:
     rule['line_share'] = None if chosen.get('line_share') is None else float(chosen['line_share'])
     rule['line_chance'] = None if chosen.get('line_chance') is None else float(chosen['line_chance'])
     rule['line_min_words'] = int(chosen.get('line_min_words') or 2)
+    blocked = []
+    for name in chosen.get('blocked_primaries') or []:
+        if isinstance(name, str) and name:
+            blocked.append(name)
+    rule['blocked_primaries'] = blocked
     # A measured file decides witnesses per song and language. The global flag is
     # only the fallback for a file that still names one mode for every line.
     if rule['witnesses'] or rule['scopes']:
@@ -242,6 +248,12 @@ def apply_rule_times(words: list[dict] | None, lang: str | None, rule: dict | No
     out = []
     for word in words:
         item = dict(word)
+        kind = item.get('second_kind') or ''
+        # A witness slot that holds MMS or stable-ts is not the Whisper clock.
+        # Bias and a borrowed checkpoint apply only to that clock.
+        if kind not in ('', 'whisperx', 'second'):
+            out.append(item)
+            continue
         key = None
         if src:
             borrowed = (word.get('borrow') or {}).get(src)
@@ -393,6 +405,7 @@ REASON_RU = {
     'no-report': 'нет отчёта выравнивания',
     'word-refuted': 'слово опровергнуто',
     'word-share': 'доказанных слов меньше доли строки',
+    'primary-chance': 'случайный проход этого постановщика выше 5 %',
 }
 
 
@@ -779,7 +792,16 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
             mode = 'two'
         elif mode is None:
             mode = global_mode
-        decision = proof_line(kind, rec.get('status') if rec else None, text_same, presnap, align_words or None, align_report is not None,
+        placed_by = (rec or {}).get('placed_by')
+        blocked = set(rule.get('blocked_primaries') or [])
+        if placed_by and P.primary_family(placed_by) in blocked and (rec or {}).get('status') == 'good':
+            decision = {
+                'pass': False, 'reason': 'primary-chance',
+                'detail': f"постановщик {P.primary_family(placed_by)} исключён: случайный проход строки выше 5 %",
+                'second': second_status(align_words, tol), 'paths': {}, 'word_proof': [],
+            }
+        else:
+            decision = proof_line(kind, rec.get('status') if rec else None, text_same, presnap, align_words or None, align_report is not None,
                               cue_start=cue_start, ctc_line_start=ctc_line,
                               structure_ok=True if rec is None else bool(rec.get('structure_ok', True)),
                               tol=tol, require_second=bool(rule.get('require_second')) and not mode,
@@ -794,7 +816,7 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
             'pass': decision['pass'], 'reason': decision['reason'],
             'detail': decision['detail'], 'second': decision.get('second', ''), 'engine': (rec or {}).get('second'),
             'paths': decision.get('paths') or {}, 'word_proof': decision.get('word_proof') or [],
-            'ctc': (rec or {}).get('status'), 'start': words[0]['s'],
+            'ctc': (rec or {}).get('status'), 'placed_by': placed_by, 'start': words[0]['s'],
             'cue_start': cue_start, 'cue_delta': cue_delta,
             'window': (rec or {}).get('second_window'),
             'onset_abs': [round(a, 3) for a in abs_pre] if decision['pass'] else [],
@@ -874,9 +896,23 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
         'cue_median': round(float(np.median(cue_vals)), 3) if cue_vals else None,
         'aligner_failed': aligner_failed, 'by_lang': by_lang,
         'fill_lines': len(passed) + len(choir_passed),
+        'placed_by': _placed_by_counts(rows),
         'word_paths': word_paths,
         'onset_consonant': _onset_stat(consonant), 'onset_soft': _onset_stat(soft),
     }
+
+
+def _placed_by_counts(rows: list[dict]) -> dict[str, int]:
+    """Who placed the lines that are `good`. The cue-kept lines have no placer."""
+    counts: dict[str, int] = {}
+    for row in rows:
+        if row.get('ctc') != 'good' or not row.get('placed_by'):
+            continue
+        if row.get('group') not in ('solo', 'choir'):
+            continue
+        name = str(row['placed_by'])
+        counts[name] = counts.get(name, 0) + 1
+    return counts
 
 
 def _onset_stat(vals: list[float | None]) -> dict:
@@ -1255,7 +1291,8 @@ def proof_md(proof: dict) -> list[str]:
                 who = 'оба независимых выравнивателя'
             L.append('- Второй выравниватель на поставленных строках: ' + ', '.join(bits) + '. '
                      f'Слово доказано, когда атака сильная и {who} '
-                     '(второй или stable-ts) совпадает с MMS не дальше 0,10 с. Путь без атаки при этом правиле закрыт.')
+                     'совпадает с началом того, кто поставил строку, не дальше 0,10 с. '
+                     'Сам постановщик себе свидетелем не служит. Путь без атаки при этом правиле закрыт.')
         else:
             L.append('- Второй выравниватель на поставленных строках: ' + ', '.join(bits) + '. '
                      'Доказательством он служит только у слова на гласную или связного, если атаки ближе 0,3 с нет, '
@@ -1273,6 +1310,11 @@ def proof_md(proof: dict) -> list[str]:
                  f"Доказано вторым выравнивателем: {paths.get('second', 0)}. "
                  f"Не доказано: {paths.get('fail', 0)}. "
                  f"Интерполяция между соседними словами доказательством не считается.")
+    placed_by = proof.get('placed_by') or {}
+    if placed_by:
+        bits = ', '.join(f'{name} — {n}' for name, n in sorted(placed_by.items()))
+        L.append(f"- Кто поставил: {bits}. "
+                 f"Окно MMS и стем htdemucs_ft записаны отдельно и в доказательстве считаются одним постановщиком.")
     if proof.get('line_share') is not None:
         L.append(f"- Если бы пословная заливка включалась по строке, а не на всю песню, её получили бы "
                  f"{proof.get('fill_lines', 0)} строк: начало не дальше 0,3 с от реплики, "
