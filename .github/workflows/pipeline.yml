@@ -20,8 +20,11 @@
 # per placer. A placer still over 5 % at K = 1 is excluded from proof; the run continues
 # when the others fit. qa reads that rule and does not prove an excluded placer.
 # A word start must sit inside the line's section (0.05 s), or that chain step
-# does not place the line. stable-ts uses the largest Whisper model that
-# finishes inside 90 minutes, measured on windows of lines already placed.
+# does not place the line. stable-ts measures every Whisper model that finishes
+# inside 90 minutes, on windows of lines already placed, and keeps each clock.
+# The largest of those places lines still open. The proof witness is chosen
+# per song and language by proved lines, after aligner-review and before the
+# attack measurement.
 # A failed measurement does not fall through to the 0.10 s attack test.
 # An align job is one song. Run 39102852010 put three ladders in one 150 minute
 # job and was cancelled at the limit (I Have Come Alive and Karitas had aligned,
@@ -739,6 +742,18 @@ jobs:
             align_rc=2
             worst=2
             echo "::error::разбор расхождений не собрался"
+          fi
+          if [ $align_rc -eq 0 ]; then
+            echo "::group::whisper choice"
+            python3 scripts/pipeline/whisper_choice.py --choose $(tr '\n' ' ' < /tmp/calibrate.txt)
+            rc=$?
+            echo "::endgroup::"
+            echo "whisper-choice: код $rc" >> /tmp/summary.txt
+            if [ $rc -ne 0 ]; then
+              align_rc=2
+              worst=2
+              echo "::error::свидетель не выбран"
+            fi
           fi
           if [ $align_rc -eq 0 ]; then
             echo "::group::attack chance"

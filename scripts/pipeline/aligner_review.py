@@ -376,8 +376,9 @@ def _counts_row(name: str, kind: str, counts: dict) -> str:
 def _model_sentence(models: list) -> str:
     named = [f"{item.get('song')} — `{item.get('model')}`" for item in models if item.get('model')]
     if not named:
-        return 'Модель выбирает лестница на раннере и пишет её в отчёт выравнивания.'
-    return 'Модель этого прогона: ' + ', '.join(named) + '.'
+        return 'Непоставленные строки ставит наибольшая домеренная модель. Свидетеля доказательства выбирают отдельно.'
+    return ('Непоставленные строки ставит наибольшая домеренная модель: ' + ', '.join(named) + '. '
+            'Свидетеля доказательства эта модель не назначает.')
 
 
 def render_md(payload: dict) -> str:

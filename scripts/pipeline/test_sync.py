@@ -1034,11 +1034,12 @@ def test_whisper_witness() -> None:
     check('ninety minutes starts large-v3 with at least thirty minutes',
           chosen == 'large-v3' and slice_s >= 30 * 60, str(slice_s))
 
-    # All four finish inside a wide budget: the largest one is the witness.
+    # All four finish inside a wide budget. The ladder still returns the largest
+    # finished model: that name places lines still open. It does not appoint the proof witness.
     t[0] = 0.0
     state = {'calls': [], 'reply': lambda name, deadline: finish(name, 10.0)}
     chosen, rows = W.ladder(advancing(state), budget_s=100000.0, clock=clock)
-    check('the largest finished model is the witness', chosen == 'large-v3' and len(rows) == 4, str([r['model'] for r in rows]))
+    check('the largest finished model places lines still open', chosen == 'large-v3' and len(rows) == 4, str([r['model'] for r in rows]))
 
     # Medium takes most of the budget, so the larger estimates do not fit.
     t[0] = 0.0
@@ -1125,6 +1126,115 @@ def test_whisper_witness() -> None:
           starts == {} and info['complete'] is False and bool(info.get('error')), str(info.get('error')))
 
 
+def _shift_row(ctc: float, second, third) -> dict:
+    return {'ctc': ctc, 'second': second, 'third': third}
+
+
+def test_whisper_choice() -> None:
+    import attack_chance as A
+    import whisper_choice as C
+    import whisper_witness as W
+
+    early = _shift_row(1.0, 0.90, 0.92)
+    late = _shift_row(1.0, 1.10, 1.12)
+    split = W.window_shift([early] * 4 + [late] * 4)
+    check('an early first half does not confirm a late second half',
+          (not split['confirmed']) and split['first']['early'] == 4 and split['second']['early'] == 0
+          and split['first']['n'] == 4 and split['second']['n'] == 4, str(split))
+    held = W.window_shift([early] * 6)
+    check('both halves early confirm the window shift',
+          held['confirmed'] and held['first']['early'] == 3 and held['second']['early'] == 3, str(held))
+    missing = W.window_shift([_shift_row(1.0, None, 0.9), early, early])
+    check('a missing witness clock is left out of the split',
+          missing['missing_clock'] == 1 and missing['both_clocks'] == 2, str(missing))
+
+    def raw_word(t, roman, models, second=None, stable=None, mms=None):
+        return {
+            'w': roman, 'roman': roman, 's': t, 'e': t + 0.3,
+            'ctc_s': t, 'ctc_e': t + 0.3,
+            'clock_mms': t if mms is None else mms, 'clock_second': second, 'clock_stable': stable,
+            'stable_models': dict(models),
+        }
+
+    applied = {
+        'summary': {'placement_model': 'medium', 'stable_model': 'medium'},
+        'lines': [
+            {
+                'id': 'mms-line', 'lang': 'ar', 'status': 'good', 'placed_by': 'mms', 'group': 'solo',
+                'cue_start': 1.0, 'ctc_start': 1.0,
+                'words': [raw_word(1.0, 'ba', {'medium': 8.0, 'small': 1.0}, second=1.5, stable=9.0)],
+            },
+            {
+                'id': 'stable-line', 'lang': 'en', 'status': 'good', 'placed_by': 'stable-ts', 'group': 'solo',
+                'cue_start': 2.0, 'ctc_start': 2.0,
+                'words': [raw_word(2.0, 'ka', {'medium': 4.0}, second=2.0, stable=3.0, mms=1.0)],
+            },
+            {
+                'id': 'kept', 'lang': 'ar', 'status': 'good', 'placed_by': 'mms', 'group': 'solo',
+                'cue_start': 3.0, 'ctc_start': 3.0,
+                'words': [raw_word(3.0, 'da', {}, second=None, stable=5.5)],
+            },
+        ],
+    }
+    C.apply_models(applied, {'ar': 'medium', 'en': 'medium'})
+    mms_word = applied['lines'][0]['words'][0]
+    stable_word = applied['lines'][1]['words'][0]
+    kept_word = applied['lines'][2]['words'][0]
+    check('an MMS line takes the chosen model as the stable witness',
+          mms_word['third_s'] == 8.0 and mms_word['second_s'] == 1.5 and mms_word['w'] == 'ba', str(mms_word))
+    check('a stable-ts line keeps the whisper slot and does not publish the stable clock there',
+          stable_word['clock_stable'] == 4.0 and stable_word['third_s'] == 2.0 and stable_word['second_s'] == 1.0,
+          str(stable_word))
+    check('a word measured only by the placement model keeps that clock',
+          kept_word['clock_stable'] == 5.5, str(kept_word))
+    C.apply_models(applied, {'ar': 'small', 'en': 'small'})
+    check('a model with no saved time leaves no stable clock',
+          applied['lines'][1]['words'][0]['clock_stable'] is None, str(applied['lines'][1]['words'][0]['clock_stable']))
+
+    hits = np.zeros((3, len(A.LINE_SHARES), 8), dtype=np.int32)
+    cand = np.array([10, 0, 0], dtype=np.int32)
+    hits[0, :, 0] = 8
+    hits[0, :, 1:] = 2
+    blocked = C.decide_lines(hits, cand)
+    check('a placer over 5 % at every share is not a passing K',
+          (not blocked['ok']) and blocked['proved'] == 0, str(blocked))
+    hits[0, :, 1:] = 0
+    opened = C.decide_lines(hits, cand)
+    check('zero probes keep the smallest share and the real lines',
+          opened['ok'] and opened['k'] == A.LINE_SHARES[0] and opened['proved'] == 8, str(opened))
+
+    def pair_word(t, roman, small_t, medium_t):
+        return raw_word(t, roman, {'small': small_t, 'medium': medium_t}, second=None, stable=medium_t)
+
+    report = {
+        'slug': 's',
+        'summary': {'placement_model': 'medium', 'stable_model': 'medium'},
+        'lines': [
+            {
+                'id': 'ar-line', 'lang': 'ar', 'status': 'good', 'placed_by': 'mms', 'group': 'solo',
+                'cue_start': 10.0, 'ctc_start': 10.0,
+                'words': [pair_word(10.0, 'ba', 10.0, 30.0), pair_word(11.0, 'ka', 11.0, 31.0)],
+            },
+            {
+                'id': 'en-line', 'lang': 'en', 'status': 'good', 'placed_by': 'mms', 'group': 'solo',
+                'cue_start': 50.0, 'ctc_start': 50.0,
+                'words': [pair_word(50.0, 'da', 80.0, 50.0), pair_word(51.0, 'ga', 81.0, 51.0)],
+            },
+        ],
+    }
+    peaks = np.array([10.0, 11.0, 50.0, 51.0])
+    result = C.choose(['s'], {'s': report}, {'s': peaks}, {}, {})
+    assignment = result['assignment']['s']
+    check('each language takes the model that proves its line',
+          assignment.get('ar') == 'small' and assignment.get('en') == 'medium'
+          and result['decision']['ok'] and result['decision']['proved'] == 2,
+          str(assignment) + ' ' + str(result['decision'].get('proved')))
+    ar_third = report['lines'][0]['words'][0]['third_s']
+    en_third = report['lines'][1]['words'][0]['third_s']
+    check('the rewritten witness is that model’s clock',
+          ar_third == 10.0 and en_third == 50.0, f'{ar_third}, {en_third}')
+
+
 def main() -> int:
     test_viterbi()
     test_star_absorbs_a_hold()
@@ -1147,6 +1257,7 @@ def main() -> int:
     test_line_rule()
     test_placement_chain()
     test_whisper_witness()
+    test_whisper_choice()
     test_calibration()
     test_bench_summary()
     test_harakat()

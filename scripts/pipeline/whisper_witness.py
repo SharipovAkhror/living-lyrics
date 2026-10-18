@@ -1,9 +1,11 @@
-"""Choose the largest stable-ts Whisper model that finishes, and describe refutations.
+"""Run the stable-ts ladder, and describe refutations.
 
 Nothing here loads a model. align.py runs each model and passes the clock in.
 The ladder always runs small and medium. large-v3-turbo and large-v3 run only
 when a conservative estimate still fits the remaining budget. The largest model
-that finished is the witness. Agreement numbers are the report, not the choice.
+that finished places lines that are still open. It is not the proof witness:
+whisper_choice.py picks that per song and language by how many lines it proves.
+Agreement numbers are the report, not the choice.
 
 A refuted word is described by where it sits and whether both witnesses moved
 the same way. That description does not change the refutation cutoffs.
@@ -51,6 +53,9 @@ def estimate_for(name: str, medium_s: float | None, turbo_s: float | None) -> fl
 
 def ladder(run_model, budget_s: float = BUDGET_S, clock=None) -> tuple[str | None, list[dict]]:
     """Run models in size order. Return the largest name that finished, and every row.
+
+    The returned name places lines that MMS has not placed. The proof witness is
+    chosen later, per song and language, from the clocks of every model that finished.
 
     `run_model(name, deadline) -> info`. `deadline` is None or an absolute time on
     `clock`. small has no deadline. medium's deadline is the budget. A larger model
@@ -362,16 +367,26 @@ def _budget_minutes(songs: list[dict]) -> int | None:
 
 
 def render_witness(songs: list[dict]) -> str:
-    """Model comparison. `songs` items are `{slug, model, rows, budget_s}` from the align summary."""
+    """Model comparison. `songs` items are `{slug, model, rows, budget_s}` from the align summary.
+
+    `model` is the largest model that finished. It places lines still open. Proof
+    witnesses, when already chosen, are `proof_models` keyed by language.
+    """
     minutes = _budget_minutes(songs)
     if minutes is None:
-        budget_sentence = 'Берётся наибольшая модель, которая целиком уложилась в бюджет песни.'
+        budget_sentence = 'Следующая модель запускается, только если её оценка укладывается в оставшийся бюджет песни.'
     else:
-        budget_sentence = f'Берётся наибольшая модель, которая целиком уложилась в {minutes} минут.'
+        budget_sentence = (
+            f'Следующая модель запускается, только если её оценка укладывается в {minutes} минут.'
+        )
     intro = (
         'stable-ts выравнивает известный текст. На раннере сравниваются модели Whisper `small`, `medium`, '
         '`large-v3-turbo` и `large-v3`, только по окнам строк, которые к этому моменту уже поставил MMS '
         '(первое окно, другое окно или ft). ' + budget_sentence + ' '
+        'Непоставленные строки ставит наибольшая модель, которая целиком домерилась. '
+        'Свидетеля доказательства эта лестница не выбирает: для каждой пары песня/язык берётся модель, '
+        'при которой доказано больше всего строк, пока проход слова не выше 15 % и проход строки не выше 5 %. '
+        'Таблица выбора — `whisper-choice.md` в этом же каталоге. '
         'Согласие — доля слов, где |stable-ts − MMS| округляется не дальше 0,10 с. Реплика — |начало строки '
         'stable-ts − реплика|. «Рабочий» значит не меньше 8 слов, доля не ниже половины и медиана не выше 0,10 с. '
         'Это чтение таблицы. Модель оно не выбирает, и пределы 15 % и 5 % из-за него не двигаются.'
@@ -391,7 +406,15 @@ def render_witness(songs: list[dict]) -> str:
             lines.append('')
             continue
         chosen = song.get('model') or '—'
-        lines.append(f'Выбрана модель `{chosen}`.')
+        proof = song.get('proof_models') or {}
+        if proof:
+            named = ', '.join(f'{lang} `{proof[lang]}`' for lang in sorted(proof))
+            lines.append(f'Непоставленные строки ставит `{chosen}`. Свидетель доказательства: {named}.')
+        else:
+            lines.append(
+                f'Непоставленные строки ставит `{chosen}`. Свидетель доказательства выбирается по '
+                'числу доказанных строк, когда часы всех моделей уже записаны.'
+            )
         lines.append('')
         lines.append('| модель | целиком | секунд | оценка | строк | поставлено | причина |')
         lines.append('|---|---|---:|---:|---:|---:|---|')
@@ -437,7 +460,149 @@ def render_witness(songs: list[dict]) -> str:
                     f"{lang}: {item.get('reading')}, {item.get('within', 0)}/{item.get('words', 0)}, "
                     f"медиана {_ru(item.get('median'), 3)} с"
                 )
-        lines.append('Азербайджанский, латынь и немецкий на выбранной модели: ' + '; '.join(bits) + '.')
+        lines.append('Азербайджанский, латынь и немецкий на модели постановки непоставленных строк: ' + '; '.join(bits) + '.')
         lines.append('')
     lines.append('')
     return '\n'.join(lines)
+
+
+def clock_cache(report: dict, placement_model: str | None, proof_models: dict | None = None) -> dict:
+    """Word clocks for every finished Whisper model, plus the fields a later proof needs.
+
+    The align report itself is not committed. This cache is. A later choice can
+    rebuild witness slots from it and does not have to run Whisper again.
+    """
+    lines = []
+    seen: set[str] = set()
+    for line in report.get('lines') or []:
+        words = []
+        for word in line.get('words') or []:
+            models = {}
+            for name, value in (word.get('stable_models') or {}).items():
+                if value is None:
+                    continue
+                models[str(name)] = round(float(value), 3)
+                seen.add(str(name))
+            words.append({
+                'w': word.get('w') or '',
+                'roman': word.get('roman') or '',
+                's': word.get('s'),
+                'ctc_s': word.get('ctc_s'),
+                'ctc_e': word.get('ctc_e'),
+                'clock_mms': word.get('clock_mms'),
+                'clock_second': word.get('clock_second'),
+                'clock_stable': word.get('clock_stable'),
+                'stable_models': models,
+            })
+        lines.append({
+            'id': line.get('id'),
+            'lang': line.get('lang'),
+            'group': line.get('group'),
+            'status': line.get('status'),
+            'placed_by': line.get('placed_by'),
+            'cue_start': line.get('cue_start'),
+            'ctc_start': line.get('ctc_start'),
+            'words': words,
+        })
+    order = [name for name in MODELS if name in seen]
+    order.extend(sorted(seen.difference(order)))
+    return {
+        'slug': report.get('slug'),
+        'placement_model': placement_model,
+        'proof_models': {str(k): str(v) for k, v in (proof_models or {}).items()},
+        'models': order,
+        'lines': lines,
+    }
+
+
+def window_rows_from_report(report: dict, song: str) -> list[dict]:
+    """First lettered word of every line placed by the other MMS window, in report order."""
+    rows = []
+    for line in report.get('lines') or []:
+        if line.get('placed_by') != 'mms-window' or line.get('status') != 'good':
+            continue
+        first = None
+        for word in line.get('words') or []:
+            if word.get('roman') and word.get('ctc_s') is not None:
+                first = word
+                break
+        if first is None:
+            continue
+        rows.append({
+            'song': song,
+            'id': line.get('id'),
+            'ctc': first.get('ctc_s'),
+            'second': first.get('second_s'),
+            'third': first.get('third_s'),
+        })
+    return rows
+
+
+def window_shift(rows: list[dict]) -> dict:
+    """First word of each mms-window line: do agreeing witnesses sit earlier?
+
+    `rows` follow the report order. A row has `ctc` (the placer), `second` and
+    `third`. Both clocks have to exist. They agree and sit earlier when
+    `shared_shift` is negative. The split is half the rows, in that order.
+    The refutation cutoffs are not read and not changed.
+    """
+    usable = []
+    missing = 0
+    for row in rows:
+        second = row.get('second')
+        third = row.get('third')
+        ctc = row.get('ctc')
+        if second is None or third is None or ctc is None:
+            missing += 1
+            continue
+        d2 = round(float(second) - float(ctc), 3)
+        d3 = round(float(third) - float(ctc), 3)
+        shared = shared_shift(d2, d3)
+        usable.append(shared is not None and float(shared) < 0)
+    mid = len(usable) // 2
+    first = usable[:mid]
+    second_half = usable[mid:]
+
+    def pack(flags: list[bool]) -> dict:
+        n = len(flags)
+        early = sum(1 for flag in flags if flag)
+        return {'n': n, 'early': early, 'holds': bool(n) and early * 2 >= n}
+
+    first_pack = pack(first)
+    second_pack = pack(second_half)
+    return {
+        'lines': len(rows),
+        'missing_clock': missing,
+        'both_clocks': len(usable),
+        'early': sum(1 for flag in usable if flag),
+        'first': first_pack,
+        'second': second_pack,
+        'confirmed': bool(first_pack['holds'] and second_pack['holds']),
+    }
+
+
+def window_shift_paragraph(stats: dict | None) -> str:
+    """The split-half note. Numbers only. The 0.20 / 0.30 cutoffs stay where they are."""
+    if not stats or not stats.get('lines'):
+        return (
+            'Строк, поставленных другим окном MMS, в этом прогоне нет. '
+            'Пороги опровержения из-за этого не менялись.'
+        )
+    first = stats.get('first') or {}
+    second = stats.get('second') or {}
+    body = (
+        f"Первое слово строк, поставленных другим окном MMS: таких строк {stats.get('lines', 0)}, "
+        f"с обоими свидетелями {stats.get('both_clocks', 0)}, без одного из часов {stats.get('missing_clock', 0)}. "
+        f"Оба свидетеля согласны и стоят раньше постановщика у {stats.get('early', 0)} из {stats.get('both_clocks', 0)}. "
+        f"В первой половине отчёта {first.get('early', 0)} из {first.get('n', 0)}, "
+        f"во второй {second.get('early', 0)} из {second.get('n', 0)}."
+    )
+    if stats.get('confirmed'):
+        body += (
+            ' Сдвиг подтверждается на первой половине и держится на второй: согласные свидетели '
+            'систематически раньше первого слова другого окна MMS.'
+        )
+    else:
+        body += ' На обеих половинах сразу этот сдвиг не подтверждается.'
+    body += ' Пороги опровержения 0,20 с и 0,30 с из-за этого наблюдения не менялись.'
+    return body

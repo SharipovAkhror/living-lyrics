@@ -36,9 +36,11 @@ How it works:
    line while a time budget holds, stable-ts, then the second aligner. The first one
    that passes structure and |Δ| ≤ 0.30 s is the placer. A word start outside the
    line's section, slack 0.05 s, fails that step. Its pre-snap start is the
-   primary clock. The other two clocks are the witnesses. stable-ts uses the largest
-   Whisper model that finishes inside 90 minutes, measured on windows of lines MMS
-   already placed. The song stem stays htdemucs.
+   primary clock. The other two clocks are the witnesses. stable-ts measures every
+   Whisper model that finishes inside 90 minutes, on windows of lines MMS already
+   placed, and keeps each model's word starts. The largest of those places lines
+   that are still open. The proof witness is chosen later, per song and language,
+   by how many lines it proves. The song stem stays htdemucs.
    align.py does not decide the flag. It marks every line `timing-draft` and leaves
    `timing.status` at `draft`. qa_sync.py --apply clears the flag only for a placed line
    whose words the measured rule proves. The default, when no rule file exists, is an
@@ -1104,12 +1106,13 @@ def _whisper_budget_s() -> float:
 
 def run_whisper_witness(x: np.ndarray, jobs: list[dict], units: list[Unit], conf: list[dict],
                         cues: dict[str, dict]) -> tuple[dict, dict]:
-    """Compare Whisper sizes on placed windows, then align the rest with the winner.
+    """Compare Whisper sizes on placed windows, then align the rest with the largest.
 
     Small and medium always run. A larger model runs only when its estimate fits
-    the ladder budget (90 minutes unless WHISPER_BUDGET_S says otherwise). The
-    chosen clocks are the witness and the stable-ts placer. A model that does not
-    finish leaves no times. Alignment itself does not fail.
+    the ladder budget (90 minutes unless WHISPER_BUDGET_S says otherwise). Every
+    model that finishes keeps its word starts. The largest one places lines that
+    are still open. It is not the proof witness. A model that does not finish
+    leaves no times. Alignment itself does not fail.
     """
     budget = _whisper_budget_s()
     by_id = {j['id']: j for j in jobs}
@@ -1177,8 +1180,8 @@ def run_whisper_witness(x: np.ndarray, jobs: list[dict], units: list[Unit], conf
                     'error': extra_info.get('error'),
                     'reason': extra_info.get('reason'),
                 }
-    print(f'свидетель stable-ts: выбрана {chosen or "нет"}, бюджет {budget:.0f} с', flush=True)
-    return third, {'model': chosen, 'budget_s': budget, 'rows': rows}
+    print(f'постановка stable-ts: наибольшая домеренная {chosen or "нет"}, бюджет {budget:.0f} с', flush=True)
+    return third, {'model': chosen, 'budget_s': budget, 'rows': rows, 'clocks': held}
 
 
 def _mark_engine(c: dict, prefix: str, attempt: dict) -> None:
@@ -1611,6 +1614,15 @@ def main() -> None:
             for model_lang, model_starts in borrowed.items():
                 if wi < len(model_starts) and model_starts[wi] is not None:
                     borrow_times[model_lang] = round(float(model_starts[wi]), 3)
+            stable_models = {}
+            for model_name, by_line in (witness_info.get('clocks') or {}).items():
+                starts = by_line.get(u.id)
+                if not starts or wi >= len(starts) or starts[wi] is None:
+                    continue
+                stable_models[str(model_name)] = round(float(starts[wi]), 3)
+            placement_model = witness_info.get('model')
+            if placement_model and e3 is not None and placement_model not in stable_models:
+                stable_models[str(placement_model)] = round(float(e3), 3)
             tol = Q.CHOIR_TOL if T.group(u.sec, u.line) == 'choir' else ENGINE_AGREE
             engines_agree = None if slot2 is None or raw[wi] is None else bool(abs(slot2 - raw[wi]) <= tol)
             onset_ok = odt[wi] is not None
@@ -1629,6 +1641,7 @@ def main() -> None:
                               'clock_mms': None if mms_t is None else round(mms_t, 3),
                               'clock_second': None if e2 is None else round(float(e2), 3),
                               'clock_stable': None if e3 is None else round(float(e3), 3),
+                              'stable_models': stable_models,
                               'borrow': borrow_times,
                               'onset_dt': None if odt[wi] is None else round(odt[wi], 2), 'proven': proven})
         all_proven = letters_n > 0 and proven_n == letters_n
@@ -1740,7 +1753,9 @@ def main() -> None:
         'section_edge_fixes': edge_fixes,
         'outside_start_pulls': pulled,
         'third_engine': 'stable-ts',
+        'placement_model': witness_info.get('model'),
         'stable_model': witness_info.get('model'),
+        'proof_models': {},
         'whisper_budget_s': witness_info.get('budget_s'),
         'whisper_witness': witness_info.get('rows') or [],
         'third_compared': sum(1 for w in ws_good if w.get('third_s') is not None and w.get('ctc_s') is not None),
@@ -1758,6 +1773,11 @@ def main() -> None:
     }
     wd = work_dir(slug)
     (wd / 'align-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding='utf-8')
+    clock_path = ROOT / 'docs' / 'analysis' / slug / 'whisper-clocks.json'
+    clock_path.parent.mkdir(parents=True, exist_ok=True)
+    clock_path.write_text(
+        json.dumps(W.clock_cache(report, witness_info.get('model')), ensure_ascii=False, separators=(',', ':')),
+        encoding='utf-8')
 
     timing_note = (f'align.py {t_start:%Y-%m-%d}: времена слов записаны, все строки помечены timing-draft. '
                    f'Выравниватель уверен в {n_good} из {n}, не нашёл текст в {n_draft}. '

@@ -909,8 +909,9 @@ def _mode_of_line(modes: dict, line: dict) -> str:
     return mode if mode in ('one', 'two') else 'two'
 
 
-def _probe_line(words: list[dict], peaks: np.ndarray, group: str | None, mode: str,
-                refute: dict, share: float, prev: float | None) -> bool:
+def _probe_parts(words: list[dict], peaks: np.ndarray, group: str | None, mode: str,
+                 refute: dict, prev: float | None) -> tuple[list[dict], list[str | None]]:
+    """Proved-word rows and refutation flags. The share K is applied by the caller."""
     tol = 0.20 if group == 'choir' else 0.10
     align_words = []
     presnap: list[float | None] = []
@@ -929,16 +930,21 @@ def _probe_line(words: list[dict], peaks: np.ndarray, group: str | None, mode: s
         cursor = float(word['t'])
     proved = Q.prove_words(align_words, presnap, tol, witnesses=mode, agree_tol=SECOND_TOL)
     flags = [Q.word_refuted(word, peaks, refute) for word in align_words]
+    return proved, flags
+
+
+def _probe_line(words: list[dict], peaks: np.ndarray, group: str | None, mode: str,
+                refute: dict, share: float, prev: float | None) -> bool:
+    proved, flags = _probe_parts(words, peaks, group, mode, refute, prev)
     return Q.line_word_ok(proved, flags, share)
 
 
-def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: dict, share: float,
-                    shift: float = 0.0, shuffle: bool = False, primary: str | None = None) -> tuple[int, int]:
-    """Candidate lines that still pass after one shared shift, or after a rotation.
+def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: dict,
+                     shift: float = 0.0, shuffle: bool = False, primary: str | None = None) -> list[dict]:
+    """One row per candidate line: proved words and refutation flags under this probe.
 
-    The cue belongs to the real line and is not applied to the shifted first word.
-    The previous line contributes its real, unshifted start. Inside the line the
-    moved starts own the peaks. Witness clocks stay on the word they were measured for.
+    The same shift and the same previous-line start as `line_pass_count`. K is not
+    applied here, so one probe can be scored at every share.
     """
     prev: float | None = None
     incoming: list[float | None] = []
@@ -946,14 +952,13 @@ def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: d
         incoming.append(prev)
         if line.get('words'):
             prev = float(line['words'][-1]['t'])
-    hits = 0
-    n = 0
+    out = []
     for i, line in enumerate(lines):
         if not _line_candidate(line):
             continue
-        if primary is not None and P.primary_family(line.get('placed_by')) != primary:
+        family = P.primary_family(line.get('placed_by'))
+        if primary is not None and family != primary:
             continue
-        n += 1
         src = line['words']
         moved = []
         if shuffle:
@@ -967,9 +972,30 @@ def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: d
                 item = dict(word)
                 item['t'] = float(word['t']) + float(shift)
                 moved.append(item)
-        if _probe_line(moved, peaks, line.get('group'), _mode_of_line(modes, line), refute, share, incoming[i]):
-            hits += 1
-    return hits, n
+        proved, flags = _probe_parts(
+            moved, peaks, line.get('group'), _mode_of_line(modes, line), refute, incoming[i])
+        out.append({
+            'id': line.get('id'),
+            'lang': line.get('lang') or '?',
+            'song': line.get('song'),
+            'family': family,
+            'proved': proved,
+            'flags': flags,
+        })
+    return out
+
+
+def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: dict, share: float,
+                    shift: float = 0.0, shuffle: bool = False, primary: str | None = None) -> tuple[int, int]:
+    """Candidate lines that still pass after one shared shift, or after a rotation.
+
+    The cue belongs to the real line and is not applied to the shifted first word.
+    The previous line contributes its real, unshifted start. Inside the line the
+    moved starts own the peaks. Witness clocks stay on the word they were measured for.
+    """
+    parts = line_probe_parts(lines, peaks, modes, refute, shift=shift, shuffle=shuffle, primary=primary)
+    hits = sum(1 for item in parts if Q.line_word_ok(item['proved'], item['flags'], share))
+    return hits, len(parts)
 
 
 def measure_line_table(per_song: list[dict], modes: dict, refute: dict, primary: str | None = None) -> list[dict]:
@@ -1506,7 +1532,8 @@ def render_witness(slugs: list[str]) -> str:
         summary = report.get('summary') or {}
         songs.append({
             'slug': slug,
-            'model': summary.get('stable_model'),
+            'model': summary.get('placement_model') or summary.get('stable_model'),
+            'proof_models': summary.get('proof_models') or {},
             'budget_s': summary.get('whisper_budget_s'),
             'rows': summary.get('whisper_witness') or [],
         })
@@ -1537,8 +1564,18 @@ def main(argv: list[str] | None = None) -> int:
     try:
         import whisper_witness as W
         cut = (payload.get('chosen') or {}).get('refute') or {}
+        shift_rows = []
+        for slug in args.slugs:
+            path = work_dir(slug) / 'align-report.json'
+            if not path.exists():
+                continue
+            shift_rows.extend(W.window_rows_from_report(json.loads(path.read_text(encoding='utf-8')), slug))
         (out_dir / 'refutation.md').write_text(
-            W.render_refutation(refutations, cut.get('both_far'), cut.get('only_far')), encoding='utf-8')
+            W.render_refutation(refutations, cut.get('both_far'), cut.get('only_far'))
+            + '\n'
+            + W.window_shift_paragraph(W.window_shift(shift_rows))
+            + '\n',
+            encoding='utf-8')
     except Exception as e:
         print(f'refutation.md не записан ({e.__class__.__name__}: {e})')
     try:
