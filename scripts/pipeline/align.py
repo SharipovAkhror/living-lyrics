@@ -1057,9 +1057,11 @@ def main() -> None:
             e2 = float(s2[wi]) if (s2 and s2[wi] is not None) else None
             e3 = float(s3[wi]) if (s3 and s3[wi] is not None) else None
             borrow_times = {}
-            for model_lang, times in borrowed.items():
-                if wi < len(times) and times[wi] is not None:
-                    borrow_times[model_lang] = round(float(times[wi]), 3)
+            # `times` above is every line's (start, end) pairs and is written after this
+            # loop. A loop variable here would replace that list with one model's starts.
+            for model_lang, model_starts in borrowed.items():
+                if wi < len(model_starts) and model_starts[wi] is not None:
+                    borrow_times[model_lang] = round(float(model_starts[wi]), 3)
             tol = Q.CHOIR_TOL if T.group(u.sec, u.line) == 'choir' else ENGINE_AGREE
             engines_agree = None if e2 is None or raw[wi] is None else bool(abs(e2 - raw[wi]) <= tol)
             onset_ok = odt[wi] is not None
