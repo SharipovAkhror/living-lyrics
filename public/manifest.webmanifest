@@ -1,11 +1,13 @@
 {
   "name": "Living Lyrics",
   "short_name": "Lyrics",
+  "id": "/",
   "description": "Песни с пословной синхронизацией, переводом и пояснением",
   "lang": "ru",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "categories": ["music"],
   "orientation": "any",
   "background_color": "#000000",
   "theme_color": "#000000",
