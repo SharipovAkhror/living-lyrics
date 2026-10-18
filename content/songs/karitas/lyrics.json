@@ -1523,12 +1523,23 @@
       "end": 281,
       "label": "Инструментальный проигрыш",
       "instruments": [
-        "ensemble"
+        "daf",
+        "violin"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "daf",
+          "at": 272.0
+        },
+        {
+          "key": "violin",
+          "at": 275.7
+        }
       ]
     },
     {
@@ -1647,12 +1658,28 @@
       "end": 403,
       "label": "Инструментальный проигрыш",
       "instruments": [
-        "ensemble"
+        "ney",
+        "violin",
+        "oud"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "ney",
+          "at": 373.35
+        },
+        {
+          "key": "violin",
+          "at": 388.0
+        },
+        {
+          "key": "oud",
+          "at": 397.55
+        }
       ]
     },
     {
@@ -1677,12 +1704,23 @@
       "end": 427.68,
       "label": "Инструментальный проигрыш",
       "instruments": [
-        "ensemble"
+        "violin",
+        "oud"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 409.0
+        },
+        {
+          "key": "oud",
+          "at": 415.0
+        }
       ]
     },
     {
@@ -2202,12 +2240,28 @@
       "end": 687,
       "label": "Инструментальный проигрыш",
       "instruments": [
-        "ensemble"
+        "oud",
+        "violin",
+        "baglama"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "oud",
+          "at": 633.2
+        },
+        {
+          "key": "violin",
+          "at": 638.05
+        },
+        {
+          "key": "baglama",
+          "at": 646.2
+        }
       ]
     },
     {
@@ -2232,12 +2286,18 @@
       "end": 714,
       "label": "Инструментальный проигрыш",
       "instruments": [
-        "ensemble"
+        "qanun"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "qanun",
+          "at": 706.0
+        }
       ]
     },
     {
@@ -2262,12 +2322,23 @@
       "end": 733,
       "label": "Инструментальный проигрыш",
       "instruments": [
-        "ensemble"
+        "ney",
+        "qanun"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "ney",
+          "at": 723.0
+        },
+        {
+          "key": "qanun",
+          "at": 723.0
+        }
       ]
     },
     {
@@ -2292,12 +2363,23 @@
       "end": 760,
       "label": "Инструментальный проигрыш",
       "instruments": [
-        "ensemble"
+        "violin",
+        "qanun"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 750.0
+        },
+        {
+          "key": "qanun",
+          "at": 753.0
+        }
       ]
     },
     {
@@ -2322,12 +2404,18 @@
       "end": 835,
       "label": "Инструментальный проигрыш",
       "instruments": [
-        "ensemble"
+        "violin"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "violin",
+          "at": 815.0
+        }
       ]
     },
     {
@@ -2352,12 +2440,18 @@
       "end": 872,
       "label": "Инструментальный проигрыш",
       "instruments": [
-        "ensemble"
+        "erhu"
       ],
       "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
         "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "erhu",
+          "at": 866.0
+        }
       ]
     },
     {

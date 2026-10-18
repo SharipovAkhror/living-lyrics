@@ -1,0 +1,314 @@
+{
+  "slug": "i-have-come-alive",
+  "present": [
+    {
+      "id": "baglama",
+      "name": "баглама",
+      "catalogKey": "baglama",
+      "reason": "титры и кадр",
+      "credited": true,
+      "stable": false,
+      "shots80": 11,
+      "shots85": 1,
+      "audio": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "reason": "титры и кадр, устойчиво по видео",
+      "credited": true,
+      "stable": true,
+      "shots80": 12,
+      "shots85": 4,
+      "audio": false
+    },
+    {
+      "id": "erhu",
+      "name": "эрху",
+      "catalogKey": "erhu",
+      "reason": "титры и кадр, устойчиво по видео",
+      "credited": true,
+      "stable": true,
+      "shots80": 4,
+      "shots85": 3,
+      "audio": false
+    },
+    {
+      "id": "kamancheh",
+      "name": "кяманча",
+      "catalogKey": "kamancheh",
+      "reason": "титры и кадр, устойчиво по видео",
+      "credited": true,
+      "stable": true,
+      "shots80": 8,
+      "shots85": 6,
+      "audio": false
+    },
+    {
+      "id": "orchestral-percussion",
+      "name": "оркестровая перкуссия",
+      "catalogKey": null,
+      "reason": "титры и кадр",
+      "credited": true,
+      "stable": false,
+      "shots80": 1,
+      "shots85": 1,
+      "audio": false
+    },
+    {
+      "id": "oud",
+      "name": "уд",
+      "catalogKey": "oud",
+      "reason": "титры и кадр",
+      "credited": true,
+      "stable": false,
+      "shots80": 1,
+      "shots85": 0,
+      "audio": false
+    },
+    {
+      "id": "qanun",
+      "name": "канун",
+      "catalogKey": "qanun",
+      "reason": "титры и кадр",
+      "credited": true,
+      "stable": false,
+      "shots80": 2,
+      "shots85": 0,
+      "audio": false
+    },
+    {
+      "id": "sitar",
+      "name": "ситар",
+      "catalogKey": null,
+      "reason": "титры и кадр",
+      "credited": true,
+      "stable": false,
+      "shots80": 2,
+      "shots85": 0,
+      "audio": false
+    },
+    {
+      "id": "tabla",
+      "name": "табла",
+      "catalogKey": null,
+      "reason": "титры и кадр",
+      "credited": true,
+      "stable": false,
+      "shots80": 1,
+      "shots85": 0,
+      "audio": false
+    },
+    {
+      "id": "tanbur",
+      "name": "танбур",
+      "catalogKey": "tanbur",
+      "reason": "титры и кадр, устойчиво по видео",
+      "credited": true,
+      "stable": true,
+      "shots80": 9,
+      "shots85": 7,
+      "audio": false
+    }
+  ],
+  "check": [
+    {
+      "id": "bendir",
+      "why": "планов с уверенностью ≥ 0,85: 2 из 3, в титрах нет",
+      "shots": 2,
+      "frames": 22
+    }
+  ],
+  "missingEngraving": [
+    {
+      "id": "orchestral-percussion",
+      "name": "оркестровая перкуссия",
+      "shots": 1,
+      "where": "coda-persian 524"
+    },
+    {
+      "id": "sitar",
+      "name": "ситар",
+      "shots": 2,
+      "where": "turkish-chorus-2 231; inst-before-mawwal 394"
+    },
+    {
+      "id": "tabla",
+      "name": "табла",
+      "shots": 1,
+      "where": "coda-persian 535"
+    }
+  ],
+  "sections": [
+    {
+      "id": "inst-open",
+      "action": "write",
+      "instruments": [
+        "tanbur"
+      ],
+      "entries": [
+        {
+          "key": "tanbur",
+          "at": 8.9
+        }
+      ],
+      "performers": []
+    },
+    {
+      "id": "voice-open",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "inst-tanbur",
+      "action": "write",
+      "instruments": [
+        "tanbur",
+        "oud",
+        "qanun",
+        "ensemble"
+      ],
+      "entries": [
+        {
+          "key": "tanbur",
+          "at": 24.0
+        },
+        {
+          "key": "oud",
+          "at": 24.8
+        },
+        {
+          "key": "qanun",
+          "at": 24.8
+        },
+        {
+          "key": "ensemble",
+          "at": 30.8
+        }
+      ],
+      "performers": [
+        "Сейед Али Джабери (танбур)",
+        "Selim Boyaci (уд)",
+        "Onur Cicin (канун)"
+      ]
+    },
+    {
+      "id": "inst-bridge-a",
+      "action": "write",
+      "instruments": [
+        "tanbur",
+        "baglama",
+        "daf"
+      ],
+      "entries": [
+        {
+          "key": "tanbur",
+          "at": 163.95
+        },
+        {
+          "key": "baglama",
+          "at": 164.55
+        },
+        {
+          "key": "daf",
+          "at": 165.75
+        }
+      ],
+      "performers": [
+        "Kutay Ozcan (баглама)",
+        "Mohammad Jaberi (даф)"
+      ]
+    },
+    {
+      "id": "voice-bridge",
+      "action": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "inst-bridge-b",
+      "action": "unchanged",
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": []
+    },
+    {
+      "id": "inst-mid",
+      "action": "write",
+      "instruments": [
+        "kamancheh",
+        "baglama",
+        "daf",
+        "ensemble"
+      ],
+      "entries": [
+        {
+          "key": "kamancheh",
+          "at": 246.7
+        },
+        {
+          "key": "baglama",
+          "at": 250.7
+        },
+        {
+          "key": "daf",
+          "at": 250.7
+        },
+        {
+          "key": "ensemble",
+          "at": 274.0
+        }
+      ],
+      "performers": [
+        "Kutay Ozcan (баглама)",
+        "Mohammad Jaberi (даф)"
+      ]
+    },
+    {
+      "id": "inst-before-mawwal",
+      "action": "write",
+      "instruments": [
+        "daf",
+        "baglama",
+        "tanbur"
+      ],
+      "entries": [
+        {
+          "key": "daf",
+          "at": 389.2
+        },
+        {
+          "key": "baglama",
+          "at": 390.0
+        },
+        {
+          "key": "tanbur",
+          "at": 390.2
+        }
+      ],
+      "performers": [
+        "Mohammad Jaberi (даф)",
+        "Kutay Ozcan (баглама)"
+      ]
+    },
+    {
+      "id": "inst-end",
+      "action": "unchanged",
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": []
+    }
+  ]
+}
