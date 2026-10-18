@@ -1,10 +1,107 @@
 [
   {
-    "id": "erhu",
-    "clips": 5,
+    "id": "oud",
+    "clips": 18,
+    "recordings": 3,
+    "enough": true,
+    "note": "Третья запись — открытые струны уда (User:Bottomline), два клипа. Остальные клипы — Andy R. Jordan и Houssem bettaibi."
+  },
+  {
+    "id": "ney",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Поиск Commons «ney solo» и «nay taksim» не дал аудио с явной свободной лицензией. PCMIR без входа не открылся. Принятых клипов 0, записей 0"
+  },
+  {
+    "id": "daf",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Отдельного соло дафа с явной свободной лицензией не нашлось. Церемония зикра — голос, не соло. Принятых клипов 0, записей 0"
+  },
+  {
+    "id": "bendir",
+    "clips": 6,
     "recordings": 1,
     "enough": false,
-    "note": "Zenodo 10.5281/zenodo.4320991, CC BY 4.0. Исполнители в файлах не размечены, это одна коллекция консерватории, поэтому класс в голову не входит."
+    "note": "Принятых клипов 6, записей 1. Все узулы — один автор, Anomyq."
+  },
+  {
+    "id": "darbuka",
+    "clips": 10,
+    "recordings": 2,
+    "enough": false,
+    "note": "Принятых клипов 10, записей 2, с флагом 1. Давул, рик и мазхар не метили как дарбуку."
+  },
+  {
+    "id": "qanun",
+    "clips": 4,
+    "recordings": 1,
+    "enough": false,
+    "note": "Принятых клипов 4, записей 1, с флагом 2. Оба образца — Ariel Qassis. Запись с пением не брали."
+  },
+  {
+    "id": "santur",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Принятых клипов 0, записей 0, с флагом 11. Концертино с оркестром не брали. Ey Iran помечен как голос, ролик Lizikus — как шум, не как соло сантура."
+  },
+  {
+    "id": "tar",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Запросы «persian tar», «azerbaijani tar» и «tar solo» не дали файла с явной свободной лицензией. Принятых клипов 0, записей 0"
+  },
+  {
+    "id": "setar",
+    "clips": 7,
+    "recordings": 2,
+    "enough": false,
+    "note": "Принятых клипов 7, записей 2, с флагом 5. Jacqke — один демонстратор ладов."
+  },
+  {
+    "id": "tanbur",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "На Commons лежат чумбуш и смычковый яйлы-танбур Озана Ярмана. Это не длинношейный танбур каталога, в манифест не входят. Принятых клипов 0, записей 0"
+  },
+  {
+    "id": "kamancheh",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Поиск не дал соло с явной лицензией. Карточка Hugging Face на 40 файлов лицензии не указывает. Принятых клипов 0, записей 0"
+  },
+  {
+    "id": "baglama",
+    "clips": 0,
+    "recordings": 0,
+    "enough": false,
+    "note": "Husseyni Saz Semayissi в описании — кеменче и уд, не саз. Другое найденное — MIDI и произношения. Принятых клипов 0, записей 0"
+  },
+  {
+    "id": "duduk",
+    "clips": 17,
+    "recordings": 3,
+    "enough": true
+  },
+  {
+    "id": "erhu",
+    "clips": 17,
+    "recordings": 3,
+    "enough": true,
+    "note": "Zhang Peijian — один человек. ErhuPT — исполнители в файлах не подписаны. Третья группа — CC0-ноты дешёвого эрху, имя скрипача в readme не указано. Сведение Antti Luode в голову не входит."
+  },
+  {
+    "id": "choir",
+    "clips": 22,
+    "recordings": 4,
+    "enough": true,
+    "note": "Kantorei St. Michael помечена review и в счёт не входит. Четыре хора: Childrenschorussa, храм «Света Троица» в Пловдиве, Ensemble Morales, Harmonica."
   },
   {
     "id": "violin",
@@ -40,103 +137,5 @@
     "recordings": "irmas 301",
     "enough": true,
     "note": "уже в голове"
-  },
-  {
-    "id": "choir",
-    "clips": 0,
-    "recordings": 0,
-    "enough": false,
-    "note": "отдельного набора хора с явной лицензией нет. В голове есть голос, не хор."
-  },
-  {
-    "id": "baglama",
-    "clips": 0,
-    "recordings": 0,
-    "enough": false,
-    "note": "Отдельной записи с явной лицензией не нашлось."
-  },
-  {
-    "id": "bendir",
-    "clips": 0,
-    "recordings": 0,
-    "enough": false,
-    "note": "Отдельной записи с явной лицензией не нашлось."
-  },
-  {
-    "id": "daf",
-    "clips": 0,
-    "recordings": 0,
-    "enough": false,
-    "note": "Отдельной записи с явной лицензией не нашлось."
-  },
-  {
-    "id": "darbuka",
-    "clips": 4,
-    "recordings": 1,
-    "enough": false,
-    "note": "4 клипа одного файла, CC BY-SA 4.0. В голову не входит."
-  },
-  {
-    "id": "duduk",
-    "clips": 5,
-    "recordings": 1,
-    "enough": false,
-    "note": "5 клипов одной записи, CC BY-SA 4.0. В голову не входит."
-  },
-  {
-    "id": "kamancheh",
-    "clips": 0,
-    "recordings": 0,
-    "enough": false,
-    "note": "Отдельной записи с явной лицензией не нашлось."
-  },
-  {
-    "id": "ney",
-    "clips": 0,
-    "recordings": 0,
-    "enough": false,
-    "note": "Отдельной записи с явной лицензией не нашлось."
-  },
-  {
-    "id": "oud",
-    "clips": 11,
-    "recordings": 2,
-    "enough": false,
-    "note": "11 клипов, 2 исполнителя: Andy R. Jordan (две части одной пьесы) и открытые струны. В голову не входит."
-  },
-  {
-    "id": "qanun",
-    "clips": 5,
-    "recordings": 1,
-    "enough": false,
-    "note": "5 клипов одной записи: канун вместе с пением, CC0. В голову не входит."
-  },
-  {
-    "id": "santur",
-    "clips": 14,
-    "recordings": 2,
-    "enough": false,
-    "note": "14 клипов, 2 исполнителя. Короткий и полный файл концертино — одна пьеса. В голову не входит."
-  },
-  {
-    "id": "setar",
-    "clips": 0,
-    "recordings": 0,
-    "enough": false,
-    "note": "Демонстрация ладов одного автора не скачалась: Wikimedia ответила 429. В голову не входит."
-  },
-  {
-    "id": "tanbur",
-    "clips": 0,
-    "recordings": 0,
-    "enough": false,
-    "note": "Отдельной записи с явной лицензией не нашлось."
-  },
-  {
-    "id": "tar",
-    "clips": 0,
-    "recordings": 0,
-    "enough": false,
-    "note": "Запрос с персидским и азербайджанским таром не дал файла с явной лицензией."
   }
 ]
