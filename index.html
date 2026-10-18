@@ -16,6 +16,14 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="preload" href="/fonts/KFGQPC-Uthmanic-Script-HAFS.otf" as="font" type="font/otf" crossorigin />
     <title>Living Lyrics</title>
+    <script>
+      // Claim a playback session before any module runs. Safari's default "auto" session
+      // can freeze or silence an <audio> element after the iPhone screen locks.
+      try {
+        var session = navigator.audioSession;
+        if (session) session.type = 'playback';
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
