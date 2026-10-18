@@ -13,7 +13,7 @@
 # Jobs do not list that stage. A failed calibration does not fall through to the old 0.30 gate.
 # After every align and before qa, the run writes docs/analysis/bench/aligner-review.json
 # (who is closer to a strong attack, the second aligner's shift, borrowed models) and then
-# measures how often a shifted word start still passes the word rule
+# measures the per-song witness rule, word refutations and the line share
 # (docs/analysis/bench/attack-chance.json). qa reads that rule.
 # A failed measurement does not fall through to the 0.10 s attack test.
 # optional "align" and "qa" — lists of extra options for align.py / qa_sync.py, e.g. {"qa": ["--fix"]}.

@@ -1,5 +1,7 @@
 {
  "limit": 0.15,
+ "line_limit": 0.05,
+ "min_words": 30,
  "shifts": [
   0.15,
   0.25,
@@ -13,30 +15,1287 @@
  "placed_lines": 125,
  "placed_words": 550,
  "current_chance": 0.7541,
+ "scopes_ok": true,
  "chosen": {
+  "name": "line-0.25",
   "tol": 0.1,
   "choir_tol": 0.2,
   "peak_height": 0.7,
   "require_rise": false,
   "require_second": false,
+  "witnesses": null,
   "agree_tol": 0.1,
-  "name": "attack-h0.7-one",
-  "witnesses": "one",
-  "shifts": {
-   "0.15": 0.1,
-   "0.25": 0.0309,
-   "0.40": 0.01,
-   "shuffle": 0.0237
+  "scopes": [
+   {
+    "song": "i-have-come-alive",
+    "lang": "*",
+    "words": 250,
+    "witnesses": "one",
+    "chance": 0.066,
+    "one_chance": 0.066,
+    "two_chance": 0.012,
+    "why": "slice-one"
+   },
+   {
+    "song": "i-have-come-alive",
+    "lang": "ar",
+    "words": 50,
+    "witnesses": "one",
+    "chance": 0.05,
+    "one_chance": 0.05,
+    "two_chance": 0.01,
+    "why": "slice-one"
+   },
+   {
+    "song": "i-have-come-alive",
+    "lang": "en",
+    "words": 44,
+    "witnesses": "two",
+    "chance": 0.0114,
+    "one_chance": 0.1591,
+    "two_chance": 0.0114,
+    "why": "slice-two"
+   },
+   {
+    "song": "i-have-come-alive",
+    "lang": "fa",
+    "words": 109,
+    "witnesses": "one",
+    "chance": 0.0505,
+    "one_chance": 0.0505,
+    "two_chance": 0.0183,
+    "why": "slice-one"
+   },
+   {
+    "song": "i-have-come-alive",
+    "lang": "tr",
+    "words": 47,
+    "witnesses": "one",
+    "chance": 0.0319,
+    "one_chance": 0.0319,
+    "two_chance": 0.0,
+    "why": "slice-one"
+   },
+   {
+    "song": "karitas",
+    "lang": "*",
+    "words": 140,
+    "witnesses": "one",
+    "chance": 0.0393,
+    "one_chance": 0.0393,
+    "two_chance": 0.0,
+    "why": "slice-one"
+   },
+   {
+    "song": "karitas",
+    "lang": "ar",
+    "words": 32,
+    "witnesses": "one",
+    "chance": 0.0625,
+    "one_chance": 0.0625,
+    "two_chance": 0.0,
+    "why": "slice-one"
+   },
+   {
+    "song": "karitas",
+    "lang": "az",
+    "words": 71,
+    "witnesses": "one",
+    "chance": 0.0493,
+    "one_chance": 0.0493,
+    "two_chance": 0.0,
+    "why": "slice-one"
+   },
+   {
+    "song": "karitas",
+    "lang": "la",
+    "words": 37,
+    "witnesses": "one",
+    "chance": 0.027,
+    "one_chance": 0.027,
+    "two_chance": 0.0,
+    "why": "slice-one"
+   },
+   {
+    "song": "one",
+    "lang": "*",
+    "words": 160,
+    "witnesses": "two",
+    "chance": 0.0281,
+    "one_chance": 0.2062,
+    "two_chance": 0.0281,
+    "why": "slice-two"
+   },
+   {
+    "song": "one",
+    "lang": "ar",
+    "words": 84,
+    "witnesses": "two",
+    "chance": 0.0238,
+    "one_chance": 0.1607,
+    "two_chance": 0.0238,
+    "why": "slice-two"
+   },
+   {
+    "song": "one",
+    "lang": "de",
+    "words": 76,
+    "witnesses": "two",
+    "chance": 0.0329,
+    "one_chance": 0.2566,
+    "two_chance": 0.0329,
+    "why": "slice-two"
+   }
+  ],
+  "refute": {
+   "both_far": 0.2,
+   "only_far": 0.3,
+   "refuted": 14,
+   "words": 550,
+   "rate": 0.0255,
+   "witnesses": 11,
+   "attack": 3,
+   "both_agree": 0.1,
+   "attack_tol": 0.1,
+   "within_cap": true,
+   "cap": 0.15,
+   "by": [
+    {
+     "song": "i-have-come-alive",
+     "lang": "ar",
+     "words": 50,
+     "refuted": 1,
+     "witnesses": 1,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "en",
+     "words": 44,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "fa",
+     "words": 109,
+     "refuted": 3,
+     "witnesses": 3,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "tr",
+     "words": 47,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "ar",
+     "words": 32,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "az",
+     "words": 71,
+     "refuted": 1,
+     "witnesses": 0,
+     "attack": 1
+    },
+    {
+     "song": "karitas",
+     "lang": "la",
+     "words": 37,
+     "refuted": 2,
+     "witnesses": 0,
+     "attack": 2
+    },
+    {
+     "song": "one",
+     "lang": "ar",
+     "words": 84,
+     "refuted": 1,
+     "witnesses": 1,
+     "attack": 0
+    },
+    {
+     "song": "one",
+     "lang": "de",
+     "words": 76,
+     "refuted": 6,
+     "witnesses": 6,
+     "attack": 0
+    }
+   ]
   },
-  "chance": 0.1,
-  "true_proved": 243,
-  "true_total": 550,
-  "true_rate": 0.4418,
+  "line_share": 0.25,
+  "line_min_words": 2,
+  "line_chance": 0.0121,
+  "line_limit": 0.05,
+  "chance": 0.0121,
+  "true_proved": 53,
+  "true_total": 124,
+  "true_rate": 0.4274,
+  "shifts": {
+   "0.15": 0.0121,
+   "0.25": 0.0,
+   "0.40": 0.0,
+   "shuffle": 0.0
+  },
   "within_limit": true,
-  "why": "witness-one",
+  "why": "per-slice",
   "bias": {},
   "adopt": {}
  },
+ "scopes": [
+  {
+   "song": "i-have-come-alive",
+   "lang": "*",
+   "words": 250,
+   "witnesses": "one",
+   "chance": 0.066,
+   "one_chance": 0.066,
+   "two_chance": 0.012,
+   "why": "slice-one"
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "ar",
+   "words": 50,
+   "witnesses": "one",
+   "chance": 0.05,
+   "one_chance": 0.05,
+   "two_chance": 0.01,
+   "why": "slice-one"
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "en",
+   "words": 44,
+   "witnesses": "two",
+   "chance": 0.0114,
+   "one_chance": 0.1591,
+   "two_chance": 0.0114,
+   "why": "slice-two"
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "fa",
+   "words": 109,
+   "witnesses": "one",
+   "chance": 0.0505,
+   "one_chance": 0.0505,
+   "two_chance": 0.0183,
+   "why": "slice-one"
+  },
+  {
+   "song": "i-have-come-alive",
+   "lang": "tr",
+   "words": 47,
+   "witnesses": "one",
+   "chance": 0.0319,
+   "one_chance": 0.0319,
+   "two_chance": 0.0,
+   "why": "slice-one"
+  },
+  {
+   "song": "karitas",
+   "lang": "*",
+   "words": 140,
+   "witnesses": "one",
+   "chance": 0.0393,
+   "one_chance": 0.0393,
+   "two_chance": 0.0,
+   "why": "slice-one"
+  },
+  {
+   "song": "karitas",
+   "lang": "ar",
+   "words": 32,
+   "witnesses": "one",
+   "chance": 0.0625,
+   "one_chance": 0.0625,
+   "two_chance": 0.0,
+   "why": "slice-one"
+  },
+  {
+   "song": "karitas",
+   "lang": "az",
+   "words": 71,
+   "witnesses": "one",
+   "chance": 0.0493,
+   "one_chance": 0.0493,
+   "two_chance": 0.0,
+   "why": "slice-one"
+  },
+  {
+   "song": "karitas",
+   "lang": "la",
+   "words": 37,
+   "witnesses": "one",
+   "chance": 0.027,
+   "one_chance": 0.027,
+   "two_chance": 0.0,
+   "why": "slice-one"
+  },
+  {
+   "song": "one",
+   "lang": "*",
+   "words": 160,
+   "witnesses": "two",
+   "chance": 0.0281,
+   "one_chance": 0.2062,
+   "two_chance": 0.0281,
+   "why": "slice-two"
+  },
+  {
+   "song": "one",
+   "lang": "ar",
+   "words": 84,
+   "witnesses": "two",
+   "chance": 0.0238,
+   "one_chance": 0.1607,
+   "two_chance": 0.0238,
+   "why": "slice-two"
+  },
+  {
+   "song": "one",
+   "lang": "de",
+   "words": 76,
+   "witnesses": "two",
+   "chance": 0.0329,
+   "one_chance": 0.2566,
+   "two_chance": 0.0329,
+   "why": "slice-two"
+  }
+ ],
+ "refute_grid": [
+  {
+   "both_far": 0.15,
+   "only_far": 0.2,
+   "refuted": 16,
+   "words": 550,
+   "rate": 0.0291,
+   "witnesses": 12,
+   "attack": 4,
+   "by": [
+    {
+     "song": "i-have-come-alive",
+     "lang": "ar",
+     "words": 50,
+     "refuted": 1,
+     "witnesses": 1,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "en",
+     "words": 44,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "fa",
+     "words": 109,
+     "refuted": 3,
+     "witnesses": 3,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "tr",
+     "words": 47,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "ar",
+     "words": 32,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "az",
+     "words": 71,
+     "refuted": 1,
+     "witnesses": 0,
+     "attack": 1
+    },
+    {
+     "song": "karitas",
+     "lang": "la",
+     "words": 37,
+     "refuted": 3,
+     "witnesses": 0,
+     "attack": 3
+    },
+    {
+     "song": "one",
+     "lang": "ar",
+     "words": 84,
+     "refuted": 2,
+     "witnesses": 2,
+     "attack": 0
+    },
+    {
+     "song": "one",
+     "lang": "de",
+     "words": 76,
+     "refuted": 6,
+     "witnesses": 6,
+     "attack": 0
+    }
+   ]
+  },
+  {
+   "both_far": 0.15,
+   "only_far": 0.3,
+   "refuted": 15,
+   "words": 550,
+   "rate": 0.0273,
+   "witnesses": 12,
+   "attack": 3,
+   "by": [
+    {
+     "song": "i-have-come-alive",
+     "lang": "ar",
+     "words": 50,
+     "refuted": 1,
+     "witnesses": 1,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "en",
+     "words": 44,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "fa",
+     "words": 109,
+     "refuted": 3,
+     "witnesses": 3,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "tr",
+     "words": 47,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "ar",
+     "words": 32,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "az",
+     "words": 71,
+     "refuted": 1,
+     "witnesses": 0,
+     "attack": 1
+    },
+    {
+     "song": "karitas",
+     "lang": "la",
+     "words": 37,
+     "refuted": 2,
+     "witnesses": 0,
+     "attack": 2
+    },
+    {
+     "song": "one",
+     "lang": "ar",
+     "words": 84,
+     "refuted": 2,
+     "witnesses": 2,
+     "attack": 0
+    },
+    {
+     "song": "one",
+     "lang": "de",
+     "words": 76,
+     "refuted": 6,
+     "witnesses": 6,
+     "attack": 0
+    }
+   ]
+  },
+  {
+   "both_far": 0.15,
+   "only_far": 0.4,
+   "refuted": 13,
+   "words": 550,
+   "rate": 0.0236,
+   "witnesses": 12,
+   "attack": 1,
+   "by": [
+    {
+     "song": "i-have-come-alive",
+     "lang": "ar",
+     "words": 50,
+     "refuted": 1,
+     "witnesses": 1,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "en",
+     "words": 44,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "fa",
+     "words": 109,
+     "refuted": 3,
+     "witnesses": 3,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "tr",
+     "words": 47,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "ar",
+     "words": 32,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "az",
+     "words": 71,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "la",
+     "words": 37,
+     "refuted": 1,
+     "witnesses": 0,
+     "attack": 1
+    },
+    {
+     "song": "one",
+     "lang": "ar",
+     "words": 84,
+     "refuted": 2,
+     "witnesses": 2,
+     "attack": 0
+    },
+    {
+     "song": "one",
+     "lang": "de",
+     "words": 76,
+     "refuted": 6,
+     "witnesses": 6,
+     "attack": 0
+    }
+   ]
+  },
+  {
+   "both_far": 0.2,
+   "only_far": 0.2,
+   "refuted": 15,
+   "words": 550,
+   "rate": 0.0273,
+   "witnesses": 11,
+   "attack": 4,
+   "by": [
+    {
+     "song": "i-have-come-alive",
+     "lang": "ar",
+     "words": 50,
+     "refuted": 1,
+     "witnesses": 1,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "en",
+     "words": 44,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "fa",
+     "words": 109,
+     "refuted": 3,
+     "witnesses": 3,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "tr",
+     "words": 47,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "ar",
+     "words": 32,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "az",
+     "words": 71,
+     "refuted": 1,
+     "witnesses": 0,
+     "attack": 1
+    },
+    {
+     "song": "karitas",
+     "lang": "la",
+     "words": 37,
+     "refuted": 3,
+     "witnesses": 0,
+     "attack": 3
+    },
+    {
+     "song": "one",
+     "lang": "ar",
+     "words": 84,
+     "refuted": 1,
+     "witnesses": 1,
+     "attack": 0
+    },
+    {
+     "song": "one",
+     "lang": "de",
+     "words": 76,
+     "refuted": 6,
+     "witnesses": 6,
+     "attack": 0
+    }
+   ]
+  },
+  {
+   "both_far": 0.2,
+   "only_far": 0.3,
+   "refuted": 14,
+   "words": 550,
+   "rate": 0.0255,
+   "witnesses": 11,
+   "attack": 3,
+   "by": [
+    {
+     "song": "i-have-come-alive",
+     "lang": "ar",
+     "words": 50,
+     "refuted": 1,
+     "witnesses": 1,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "en",
+     "words": 44,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "fa",
+     "words": 109,
+     "refuted": 3,
+     "witnesses": 3,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "tr",
+     "words": 47,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "ar",
+     "words": 32,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "az",
+     "words": 71,
+     "refuted": 1,
+     "witnesses": 0,
+     "attack": 1
+    },
+    {
+     "song": "karitas",
+     "lang": "la",
+     "words": 37,
+     "refuted": 2,
+     "witnesses": 0,
+     "attack": 2
+    },
+    {
+     "song": "one",
+     "lang": "ar",
+     "words": 84,
+     "refuted": 1,
+     "witnesses": 1,
+     "attack": 0
+    },
+    {
+     "song": "one",
+     "lang": "de",
+     "words": 76,
+     "refuted": 6,
+     "witnesses": 6,
+     "attack": 0
+    }
+   ]
+  },
+  {
+   "both_far": 0.2,
+   "only_far": 0.4,
+   "refuted": 12,
+   "words": 550,
+   "rate": 0.0218,
+   "witnesses": 11,
+   "attack": 1,
+   "by": [
+    {
+     "song": "i-have-come-alive",
+     "lang": "ar",
+     "words": 50,
+     "refuted": 1,
+     "witnesses": 1,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "en",
+     "words": 44,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "fa",
+     "words": 109,
+     "refuted": 3,
+     "witnesses": 3,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "tr",
+     "words": 47,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "ar",
+     "words": 32,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "az",
+     "words": 71,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "la",
+     "words": 37,
+     "refuted": 1,
+     "witnesses": 0,
+     "attack": 1
+    },
+    {
+     "song": "one",
+     "lang": "ar",
+     "words": 84,
+     "refuted": 1,
+     "witnesses": 1,
+     "attack": 0
+    },
+    {
+     "song": "one",
+     "lang": "de",
+     "words": 76,
+     "refuted": 6,
+     "witnesses": 6,
+     "attack": 0
+    }
+   ]
+  },
+  {
+   "both_far": 0.3,
+   "only_far": 0.2,
+   "refuted": 10,
+   "words": 550,
+   "rate": 0.0182,
+   "witnesses": 6,
+   "attack": 4,
+   "by": [
+    {
+     "song": "i-have-come-alive",
+     "lang": "ar",
+     "words": 50,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "en",
+     "words": 44,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "fa",
+     "words": 109,
+     "refuted": 2,
+     "witnesses": 2,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "tr",
+     "words": 47,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "ar",
+     "words": 32,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "az",
+     "words": 71,
+     "refuted": 1,
+     "witnesses": 0,
+     "attack": 1
+    },
+    {
+     "song": "karitas",
+     "lang": "la",
+     "words": 37,
+     "refuted": 3,
+     "witnesses": 0,
+     "attack": 3
+    },
+    {
+     "song": "one",
+     "lang": "ar",
+     "words": 84,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "one",
+     "lang": "de",
+     "words": 76,
+     "refuted": 4,
+     "witnesses": 4,
+     "attack": 0
+    }
+   ]
+  },
+  {
+   "both_far": 0.3,
+   "only_far": 0.3,
+   "refuted": 9,
+   "words": 550,
+   "rate": 0.0164,
+   "witnesses": 6,
+   "attack": 3,
+   "by": [
+    {
+     "song": "i-have-come-alive",
+     "lang": "ar",
+     "words": 50,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "en",
+     "words": 44,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "fa",
+     "words": 109,
+     "refuted": 2,
+     "witnesses": 2,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "tr",
+     "words": 47,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "ar",
+     "words": 32,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "az",
+     "words": 71,
+     "refuted": 1,
+     "witnesses": 0,
+     "attack": 1
+    },
+    {
+     "song": "karitas",
+     "lang": "la",
+     "words": 37,
+     "refuted": 2,
+     "witnesses": 0,
+     "attack": 2
+    },
+    {
+     "song": "one",
+     "lang": "ar",
+     "words": 84,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "one",
+     "lang": "de",
+     "words": 76,
+     "refuted": 4,
+     "witnesses": 4,
+     "attack": 0
+    }
+   ]
+  },
+  {
+   "both_far": 0.3,
+   "only_far": 0.4,
+   "refuted": 7,
+   "words": 550,
+   "rate": 0.0127,
+   "witnesses": 6,
+   "attack": 1,
+   "by": [
+    {
+     "song": "i-have-come-alive",
+     "lang": "ar",
+     "words": 50,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "en",
+     "words": 44,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "fa",
+     "words": 109,
+     "refuted": 2,
+     "witnesses": 2,
+     "attack": 0
+    },
+    {
+     "song": "i-have-come-alive",
+     "lang": "tr",
+     "words": 47,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "ar",
+     "words": 32,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "az",
+     "words": 71,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "karitas",
+     "lang": "la",
+     "words": 37,
+     "refuted": 1,
+     "witnesses": 0,
+     "attack": 1
+    },
+    {
+     "song": "one",
+     "lang": "ar",
+     "words": 84,
+     "refuted": 0,
+     "witnesses": 0,
+     "attack": 0
+    },
+    {
+     "song": "one",
+     "lang": "de",
+     "words": 76,
+     "refuted": 4,
+     "witnesses": 4,
+     "attack": 0
+    }
+   ]
+  }
+ ],
+ "line_table": [
+  {
+   "k": 0.25,
+   "chance": 0.0121,
+   "proved": 53,
+   "candidates": 124,
+   "by_song": {
+    "i-have-come-alive": 39,
+    "karitas": 11,
+    "one": 3
+   },
+   "shifts": {
+    "0.15": 0.0121,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0
+   }
+  },
+  {
+   "k": 0.33,
+   "chance": 0.0081,
+   "proved": 52,
+   "candidates": 124,
+   "by_song": {
+    "i-have-come-alive": 39,
+    "karitas": 10,
+    "one": 3
+   },
+   "shifts": {
+    "0.15": 0.0081,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0
+   }
+  },
+  {
+   "k": 0.4,
+   "chance": 0.0081,
+   "proved": 50,
+   "candidates": 124,
+   "by_song": {
+    "i-have-come-alive": 37,
+    "karitas": 10,
+    "one": 3
+   },
+   "shifts": {
+    "0.15": 0.0081,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0
+   }
+  },
+  {
+   "k": 0.5,
+   "chance": 0.0081,
+   "proved": 43,
+   "candidates": 124,
+   "by_song": {
+    "i-have-come-alive": 35,
+    "karitas": 7,
+    "one": 1
+   },
+   "shifts": {
+    "0.15": 0.0081,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0
+   }
+  },
+  {
+   "k": 0.6,
+   "chance": 0.0,
+   "proved": 38,
+   "candidates": 124,
+   "by_song": {
+    "i-have-come-alive": 30,
+    "karitas": 7,
+    "one": 1
+   },
+   "shifts": {
+    "0.15": 0.0,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0
+   }
+  },
+  {
+   "k": 0.67,
+   "chance": 0.0,
+   "proved": 22,
+   "candidates": 124,
+   "by_song": {
+    "i-have-come-alive": 19,
+    "karitas": 3,
+    "one": 0
+   },
+   "shifts": {
+    "0.15": 0.0,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0
+   }
+  },
+  {
+   "k": 0.75,
+   "chance": 0.0,
+   "proved": 22,
+   "candidates": 124,
+   "by_song": {
+    "i-have-come-alive": 19,
+    "karitas": 3,
+    "one": 0
+   },
+   "shifts": {
+    "0.15": 0.0,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0
+   }
+  },
+  {
+   "k": 0.8,
+   "chance": 0.0,
+   "proved": 15,
+   "candidates": 124,
+   "by_song": {
+    "i-have-come-alive": 12,
+    "karitas": 3,
+    "one": 0
+   },
+   "shifts": {
+    "0.15": 0.0,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0
+   }
+  },
+  {
+   "k": 0.9,
+   "chance": 0.0,
+   "proved": 12,
+   "candidates": 124,
+   "by_song": {
+    "i-have-come-alive": 11,
+    "karitas": 1,
+    "one": 0
+   },
+   "shifts": {
+    "0.15": 0.0,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0
+   }
+  },
+  {
+   "k": 1.0,
+   "chance": 0.0,
+   "proved": 12,
+   "candidates": 124,
+   "by_song": {
+    "i-have-come-alive": 11,
+    "karitas": 1,
+    "one": 0
+   },
+   "shifts": {
+    "0.15": 0.0,
+    "0.25": 0.0,
+    "0.40": 0.0,
+    "shuffle": 0.0
+   }
+  }
+ ],
  "density": [
   {
    "song": "i-have-come-alive",
@@ -133,320 +1392,6 @@
    "median_interval": 0.26,
    "placed_words": 76,
    "placed_lines": 12
-  }
- ],
- "by_slice": [
-  {
-   "song": "i-have-come-alive",
-   "lang": "*",
-   "words": 250,
-   "rule": "tol-0.10-h0.5",
-   "rates": {
-    "0.15": 0.448,
-    "0.25": 0.412,
-    "0.40": 0.388,
-    "shuffle": 0.728,
-    "chance": 0.728
-   }
-  },
-  {
-   "song": "i-have-come-alive",
-   "lang": "*",
-   "words": 250,
-   "rule": "attack-h0.7-one",
-   "rates": {
-    "0.15": 0.066,
-    "0.25": 0.006,
-    "0.40": 0.006,
-    "shuffle": 0.024,
-    "chance": 0.066
-   }
-  },
-  {
-   "song": "i-have-come-alive",
-   "lang": "ar",
-   "words": 50,
-   "rule": "tol-0.10-h0.5",
-   "rates": {
-    "0.15": 0.38,
-    "0.25": 0.37,
-    "0.40": 0.44,
-    "shuffle": 0.74,
-    "chance": 0.74
-   }
-  },
-  {
-   "song": "i-have-come-alive",
-   "lang": "ar",
-   "words": 50,
-   "rule": "attack-h0.7-one",
-   "rates": {
-    "0.15": 0.05,
-    "0.25": 0.0,
-    "0.40": 0.0,
-    "shuffle": 0.0,
-    "chance": 0.05
-   }
-  },
-  {
-   "song": "i-have-come-alive",
-   "lang": "en",
-   "words": 44,
-   "rule": "tol-0.10-h0.5",
-   "rates": {
-    "0.15": 0.5227,
-    "0.25": 0.5114,
-    "0.40": 0.375,
-    "shuffle": 0.7273,
-    "chance": 0.7273
-   }
-  },
-  {
-   "song": "i-have-come-alive",
-   "lang": "en",
-   "words": 44,
-   "rule": "attack-h0.7-one",
-   "rates": {
-    "0.15": 0.1591,
-    "0.25": 0.0227,
-    "0.40": 0.0,
-    "shuffle": 0.0227,
-    "chance": 0.1591
-   }
-  },
-  {
-   "song": "i-have-come-alive",
-   "lang": "fa",
-   "words": 109,
-   "rule": "tol-0.10-h0.5",
-   "rates": {
-    "0.15": 0.5092,
-    "0.25": 0.4954,
-    "0.40": 0.4358,
-    "shuffle": 0.7431,
-    "chance": 0.7431
-   }
-  },
-  {
-   "song": "i-have-come-alive",
-   "lang": "fa",
-   "words": 109,
-   "rule": "attack-h0.7-one",
-   "rates": {
-    "0.15": 0.0505,
-    "0.25": 0.0046,
-    "0.40": 0.0092,
-    "shuffle": 0.0459,
-    "chance": 0.0505
-   }
-  },
-  {
-   "song": "i-have-come-alive",
-   "lang": "tr",
-   "words": 47,
-   "rule": "tol-0.10-h0.5",
-   "rates": {
-    "0.15": 0.3085,
-    "0.25": 0.1702,
-    "0.40": 0.234,
-    "shuffle": 0.6809,
-    "chance": 0.6809
-   }
-  },
-  {
-   "song": "i-have-come-alive",
-   "lang": "tr",
-   "words": 47,
-   "rule": "attack-h0.7-one",
-   "rates": {
-    "0.15": 0.0319,
-    "0.25": 0.0,
-    "0.40": 0.0106,
-    "shuffle": 0.0,
-    "chance": 0.0319
-   }
-  },
-  {
-   "song": "karitas",
-   "lang": "*",
-   "words": 140,
-   "rule": "tol-0.10-h0.5",
-   "rates": {
-    "0.15": 0.4857,
-    "0.25": 0.4036,
-    "0.40": 0.475,
-    "shuffle": 0.7554,
-    "chance": 0.7554
-   }
-  },
-  {
-   "song": "karitas",
-   "lang": "*",
-   "words": 140,
-   "rule": "attack-h0.7-one",
-   "rates": {
-    "0.15": 0.0393,
-    "0.25": 0.0179,
-    "0.40": 0.0071,
-    "shuffle": 0.0,
-    "chance": 0.0393
-   }
-  },
-  {
-   "song": "karitas",
-   "lang": "ar",
-   "words": 32,
-   "rule": "tol-0.10-h0.5",
-   "rates": {
-    "0.15": 0.5312,
-    "0.25": 0.5,
-    "0.40": 0.5,
-    "shuffle": 0.9032,
-    "chance": 0.9032
-   }
-  },
-  {
-   "song": "karitas",
-   "lang": "ar",
-   "words": 32,
-   "rule": "attack-h0.7-one",
-   "rates": {
-    "0.15": 0.0625,
-    "0.25": 0.0156,
-    "0.40": 0.0,
-    "shuffle": 0.0,
-    "chance": 0.0625
-   }
-  },
-  {
-   "song": "karitas",
-   "lang": "az",
-   "words": 71,
-   "rule": "tol-0.10-h0.5",
-   "rates": {
-    "0.15": 0.5352,
-    "0.25": 0.4577,
-    "0.40": 0.5775,
-    "shuffle": 0.831,
-    "chance": 0.831
-   }
-  },
-  {
-   "song": "karitas",
-   "lang": "az",
-   "words": 71,
-   "rule": "attack-h0.7-one",
-   "rates": {
-    "0.15": 0.0493,
-    "0.25": 0.0211,
-    "0.40": 0.0,
-    "shuffle": 0.0,
-    "chance": 0.0493
-   }
-  },
-  {
-   "song": "karitas",
-   "lang": "la",
-   "words": 37,
-   "rule": "tol-0.10-h0.5",
-   "rates": {
-    "0.15": 0.3514,
-    "0.25": 0.2162,
-    "0.40": 0.2568,
-    "shuffle": 0.4865,
-    "chance": 0.4865
-   }
-  },
-  {
-   "song": "karitas",
-   "lang": "la",
-   "words": 37,
-   "rule": "attack-h0.7-one",
-   "rates": {
-    "0.15": 0.0,
-    "0.25": 0.0135,
-    "0.40": 0.027,
-    "shuffle": 0.0,
-    "chance": 0.027
-   }
-  },
-  {
-   "song": "one",
-   "lang": "*",
-   "words": 160,
-   "rule": "tol-0.10-h0.5",
-   "rates": {
-    "0.15": 0.6281,
-    "0.25": 0.5563,
-    "0.40": 0.5844,
-    "shuffle": 0.7937,
-    "chance": 0.7937
-   }
-  },
-  {
-   "song": "one",
-   "lang": "*",
-   "words": 160,
-   "rule": "attack-h0.7-one",
-   "rates": {
-    "0.15": 0.2062,
-    "0.25": 0.0813,
-    "0.40": 0.0187,
-    "shuffle": 0.0437,
-    "chance": 0.2062
-   }
-  },
-  {
-   "song": "one",
-   "lang": "ar",
-   "words": 84,
-   "rule": "tol-0.10-h0.5",
-   "rates": {
-    "0.15": 0.5179,
-    "0.25": 0.3869,
-    "0.40": 0.494,
-    "shuffle": 0.7857,
-    "chance": 0.7857
-   }
-  },
-  {
-   "song": "one",
-   "lang": "ar",
-   "words": 84,
-   "rule": "attack-h0.7-one",
-   "rates": {
-    "0.15": 0.1607,
-    "0.25": 0.0417,
-    "0.40": 0.0298,
-    "shuffle": 0.0476,
-    "chance": 0.1607
-   }
-  },
-  {
-   "song": "one",
-   "lang": "de",
-   "words": 76,
-   "rule": "tol-0.10-h0.5",
-   "rates": {
-    "0.15": 0.75,
-    "0.25": 0.7434,
-    "0.40": 0.6842,
-    "shuffle": 0.8026,
-    "chance": 0.8026
-   }
-  },
-  {
-   "song": "one",
-   "lang": "de",
-   "words": 76,
-   "rule": "attack-h0.7-one",
-   "rates": {
-    "0.15": 0.2566,
-    "0.25": 0.125,
-    "0.40": 0.0066,
-    "shuffle": 0.0395,
-    "chance": 0.2566
-   }
   }
  ],
  "candidates": [

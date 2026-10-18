@@ -189,7 +189,36 @@ def load_word_rule() -> dict:
         if isinstance(value, str) and value:
             adopt[str(key)] = value
     rule['adopt'] = adopt
-    if rule['witnesses']:
+    scopes = []
+    for scope in chosen.get('scopes') or []:
+        if not isinstance(scope, dict):
+            continue
+        if scope.get('witnesses') not in ('one', 'two'):
+            continue
+        if not scope.get('song') or scope.get('lang') is None:
+            continue
+        scopes.append({
+            'song': str(scope['song']),
+            'lang': str(scope['lang']),
+            'witnesses': scope['witnesses'],
+        })
+    rule['scopes'] = scopes
+    refute_in = chosen.get('refute') if isinstance(chosen.get('refute'), dict) else None
+    if refute_in:
+        rule['refute'] = {
+            'both_agree': float(refute_in.get('both_agree', 0.10)),
+            'both_far': float(refute_in.get('both_far', 0.20)),
+            'only_far': float(refute_in.get('only_far', 0.30)),
+            'attack_tol': float(refute_in.get('attack_tol', 0.10)),
+        }
+    else:
+        rule['refute'] = None
+    rule['line_share'] = None if chosen.get('line_share') is None else float(chosen['line_share'])
+    rule['line_chance'] = None if chosen.get('line_chance') is None else float(chosen['line_chance'])
+    rule['line_min_words'] = int(chosen.get('line_min_words') or 2)
+    # A measured file decides witnesses per song and language. The global flag is
+    # only the fallback for a file that still names one mode for every line.
+    if rule['witnesses'] or rule['scopes']:
         rule['require_second'] = False
     return rule
 
@@ -261,6 +290,93 @@ def song_ready(parts: list[tuple[int, int]]) -> bool:
     return all(song_proven(passed, n) for passed, n in present)
 
 
+def share_met(got: int, n: int, share: float) -> bool:
+    """Integer gate, same rounding as the song threshold. 1 of 2 meets 0.50."""
+    if n <= 0:
+        return False
+    return got * 1000 >= n * int(round(float(share) * 1000))
+
+
+def witnesses_for(rule: dict | None, song: str | None, lang: str | None) -> str | None:
+    """Witness mode for one line. A language scope wins; otherwise the song scope.
+
+    A measured file lists every language. The song row (`lang` `*`) covers a language
+    with too few words to judge on its own. No scope and no global mode means the
+    caller is on the default rule, which does not use witnesses.
+    """
+    rule = rule or {}
+    scopes = rule.get('scopes') or []
+    lang = lang or '?'
+    for scope in scopes:
+        if song and scope.get('song') == song and scope.get('lang') == lang and scope.get('witnesses') in ('one', 'two'):
+            return scope['witnesses']
+    for scope in scopes:
+        if song and scope.get('song') == song and scope.get('lang') == '*' and scope.get('witnesses') in ('one', 'two'):
+            return scope['witnesses']
+    mode = rule.get('witnesses')
+    return mode if mode in ('one', 'two') else None
+
+
+def word_refuted(word: dict, peaks: np.ndarray | None, refute: dict | None) -> str | None:
+    """Why this word contradicts MMS, or None when there is simply no proof.
+
+    Both clocks, when both exist, refute the word if they agree with each other and
+    both sit far from MMS. One clock refutes it only when that clock is far from MMS
+    and a strong attack sits on the clock but not on MMS. No clock is not a refutation.
+    """
+    if not refute or word.get('ctc_s') is None:
+        return None
+    ctc = float(word['ctc_s'])
+    both_agree = float(refute.get('both_agree', 0.10))
+    both_far = float(refute.get('both_far', 0.20))
+    only_far = float(refute.get('only_far', 0.30))
+    attack_tol = float(refute.get('attack_tol', 0.10))
+    clocks = []
+    for key in ('second_s', 'third_s'):
+        if word.get(key) is not None:
+            clocks.append(float(word[key]))
+    if len(clocks) >= 2:
+        if abs(clocks[0] - clocks[1]) <= both_agree + 1e-12 and all(abs(c - ctc) > both_far + 1e-12 for c in clocks[:2]):
+            return 'witnesses-agree-elsewhere'
+        return None
+    if len(clocks) == 1 and abs(clocks[0] - ctc) > only_far + 1e-12:
+        if _peak_near(clocks[0], peaks, attack_tol) and not _peak_near(ctc, peaks, attack_tol):
+            return 'witness-attack'
+    return None
+
+
+def _peak_near(t: float, peaks: np.ndarray | None, tol: float) -> bool:
+    if peaks is None or len(peaks) == 0:
+        return False
+    return bool(np.min(np.abs(np.asarray(peaks, dtype=float) - float(t))) <= tol + 1e-12)
+
+
+def line_word_ok(proved: list[dict], refuted: list[str | None], share: float, minimum: int = 2) -> bool:
+    """A line's words, once the cue already matched. Refutation blocks the line.
+
+    At least `minimum` words must be proved, and they must be at least `share` of the
+    lettered words. A word with neither proof nor refutation does not block the line.
+    """
+    n = len(proved)
+    if n < minimum or len(refuted) != n:
+        return False
+    if any(refuted):
+        return False
+    got = sum(1 for word in proved if word.get('path') != 'fail')
+    if got < minimum:
+        return False
+    return share_met(got, n, share)
+
+
+def _refute_detail(why: str, refute: dict | None) -> str:
+    refute = refute or {}
+    if why == 'witnesses-agree-elsewhere':
+        return (f"оба свидетеля согласны (≤ {float(refute.get('both_agree', 0.10)):.2f} с) "
+                f"и дальше {float(refute.get('both_far', 0.20)):.2f} с от MMS")
+    return (f"единственный свидетель дальше {float(refute.get('only_far', 0.30)):.2f} с, "
+            f"сильная атака у него, а не у MMS")
+
+
 REASON_RU = {
     'pass': 'доказано',
     'not-solo': 'не соло',
@@ -275,6 +391,8 @@ REASON_RU = {
     'cue-disagree': 'расходится с субтитрами',
     'text-changed': 'текст изменился после выравнивания',
     'no-report': 'нет отчёта выравнивания',
+    'word-refuted': 'слово опровергнуто',
+    'word-share': 'доказанных слов меньше доли строки',
 }
 
 
@@ -504,13 +622,19 @@ def prove_words(align_words: list[dict] | None, presnap: list[float | None], tol
 def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presnap: list[float | None], align_words: list[dict] | None, has_report: bool,
                cue_start: float | None = None, ctc_line_start: float | None = None, structure_ok: bool = True,
                tol: float | None = None, require_second: bool = False, witnesses: str | None = None,
-               agree_tol: float = SECOND_WORD_TOL) -> dict:
-    """Whether one line may lose timing-draft. The first failing word sets the reason.
+               agree_tol: float = SECOND_WORD_TOL, peaks: np.ndarray | None = None,
+               refute: dict | None = None, line_share: float | None = None,
+               line_min_words: int = 2) -> dict:
+    """Whether one line may lose timing-draft.
 
+    Without `line_share`, the first failing word sets the reason: each lettered
+    word needs an attack within the group tolerance, or, when it is soft and no
+    attack is closer than 0.30 s, a second aligner within 0.10 s.
+    With `line_share`, a refuted word blocks the line, and the rest pass when at
+    least that share of the lettered words is proved and at least `line_min_words`
+    of them are. A word with neither proof nor a refutation does not block it.
     Placed (`good`) for a cued line already means the structural checks and
-    |start − cue| ≤ 0.30 s. The MMS score does not decide that. Each lettered
-    word then needs an attack within the group tolerance, or, when it is soft
-    and no attack is closer than 0.30 s, a second aligner within 0.10 s.
+    |start − cue| ≤ 0.30 s. The MMS score does not decide that.
     `tol` overrides the group tolerance when a measured rule tightened it.
     A duet or tutti is neither group. The whole-line shift alarm is not a gate.
     A cued line that was not placed does not blame the text.
@@ -572,12 +696,29 @@ def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presn
         if has_cue:
             return fail('aligner-failed', 'в строке не осталось букв')
         return fail('text-not-found', 'в строке не осталось букв')
-    first = next((word for word in proved if word['path'] == 'fail'), None)
     paths = _path_counts(proved)
-    if first:
-        return {'pass': False, 'reason': first['reason'], 'detail': first['detail'], 'second': second,
-                'paths': paths, 'word_proof': proved}
-    return {'pass': True, 'reason': 'pass', 'detail': '', 'second': second, 'paths': paths, 'word_proof': proved}
+    if line_share is None:
+        first = next((word for word in proved if word['path'] == 'fail'), None)
+        if first:
+            return {'pass': False, 'reason': first['reason'], 'detail': first['detail'], 'second': second,
+                    'paths': paths, 'word_proof': proved}
+        return {'pass': True, 'reason': 'pass', 'detail': '', 'second': second, 'paths': paths, 'word_proof': proved}
+    lettered = [word for word in (align_words or []) if word.get('roman')]
+    flags: list[str | None] = []
+    for word, item in zip(lettered, proved):
+        why = word_refuted(word, peaks, refute)
+        item['refuted'] = why
+        flags.append(why)
+    first_why = next((why for why in flags if why), None)
+    if first_why:
+        return {'pass': False, 'reason': 'word-refuted', 'detail': _refute_detail(first_why, refute),
+                'second': second, 'paths': paths, 'word_proof': proved}
+    if line_word_ok(proved, flags, float(line_share), line_min_words):
+        return {'pass': True, 'reason': 'pass', 'detail': '', 'second': second, 'paths': paths, 'word_proof': proved}
+    got = sum(1 for word in proved if word.get('path') != 'fail')
+    return {'pass': False, 'reason': 'word-share',
+            'detail': f'{got} из {len(proved)} при доле {float(line_share):.2f}, нужно не меньше {line_min_words}',
+            'second': second, 'paths': paths, 'word_proof': proved}
 
 
 def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict], align_report: dict | None,
@@ -591,8 +732,13 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
     rule = default_word_rule() if word_rule is None else word_rule
     by_id = {r['id']: r for r in align_report.get('lines', [])} if align_report else {}
     height = float(rule.get('peak_height', PEAK_HEIGHT))
-    witnesses = rule.get('witnesses') if rule.get('witnesses') in ('one', 'two') else None
+    global_mode = rule.get('witnesses') if rule.get('witnesses') in ('one', 'two') else None
     agree_tol = float(rule.get('agree_tol', SECOND_WORD_TOL))
+    line_share = None if rule.get('line_share') is None else float(rule['line_share'])
+    line_min = int(rule.get('line_min_words') or 2)
+    refute = rule.get('refute') if line_share is not None else None
+    scoped = bool(rule.get('scopes'))
+    song = rule.get('song')
     peaks = onset_peak_times(sig, min_height=height)
     if rule.get('require_rise'):
         peaks = peaks_on_rise(sig, peaks, height)
@@ -628,11 +774,17 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
             if aw.get('second_s') is not None:
                 agree.append(abs(float(aw['second_s']) - t))
             prev_ctc = t
+        mode = witnesses_for(rule, song, line.get('lang'))
+        if line_share is not None and mode is None:
+            mode = 'two'
+        elif mode is None:
+            mode = global_mode
         decision = proof_line(kind, rec.get('status') if rec else None, text_same, presnap, align_words or None, align_report is not None,
                               cue_start=cue_start, ctc_line_start=ctc_line,
                               structure_ok=True if rec is None else bool(rec.get('structure_ok', True)),
-                              tol=tol, require_second=bool(rule.get('require_second')) and not witnesses,
-                              witnesses=witnesses, agree_tol=agree_tol)
+                              tol=tol, require_second=bool(rule.get('require_second')) and not mode,
+                              witnesses=mode, agree_tol=agree_tol, peaks=peaks, refute=refute,
+                              line_share=line_share, line_min_words=line_min)
         found_line = (rec or {}).get('status') in ('good', 'weak')
         cue_delta = None
         if found_line and cue_start is not None and ctc_line is not None:
@@ -688,7 +840,7 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
     soft: list[float | None] = []
     for r in rows:
         lang = r.get('lang') or '?'
-        bucket = by_lang.setdefault(lang, {'n': 0, 'placed': 0, 'proved': 0})
+        bucket = by_lang.setdefault(lang, {'n': 0, 'placed': 0, 'proved': 0, 'words': 0, 'refuted': 0})
         bucket['n'] += 1
         if r.get('ctc') == 'good':
             bucket['placed'] += 1
@@ -696,6 +848,9 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
                 key = word['path'] if word['path'] in word_paths else 'fail'
                 word_paths[key] += 1
                 (soft if word['soft'] else consonant).append(word['abs'])
+                bucket['words'] += 1
+                if word.get('refuted'):
+                    bucket['refuted'] += 1
         if r.get('pass'):
             bucket['proved'] += 1
     return {
@@ -705,7 +860,8 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
         'word_tol': float(rule['tol']), 'choir_tol': float(rule['choir_tol']), 'line_tol': TOL, 'song_share': SONG_SHARE,
         'word_rule': rule.get('name'), 'peak_height': height,
         'require_rise': bool(rule.get('require_rise')), 'require_second': bool(rule.get('require_second')),
-        'witnesses': witnesses, 'agree_tol': agree_tol,
+        'witnesses': 'scoped' if scoped else global_mode, 'agree_tol': agree_tol,
+        'line_share': line_share, 'line_chance': rule.get('line_chance'), 'refute': refute,
         'onset_median': onset_median, 'onset_p90': onset_p90, 'onset_words': len(onset),
         'presnap_median': onset_median, 'presnap_p90': onset_p90,
         'agree_median': agree_median, 'agree_p90': agree_p90,
@@ -1057,8 +1213,12 @@ def proof_md(proof: dict) -> list[str]:
         extra.append('сильная атака и хотя бы один независимый выравниватель в пределах 0,10 с')
     elif proof.get('witnesses') == 'two':
         extra.append('сильная атака и оба независимых выравнивателя в пределах 0,10 с')
+    elif proof.get('witnesses') == 'scoped':
+        extra.append('сильная атака и один или оба свидетеля, как решено для песни и языка')
     elif proof.get('require_second'):
         extra.append('нужно согласие второго выравнивателя')
+    if proof.get('line_share') is not None:
+        extra.append(f"строка при доле доказанных слов {ru(float(proof['line_share']))} и без опровержений")
     extra_bit = (', ' + ', '.join(extra)) if extra else ''
     L.append(f"- Поставлено: {proof.get('placed', 0)} из {proof['lines_n']} "
              f"(у строки с репликой — структурные проверки и |Δ| ≤ {ru(PROOF_CUE_TOL)} с; "
@@ -1087,9 +1247,14 @@ def proof_md(proof: dict) -> list[str]:
         names = (('agree', 'сошёлся'), ('disagree', 'разошёлся'), ('partial', 'поставил не все слова'), ('absent', 'времени нет'))
         bits = [f"{label} {sum(1 for r in asked if r.get('second') == key)}" for key, label in names]
         if proof.get('witnesses'):
-            who = 'хотя бы один из двух' if proof.get('witnesses') == 'one' else 'оба'
+            if proof.get('witnesses') == 'one':
+                who = 'хотя бы один из двух независимых выравнивателей'
+            elif proof.get('witnesses') == 'scoped':
+                who = 'столько независимых выравнивателей, сколько требует язык этой строки'
+            else:
+                who = 'оба независимых выравнивателя'
             L.append('- Второй выравниватель на поставленных строках: ' + ', '.join(bits) + '. '
-                     f'Слово доказано, когда атака сильная и {who} независимых выравнивателя '
+                     f'Слово доказано, когда атака сильная и {who} '
                      '(второй или stable-ts) совпадает с MMS не дальше 0,10 с. Путь без атаки при этом правиле закрыт.')
         else:
             L.append('- Второй выравниватель на поставленных строках: ' + ', '.join(bits) + '. '
@@ -1108,24 +1273,47 @@ def proof_md(proof: dict) -> list[str]:
                  f"Доказано вторым выравнивателем: {paths.get('second', 0)}. "
                  f"Не доказано: {paths.get('fail', 0)}. "
                  f"Интерполяция между соседними словами доказательством не считается.")
-    L.append(f"- Если бы пословная заливка включалась по строке, а не на всю песню, её получили бы "
-             f"{proof.get('fill_lines', 0)} строк — только доказанные. "
-             f"Сайт так не делает: заливка включается на всю песню, когда статус не draft, "
-             f"и не горит у строки с флагом timing-draft.")
+    if proof.get('line_share') is not None:
+        L.append(f"- Если бы пословная заливка включалась по строке, а не на всю песню, её получили бы "
+                 f"{proof.get('fill_lines', 0)} строк: начало не дальше 0,3 с от реплики, "
+                 f"ни одного опровергнутого слова и не меньше {ru(float(proof['line_share']))} доказанных слов "
+                 f"(не меньше двух). "
+                 f"Сайт так не делает: заливка включается на всю песню, когда статус не draft, "
+                 f"и не горит у строки с флагом timing-draft.")
+    else:
+        L.append(f"- Если бы пословная заливка включалась по строке, а не на всю песню, её получили бы "
+                 f"{proof.get('fill_lines', 0)} строк — только доказанные. "
+                 f"Сайт так не делает: заливка включается на всю песню, когда статус не draft, "
+                 f"и не горит у строки с флагом timing-draft.")
     if proof['reasons']:
         bits = ', '.join(f"{REASON_RU.get(k, k)} — {v}" for k, v in sorted(proof['reasons'].items(), key=lambda kv: -kv[1]))
         L.append(f"- Почему строки не доказаны: {bits}.")
     L.append('')
     L.append('## По языкам')
     L.append('')
-    L.append('Поставлено у строки с репликой — структура и |Δ| ≤ 0,3 с. Оценка строку не бракует. Доказано — поставленная строка, у которой прошло каждое слово.')
-    L.append('')
-    L.append('| язык | строк | поставлено | доказано |')
-    L.append('|---|---:|---:|---:|')
-    for lang, bucket in sorted((proof.get('by_lang') or {}).items()):
-        L.append(f"| {lang} | {bucket['n']} | {bucket['placed']} | {bucket['proved']} |")
+    if proof.get('line_share') is not None:
+        L.append('Поставлено у строки с репликой — структура и |Δ| ≤ 0,3 с. Оценка строку не бракует. '
+                 f"Доказано — поставленная строка соло или хора, у которой ни одно слово не опровергнуто "
+                 f"и доказано не меньше {ru(float(proof['line_share']))} слов (не меньше двух). "
+                 'Опровергнуто — слова поставленных строк, у которых свидетели сходятся в стороне от MMS.')
+        L.append('')
+        L.append('| язык | строк | поставлено | доказано | слов | опровергнуто слов |')
+        L.append('|---|---:|---:|---:|---:|---:|')
+        for lang, bucket in sorted((proof.get('by_lang') or {}).items()):
+            L.append(f"| {lang} | {bucket['n']} | {bucket['placed']} | {bucket['proved']} | "
+                     f"{bucket.get('words', 0)} | {bucket.get('refuted', 0)} |")
+    else:
+        L.append('Поставлено у строки с репликой — структура и |Δ| ≤ 0,3 с. Оценка строку не бракует. Доказано — поставленная строка, у которой прошло каждое слово.')
+        L.append('')
+        L.append('| язык | строк | поставлено | доказано |')
+        L.append('|---|---:|---:|---:|')
+        for lang, bucket in sorted((proof.get('by_lang') or {}).items()):
+            L.append(f"| {lang} | {bucket['n']} | {bucket['placed']} | {bucket['proved']} |")
     if not proof.get('by_lang'):
-        L.append('| — | 0 | 0 | 0 |')
+        if proof.get('line_share') is not None:
+            L.append('| — | 0 | 0 | 0 | 0 | 0 |')
+        else:
+            L.append('| — | 0 | 0 | 0 |')
     L.append('')
     cons = proof.get('onset_consonant') or {}
     soft = proof.get('onset_soft') or {}
@@ -1217,6 +1405,11 @@ def render_md(meta: dict, summary: dict, results: list[dict], words: list[dict],
     elif witness_mode == 'two':
         word_rule_text = (f"Слово доказано сильной атакой и согласием обоих независимых выравнивателей "
                           f"в пределах {ru((proof or {}).get('agree_tol', SECOND_WORD_TOL))} с от начала MMS.")
+    elif witness_mode == 'scoped':
+        share = (proof or {}).get('line_share')
+        share_bit = '' if share is None else f" Строка доказана при доле таких слов {ru(float(share))} и без опровержений."
+        word_rule_text = ("Слово доказано сильной атакой и согласием одного или обоих независимых выравнивателей, "
+                          f"как решено для этой песни и языка.{share_bit}")
     else:
         word_rule_text = (f"Слово на гласную или связное без атаки ближе {ru(ATTACK_NEAR)} с доказывается вторым выравнивателем "
                           f"в пределах {ru(SECOND_WORD_TOL)} с.")
@@ -1419,7 +1612,9 @@ def main() -> int:
         cues = {}
         if cue_path.exists():
             cues = {r['line']: r for r in json.loads(cue_path.read_text(encoding='utf-8')) if r.get('line')}
-        proof = build_proof(sig, lines, results, align_report, cues, word_rule=load_word_rule())
+        rule = load_word_rule()
+        rule['song'] = slug
+        proof = build_proof(sig, lines, results, align_report, cues, word_rule=rule)
     if args.apply and proof is not None and song.get('timing', {}).get('status') == 'verified':
         print('song.json: timing.status = verified — qa_sync --apply ничего не меняет')
     elif args.apply and proof is not None:
