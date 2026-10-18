@@ -307,12 +307,15 @@ def _extra_rows(data: dict) -> list[dict]:
         if csv_path.is_file():
             with csv_path.open(encoding="utf-8", newline="") as handle:
                 for record in csv.DictReader(handle):
-                    name = f"{record['recording']}-{float(record['start']):.1f}.wav"
+                    name = (record.get("file") or "").strip() or f"{record['recording']}-{float(record['start']):.1f}.wav"
                     meta_by_name[name] = record
         pending = []
         recordings = set()
         for wav in sorted(folder.glob("*.wav")):
-            meta = meta_by_name.get(wav.name, {})
+            meta = meta_by_name.get(wav.name)
+            # A wav without a manifest row, or with a doubt flag, does not train.
+            if not meta or (meta.get("flag") or "").strip():
+                continue
             recording = meta.get("recording") or wav.stem
             license_name = meta.get("license") or "не записана"
             group = f"extra:{folder.name}:{recording}"

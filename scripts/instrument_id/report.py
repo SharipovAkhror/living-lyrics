@@ -198,6 +198,12 @@ def _sources_block() -> list[str]:
             f"{'да' if row.get('enough') else 'нет'} |"
         )
     lines.append("")
+    for row in rows:
+        note = (row.get("note") or "").strip()
+        if note and not row.get("enough"):
+            lines.append(f"- {row['id']}: {note}")
+    if any((row.get("note") or "").strip() and not row.get("enough") for row in rows):
+        lines.append("")
     return lines
 
 
