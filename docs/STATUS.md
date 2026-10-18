@@ -9,6 +9,7 @@ _Обновлено: 2026-10-18 (задачи выполняет Grok, Claude Co
 - Сайт: https://living-lyrics.vercel.app (пароль — Vercel → Settings → Environment Variables → `SITE_PASSWORD`). Ветка `main` деплоится автоматически.
 - Репозиторий: `SharipovAkhror/living-lyrics` (публичный). Vercel: команда `team_vKwfBgyY5JNLfiqxgWSD6R8A`, проект `prj_qSpZgGNjg0KoGNHaT0Rw3RcBZ7kX`.
 - Правила для любого агента — `AGENTS.md` (`CLAUDE.md` и `GEMINI.md` его подключают). Методология добавления песни — `docs/methodology/`.
+- Страница хода работы для владельца («Штаб Living Lyrics»): https://claude.ai/artifact/4qDrBtHpga6s9wzVpZw7VM — задачи простыми словами, что нужно от владельца, прогресс подсветки по словам. Данные страницы обновляет Claude Code после каждого шага (база артефакта, не код в репозитории).
 
 ## Как работать
 
