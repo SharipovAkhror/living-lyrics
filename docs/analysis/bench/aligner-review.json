@@ -1,0 +1,432 @@
+{
+ "songs": [
+  "i-have-come-alive",
+  "karitas",
+  "one"
+ ],
+ "strong_height": 0.7,
+ "agree_tol": 0.1,
+ "closer": {
+  "words": {
+   "n": 122,
+   "mms": 67,
+   "second": 46,
+   "tie": 9,
+   "no_peak": 0
+  },
+  "lines": {
+   "n": 22,
+   "mms": 11,
+   "second": 8,
+   "tie": 3,
+   "no_peak": 0
+  },
+  "by_lang": {
+   "en": {
+    "words": {
+     "n": 2,
+     "mms": 1,
+     "second": 1,
+     "tie": 0,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 0,
+     "mms": 0,
+     "second": 0,
+     "tie": 0,
+     "no_peak": 0
+    }
+   },
+   "fa": {
+    "words": {
+     "n": 22,
+     "mms": 13,
+     "second": 7,
+     "tie": 2,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 4,
+     "mms": 0,
+     "second": 4,
+     "tie": 0,
+     "no_peak": 0
+    }
+   },
+   "tr": {
+    "words": {
+     "n": 3,
+     "mms": 3,
+     "second": 0,
+     "tie": 0,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 0,
+     "mms": 0,
+     "second": 0,
+     "tie": 0,
+     "no_peak": 0
+    }
+   },
+   "ar": {
+    "words": {
+     "n": 49,
+     "mms": 23,
+     "second": 19,
+     "tie": 7,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 9,
+     "mms": 3,
+     "second": 3,
+     "tie": 3,
+     "no_peak": 0
+    }
+   },
+   "az": {
+    "words": {
+     "n": 0,
+     "mms": 0,
+     "second": 0,
+     "tie": 0,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 0,
+     "mms": 0,
+     "second": 0,
+     "tie": 0,
+     "no_peak": 0
+    }
+   },
+   "la": {
+    "words": {
+     "n": 0,
+     "mms": 0,
+     "second": 0,
+     "tie": 0,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 0,
+     "mms": 0,
+     "second": 0,
+     "tie": 0,
+     "no_peak": 0
+    }
+   },
+   "de": {
+    "words": {
+     "n": 46,
+     "mms": 27,
+     "second": 19,
+     "tie": 0,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 9,
+     "mms": 8,
+     "second": 1,
+     "tie": 0,
+     "no_peak": 0
+    }
+   }
+  },
+  "by_song": {
+   "i-have-come-alive": {
+    "words": {
+     "n": 36,
+     "mms": 25,
+     "second": 9,
+     "tie": 2,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 6,
+     "mms": 2,
+     "second": 4,
+     "tie": 0,
+     "no_peak": 0
+    }
+   },
+   "karitas": {
+    "words": {
+     "n": 3,
+     "mms": 1,
+     "second": 1,
+     "tie": 1,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 0,
+     "mms": 0,
+     "second": 0,
+     "tie": 0,
+     "no_peak": 0
+    }
+   },
+   "one": {
+    "words": {
+     "n": 83,
+     "mms": 41,
+     "second": 36,
+     "tie": 6,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 16,
+     "mms": 9,
+     "second": 4,
+     "tie": 3,
+     "no_peak": 0
+    }
+   }
+  }
+ },
+ "third": {
+  "en": {
+   "words": 44,
+   "third": 44,
+   "within_0_10": 23
+  },
+  "fa": {
+   "words": 109,
+   "third": 109,
+   "within_0_10": 77
+  },
+  "tr": {
+   "words": 47,
+   "third": 47,
+   "within_0_10": 15
+  },
+  "ar": {
+   "words": 166,
+   "third": 166,
+   "within_0_10": 77
+  },
+  "az": {
+   "words": 71,
+   "third": 71,
+   "within_0_10": 34
+  },
+  "la": {
+   "words": 37,
+   "third": 37,
+   "within_0_10": 8
+  },
+  "de": {
+   "words": 76,
+   "third": 76,
+   "within_0_10": 19
+  }
+ },
+ "groups": [
+  {
+   "consonant_lines": 8,
+   "train_lines": 4,
+   "hold_lines": 4,
+   "train_words": 24,
+   "hold_words": 24,
+   "median_train": -0.0045,
+   "median_hold": 0.0025,
+   "line_median_train": -0.0017,
+   "line_median_hold": 0.0015,
+   "iqr_train": 0.0272,
+   "offset": 0.0,
+   "applied": false,
+   "reason": "shift-under-0.02",
+   "hold_agree_before": 0.9032,
+   "hold_agree_before_n": [
+    28,
+    31
+   ],
+   "hold_agree_if_train_offset": 0.9032,
+   "hold_agree_if_train_offset_n": [
+    28,
+    31
+   ],
+   "key": "borrow-tr|az"
+  },
+  {
+   "consonant_lines": 29,
+   "train_lines": 14,
+   "hold_lines": 15,
+   "train_words": 32,
+   "hold_words": 51,
+   "median_train": 0.02,
+   "median_hold": 0.04,
+   "line_median_train": 0.015,
+   "line_median_hold": 0.06,
+   "iqr_train": 0.03,
+   "offset": 0.0,
+   "applied": false,
+   "reason": "shift-under-0.02",
+   "hold_agree_before": 0.6338,
+   "hold_agree_before_n": [
+    45,
+    71
+   ],
+   "hold_agree_if_train_offset": 0.662,
+   "hold_agree_if_train_offset_n": [
+    47,
+    71
+   ],
+   "key": "whisperx|ar"
+  },
+  {
+   "consonant_lines": 9,
+   "train_lines": 4,
+   "hold_lines": 5,
+   "train_words": 20,
+   "hold_words": 14,
+   "median_train": 0.085,
+   "median_hold": 0.055,
+   "line_median_train": 0.085,
+   "line_median_hold": 0.05,
+   "iqr_train": 0.155,
+   "offset": null,
+   "applied": false,
+   "reason": "wide-spread",
+   "hold_agree_before": 0.4483,
+   "hold_agree_before_n": [
+    13,
+    29
+   ],
+   "hold_agree_if_train_offset": 0.5172,
+   "hold_agree_if_train_offset_n": [
+    15,
+    29
+   ],
+   "key": "whisperx|de"
+  },
+  {
+   "consonant_lines": 2,
+   "train_lines": 1,
+   "hold_lines": 1,
+   "train_words": 2,
+   "hold_words": 3,
+   "median_train": 0.04,
+   "median_hold": 0.01,
+   "line_median_train": 0.04,
+   "line_median_hold": 0.01,
+   "iqr_train": null,
+   "offset": null,
+   "applied": false,
+   "reason": "too-few-words",
+   "hold_agree_before": 1.0,
+   "hold_agree_before_n": [
+    4,
+    4
+   ],
+   "hold_agree_if_train_offset": 1.0,
+   "hold_agree_if_train_offset_n": [
+    4,
+    4
+   ],
+   "key": "whisperx|en"
+  },
+  {
+   "consonant_lines": 23,
+   "train_lines": 11,
+   "hold_lines": 12,
+   "train_words": 42,
+   "hold_words": 46,
+   "median_train": 0.02,
+   "median_hold": 0.015,
+   "line_median_train": 0.02,
+   "line_median_hold": 0.01,
+   "iqr_train": 0.02,
+   "offset": 0.0,
+   "applied": false,
+   "reason": "shift-under-0.02",
+   "hold_agree_before": 0.7885,
+   "hold_agree_before_n": [
+    41,
+    52
+   ],
+   "hold_agree_if_train_offset": 0.7885,
+   "hold_agree_if_train_offset_n": [
+    41,
+    52
+   ],
+   "key": "whisperx|fa"
+  },
+  {
+   "consonant_lines": 11,
+   "train_lines": 5,
+   "hold_lines": 6,
+   "train_words": 15,
+   "hold_words": 16,
+   "median_train": 0.0,
+   "median_hold": 0.005,
+   "line_median_train": 0.0,
+   "line_median_hold": 0.0025,
+   "iqr_train": 0.025,
+   "offset": 0.0,
+   "applied": false,
+   "reason": "shift-under-0.02",
+   "hold_agree_before": 0.9474,
+   "hold_agree_before_n": [
+    18,
+    19
+   ],
+   "hold_agree_if_train_offset": 0.9474,
+   "hold_agree_if_train_offset_n": [
+    18,
+    19
+   ],
+   "key": "whisperx|tr"
+  }
+ ],
+ "bias": {},
+ "adopt": {},
+ "borrow": {
+  "letters": {
+   "az-tr": "ə→e, x→h, q→g. q в азербайджанском — [g], не [k].",
+   "la-it": "æ/œ→e, y/j→i, k→c, w→v, x→s.",
+   "la-es": "æ/œ→e, k→c, w→u, y→i. Латинское y — гласная."
+  },
+  "tr_native": {
+   "n": 16,
+   "within_0_30": 16,
+   "fraction": 1.0,
+   "median": 0.1415,
+   "model": "mpoyraz/wav2vec2-xls-r-300m-cv7-turkish",
+   "license": "CC-BY-4.0",
+   "card": "Common Voice 7, Turkish"
+  },
+  "az_tr": {
+   "n": 26,
+   "within_0_30": 22,
+   "fraction": 0.8462,
+   "median": 0.2015,
+   "model": "mpoyraz/wav2vec2-xls-r-300m-cv7-turkish",
+   "license": "CC-BY-4.0",
+   "card": "Common Voice 7, Turkish",
+   "decision": "worse-fraction"
+  },
+  "la_it": {
+   "n": 24,
+   "within_0_30": 7,
+   "fraction": 0.2917,
+   "median": 0.4315,
+   "model": "jonatasgrosman/wav2vec2-large-xlsr-53-italian",
+   "license": "Apache-2.0",
+   "card": "Common Voice 6.1, Italian",
+   "decision": "not-adopted-no-native-singing"
+  },
+  "la_es": {
+   "n": 24,
+   "within_0_30": 5,
+   "fraction": 0.2083,
+   "median": 0.504,
+   "model": "jonatasgrosman/wav2vec2-large-xlsr-53-spanish",
+   "license": "Apache-2.0",
+   "card": "Common Voice 6.1, Spanish",
+   "decision": "not-adopted-no-native-singing"
+  }
+ }
+}

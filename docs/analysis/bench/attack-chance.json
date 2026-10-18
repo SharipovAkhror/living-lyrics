@@ -12,26 +12,30 @@
  ],
  "placed_lines": 125,
  "placed_words": 550,
- "current_chance": 0.7523,
+ "current_chance": 0.7541,
  "chosen": {
-  "name": "tol-0.10-h0.7-second",
   "tol": 0.1,
   "choir_tol": 0.2,
   "peak_height": 0.7,
   "require_rise": false,
-  "require_second": true,
+  "require_second": false,
+  "agree_tol": 0.1,
+  "name": "attack-h0.7-one",
+  "witnesses": "one",
   "shifts": {
-   "0.15": 0.0482,
-   "0.25": 0.01,
-   "0.40": 0.0064,
-   "shuffle": 0.0182
+   "0.15": 0.1,
+   "0.25": 0.0309,
+   "0.40": 0.01,
+   "shuffle": 0.0237
   },
-  "chance": 0.0482,
-  "true_proved": 289,
+  "chance": 0.1,
+  "true_proved": 243,
   "true_total": 550,
-  "true_rate": 0.5255,
+  "true_rate": 0.4418,
   "within_limit": true,
-  "why": "tightened"
+  "why": "witness-one",
+  "bias": {},
+  "adopt": {}
  },
  "density": [
   {
@@ -149,13 +153,13 @@
    "song": "i-have-come-alive",
    "lang": "*",
    "words": 250,
-   "rule": "tol-0.10-h0.7-second",
+   "rule": "attack-h0.7-one",
    "rates": {
-    "0.15": 0.026,
-    "0.25": 0.0,
-    "0.40": 0.004,
-    "shuffle": 0.016,
-    "chance": 0.026
+    "0.15": 0.066,
+    "0.25": 0.006,
+    "0.40": 0.006,
+    "shuffle": 0.024,
+    "chance": 0.066
    }
   },
   {
@@ -175,13 +179,13 @@
    "song": "i-have-come-alive",
    "lang": "ar",
    "words": 50,
-   "rule": "tol-0.10-h0.7-second",
+   "rule": "attack-h0.7-one",
    "rates": {
-    "0.15": 0.02,
+    "0.15": 0.05,
     "0.25": 0.0,
     "0.40": 0.0,
     "shuffle": 0.0,
-    "chance": 0.02
+    "chance": 0.05
    }
   },
   {
@@ -201,13 +205,13 @@
    "song": "i-have-come-alive",
    "lang": "en",
    "words": 44,
-   "rule": "tol-0.10-h0.7-second",
+   "rule": "attack-h0.7-one",
    "rates": {
-    "0.15": 0.0455,
-    "0.25": 0.0,
+    "0.15": 0.1591,
+    "0.25": 0.0227,
     "0.40": 0.0,
     "shuffle": 0.0227,
-    "chance": 0.0455
+    "chance": 0.1591
    }
   },
   {
@@ -227,13 +231,13 @@
    "song": "i-have-come-alive",
    "lang": "fa",
    "words": 109,
-   "rule": "tol-0.10-h0.7-second",
+   "rule": "attack-h0.7-one",
    "rates": {
-    "0.15": 0.0275,
-    "0.25": 0.0,
+    "0.15": 0.0505,
+    "0.25": 0.0046,
     "0.40": 0.0092,
-    "shuffle": 0.0275,
-    "chance": 0.0275
+    "shuffle": 0.0459,
+    "chance": 0.0505
    }
   },
   {
@@ -253,13 +257,13 @@
    "song": "i-have-come-alive",
    "lang": "tr",
    "words": 47,
-   "rule": "tol-0.10-h0.7-second",
+   "rule": "attack-h0.7-one",
    "rates": {
-    "0.15": 0.0106,
+    "0.15": 0.0319,
     "0.25": 0.0,
-    "0.40": 0.0,
+    "0.40": 0.0106,
     "shuffle": 0.0,
-    "chance": 0.0106
+    "chance": 0.0319
    }
   },
   {
@@ -268,24 +272,24 @@
    "words": 140,
    "rule": "tol-0.10-h0.5",
    "rates": {
-    "0.15": 0.4821,
+    "0.15": 0.4857,
     "0.25": 0.4036,
     "0.40": 0.475,
-    "shuffle": 0.7482,
-    "chance": 0.7482
+    "shuffle": 0.7554,
+    "chance": 0.7554
    }
   },
   {
    "song": "karitas",
    "lang": "*",
    "words": 140,
-   "rule": "tol-0.10-h0.7-second",
+   "rule": "attack-h0.7-one",
    "rates": {
-    "0.15": 0.0036,
-    "0.25": 0.0036,
-    "0.40": 0.0,
+    "0.15": 0.0393,
+    "0.25": 0.0179,
+    "0.40": 0.0071,
     "shuffle": 0.0,
-    "chance": 0.0036
+    "chance": 0.0393
    }
   },
   {
@@ -305,13 +309,13 @@
    "song": "karitas",
    "lang": "ar",
    "words": 32,
-   "rule": "tol-0.10-h0.7-second",
+   "rule": "attack-h0.7-one",
    "rates": {
-    "0.15": 0.0156,
+    "0.15": 0.0625,
     "0.25": 0.0156,
     "0.40": 0.0,
     "shuffle": 0.0,
-    "chance": 0.0156
+    "chance": 0.0625
    }
   },
   {
@@ -320,7 +324,7 @@
    "words": 71,
    "rule": "tol-0.10-h0.5",
    "rates": {
-    "0.15": 0.5282,
+    "0.15": 0.5352,
     "0.25": 0.4577,
     "0.40": 0.5775,
     "shuffle": 0.831,
@@ -331,13 +335,13 @@
    "song": "karitas",
    "lang": "az",
    "words": 71,
-   "rule": "tol-0.10-h0.7-second",
+   "rule": "attack-h0.7-one",
    "rates": {
-    "0.15": 0.0,
-    "0.25": 0.0,
+    "0.15": 0.0493,
+    "0.25": 0.0211,
     "0.40": 0.0,
     "shuffle": 0.0,
-    "chance": 0.0
+    "chance": 0.0493
    }
   },
   {
@@ -349,21 +353,21 @@
     "0.15": 0.3514,
     "0.25": 0.2162,
     "0.40": 0.2568,
-    "shuffle": 0.4595,
-    "chance": 0.4595
+    "shuffle": 0.4865,
+    "chance": 0.4865
    }
   },
   {
    "song": "karitas",
    "lang": "la",
    "words": 37,
-   "rule": "tol-0.10-h0.7-second",
+   "rule": "attack-h0.7-one",
    "rates": {
     "0.15": 0.0,
-    "0.25": 0.0,
-    "0.40": 0.0,
+    "0.25": 0.0135,
+    "0.40": 0.027,
     "shuffle": 0.0,
-    "chance": 0.0
+    "chance": 0.027
    }
   },
   {
@@ -372,7 +376,7 @@
    "words": 160,
    "rule": "tol-0.10-h0.5",
    "rates": {
-    "0.15": 0.625,
+    "0.15": 0.6281,
     "0.25": 0.5563,
     "0.40": 0.5844,
     "shuffle": 0.7937,
@@ -383,13 +387,13 @@
    "song": "one",
    "lang": "*",
    "words": 160,
-   "rule": "tol-0.10-h0.7-second",
+   "rule": "attack-h0.7-one",
    "rates": {
-    "0.15": 0.1219,
-    "0.25": 0.0312,
-    "0.40": 0.0156,
-    "shuffle": 0.0375,
-    "chance": 0.1219
+    "0.15": 0.2062,
+    "0.25": 0.0813,
+    "0.40": 0.0187,
+    "shuffle": 0.0437,
+    "chance": 0.2062
    }
   },
   {
@@ -398,7 +402,7 @@
    "words": 84,
    "rule": "tol-0.10-h0.5",
    "rates": {
-    "0.15": 0.5119,
+    "0.15": 0.5179,
     "0.25": 0.3869,
     "0.40": 0.494,
     "shuffle": 0.7857,
@@ -409,13 +413,13 @@
    "song": "one",
    "lang": "ar",
    "words": 84,
-   "rule": "tol-0.10-h0.7-second",
+   "rule": "attack-h0.7-one",
    "rates": {
-    "0.15": 0.1012,
-    "0.25": 0.0238,
-    "0.40": 0.0238,
-    "shuffle": 0.0357,
-    "chance": 0.1012
+    "0.15": 0.1607,
+    "0.25": 0.0417,
+    "0.40": 0.0298,
+    "shuffle": 0.0476,
+    "chance": 0.1607
    }
   },
   {
@@ -435,17 +439,57 @@
    "song": "one",
    "lang": "de",
    "words": 76,
-   "rule": "tol-0.10-h0.7-second",
+   "rule": "attack-h0.7-one",
    "rates": {
-    "0.15": 0.1447,
-    "0.25": 0.0395,
+    "0.15": 0.2566,
+    "0.25": 0.125,
     "0.40": 0.0066,
     "shuffle": 0.0395,
-    "chance": 0.1447
+    "chance": 0.2566
    }
   }
  ],
  "candidates": [
+  {
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 0.7,
+   "require_rise": false,
+   "require_second": false,
+   "agree_tol": 0.1,
+   "name": "attack-h0.7-one",
+   "witnesses": "one",
+   "shifts": {
+    "0.15": 0.1,
+    "0.25": 0.0309,
+    "0.40": 0.01,
+    "shuffle": 0.0237
+   },
+   "chance": 0.1,
+   "true_proved": 243,
+   "true_total": 550,
+   "true_rate": 0.4418
+  },
+  {
+   "tol": 0.1,
+   "choir_tol": 0.2,
+   "peak_height": 0.7,
+   "require_rise": false,
+   "require_second": false,
+   "agree_tol": 0.1,
+   "name": "attack-h0.7-two",
+   "witnesses": "two",
+   "shifts": {
+    "0.15": 0.0136,
+    "0.25": 0.0018,
+    "0.40": 0.0,
+    "shuffle": 0.0036
+   },
+   "chance": 0.0136,
+   "true_proved": 102,
+   "true_total": 550,
+   "true_rate": 0.1855
+  },
   {
    "name": "tol-0.10-h0.5",
    "tol": 0.1,
@@ -454,12 +498,12 @@
    "require_rise": false,
    "require_second": false,
    "shifts": {
-    "0.15": 0.5082,
+    "0.15": 0.51,
     "0.25": 0.4518,
     "0.40": 0.4673,
-    "shuffle": 0.7523
+    "shuffle": 0.7541
    },
-   "chance": 0.7523,
+   "chance": 0.7541,
    "true_proved": 434,
    "true_total": 550,
    "true_rate": 0.7891
@@ -472,12 +516,12 @@
    "require_rise": false,
    "require_second": true,
    "shifts": {
-    "0.15": 0.0691,
+    "0.15": 0.07,
     "0.25": 0.0245,
     "0.40": 0.0173,
     "shuffle": 0.02
    },
-   "chance": 0.0691,
+   "chance": 0.07,
    "true_proved": 285,
    "true_total": 550,
    "true_rate": 0.5182
@@ -490,7 +534,7 @@
    "require_rise": true,
    "require_second": false,
    "shifts": {
-    "0.15": 0.2409,
+    "0.15": 0.2427,
     "0.25": 0.1918,
     "0.40": 0.2127,
     "shuffle": 0.4117
@@ -508,15 +552,15 @@
    "require_rise": false,
    "require_second": false,
    "shifts": {
-    "0.15": 0.4018,
+    "0.15": 0.4027,
     "0.25": 0.3991,
-    "0.40": 0.3936,
-    "shuffle": 0.7013
+    "0.40": 0.3945,
+    "shuffle": 0.7031
    },
-   "chance": 0.7013,
-   "true_proved": 408,
+   "chance": 0.7031,
+   "true_proved": 409,
    "true_total": 550,
-   "true_rate": 0.7418
+   "true_rate": 0.7436
   },
   {
    "name": "tol-0.08-h0.5-second",
@@ -532,9 +576,9 @@
     "shuffle": 0.02
    },
    "chance": 0.0564,
-   "true_proved": 270,
+   "true_proved": 271,
    "true_total": 550,
-   "true_rate": 0.4909
+   "true_rate": 0.4927
   },
   {
    "name": "tol-0.08-h0.5-rise",
@@ -546,13 +590,13 @@
    "shifts": {
     "0.15": 0.1764,
     "0.25": 0.1555,
-    "0.40": 0.1764,
-    "shuffle": 0.3752
+    "0.40": 0.1773,
+    "shuffle": 0.377
    },
-   "chance": 0.3752,
-   "true_proved": 312,
+   "chance": 0.377,
+   "true_proved": 313,
    "true_total": 550,
-   "true_rate": 0.5673
+   "true_rate": 0.5691
   },
   {
    "name": "tol-0.06-h0.5",
@@ -562,15 +606,15 @@
    "require_rise": false,
    "require_second": false,
    "shifts": {
-    "0.15": 0.3009,
+    "0.15": 0.3018,
     "0.25": 0.3327,
     "0.40": 0.3273,
-    "shuffle": 0.6248
+    "shuffle": 0.623
    },
-   "chance": 0.6248,
-   "true_proved": 341,
+   "chance": 0.623,
+   "true_proved": 340,
    "true_total": 550,
-   "true_rate": 0.62
+   "true_rate": 0.6182
   },
   {
    "name": "tol-0.06-h0.5-second",
@@ -619,12 +663,12 @@
     "0.15": 0.2536,
     "0.25": 0.2827,
     "0.40": 0.2791,
-    "shuffle": 0.5556
+    "shuffle": 0.5537
    },
-   "chance": 0.5556,
-   "true_proved": 304,
+   "chance": 0.5537,
+   "true_proved": 302,
    "true_total": 550,
-   "true_rate": 0.5527
+   "true_rate": 0.5491
   },
   {
    "name": "tol-0.05-h0.5-second",
@@ -658,9 +702,9 @@
     "shuffle": 0.2532
    },
    "chance": 0.2532,
-   "true_proved": 235,
+   "true_proved": 233,
    "true_total": 550,
-   "true_rate": 0.4273
+   "true_rate": 0.4236
   },
   {
    "name": "tol-0.04-h0.5",
@@ -670,12 +714,12 @@
    "require_rise": false,
    "require_second": false,
    "shifts": {
-    "0.15": 0.1982,
+    "0.15": 0.1973,
     "0.25": 0.2364,
-    "0.40": 0.2355,
-    "shuffle": 0.4663
+    "0.40": 0.2345,
+    "shuffle": 0.4627
    },
-   "chance": 0.4663,
+   "chance": 0.4627,
    "true_proved": 261,
    "true_total": 550,
    "true_rate": 0.4745
@@ -709,9 +753,9 @@
     "0.15": 0.0691,
     "0.25": 0.0773,
     "0.40": 0.0945,
-    "shuffle": 0.204
+    "shuffle": 0.2004
    },
-   "chance": 0.204,
+   "chance": 0.2004,
    "true_proved": 210,
    "true_total": 550,
    "true_rate": 0.3818
@@ -724,7 +768,7 @@
    "require_rise": false,
    "require_second": false,
    "shifts": {
-    "0.15": 0.32,
+    "0.15": 0.3191,
     "0.25": 0.2627,
     "0.40": 0.2818,
     "shuffle": 0.5701
@@ -760,7 +804,7 @@
    "require_rise": true,
    "require_second": false,
    "shifts": {
-    "0.15": 0.17,
+    "0.15": 0.1682,
     "0.25": 0.1145,
     "0.40": 0.1373,
     "shuffle": 0.3406
@@ -892,9 +936,9 @@
     "shuffle": 0.3898
    },
    "chance": 0.3898,
-   "true_proved": 269,
+   "true_proved": 270,
    "true_total": 550,
-   "true_rate": 0.4891
+   "true_rate": 0.4909
   },
   {
    "name": "tol-0.05-h0.7-second",
@@ -928,9 +972,9 @@
     "shuffle": 0.204
    },
    "chance": 0.204,
-   "true_proved": 240,
+   "true_proved": 241,
    "true_total": 550,
-   "true_rate": 0.4364
+   "true_rate": 0.4382
   },
   {
    "name": "tol-0.04-h0.7",
@@ -943,12 +987,12 @@
     "0.15": 0.0991,
     "0.25": 0.1145,
     "0.40": 0.1355,
-    "shuffle": 0.3188
+    "shuffle": 0.3224
    },
-   "chance": 0.3188,
-   "true_proved": 239,
+   "chance": 0.3224,
+   "true_proved": 241,
    "true_total": 550,
-   "true_rate": 0.4345
+   "true_rate": 0.4382
   },
   {
    "name": "tol-0.04-h0.7-second",
@@ -964,9 +1008,9 @@
     "shuffle": 0.0091
    },
    "chance": 0.0145,
-   "true_proved": 196,
+   "true_proved": 197,
    "true_total": 550,
-   "true_rate": 0.3564
+   "true_rate": 0.3582
   },
   {
    "name": "tol-0.04-h0.7-rise",
@@ -979,12 +1023,12 @@
     "0.15": 0.0409,
     "0.25": 0.0409,
     "0.40": 0.0618,
-    "shuffle": 0.1585
+    "shuffle": 0.1621
    },
-   "chance": 0.1585,
-   "true_proved": 222,
+   "chance": 0.1621,
+   "true_proved": 224,
    "true_total": 550,
-   "true_rate": 0.4036
+   "true_rate": 0.4073
   },
   {
    "name": "tol-0.10-h0.9",
@@ -1158,13 +1202,13 @@
    "shifts": {
     "0.15": 0.0709,
     "0.25": 0.0936,
-    "0.40": 0.1045,
+    "0.40": 0.1055,
     "shuffle": 0.3024
    },
    "chance": 0.3024,
-   "true_proved": 261,
+   "true_proved": 262,
    "true_total": 550,
-   "true_rate": 0.4745
+   "true_rate": 0.4764
   },
   {
    "name": "tol-0.05-h0.9-second",
@@ -1194,13 +1238,13 @@
    "shifts": {
     "0.15": 0.0364,
     "0.25": 0.0382,
-    "0.40": 0.06,
+    "0.40": 0.0609,
     "shuffle": 0.1749
    },
    "chance": 0.1749,
-   "true_proved": 245,
+   "true_proved": 246,
    "true_total": 550,
-   "true_rate": 0.4455
+   "true_rate": 0.4473
   },
   {
    "name": "tol-0.04-h0.9",
@@ -1216,9 +1260,9 @@
     "shuffle": 0.2495
    },
    "chance": 0.2495,
-   "true_proved": 238,
+   "true_proved": 239,
    "true_total": 550,
-   "true_rate": 0.4327
+   "true_rate": 0.4345
   },
   {
    "name": "tol-0.04-h0.9-second",
@@ -1234,9 +1278,9 @@
     "shuffle": 0.0036
    },
    "chance": 0.0036,
-   "true_proved": 211,
+   "true_proved": 210,
    "true_total": 550,
-   "true_rate": 0.3836
+   "true_rate": 0.3818
   },
   {
    "name": "tol-0.04-h0.9-rise",
@@ -1252,9 +1296,9 @@
     "shuffle": 0.1384
    },
    "chance": 0.1384,
-   "true_proved": 229,
+   "true_proved": 230,
    "true_total": 550,
-   "true_rate": 0.4164
+   "true_rate": 0.4182
   },
   {
    "name": "tol-0.10-h1.2",
