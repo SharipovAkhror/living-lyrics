@@ -7,41 +7,34 @@
 
 | с | по | инструмент | решение | пометка | источники | звук | кадр | кто |
 |---|---|---|---|---|---|---|---|---|
-| 11.5 | 14.5 | баглама | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 18.5 | 21.5 | баглама | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 23.5 | 26.5 | баглама | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 82.5 | 85.5 | баглама | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 134.5 | 137.5 | баглама | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 146.5 | 149.5 | баглама | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 154.5 | 157.5 | баглама | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 218.5 | 221.5 | баглама | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 250.5 | 253.5 | баглама | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 398.5 | 401.5 | баглама | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 478.5 | 481.5 | баглама | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 510.5 | 513.5 | баглама | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 538.5 | 541.5 | баглама | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 31.5 | 34.5 | балабан | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 314.5 | 321.5 | балабан | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 550.5 | 553.5 | балабан | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 11.5 | 14.5 | бендир | check | — | vision | 0.0 | 0.95 |  |
-| 18.5 | 21.5 | бендир | check | — | vision | 0.0 | 0.95 |  |
-| 23.5 | 26.5 | бендир | check | — | vision | 0.0 | 0.95 |  |
-| 52.5 | 55.5 | бендир | check | — | vision | 0.0 | 0.95 |  |
-| 82.5 | 85.5 | бендир | check | — | vision | 0.0 | 0.95 |  |
-| 134.5 | 137.5 | бендир | check | — | vision | 0.0 | 0.9 |  |
-| 146.5 | 149.5 | бендир | check | — | vision | 0.0 | 0.9 |  |
-| 154.5 | 157.5 | бендир | check | — | vision | 0.0 | 0.9 |  |
-| 218.5 | 221.5 | бендир | check | — | vision | 0.0 | 0.9 |  |
-| 230.5 | 233.5 | бендир | check | — | vision | 0.0 | 0.9 |  |
-| 250.5 | 253.5 | бендир | check | — | vision | 0.0 | 0.95 |  |
-| 274.5 | 277.5 | бендир | check | — | vision | 0.0 | 0.95 |  |
-| 398.5 | 401.5 | бендир | check | — | vision | 0.0 | 0.95 |  |
-| 454.5 | 461.5 | бендир | check | — | vision | 0.0 | 0.9 |  |
-| 478.5 | 481.5 | бендир | check | — | vision | 0.0 | 0.95 |  |
-| 502.5 | 505.5 | бендир | check | — | vision | 0.0 | 0.9 |  |
-| 510.5 | 513.5 | бендир | check | — | vision | 0.0 | 0.95 |  |
-| 526.5 | 529.5 | бендир | check | — | vision | 0.0 | 0.95 |  |
-| 538.5 | 541.5 | бендир | check | — | vision | 0.0 | 0.95 |  |
+| 11.5 | 14.5 | баглама | accept | — | vision, credits | 0.0 | 0.85 |  |
+| 59.5 | 62.5 | баглама | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 82.5 | 85.5 | баглама | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 164.5 | 167.5 | баглама | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 249.5 | 253.5 | баглама | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 280.5 | 283.5 | баглама | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 347.5 | 350.5 | баглама | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 388.5 | 395.5 | баглама | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 398.5 | 401.5 | баглама | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 537.5 | 541.5 | баглама | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 560.5 | 563.5 | баглама | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 11.5 | 14.5 | бендир | check | — | vision | 0.0 | 0.85 |  |
+| 18.5 | 21.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 23.5 | 26.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 52.5 | 55.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 59.5 | 62.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 82.5 | 85.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 87.5 | 90.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 164.5 | 171.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 249.5 | 253.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 274.5 | 277.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 280.5 | 283.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 347.5 | 350.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 388.5 | 395.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 398.5 | 401.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 525.5 | 529.5 | бендир | check | — | vision | 0.0 | 0.85 |  |
+| 537.5 | 541.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
+| 560.5 | 563.5 | бендир | check | — | vision | 0.0 | 0.8 |  |
 | 53.0 | 56.0 | виолончель | check | — | audio | 0.8322 | 0.0 |  |
 | 88.0 | 91.0 | виолончель | check | — | audio | 0.9392 | 0.0 |  |
 | 111.0 | 115.0 | виолончель | check | — | audio | 0.8807 | 0.0 |  |
@@ -67,39 +60,32 @@
 | 526.0 | 532.0 | виолончель | check | — | audio | 0.9894 | 0.0 |  |
 | 536.0 | 540.0 | виолончель | check | — | audio | 0.8663 | 0.0 |  |
 | 554.0 | 560.0 | виолончель | check | — | audio | 0.9476 | 0.0 |  |
-| 146.5 | 161.5 | хор | check | — | vision | 0.0 | 0.95 |  |
-| 218.5 | 233.5 | хор | check | — | vision | 0.0 | 0.95 |  |
-| 238.5 | 241.5 | хор | check | — | vision | 0.0 | 0.95 |  |
-| 354.5 | 357.5 | хор | check | — | vision | 0.0 | 0.95 |  |
-| 382.5 | 385.5 | хор | check | — | vision | 0.0 | 0.95 |  |
-| 394.5 | 397.5 | хор | check | — | vision | 0.0 | 0.95 |  |
-| 422.5 | 429.5 | хор | check | — | vision | 0.0 | 0.95 |  |
-| 478.5 | 481.5 | хор | check | — | vision | 0.0 | 0.95 |  |
-| 510.5 | 513.5 | хор | check | — | vision | 0.0 | 0.95 |  |
-| 526.5 | 529.5 | хор | check | — | vision | 0.0 | 0.95 |  |
-| 534.5 | 545.5 | хор | check | — | vision | 0.0 | 0.95 |  |
-| 554.5 | 557.5 | хор | check | — | vision | 0.0 | 0.95 |  |
-| 562.5 | 565.5 | хор | check | — | vision | 0.0 | 0.95 |  |
-| 18.5 | 21.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 23.5 | 26.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 34.5 | 37.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 52.5 | 55.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 82.5 | 85.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 134.5 | 137.5 | даф | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 146.5 | 149.5 | даф | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 154.5 | 157.5 | даф | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 218.5 | 221.5 | даф | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 230.5 | 233.5 | даф | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 250.5 | 253.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 274.5 | 277.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 282.5 | 285.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 398.5 | 401.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 454.5 | 461.5 | даф | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 478.5 | 481.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 502.5 | 505.5 | даф | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 510.5 | 513.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 526.5 | 529.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 538.5 | 541.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
+| 131.5 | 137.5 | хор | check | — | vision | 0.0 | 0.85 |  |
+| 146.5 | 163.5 | хор | check | — | vision | 0.0 | 0.85 |  |
+| 213.5 | 229.5 | хор | check | — | vision | 0.0 | 0.85 |  |
+| 237.5 | 242.5 | хор | check | — | vision | 0.0 | 0.85 |  |
+| 343.5 | 349.5 | хор | check | — | vision | 0.0 | 0.85 |  |
+| 351.5 | 357.5 | хор | check | — | vision | 0.0 | 0.85 |  |
+| 381.5 | 385.5 | хор | check | — | vision | 0.0 | 0.85 |  |
+| 422.5 | 429.5 | хор | check | — | vision | 0.0 | 0.85 |  |
+| 472.5 | 481.5 | хор | check | — | vision | 0.0 | 0.85 |  |
+| 506.5 | 517.5 | хор | check | — | vision | 0.0 | 0.85 |  |
+| 519.5 | 522.5 | хор | check | — | vision | 0.0 | 0.85 |  |
+| 527.5 | 547.5 | хор | check | — | vision | 0.0 | 0.85 |  |
+| 551.5 | 559.5 | хор | check | — | vision | 0.0 | 0.85 |  |
+| 29.5 | 37.5 | даф | accept | — | vision, credits | 0.0 | 0.95 |  |
+| 52.5 | 55.5 | даф | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 82.5 | 85.5 | даф | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 87.5 | 90.5 | даф | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 164.5 | 171.5 | даф | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 249.5 | 253.5 | даф | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 274.5 | 277.5 | даф | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 280.5 | 285.5 | даф | accept | — | vision, credits | 0.0 | 0.85 |  |
+| 347.5 | 350.5 | даф | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 388.5 | 391.5 | даф | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 396.5 | 399.5 | даф | accept | — | vision, credits | 0.0 | 0.9 |  |
+| 525.5 | 529.5 | даф | accept | — | vision, credits | 0.0 | 0.85 |  |
+| 560.5 | 563.5 | даф | accept | — | vision, credits | 0.0 | 0.8 |  |
 | 44.0 | 47.0 | контрабас | check | — | audio | 0.9267 | 0.0 |  |
 | 101.0 | 104.0 | контрабас | check | — | audio | 0.8832 | 0.0 |  |
 | 112.0 | 117.0 | контрабас | check | — | audio | 0.959 | 0.0 |  |
@@ -121,10 +107,10 @@
 | 524.0 | 531.0 | контрабас | check | — | audio | 0.8402 | 0.0 |  |
 | 546.0 | 549.0 | контрабас | check | — | audio | 0.895 | 0.0 |  |
 | 557.0 | 560.0 | контрабас | check | — | audio | 0.8275 | 0.0 |  |
-| 152.5 | 155.5 | эрху | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 534.5 | 537.5 | эрху | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 542.5 | 545.5 | эрху | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 554.5 | 557.5 | эрху | accept | — | vision, credits | 0.0 | 0.95 |  |
+| 152.5 | 155.5 | эрху | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 533.5 | 537.5 | эрху | accept | — | vision, credits | 0.0 | 0.85 |  |
+| 541.5 | 545.5 | эрху | accept | — | vision, credits | 0.0 | 0.85 |  |
+| 554.5 | 557.5 | эрху | accept | — | vision, credits | 0.0 | 0.85 |  |
 | 75.0 | 80.0 | поперечная флейта | check | — | audio | 0.9501 | 0.0 |  |
 | 84.0 | 87.0 | поперечная флейта | check | — | audio | 0.8647 | 0.0 |  |
 | 91.0 | 94.0 | поперечная флейта | check | — | audio | 0.9002 | 0.0 |  |
@@ -144,102 +130,52 @@
 | 18.0 | 34.0 | акустическая гитара | check | — | audio | 0.9827 | 0.0 |  |
 | 43.0 | 46.0 | акустическая гитара | check | — | audio | 0.7635 | 0.0 |  |
 | 401.0 | 404.0 | акустическая гитара | check | — | audio | 0.9759 | 0.0 |  |
-| 54.5 | 65.5 | кяманча | accept | — | vision, credits | 0.0 | 0.95 |  |
+| 54.5 | 65.5 | кяманча | accept | — | vision, credits | 0.0 | 0.85 |  |
 | 70.5 | 77.5 | кяманча | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 246.5 | 249.5 | кяманча | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 254.5 | 257.5 | кяманча | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 314.5 | 321.5 | кяманча | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 550.5 | 553.5 | кяманча | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 23.5 | 26.5 | оркестровая перкуссия | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 82.5 | 85.5 | оркестровая перкуссия | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 250.5 | 253.5 | оркестровая перкуссия | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 274.5 | 277.5 | оркестровая перкуссия | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 522.5 | 525.5 | оркестровая перкуссия | accept | — | vision, credits | 0.0 | 0.95 |  |
+| 245.5 | 249.5 | кяманча | accept | — | vision, credits | 0.0 | 0.85 |  |
+| 253.5 | 257.5 | кяманча | accept | — | vision, credits | 0.0 | 0.85 |  |
+| 263.5 | 266.5 | кяманча | accept | — | vision, credits | 0.0 | 0.85 |  |
+| 496.5 | 499.5 | кяманча | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 550.5 | 553.5 | кяманча | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 35.5 | 53.5 | оркестр | check | — | vision | 0.0 | 0.8 |  |
+| 61.5 | 64.5 | оркестр | check | — | vision | 0.0 | 0.8 |  |
+| 66.5 | 69.5 | оркестр | check | — | vision | 0.0 | 0.8 |  |
+| 78.5 | 81.5 | оркестр | check | — | vision | 0.0 | 0.8 |  |
+| 89.5 | 97.5 | оркестр | check | — | vision | 0.0 | 0.8 |  |
+| 170.5 | 177.5 | оркестр | check | — | vision | 0.0 | 0.8 |  |
+| 257.5 | 261.5 | оркестр | check | — | vision | 0.0 | 0.8 |  |
+| 264.5 | 273.5 | оркестр | check | — | vision | 0.0 | 0.8 |  |
+| 277.5 | 281.5 | оркестр | check | — | vision | 0.0 | 0.8 |  |
+| 384.5 | 387.5 | оркестр | check | — | vision | 0.0 | 0.8 |  |
+| 502.5 | 505.5 | оркестр | check | — | vision | 0.0 | 0.8 |  |
+| 522.5 | 525.5 | оркестровая перкуссия | accept | — | vision, credits | 0.0 | 0.9 |  |
 | 253.0 | 256.0 | орган | check | — | audio | 0.7979 | 0.0 |  |
-| 11.5 | 14.5 | уд | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 18.5 | 21.5 | уд | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 23.5 | 26.5 | уд | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 82.5 | 85.5 | уд | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 154.5 | 157.5 | уд | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 250.5 | 253.5 | уд | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 398.5 | 401.5 | уд | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 478.5 | 481.5 | уд | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 538.5 | 541.5 | уд | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 11.5 | 14.5 | канун | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 18.5 | 21.5 | канун | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 23.5 | 26.5 | канун | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 82.5 | 85.5 | канун | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 154.5 | 157.5 | канун | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 250.5 | 253.5 | канун | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 274.5 | 277.5 | канун | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 314.5 | 321.5 | канун | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 398.5 | 401.5 | канун | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 478.5 | 481.5 | канун | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 550.5 | 553.5 | канун | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 90.5 | 93.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 106.5 | 109.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 114.5 | 117.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 122.5 | 129.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 134.5 | 137.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 146.5 | 149.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 166.5 | 169.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 202.5 | 205.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 210.5 | 213.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 218.5 | 221.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 230.5 | 237.5 | ситар | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 250.5 | 253.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 278.5 | 281.5 | ситар | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 286.5 | 289.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 326.5 | 329.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 334.5 | 337.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 362.5 | 365.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 398.5 | 401.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 422.5 | 429.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 442.5 | 445.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 454.5 | 461.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 478.5 | 481.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 502.5 | 505.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 510.5 | 517.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 538.5 | 541.5 | ситар | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 562.5 | 565.5 | ситар | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 90.5 | 93.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 106.5 | 109.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 114.5 | 117.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 122.5 | 129.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 134.5 | 137.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 146.5 | 149.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 166.5 | 169.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 202.5 | 205.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 210.5 | 213.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 218.5 | 221.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 230.5 | 233.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 278.5 | 281.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 286.5 | 289.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 326.5 | 329.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 334.5 | 337.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 362.5 | 365.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 422.5 | 429.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 442.5 | 445.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 454.5 | 461.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 502.5 | 505.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 510.5 | 517.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 534.5 | 537.5 | табла | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 8.5 | 17.5 | танбур | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 22.5 | 34.5 | танбур | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 86.5 | 89.5 | танбур | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 162.5 | 165.5 | танбур | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 314.5 | 321.5 | танбур | accept | — | vision, credits | 0.0 | 0.9 |  |
-| 390.5 | 393.5 | танбур | accept | — | vision, credits | 0.0 | 0.95 |  |
-| 550.5 | 553.5 | танбур | accept | — | vision, credits | 0.0 | 0.9 |  |
+| 18.5 | 21.5 | уд | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 23.5 | 26.5 | уд | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 18.5 | 21.5 | канун | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 23.5 | 26.5 | канун | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 274.5 | 277.5 | канун | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 229.5 | 237.5 | ситар | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 392.5 | 395.5 | ситар | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 398.5 | 401.5 | ситар | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 533.5 | 537.5 | табла | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 8.5 | 17.5 | танбур | accept | — | vision, credits | 0.0 | 0.85 |  |
+| 20.5 | 33.5 | танбур | accept | — | vision, credits | 0.0 | 0.85 |  |
+| 85.5 | 89.5 | танбур | accept | — | vision, credits | 0.0 | 0.9 |  |
+| 162.5 | 165.5 | танбур | accept | — | vision, credits | 0.0 | 0.9 |  |
+| 272.5 | 275.5 | танбур | accept | — | vision, credits | 0.0 | 0.9 |  |
+| 390.5 | 393.5 | танбур | accept | — | vision, credits | 0.0 | 0.9 |  |
+| 496.5 | 499.5 | танбур | accept | — | vision, credits | 0.0 | 0.8 |  |
+| 550.5 | 553.5 | танбур | accept | — | vision, credits | 0.0 | 0.8 |  |
 | 66.0 | 69.0 | труба | check | — | audio | 0.931 | 0.0 |  |
 | 228.0 | 231.0 | туба | check | — | audio | 0.8373 | 0.0 |  |
 | 347.0 | 350.0 | туба | check | — | audio | 0.8528 | 0.0 |  |
-| 98.5 | 169.5 | голос | accept | — | audio, vision, credits | 1.0 | 0.95 |  |
+| 99.0 | 169.5 | голос | accept | — | audio, vision, credits | 1.0 | 0.95 |  |
 | 171.0 | 174.0 | голос | accept | — | audio, credits | 0.9688 | 0.0 |  |
-| 182.0 | 251.0 | голос | accept | — | audio, vision, credits | 1.0 | 0.95 |  |
-| 285.0 | 389.5 | голос | accept | — | audio, vision, credits | 0.9999 | 0.95 |  |
-| 403.0 | 566.0 | голос | accept | — | audio, vision, credits | 1.0 | 0.95 |  |
+| 181.5 | 251.0 | голос | accept | — | audio, vision, credits | 1.0 | 0.95 |  |
+| 284.5 | 389.5 | голос | accept | — | audio, vision, credits | 0.9999 | 0.95 |  |
+| 402.5 | 566.0 | голос | accept | — | audio, vision, credits | 1.0 | 0.95 |  |
 
-Принято отрезков: 131. Проверить: 101.
+Принято отрезков: 58. Проверить: 110.
 Принятых одним звуком: 0.
 

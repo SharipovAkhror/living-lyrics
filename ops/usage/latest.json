@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-18T10:54:53Z",
+  "updated": "2026-10-18T11:02:34Z",
   "grok": {
     "plan": "SuperGrok Heavy",
     "today": 178282571,
@@ -14,21 +14,21 @@
     "plan": "Google AI Pro",
     "quota": {
       "gemini": {
-        "weeklyRemaining": 98.15,
-        "weeklyResetIn": "147h 52m",
-        "fiveHourRemaining": 94.14,
-        "fiveHourResetIn": "4h 0m",
-        "at": "2026-10-18T10:54:05Z"
+        "weeklyRemaining": 97.99,
+        "weeklyResetIn": "147h 49m",
+        "fiveHourRemaining": 93.57,
+        "fiveHourResetIn": "3h 57m",
+        "at": "2026-10-18T10:57:42Z"
       },
       "claude-gpt": {
         "weeklyRemaining": 100.0,
         "weeklyResetIn": "",
         "fiveHourRemaining": 100.0,
         "fiveHourResetIn": "",
-        "at": "2026-10-18T10:54:05Z"
+        "at": "2026-10-18T10:57:42Z"
       }
     },
-    "runsToday": 0,
-    "secondsToday": 0
+    "runsToday": 3,
+    "secondsToday": 1667
   }
 }

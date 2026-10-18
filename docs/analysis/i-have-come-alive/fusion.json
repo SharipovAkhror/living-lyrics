@@ -14,7 +14,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -22,8 +22,8 @@
       "id": "baglama",
       "name": "баглама",
       "catalogKey": "baglama",
-      "start": 18.5,
-      "end": 21.5,
+      "start": 59.5,
+      "end": 62.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -31,24 +31,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "baglama",
-      "name": "баглама",
-      "catalogKey": "baglama",
-      "start": 23.5,
-      "end": 26.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -65,7 +48,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -73,8 +56,8 @@
       "id": "baglama",
       "name": "баглама",
       "catalogKey": "baglama",
-      "start": 134.5,
-      "end": 137.5,
+      "start": 164.5,
+      "end": 167.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -82,7 +65,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -90,58 +73,7 @@
       "id": "baglama",
       "name": "баглама",
       "catalogKey": "baglama",
-      "start": 146.5,
-      "end": 149.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "baglama",
-      "name": "баглама",
-      "catalogKey": "baglama",
-      "start": 154.5,
-      "end": 157.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "baglama",
-      "name": "баглама",
-      "catalogKey": "baglama",
-      "start": 218.5,
-      "end": 221.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "baglama",
-      "name": "баглама",
-      "catalogKey": "baglama",
-      "start": 250.5,
+      "start": 249.5,
       "end": 253.5,
       "decision": "accept",
       "review": "",
@@ -150,7 +82,58 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "baglama",
+      "name": "баглама",
+      "catalogKey": "baglama",
+      "start": 280.5,
+      "end": 283.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "baglama",
+      "name": "баглама",
+      "catalogKey": "baglama",
+      "start": 347.5,
+      "end": 350.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "baglama",
+      "name": "баглама",
+      "catalogKey": "baglama",
+      "start": 388.5,
+      "end": 395.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -167,7 +150,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -175,41 +158,7 @@
       "id": "baglama",
       "name": "баглама",
       "catalogKey": "baglama",
-      "start": 478.5,
-      "end": 481.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "baglama",
-      "name": "баглама",
-      "catalogKey": "baglama",
-      "start": 510.5,
-      "end": 513.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "baglama",
-      "name": "баглама",
-      "catalogKey": "baglama",
-      "start": 538.5,
+      "start": 537.5,
       "end": 541.5,
       "decision": "accept",
       "review": "",
@@ -218,16 +167,16 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
     {
-      "id": "balaban",
-      "name": "балабан",
-      "catalogKey": null,
-      "start": 31.5,
-      "end": 34.5,
+      "id": "baglama",
+      "name": "баглама",
+      "catalogKey": "baglama",
+      "start": 560.5,
+      "end": 563.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -235,41 +184,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "balaban",
-      "name": "балабан",
-      "catalogKey": null,
-      "start": 314.5,
-      "end": 321.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "balaban",
-      "name": "балабан",
-      "catalogKey": null,
-      "start": 550.5,
-      "end": 553.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -285,7 +200,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -301,7 +216,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -317,7 +232,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -333,7 +248,23 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 59.5,
+      "end": 62.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -349,7 +280,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -357,15 +288,15 @@
       "id": "bendir",
       "name": "бендир",
       "catalogKey": "bendir",
-      "start": 134.5,
-      "end": 137.5,
+      "start": 87.5,
+      "end": 90.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -373,15 +304,15 @@
       "id": "bendir",
       "name": "бендир",
       "catalogKey": "bendir",
-      "start": 146.5,
-      "end": 149.5,
+      "start": 164.5,
+      "end": 171.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -389,55 +320,7 @@
       "id": "bendir",
       "name": "бендир",
       "catalogKey": "bendir",
-      "start": 154.5,
-      "end": 157.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 218.5,
-      "end": 221.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 230.5,
-      "end": 233.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 250.5,
+      "start": 249.5,
       "end": 253.5,
       "decision": "check",
       "review": "",
@@ -445,7 +328,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -461,7 +344,55 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 280.5,
+      "end": 283.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 347.5,
+      "end": 350.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 388.5,
+      "end": 395.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -477,7 +408,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -485,71 +416,7 @@
       "id": "bendir",
       "name": "бендир",
       "catalogKey": "bendir",
-      "start": 454.5,
-      "end": 461.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 478.5,
-      "end": 481.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 502.5,
-      "end": 505.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 510.5,
-      "end": 513.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 526.5,
+      "start": 525.5,
       "end": 529.5,
       "decision": "check",
       "review": "",
@@ -557,7 +424,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -565,7 +432,7 @@
       "id": "bendir",
       "name": "бендир",
       "catalogKey": "bendir",
-      "start": 538.5,
+      "start": 537.5,
       "end": 541.5,
       "decision": "check",
       "review": "",
@@ -573,7 +440,23 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 560.5,
+      "end": 563.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -981,15 +864,31 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
+      "start": 131.5,
+      "end": 137.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
       "start": 146.5,
-      "end": 161.5,
+      "end": 163.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -997,15 +896,15 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 218.5,
-      "end": 233.5,
+      "start": 213.5,
+      "end": 229.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1013,15 +912,15 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 238.5,
-      "end": 241.5,
+      "start": 237.5,
+      "end": 242.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1029,7 +928,23 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 354.5,
+      "start": 343.5,
+      "end": 349.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 351.5,
       "end": 357.5,
       "decision": "check",
       "review": "",
@@ -1037,7 +952,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1045,7 +960,7 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 382.5,
+      "start": 381.5,
       "end": 385.5,
       "decision": "check",
       "review": "",
@@ -1053,23 +968,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 394.5,
-      "end": 397.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1085,7 +984,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1093,7 +992,7 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 478.5,
+      "start": 472.5,
       "end": 481.5,
       "decision": "check",
       "review": "",
@@ -1101,7 +1000,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1109,15 +1008,15 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 510.5,
-      "end": 513.5,
+      "start": 506.5,
+      "end": 517.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1125,15 +1024,15 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 526.5,
-      "end": 529.5,
+      "start": 519.5,
+      "end": 522.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1141,15 +1040,15 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 534.5,
-      "end": 545.5,
+      "start": 527.5,
+      "end": 547.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1157,31 +1056,15 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 554.5,
-      "end": 557.5,
+      "start": 551.5,
+      "end": 559.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 562.5,
-      "end": 565.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1189,41 +1072,7 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 18.5,
-      "end": 21.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 23.5,
-      "end": 26.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 34.5,
+      "start": 29.5,
       "end": 37.5,
       "decision": "accept",
       "review": "",
@@ -1249,7 +1098,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -1266,7 +1115,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -1274,8 +1123,8 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 134.5,
-      "end": 137.5,
+      "start": 87.5,
+      "end": 90.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -1283,7 +1132,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -1291,8 +1140,8 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 146.5,
-      "end": 149.5,
+      "start": 164.5,
+      "end": 171.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -1300,7 +1149,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -1308,58 +1157,7 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 154.5,
-      "end": 157.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 218.5,
-      "end": 221.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 230.5,
-      "end": 233.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 250.5,
+      "start": 249.5,
       "end": 253.5,
       "decision": "accept",
       "review": "",
@@ -1368,7 +1166,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -1385,7 +1183,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -1393,7 +1191,7 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 282.5,
+      "start": 280.5,
       "end": 285.5,
       "decision": "accept",
       "review": "",
@@ -1402,7 +1200,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1410,8 +1208,8 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 398.5,
-      "end": 401.5,
+      "start": 347.5,
+      "end": 350.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -1419,7 +1217,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -1427,8 +1225,8 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 454.5,
-      "end": 461.5,
+      "start": 388.5,
+      "end": 391.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -1436,7 +1234,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -1444,25 +1242,8 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 478.5,
-      "end": 481.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 502.5,
-      "end": 505.5,
+      "start": 396.5,
+      "end": 399.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -1478,24 +1259,7 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 510.5,
-      "end": 513.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 526.5,
+      "start": 525.5,
       "end": 529.5,
       "decision": "accept",
       "review": "",
@@ -1504,7 +1268,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1512,8 +1276,8 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 538.5,
-      "end": 541.5,
+      "start": 560.5,
+      "end": 563.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -1521,7 +1285,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -1874,7 +1638,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -1882,7 +1646,7 @@
       "id": "erhu",
       "name": "эрху",
       "catalogKey": "erhu",
-      "start": 534.5,
+      "start": 533.5,
       "end": 537.5,
       "decision": "accept",
       "review": "",
@@ -1891,7 +1655,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1899,7 +1663,7 @@
       "id": "erhu",
       "name": "эрху",
       "catalogKey": "erhu",
-      "start": 542.5,
+      "start": 541.5,
       "end": 545.5,
       "decision": "accept",
       "review": "",
@@ -1908,7 +1672,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -1925,7 +1689,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -2246,7 +2010,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -2271,7 +2035,7 @@
       "id": "kamancheh",
       "name": "кяманча",
       "catalogKey": "kamancheh",
-      "start": 246.5,
+      "start": 245.5,
       "end": 249.5,
       "decision": "accept",
       "review": "",
@@ -2280,7 +2044,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -2288,7 +2052,7 @@
       "id": "kamancheh",
       "name": "кяманча",
       "catalogKey": "kamancheh",
-      "start": 254.5,
+      "start": 253.5,
       "end": 257.5,
       "decision": "accept",
       "review": "",
@@ -2297,7 +2061,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -2305,8 +2069,8 @@
       "id": "kamancheh",
       "name": "кяманча",
       "catalogKey": "kamancheh",
-      "start": 314.5,
-      "end": 321.5,
+      "start": 263.5,
+      "end": 266.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -2314,7 +2078,24 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "kamancheh",
+      "name": "кяманча",
+      "catalogKey": "kamancheh",
+      "start": 496.5,
+      "end": 499.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -2331,75 +2112,183 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
     {
-      "id": "orchestral-percussion",
-      "name": "оркестровая перкуссия",
+      "id": "orchestra",
+      "name": "оркестр",
       "catalogKey": null,
-      "start": 23.5,
-      "end": 26.5,
-      "decision": "accept",
+      "start": 35.5,
+      "end": 53.5,
+      "decision": "check",
       "review": "",
       "sources": [
-        "vision",
-        "credits"
+        "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
     {
-      "id": "orchestral-percussion",
-      "name": "оркестровая перкуссия",
+      "id": "orchestra",
+      "name": "оркестр",
       "catalogKey": null,
-      "start": 82.5,
-      "end": 85.5,
-      "decision": "accept",
+      "start": 61.5,
+      "end": 64.5,
+      "decision": "check",
       "review": "",
       "sources": [
-        "vision",
-        "credits"
+        "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
     {
-      "id": "orchestral-percussion",
-      "name": "оркестровая перкуссия",
+      "id": "orchestra",
+      "name": "оркестр",
       "catalogKey": null,
-      "start": 250.5,
-      "end": 253.5,
-      "decision": "accept",
+      "start": 66.5,
+      "end": 69.5,
+      "decision": "check",
       "review": "",
       "sources": [
-        "vision",
-        "credits"
+        "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
     {
-      "id": "orchestral-percussion",
-      "name": "оркестровая перкуссия",
+      "id": "orchestra",
+      "name": "оркестр",
       "catalogKey": null,
-      "start": 274.5,
-      "end": 277.5,
-      "decision": "accept",
+      "start": 78.5,
+      "end": 81.5,
+      "decision": "check",
       "review": "",
       "sources": [
-        "vision",
-        "credits"
+        "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 89.5,
+      "end": 97.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 170.5,
+      "end": 177.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 257.5,
+      "end": 261.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 264.5,
+      "end": 273.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 277.5,
+      "end": 281.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 384.5,
+      "end": 387.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 502.5,
+      "end": 505.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -2416,7 +2305,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.9,
       "who": "",
       "audioAlone": false
     },
@@ -2440,23 +2329,6 @@
       "id": "oud",
       "name": "уд",
       "catalogKey": "oud",
-      "start": 11.5,
-      "end": 14.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
       "start": 18.5,
       "end": 21.5,
       "decision": "accept",
@@ -2466,7 +2338,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -2483,126 +2355,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
-      "start": 82.5,
-      "end": 85.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
-      "start": 154.5,
-      "end": 157.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
-      "start": 250.5,
-      "end": 253.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
-      "start": 398.5,
-      "end": 401.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
-      "start": 478.5,
-      "end": 481.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
-      "start": 538.5,
-      "end": 541.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 11.5,
-      "end": 14.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -2619,7 +2372,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -2636,58 +2389,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 82.5,
-      "end": 85.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 154.5,
-      "end": 157.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 250.5,
-      "end": 253.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -2704,75 +2406,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 314.5,
-      "end": 321.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 398.5,
-      "end": 401.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 478.5,
-      "end": 481.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 550.5,
-      "end": 553.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -2780,177 +2414,7 @@
       "id": "sitar",
       "name": "ситар",
       "catalogKey": null,
-      "start": 90.5,
-      "end": 93.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 106.5,
-      "end": 109.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 114.5,
-      "end": 117.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 122.5,
-      "end": 129.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 134.5,
-      "end": 137.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 146.5,
-      "end": 149.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 166.5,
-      "end": 169.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 202.5,
-      "end": 205.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 210.5,
-      "end": 213.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 218.5,
-      "end": 221.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 230.5,
+      "start": 229.5,
       "end": 237.5,
       "decision": "accept",
       "review": "",
@@ -2959,7 +2423,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -2967,8 +2431,8 @@
       "id": "sitar",
       "name": "ситар",
       "catalogKey": null,
-      "start": 250.5,
-      "end": 253.5,
+      "start": 392.5,
+      "end": 395.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -2976,92 +2440,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 278.5,
-      "end": 281.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 286.5,
-      "end": 289.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 326.5,
-      "end": 329.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 334.5,
-      "end": 337.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 362.5,
-      "end": 365.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -3078,143 +2457,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 422.5,
-      "end": 429.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 442.5,
-      "end": 445.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 454.5,
-      "end": 461.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 478.5,
-      "end": 481.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 502.5,
-      "end": 505.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 510.5,
-      "end": 517.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 538.5,
-      "end": 541.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 562.5,
-      "end": 565.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -3222,364 +2465,7 @@
       "id": "tabla",
       "name": "табла",
       "catalogKey": null,
-      "start": 90.5,
-      "end": 93.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 106.5,
-      "end": 109.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 114.5,
-      "end": 117.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 122.5,
-      "end": 129.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 134.5,
-      "end": 137.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 146.5,
-      "end": 149.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 166.5,
-      "end": 169.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 202.5,
-      "end": 205.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 210.5,
-      "end": 213.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 218.5,
-      "end": 221.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 230.5,
-      "end": 233.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 278.5,
-      "end": 281.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 286.5,
-      "end": 289.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 326.5,
-      "end": 329.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 334.5,
-      "end": 337.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 362.5,
-      "end": 365.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 422.5,
-      "end": 429.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 442.5,
-      "end": 445.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 454.5,
-      "end": 461.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 502.5,
-      "end": 505.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 510.5,
-      "end": 517.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 534.5,
+      "start": 533.5,
       "end": 537.5,
       "decision": "accept",
       "review": "",
@@ -3588,7 +2474,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -3605,7 +2491,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -3613,8 +2499,8 @@
       "id": "tanbur",
       "name": "танбур",
       "catalogKey": "tanbur",
-      "start": 22.5,
-      "end": 34.5,
+      "start": 20.5,
+      "end": 33.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -3622,7 +2508,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -3630,7 +2516,7 @@
       "id": "tanbur",
       "name": "танбур",
       "catalogKey": "tanbur",
-      "start": 86.5,
+      "start": 85.5,
       "end": 89.5,
       "decision": "accept",
       "review": "",
@@ -3639,7 +2525,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.9,
       "who": "",
       "audioAlone": false
     },
@@ -3656,7 +2542,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.9,
       "who": "",
       "audioAlone": false
     },
@@ -3664,8 +2550,8 @@
       "id": "tanbur",
       "name": "танбур",
       "catalogKey": "tanbur",
-      "start": 314.5,
-      "end": 321.5,
+      "start": 272.5,
+      "end": 275.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -3690,7 +2576,24 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "tanbur",
+      "name": "танбур",
+      "catalogKey": "tanbur",
+      "start": 496.5,
+      "end": 499.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -3707,7 +2610,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -3763,7 +2666,7 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 98.5,
+      "start": 99.0,
       "end": 169.5,
       "decision": "accept",
       "review": "",
@@ -3798,7 +2701,7 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 182.0,
+      "start": 181.5,
       "end": 251.0,
       "decision": "accept",
       "review": "",
@@ -3816,7 +2719,7 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 285.0,
+      "start": 284.5,
       "end": 389.5,
       "decision": "accept",
       "review": "",
@@ -3834,7 +2737,7 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 403.0,
+      "start": 402.5,
       "end": 566.0,
       "decision": "accept",
       "review": "",
@@ -3863,7 +2766,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -3871,8 +2774,8 @@
       "id": "baglama",
       "name": "баглама",
       "catalogKey": "baglama",
-      "start": 18.5,
-      "end": 21.5,
+      "start": 59.5,
+      "end": 62.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -3880,24 +2783,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "baglama",
-      "name": "баглама",
-      "catalogKey": "baglama",
-      "start": 23.5,
-      "end": 26.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -3914,7 +2800,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -3922,8 +2808,8 @@
       "id": "baglama",
       "name": "баглама",
       "catalogKey": "baglama",
-      "start": 134.5,
-      "end": 137.5,
+      "start": 164.5,
+      "end": 167.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -3931,7 +2817,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -3939,58 +2825,7 @@
       "id": "baglama",
       "name": "баглама",
       "catalogKey": "baglama",
-      "start": 146.5,
-      "end": 149.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "baglama",
-      "name": "баглама",
-      "catalogKey": "baglama",
-      "start": 154.5,
-      "end": 157.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "baglama",
-      "name": "баглама",
-      "catalogKey": "baglama",
-      "start": 218.5,
-      "end": 221.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "baglama",
-      "name": "баглама",
-      "catalogKey": "baglama",
-      "start": 250.5,
+      "start": 249.5,
       "end": 253.5,
       "decision": "accept",
       "review": "",
@@ -3999,7 +2834,58 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "baglama",
+      "name": "баглама",
+      "catalogKey": "baglama",
+      "start": 280.5,
+      "end": 283.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "baglama",
+      "name": "баглама",
+      "catalogKey": "baglama",
+      "start": 347.5,
+      "end": 350.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "baglama",
+      "name": "баглама",
+      "catalogKey": "baglama",
+      "start": 388.5,
+      "end": 395.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4016,7 +2902,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4024,41 +2910,7 @@
       "id": "baglama",
       "name": "баглама",
       "catalogKey": "baglama",
-      "start": 478.5,
-      "end": 481.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "baglama",
-      "name": "баглама",
-      "catalogKey": "baglama",
-      "start": 510.5,
-      "end": 513.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "baglama",
-      "name": "баглама",
-      "catalogKey": "baglama",
-      "start": 538.5,
+      "start": 537.5,
       "end": 541.5,
       "decision": "accept",
       "review": "",
@@ -4067,16 +2919,16 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
     {
-      "id": "balaban",
-      "name": "балабан",
-      "catalogKey": null,
-      "start": 31.5,
-      "end": 34.5,
+      "id": "baglama",
+      "name": "баглама",
+      "catalogKey": "baglama",
+      "start": 560.5,
+      "end": 563.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -4084,41 +2936,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "balaban",
-      "name": "балабан",
-      "catalogKey": null,
-      "start": 314.5,
-      "end": 321.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "balaban",
-      "name": "балабан",
-      "catalogKey": null,
-      "start": 550.5,
-      "end": 553.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4126,41 +2944,7 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 18.5,
-      "end": 21.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 23.5,
-      "end": 26.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 34.5,
+      "start": 29.5,
       "end": 37.5,
       "decision": "accept",
       "review": "",
@@ -4186,7 +2970,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4203,7 +2987,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4211,8 +2995,8 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 134.5,
-      "end": 137.5,
+      "start": 87.5,
+      "end": 90.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -4220,7 +3004,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4228,8 +3012,8 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 146.5,
-      "end": 149.5,
+      "start": 164.5,
+      "end": 171.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -4237,7 +3021,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4245,58 +3029,7 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 154.5,
-      "end": 157.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 218.5,
-      "end": 221.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 230.5,
-      "end": 233.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 250.5,
+      "start": 249.5,
       "end": 253.5,
       "decision": "accept",
       "review": "",
@@ -4305,7 +3038,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4322,7 +3055,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4330,7 +3063,7 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 282.5,
+      "start": 280.5,
       "end": 285.5,
       "decision": "accept",
       "review": "",
@@ -4339,7 +3072,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -4347,8 +3080,8 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 398.5,
-      "end": 401.5,
+      "start": 347.5,
+      "end": 350.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -4356,7 +3089,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4364,8 +3097,8 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 454.5,
-      "end": 461.5,
+      "start": 388.5,
+      "end": 391.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -4373,7 +3106,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4381,25 +3114,8 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 478.5,
-      "end": 481.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 502.5,
-      "end": 505.5,
+      "start": 396.5,
+      "end": 399.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -4415,24 +3131,7 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 510.5,
-      "end": 513.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "daf",
-      "name": "даф",
-      "catalogKey": "daf",
-      "start": 526.5,
+      "start": 525.5,
       "end": 529.5,
       "decision": "accept",
       "review": "",
@@ -4441,7 +3140,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -4449,8 +3148,8 @@
       "id": "daf",
       "name": "даф",
       "catalogKey": "daf",
-      "start": 538.5,
-      "end": 541.5,
+      "start": 560.5,
+      "end": 563.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -4458,7 +3157,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4475,7 +3174,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4483,7 +3182,7 @@
       "id": "erhu",
       "name": "эрху",
       "catalogKey": "erhu",
-      "start": 534.5,
+      "start": 533.5,
       "end": 537.5,
       "decision": "accept",
       "review": "",
@@ -4492,7 +3191,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -4500,7 +3199,7 @@
       "id": "erhu",
       "name": "эрху",
       "catalogKey": "erhu",
-      "start": 542.5,
+      "start": 541.5,
       "end": 545.5,
       "decision": "accept",
       "review": "",
@@ -4509,7 +3208,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -4526,7 +3225,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -4543,7 +3242,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -4568,7 +3267,7 @@
       "id": "kamancheh",
       "name": "кяманча",
       "catalogKey": "kamancheh",
-      "start": 246.5,
+      "start": 245.5,
       "end": 249.5,
       "decision": "accept",
       "review": "",
@@ -4577,7 +3276,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -4585,7 +3284,7 @@
       "id": "kamancheh",
       "name": "кяманча",
       "catalogKey": "kamancheh",
-      "start": 254.5,
+      "start": 253.5,
       "end": 257.5,
       "decision": "accept",
       "review": "",
@@ -4594,7 +3293,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -4602,8 +3301,8 @@
       "id": "kamancheh",
       "name": "кяманча",
       "catalogKey": "kamancheh",
-      "start": 314.5,
-      "end": 321.5,
+      "start": 263.5,
+      "end": 266.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -4611,7 +3310,24 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "kamancheh",
+      "name": "кяманча",
+      "catalogKey": "kamancheh",
+      "start": 496.5,
+      "end": 499.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4628,75 +3344,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "orchestral-percussion",
-      "name": "оркестровая перкуссия",
-      "catalogKey": null,
-      "start": 23.5,
-      "end": 26.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "orchestral-percussion",
-      "name": "оркестровая перкуссия",
-      "catalogKey": null,
-      "start": 82.5,
-      "end": 85.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "orchestral-percussion",
-      "name": "оркестровая перкуссия",
-      "catalogKey": null,
-      "start": 250.5,
-      "end": 253.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "orchestral-percussion",
-      "name": "оркестровая перкуссия",
-      "catalogKey": null,
-      "start": 274.5,
-      "end": 277.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4713,23 +3361,6 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
-      "start": 11.5,
-      "end": 14.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
       "visionConfidence": 0.9,
       "who": "",
       "audioAlone": false
@@ -4747,7 +3378,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4764,126 +3395,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
-      "start": 82.5,
-      "end": 85.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
-      "start": 154.5,
-      "end": 157.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
-      "start": 250.5,
-      "end": 253.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
-      "start": 398.5,
-      "end": 401.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
-      "start": 478.5,
-      "end": 481.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "oud",
-      "name": "уд",
-      "catalogKey": "oud",
-      "start": 538.5,
-      "end": 541.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 11.5,
-      "end": 14.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4900,7 +3412,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4917,58 +3429,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 82.5,
-      "end": 85.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 154.5,
-      "end": 157.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 250.5,
-      "end": 253.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -4985,75 +3446,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 314.5,
-      "end": 321.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 398.5,
-      "end": 401.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 478.5,
-      "end": 481.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "qanun",
-      "name": "канун",
-      "catalogKey": "qanun",
-      "start": 550.5,
-      "end": 553.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -5061,177 +3454,7 @@
       "id": "sitar",
       "name": "ситар",
       "catalogKey": null,
-      "start": 90.5,
-      "end": 93.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 106.5,
-      "end": 109.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 114.5,
-      "end": 117.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 122.5,
-      "end": 129.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 134.5,
-      "end": 137.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 146.5,
-      "end": 149.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 166.5,
-      "end": 169.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 202.5,
-      "end": 205.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 210.5,
-      "end": 213.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 218.5,
-      "end": 221.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 230.5,
+      "start": 229.5,
       "end": 237.5,
       "decision": "accept",
       "review": "",
@@ -5240,7 +3463,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -5248,8 +3471,8 @@
       "id": "sitar",
       "name": "ситар",
       "catalogKey": null,
-      "start": 250.5,
-      "end": 253.5,
+      "start": 392.5,
+      "end": 395.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -5257,92 +3480,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 278.5,
-      "end": 281.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 286.5,
-      "end": 289.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 326.5,
-      "end": 329.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 334.5,
-      "end": 337.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 362.5,
-      "end": 365.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -5359,143 +3497,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 422.5,
-      "end": 429.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 442.5,
-      "end": 445.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 454.5,
-      "end": 461.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 478.5,
-      "end": 481.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 502.5,
-      "end": 505.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 510.5,
-      "end": 517.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 538.5,
-      "end": 541.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "sitar",
-      "name": "ситар",
-      "catalogKey": null,
-      "start": 562.5,
-      "end": 565.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -5503,364 +3505,7 @@
       "id": "tabla",
       "name": "табла",
       "catalogKey": null,
-      "start": 90.5,
-      "end": 93.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 106.5,
-      "end": 109.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 114.5,
-      "end": 117.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 122.5,
-      "end": 129.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 134.5,
-      "end": 137.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 146.5,
-      "end": 149.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 166.5,
-      "end": 169.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 202.5,
-      "end": 205.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 210.5,
-      "end": 213.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 218.5,
-      "end": 221.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 230.5,
-      "end": 233.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 278.5,
-      "end": 281.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 286.5,
-      "end": 289.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 326.5,
-      "end": 329.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 334.5,
-      "end": 337.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 362.5,
-      "end": 365.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 422.5,
-      "end": 429.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 442.5,
-      "end": 445.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 454.5,
-      "end": 461.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 502.5,
-      "end": 505.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 510.5,
-      "end": 517.5,
-      "decision": "accept",
-      "review": "",
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "tabla",
-      "name": "табла",
-      "catalogKey": null,
-      "start": 534.5,
+      "start": 533.5,
       "end": 537.5,
       "decision": "accept",
       "review": "",
@@ -5869,7 +3514,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -5886,7 +3531,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -5894,8 +3539,8 @@
       "id": "tanbur",
       "name": "танбур",
       "catalogKey": "tanbur",
-      "start": 22.5,
-      "end": 34.5,
+      "start": 20.5,
+      "end": 33.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -5903,7 +3548,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -5911,7 +3556,7 @@
       "id": "tanbur",
       "name": "танбур",
       "catalogKey": "tanbur",
-      "start": 86.5,
+      "start": 85.5,
       "end": 89.5,
       "decision": "accept",
       "review": "",
@@ -5920,7 +3565,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.9,
       "who": "",
       "audioAlone": false
     },
@@ -5937,7 +3582,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.9,
       "who": "",
       "audioAlone": false
     },
@@ -5945,8 +3590,8 @@
       "id": "tanbur",
       "name": "танбур",
       "catalogKey": "tanbur",
-      "start": 314.5,
-      "end": 321.5,
+      "start": 272.5,
+      "end": 275.5,
       "decision": "accept",
       "review": "",
       "sources": [
@@ -5971,7 +3616,24 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "tanbur",
+      "name": "танбур",
+      "catalogKey": "tanbur",
+      "start": 496.5,
+      "end": 499.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -5988,7 +3650,7 @@
         "credits"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -5996,7 +3658,7 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 98.5,
+      "start": 99.0,
       "end": 169.5,
       "decision": "accept",
       "review": "",
@@ -6031,7 +3693,7 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 182.0,
+      "start": 181.5,
       "end": 251.0,
       "decision": "accept",
       "review": "",
@@ -6049,7 +3711,7 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 285.0,
+      "start": 284.5,
       "end": 389.5,
       "decision": "accept",
       "review": "",
@@ -6067,7 +3729,7 @@
       "id": "voice",
       "name": "голос",
       "catalogKey": "voice",
-      "start": 403.0,
+      "start": 402.5,
       "end": 566.0,
       "decision": "accept",
       "review": "",
@@ -6095,7 +3757,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -6111,7 +3773,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -6127,7 +3789,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -6143,7 +3805,23 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 59.5,
+      "end": 62.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -6159,7 +3837,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -6167,15 +3845,15 @@
       "id": "bendir",
       "name": "бендир",
       "catalogKey": "bendir",
-      "start": 134.5,
-      "end": 137.5,
+      "start": 87.5,
+      "end": 90.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -6183,15 +3861,15 @@
       "id": "bendir",
       "name": "бендир",
       "catalogKey": "bendir",
-      "start": 146.5,
-      "end": 149.5,
+      "start": 164.5,
+      "end": 171.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -6199,55 +3877,7 @@
       "id": "bendir",
       "name": "бендир",
       "catalogKey": "bendir",
-      "start": 154.5,
-      "end": 157.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 218.5,
-      "end": 221.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 230.5,
-      "end": 233.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 250.5,
+      "start": 249.5,
       "end": 253.5,
       "decision": "check",
       "review": "",
@@ -6255,7 +3885,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -6271,7 +3901,55 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 280.5,
+      "end": 283.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 347.5,
+      "end": 350.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 388.5,
+      "end": 395.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -6287,7 +3965,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -6295,71 +3973,7 @@
       "id": "bendir",
       "name": "бендир",
       "catalogKey": "bendir",
-      "start": 454.5,
-      "end": 461.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 478.5,
-      "end": 481.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 502.5,
-      "end": 505.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.9,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 510.5,
-      "end": 513.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "bendir",
-      "name": "бендир",
-      "catalogKey": "bendir",
-      "start": 526.5,
+      "start": 525.5,
       "end": 529.5,
       "decision": "check",
       "review": "",
@@ -6367,7 +3981,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -6375,7 +3989,7 @@
       "id": "bendir",
       "name": "бендир",
       "catalogKey": "bendir",
-      "start": 538.5,
+      "start": 537.5,
       "end": 541.5,
       "decision": "check",
       "review": "",
@@ -6383,7 +3997,23 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "bendir",
+      "name": "бендир",
+      "catalogKey": "bendir",
+      "start": 560.5,
+      "end": 563.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
       "who": "",
       "audioAlone": false
     },
@@ -6791,15 +4421,31 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
+      "start": 131.5,
+      "end": 137.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
       "start": 146.5,
-      "end": 161.5,
+      "end": 163.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -6807,15 +4453,15 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 218.5,
-      "end": 233.5,
+      "start": 213.5,
+      "end": 229.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -6823,15 +4469,15 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 238.5,
-      "end": 241.5,
+      "start": 237.5,
+      "end": 242.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -6839,7 +4485,23 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 354.5,
+      "start": 343.5,
+      "end": 349.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "choir",
+      "name": "хор",
+      "catalogKey": "choir",
+      "start": 351.5,
       "end": 357.5,
       "decision": "check",
       "review": "",
@@ -6847,7 +4509,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -6855,7 +4517,7 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 382.5,
+      "start": 381.5,
       "end": 385.5,
       "decision": "check",
       "review": "",
@@ -6863,23 +4525,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 394.5,
-      "end": 397.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -6895,7 +4541,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -6903,7 +4549,7 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 478.5,
+      "start": 472.5,
       "end": 481.5,
       "decision": "check",
       "review": "",
@@ -6911,7 +4557,7 @@
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -6919,15 +4565,15 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 510.5,
-      "end": 513.5,
+      "start": 506.5,
+      "end": 517.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -6935,15 +4581,15 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 526.5,
-      "end": 529.5,
+      "start": 519.5,
+      "end": 522.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -6951,15 +4597,15 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 534.5,
-      "end": 545.5,
+      "start": 527.5,
+      "end": 547.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -6967,31 +4613,15 @@
       "id": "choir",
       "name": "хор",
       "catalogKey": "choir",
-      "start": 554.5,
-      "end": 557.5,
+      "start": 551.5,
+      "end": 559.5,
       "decision": "check",
       "review": "",
       "sources": [
         "vision"
       ],
       "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
-      "who": "",
-      "audioAlone": false
-    },
-    {
-      "id": "choir",
-      "name": "хор",
-      "catalogKey": "choir",
-      "start": 562.5,
-      "end": 565.5,
-      "decision": "check",
-      "review": "",
-      "sources": [
-        "vision"
-      ],
-      "audioConfidence": 0.0,
-      "visionConfidence": 0.95,
+      "visionConfidence": 0.85,
       "who": "",
       "audioAlone": false
     },
@@ -7634,6 +5264,182 @@
       "visionConfidence": 0.0,
       "who": "",
       "audioAlone": true
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 35.5,
+      "end": 53.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 61.5,
+      "end": 64.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 66.5,
+      "end": 69.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 78.5,
+      "end": 81.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 89.5,
+      "end": 97.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 170.5,
+      "end": 177.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 257.5,
+      "end": 261.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 264.5,
+      "end": 273.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 277.5,
+      "end": 281.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 384.5,
+      "end": 387.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "orchestra",
+      "name": "оркестр",
+      "catalogKey": null,
+      "start": 502.5,
+      "end": 505.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
     },
     {
       "id": "organ",
