@@ -12,6 +12,12 @@ import grok_status as gs
 QUIET = 90
 start = time.time()
 names = sys.argv[1:]
+# A task that already ended its turn before the watcher started would never be reported.
+for n in names:
+    sdir = gs.session_dir(gs.WT / n)
+    if sdir is not None and not gs.working(sdir):
+        print(f'FINISHED {n} (before the watcher started)')
+        sys.exit(0)
 while True:
     for n in names:
         sdir = gs.session_dir(gs.WT / n)
