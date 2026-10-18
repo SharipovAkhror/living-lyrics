@@ -23,8 +23,9 @@ Rules (also docs/methodology/09-instruments.md, «Что попадает в д�
    nobody playing, are an empty stage: label «Аплодисменты», no ensemble plate.
    A vocal section with words is left as lines.
 
-3. A recognition id is drawn only with its own catalog engraving. Without one, the id
-   stays out of instruments and is listed as a missing engraving.
+3. A recognition id is drawn only with its own catalog engraving, or with the engraving
+   of the one id named in aliasOf. Without one, the id stays out of instruments and is
+   listed as a missing engraving.
 """
 
 from __future__ import annotations
@@ -34,7 +35,7 @@ import re
 from pathlib import Path
 
 from paths import ROOT, SONGS
-from taxonomy import credit_targets, load, match_ids
+from taxonomy import credit_targets, load, match_ids, plate_key
 
 # Not tuned per song. Close/medium is the first word of the frame note.
 CREDIT_CONF = 0.8
@@ -285,7 +286,7 @@ def decide_presence(shots: dict[str, list[dict]], credits: list[dict], audio_hit
         record = {
             "id": iid,
             "name": info["name"],
-            "catalogKey": info.get("catalogKey"),
+            "catalogKey": plate_key(info, data),
             "family": info["family"],
             "credited": named,
             "grouped": grouped and by_group,
@@ -420,7 +421,7 @@ def solo_people(credits: list[dict], data: dict) -> dict[str, str]:
         if not iid or not person:
             continue
         info = data["by_id"].get(iid) or {}
-        key = info.get("catalogKey")
+        key = plate_key(info, data)
         if not key:
             continue
         people.setdefault(key, set()).add(person)
@@ -1098,8 +1099,25 @@ def test_rules() -> None:
         data,
     )
     check("guitar-classical" in _ids(family), "семья в титрах называет гитару")
-    check(family["sections"][0]["action"] == "unchanged", "классическая гитара не рисуется гравюрой фламенко")
-    check(not any(entry[1] == "guitar" for entry in _entry_keys(family)), "чужая гравюра не подставлена")
+    check(family["sections"][0]["action"] == "write", "классическая гитара получает свою гравюру")
+    check(family["sections"][0]["instruments"] == ["guitar-classical"], f"ключ классической: {family['sections'][0]['instruments']}")
+    check(not any(entry[1] == "guitar" for entry in _entry_keys(family)), "чужая гравюра фламенко не подставлена")
+
+    acoustic = plan(
+        {"frames": [_frame(12, "close", "guitar-acoustic", 0.9)]},
+        [{"id": None, "family": "guitar", "group": None, "person": "Ada"}],
+        [_inst("break", 0, 40)],
+        None,
+        None,
+        names,
+        data,
+    )
+    check(acoustic["sections"][0]["action"] == "write", "акустическая гитара — псевдоним пластины")
+    check(
+        acoustic["sections"][0]["instruments"] == ["guitar-classical"],
+        f"псевдоним ведёт на классическую: {acoustic['sections'][0]['instruments']}",
+    )
+    check(not any(entry[1] == "guitar" for entry in _entry_keys(acoustic)), "псевдоним не берёт гравюру фламенко")
 
     group = plan(
         {"frames": [_frame(12, "close", "bendir", 0.95)]},

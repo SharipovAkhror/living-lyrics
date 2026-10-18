@@ -57,7 +57,7 @@
     {"id": "setar", "name": "сетар", "family": "plucked-lute", "catalogKey": null, "names": ["сетар", "setar"]},
     {"id": "dutar", "name": "дутар", "family": "plucked-lute", "catalogKey": null, "names": ["дутар", "dutar"]},
     {"id": "dombra", "name": "домбра", "family": "plucked-lute", "catalogKey": null, "names": ["домбра", "dombra"]},
-    {"id": "sitar", "name": "ситар", "family": "plucked-lute", "catalogKey": null, "names": ["ситар", "sitar"]},
+    {"id": "sitar", "name": "ситар", "family": "plucked-lute", "catalogKey": "sitar", "names": ["ситар", "sitar"]},
     {"id": "rubab", "name": "рубаб", "family": "plucked-lute", "catalogKey": null, "names": ["рубаб", "rubab", "rabab"]},
     {"id": "shamisen", "name": "сямисэн", "family": "plucked-lute", "catalogKey": null, "names": ["сямисэн", "shamisen"]},
     {"id": "pipa", "name": "пипа", "family": "plucked-lute", "catalogKey": null, "names": ["пипа", "pipa"]},
@@ -80,9 +80,9 @@
     {"id": "konghou", "name": "кунхоу", "family": "harp", "catalogKey": null, "names": ["кунхоу", "konghou"]},
     {"id": "lyre", "name": "лира", "family": "harp", "catalogKey": null, "names": ["лира", "lyre"]},
 
-    {"id": "guitar-acoustic", "name": "акустическая гитара", "family": "guitar", "catalogKey": null, "names": ["акустическая гитара", "acoustic guitar"]},
+    {"id": "guitar-acoustic", "name": "акустическая гитара", "family": "guitar", "catalogKey": null, "aliasOf": "guitar-classical", "names": ["акустическая гитара", "acoustic guitar"]},
     {"id": "guitar-electric", "name": "электрогитара", "family": "guitar", "catalogKey": null, "names": ["электрогитара", "electric guitar"]},
-    {"id": "guitar-classical", "name": "классическая гитара", "family": "guitar", "catalogKey": null, "names": ["классическая гитара", "classical guitar"]},
+    {"id": "guitar-classical", "name": "классическая гитара", "family": "guitar", "catalogKey": "guitar-classical", "names": ["классическая гитара", "classical guitar"]},
     {"id": "guitar-flamenco", "name": "гитара фламенко", "family": "guitar", "catalogKey": "guitar", "names": ["гитара фламенко", "flamenco guitar", "guitarra flamenca"]},
     {"id": "bass-guitar", "name": "бас-гитара", "family": "guitar", "catalogKey": null, "names": ["бас-гитара", "bass guitar"]},
 
@@ -99,7 +99,7 @@
     {"id": "rebec", "name": "ребек", "family": "bowed", "catalogKey": null, "names": ["ребек", "rebec"]},
 
     {"id": "ney", "name": "най", "family": "flute", "catalogKey": "ney", "names": ["най", "ney", "نی"]},
-    {"id": "flute", "name": "поперечная флейта", "family": "flute", "catalogKey": null, "names": ["поперечная флейта", "флейта", "flute"]},
+    {"id": "flute", "name": "поперечная флейта", "family": "flute", "catalogKey": "flute", "names": ["поперечная флейта", "флейта", "flute"]},
     {"id": "piccolo", "name": "пикколо", "family": "flute", "catalogKey": null, "names": ["пикколо", "piccolo"]},
     {"id": "bansuri", "name": "бансури", "family": "flute", "catalogKey": null, "names": ["бансури", "bansuri"]},
     {"id": "shakuhachi", "name": "сякухати", "family": "flute", "catalogKey": null, "names": ["сякухати", "shakuhachi"]},
@@ -144,7 +144,7 @@
     {"id": "tombak", "name": "томбак", "family": "goblet-drum", "catalogKey": "tombak", "names": ["томбак", "тонбак", "tombak", "تنبک"]},
     {"id": "djembe", "name": "джембе", "family": "goblet-drum", "catalogKey": null, "names": ["джембе", "djembe"]},
 
-    {"id": "tabla", "name": "табла", "family": "hand-drum", "catalogKey": null, "names": ["табла", "tabla"]},
+    {"id": "tabla", "name": "табла", "family": "hand-drum", "catalogKey": "tabla", "names": ["табла", "tabla"]},
     {"id": "dholak", "name": "дхолак", "family": "hand-drum", "catalogKey": null, "names": ["дхолак", "dholak"]},
     {"id": "mridangam", "name": "мридангам", "family": "hand-drum", "catalogKey": null, "names": ["мридангам", "mridangam"]},
     {"id": "bongos", "name": "бонго", "family": "hand-drum", "catalogKey": null, "names": ["бонго", "bongos"]},
@@ -159,7 +159,7 @@
     {"id": "marimba", "name": "маримба", "family": "orchestral-percussion", "catalogKey": null, "names": ["маримба", "marimba"]},
     {"id": "glockenspiel", "name": "колокольчики", "family": "orchestral-percussion", "catalogKey": null, "names": ["колокольчики", "glockenspiel"]},
     {"id": "gong", "name": "гонг", "family": "orchestral-percussion", "catalogKey": null, "names": ["гонг", "gong"]},
-    {"id": "orchestral-percussion", "name": "оркестровая перкуссия", "family": "orchestral-percussion", "catalogKey": null, "names": ["оркестровая перкуссия", "orchestral percussion"]},
+    {"id": "orchestral-percussion", "name": "оркестровая перкуссия", "family": "orchestral-percussion", "catalogKey": "orchestral-percussion", "names": ["оркестровая перкуссия", "orchestral percussion"]},
 
     {"id": "piano", "name": "фортепиано", "family": "keyboard", "catalogKey": "piano", "names": ["фортепиано", "рояль", "пианино", "piano"]},
     {"id": "organ", "name": "орган", "family": "keyboard", "catalogKey": null, "names": ["орган", "organ"]},

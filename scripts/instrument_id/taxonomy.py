@@ -114,9 +114,25 @@ def catalog_keys_from_list_ts(list_ts: Path) -> list[str]:
     return re.findall(r"key:\s*'([^']+)'", text)
 
 
+def plate_key(item: dict, data: dict) -> str | None:
+    """Engraving for a recognition id: its own catalogKey, else one alias hop.
+
+    `aliasOf` names another id. The hop is not chained, and it counts only when
+    that id has a catalogKey. Two ids must not share a catalogKey of their own.
+    """
+    own = item.get("catalogKey")
+    if own:
+        return own
+    alias = item.get("aliasOf")
+    if not alias:
+        return None
+    target = (data.get("by_id") or {}).get(alias) or {}
+    return target.get("catalogKey") or None
+
+
 def drawing_gaps(data: dict | None = None) -> list[dict]:
     data = data or load()
-    return [item for item in data["instruments"] if not item.get("catalogKey")]
+    return [item for item in data["instruments"] if not plate_key(item, data)]
 
 
 def write_doc(path: Path | None = None) -> Path:
@@ -140,7 +156,10 @@ def write_doc(path: Path | None = None) -> Path:
         "",
         "Ключ каталога сайта (`src/instruments/list.ts`) стоит только там, где гравюра изображает именно этот класс.",
         "Гравюра `guitar` — гитара фламенко, поэтому она связана с `guitar-flamenco`.",
-        "Акустическая, электрическая и классическая гитара ключ каталога не получают.",
+        "Классическая гитара — ключ `guitar-classical`. Кадры `guitar-acoustic` на этих концертах",
+        "показывают ту же гитару с нейлоновыми струнами, поэтому `guitar-acoustic` — псевдоним",
+        "`guitar-classical` (поле `aliasOf`, один переход), а не отдельная пластина и не гравюра фламенко.",
+        "Электрогитара ключ каталога не получает.",
         "",
         "## Семьи",
         "",
@@ -163,7 +182,13 @@ def write_doc(path: Path | None = None) -> Path:
         "|---|---|---|---|",
     ]
     for item in data["instruments"]:
-        grav = f"`{item['catalogKey']}`" if item.get("catalogKey") else "нет"
+        plate = plate_key(item, data)
+        if item.get("catalogKey"):
+            grav = f"`{item['catalogKey']}`"
+        elif plate:
+            grav = f"`{plate}` (псевдоним `{item['aliasOf']}`)"
+        else:
+            grav = "нет"
         lines.append(f"| `{item['id']}` | {item['name']} | {families[item['family']]['name']} | {grav} |")
     gaps = drawing_gaps(data)
     lines += [
@@ -188,7 +213,7 @@ def write_doc(path: Path | None = None) -> Path:
         "",
         "## Как добавить инструмент",
         "",
-        "1. Дописать объект в `labels.json`: `id`, `name`, `family` из списка семей, `catalogKey` или `null`, `names` (как класс называют в титрах и на кадре).",
+        "1. Дописать объект в `labels.json`: `id`, `name`, `family` из списка семей, `catalogKey` или `null`, `names` (как класс называют в титрах и на кадре). `aliasOf` — один переход на id, у которого гравюра уже есть; цепочку псевдонимов не делают.",
         "2. Собрать примеры без ключа, как в `docs/methodology/09-instruments.md`: манифест `scripts/instrument_id/sources/<id>.csv`, звук только в `work/instrument_id/extra/<id>/`. Класс без 15 клипов из 3 записей в голову не входит. Свой класс, который на чужой записи не держит порог `heldOutRecording`, тоже не входит.",
         "3. Переобучить одной командой из `docs/methodology/09-instruments.md` и прочитать новый отчёт.",
         "4. Пересобрать эту страницу: `python scripts/instrument_id/taxonomy.py --write-doc`.",

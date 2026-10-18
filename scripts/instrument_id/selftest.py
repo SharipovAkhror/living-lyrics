@@ -10,7 +10,7 @@ from anchors import DISPUTE, _boundary_bleed, labels_on_anchor, score_slug, visi
 from fuse import fuse_payload
 from paths import ROOT, SONGS
 from predict import smooth
-from taxonomy import catalog_keys_from_list_ts, credit_targets, load, match_ids
+from taxonomy import catalog_keys_from_list_ts, credit_targets, load, match_ids, plate_key
 from train import _choose_tau
 from watch import choose_times
 
@@ -44,6 +44,12 @@ def test_taxonomy() -> None:
     check(match_ids("гитара") == [], "голое слово гитара не называет класс")
     check(match_ids("тар") == ["tar"], "тар отдельным словом")
     check(match_ids("классическая гитара") == ["guitar-classical"], "классическая гитара")
+    classical = next(item for item in data["instruments"] if item["id"] == "guitar-classical")
+    acoustic = next(item for item in data["instruments"] if item["id"] == "guitar-acoustic")
+    check(classical["catalogKey"] == "guitar-classical", "у классической свой ключ")
+    check(not acoustic.get("catalogKey"), "у акустической нет своего ключа")
+    check(acoustic.get("aliasOf") == "guitar-classical", "акустическая — псевдоним классической")
+    check(plate_key(acoustic, data) == "guitar-classical", "псевдоним решается в один переход")
     check("tar" not in match_ids("это гитара фламенко"), "тар не находится внутри гитары")
     bar = data["heldOutRecording"]
     check(

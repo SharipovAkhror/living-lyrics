@@ -2535,7 +2535,8 @@
       "instruments": [
         "daf",
         "baglama",
-        "tanbur"
+        "tanbur",
+        "sitar"
       ],
       "note": "Инструменты перед маввалем.",
       "flags": [
@@ -2554,11 +2555,16 @@
         {
           "key": "tanbur",
           "at": 390.2
+        },
+        {
+          "key": "sitar",
+          "at": 394.0
         }
       ],
       "performers": [
         "Mohammad Jaberi (даф)",
-        "Kutay Ozcan (баглама)"
+        "Kutay Ozcan (баглама)",
+        "Asad Khan (ситар)"
       ]
     },
     {

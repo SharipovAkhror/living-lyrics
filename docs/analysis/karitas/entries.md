@@ -10,7 +10,7 @@
 | `daf` | `daf` | устойчиво по видео | 5 | нет |
 | `darbuka` | `darbuka` | устойчиво по видео | 8 | нет |
 | `erhu` | `erhu` | устойчиво по видео | 4 | нет |
-| `guitar-acoustic` | нет | устойчиво по видео | 4 | да |
+| `guitar-acoustic` | `guitar-classical` | устойчиво по видео | 4 | да |
 | `ney` | `ney` | устойчиво по видео | 13 | нет |
 | `oud` | `oud` | устойчиво по видео | 5 | нет |
 | `qanun` | `qanun` | устойчиво по видео | 11 | нет |
@@ -42,8 +42,8 @@
 | `voice-12` | 733 | 750 | `voice` 733, `ney` 738, `qanun` 738, `violin` 742.05 (кадр 743). Заметность: ney 0.85, qanun 0.85, violin 1.7 |
 | `instruments-7` | 750 | 760 | `violin` 750, `qanun` 753. Заметность: violin 1.7, qanun 0.95 |
 | `voice-13` | 760 | 813 | `choir` 760, `darbuka` 761.7 (кадр 762), `riq` 761.7 (кадр 762), `violin` 805. Заметность: darbuka 0.85, riq 0.85, violin 0.85 |
-| `instruments-8` | 813 | 835 | `violin` 815. Заметность: violin 2.65 |
-| `voice-14` | 835 | 861 | `voice` 835, `erhu` 837, `darbuka` 853.95, `violin` 860. Заметность: erhu 2.75, darbuka 0.95, violin 0.85 |
+| `instruments-8` | 813 | 835 | `violin` 815, `guitar-classical` 817. Заметность: violin 2.65, guitar-acoustic 4.55 |
+| `voice-14` | 835 | 861 | `voice` 835, `erhu` 837, `darbuka` 853.95, `guitar-classical` 859, `violin` 860. Заметность: erhu 2.75, darbuka 0.95, guitar-acoustic 0.85, violin 0.85 |
 | `instruments-9` | 861 | 872 | `erhu` 866. Заметность: erhu 2.55 |
 | `voice-15` | 872 | 879.04 | голос, как было |
 | `voice-16` | 942.13 | 953 | аплодисменты, гравюр нет |
@@ -61,9 +61,7 @@
 
 ## Нужна гравюра
 
-| id | где звучит | планов |
-|---|---|---|
-| `guitar-acoustic` | hildegard-2 211; instruments-8 817; instruments-8 827; voice-14 859 | 4 |
+У всего, что принято, гравюра есть.
 
 ## Не засчитаны
 

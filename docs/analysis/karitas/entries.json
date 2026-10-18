@@ -48,7 +48,7 @@
     {
       "id": "guitar-acoustic",
       "name": "акустическая гитара",
-      "catalogKey": null,
+      "catalogKey": "guitar-classical",
       "reason": "устойчиво по видео",
       "credited": false,
       "stable": true,
@@ -138,14 +138,7 @@
       "frames": 1
     }
   ],
-  "missingEngraving": [
-    {
-      "id": "guitar-acoustic",
-      "name": "акустическая гитара",
-      "shots": 4,
-      "where": "hildegard-2 211; instruments-8 817; instruments-8 827; voice-14 859"
-    }
-  ],
+  "missingEngraving": [],
   "sections": [
     {
       "id": "intro",
@@ -666,12 +659,17 @@
       "label": "Инструментальный проигрыш",
       "identity": null,
       "instruments": [
-        "violin"
+        "violin",
+        "guitar-classical"
       ],
       "entries": [
         {
           "key": "violin",
           "at": 815.0
+        },
+        {
+          "key": "guitar-classical",
+          "at": 817.0
         }
       ],
       "performers": [],
@@ -687,6 +685,7 @@
         "voice",
         "erhu",
         "darbuka",
+        "guitar-classical",
         "violin"
       ],
       "entries": [
@@ -701,6 +700,10 @@
         {
           "key": "darbuka",
           "at": 853.95
+        },
+        {
+          "key": "guitar-classical",
+          "at": 859.0
         },
         {
           "key": "violin",

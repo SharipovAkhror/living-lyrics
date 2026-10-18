@@ -13,12 +13,24 @@ export { INSTRUMENTS, type InstrumentInfo } from './list';
 
 const byKey = new Map(INSTRUMENTS.map((i) => [i.key, i]));
 
+/**
+ * Recognition names that share another key's engraving. One hop: the target is a real catalog key.
+ * `guitar-acoustic` is the label on the Karitas frames; those frames are a classical nylon guitar.
+ */
+const ALIASES: Record<string, string> = {
+  'guitar-acoustic': 'guitar-classical',
+};
+
+function resolveKey(key: string): string {
+  return ALIASES[key] ?? key;
+}
+
 export function instrument(key: string) {
-  return byKey.get(key);
+  return byKey.get(resolveKey(key));
 }
 
 function pathOf(key: string) {
-  const p = `/src/instruments/svg/${key}.svg`;
+  const p = `/src/instruments/svg/${resolveKey(key)}.svg`;
   return p in loaders ? p : '/src/instruments/svg/ensemble.svg';
 }
 
@@ -42,7 +54,7 @@ export function preloadInstruments(keys: string[]) {
 }
 
 export function hasArt(key: string) {
-  return `/src/instruments/svg/${key}.svg` in loaders;
+  return `/src/instruments/svg/${resolveKey(key)}.svg` in loaders;
 }
 
 /**
@@ -50,7 +62,8 @@ export function hasArt(key: string) {
  * written by `npm run art`). Unknown keys fall back to the ensemble drawing, like the loader.
  */
 export function instrumentAspect(key: string): number {
-  const m = (artMeta as Record<string, { w: number; h: number }>)[hasArt(key) ? key : 'ensemble'];
+  const resolved = resolveKey(key);
+  const m = (artMeta as Record<string, { w: number; h: number }>)[hasArt(key) ? resolved : 'ensemble'];
   return m && m.h > 0 ? m.w / m.h : 1;
 }
 
