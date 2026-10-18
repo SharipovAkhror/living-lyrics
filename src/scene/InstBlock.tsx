@@ -59,8 +59,9 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
   const keys = section.instruments;
   const names = keys.map((k) => instrument(k)?.name ?? k);
   // Credit the player on the full section, then keep that name when the phone shows only the later entrance.
-  const credited = assignPerformers(keys.length ? keys : ['ensemble'], section.performers);
-  const title = passageTitle(keys);
+  // An empty list is applause: no ensemble plate and no invented performer.
+  const credited = assignPerformers(keys, section.performers);
+  const title = passageTitle(keys) ?? (keys.length === 0 ? section.label : null);
   const nextVocal = timeline.cues.find((c) => c.kind === 'line' && c.start >= cue.end - 0.01);
   const [anim, setAnim] = useState({ progress: 0, presence: 0 });
   const animRef = useRef(anim);

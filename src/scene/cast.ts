@@ -8,6 +8,7 @@
  * A wide box keeps every instrument that has entered and not yet left.
  * A passage whose keys are only `voice` and `choir` holds those engravings for the whole
  * section: no invented orchestra and no fake turn-taking.
+ * An empty key list and no entries is an empty stage (applause). It is not ensemble.
  */
 import type { MotionPref } from '@/app/settings';
 
@@ -67,6 +68,7 @@ function smooth(v: number) {
 
 /** Entrance schedule for the whole section, independent of the clock and the box. */
 export function scheduleOf(section: CastSection): Span[] {
+  if (!section.instruments.length && !(section.entries && section.entries.length)) return [];
   const keys = section.instruments.length ? section.instruments : ['ensemble'];
   const start = section.start;
   const end = Math.max(section.end, start + 0.05);

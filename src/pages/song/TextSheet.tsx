@@ -56,7 +56,9 @@ export function TextSheet({
                 ) : (
                   <span className="tl-text">
                     <span className="tl-inst t-subhead">
-                      {c.section.instruments.map((k) => instrument(k)?.name ?? k).join(' · ')}
+                      {c.section.instruments.length
+                        ? c.section.instruments.map((k) => instrument(k)?.name ?? k).join(' · ')
+                        : c.section.label}
                     </span>
                     <span className="t-footnote secondary">Инструментальная часть · {formatTime(c.end - c.start)}</span>
                   </span>

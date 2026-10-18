@@ -6,14 +6,22 @@ Rules (also docs/methodology/09-instruments.md, «Что попадает в д�
    and a close or medium shot shows it being played at confidence ≥ 0.8, or when the
    video shows it being played on at least three close or medium shots spaced ≥ 8 s
    apart at confidence ≥ 0.85. One shot is only a check. orchestra, choir and voice
-   stay groups. Audio is reported where it agrees; it does not admit or reject.
+   stay groups. A credit that only names the percussion group («ударные») does not
+   license one frame, but two such shots at ≥ 0.85 are enough for a percussion-family
+   instrument. Audio is reported where it agrees; it does not admit or reject.
+   Frames listed in docs/analysis/<slug>/vision-review.json with verdict "wrong" are
+   not counted, and neither is the same instrument within 8 s: that is one shot.
 
-2. An instrumental section lists the admitted instruments that are seen in it, in the
-   order of the first clear frame, at most four drawings. The rest fold into ensemble
-   (there is no orchestra engraving). entries[].at is that frame, moved back to an
-   attack on the matching stem when one falls within the previous 2 s. until is never
-   set: a camera cut is not the instrument leaving. A section that is only voice or
-   choir is left as it is.
+2. An instrumental section lists the admitted instruments that are seen in it.
+   Order is the first clear frame. More than four drawings: keep the three most
+   prominent (clear-frame count times mean confidence; ties break on mean confidence,
+   then earlier time, then id) and fold the rest into ensemble. entries[].at is that
+   frame, moved back to an attack on the matching stem when one falls within the
+   previous 2 s. until is never set. A voice or choir section keeps that key first
+   and gains entries for admitted instruments seen playing in it. Choir wins the key
+   when more frames show the choir singing than a soloist. Applause and bows, with
+   nobody playing, are an empty stage: label «Аплодисменты», no ensemble plate.
+   A vocal section with words is left as lines.
 
 3. A recognition id is drawn only with its own catalog engraving. Without one, the id
    stays out of instruments and is listed as a missing engraving.
@@ -32,8 +40,12 @@ from taxonomy import credit_targets, load, match_ids
 CREDIT_CONF = 0.8
 STABLE_CONF = 0.85
 STABLE_SHOTS = 3
+# A named percussion group lowers the bar from three shots to two. Still ≥ 0.85, still ≥ 8 s.
+GROUP_SHOTS = 2
 SHOT_GAP = 8.0
 MAX_DRAWINGS = 4
+# When more than four drawings would be needed, this many stay themselves.
+PROMINENT_KEEP = 3
 ATTACK_LEAD = 2.0
 # A 100 ms rise on the 0…1 stem envelope. About a clear note on `other` and a
 # moderate hit on `drums` across these recordings; the same number for every song.
@@ -70,6 +82,43 @@ def credited(instrument: str, credits: list[dict], data: dict) -> bool:
         if hit.get("id") == instrument:
             return True
         if hit.get("family") and hit["family"] == info["family"]:
+            return True
+    return False
+
+
+def group_credited(instrument: str, credits: list[dict], data: dict) -> bool:
+    """Credits name the percussion group, and this id belongs to that group.
+
+    The group still does not license a single frame. Two clear shots do.
+    An orchestra credit is not this path: it must not name a violin.
+    """
+    info = data["by_id"].get(instrument) or {}
+    family = info.get("family")
+    if family not in set(data.get("percussionFamilies") or []):
+        return False
+    return any(hit.get("group") == "percussion" for hit in credits)
+
+
+def load_reviews(slug: str) -> list[dict]:
+    """Frames a person checked and called wrong. Missing file means nothing is rejected."""
+    raw = _load_json(ROOT / "docs" / "analysis" / slug / "vision-review.json")
+    if not isinstance(raw, list):
+        return []
+    return [row for row in raw if isinstance(row, dict)]
+
+
+def review_rejects(reviews: list[dict], instrument: str, time_s: float) -> bool:
+    """A wrong frame voids that shot: the same instrument closer than 8 s is one plan."""
+    for row in reviews:
+        if str(row.get("verdict") or "") != "wrong":
+            continue
+        if str(row.get("instrument") or "") != instrument:
+            continue
+        try:
+            mark = float(row.get("time_s"))
+        except (TypeError, ValueError):
+            continue
+        if abs(mark - time_s) < SHOT_GAP - 1e-9:
             return True
     return False
 
@@ -152,8 +201,12 @@ def _load_json(path: Path) -> dict | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def collect_shots(vision: dict | None, data: dict) -> tuple[dict[str, list[dict]], list[str]]:
-    """Close/medium frames where someone is playing. Groups stay out of the lists."""
+def collect_shots(vision: dict | None, data: dict, reviews: list[dict] | None = None) -> tuple[dict[str, list[dict]], list[str]]:
+    """Close/medium frames where someone is playing. Groups stay out of the lists.
+
+    A reviewed wrong frame is dropped here, so it cannot admit the instrument or open an entrance.
+    """
+    reviews = reviews or []
     by_id: dict[str, list[dict]] = {}
     unmatched: list[str] = []
     if not vision:
@@ -174,6 +227,8 @@ def collect_shots(vision: dict | None, data: dict) -> tuple[dict[str, list[dict]
                     unmatched.append(raw)
                 continue
             if iid in GROUPS or iid in seen_here:
+                continue
+            if review_rejects(reviews, iid, t):
                 continue
             seen_here.add(iid)
             by_id.setdefault(iid, []).append({
@@ -220,9 +275,12 @@ def decide_presence(shots: dict[str, list[dict]], credits: list[dict], audio_hit
         if not clear80 and not clear85:
             continue
         named = credited(iid, credits, data)
+        grouped = group_credited(iid, credits, data)
         stable_times = spaced([row["time"] for row in clear85])
         stable = len(stable_times) >= STABLE_SHOTS
         by_credit = named and len(clear80) >= 1
+        # The group does not lower the confidence bar. Two spaced ≥ 0.85 shots, not one 0.8 frame.
+        by_group = (not named) and grouped and len(stable_times) >= GROUP_SHOTS
         info = data["by_id"][iid]
         record = {
             "id": iid,
@@ -230,17 +288,26 @@ def decide_presence(shots: dict[str, list[dict]], credits: list[dict], audio_hit
             "catalogKey": info.get("catalogKey"),
             "family": info["family"],
             "credited": named,
+            "grouped": grouped and by_group,
             "stable": stable,
             "shots80": len(spaced([row["time"] for row in clear80])),
             "shots85": len(stable_times),
             "frames80": len(clear80),
             "audio": audio_agrees(audio_hits, iid, [row["time"] for row in (clear85 or clear80)]),
-            "rows": clear85 if stable and not by_credit else clear80,
+            "rows": clear85 if (stable or by_group) and not by_credit else clear80,
         }
-        if by_credit or stable:
-            record["reason"] = "титры и кадр" if by_credit and not stable else (
-                "титры и кадр, устойчиво по видео" if by_credit else "устойчиво по видео"
-            )
+        if by_credit or by_group or stable:
+            if by_credit and stable:
+                reason = "титры и кадр, устойчиво по видео"
+            elif by_credit:
+                reason = "титры и кадр"
+            elif by_group and stable:
+                reason = "группа в титрах и два плана, устойчиво по видео"
+            elif by_group:
+                reason = "группа в титрах и два плана"
+            else:
+                reason = "устойчиво по видео"
+            record["reason"] = reason
             present.append(record)
         else:
             if len(spaced([row["time"] for row in clear80])) <= 1:
@@ -272,6 +339,69 @@ def is_voice_section(section: dict) -> bool:
         return False
     keys = section.get("instruments") or []
     return bool(keys) and all(key in VOICE_KEYS for key in keys)
+
+
+_APPLAUSE = re.compile(
+    r"\b(applause|applaud\w*|clapping|claps?|ovation|thank\w*|bowing|bows)\b",
+    re.IGNORECASE,
+)
+APPLAUSE_LABEL = "Аплодисменты"
+APPLAUSE_NOTE = "Аплодисменты и поклоны, пения нет."
+CHOIR_LABEL = "Хор"
+
+
+def _playing_ids(frame: dict, data: dict) -> list[str]:
+    found = []
+    for player in frame.get("players") or []:
+        if not player.get("playing"):
+            continue
+        raw = str(player.get("instrument") or "").strip()
+        iid = player_id(raw, data) or raw
+        if iid:
+            found.append(iid)
+    return found
+
+
+def _section_frames(section: dict, frames: list[dict], last: bool) -> list[dict]:
+    start = float(section["start"])
+    end = float(section["end"])
+    inside = []
+    for frame in frames:
+        t = float(frame.get("time_s") or 0)
+        if start <= t < end or (last and t == end and start <= t):
+            inside.append(frame)
+    return inside
+
+
+def is_applause(frames: list[dict], data: dict) -> bool:
+    """Bows and clapping, not a performance.
+
+    One applause frame is enough when nobody is playing at all (a dark hall after the bows
+    is still the ending). If a group is marked playing, applause has to be the majority,
+    and a named instrument or a soloist keeps the section as music.
+    """
+    if not frames:
+        return False
+    applause_n = 0
+    anyone = False
+    solo = False
+    named = False
+    for frame in frames:
+        if _APPLAUSE.search(str(frame.get("note") or "")):
+            applause_n += 1
+        ids = _playing_ids(frame, data)
+        if ids:
+            anyone = True
+        for iid in ids:
+            if iid == "voice":
+                solo = True
+            elif iid not in GROUPS:
+                named = True
+    if solo or named or applause_n == 0:
+        return False
+    if not anyone:
+        return True
+    return applause_n * 2 > len(frames)
 
 
 def _bar(item: dict) -> float:
@@ -330,6 +460,99 @@ def _first_rows(item: dict, start: float, end: float) -> list[dict]:
     return rows
 
 
+def _prominence(rows: list[dict]) -> float:
+    """Clear frames in the section times their mean confidence."""
+    if not rows:
+        return 0.0
+    return len(rows) * (sum(row["confidence"] for row in rows) / len(rows))
+
+
+def _candidates(present: list[dict], start: float, end: float) -> list[dict]:
+    found = []
+    for item in present:
+        rows = _first_rows(item, start, end)
+        if not rows:
+            continue
+        found.append({"time": rows[0]["time"], "item": item, "rows": rows})
+    found.sort(key=lambda row: (row["time"], row["item"]["id"]))
+    return found
+
+
+def _select_drawings(drawable: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Keep every drawing up to four. Above that, the three most prominent stay.
+
+    Voice and choir are not in this list: they are the section, not one of the three.
+    Chosen rows stay in time order. Ties: higher mean confidence, then earlier, then id.
+    """
+    if len(drawable) <= MAX_DRAWINGS:
+        return list(drawable), []
+    ranked = sorted(drawable, key=lambda row: (
+        -_prominence(row["rows"]),
+        -(sum(item["confidence"] for item in row["rows"]) / len(row["rows"])),
+        row["time"],
+        row["item"]["id"],
+    ))
+    keep = {row["item"]["id"] for row in ranked[:PROMINENT_KEEP]}
+    chosen = [row for row in drawable if row["item"]["id"] in keep]
+    overflow = [row for row in drawable if row["item"]["id"] not in keep]
+    return chosen, overflow
+
+
+def _entry(key: str, at: float, frame: float, iid: str, rows: list[dict] | None = None) -> dict:
+    return {
+        "key": key,
+        "at": at,
+        "frame": round(frame, 2),
+        "id": iid,
+        "prominence": round(_prominence(rows), 2) if rows else None,
+    }
+
+
+def _build_entries(
+    chosen: list[dict],
+    overflow: list[dict],
+    start: float,
+    end: float,
+    attacks: dict[str, list[float]],
+    data: dict,
+    identity: str | None,
+) -> list[dict]:
+    entries = []
+    if identity in VOICE_KEYS:
+        # The plate is already there when the section opens. An attack must not move it.
+        entries.append(_entry(identity, round(start, 2), start, identity))
+    for row in chosen:
+        item = row["item"]
+        stem = stem_for(item["id"], data)
+        at = snap_at(row["time"], start, end, attacks.get(stem) or [])
+        entries.append(_entry(item["catalogKey"], at, row["time"], item["id"], row["rows"]))
+    if overflow:
+        first = min(overflow, key=lambda row: (row["time"], row["item"]["id"]))
+        stem = stem_for(first["item"]["id"], data)
+        at = snap_at(first["time"], start, end, attacks.get(stem) or [])
+        entries.append(_entry("ensemble", at, first["time"], "ensemble"))
+    entries.sort(key=lambda entry: (entry["at"], 0 if entry["key"] in VOICE_KEYS else 1, entry["key"]))
+    dedup = []
+    seen = set()
+    for entry in entries:
+        if entry["key"] in seen:
+            continue
+        seen.add(entry["key"])
+        dedup.append(entry)
+    return dedup
+
+
+def _singing_counts(frames: list[dict], data: dict) -> tuple[int, int]:
+    choir = solo = 0
+    for frame in frames:
+        ids = _playing_ids(frame, data)
+        if "choir" in ids:
+            choir += 1
+        if "voice" in ids:
+            solo += 1
+    return choir, solo
+
+
 def plan_sections(
     sections: list[dict],
     present: list[dict],
@@ -337,81 +560,98 @@ def plan_sections(
     names: dict[str, str],
     solo: dict[str, str],
     data: dict,
+    frames: list[dict] | None = None,
 ) -> list[dict]:
+    frames = frames or []
+    instrumental = [section for section in sections if section.get("kind") == "instrumental"]
     plans = []
-    for section in sections:
-        if section.get("kind") != "instrumental":
-            continue
+    for section in instrumental:
+        last = section is instrumental[-1]
+        seen_frames = _section_frames(section, frames, last)
+        start = float(section["start"])
+        end = float(section["end"])
         base = {
             "id": section["id"],
-            "start": float(section["start"]),
-            "end": float(section["end"]),
+            "start": start,
+            "end": end,
             "label": section.get("label") or "",
             "before": list(section.get("instruments") or []),
         }
-        if is_voice_section(section):
-            seen = []
-            for item in present:
-                rows = _first_rows(item, base["start"], base["end"])
-                if rows:
-                    seen.append({"id": item["id"], "time": rows[0]["time"], "catalogKey": item.get("catalogKey")})
-            plans.append({**base, "action": "voice", "seen": seen, "instruments": base["before"], "entries": [], "performers": list(section.get("performers") or [])})
+        choir_n, solo_n = _singing_counts(seen_frames, data)
+        # A vocalise stays one after the first write, when instruments already follow voice or choir.
+        # Applause is decided from the frames, so an empty list does not fall through to ensemble.
+        identity = None
+        lead = (base["before"] or [None])[0]
+        if is_applause(seen_frames, data):
+            identity = "applause"
+        elif lead in VOICE_KEYS:
+            identity = "choir" if choir_n > solo_n and choir_n > 0 else "voice"
+        base["identity"] = identity
+        base["choirFrames"] = choir_n
+        base["soloFrames"] = solo_n
+        if identity == "applause":
+            plans.append({
+                **base,
+                "action": "applause",
+                "label": APPLAUSE_LABEL,
+                "note": APPLAUSE_NOTE,
+                "instruments": [],
+                "entries": [],
+                "performers": [],
+                "missing": [],
+                "folded": [],
+            })
             continue
-        ranked = []
-        for item in present:
-            rows = _first_rows(item, base["start"], base["end"])
-            if not rows:
-                continue
-            ranked.append((rows[0]["time"], item, rows[0]))
-        ranked.sort(key=lambda triple: (triple[0], triple[1]["id"]))
-        drawable = [(t, item, row) for t, item, row in ranked if item.get("catalogKey")]
-        missing = [(t, item, row) for t, item, row in ranked if not item.get("catalogKey")]
-        if not drawable:
+        ranked = _candidates(present, start, end)
+        drawable = [row for row in ranked if row["item"].get("catalogKey")]
+        missing = [row for row in ranked if not row["item"].get("catalogKey")]
+        missing_out = [{"id": row["item"]["id"], "time": row["time"]} for row in missing]
+        if identity == "voice" and not drawable:
+            plans.append({
+                **base,
+                "action": "voice",
+                "seen": [{"id": row["item"]["id"], "time": row["time"]} for row in missing],
+                "instruments": base["before"] or ["voice"],
+                "entries": [],
+                "performers": list(section.get("performers") or []),
+                "missing": missing_out,
+                "folded": [],
+            })
+            continue
+        if not drawable and identity != "choir":
             plans.append({
                 **base,
                 "action": "unchanged",
-                "missing": [{"id": item["id"], "time": t} for t, item, _row in missing],
+                "missing": missing_out,
                 "instruments": base["before"],
                 "entries": list(section.get("entries") or []),
                 "performers": list(section.get("performers") or []),
+                "folded": [],
             })
             continue
-        overflow = []
-        chosen = drawable
-        if len(drawable) > MAX_DRAWINGS:
-            chosen = drawable[: MAX_DRAWINGS - 1]
-            overflow = drawable[MAX_DRAWINGS - 1 :]
-        entries = []
-        for t, item, row in chosen:
-            key = item["catalogKey"]
-            stem = stem_for(item["id"], data)
-            at = snap_at(t, base["start"], base["end"], attacks.get(stem) or [])
-            entries.append({"key": key, "at": at, "frame": round(t, 2), "id": item["id"]})
-        if overflow:
-            t, item, _row = overflow[0]
-            stem = stem_for(item["id"], data)
-            at = snap_at(t, base["start"], base["end"], attacks.get(stem) or [])
-            entries.append({"key": "ensemble", "at": at, "frame": round(t, 2), "id": "ensemble"})
-        entries.sort(key=lambda entry: (entry["at"], entry["frame"], entry["key"]))
-        # One drawing per key: the first time it is admitted.
-        dedup = []
-        seen_keys = set()
-        for entry in entries:
-            if entry["key"] in seen_keys:
-                continue
-            seen_keys.add(entry["key"])
-            dedup.append(entry)
-        keys = [entry["key"] for entry in dedup]
-        performers = performers_for(section, keys, names, solo)
+        chosen, overflow = _select_drawings(drawable)
+        dedup = _build_entries(chosen, overflow, start, end, attacks, data, identity if identity in VOICE_KEYS else None)
+        # Voice or choir alone holds the plate for the whole section. No fake turn-taking.
+        only_voice = bool(dedup) and all(entry["key"] in VOICE_KEYS for entry in dedup)
+        if only_voice:
+            dedup = []
+        keys = [identity] if only_voice and identity in VOICE_KEYS else [entry["key"] for entry in dedup]
+        if identity == "choir":
+            label = CHOIR_LABEL
+        else:
+            label = base["label"]
         plans.append({
             **base,
             "action": "write",
+            "label": label,
             "instruments": keys,
             "entries": [{"key": entry["key"], "at": entry["at"]} for entry in dedup],
             "entryFrames": {entry["key"]: entry["frame"] for entry in dedup},
-            "performers": performers,
-            "folded": [item["id"] for _t, item, _row in overflow],
-            "missing": [{"id": item["id"], "time": t} for t, item, _row in missing],
+            "prominence": {entry["id"]: entry["prominence"] for entry in dedup if entry["prominence"] is not None},
+            "performers": performers_for(section, keys, names, solo),
+            "folded": [row["item"]["id"] for row in overflow],
+            "foldedProminence": {row["item"]["id"]: round(_prominence(row["rows"]), 2) for row in overflow},
+            "missing": missing_out,
         })
     return plans
 
@@ -425,10 +665,12 @@ def plan(
     names: dict[str, str] | None = None,
     data: dict | None = None,
     slug: str = "",
+    reviews: list[dict] | None = None,
 ) -> dict:
     data = data or load()
     names = names if names is not None else catalog_names()
-    shots, unmatched = collect_shots(vision, data)
+    reviews = reviews or []
+    shots, unmatched = collect_shots(vision, data, reviews)
     audio_hits = _audio_hits(audio)
     present, check = decide_presence(shots, credits, audio_hits, data)
     attacks = {}
@@ -437,7 +679,10 @@ def plan(
         for stem in ("other", "drums"):
             track = features["tracks"].get(stem) or []
             attacks[stem] = attack_times(track, rate)
-    section_plans = plan_sections(sections, present, attacks, names, solo_people(credits, data), data)
+    vision_frames = list((vision or {}).get("frames") or [])
+    section_plans = plan_sections(
+        sections, present, attacks, names, solo_people(credits, data), data, vision_frames,
+    )
     return {
         "slug": slug,
         "present": present,
@@ -445,6 +690,7 @@ def plan(
         "unmatched": unmatched,
         "sections": section_plans,
         "shots": shots,
+        "reviews": reviews,
     }
 
 
@@ -460,6 +706,7 @@ def load_song(slug: str, data: dict | None = None) -> dict:
         catalog_names(),
         data,
         slug,
+        load_reviews(slug),
     )
 
 
@@ -503,8 +750,11 @@ def render_markdown(result: dict, lyrics_sections: list[dict]) -> str:
         "",
         "Считает `python scripts/instrument_id/run.py entries`. "
         "Присутствие — титры и чёткий кадр, либо три разнесённых плана. "
-        "Один кадр сюда не попадает. Звук отмечен, где он совпал, и решение не меняет. "
-        "`until` нет: склейка камеры — не уход инструмента.",
+        "Группа «ударные» в титрах снижает порог до двух планов с уверенностью не ниже 0,85. "
+        "Один кадр сюда не попадает. Кадр из `vision-review.json` и тот же план (ближе 8 с) не считаются. "
+        "Звук отмечен, где он совпал, и решение не меняет. "
+        "`until` нет: склейка камеры — не уход инструмента. "
+        "Если гравюр больше четырёх, остаются три самых заметных, остальные — ансамбль.",
         "",
         "## Присутствие",
         "",
@@ -525,19 +775,30 @@ def render_markdown(result: dict, lyrics_sections: list[dict]) -> str:
         "|---|---|---|---|",
     ]
     for section in result["sections"]:
-        if section["action"] == "voice":
+        if section["action"] == "applause":
+            written = "аплодисменты, гравюр нет"
+        elif section["action"] == "voice":
             extra = ""
-            if section["seen"]:
-                extra = "; в кадре, секцию не менял: " + ", ".join(
+            if section.get("seen"):
+                extra = "; без гравюры: " + ", ".join(
                     f"{row['id']} {_fmt(row['time'])}" for row in section["seen"][:6]
                 )
-            written = "голос или хор, как было" + extra
+            written = "голос, как было" + extra
         elif section["action"] == "unchanged":
             written = "как было: " + ", ".join(f"`{key}`" for key in section["instruments"])
             if section.get("missing"):
                 written += "; без гравюры: " + ", ".join(row["id"] for row in section["missing"])
         else:
             frames = section.get("entryFrames") or {}
+            keys_now = section.get("instruments") or []
+            # Choir or voice alone has no timed entries: the plate holds for the whole section.
+            if not section.get("entries") and keys_now and all(key in VOICE_KEYS for key in keys_now):
+                bits = [f"`{key}`" for key in keys_now]
+                written = ", ".join(bits) + ", на всю секцию"
+                if section.get("performers"):
+                    written += ". Исполнители: " + "; ".join(section["performers"])
+                lines.append(f"| `{section['id']}` | {_fmt(section['start'])} | {_fmt(section['end'])} | {written} |")
+                continue
             bits = []
             for entry in section["entries"]:
                 frame = frames.get(entry["key"])
@@ -547,7 +808,16 @@ def render_markdown(result: dict, lyrics_sections: list[dict]) -> str:
                 bits.append(bit)
             written = ", ".join(bits)
             if section.get("folded"):
-                written += "; свёрнуты в ансамбль: " + ", ".join(section["folded"])
+                ranks = section.get("foldedProminence") or {}
+                bits_folded = []
+                for iid in section["folded"]:
+                    score = ranks.get(iid)
+                    bits_folded.append(f"{iid} ({_fmt(score)})" if isinstance(score, (int, float)) else iid)
+                written += "; свёрнуты в ансамбль: " + ", ".join(bits_folded)
+            prominence = section.get("prominence") or {}
+            if prominence:
+                shown = ", ".join(f"{iid} {_fmt(score)}" for iid, score in prominence.items())
+                written += f". Заметность: {shown}"
         if section.get("performers"):
             written += ". Исполнители: " + "; ".join(section["performers"])
         lines.append(f"| `{section['id']}` | {_fmt(section['start'])} | {_fmt(section['end'])} | {written} |")
@@ -561,8 +831,8 @@ def render_markdown(result: dict, lyrics_sections: list[dict]) -> str:
             "",
             "## Приняты, в проигрыш не попали",
             "",
-            "Инструмент принят в песню, гравюра есть, но чёткий кадр не попал ни в один проигрыш "
-            "(только вокал или секция голоса, которую правило не переписывает).",
+            "Инструмент принят в песню, гравюра есть, но чёткий кадр попал только в вокальную секцию "
+            "со словами: в это время сцена показывает строки, не гравюру.",
             "",
             "| id | гравюра | планов ≥ 0,85 |",
             "|---|---|---|",
@@ -593,6 +863,19 @@ def render_markdown(result: dict, lyrics_sections: list[dict]) -> str:
             lines.append(f"| `{row['id']}` | {row['where']} | {row['shots']} |")
     if result["unmatched"]:
         lines += ["", "## Кадр не сопоставлен", "", ", ".join(f"`{name}`" for name in result["unmatched"]), ""]
+    reviews = [row for row in result.get("reviews") or [] if str(row.get("verdict") or "") == "wrong"]
+    if reviews:
+        lines += [
+            "",
+            "## Не засчитаны",
+            "",
+            "Кадр из `vision-review.json`. Тот же инструмент ближе чем на 8 с — тот же план, он тоже не считается.",
+            "",
+            "| с | инструмент | заметка |",
+            "|---|---|---|",
+        ]
+        for row in reviews:
+            lines.append(f"| {_fmt(float(row.get('time_s') or 0))} | `{row.get('instrument')}` | {row.get('note') or ''} |")
     lines.append("")
     return "\n".join(lines)
 
@@ -615,9 +898,13 @@ def write_report(result: dict, lyrics_sections: list[dict]) -> Path:
             {
                 "id": section["id"],
                 "action": section["action"],
+                "label": section.get("label"),
+                "identity": section.get("identity"),
                 "instruments": section["instruments"],
                 "entries": section["entries"],
                 "performers": section["performers"],
+                "choirFrames": section.get("choirFrames"),
+                "soloFrames": section.get("soloFrames"),
             }
             for section in result["sections"]
         ],
@@ -628,21 +915,45 @@ def write_report(result: dict, lyrics_sections: list[dict]) -> Path:
     return path
 
 
+def _line_fingerprint(lyrics: dict) -> list:
+    """Words and times. write_lyrics must not move these."""
+    frozen = []
+    for section in lyrics.get("sections") or []:
+        frozen.append((section.get("id"), section.get("start"), section.get("end"), section.get("kind")))
+        for line in section.get("lines") or []:
+            words = tuple((word.get("w"), word.get("s"), word.get("e")) for word in line.get("words") or [])
+            frozen.append((line.get("id"), line.get("lang"), words))
+    return frozen
+
+
 def write_lyrics(slug: str, result: dict) -> None:
-    """Replace only instruments, entries and performers. Anything else is a bug."""
+    """Replace instruments, entries, performers, and a label or note the video corrected.
+
+    Lines, words and times are compared before the file is written and left as they were.
+    """
     path = ROOT / "content" / "songs" / slug / "lyrics.json"
     lyrics = json.loads(path.read_text(encoding="utf-8"))
+    before = _line_fingerprint(lyrics)
     by_id = {section["id"]: section for section in result["sections"]}
     for section in lyrics["sections"]:
         plan_row = by_id.get(section["id"])
-        if not plan_row or plan_row["action"] != "write":
+        if not plan_row or plan_row["action"] not in ("write", "applause"):
             continue
+        if plan_row.get("label") and plan_row["label"] != section.get("label"):
+            section["label"] = plan_row["label"]
         section["instruments"] = list(plan_row["instruments"])
-        section["entries"] = [{"key": entry["key"], "at": entry["at"]} for entry in plan_row["entries"]]
+        if plan_row["entries"]:
+            section["entries"] = [{"key": entry["key"], "at": entry["at"]} for entry in plan_row["entries"]]
+        else:
+            section.pop("entries", None)
         if plan_row["performers"]:
             section["performers"] = list(plan_row["performers"])
         else:
             section.pop("performers", None)
+        if plan_row["action"] == "applause":
+            section["note"] = plan_row["note"]
+    if _line_fingerprint(lyrics) != before:
+        raise SystemExit(f"{slug}: запись задела строки или время, файл не тронут")
     text = json.dumps(lyrics, ensure_ascii=False, indent=2) + "\n"
     path.write_text(text, encoding="utf-8")
 
@@ -799,7 +1110,37 @@ def test_rules() -> None:
         names,
         data,
     )
-    check("bendir" not in _ids(group), "титры «ударные» не называют бендир")
+    check("bendir" not in _ids(group), "титры «ударные» не называют бендир по одному плану")
+    group_two = plan(
+        {"frames": [_frame(10, "close", "bendir", 0.9), _frame(30, "medium", "bendir", 0.91)]},
+        [{"id": None, "family": None, "group": "percussion", "person": "Bo"}],
+        [_inst("break", 0, 40)],
+        None,
+        None,
+        names,
+        data,
+    )
+    check("bendir" in _ids(group_two), "титры «ударные» и два плана ≥ 0,85 называют бендир")
+    group_close = plan(
+        {"frames": [_frame(10, "close", "bendir", 0.95), _frame(16, "close", "bendir", 0.95)]},
+        [{"id": None, "family": None, "group": "percussion", "person": "Bo"}],
+        [_inst("break", 0, 40)],
+        None,
+        None,
+        names,
+        data,
+    )
+    check("bendir" not in _ids(group_close), "два плана ближе 8 с остаются одним")
+    group_low = plan(
+        {"frames": [_frame(10, "close", "bendir", 0.8), _frame(30, "close", "bendir", 0.8)]},
+        [{"id": None, "family": None, "group": "percussion", "person": "Bo"}],
+        [_inst("break", 0, 40)],
+        None,
+        None,
+        names,
+        data,
+    )
+    check("bendir" not in _ids(group_low), "группа в титрах не снижает порог уверенности до 0,8")
     orchestra = plan(
         {"frames": [_frame(12, "close", "violin", 0.95)]},
         [{"id": "orchestra", "family": None, "group": None, "person": "Оркестр"}],
@@ -817,19 +1158,102 @@ def test_rules() -> None:
     capped = plan({"frames": many_frames}, [], [_inst("break", 0, 90)], None, None, names, data)
     written = next(section for section in capped["sections"] if section["action"] == "write")
     check(len(written["instruments"]) == 4 and written["instruments"][-1] == "ensemble", f"не больше четырёх, хвост — ансамбль: {written['instruments']}")
-    check("daf" in written["folded"], "пятый инструмент свёрнут, не нарисован шестым")
+    check("daf" in written["folded"], "при равной заметности остаётся ранний, пятый свёрнут")
+
+    # A later instrument with more clear frames outranks the early ones.
+    loud = []
+    for index, iid in enumerate(("violin", "ney", "oud", "qanun")):
+        loud.extend(_frame(index * 10 + step, "close", iid, 0.86) for step in (0, 12, 24))
+    loud.extend(_frame(t, "close", "daf", 0.95) for t in (50, 62, 74, 86, 98, 110))
+    prominent = plan({"frames": loud}, [], [_inst("break", 0, 130)], None, None, names, data)
+    picked = next(section for section in prominent["sections"] if section["action"] == "write")
+    check("daf" in picked["instruments"] and "oud" in picked["folded"] and "qanun" in picked["folded"], f"заметный поздний остаётся: {picked['instruments']} / {picked['folded']}")
+    check(picked["instruments"].index("daf") > picked["instruments"].index("violin"), "порядок вступлений всё равно по времени")
 
     voice = plan(
         {"frames": [_frame(t, "close", "violin", 0.95) for t in (5, 20, 40)]},
         [],
-        [_inst("voice-1", 0, 30, ["voice"]), _inst("break", 30, 50)],
+        [_inst("voice-1", 0, 30, ["voice"]), _inst("break", 30, 50), _inst("quiet", 60, 70, ["voice"])],
         None,
         None,
         names,
         data,
     )
     voice_row = next(section for section in voice["sections"] if section["id"] == "voice-1")
-    check(voice_row["action"] == "voice" and voice_row["instruments"] == ["voice"] and voice_row["entries"] == [], "секция голоса остаётся как есть")
+    check(
+        voice_row["instruments"][0] == "voice" and "violin" in voice_row["instruments"],
+        f"в секции голоса голос первый, скрипка вступает: {voice_row['instruments']}",
+    )
+    check(any(entry["key"] == "voice" and entry["at"] == 0 for entry in voice_row["entries"]), "голос выходит в начале секции")
+    quiet = next(section for section in voice["sections"] if section["id"] == "quiet")
+    check(quiet["action"] == "voice" and quiet["instruments"] == ["voice"] and quiet["entries"] == [], "голос без инструментов остаётся как есть")
+
+    choir = plan(
+        {"frames": [_frame(2, "wide", "choir", 0.9), _frame(8, "wide", "choir", 0.9), _frame(20, "close", "voice", 0.9)]},
+        [],
+        [_inst("voice-1", 0, 30, ["voice"])],
+        None,
+        None,
+        names,
+        data,
+    )
+    choir_row = choir["sections"][0]
+    check(choir_row["instruments"] == ["choir"] and choir_row["label"] == "Хор", f"хор поёт чаще солиста: {choir_row['instruments']} {choir_row['label']}")
+
+    applause = plan(
+        {"frames": [{"time_s": 5, "note": "wide audience applauding", "visible": True, "players": []}]},
+        [],
+        [_inst("voice-end", 0, 20, ["voice"])],
+        None,
+        None,
+        names,
+        data,
+    )
+    applause_row = applause["sections"][0]
+    check(
+        applause_row["action"] == "applause" and applause_row["instruments"] == [] and applause_row["label"] == "Аплодисменты",
+        f"аплодисменты без гравюры: {applause_row['action']} {applause_row['instruments']}",
+    )
+    clapping_inside = plan(
+        {"frames": [
+            _frame(2, "close", "ney", 0.95),
+            _frame(14, "close", "ney", 0.95),
+            _frame(26, "close", "ney", 0.95),
+            {"time_s": 10, "note": "wide Sami Yusuf clapping", "visible": True, "players": [{"instrument": "voice", "playing": True, "confidence": 0.9}]},
+        ]},
+        [],
+        [_inst("voice-9", 0, 40, ["voice"])],
+        None,
+        None,
+        names,
+        data,
+    )
+    mixed = clapping_inside["sections"][0]
+    check(mixed["identity"] == "voice" and mixed["action"] != "applause", "один хлопок внутри пения не делает секцию аплодисментами")
+
+    reviewed = [
+        {"time_s": 894, "instrument": "santur", "verdict": "wrong", "note": "в кадре лица певиц"},
+    ]
+    with_review = plan(
+        {"frames": [_frame(t, "close", "santur", 0.95) for t in (870, 894, 910)]},
+        [],
+        [_inst("break", 860, 930)],
+        None,
+        None,
+        names,
+        data,
+        reviews=reviewed,
+    )
+    without_review = plan(
+        {"frames": [_frame(t, "close", "santur", 0.95) for t in (870, 894, 910)]},
+        [],
+        [_inst("break", 860, 930)],
+        None,
+        None,
+        names,
+        data,
+    )
+    check("santur" not in _ids(with_review) and "santur" in _ids(without_review), "кадр из списка проверки не проходит, без списка три плана проходят")
 
     idle = plan(
         {"frames": [_frame(t, "close", "ney", 0.99, playing=False) for t in (0, 10, 20)]},
@@ -886,10 +1310,47 @@ def test_known_concert_frames() -> None:
         "кадры ONE 191–192 не дают вступления",
     )
 
+    karitas_reviews = json.loads((ROOT / "docs" / "analysis" / "karitas" / "vision-review.json").read_text(encoding="utf-8"))
+    check(
+        any(row.get("instrument") == "santur" and abs(float(row.get("time_s")) - 894) < 0.05 and row.get("verdict") == "wrong" for row in karitas_reviews),
+        "список проверки Karitas помечает сантур на 894",
+    )
+    padded = plan(
+        {"frames": [_frame(t, "close", "santur", 0.95) for t in (870, 894, 910)]},
+        [],
+        [_inst("break", 860, 930)],
+        None,
+        None,
+        names,
+        data,
+        reviews=karitas_reviews,
+    )
+    check("santur" not in _ids(padded), "файл vision-review.json не даёт сантуру присутствия")
+
+    one_reviews = json.loads((ROOT / "docs" / "analysis" / "one" / "vision-review.json").read_text(encoding="utf-8"))
+    check(
+        any(row.get("instrument") == "double-bass" and abs(float(row.get("time_s")) - 191) < 0.05 and row.get("verdict") == "wrong" for row in one_reviews),
+        "список проверки ONE помечает контрабас на 191",
+    )
+    padded_bass = plan(
+        {"frames": [_frame(t, "close", "double-bass", 0.95) for t in (191, 192, 212, 484)]},
+        read_credits("one", data),
+        one_lyrics["sections"],
+        None,
+        None,
+        names,
+        data,
+        reviews=one_reviews,
+    )
+    check("double-bass" not in _ids(padded_bass), "файл проверки снимает план 191–192, двух планов мало")
+
     full_k = load_song("karitas", data)
     check("santur" not in _ids(full_k), "во всей Karitas сантур не принят")
     check(all(entry[1] != "santur" for entry in _entry_keys(full_k)), "во всей Karitas нет вступления сантура")
+    opening = next(section for section in full_k["sections"] if section["id"] == "voice-1")
+    check(opening["instruments"][0] == "choir" and opening["label"] == "Хор", f"Karitas 2–37 с — хор: {opening['instruments'][:4]} {opening['label']}")
     full_o = load_song("one", data)
+    check("double-bass" not in _ids(full_o), "во всей ONE контрабас не принят: после 191 с осталось два плана")
     check(
         all(not (entry[1] == "double-bass" and abs(entry[2] - 191) < 3) for entry in _entry_keys(full_o)),
         "во всей ONE нет вступления контрабаса у 191 с",
@@ -898,6 +1359,10 @@ def test_known_concert_frames() -> None:
         all("double-bass" not in section["instruments"] for section in full_o["sections"]),
         "контрабас не записан ни в одну секцию ONE",
     )
+    alive = load_song("i-have-come-alive", data)
+    check("bendir" in _ids(alive), "бендир I Have Come Alive принят по группе «ударные» и двум планам")
+    voice_open = next(section for section in alive["sections"] if section["id"] == "voice-open")
+    check(voice_open["instruments"][0] == "voice" and "tanbur" in voice_open["instruments"], f"танбур вступает в voice-open: {voice_open['instruments']}")
 
 
 def selftest() -> None:

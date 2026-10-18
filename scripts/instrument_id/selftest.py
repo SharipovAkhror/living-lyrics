@@ -220,12 +220,21 @@ def test_anchor_listen() -> None:
     check(not vision_disputes_voice(voice, [hidden]), "невидимый кадр не спорит")
     tanbur = {"start": 23.7, "end": 100.8, "id": "tanbur", "catalogKey": "tanbur"}
     check(not vision_disputes_voice(tanbur, [choir]), "не голосовой якорь не снимается")
+    # The opening is choir in the song data now, so it is no longer a voice anchor to dispute.
+    # A voice section that the video still shows as a choir stays a dispute, not a failed class.
     scored = score_slug(
         "karitas",
         data,
-        frames=[choir],
+        frames=[{
+            "time_s": 283.0,
+            "visible": True,
+            "note": "choir vocalizing",
+            "players": [{"instrument": "choir", "playing": True, "who": "", "confidence": 0.9}],
+        }],
     )
-    voice_rows = [row for row in scored["anchors"] if row["catalogKey"] == "voice" and row["start"] == 2.0]
+    opening = [row for row in scored["anchors"] if row["section"] == "voice-1"]
+    check(opening and all(row["catalogKey"] == "choir" for row in opening), f"Karitas с 2 с — якорь хора, не голоса: {opening}")
+    voice_rows = [row for row in scored["anchors"] if row["catalogKey"] == "voice" and row["section"] == "voice-3"]
     check(len(voice_rows) == 1 and voice_rows[0]["verdict"] == DISPUTE, f"спорный якорь не провал: {voice_rows}")
     check(voice_rows[0]["verdict"] != "fail" and scored["failures"] == sum(
         1 for row in scored["anchors"] if row["verdict"] == "fail"
