@@ -1,18 +1,21 @@
 {
-  "trainedAt": "2026-10-17T15:55Z",
+  "trainedAt": "2026-10-18T11:14Z",
   "embedding": "efficientat-mn10_as",
   "featureDim": 960,
   "windowSec": 2.0,
   "hopSec": 1.0,
   "sampleRate": 32000,
   "classes": [
+    "oud",
     "guitar-acoustic",
     "guitar-electric",
     "violin",
     "viola",
     "cello",
     "double-bass",
+    "erhu",
     "flute",
+    "duduk",
     "clarinet",
     "oboe",
     "bassoon",
@@ -24,9 +27,11 @@
     "accordion",
     "piano",
     "organ",
-    "voice"
+    "voice",
+    "choir"
   ],
   "families": [
+    "plucked-lute",
     "guitar",
     "bowed",
     "flute",
@@ -37,13 +42,13 @@
     "voice"
   ],
   "temperature": 1.6,
-  "threshold": 0.55,
+  "threshold": 0.53,
   "thresholdReached": true,
-  "valAcceptedPrecision": 0.9000960614793467,
-  "valCoverage": 0.871859296482412,
-  "threshold95": 0.76,
-  "valAcceptedPrecision95": 0.9506462984723855,
-  "valCoverage95": 0.7127303182579564,
+  "valAcceptedPrecision": 0.9008579599618685,
+  "valCoverage": 0.8698175787728026,
+  "threshold95": 0.77,
+  "valAcceptedPrecision95": 0.9508393285371702,
+  "valCoverage95": 0.6915422885572139,
   "familyFallbackMin": 0.7,
   "fewExamples": [],
   "noncommercial": true,
@@ -68,24 +73,27 @@
   "irmasCapPerClass": 300,
   "seed": 17,
   "counts": {
-    "train": 3777,
-    "val": 1194,
-    "test": 1256
+    "train": 3849,
+    "val": 1206,
+    "test": 1296
   },
-  "split": "TinySOL: официальные fold 0–2 обучение, 3 проверка, 4 тест. IRMAS: группа — номер отрывка в имени файла, 60/20/20 по sha256, потолок файлов на класс. Официальный тест IRMAS не скачивался. Оба разбиения оптимистичны: исполнитель не удержан.",
+  "split": "TinySOL: официальные fold 0–2 обучение, 3 проверка, 4 тест. IRMAS: группа — номер отрывка в имени файла, 60/20/20 по sha256, потолок файлов на класс. Официальный тест IRMAS не скачивался. Оба разбиения оптимистичны: исполнитель не удержан. Дополнительные клипы: запись целиком в одной доле. В тест уходит самая крупная запись, после которой в обучении остаётся не меньше 15; при равенстве берётся Commons.",
   "openSet": {
     "method": "softmax",
-    "threshold": 0.6440783796676477,
+    "threshold": 0.8038733422584302,
     "higherIsIn": true,
     "idValCoverageTarget": 0.8,
     "classes": [
+      "oud",
       "guitar-acoustic",
       "guitar-electric",
       "violin",
       "viola",
       "cello",
       "double-bass",
+      "erhu",
       "flute",
+      "duduk",
       "clarinet",
       "oboe",
       "bassoon",
@@ -97,11 +105,9 @@
       "accordion",
       "piano",
       "organ",
-      "voice"
+      "voice",
+      "choir"
     ],
-    "knnK": 5,
-    "goalMet": false,
-    "thresholdOn": "saved-probe-val-quantile",
-    "note": "Порог держит около 80% проверки сохранённой головы. Leave-class-out цель 90% отвержения при 80% покрытия не выполнен ни одним из трёх способов."
+    "knnK": 5
   }
 }
