@@ -929,6 +929,23 @@ def test_placement_chain() -> None:
     check('a missing mix does not abort alignment',
           missed['ran'] is False and str(missed.get('error') or '').startswith('FileNotFoundError'),
           str(missed))
+    text = A.render_md({
+        'songs': ['s'],
+        'current_chance': 0.2,
+        'chosen': {
+            'name': 'line-0.25', 'chance': 0.01, 'true_proved': 1, 'true_total': 2, 'line_share': 0.25,
+            'refute': {'both_far': 0.2, 'only_far': 0.3, 'both_agree': 0.1, 'attack_tol': 0.1,
+                       'refuted': 0, 'words': 4, 'rate': 0.0, 'witnesses': 0, 'attack': 0,
+                       'within_cap': True, 'by': []},
+            'primaries': [{'name': 'mms', 'candidates': 2, 'proved': 1, 'chance': 0.01, 'blocked': False}],
+        },
+        'scopes': [], 'refute_grid': [],
+        'line_table': [{'k': 0.25, 'chance': 0.01, 'proved': 1, 'by_song': {'s': 1}}],
+        'density': [],
+        'candidates': [{'name': 'tol-0.10', 'tol': 0.1, 'peak_height': 0.5, 'require_rise': False,
+                        'require_second': False, 'chance': 0.01, 'true_rate': 0.5}],
+    })
+    check('the word-rule grid still renders beside the line table', 'tol-0.10' in text and 'постановщик' in text, text[-180:])
 
 
 def main() -> int:

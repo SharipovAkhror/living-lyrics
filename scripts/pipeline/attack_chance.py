@@ -1220,10 +1220,10 @@ def build_payload(slugs: list[str]) -> dict:
         candidates = 0
         by_song: dict[str, int] = {}
         chances = []
-        for name, rows in primary_tables.items():
+        for name, table in primary_tables.items():
             if name in blocked:
                 continue
-            row = _row_at(rows, share)
+            row = _row_at(table, share)
             n = int(row.get('candidates') or 0)
             if n == 0:
                 continue
@@ -1441,8 +1441,15 @@ def main(argv: list[str] | None = None) -> int:
     out_dir = ROOT / 'docs' / 'analysis' / 'bench'
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / 'attack-chance.json').write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding='utf-8')
-    (out_dir / 'attack-chance.md').write_text(render_md(payload), encoding='utf-8')
-    (out_dir / 'placement.md').write_text(render_placement(args.slugs), encoding='utf-8')
+    # A report renderer must not cancel qa. The json above is what qa reads.
+    try:
+        (out_dir / 'attack-chance.md').write_text(render_md(payload), encoding='utf-8')
+    except Exception as e:
+        print(f'attack-chance.md не записан ({e.__class__.__name__}: {e})')
+    try:
+        (out_dir / 'placement.md').write_text(render_placement(args.slugs), encoding='utf-8')
+    except Exception as e:
+        print(f'placement.md не записан ({e.__class__.__name__}: {e})')
     chosen = payload['chosen']
     refute = chosen.get('refute') or {}
     print(f"правило {chosen.get('name')}: случайный проход строки {chosen.get('chance')}, "
