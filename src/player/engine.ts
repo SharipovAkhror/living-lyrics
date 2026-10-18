@@ -645,9 +645,15 @@ export class AudioEngine {
   private artwork(): MediaImage[] {
     const origin = typeof location !== 'undefined' && location.origin && location.origin !== 'null' ? location.origin : '';
     const url = (path: string) => (origin ? `${origin}${path}` : path);
+    const cover = (size: number) => ({ src: url(`/covers/${this.opts.slug}/${size}.png`), sizes: `${size}x${size}`, type: 'image/png' });
+    // The song square first. The site icon stays, for a player that cannot load the file.
     return [
-      { src: url('/icons/icon-192.png'), sizes: '192x192', type: 'image/png' },
+      cover(1024),
+      cover(512),
+      cover(192),
+      cover(96),
       { src: url('/icons/icon-512.png'), sizes: '512x512', type: 'image/png' },
+      { src: url('/icons/icon-192.png'), sizes: '192x192', type: 'image/png' },
     ];
   }
 

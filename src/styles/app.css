@@ -136,6 +136,16 @@
 .song.has-comment .scene-stage {
   bottom: calc(var(--player-h) + 76px);
 }
+/* The 286px reserve is taller than the player. On a low window that empty band
+   was the whole stage, and the plates had nowhere to stand. */
+@media (max-height: 640px) {
+  .song {
+    --player-h: 230px;
+  }
+  .song.has-comment .scene-stage {
+    bottom: calc(var(--player-bottom) + var(--player-h) + 28px);
+  }
+}
 
 /* ----- Lyrics flow ----- */
 /* Lines fade out under the bars instead of being cut, as in Apple Music. */
@@ -411,6 +421,9 @@
   text-overflow: ellipsis;
 }
 /* On the song the engraving sits in the sky. The gallery keeps its own plates. */
+.scene .ist {
+  flex-shrink: 0;
+}
 .scene .ist-plate {
   background: transparent;
   box-shadow: none;

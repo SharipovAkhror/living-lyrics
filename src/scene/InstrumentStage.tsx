@@ -27,9 +27,9 @@ export interface InstrumentStageProps {
   performers?: string[];
   /** Layout mode from the data (`layout` of an instrumental section); omitted or 'auto' lets the engine choose. */
   mode?: LayoutMode | 'auto' | string;
-  /** Song stage: equal rows. A named section layout ignores this. */
+  /** Accepted by the stage. Equal rows are not used; prominence is the automatic layout. */
   uniform?: boolean;
-  /** At most this many plates. The rest are the chip. */
+  /** At most this many plates. What does not fit is left out. */
   maxShown?: number;
   /** Cast presence 0…1 aligned with `keys`, for the first paint. Later frames come from `pose`. */
   presences?: number[];

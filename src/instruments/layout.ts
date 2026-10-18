@@ -4,12 +4,13 @@
  *
  * Every instrument sits on a plate: the drawing (fitted to its viewBox aspect, never stretched)
  * with a caption under it (or beside it in `stack`). The engine picks a mode from the count and the box,
- * never lets a drawing fall below a readable size, and groups what does not fit into an «ещё N» chip.
- * `uniform` (the song stage) uses equal rows instead of the decorative modes. The gallery keeps `auto`.
+ * never lets a drawing fall below a readable size. What does not fit is left out: there is no «+N» chip.
+ * Automatic layout is prominence on every screen, including the short wide car page.
+ * That page's chrome (lyric, comment, player) is CSS, not a second instrument layout.
  * Rules in prose: docs/methodology/09-instruments.md.
  */
 
-export const LAYOUT_MODES = ['single', 'pair-sides', 'pair-diagonal', 'stack', 'fan', 'hero-insets', 'grid'] as const;
+export const LAYOUT_MODES = ['single', 'pair-sides', 'pair-diagonal', 'stack', 'fan', 'hero-insets', 'grid', 'prominence'] as const;
 export type LayoutMode = (typeof LAYOUT_MODES)[number];
 
 export const LAYOUT_NAMES: Record<LayoutMode, string> = {
@@ -20,6 +21,7 @@ export const LAYOUT_NAMES: Record<LayoutMode, string> = {
   fan: 'Веером',
   'hero-insets': 'Главный и вставки',
   grid: 'Сетка',
+  prominence: 'По главности',
 };
 
 export interface Size {
@@ -69,7 +71,7 @@ export interface Layout {
   mode: LayoutMode;
   box: Size;
   slots: Slot[];
-  /** Indices of instruments not drawn (they are counted in the chip). */
+  /** Indices of instruments not drawn. */
   hidden: number[];
   /** Smallest drawing side among the visible instruments, px. */
   minArt: number;
@@ -86,16 +88,16 @@ export interface LayoutOptions {
   aspects?: number[];
   /** Caption lines under each drawing: 1 (name), 2 (name + native name), 3 (+ performer). Default 2. */
   lines?: number;
-  /** Readable minimum side of a drawing, px. Default: 20 % of the short side, clamped to 84…150. */
+  /** Readable minimum side of a drawing, px. Default is `readableMin`. */
   minArt?: number;
   /** Largest drawing side, px. Default 540. */
   maxArt?: number;
   /**
-   * Song stage: one or two even rows, same scale, even gaps, no rotation or overlap.
-   * Ignored when a section asks for a mode. The gallery does not set this.
+   * Accepted so an older caller can still pass it. It does not change the layout:
+   * the stage is prominence, and equal rows are not drawn.
    */
   uniform?: boolean;
-  /** Show at most this many plates. The rest stay in the chip. Unset shows as many as fit. */
+  /** Show at most this many plates. What does not fit is left out. */
   maxShown?: number;
 }
 
@@ -109,9 +111,8 @@ export const LABEL_METRICS: Record<LabelTier, { name: number; nameLH: number; su
 /** A drawing at least this big gets the tier's captions. */
 const TIER_MIN: Record<LabelTier, number> = { l: 240, m: 140, s: 0 };
 const TIERS: LabelTier[] = ['l', 'm', 's'];
+/** Old chip size. The engine does not draw a chip; tests still read the constant. */
 export const CHIP = { w: 56, h: 34 };
-/** Wider chip so «ещё N» fits on the song stage. Gallery modes keep `CHIP`. */
-const EVEN_CHIP = { w: 78, h: 36 };
 
 export function labelHeight(tier: LabelTier, lines: number) {
   const m = LABEL_METRICS[tier];
@@ -120,7 +121,10 @@ export function labelHeight(tier: LabelTier, lines: number) {
 
 /** Default readable minimum for a box. */
 export function readableMin(box: Size) {
-  return Math.round(Math.min(150, Math.max(84, Math.min(box.w, box.h) * 0.2)));
+  // The phone keeps a stricter floor so a companion that would be a smudge drops out.
+  // A wider stage can hold the smaller steps (about 0.65 of the lead) in a low row.
+  const floor = box.w < 560 ? 84 : 56;
+  return Math.round(Math.min(150, Math.max(floor, Math.min(box.w, box.h) * 0.2)));
 }
 
 /* ---------- Plate fitting ---------- */
@@ -221,31 +225,13 @@ function instrumentSlot(index: number, role: Slot['role'], x: number, y: number,
   return { index, kind: 'instrument', role, x, y, w: p.w, h: p.h, z, art: p.art, label: p.label, ...extra };
 }
 
-function chipSlot(x: number, y: number, more: number, z: number, size: Size = CHIP): Slot {
-  return {
-    index: -1,
-    kind: 'more',
-    role: 'more',
-    x,
-    y,
-    w: size.w,
-    h: size.h,
-    z,
-    more,
-    art: { x: 0, y: 0, w: 0, h: 0 },
-    label: { x: 0, y: 0, w: size.w, h: size.h, align: 'center', tier: 's' },
-  };
-}
-
 function single(c: Ctx, idx: number[], more: number): Built {
+  void more;
   const { box } = c;
   const p = plateBelow(box.w, box.h, c.aspects[idx[0]], c.lines, c.maxArt);
   const x = (box.w - p.w) / 2;
   const y = (box.h - p.h) / 2;
-  const slots = [instrumentSlot(idx[0], 'solo', x, y, p, 1)];
-  // The chip sits in the plate's top corner, which a round engraving leaves empty
-  if (more) slots.push(chipSlot(x + p.w - CHIP.w - 8, y + 8, more, 2));
-  return { slots, visibility: 1 };
+  return { slots: [instrumentSlot(idx[0], 'solo', x, y, p, 1)], visibility: 1 };
 }
 
 function pairSides(c: Ctx, idx: number[]): Built {
@@ -294,10 +280,10 @@ function pairDiagonal(c: Ctx, idx: number[]): Built {
 }
 
 function stack(c: Ctx, idx: number[], more: number): Built | null {
+  void more;
   const { box, gap } = c;
   const n = idx.length;
-  const chipRow = more ? CHIP.h + gap : 0;
-  const rh = (box.h - chipRow - (n - 1) * gap) / n;
+  const rh = (box.h - (n - 1) * gap) / n;
   if (rh <= 0) return null;
   // Same art size on every row, so the column reads as one list.
   let plates = idx.map((i) => plateBeside(box.w, rh, c.aspects[i], c.lines, c.maxArt));
@@ -316,7 +302,7 @@ function stack(c: Ctx, idx: number[], more: number): Built | null {
   }
   // Rows share one width so captions line up
   const w = Math.max(...ps.map((p) => p.w));
-  const used = ps.reduce((s, p) => s + p.h, 0) + (n - 1) * gap + chipRow;
+  const used = ps.reduce((s, p) => s + p.h, 0) + (n - 1) * gap;
   let y = (box.h - used) / 2;
   const x = (box.w - w) / 2;
   const slots: Slot[] = ps.map((p, k) => {
@@ -325,7 +311,6 @@ function stack(c: Ctx, idx: number[], more: number): Built | null {
     y += p.h + gap;
     return s;
   });
-  if (more) slots.push(chipSlot(x, y, more, 1));
   return { slots, visibility: 1 };
 }
 
@@ -386,8 +371,9 @@ function fan(c: Ctx, idx: number[]): Built {
 }
 
 function heroInsets(c: Ctx, idx: number[], more: number): Built | null {
+  void more;
   const { box } = c;
-  const insetCount = idx.length - 1 + (more ? 1 : 0);
+  const insetCount = idx.length - 1;
   if (insetCount < 1 || insetCount > 3) return null;
   const heroAspect = c.aspects[idx[0]];
   // (ax, ay) place the main drawing and its caption inside the frame: 0.5 centres it, 0 / 1 push it
@@ -456,18 +442,15 @@ function heroInsets(c: Ctx, idx: number[], more: number): Built | null {
       const p = plateBelow(1e6, 1e6, insetAspect(j), c.lines, s);
       const r = rectAt(k.fx, k.fy, p.w, p.h);
       slots.push(instrumentSlot(idx[j + 1], 'inset', r.x, r.y, p, 2 + j));
-    } else {
-      const p = plateBelow(1e6, 1e6, 1, c.lines, s);
-      const r = rectAt(k.fx, k.fy, p.w, p.h);
-      slots.push(chipSlot(r.x + (r.w - CHIP.w) / 2, r.y + (r.h - CHIP.h) / 2, more, 2 + j));
     }
   });
   return { slots, visibility: 1 };
 }
 
 function grid(c: Ctx, idx: number[], more: number): Built {
+  void more;
   const { box, gap } = c;
-  const cells = idx.length + (more ? 1 : 0);
+  const cells = idx.length;
   let best: { cols: number; rows: number; side: number; score: number } | null = null;
   for (let cols = 1; cols <= cells; cols++) {
     const rows = Math.ceil(cells / cols);
@@ -502,77 +485,100 @@ function grid(c: Ctx, idx: number[], more: number): Built {
       const p = ps[j];
       const plate = { ...p, w: pw, h: ph, art: { ...p.art, x: (pw - p.art.w) / 2 }, label: { ...p.label, w: pw - 2 * LABEL_METRICS[p.label.tier].pad } };
       slots.push(instrumentSlot(idx[j], 'cell', x, y, plate, 1));
-    } else slots.push(chipSlot(x + (pw - CHIP.w) / 2, y + (ph - CHIP.h) / 2, more, 1));
+    }
   }
   return { slots, visibility: 1 };
 }
 
+/* ---------- Prominence ---------- */
+
+/** Drawing scale by rank. The first instrument is the lead. */
+export const PROMINENCE_SCALE = [1, 0.8, 0.7, 0.65];
+
 /**
- * Equal plates in one or two rows. Places are a grid: a later plate fades into a cell
- * that was empty, it does not push the others. One row wins when its drawing stays
- * within 88 % of the two-row drawing. Returns null when the plates do not fit.
+ * How many plates a box may hold. Under 1000 CSS px (phone and medium) the cap is 3;
+ * a wide box holds 4. The phone then drops to the lead alone when the others are not readable.
  */
-function evenRows(c: Ctx, idx: number[], more: number): Built | null {
-  const count = idx.length + (more ? 1 : 0);
-  if (idx.length < 1 || count < 2) return null;
-  const chip = EVEN_CHIP;
-  const place = (rows: number) => {
-    const cols = Math.ceil(count / rows);
-    if (cols < 1 || (rows === 2 && count < 3)) return null;
-    const gap = c.gap;
-    const cw = (c.box.w - (cols - 1) * gap) / cols;
-    const ch = (c.box.h - (rows - 1) * gap) / rows;
-    if (cw < chip.w || ch < 64) return null;
-    const probe = idx.map((i) => plateBelow(cw, ch, c.aspects[i], c.lines, c.maxArt));
-    const side = Math.min(...probe.map((p) => p.side));
-    if (!(side > 0)) return null;
-    const ps = idx.map((i) => plateBelow(cw, ch, c.aspects[i], c.lines, Math.min(c.maxArt, side * Math.max(1, c.aspects[i]))));
-    if (ps.some((p) => p.w > cw + 0.5 || p.h > ch + 0.5)) return null;
-    const pw = Math.max(...ps.map((p) => p.w), more ? chip.w : 0);
-    const ph = Math.max(...ps.map((p) => p.h), more ? chip.h : 0);
-    const usedW = cols * pw + (cols - 1) * gap;
-    const usedH = rows * ph + (rows - 1) * gap;
-    if (usedW > c.box.w + 1 || usedH > c.box.h + 1) return null;
-    const ox = (c.box.w - usedW) / 2;
-    const oy = (c.box.h - usedH) / 2;
-    const slots: Slot[] = [];
-    for (let j = 0; j < count; j++) {
-      const row = Math.floor(j / cols);
-      const inRow = Math.min(cols, count - row * cols);
-      const col = j - row * cols;
-      const x = ox + ((cols - inRow) * (pw + gap)) / 2 + col * (pw + gap);
-      const y = oy + row * (ph + gap);
-      if (j < idx.length) {
-        const p = ps[j];
-        const pad = LABEL_METRICS[p.label.tier].pad;
-        const plate = { ...p, w: pw, art: { ...p.art, x: (pw - p.art.w) / 2 }, label: { ...p.label, w: pw - 2 * pad } };
-        slots.push(instrumentSlot(idx[j], 'cell', x, y, plate, 1));
-      } else {
-        const cx = Math.min(Math.max(0, x + (pw - chip.w) / 2), c.box.w - chip.w);
-        const cy = Math.min(Math.max(0, y + (ph - chip.h) / 2), c.box.h - chip.h);
-        slots.push(chipSlot(cx, cy, more, 1, chip));
-      }
-    }
-    return { side, slots };
+export function prominenceLimit(width: number) {
+  return width < 1000 ? 3 : 4;
+}
+
+/** A plate whose width is the drawing plus equal side padding, so the gaps between drawings stay even. */
+function prominencePlate(aspect: number, lines: number, maxSide: number, tier: LabelTier, compact: boolean): Plate {
+  const m = LABEL_METRICS[tier];
+  const pad = compact ? 4 : m.pad;
+  const lh = labelHeight(tier, lines);
+  const aw = aspect >= 1 ? maxSide : maxSide * aspect;
+  const ah = aw / aspect;
+  // Narrow drawings still need a caption: «Ансамбль» does not fit in a 60px line.
+  const labelW = Math.max(84, aw);
+  const w = labelW + 2 * pad;
+  const h = ah + 2 * pad + m.gap + lh;
+  return {
+    w,
+    h,
+    side: Math.min(aw, ah),
+    art: { x: (w - aw) / 2, y: pad, w: aw, h: ah },
+    label: { x: pad, y: pad + ah + m.gap, w: labelW, h: lh, align: 'center', tier },
   };
-  const one = place(1);
-  const two = place(2);
-  const pick = !one ? two : !two ? one : one.side >= two.side * 0.88 ? one : two;
-  if (!pick) return null;
-  return { slots: pick.slots, visibility: 1 };
+}
+
+/** Plates in a row, art bottoms on one line, even gaps, scale by rank. */
+function prominence(c: Ctx, idx: number[]): Built | null {
+  const n = idx.length;
+  if (!n) return null;
+  const scales = idx.map((_, i) => PROMINENCE_SCALE[Math.min(i, PROMINENCE_SCALE.length - 1)]);
+  const tierFor = (side: number): LabelTier => (side >= TIER_MIN.l ? 'l' : side >= TIER_MIN.m ? 'm' : 's');
+  // A low wide row (the stage above the player on a short window) spends its height on the drawing.
+  const compact = c.box.w >= 560 && c.box.h < 200;
+  const placed = (lead: number) => {
+    const tier = tierFor(lead);
+    const plates = idx.map((i, j) => prominencePlate(c.aspects[i], c.lines, Math.max(1, lead * scales[j]), tier, compact));
+    if (n === 1 && plates[0].label.w < 220 && c.box.w > plates[0].w + 24) {
+      const p = plates[0];
+      const want = Math.min(240, c.box.w - 32);
+      const extra = want - p.w;
+      plates[0] = {
+        ...p,
+        w: p.w + extra,
+        art: { ...p.art, x: p.art.x + extra / 2 },
+        label: { ...p.label, w: p.label.w + extra },
+      };
+    }
+    const yRel = plates.map((p) => -(p.art.y + p.art.h));
+    const top = Math.min(...yRel);
+    const bottom = Math.max(...plates.map((p, j) => yRel[j] + p.h));
+    const width = plates.reduce((sum, p) => sum + p.w, 0) + c.gap * Math.max(0, n - 1);
+    const height = bottom - top;
+    return { plates, yRel, top, width, height, ok: width <= c.box.w + 0.01 && height <= c.box.h + 0.01 };
+  };
+  if (!placed(8).ok) return null;
+  const lead = search(8, c.maxArt, (v) => placed(v).ok);
+  const g = placed(lead);
+  if (!g.ok) return null;
+  const ox = (c.box.w - g.width) / 2;
+  const oy = (c.box.h - g.height) / 2 - g.top;
+  let x = ox;
+  const slots = g.plates.map((p, j) => {
+    const slot = instrumentSlot(idx[j], j === 0 ? 'main' : 'side', x, oy + g.yRel[j], p, n - j);
+    x += p.w + c.gap;
+    return slot;
+  });
+  return { slots, visibility: 1 };
 }
 
 /* ---------- Choice ---------- */
 
 /** How many instruments each mode is made for (inclusive). Shared with the validator. */
 export const MODE_COUNTS: Record<LayoutMode, { min: number; max: number; chip: boolean }> = {
-  single: { min: 1, max: 1, chip: true },
+  single: { min: 1, max: 1, chip: false },
   'pair-sides': { min: 2, max: 2, chip: false },
   'pair-diagonal': { min: 2, max: 2, chip: false },
-  stack: { min: 2, max: 4, chip: true },
+  stack: { min: 2, max: 4, chip: false },
   fan: { min: 3, max: 5, chip: false },
-  'hero-insets': { min: 2, max: 4, chip: true },
-  grid: { min: 3, max: Infinity, chip: true },
+  'hero-insets': { min: 2, max: 4, chip: false },
+  grid: { min: 3, max: Infinity, chip: false },
+  prominence: { min: 1, max: 4, chip: false },
 };
 const ALLOWED = Object.fromEntries(LAYOUT_MODES.map((m) => [m, (n: number) => n >= MODE_COUNTS[m].min && n <= MODE_COUNTS[m].max])) as Record<LayoutMode, (n: number) => boolean>;
 
@@ -606,6 +612,8 @@ function preference(mode: LayoutMode, n: number, aspect: number): number {
       return n === 4 ? 1 : n === 3 ? 0.9 : 0.7;
     case 'grid':
       return n >= 5 ? 1 : 0.9;
+    case 'prominence':
+      return 1;
   }
 }
 
@@ -625,6 +633,8 @@ function build(mode: LayoutMode, c: Ctx, idx: number[], more: number): Built | n
       return heroInsets(c, idx, more);
     case 'grid':
       return grid(c, idx, more);
+    case 'prominence':
+      return prominence(c, idx);
   }
 }
 
@@ -634,8 +644,8 @@ function measure(b: Built) {
 }
 
 /**
- * Lay out `count` instruments (1…8 and more) in a box of `box.w × box.h` CSS px.
- * The first instrument is the lead: modes that have a main place give it to the first.
+ * Lay out `count` instruments in a box of `box.w × box.h` CSS px.
+ * The first instrument is the lead. Automatic layout is one prominence row.
  */
 export function layoutInstruments(count: number, box: Size, opts: LayoutOptions = {}): Layout {
   const n = Math.max(1, Math.floor(count));
@@ -649,7 +659,8 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
   const threshold = opts.minArt ?? readableMin(c.box);
   const aspect = c.box.w / c.box.h;
   const all = Array.from({ length: n }, (_, i) => i);
-  const cap = Math.max(1, Math.min(n, opts.maxShown != null && opts.maxShown > 0 ? Math.floor(opts.maxShown) : n));
+  const limit = Math.max(1, Math.min(n, opts.maxShown != null && opts.maxShown > 0 ? Math.floor(opts.maxShown) : n));
+  void opts.uniform;
 
   const result = (mode: LayoutMode, b: Built, visible: number, fallback: boolean): Layout => ({
     mode,
@@ -661,26 +672,29 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
     fallback,
   });
 
-  // A requested mode is honoured when it can show the instruments readably (extras go to the chip).
+  // A requested mode is honoured when it can show the instruments readably.
+  // Extras are not drawn. Prominence also keeps to the box cap.
   const wanted = opts.mode && opts.mode !== 'auto' ? opts.mode : null;
-  // The song stage asks for equal rows. A section that names a mode still gets that mode.
-  if (opts.uniform && !wanted) {
-    for (let k = cap; k >= 1; k--) {
-      const b = k === 1 ? single(c, all.slice(0, 1), n - 1) : evenRows(c, all.slice(0, k), n - k);
-      if (b && measure(b).min >= threshold) return result(k === 1 ? 'single' : 'grid', b, k, false);
-    }
-    return result('single', single(c, [0], n - 1), 1, false);
-  }
   if (wanted) {
-    for (let k = cap; k >= 1; k--) {
+    const shown = wanted === 'prominence' ? Math.min(limit, prominenceLimit(c.box.w)) : limit;
+    for (let k = shown; k >= 1; k--) {
       if (!ALLOWED[wanted](k) && !(wanted === 'single' && k === 1)) continue;
       const b = build(wanted, c, all.slice(0, k), n - k);
-      if (b && measure(b).min >= threshold) return result(wanted, b, k, false);
+      if (b && (k === 1 || measure(b).min >= threshold)) return result(wanted, b, k, false);
     }
   }
 
-  // Automatic: the best readable mode for all instruments; failing that, fewer instruments and a chip.
-  for (let k = cap; k >= 1; k--) {
+  // Automatic: one row, largest first, never more than the cap, and never a chip.
+  const autoCap = Math.min(limit, prominenceLimit(c.box.w));
+  for (let k = autoCap; k >= 1; k--) {
+    const b = prominence(c, all.slice(0, k));
+    if (!b) continue;
+    if (k > 1 && measure(b).min < threshold) continue;
+    return result('prominence', b, k, Boolean(wanted));
+  }
+
+  // Legacy sweep kept for an explicit mode that could not be placed above.
+  for (let k = limit; k >= 1; k--) {
     const more = n - k;
     let best: { mode: LayoutMode; b: Built; score: number } | null = null;
     for (const mode of LAYOUT_MODES) {
