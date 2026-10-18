@@ -1,344 +1,245 @@
 """Download openly licensed instrument clips into work/ and write the git manifest.
 
 Audio stays in work/instrument_id/extra/<id>/. The manifest is
-scripts/instrument_id/sources/<id>.csv with url, license, author, recording, start, end.
-A class needs at least 15 clips from at least 3 recordings. Anything short is listed
-and is not copied into the training folder.
+scripts/instrument_id/sources/<id>.csv. A row with a non-empty flag is kept for
+the report and is not a training example. A class needs at least 15 accepted
+clips from at least 3 recordings. The file title is not a label: the Commons
+file page is read again at download time.
 """
 
 from __future__ import annotations
 
 import csv
+import hashlib
 import html
 import json
 import re
-import sys
 import time
-import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
+import zipfile
 from pathlib import Path
+
+import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from audio import ffmpeg_exe, probe_duration
 from paths import ROOT, WORK
 
-UA = "LivingLyricsInstrumentId/1.0 (local research; instrument samples)"
-ALLOWED = ("cc by", "cc by-sa", "cc0", "public domain", "cc by 2", "cc by-sa 2", "cc by 3", "cc by-sa 3", "cc by 4", "cc by-sa 4")
-SKIP_TITLE = re.compile(
-    r"(pronunciation|lingua libre|spoken wikipedia|^file:q\d+|article\.ogg|^file:[a-z]{2,3}-"
-    r"|ll-q\d|librivox|audiobook|78rpm|schellak|oud\s*&\s*nieuw|nieuw|vliegveld|riool|majelis|hadits|junub"
-    r"|kettle|whistle|paisaje)",
-    re.I,
-)
-# Quoted phrases so a short word does not match a language sample or a place name.
-SEARCHES = {
-    "oud": ['"oud music"', '"oud solo"', '"playing the oud"'],
-    "ney": ['"ney flute"', '"ney solo"', '"nay flute"'],
-    "daf": ['"daf drum"', '"daf solo"', '"playing the daf"'],
-    "bendir": ['"bendir"', '"bendir drum"'],
-    "darbuka": ['"darbuka"', '"doumbek"'],
-    "qanun": ['"qanun"', '"kanun music"'],
-    "santur": ['"santur"', '"santoor"'],
-    "tar": ['"persian tar"', '"azerbaijani tar"', '"tar instrument"'],
-    "setar": ['"setar"', '"setar music"'],
-    "tanbur": ['"tanbur"', '"tambur music"'],
-    "kamancheh": ['"kamancheh"', '"kamancha"'],
-    "baglama": ['"baglama"', '"bağlama"', '"saz music"'],
-    "duduk": ['"armenian duduk"', '"duduk improvisation"', '"duduk music"', '"sound of duduk"'],
-    "erhu": ['"erhu"'],
-}
-WORD = {
-    "oud": r"\boud\b",
-    "ney": r"\b(ney|nay)\b",
-    "daf": r"\bdaf\b",
-    "bendir": r"\bbendir\b",
-    "darbuka": r"\b(darbuka|doumbek)\b",
-    "qanun": r"\b(qanun|kanun)\b",
-    "santur": r"\b(santur|santoor)\b",
-    "tar": r"\btar\b",
-    "setar": r"\bsetar\b",
-    "tanbur": r"\b(tanbur|tambur)\b",
-    "kamancheh": r"\b(kamancheh|kamancha)\b",
-    "baglama": r"\b(baglama|bağlama|saz)\b",
-    "duduk": r"\bduduk\b",
-    "erhu": r"\berhu\b",
-}
+UA = "LivingLyricsInstrumentId/1.0 (https://github.com/SharipovAkhror/living-lyrics; instrument samples)"
 MIN_CLIPS = 15
 MIN_RECORDINGS = 3
-SHORT_NOTE = {
-    "oud": "11 клипов, 2 исполнителя: Andy R. Jordan (две части одной пьесы) и открытые струны. В голову не входит.",
-    "santur": "14 клипов, 2 исполнителя. Короткий и полный файл концертино — одна пьеса. В голову не входит.",
-    "qanun": "5 клипов одной записи: канун вместе с пением, CC0. В голову не входит.",
-    "darbuka": "4 клипа одного файла, CC BY-SA 4.0. В голову не входит.",
-    "duduk": "5 клипов одной записи, CC BY-SA 4.0. В голову не входит.",
-    "setar": "Демонстрация ладов одного автора не скачалась: Wikimedia ответила 429. В голову не входит.",
-    "ney": "Отдельной записи с явной лицензией не нашлось.",
-    "daf": "Отдельной записи с явной лицензией не нашлось.",
-    "bendir": "Отдельной записи с явной лицензией не нашлось.",
-    "tar": "Запрос с персидским и азербайджанским таром не дал файла с явной лицензией.",
-    "tanbur": "Отдельной записи с явной лицензией не нашлось.",
-    "kamancheh": "Отдельной записи с явной лицензией не нашлось.",
-    "baglama": "Отдельной записи с явной лицензией не нашлось.",
-}
-MAX_CLIPS_PER_RECORDING = 5
 CLIP_SEC = 2.0
-HOP_SEC = 4.0
+# Non-overlapping windows. A coarser hop left three-recording classes under the
+# trainer's 15-clip train gate after one recording was held out.
+HOP_SEC = 2.0
+HOP_TIGHT = 2.0
+MAX_CLIPS_PER_RECORDING = 10
+MAX_CLIPS_TIGHT = 10
+# Andy's file is 68 s. Sixteen windows keep train at or above 15 after the
+# Houssem performance is held out. The open-string file is too short to do that.
+CAP_OVERRIDE = {"andy-r-jordan": 16}
 MAX_BYTES = 40_000_000
+FIELDS = ["url", "license", "author", "recording", "start", "end", "source", "file", "flag"]
+ERHU_API = "https://zenodo.org/api/records/4320991"
+# title, recording id. One person keeps one recording id across pieces.
+CATALOG: dict[str, list[tuple[str, str]]] = {
+    "oud": [
+        ("File:Oud music by Andy R. Jordan 1V2 long.mp3", "andy-r-jordan"),
+        ("File:OUD.ogg", "houssem-bettaibi"),
+        ("File:Oud open Strings.ogg", "user-bottomline"),
+    ],
+    "duduk": [
+        ("File:Sound of Armenian Duduk.ogg", "ilya-mazia"),
+        ("File:Duduk Music.wav", "ikuzusotnek"),
+        ("File:SERGO.TEL - April - duduk-improvisation2.ogg", "sergo-tel"),
+    ],
+    "erhu": [
+        ("File:二泉映月.ogg", "zhang-peijian"),
+        ("File:江河水.ogg", "zhang-peijian"),
+        ("File:Dances With Erhu (Antti Luode).mp3", "antti-luode"),
+    ],
+    "choir": [
+        ('File:Advanced Choirs - "Ask the Moon" (Dec. 2009).ogg', "childrenschorussa"),
+        ('File:Advanced Choirs - "Riu, Riu Chiu" (Nov. 2012).ogg', "childrenschorussa"),
+        ("File:7.Mnogaia Leta.ogg", "plovdiv-sveta-troitsa"),
+        ("File:Byrd 4-Part Mass - Kyrie.ogg", "ensemble-morales"),
+        ("File:Harmonica sings Tourdion.flac", "harmonica"),
+        ("File:Hoerprobe Kantorei St. Michael (Jena).ogg", "kantorei-st-michael"),
+    ],
+    "darbuka": [
+        ("File:Darbuka.ogg", "cassa342"),
+        ("File:Wahda Ejemplo.ogg", "derbake"),
+        ("File:Zaffa Ejemplo.ogg", "derbake"),
+        ("File:Saidi Ejemplo.ogg", "derbake"),
+        ("File:Maksum Ejemplo.ogg", "derbake"),
+        ("File:Baladi Ejemplo.ogg", "derbake"),
+    ],
+    "bendir": [
+        ("File:Raksan (90 bpm).ogg", "anomyq"),
+        ("File:Aksak (60 bpm).ogg", "anomyq"),
+        ("File:Evfer (60 bpm).ogg", "anomyq"),
+        ("File:Frenkçin (150 bpm).ogg", "anomyq"),
+    ],
+    "qanun": [
+        ("File:ArabicQanunSample.ogg", "ariel-qassis"),
+        ("File:TurkishKanunSample.ogg", "ariel-qassis"),
+    ],
+    "santur": [
+        ("File:Turkish santur.ogv", "lizikus"),
+        ("File:Ey Iran (Santoor).ogg", "iran-persian"),
+    ],
+    "setar": [
+        ("File:Segah-Setar.ogg", "leyth"),
+        ("File:Setar 1st string tuned to C, open string note.ogg", "jacqke"),
+        ("File:Setar 1st string tuned to C, 5th fret E.ogg", "jacqke"),
+        ("File:Setar 1st string tuned to C, 12th fret A.ogg", "jacqke"),
+    ],
+}
+# Classes with no accepted file after the 2026-10-18 pass. The note is the reason.
+EMPTY_NOTE = {
+    "ney": "Поиск Commons «ney solo» и «nay taksim» не дал аудио с явной свободной лицензией. PCMIR без входа не открылся.",
+    "daf": "Отдельного соло дафа с явной свободной лицензией не нашлось. Церемония зикра — голос, не соло.",
+    "tar": "Запросы «persian tar», «azerbaijani tar» и «tar solo» не дали файла с явной свободной лицензией.",
+    "tanbur": "На Commons лежат чумбуш и смычковый яйлы-танбур Озана Ярмана. Это не длинношейный танбур каталога, в манифест не входят.",
+    "kamancheh": "Поиск не дал соло с явной лицензией. Карточка Hugging Face на 40 файлов лицензии не указывает.",
+    "baglama": "Husseyni Saz Semayissi в описании — кеменче и уд, не саз. Другое найденное — MIDI и произношения.",
+}
+CORE = [
+    "oud", "ney", "daf", "bendir", "darbuka", "qanun", "santur", "tar", "setar",
+    "tanbur", "kamancheh", "baglama", "duduk", "erhu", "choir",
+]
+CHOIR_BLOCK = re.compile(r"orchestra|organ|vimeo|youtube|\balbum\b|midi|high hu|高胡", re.I)
+GAOHU = re.compile(r"高胡|gaohu", re.I)
 
 
-def _get(url: str) -> bytes:
-    delay = 5
-    for attempt in range(5):
+def _pause_for(exc: urllib.error.HTTPError, delay: float) -> float:
+    if exc.code != 429:
+        return delay
+    retry = (exc.headers.get("Retry-After") or "").strip()
+    if re.fullmatch(r"\d+", retry):
+        return float(retry)
+    return delay
+
+
+def _get(url: str, timeout: int = 180) -> bytes:
+    delay = 5.0
+    last: Exception | None = None
+    for attempt in range(6):
         req = urllib.request.Request(url, headers={"User-Agent": UA})
         try:
-            with urllib.request.urlopen(req, timeout=90) as handle:
+            with urllib.request.urlopen(req, timeout=timeout) as handle:
                 payload = handle.read()
-            time.sleep(1.5)
+            time.sleep(1.2)
             return payload
         except urllib.error.HTTPError as exc:
-            if exc.code != 429 or attempt == 4:
-                raise
+            last = exc
+            if exc.code == 429 and attempt < 5:
+                pause = _pause_for(exc, delay)
+                print(f"  429, пауза {pause:.0f} с", flush=True)
+                time.sleep(pause)
+                delay = min(delay * 2, 120)
+                continue
+            raise
+        except Exception as exc:
+            last = exc
+            if attempt == 5:
+                break
             time.sleep(delay)
-            delay *= 2
-    raise RuntimeError(url)
+            delay = min(delay * 2, 60)
+    raise RuntimeError(f"{url}: {last}")
 
 
-def _search(query: str) -> list[dict]:
-    found = []
-    cont = {}
-    for _ in range(2):
-        params = {
-            "action": "query", "format": "json", "generator": "search",
-            "gsrnamespace": "6", "gsrlimit": "20", "gsrsearch": query,
-            "prop": "imageinfo", "iiprop": "url|mime|size|extmetadata",
-        }
-        params.update(cont)
-        url = "https://commons.wikimedia.org/w/api.php?" + urllib.parse.urlencode(params)
-        payload = json.loads(_get(url))
-        pages = (payload.get("query") or {}).get("pages") or {}
-        for page in pages.values():
-            info = (page.get("imageinfo") or [{}])[0]
-            meta = info.get("extmetadata") or {}
-            license_name = html.unescape(re.sub("<[^>]+>", "", (meta.get("LicenseShortName") or {}).get("value") or "")).strip()
-            artist = html.unescape(re.sub("<[^>]+>", "", (meta.get("Artist") or {}).get("value") or "")).strip()
-            artist = re.sub(r"\s+", " ", artist)[:180]
-            found.append({
-                "title": page.get("title") or "",
-                "url": info.get("url") or "",
-                "mime": info.get("mime") or "",
-                "size": int(info.get("size") or 0),
-                "license": license_name,
-                "author": artist or "не указан",
-            })
-        cont = payload.get("continue") or {}
-        if not cont:
-            break
-    return found
+def _strip(value: str) -> str:
+    text = html.unescape(re.sub(r"<[^>]+>", " ", value or ""))
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def _license_ok(name: str) -> bool:
-    text = name.lower().replace("–", "-")
+    text = name.lower().replace("–", "-").replace("—", "-")
     if "public domain mark" in text or "publicdomain/mark" in text:
         return False
     if re.search(r"\bnc\b|noncommercial|non-commercial|-nc\b|/nc\b", text):
         return False
     if re.search(r"\bnd\b|-nd\b|/nd\b|noderiv", text):
         return False
-    return any(piece in text for piece in ("cc by", "cc-by", "cc0", "cc-zero", "public domain", "publicdomain/zero"))
-
-
-def _performer_id(author: str, title: str) -> str:
-    """One person is one recording. Parts, frets and short/full edits do not multiply the count."""
-    text = re.sub(r"\s+", " ", author or "").strip()
-    slug = ""
-    if text.lower() not in {"", "не указан", "unknown", "none"}:
-        slug = _recording_id(text)
-    if not slug:
-        slug = _recording_id(title)
-    return slug or "recording"
-
-
-def _recording_id(title: str) -> str:
-    stem = unicodedata.normalize("NFKD", title)
-    stem = "".join(ch for ch in stem if not unicodedata.combining(ch))
-    stem = re.sub(r"^File:", "", stem, flags=re.I)
-    stem = re.sub(r"\.(ogg|oga|mp3|wav|flac|opus)$", "", stem, flags=re.I)
-    stem = re.sub(r"\b(long|short|wav|mp3)\b", "", stem, flags=re.I)
-    stem = re.sub(r"[^a-z0-9]+", "-", stem.lower()).strip("-")
-    return stem[:80]
-
-
-def _candidates(instrument: str) -> list[dict]:
-    seen = set()
-    rows = []
-    for query in SEARCHES[instrument]:
-        for item in _search(query):
-            if not item["url"] or item["url"] in seen:
-                continue
-            seen.add(item["url"])
-            if SKIP_TITLE.search(item["title"]):
-                continue
-            if not re.search(WORD[instrument], item["title"], re.I):
-                continue
-            if instrument == "tar" and not re.search(r"(persian|azerbaijani|caucasus|tar instrument)", item["title"], re.I):
-                continue
-            if item["mime"] not in {"audio/mpeg", "audio/ogg", "application/ogg", "audio/wav", "audio/x-wav", "audio/flac"}:
-                continue
-            if not _license_ok(item["license"]):
-                continue
-            if item["size"] <= 0 or item["size"] > MAX_BYTES:
-                continue
-            # Prefer the smaller of wav/mp3 twins by recording id later.
-            item["recording"] = _performer_id(item["author"], item["title"])
-            rows.append(item)
-    # One file per recording: smallest.
-    best: dict[str, dict] = {}
-    for item in rows:
-        current = best.get(item["recording"])
-        if current is None or item["size"] < current["size"]:
-            best[item["recording"]] = item
-    return list(best.values())
-
-
-def _ia_license_ok(url: str) -> bool:
-    text = (url or "").lower()
-    if "creativecommons.org" not in text:
+    if "copyrighted free use" in text:
         return False
-    if any(piece in text for piece in ("/nc", "-nc", "/nd", "-nd", "publicdomain/mark")):
-        return False
-    return "/licenses/by" in text or "publicdomain/zero" in text
+    return any(piece in text for piece in (
+        "cc by", "cc-by", "cc0", "cc-zero", "public domain", "publicdomain/zero",
+        "fal", "free art",
+    ))
 
 
-def _ia_candidates(instrument: str) -> list[dict]:
-    """Internet Archive items whose title names the instrument and whose license URL is an explicit CC license."""
-    found = []
-    seen = set()
-    for phrase in SEARCHES[instrument]:
-        query = (
-            f"title:({phrase}) AND mediatype:audio AND "
-            "(licenseurl:*creativecommons.org/licenses/by* OR licenseurl:*publicdomain/zero*) "
-            "AND NOT licenseurl:*nc* AND NOT licenseurl:*nd*"
-        )
-        params = urllib.parse.urlencode({
-            "q": query,
-            "fl[]": ["identifier", "title", "licenseurl", "creator"],
-            "rows": 15,
-            "page": 1,
-            "output": "json",
-        }, doseq=True)
-        try:
-            payload = json.loads(_get("https://archive.org/advancedsearch.php?" + params))
-        except Exception as exc:
-            print(f"  archive search {phrase}: {exc}", flush=True)
-            continue
-        for doc in (payload.get("response") or {}).get("docs") or []:
-            title = str(doc.get("title") or "")
-            identifier = str(doc.get("identifier") or "")
-            if not identifier or identifier in seen:
-                continue
-            if SKIP_TITLE.search(title) or not re.search(WORD[instrument], title, re.I):
-                continue
-            if not _ia_license_ok(str(doc.get("licenseurl") or "")):
-                continue
-            seen.add(identifier)
-            try:
-                meta = json.loads(_get(f"https://archive.org/metadata/{urllib.parse.quote(identifier)}"))
-            except Exception as exc:
-                print(f"  archive meta {identifier}: {exc}", flush=True)
-                continue
-            files = []
-            for item in meta.get("files") or []:
-                name = str(item.get("name") or "")
-                if not re.search(r"\.(mp3|ogg|wav|flac)$", name, re.I):
-                    continue
-                size = int(item.get("size") or 0)
-                if size <= 0 or size > MAX_BYTES:
-                    continue
-                files.append((size, name))
-            if not files:
-                continue
-            _size, name = sorted(files)[0]
-            creator = doc.get("creator") or "не указан"
-            if isinstance(creator, list):
-                creator = ", ".join(str(part) for part in creator)
-            found.append({
-                "title": f"File:{title}",
-                "url": "https://archive.org/download/" + identifier + "/" + urllib.parse.quote(name),
-                "mime": "audio/mpeg",
-                "size": _size,
-                "license": str(doc.get("licenseurl")),
-                "author": re.sub(r"\s+", " ", str(creator))[:180],
-                "recording": _performer_id(str(creator), title),
-            })
-            if len(found) >= 8:
-                return found
+def _lookup(titles: list[str]) -> dict[str, dict]:
+    found: dict[str, dict] = {}
+    for start in range(0, len(titles), 20):
+        chunk = titles[start:start + 20]
+        params = {
+            "action": "query", "format": "json", "titles": "|".join(chunk),
+            "prop": "imageinfo", "iiprop": "url|mime|size|extmetadata",
+        }
+        url = "https://commons.wikimedia.org/w/api.php?" + urllib.parse.urlencode(params)
+        payload = json.loads(_get(url))
+        pages = (payload.get("query") or {}).get("pages") or {}
+        for page in pages.values():
+            title = page.get("title") or ""
+            info = (page.get("imageinfo") or [{}])[0]
+            meta = info.get("extmetadata") or {}
+            found[title] = {
+                "title": title,
+                "missing": "missing" in page or not info.get("url"),
+                "url": info.get("url") or "",
+                "mime": info.get("mime") or "",
+                "size": int(info.get("size") or 0),
+                "license": _strip((meta.get("LicenseShortName") or {}).get("value") or ""),
+                "author": _strip((meta.get("Artist") or {}).get("value") or "")[:180] or "не указан",
+                "description": _strip((meta.get("ImageDescription") or {}).get("value") or "")[:400],
+            }
     return found
 
 
-def _erhu_zenodo(manifest_root: Path) -> dict:
-    """One Zenodo collection. Players are not labeled, so it is one recording and stays out of the head."""
-    zip_path = WORK / "data" / "ErhuPT.zip"
-    row = {"id": "erhu", "clips": 0, "recordings": 0, "enough": False, "note": "архив Zenodo не найден"}
-    if not zip_path.is_file():
-        return row
-    import zipfile
-    archive = zipfile.ZipFile(zip_path, metadata_encoding="utf-8")
-    wavs = [name for name in archive.namelist() if name.startswith("train_data/") and name.lower().endswith(".wav") and "__MACOSX" not in name]
-    picked = wavs[:5]
-    manifest_rows = []
-    dest = None
-    raw_root = WORK / "sources-raw" / "erhu"
-    raw_root.mkdir(parents=True, exist_ok=True)
-    for name in picked:
-        dest = raw_root / "probe.wav"
-        dest.write_bytes(archive.read(name))
-        try:
-            duration = probe_duration(dest)
-        except Exception:
-            duration = 0.0
-        end = min(CLIP_SEC, duration) if duration else 0.0
-        if end < 0.4:
-            continue
-        manifest_rows.append({
-            "url": "https://zenodo.org/records/4320991/files/ErhuPT.zip?download=1#" + urllib.parse.quote(name),
-            "license": "CC BY 4.0",
-            "author": "Zehao Wang, Jingru Li",
-            "recording": "erhupt",
-            "start": "0.000",
-            "end": f"{end:.3f}",
-            "source": "zenodo",
-        })
-    if dest_parent := raw_root:
-        for wav in dest_parent.glob("*.wav"):
-            wav.unlink()
-    csv_path = manifest_root / "erhu.csv"
-    with csv_path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["url", "license", "author", "recording", "start", "end", "source"])
-        writer.writeheader()
-        writer.writerows(manifest_rows)
-    return {
-        "id": "erhu",
-        "clips": len(manifest_rows),
-        "recordings": 1 if manifest_rows else 0,
-        "enough": False,
-        "note": "Zenodo 10.5281/zenodo.4320991, CC BY 4.0. Исполнители в файлах не размечены, это одна коллекция консерватории, поэтому класс в голову не входит.",
-    }
+def _allowed_page(instrument: str, page: dict) -> str:
+    """Return a skip reason, or an empty string when the page may be downloaded."""
+    if page.get("missing"):
+        return "нет файла"
+    if not _license_ok(page.get("license") or ""):
+        return f"лицензия {page.get('license') or 'не указана'}"
+    size = int(page.get("size") or 0)
+    if size <= 0 or size > MAX_BYTES:
+        return f"размер {size}"
+    mime = page.get("mime") or ""
+    if not (mime.startswith("audio/") or mime in {"application/ogg", "video/ogg", "application/flac"}):
+        return f"mime {mime}"
+    text = f"{page.get('title') or ''} {page.get('description') or ''}"
+    if instrument == "erhu" and GAOHU.search(text):
+        return "в описании гаоху"
+    if instrument == "bendir" and "bendir" not in text.lower():
+        return "описание не называет бендир"
+    if instrument == "choir" and CHOIR_BLOCK.search(text):
+        return "описание: орган, оркестр или чужой источник"
+    if instrument == "darbuka" and re.search(r"\b(davul|riq|mazhar|tabl)\b", text, re.I):
+        return "другой барабан"
+    return ""
 
 
-def _clips(path: Path, duration: float) -> list[tuple[float, float]]:
+def _cap(recording: str, default: int) -> int:
+    return CAP_OVERRIDE.get(recording, default)
+
+
+def _clips(duration: float, hop: float, cap: int) -> list[tuple[float, float]]:
     if duration < CLIP_SEC:
         return []
-    clips = []
-    start = max(0.0, (duration - CLIP_SEC) / 2) if duration < HOP_SEC + CLIP_SEC else 0.0
-    if duration < HOP_SEC + CLIP_SEC:
+    if duration < hop + CLIP_SEC:
+        start = max(0.0, (duration - CLIP_SEC) / 2)
         return [(round(start, 3), round(start + CLIP_SEC, 3))]
+    clips = []
     t = 0.0
-    while t + CLIP_SEC <= duration + 0.05 and len(clips) < MAX_CLIPS_PER_RECORDING:
+    while t + CLIP_SEC <= duration + 0.05 and len(clips) < cap:
         clips.append((round(t, 3), round(t + CLIP_SEC, 3)))
-        t += HOP_SEC
+        t += hop
     return clips
 
 
@@ -354,94 +255,370 @@ def _export_clip(src: Path, dest: Path, start: float) -> None:
         raise RuntimeError(proc.stderr.decode("utf-8", errors="replace")[-300:])
 
 
-def fetch(instruments: list[str] | None = None) -> None:
-    wanted = instruments or list(SEARCHES)
-    manifest_root = ROOT / "scripts" / "instrument_id" / "sources"
-    manifest_root.mkdir(parents=True, exist_ok=True)
-    summary = []
-    for instrument in wanted:
-        print(f"=== {instrument}", flush=True)
-        if instrument == "erhu":
-            summary.append(_erhu_zenodo(manifest_root))
-            print(f"  эрху: {summary[-1]}", flush=True)
+def _cache_raw(url: str, dest: Path, timeout: int = 180) -> bool:
+    if dest.is_file() and dest.stat().st_size > 1000:
+        return True
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        dest.write_bytes(_get(url, timeout=timeout))
+    except Exception as exc:
+        print(f"  не скачалось {dest.name}: {exc}", flush=True)
+        if dest.is_file():
+            dest.unlink()
+        return False
+    return dest.is_file() and dest.stat().st_size > 1000
+
+
+def _rows_from_raw(instrument: str, page: dict, recording: str, raw: Path, hop: float, cap: int,
+                   per_recording: dict[str, int]) -> list[dict]:
+    try:
+        duration = probe_duration(raw)
+    except Exception as exc:
+        print(f"  нет длительности {page['title']}: {exc}", flush=True)
+        return []
+    room = cap - per_recording.get(recording, 0)
+    if room <= 0:
+        print(f"  {recording}: потолок клипов, {page['title']}", flush=True)
+        return []
+    spans = _clips(duration, hop, room)
+    if not spans:
+        print(f"  короче 2 с: {page['title']} ({duration:.2f})", flush=True)
+        return []
+    digest = hashlib.sha256(page["title"].encode("utf-8")).hexdigest()[:8]
+    audio_root = WORK / "extra" / instrument
+    rows = []
+    for start, end in spans:
+        name = f"{recording}-{digest}-{start:.1f}.wav"
+        try:
+            _export_clip(raw, audio_root / name, start)
+        except Exception as exc:
+            print(f"  клип {name}: {exc}", flush=True)
             continue
-        try:
-            files = _candidates(instrument)
-        except Exception as exc:
-            print(f"  commons: {exc}", flush=True)
-            files = []
-        try:
-            files.extend(_ia_candidates(instrument))
-        except Exception as exc:
-            print(f"  archive: {exc}", flush=True)
-        print(f"  записей с явной лицензией: {len(files)}", flush=True)
+        rows.append({
+            "url": page["url"],
+            "license": page["license"],
+            "author": page["author"],
+            "recording": recording,
+            "start": f"{start:.3f}",
+            "end": f"{end:.3f}",
+            "source": "commons",
+            "file": name,
+            "flag": "",
+        })
+    per_recording[recording] = per_recording.get(recording, 0) + len(rows)
+    print(f"  {recording}: {duration:.1f} с, клипов {len(rows)}, {page['license']}", flush=True)
+    return rows
+
+
+def _commons(instrument: str) -> list[dict]:
+    spec = CATALOG.get(instrument) or []
+    if not spec:
+        return []
+    pages = _lookup([title for title, _recording in spec])
+    raw_root = WORK / "sources-raw" / instrument
+    rows: list[dict] = []
+    per_recording: dict[str, int] = {}
+    downloaded: list[tuple[dict, str, Path]] = []
+    for title, recording in spec:
+        page = pages.get(title)
+        if page is None:
+            print(f"  нет карточки {title}", flush=True)
+            continue
+        reason = _allowed_page(instrument, page)
+        if reason:
+            print(f"  пропуск {title}: {reason}", flush=True)
+            continue
+        ext = Path(urllib.parse.urlparse(page["url"]).path).suffix.lower() or ".bin"
+        digest = hashlib.sha256(title.encode("utf-8")).hexdigest()[:8]
+        raw = raw_root / f"{digest}{ext}"
+        if not _cache_raw(page["url"], raw):
+            continue
+        downloaded.append((page, recording, raw))
+        rows.extend(_rows_from_raw(
+            instrument, page, recording, raw, HOP_SEC, _cap(recording, MAX_CLIPS_PER_RECORDING), per_recording,
+        ))
+    recordings = {row["recording"] for row in rows}
+    # A second pass only helps when the first hop left gaps. At 2 s the windows
+    # already touch, so a tighter hop would not add a new slice.
+    if len(rows) < MIN_CLIPS and len(recordings) >= MIN_RECORDINGS and HOP_SEC > HOP_TIGHT:
+        print("  добор шагом 2 с", flush=True)
+        per_recording = {}
+        rows = []
         audio_root = WORK / "extra" / instrument
         if audio_root.is_dir():
-            for old in audio_root.glob("*.wav"):
-                old.unlink()
-        raw_root = WORK / "sources-raw" / instrument
-        raw_root.mkdir(parents=True, exist_ok=True)
-        manifest_rows = []
-        recordings = set()
-        for item in files:
-            if len(manifest_rows) >= MIN_CLIPS and len(recordings) >= MIN_RECORDINGS:
-                break
-            ext = Path(urllib.parse.urlparse(item["url"]).path).suffix.lower() or ".bin"
-            raw = raw_root / f"{item['recording']}{ext}"
-            if not raw.is_file() or raw.stat().st_size < 1000:
-                try:
-                    raw.write_bytes(_get(item["url"]))
-                except Exception as exc:
-                    print(f"  пропуск {item['title']}: {exc}", flush=True)
-                    continue
-            try:
-                duration = probe_duration(raw)
-            except Exception as exc:
-                print(f"  нет длительности {item['title']}: {exc}", flush=True)
-                continue
-            clips = _clips(raw, duration)
-            if not clips:
-                continue
-            made = 0
-            for start, end in clips:
-                if len(manifest_rows) >= MIN_CLIPS and len(recordings) >= MIN_RECORDINGS:
-                    break
-                name = f"{item['recording']}-{start:.1f}.wav"
-                dest = audio_root / name
-                try:
-                    _export_clip(raw, dest, start)
-                except Exception as exc:
-                    print(f"  клип {name}: {exc}", flush=True)
-                    continue
-                manifest_rows.append({
-                    "url": item["url"],
-                    "license": item["license"],
-                    "author": item["author"],
-                    "recording": item["recording"],
-                    "start": f"{start:.3f}",
-                    "end": f"{end:.3f}",
-                    "source": "internet-archive" if "archive.org" in item["url"] else "commons",
-                })
-                recordings.add(item["recording"])
-                made += 1
-            print(f"  {item['recording']}: {duration:.1f} с, клипов {made}, {item['license']}", flush=True)
-        ok = len(manifest_rows) >= MIN_CLIPS and len(recordings) >= MIN_RECORDINGS
-        csv_path = manifest_root / f"{instrument}.csv"
-        with csv_path.open("w", encoding="utf-8", newline="") as handle:
-            writer = csv.DictWriter(handle, fieldnames=["url", "license", "author", "recording", "start", "end", "source"])
-            writer.writeheader()
-            writer.writerows(manifest_rows)
-        if not ok and audio_root.is_dir():
             for wav in audio_root.glob("*.wav"):
                 wav.unlink()
-        summary.append({
-            "id": instrument,
-            "clips": len(manifest_rows),
-            "recordings": len(recordings),
-            "enough": ok,
+        for page, recording, raw in downloaded:
+            rows.extend(_rows_from_raw(
+                instrument, page, recording, raw, HOP_TIGHT, _cap(recording, MAX_CLIPS_TIGHT), per_recording,
+            ))
+    return rows
+
+
+SFZ_NOTES = (
+    "Samples/sus/erhu_d5_sus_rr1.wav",
+    "Samples/sus/erhu_a5_sus_rr1.wav",
+    "Samples/sus/erhu_e5_sus_rr1.wav",
+    "Samples/sus/erhu_g5_sus_rr1.wav",
+    "Samples/sus/erhu_c6_sus_rr1.wav",
+    "Samples/sus/erhu_f5_sus_rr1.wav",
+    # Four more rr1 pitches, names taken from the public git tree of Samples/sus.
+    "Samples/sus/erhu_b5_sus_rr1.wav",
+    "Samples/sus/erhu_a6_sus_rr1.wav",
+    "Samples/sus/erhu_d6_sus_rr1.wav",
+    "Samples/sus/erhu_e6_sus_rr1.wav",
+)
+
+
+def _erhu_sfz() -> list[dict]:
+    """CC0 close-miked notes. The readme names no player, so this is one recording."""
+    rows = []
+    raw_root = WORK / "sources-raw" / "erhu"
+    raw_root.mkdir(parents=True, exist_ok=True)
+    for path in SFZ_NOTES:
+        if len(rows) >= MAX_CLIPS_PER_RECORDING:
+            break
+        url = "https://raw.githubusercontent.com/sfzinstruments/aliexpress-erhu/main/" + path
+        dest = raw_root / Path(path).name
+        if not _cache_raw(url, dest):
+            continue
+        try:
+            duration = probe_duration(dest)
+        except Exception as exc:
+            print(f"  sfz {dest.name}: {exc}", flush=True)
+            continue
+        if duration < CLIP_SEC:
+            print(f"  sfz короче 2 с: {dest.name}", flush=True)
+            continue
+        file_name = f"aliexpress-erhu-{dest.stem}-0.0.wav"
+        try:
+            _export_clip(dest, WORK / "extra" / "erhu" / file_name, 0.0)
+        except Exception as exc:
+            print(f"  sfz клип {dest.name}: {exc}", flush=True)
+            continue
+        rows.append({
+            "url": url,
+            "license": "CC0 1.0",
+            "author": "не указан (readme.txt: скрипач, дешёвый эрху)",
+            "recording": "aliexpress-erhu",
+            "start": "0.000",
+            "end": f"{CLIP_SEC:.3f}",
+            "source": "github",
+            "file": file_name,
+            "flag": "",
         })
-        print(f"  итог клипов {len(manifest_rows)}, записей {len(recordings)}, в голову: {'да' if ok else 'нет'}", flush=True)
-    # Classes already inside the trained head. Counts are files in the index, not a new manifest.
+    print(f"  aliexpress-erhu: клипов {len(rows)}, CC0", flush=True)
+    return rows
+
+
+def _wav_seconds(blob: bytes) -> float | None:
+    """Duration from a wav header. The data chunk size is enough; the samples are not read."""
+    if len(blob) < 44 or blob[:4] != b"RIFF" or blob[8:12] != b"WAVE":
+        return None
+    pos = 12
+    rate = channels = width = None
+    data_size = None
+    while pos + 8 <= len(blob):
+        chunk = blob[pos:pos + 4]
+        size = int.from_bytes(blob[pos + 4:pos + 8], "little")
+        pos += 8
+        if chunk == b"fmt " and pos + 16 <= len(blob):
+            channels = int.from_bytes(blob[pos + 2:pos + 4], "little")
+            rate = int.from_bytes(blob[pos + 4:pos + 8], "little")
+            width = int.from_bytes(blob[pos + 14:pos + 16], "little")
+        elif chunk == b"data":
+            data_size = size
+            break
+        pos += size + (size & 1)
+    if not rate or not channels or not width or data_size is None:
+        return None
+    return data_size / (rate * channels * (width / 8))
+
+
+# English technique folders in ErhuPT. Short hits and pizzicato are not the bowed class.
+ERHU_BOWED = ("detache", "diangong", "legato", "tremolo", "trill", "vibrato")
+ERHU_PER_FOLDER = 2
+
+
+def _erhu_zenodo() -> list[dict]:
+    """Unlabeled players stay one recording. One or two long bowed notes per technique."""
+    zip_path = WORK / "data" / "ErhuPT.zip"
+    zip_path.parent.mkdir(parents=True, exist_ok=True)
+    meta = json.loads(_get(ERHU_API))
+    files = ((meta.get("files") or []) if isinstance(meta, dict) else [])
+    chosen = next((item for item in files if str(item.get("key") or "").endswith("ErhuPT.zip")), None)
+    if chosen is None:
+        print("  ErhuPT.zip нет в записи Zenodo", flush=True)
+        return []
+    links = chosen.get("links") or {}
+    url = links.get("self") or ""
+    expect = int(chosen.get("size") or 0)
+    checksum = str(chosen.get("checksum") or "")
+    if not zip_path.is_file() or (expect and zip_path.stat().st_size != expect):
+        if not url:
+            print("  у ErhuPT нет прямой ссылки", flush=True)
+            return []
+        print(f"  качаю ErhuPT, {expect} байт", flush=True)
+        if not _cache_raw(url, zip_path, timeout=600):
+            return []
+    if expect and zip_path.stat().st_size != expect:
+        print(f"  размер ErhuPT {zip_path.stat().st_size}, ждали {expect}", flush=True)
+        return []
+    if checksum.startswith("md5:"):
+        digest = hashlib.md5(zip_path.read_bytes()).hexdigest()
+        if digest != checksum.split(":", 1)[1]:
+            print(f"  md5 ErhuPT не сошёлся: {digest}", flush=True)
+            return []
+    archive = zipfile.ZipFile(zip_path)
+    names = [
+        name for name in archive.namelist()
+        if name.lower().endswith(".wav") and "train_data" in name.replace("\\", "/") and "__MACOSX" not in name
+    ]
+    by_dir: dict[str, list[str]] = {}
+    for name in names:
+        by_dir.setdefault(str(Path(name).parent), []).append(name)
+    raw_root = WORK / "sources-raw" / "erhu"
+    raw_root.mkdir(parents=True, exist_ok=True)
+    picked: list[str] = []
+    for folder in sorted(by_dir):
+        path = folder.replace("\\", "/")
+        leaf = path.rsplit("/", 1)[-1].lower()
+        if "11 classes" not in path or not any(token in leaf for token in ERHU_BOWED):
+            continue
+        found = 0
+        for name in sorted(by_dir[folder]):
+            if len(picked) >= MAX_CLIPS_PER_RECORDING or found >= ERHU_PER_FOLDER:
+                break
+            with archive.open(name) as handle:
+                seconds = _wav_seconds(handle.read(4096))
+            if seconds is None or seconds < CLIP_SEC:
+                continue
+            picked.append(name)
+            found += 1
+    rows = []
+    dest = raw_root / "probe.wav"
+    for name in picked:
+        dest.write_bytes(archive.read(name))
+        try:
+            duration = probe_duration(dest)
+        except Exception:
+            continue
+        if duration < CLIP_SEC:
+            continue
+        digest = hashlib.sha256(name.encode("utf-8")).hexdigest()[:8]
+        file_name = f"erhupt-{digest}-0.0.wav"
+        try:
+            _export_clip(dest, WORK / "extra" / "erhu" / file_name, 0.0)
+        except Exception as exc:
+            print(f"  эрху {name}: {exc}", flush=True)
+            continue
+        rows.append({
+            "url": "https://zenodo.org/records/4320991/files/ErhuPT.zip?download=1#" + urllib.parse.quote(name),
+            "license": "CC BY 4.0",
+            "author": "Zehao Wang, Jingru Li",
+            "recording": "erhupt",
+            "start": "0.000",
+            "end": f"{min(CLIP_SEC, duration):.3f}",
+            "source": "zenodo",
+            "file": file_name,
+            "flag": "",
+        })
+    if dest.is_file():
+        dest.unlink()
+    print(f"  erhupt: клипов {len(rows)} из долгих смычковых приёмов", flush=True)
+    return rows
+
+
+def _write_csv(instrument: str, rows: list[dict]) -> None:
+    path = ROOT / "scripts" / "instrument_id" / "sources" / f"{instrument}.csv"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=FIELDS)
+        writer.writeheader()
+        writer.writerows(rows)
+    keep = {row["file"] for row in rows}
+    audio_root = WORK / "extra" / instrument
+    if audio_root.is_dir():
+        for wav in audio_root.glob("*.wav"):
+            if wav.name not in keep:
+                wav.unlink()
+
+
+def _accepted(rows: list[dict]) -> list[dict]:
+    return [row for row in rows if not (row.get("flag") or "").strip()]
+
+
+def _note(instrument: str, rows: list[dict]) -> str:
+    accepted = _accepted(rows)
+    recordings = {row["recording"] for row in accepted}
+    flagged = len(rows) - len(accepted)
+    if len(accepted) >= MIN_CLIPS and len(recordings) >= MIN_RECORDINGS:
+        if instrument == "oud":
+            return "Третья запись — открытые струны уда (User:Bottomline), два клипа. Остальные клипы — Andy R. Jordan и Houssem bettaibi."
+        if instrument == "erhu":
+            return (
+                "Zhang Peijian — один человек. Десять клипов — из «二泉映月»; «江河水» тот же исполнитель "
+                "и в нарезку не вошла, потолок записи уже был заполнен. "
+                "ErhuPT — исполнители в файлах не подписаны; взяты долгие смычковые приёмы, "
+                "короткие удары и пиццикато не брали. "
+                "Третья группа — десять CC0-нот дешёвого эрху, имя скрипача в readme не указано. "
+                "Сведение Antti Luode в голову не входит."
+            )
+        if instrument == "choir":
+            return "Kantorei St. Michael помечена review и в счёт не входит. Четыре хора: Childrenschorussa, храм «Света Троица» в Пловдиве, Ensemble Morales, Harmonica."
+        return ""
+    base = EMPTY_NOTE.get(instrument) or ""
+    detail = f"Принятых клипов {len(accepted)}, записей {len(recordings)}"
+    if flagged:
+        detail += f", с флагом {flagged}"
+    if instrument == "erhu" and accepted:
+        detail += ". Исполнители ErhuPT в файлах не подписаны, это одна группа."
+    if instrument == "oud" and "user-bottomline" in recordings:
+        detail += ". Открытые струны — один короткий клип, не третья пьеса."
+    if instrument == "santur":
+        detail += ". Концертино с оркестром не брали. Ey Iran помечен как голос, ролик Lizikus — как шум, не как соло сантура."
+    if instrument == "darbuka":
+        detail += ". Давул, рик и мазхар не метили как дарбуку."
+    if instrument == "bendir":
+        detail += ". Все узулы — один автор, Anomyq."
+    if instrument == "qanun":
+        detail += ". Оба образца — Ariel Qassis. Запись с пением не брали."
+    if instrument == "setar":
+        detail += ". Jacqke — один демонстратор ладов."
+    return (base + " " + detail).strip()
+
+
+def summarize() -> list[dict]:
+    """Recount manifests. Western counts stay as they were until this machine has an index."""
+    manifest_root = ROOT / "scripts" / "instrument_id" / "sources"
+    previous: dict[str, dict] = {}
+    report_path = ROOT / "docs" / "analysis" / "instrument-id-sources.json"
+    if report_path.is_file():
+        for row in json.loads(report_path.read_text(encoding="utf-8")):
+            previous[row.get("id") or ""] = row
+    summary = []
+    seen = set()
+    for instrument in CORE:
+        csv_path = manifest_root / f"{instrument}.csv"
+        records = []
+        if csv_path.is_file():
+            with csv_path.open(encoding="utf-8", newline="") as handle:
+                records = list(csv.DictReader(handle))
+        accepted = _accepted(records)
+        recordings = {row.get("recording") or "" for row in accepted}
+        recordings.discard("")
+        enough = len(accepted) >= MIN_CLIPS and len(recordings) >= MIN_RECORDINGS
+        row = {
+            "id": instrument,
+            "clips": len(accepted),
+            "recordings": len(recordings),
+            "enough": enough,
+        }
+        note = _note(instrument, records)
+        if note:
+            row["note"] = note
+        summary.append(row)
+        seen.add(instrument)
     index_path = WORK / "index.jsonl"
     have: dict[str, dict[str, int]] = {}
     if index_path.is_file():
@@ -456,47 +633,51 @@ def fetch(instruments: list[str] | None = None) -> None:
         ("cello", "уже в голове"),
         ("piano", "уже в голове"),
         ("guitar-acoustic", "уже в голове. Это не гравюра фламенко."),
-        ("voice", "уже в голове"),
+        ("voice", "уже в голове из IRMAS, отдельный набор не собирали. Веса некоммерческие из-за CC BY-NC-SA 4.0."),
     ):
-        bucket = have.get(instrument) or {}
-        summary.append({
-            "id": instrument,
-            "clips": sum(bucket.values()),
-            "recordings": ", ".join(f"{name} {count}" for name, count in sorted(bucket.items())) or "0",
-            "enough": sum(bucket.values()) >= MIN_CLIPS,
-            "note": note,
-        })
-    summary.append({
-        "id": "choir",
-        "clips": sum((have.get("choir") or {}).values()),
-        "recordings": 0,
-        "enough": False,
-        "note": "отдельного набора хора с явной лицензией нет. В голове есть голос, не хор.",
-    })
-    # Disk is the source of truth: a partial run must not drop classes fetched earlier.
-    by_id = {row["id"]: row for row in summary}
-    for csv_path in sorted(manifest_root.glob("*.csv")):
-        with csv_path.open(encoding="utf-8", newline="") as handle:
-            records = list(csv.DictReader(handle))
-        recordings = {record.get("recording") or "" for record in records}
-        recordings.discard("")
-        enough = len(records) >= MIN_CLIPS and len(recordings) >= MIN_RECORDINGS
-        row = by_id.get(csv_path.stem)
-        if row is None:
-            row = {"id": csv_path.stem}
-            summary.append(row)
-            by_id[csv_path.stem] = row
-        row["clips"] = len(records)
-        row["recordings"] = len(recordings)
-        row["enough"] = enough
-        if not enough:
-            row["note"] = SHORT_NOTE.get(csv_path.stem) or row.get("note") or "меньше 15 клипов или меньше 3 исполнителей"
-    report = ROOT / "docs" / "analysis" / "instrument-id-sources.json"
-    report.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(report)
+        if index_path.is_file():
+            bucket = have.get(instrument) or {}
+            summary.append({
+                "id": instrument,
+                "clips": sum(bucket.values()),
+                "recordings": ", ".join(f"{name} {count}" for name, count in sorted(bucket.items())) or "0",
+                "enough": sum(bucket.values()) >= MIN_CLIPS,
+                "note": note,
+            })
+        elif instrument in previous:
+            summary.append(previous[instrument])
+        seen.add(instrument)
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(report_path)
+    return summary
+
+
+def fetch(instruments: list[str] | None = None) -> None:
+    wanted = instruments or CORE
+    for instrument in wanted:
+        print(f"=== {instrument}", flush=True)
+        if instrument not in CATALOG and instrument != "erhu":
+            _write_csv(instrument, [])
+            print("  файлов с явной лицензией нет", flush=True)
+            continue
+        rows = _commons(instrument) if instrument in CATALOG else []
+        if instrument == "erhu":
+            try:
+                rows.extend(_erhu_zenodo())
+            except Exception as exc:
+                print(f"  zenodo: {exc}", flush=True)
+            try:
+                rows.extend(_erhu_sfz())
+            except Exception as exc:
+                print(f"  sfz: {exc}", flush=True)
+        _write_csv(instrument, rows)
+        accepted = _accepted(rows)
+        recordings = {row["recording"] for row in accepted}
+        ok = len(accepted) >= MIN_CLIPS and len(recordings) >= MIN_RECORDINGS
+        print(f"  итог клипов {len(accepted)}, записей {len(recordings)}, в голову: {'да' if ok else 'нет'}", flush=True)
+    summarize()
 
 
 if __name__ == "__main__":
-    import sys
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
     fetch(sys.argv[1:] or None)

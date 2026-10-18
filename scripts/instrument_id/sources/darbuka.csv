@@ -1,5 +1,12 @@
-url,license,author,recording,start,end,source
-https://upload.wikimedia.org/wikipedia/commons/e/ed/Darbuka.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Cassa342,cassa342,0.000,2.000,commons
-https://upload.wikimedia.org/wikipedia/commons/e/ed/Darbuka.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Cassa342,cassa342,4.000,6.000,commons
-https://upload.wikimedia.org/wikipedia/commons/e/ed/Darbuka.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Cassa342,cassa342,8.000,10.000,commons
-https://upload.wikimedia.org/wikipedia/commons/e/ed/Darbuka.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Cassa342,cassa342,12.000,14.000,commons
+url,license,author,recording,start,end,source,file,flag
+https://upload.wikimedia.org/wikipedia/commons/e/ed/Darbuka.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Cassa342,cassa342,0.000,2.000,commons,cassa342-93cb6342-0.0.wav,
+https://upload.wikimedia.org/wikipedia/commons/e/ed/Darbuka.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Cassa342,cassa342,3.000,5.000,commons,cassa342-93cb6342-3.0.wav,
+https://upload.wikimedia.org/wikipedia/commons/e/ed/Darbuka.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Cassa342,cassa342,6.000,8.000,commons,cassa342-93cb6342-6.0.wav,
+https://upload.wikimedia.org/wikipedia/commons/e/ed/Darbuka.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Cassa342,cassa342,9.000,11.000,commons,cassa342-93cb6342-9.0.wav,
+https://upload.wikimedia.org/wikipedia/commons/e/ed/Darbuka.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Cassa342,cassa342,12.000,14.000,commons,cassa342-93cb6342-12.0.wav,
+https://upload.wikimedia.org/wikipedia/commons/9/9e/Wahda_Ejemplo.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Derbake,derbake,0.000,2.000,commons,derbake-bd24e3a0-0.0.wav,
+https://upload.wikimedia.org/wikipedia/commons/9/9e/Wahda_Ejemplo.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Derbake,derbake,3.000,5.000,commons,derbake-bd24e3a0-3.0.wav,
+https://upload.wikimedia.org/wikipedia/commons/9/9e/Wahda_Ejemplo.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Derbake,derbake,6.000,8.000,commons,derbake-bd24e3a0-6.0.wav,silence
+https://upload.wikimedia.org/wikipedia/commons/6/6a/Zaffa_Ejemplo.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Derbake,derbake,0.000,2.000,commons,derbake-826ab1bb-0.0.wav,
+https://upload.wikimedia.org/wikipedia/commons/6/6a/Zaffa_Ejemplo.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Derbake,derbake,3.000,5.000,commons,derbake-826ab1bb-3.0.wav,
+https://upload.wikimedia.org/wikipedia/commons/6/6a/Zaffa_Ejemplo.ogg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original,CC BY-SA 4.0,Derbake,derbake,6.000,8.000,commons,derbake-826ab1bb-6.0.wav,

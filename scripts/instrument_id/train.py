@@ -3,6 +3,12 @@
 The threshold is the lowest one on the validation split whose accepted top-1
 precision is at least 0.90 (and at least 20 accepted clips). It is frozen
 before the test split is touched.
+
+An extra class, whose test split is one recording held out of training, also
+has to clear heldOutRecording in labels.json on that recording. The bar is
+measured while the class is still in the probe, then the shipped head is fit
+without the classes that missed it. TinySOL and IRMAS are not gated: their
+split does not hold out a performer.
 """
 
 from __future__ import annotations
@@ -93,56 +99,87 @@ def _pack_labels(rows: list[dict], ids: list[str]) -> tuple[np.ndarray, np.ndarr
     )
 
 
-def train() -> dict:
+def _one_prf(y_true: np.ndarray, y_pred: np.ndarray, label: int) -> tuple[float, float, int]:
+    tp = int(((y_pred == label) & (y_true == label)).sum())
+    fp = int(((y_pred == label) & (y_true != label)).sum())
+    fn = int(((y_pred != label) & (y_true == label)).sum())
+    precision = tp / (tp + fp) if tp + fp else 0.0
+    recall = tp / (tp + fn) if tp + fn else 0.0
+    return precision, recall, int((y_true == label).sum())
+
+
+def _is_gated_extra(rows: list[dict], class_id: str) -> bool:
+    """True when every clip of the class is an extra manifest row, not TinySOL or IRMAS."""
+    own = [row for row in rows if row["id"] == class_id]
+    if not own:
+        return False
+    return all(row.get("source") not in ("tinysol", "irmas") and not row.get("optimistic") for row in own)
+
+
+def _fit_classifier(features: np.ndarray, rows: list[dict], kept: list[str], seed: int) -> dict:
     from sklearn.linear_model import LogisticRegression
 
-    data = load()
-    rows = read_index()
-    blob = np.load(EMB_PATH, allow_pickle=False)
-    if len(blob["paths"]) != len(rows) or any(str(p) != row["path"] for p, row in zip(blob["paths"].tolist(), rows)):
-        raise SystemExit("embeddings.npz не совпадает с индексом. Запустите embed ещё раз.")
-    features = blob["features"].astype(np.float64)
-    counts: dict[str, int] = {}
-    for row in rows:
-        if row["split"] == "train":
-            counts[row["id"]] = counts.get(row["id"], 0) + 1
-    minimum = int(data["minExamples"])
-    kept = [item["id"] for item in data["instruments"] if counts.get(item["id"], 0) >= minimum]
-    few = sorted(set(counts) - set(kept))
-    if len(kept) < 2:
-        raise SystemExit(f"в голове {len(kept)} классов — мало")
     pos, y, tr, va, te = _pack_labels(rows, kept)
+    if len(tr) < 2:
+        raise SystemExit("в обучении меньше двух строк")
     x = features[pos]
     mu = x[tr].mean(axis=0)
     sd = x[tr].std(axis=0) + 1e-6
     xn = (x - mu) / sd
-
     clf = LogisticRegression(
-        C=1.0, class_weight="balanced", max_iter=500, solver="lbfgs", random_state=int(data["seed"]),
+        C=1.0, class_weight="balanced", max_iter=500, solver="lbfgs", random_state=seed,
     )
     clf.fit(xn[tr], y[tr])
     logits = xn @ clf.coef_.T + clf.intercept_
+    return {
+        "pos": pos, "y": y, "tr": tr, "va": va, "te": te,
+        "mu": mu, "sd": sd, "xn": xn, "clf": clf, "logits": logits,
+    }
 
-    fam_ids = []
-    for instrument in kept:
-        fam = data["by_id"][instrument]["family"]
-        if fam not in fam_ids:
-            fam_ids.append(fam)
-    fam_index = {name: i for i, name in enumerate(fam_ids)}
-    yf = np.array([fam_index[data["by_id"][kept[label]]["family"]] for label in y], dtype=np.int64)
-    fam = LogisticRegression(
-        C=1.0, class_weight="balanced", max_iter=500, solver="lbfgs", random_state=int(data["seed"]),
-    )
-    fam.fit(xn[tr], yf[tr])
-    fam_logits = xn @ fam.coef_.T + fam.intercept_
 
+def _held_out_scores(rows: list[dict], kept: list[str], bundle: dict, data: dict) -> list[dict]:
+    bar = data["heldOutRecording"]
+    te = bundle["te"]
+    pred = bundle["logits"][te].argmax(axis=1)
+    y_te = bundle["y"][te]
+    scored = []
+    for class_id in kept:
+        if not _is_gated_extra(rows, class_id):
+            continue
+        precision, recall, support = _one_prf(y_te, pred, kept.index(class_id))
+        recordings = sorted({
+            row["group"].rsplit(":", 1)[-1]
+            for row in rows
+            if row["id"] == class_id and row["split"] == "test"
+        })
+        passed = (
+            support >= int(bar["minSupport"])
+            and precision + 1e-9 >= float(bar["minPrecision"])
+            and recall + 1e-9 >= float(bar["minRecall"])
+        )
+        scored.append({
+            "id": class_id,
+            "name": data["by_id"][class_id]["name"],
+            "precision": precision,
+            "recall": recall,
+            "support": support,
+            "recordings": recordings,
+            "passed": passed,
+        })
+        print(
+            f"чужая запись {class_id}: точность {precision:.3f} полнота {recall:.3f} "
+            f"опора {support} запись {', '.join(recordings) or '—'} "
+            f"{'в голове' if passed else 'вне головы'}"
+        )
+    return scored
+
+
+def _freeze_threshold(logits: np.ndarray, y: np.ndarray, va: np.ndarray):
     temperature = _fit_temperature(logits[va], y[va])
     prob = _softmax(logits, temperature)
     tau, prec, cov = _choose_tau(prob[va], y[va], 0.90)
     reached = tau is not None
     if tau is None:
-        tau = float(_choose_tau(prob[va], y[va], 0.0)[0] or 0.99)
-        # _choose_tau with target 0 returns None; recompute the best tau explicitly
         top = prob[va].max(axis=1)
         pred = prob[va].argmax(axis=1)
         best = (0.0, 0.99, 0.0)
@@ -158,6 +195,54 @@ def train() -> dict:
         prec = best[0]
         cov = best[2]
     tau95, prec95, cov95 = _choose_tau(prob[va], y[va], 0.95)
+    return temperature, float(tau), prec, cov, reached, tau95, prec95, cov95
+
+
+def train() -> dict:
+    from sklearn.linear_model import LogisticRegression
+
+    data = load()
+    if "heldOutRecording" not in data:
+        raise SystemExit("в labels.json нет heldOutRecording")
+    rows = read_index()
+    blob = np.load(EMB_PATH, allow_pickle=False)
+    if len(blob["paths"]) != len(rows) or any(str(p) != row["path"] for p, row in zip(blob["paths"].tolist(), rows)):
+        raise SystemExit("embeddings.npz не совпадает с индексом. Запустите embed ещё раз.")
+    features = blob["features"].astype(np.float64)
+    counts: dict[str, int] = {}
+    for row in rows:
+        if row["split"] == "train":
+            counts[row["id"]] = counts.get(row["id"], 0) + 1
+    minimum = int(data["minExamples"])
+    counted = [item["id"] for item in data["instruments"] if counts.get(item["id"], 0) >= minimum]
+    few = sorted(set(counts) - set(counted))
+    if len(counted) < 2:
+        raise SystemExit(f"в голове {len(counted)} классов — мало")
+    seed = int(data["seed"])
+    measured = _fit_classifier(features, rows, counted, seed)
+    held = _held_out_scores(rows, counted, measured, data)
+    rejected = {row["id"] for row in held if not row["passed"]}
+    kept = [class_id for class_id in counted if class_id not in rejected]
+    if len(kept) < 2:
+        raise SystemExit(f"после чужой записи в голове {len(kept)} классов — мало")
+    bundle = measured if kept == counted else _fit_classifier(features, rows, kept, seed)
+    pos, y, tr, va, te = bundle["pos"], bundle["y"], bundle["tr"], bundle["va"], bundle["te"]
+    mu, sd, xn, clf, logits = bundle["mu"], bundle["sd"], bundle["xn"], bundle["clf"], bundle["logits"]
+
+    fam_ids = []
+    for instrument in kept:
+        fam = data["by_id"][instrument]["family"]
+        if fam not in fam_ids:
+            fam_ids.append(fam)
+    fam_index = {name: i for i, name in enumerate(fam_ids)}
+    yf = np.array([fam_index[data["by_id"][kept[label]]["family"]] for label in y], dtype=np.int64)
+    fam = LogisticRegression(
+        C=1.0, class_weight="balanced", max_iter=500, solver="lbfgs", random_state=seed,
+    )
+    fam.fit(xn[tr], yf[tr])
+    fam_logits = xn @ fam.coef_.T + fam.intercept_
+
+    temperature, tau, prec, cov, reached, tau95, prec95, cov95 = _freeze_threshold(logits, y, va)
 
     groups = {}
     for row, label_index in zip((rows[i] for i in pos), range(len(y))):
@@ -195,6 +280,12 @@ def train() -> dict:
         "valCoverage95": None if tau95 is None else cov95,
         "familyFallbackMin": 0.70,
         "fewExamples": few,
+        "heldOutRecording": {
+            "minPrecision": float(data["heldOutRecording"]["minPrecision"]),
+            "minRecall": float(data["heldOutRecording"]["minRecall"]),
+            "minSupport": int(data["heldOutRecording"]["minSupport"]),
+        },
+        "heldOut": held,
         "noncommercial": True,
         "noncommercialReason": "IRMAS на Zenodo помечен CC BY-NC-SA 4.0. Веса обучены и на этих записях.",
         "licenses": [
@@ -212,7 +303,12 @@ def train() -> dict:
         "split": (
             "TinySOL: официальные fold 0–2 обучение, 3 проверка, 4 тест. "
             "IRMAS: группа — номер отрывка в имени файла, 60/20/20 по sha256, потолок файлов на класс. "
-            "Официальный тест IRMAS не скачивался. Оба разбиения оптимистичны: исполнитель не удержан."
+            "Официальный тест IRMAS не скачивался. Оба разбиения оптимистичны: исполнитель не удержан. "
+            "Дополнительные клипы: запись целиком в одной доле. В тест уходит самая крупная запись, "
+            "после которой в обучении остаётся не меньше 15; при равенстве берётся Commons. "
+            "Свой класс входит в голову, только если на этой чужой записи точность не ниже 0,8 "
+            "и полнота не ниже 0,3 при опоре не меньше 8 окон. Порог измерен, пока класс ещё в голове, "
+            "затем голова переобучена без тех, кто не прошёл. TinySOL и IRMAS этим порогом не режутся."
         ),
     }
     (WEIGHTS / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
