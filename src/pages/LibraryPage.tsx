@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { songs, LANG_NAMES, formatTime } from '@/data/library';
 import type { Song } from '@/data/schema';
+import { prefetchLyrics } from '@/app/prefetch';
 import { linkHandler } from '@/app/router';
 import { useSettings } from '@/app/settings';
 import { useAppliedTheme } from '@/app/theme';
@@ -66,36 +67,71 @@ export function LibraryPage() {
       </header>
 
       <ul className="lib-list">
-        {list.map((song) => {
-          const st = statusOf(song);
-          const origRtl = originalScript(song.titleOriginal);
-          return (
-            <li key={song.slug}>
-              <a className="lib-band" href={`/song/${song.slug}`} onClick={linkHandler(`/song/${song.slug}`)}>
-                <Field colors={song.palette.field} dark={dark} t={stillT(song.slug)} still />
-                <span className="lib-band-copy">
-                  <span className="lib-band-title">{song.title}</span>
-                  {song.titleOriginal ? (
-                    <span className={`lib-band-orig${origRtl ? ' f-mushaf' : ''}`} dir={origRtl ? 'rtl' : 'ltr'}>
-                      {song.titleOriginal}
-                    </span>
-                  ) : null}
-                  <span className="lib-band-meta">
-                    {song.artist}
-                    {song.release?.year ? ` · ${song.release.year}` : ''} · {song.languages.map((l) => LANG_NAMES[l] ?? l).join(', ')} · {formatTime(song.duration)}
-                  </span>
-                  {st && <span className={`chip chip--${st.tone} t-caption1`}>{st.text}</span>}
-                </span>
-              </a>
-            </li>
-          );
-        })}
+        {list.map((song) => (
+          <li key={song.slug}>
+            <SongBand song={song} dark={dark} />
+          </li>
+        ))}
       </ul>
       {list.length === 0 && <p className="lib-empty t-body secondary">Ничего не найдено.</p>}
       <footer className="lib-foot t-footnote tertiary">
         Тексты, переводы и пояснения — {songs.length} {plural(songs.length, 'песня', 'песни', 'песен')}. Как добавить новую — в разделе «Методология».
       </footer>
     </div>
+  );
+}
+
+/** Lyrics for a visible or pointed-at song, so the tap does not wait on that chunk. */
+function SongBand({ song, dark }: { song: Song; dark: boolean }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    let done = false;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (done || !entries.some((e) => e.isIntersecting)) return;
+        done = true;
+        io.disconnect();
+        const run = () => prefetchLyrics(song.slug);
+        const host = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number };
+        if (typeof host.requestIdleCallback === 'function') host.requestIdleCallback(run, { timeout: 1200 });
+        else window.setTimeout(run, 280);
+      },
+      { rootMargin: '160px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [song.slug]);
+
+  const st = statusOf(song);
+  const origRtl = originalScript(song.titleOriginal);
+  const warm = () => prefetchLyrics(song.slug);
+  return (
+    <a
+      ref={ref}
+      className="lib-band"
+      href={`/song/${song.slug}`}
+      onClick={linkHandler(`/song/${song.slug}`)}
+      onPointerEnter={warm}
+      onPointerDown={warm}
+      onFocus={warm}
+    >
+      <Field colors={song.palette.field} dark={dark} t={stillT(song.slug)} still />
+      <span className="lib-band-copy">
+        <span className="lib-band-title">{song.title}</span>
+        {song.titleOriginal ? (
+          <span className={`lib-band-orig${origRtl ? ' f-mushaf' : ''}`} dir={origRtl ? 'rtl' : 'ltr'}>
+            {song.titleOriginal}
+          </span>
+        ) : null}
+        <span className="lib-band-meta">
+          {song.artist}
+          {song.release?.year ? ` · ${song.release.year}` : ''} · {song.languages.map((l) => LANG_NAMES[l] ?? l).join(', ')} · {formatTime(song.duration)}
+        </span>
+        {st && <span className={`chip chip--${st.tone} t-caption1`}>{st.text}</span>}
+      </span>
+    </a>
   );
 }
 

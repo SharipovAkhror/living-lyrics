@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import type { Song } from '@/data/schema';
 import type { ThemePref } from './settings';
 
@@ -25,9 +25,9 @@ export function useAppliedTheme(pref: ThemePref): boolean {
   return dark;
 }
 
-/** Per-song accent colours on <html> while a song is open. */
+/** Per-song accent colours on <html> while a song is open. Layout, so the first paint already has them. */
 export function useSongAccent(song: Song | undefined) {
-  useEffect(() => {
+  useLayoutEffect(() => {
     const root = document.documentElement.style;
     if (!song) return;
     root.setProperty('--song-accent', song.palette.accent);

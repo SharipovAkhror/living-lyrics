@@ -56,12 +56,45 @@
   position: absolute;
   inset: 0;
 }
+.scene {
+  z-index: 2;
+}
+/* The sky of the song being left. It sits over the new sky and under the words and the chrome. */
+.sky-leave {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  animation: sky-leave var(--dur-3) var(--ease-out) forwards;
+}
+@keyframes sky-leave {
+  to {
+    opacity: 0;
+  }
+}
 .scene--loading {
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.load-error {
+  position: absolute;
+  z-index: 3;
+  left: 24px;
+  right: 24px;
+  top: 62%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  color: var(--ink);
+}
+.load-error p {
+  margin: 0;
+}
 .field {
+  z-index: 0;
   overflow: hidden;
   background: var(--bg);
 }
@@ -336,6 +369,11 @@
   padding-bottom: 8px;
   cursor: default;
 }
+/* Shown before the timed flow exists, in the same place the title card settles. */
+.fb--intro.is-held {
+  top: 18%;
+  visibility: visible;
+}
 .intro-title {
   font-family: var(--font-serif);
   font-weight: 600;
@@ -565,6 +603,57 @@
   padding: 8px 16px calc(8px + var(--safe-b, env(safe-area-inset-bottom)));
   background: linear-gradient(to top, color-mix(in srgb, var(--bg) 94%, transparent) 0%, color-mix(in srgb, var(--bg) 72%, transparent) 62%, transparent);
   transition: opacity var(--dur-3) var(--ease-out);
+}
+.player-alert {
+  position: absolute;
+  z-index: 4;
+  left: 16px;
+  right: 16px;
+  top: calc(var(--chrome-top) + 6px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 8px 8px 8px 14px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bg) 86%, var(--ink));
+  color: var(--ink);
+}
+.player-alert p {
+  margin: 0;
+  font: 500 13px/1.3 var(--font-ui);
+}
+.btn-ring.is-buffering {
+  position: relative;
+}
+.btn-ring.is-buffering::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  border: 1.5px solid transparent;
+  border-top-color: var(--accent);
+  animation: btn-buffer 0.9s linear infinite;
+}
+@keyframes btn-buffer {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.btn-buffer {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.sheet-wait {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 4px 0 12px;
 }
 .transport {
   display: flex;

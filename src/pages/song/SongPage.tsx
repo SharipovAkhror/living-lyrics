@@ -5,14 +5,18 @@ import type { Lyrics, Peaks } from '@/data/schema';
 import { buildTimeline, commentFor, type Cue } from '@/data/timeline';
 import { useSettings, setSettings } from '@/app/settings';
 import { useSongAccent } from '@/app/theme';
+import { enableSongFonts } from '@/app/fontCatalog';
+import { nextSlug, prefetchLyrics, prefetchRecording, recordingUrl } from '@/app/prefetch';
 import { linkHandler } from '@/app/router';
 import { AudioEngine } from '@/player/engine';
+import { preloadMode, readNetHint } from '@/player/preload';
 import { Scrubber } from '@/player/Scrubber';
 import { Scene } from '@/scene/Scene';
+import { Field } from '@/scene/Field';
 import { LEAD } from '@/scene/flow';
 import { Icon } from '@/icons/Icon';
 import { RichText } from '@/components/RichText';
-import { stripHarakat } from '@/data/harakat';
+import { showHarakatText, stripHarakat } from '@/data/harakat';
 import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
 import { preloadInstruments } from '@/instruments/catalog';
 import { SettingsSheet } from './SettingsSheet';
@@ -55,7 +59,7 @@ function useHold(onTap: () => void, onHold: () => void) {
   };
 }
 
-export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
+export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: boolean; leaving?: string[] | null }) {
   const song = getSong(slug);
   useSongAccent(song);
   const settings = useSettings();
@@ -63,6 +67,7 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
   const [peaks, setPeaks] = useState<Peaks | null>(null);
   const [features, setFeatures] = useState<AudioFeatures | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [textAttempt, setTextAttempt] = useState(0);
 
   const engine = useMemo(
     () =>
@@ -85,20 +90,68 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
   );
 
   useEffect(() => {
-    if (!song || !engine) return;
+    if (!song) return;
     let alive = true;
+    setLoadError(null);
     loadLyrics(song.slug)
       .then((l) => {
-        if (!alive) return;
-        setLyrics(l);
-        void preloadInstruments(l.sections.flatMap((s) => (s.kind === 'instrumental' ? s.instruments : [])));
+        if (alive) setLyrics(l);
       })
-      .catch((e) => alive && setLoadError(String(e)));
-    if (song.audio.peaks) void loadPeaks(song.audio.peaks).then((p) => alive && p && setPeaks(p));
-    // Features are large and only drive instrument motion, so they wait until the page has painted.
+      .catch(() => {
+        if (!alive) return;
+        const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
+        setLoadError(offline ? 'Нет сети. Проверьте соединение и повторите.' : 'Не удалось открыть текст этой песни.');
+      });
+    return () => {
+      alive = false;
+    };
+  }, [song, textAttempt]);
+
+  useEffect(() => {
+    if (!song || !engine) return;
+    let alive = true;
+    const net = readNetHint(navigator);
+    // Metadata at most until the sky has painted. A slow connection fetches nothing yet.
+    engine.setPreload(preloadMode('first', net));
+    let outer = 0;
+    let inner = 0;
+    outer = requestAnimationFrame(() => {
+      inner = requestAnimationFrame(() => {
+        if (!alive) return;
+        engine.setPreload(preloadMode('settle', net));
+        enableSongFonts();
+        const next = nextSlug(song.slug);
+        if (next) prefetchLyrics(next);
+      });
+    });
+    const s = settings;
+    void engine.init({ quality: s.quality, rate: s.rate, volume: s.volume, normalize: s.normalize }).then(() => {
+      if (!alive) return;
+      if (s.eqEnabled) engine.setEffects(true, s.eqBands, s.eqPreamp);
+      // Deep link to a moment: /song/<slug>?t=95
+      const t = parseFloat(new URLSearchParams(location.search).get('t') ?? '');
+      if (Number.isFinite(t)) engine.seek(t);
+    });
+    return () => {
+      alive = false;
+      cancelAnimationFrame(outer);
+      cancelAnimationFrame(inner);
+      engine.destroy();
+    };
+    // Settings are read once at start; later changes go through the settings sheet.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [song, engine]);
+
+  // Peaks, engravings and the feature file are not on the first frame. They wait until the text is up and the browser is idle.
+  useEffect(() => {
+    if (!song || !lyrics) return;
+    let alive = true;
     const ctrl = new AbortController();
-    const loadFeatures = () => {
-      fetch(`/audio/${song.slug}/features.json`, { signal: ctrl.signal })
+    const run = () => {
+      if (!alive) return;
+      void preloadInstruments(lyrics.sections.flatMap((s) => (s.kind === 'instrumental' ? s.instruments : [])));
+      if (song.audio.peaks) void loadPeaks(song.audio.peaks).then((p) => alive && p && setPeaks(p));
+      fetch(`/audio/${song.slug}/features.json`, { signal: ctrl.signal, priority: 'low' })
         .then((res) => (res.ok ? res.json() : null))
         .then((raw) => {
           if (alive) setFeatures(parseAudioFeatures(raw));
@@ -107,30 +160,26 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
           /* aborted, or no file: the drawings stay still */
         });
     };
-    // Idle is missing on older WebKit. The typed Window always has the method, so the check goes through a widened view.
     const host = window as Window & {
       requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
       cancelIdleCallback?: (id: number) => void;
     };
-    const idle = typeof host.requestIdleCallback === 'function' ? host.requestIdleCallback(loadFeatures, { timeout: 1200 }) : window.setTimeout(loadFeatures, 40);
     const idleWasCallback = typeof host.requestIdleCallback === 'function';
-    const s = settings;
-    void engine.init({ quality: s.quality, rate: s.rate, volume: s.volume, normalize: s.normalize }).then(() => {
-      if (s.eqEnabled) engine.setEffects(true, s.eqBands, s.eqPreamp);
-      // Deep link to a moment: /song/<slug>?t=95
-      const t = parseFloat(new URLSearchParams(location.search).get('t') ?? '');
-      if (Number.isFinite(t)) engine.seek(t);
-    });
+    const idle = idleWasCallback ? host.requestIdleCallback!(run, { timeout: 1500 }) : window.setTimeout(run, 80);
     return () => {
       alive = false;
       ctrl.abort();
       if (idleWasCallback) host.cancelIdleCallback?.(idle);
       else clearTimeout(idle);
-      engine.destroy();
     };
-    // Settings are read once at start; later changes go through the settings sheet.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [song, engine]);
+  }, [song, lyrics]);
+
+  useEffect(() => {
+    if (!song || !state?.canPlay) return;
+    const next = nextSlug(song.slug);
+    const following = next ? getSong(next) : undefined;
+    if (following) prefetchRecording(recordingUrl(following, settings.quality));
+  }, [song, state?.canPlay, settings.quality]);
 
   // A file attached on this device has no peaks.json: compute an envelope once.
   useEffect(() => {
@@ -264,6 +313,9 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
 
   if (!song || !engine) return <NotFound />;
 
+  const poets = song.poets?.map((p) => p.name).join(' · ');
+  const buffering = !!state?.buffering;
+  const playLabel = buffering ? (playing ? 'Буферизация' : 'Загрузка записи') : playing ? 'Пауза' : 'Воспроизвести';
   const ownerCue = timeline && owner >= 0 ? timeline.cues[owner] : null;
   const sectionLabel = headerLine(song, ownerCue);
   const comment = timeline && settings.showComment && owner >= 0 ? commentFor(timeline, owner) : null;
@@ -281,10 +333,40 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
 
   return (
     <div className={`song${comment ? ' has-comment' : ''}${settings.commentOpen ? ' comment-open' : ''}`}>
+      <Field colors={song.palette.field} dark={dark} clock={timeline ? clock : undefined} t={0} still={!timeline} />
+      {leaving && (
+        <div className="sky-leave" aria-hidden>
+          <Field colors={leaving} dark={dark} t={0} still />
+        </div>
+      )}
       {timeline ? (
-        <Scene song={song} timeline={timeline} settings={settings} dark={dark} features={features} clock={clock} onOwnerChange={setOwner} onPick={pick} />
+        <Scene song={song} timeline={timeline} settings={settings} features={features} clock={clock} onOwnerChange={setOwner} onPick={pick} />
       ) : (
-        <div className="scene scene--loading">{loadError ? <p className="t-body secondary">{loadError}</p> : null}</div>
+        <div className="scene scene--hold">
+          <div className="scene-stage">
+            <div className="fb fb--intro is-held">
+              <div className="intro-title">{song.title}</div>
+              {song.titleOriginal && (
+                <div className="intro-original f-mushaf" dir="rtl">
+                  {showHarakatText(song.titleOriginal, settings.showHarakat)}
+                </div>
+              )}
+              <div className="intro-meta t-subhead">
+                {song.artist}
+                {song.performance?.event ? ` · ${song.performance.event}` : ''}
+              </div>
+              {poets && <div className="intro-poets t-footnote">{poets}</div>}
+            </div>
+          </div>
+          {loadError && (
+            <div className="load-error" role="alert">
+              <p>{loadError}</p>
+              <button type="button" className="btn btn-capsule btn-tinted" onClick={() => setTextAttempt((n) => n + 1)}>
+                Повторить
+              </button>
+            </div>
+          )}
+        </div>
       )}
 
       <header className="topbar">
@@ -313,7 +395,15 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
         </aside>
       )}
 
-      {state?.source === 'silent' && !playing && (
+      {state?.error && (
+        <div className="player-alert" role="alert">
+          <p>{state.error}</p>
+          <button type="button" className="btn btn-capsule btn-sm btn-tinted" onClick={() => engine.retry()}>
+            Повторить
+          </button>
+        </div>
+      )}
+      {state?.source === 'silent' && !playing && !song.audio.high && !song.audio.saver && (
         <button className="hint" onClick={() => setSheet('settings')}>
           <Icon name="music.note" size={15} />
           Аудио не подключено — подключить
@@ -321,7 +411,7 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
       )}
 
       <footer className="player">
-        {timeline && (
+        {timeline ? (
           <Scrubber
             timeline={timeline}
             duration={duration}
@@ -355,13 +445,32 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
               </div>
             }
           />
+        ) : (
+          <div className="scrub scrub--hold" aria-hidden="true">
+            <div className="scrub-top" />
+            <div className="scrub-track">
+              <div className="scrub-rail" />
+            </div>
+            <div className="scrub-meta">
+              <span className="scrub-remain"> </span>
+            </div>
+          </div>
         )}
         <div className="transport">
           <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)">
             <Icon name="backward" size={22} />
           </button>
-          <button className="btn btn-circle btn-xl btn-ring" onClick={togglePlay} aria-label={playing ? 'Пауза' : 'Воспроизвести'}>
-            <Icon name={playing ? 'pause' : 'play'} size={26} style={playing ? undefined : { marginLeft: 3 }} />
+          <button
+            className={`btn btn-circle btn-xl btn-ring${buffering ? ' is-buffering' : ''}`}
+            onClick={togglePlay}
+            aria-label={playLabel}
+            aria-busy={buffering}
+          >
+            {buffering && !playing ? (
+              <span className="btn-buffer" />
+            ) : (
+              <Icon name={playing ? 'pause' : 'play'} size={26} style={playing ? undefined : { marginLeft: 3 }} />
+            )}
           </button>
           <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)">
             <Icon name="forward" size={22} />
@@ -395,24 +504,25 @@ export function SongPage({ slug, dark }: { slug: string; dark: boolean }) {
         lyrics={lyrics}
         showHarakat={settings.showHarakat}
         fontPersian={settings.fontPersian}
+        pendingNote={!lyrics ? (loadError ?? 'Подробности строк ещё открываются') : null}
         onSeek={(t) => {
           engine.seek(t);
           setSheet(null);
         }}
       />
-      {timeline && (
-        <TextSheet
-          open={sheet === 'text'}
-          onClose={() => setSheet(null)}
-          timeline={timeline}
-          owner={owner}
-          settings={settings}
-          onPick={(idx) => {
-            setSheet(null);
-            pick(idx);
-          }}
-        />
-      )}
+      <TextSheet
+        open={sheet === 'text'}
+        onClose={() => setSheet(null)}
+        timeline={timeline}
+        owner={owner}
+        settings={settings}
+        error={loadError}
+        onRetry={() => setTextAttempt((n) => n + 1)}
+        onPick={(idx) => {
+          setSheet(null);
+          pick(idx);
+        }}
+      />
     </div>
   );
 }
