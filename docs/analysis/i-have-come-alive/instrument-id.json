@@ -5,8 +5,8 @@
   "noncommercialReason": "IRMAS на Zenodo помечен CC BY-NC-SA 4.0. Веса обучены и на этих записях.",
   "creditsUsed": false,
   "audioPrimary": "mix",
-  "threshold": 0.53,
-  "threshold95": 0.77,
+  "threshold": 0.56,
+  "threshold95": 0.79,
   "thresholdReached": true,
   "sources": {
     "mix": {
@@ -21,7 +21,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9125,
+          "confidence": 0.9086,
           "accepted": true
         },
         {
@@ -32,7 +32,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9277,
+          "confidence": 0.8895,
           "accepted": true
         },
         {
@@ -43,18 +43,18 @@
           "name": "фортепиано",
           "catalogKey": "piano",
           "kind": "instrument",
-          "confidence": 0.9179,
+          "confidence": 0.9494,
           "accepted": true
         },
         {
-          "start": 71.0,
+          "start": 72.0,
           "end": 81.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.996,
+          "confidence": 0.9967,
           "accepted": true
         },
         {
@@ -65,7 +65,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.931,
+          "confidence": 0.939,
           "accepted": true
         },
         {
@@ -80,14 +80,14 @@
           "accepted": true
         },
         {
-          "start": 170.0,
+          "start": 171.0,
           "end": 175.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9404,
+          "confidence": 0.9348,
           "accepted": true
         },
         {
@@ -98,7 +98,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9814,
+          "confidence": 0.9813,
           "accepted": true
         },
         {
@@ -120,7 +120,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.991,
+          "confidence": 0.9927,
           "accepted": true
         },
         {
@@ -131,11 +131,11 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9844,
+          "confidence": 0.9878,
           "accepted": true
         },
         {
-          "start": 285.0,
+          "start": 286.0,
           "end": 387.0,
           "id": "voice",
           "family": "voice",
@@ -153,7 +153,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9585,
+          "confidence": 0.9482,
           "accepted": true
         },
         {
@@ -164,7 +164,7 @@
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
-          "confidence": 0.9953,
+          "confidence": 0.9958,
           "accepted": true
         },
         {
@@ -175,7 +175,7 @@
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
-          "confidence": 0.9769,
+          "confidence": 0.9762,
           "accepted": true
         },
         {

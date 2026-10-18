@@ -533,8 +533,8 @@
     },
     {
       "id": "voice",
-      "start": 99.0,
-      "end": 169.5,
+      "start": 99.5,
+      "end": 165.0,
       "sources": [
         "audio",
         "vision",
@@ -544,10 +544,10 @@
     },
     {
       "id": "voice",
-      "start": 171.0,
-      "end": 174.0,
+      "start": 166.5,
+      "end": 169.5,
       "sources": [
-        "audio",
+        "vision",
         "credits"
       ],
       "review": ""
@@ -555,7 +555,7 @@
     {
       "id": "voice",
       "start": 181.5,
-      "end": 251.0,
+      "end": 248.0,
       "sources": [
         "audio",
         "vision",

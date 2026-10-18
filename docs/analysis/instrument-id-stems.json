@@ -11,7 +11,8 @@
           "mixSaid": [],
           "stemSaid": [],
           "mixWrong": [],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "inst-tanbur",
@@ -24,7 +25,8 @@
           "mixWrong": [],
           "stemWrong": [
             "guitar-acoustic"
-          ]
+          ],
+          "disputed": false
         },
         {
           "section": "voice-bridge",
@@ -33,7 +35,8 @@
           "mixSaid": [],
           "stemSaid": [],
           "mixWrong": [],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         }
       ],
       "status": "ok",
@@ -61,7 +64,8 @@
           ],
           "stemWrong": [
             "choir"
-          ]
+          ],
+          "disputed": true
         },
         {
           "section": "voice-2",
@@ -74,20 +78,20 @@
           "mixWrong": [
             "flute"
           ],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": true
         },
         {
           "section": "voice-3",
           "catalogKey": "voice",
           "stem": "vocals",
-          "mixSaid": [
-            "voice"
-          ],
+          "mixSaid": [],
           "stemSaid": [
             "voice"
           ],
           "mixWrong": [],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-4",
@@ -100,7 +104,8 @@
           "mixWrong": [
             "flute"
           ],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-5",
@@ -113,7 +118,8 @@
           "mixWrong": [
             "flute"
           ],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-6",
@@ -126,7 +132,8 @@
           "mixWrong": [
             "flute"
           ],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-7",
@@ -135,7 +142,8 @@
           "mixSaid": [],
           "stemSaid": [],
           "mixWrong": [],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-8",
@@ -144,7 +152,8 @@
           "mixSaid": [],
           "stemSaid": [],
           "mixWrong": [],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-9",
@@ -160,7 +169,8 @@
           "mixWrong": [
             "flute"
           ],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": true
         },
         {
           "section": "voice-10",
@@ -170,12 +180,15 @@
             "flute",
             "guitar-acoustic"
           ],
-          "stemSaid": [],
+          "stemSaid": [
+            "voice"
+          ],
           "mixWrong": [
             "flute",
             "guitar-acoustic"
           ],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-11",
@@ -188,7 +201,8 @@
           "mixWrong": [
             "guitar-acoustic"
           ],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-12",
@@ -197,13 +211,12 @@
           "mixSaid": [
             "flute"
           ],
-          "stemSaid": [
-            "voice"
-          ],
+          "stemSaid": [],
           "mixWrong": [
             "flute"
           ],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-13",
@@ -223,7 +236,8 @@
           ],
           "stemWrong": [
             "choir"
-          ]
+          ],
+          "disputed": true
         },
         {
           "section": "voice-14",
@@ -236,7 +250,8 @@
           "mixWrong": [
             "flute"
           ],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-15",
@@ -249,16 +264,20 @@
           "mixWrong": [
             "flute"
           ],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-16",
           "catalogKey": "voice",
           "stem": "vocals",
           "mixSaid": [],
-          "stemSaid": [],
+          "stemSaid": [
+            "voice"
+          ],
           "mixWrong": [],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": true
         },
         {
           "section": "voice-17",
@@ -276,13 +295,14 @@
           ],
           "stemWrong": [
             "choir"
-          ]
+          ],
+          "disputed": true
         }
       ],
       "status": "ok",
       "wrongAnchors": {
-        "mix": 13,
-        "stem": 3
+        "mix": 8,
+        "stem": 0
       },
       "better": "stem"
     },
@@ -300,7 +320,8 @@
           "mixWrong": [
             "guitar-acoustic"
           ],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-2",
@@ -311,21 +332,22 @@
           ],
           "stemSaid": [],
           "mixWrong": [],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-3",
           "catalogKey": "voice",
           "stem": "vocals",
           "mixSaid": [
-            "flute",
-            "voice"
+            "flute"
           ],
           "stemSaid": [],
           "mixWrong": [
             "flute"
           ],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-4",
@@ -334,11 +356,10 @@
           "mixSaid": [
             "voice"
           ],
-          "stemSaid": [
-            "voice"
-          ],
+          "stemSaid": [],
           "mixWrong": [],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-5",
@@ -347,7 +368,8 @@
           "mixSaid": [],
           "stemSaid": [],
           "mixWrong": [],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-6",
@@ -360,7 +382,8 @@
           "mixWrong": [
             "flute"
           ],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": false
         },
         {
           "section": "voice-7",
@@ -369,7 +392,8 @@
           "mixSaid": [],
           "stemSaid": [],
           "mixWrong": [],
-          "stemWrong": []
+          "stemWrong": [],
+          "disputed": true
         },
         {
           "section": "voice-8",
@@ -377,19 +401,19 @@
           "stem": "vocals",
           "mixSaid": [],
           "stemSaid": [
-            "choir",
-            "voice"
+            "choir"
           ],
           "mixWrong": [],
           "stemWrong": [
             "choir"
-          ]
+          ],
+          "disputed": true
         }
       ],
       "status": "ok",
       "wrongAnchors": {
         "mix": 3,
-        "stem": 1
+        "stem": 0
       },
       "better": "stem"
     }

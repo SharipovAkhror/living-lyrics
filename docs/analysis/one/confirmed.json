@@ -14,8 +14,9 @@
     {
       "id": "choir",
       "start": 11.5,
-      "end": 17.5,
+      "end": 25.0,
       "sources": [
+        "audio",
         "vision",
         "credits"
       ],
@@ -26,6 +27,7 @@
       "start": 26.5,
       "end": 54.5,
       "sources": [
+        "audio",
         "vision",
         "credits"
       ],
@@ -64,18 +66,9 @@
     {
       "id": "choir",
       "start": 88.5,
-      "end": 97.5,
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "review": ""
-    },
-    {
-      "id": "choir",
-      "start": 101.5,
       "end": 105.5,
       "sources": [
+        "audio",
         "vision",
         "credits"
       ],
@@ -83,29 +76,10 @@
     },
     {
       "id": "choir",
-      "start": 114.5,
-      "end": 117.5,
+      "start": 108.0,
+      "end": 140.0,
       "sources": [
-        "vision",
-        "credits"
-      ],
-      "review": ""
-    },
-    {
-      "id": "choir",
-      "start": 122.5,
-      "end": 125.5,
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "review": ""
-    },
-    {
-      "id": "choir",
-      "start": 131.5,
-      "end": 137.5,
-      "sources": [
+        "audio",
         "vision",
         "credits"
       ],
@@ -116,6 +90,7 @@
       "start": 141.5,
       "end": 153.5,
       "sources": [
+        "audio",
         "vision",
         "credits"
       ],
@@ -124,8 +99,9 @@
     {
       "id": "choir",
       "start": 158.5,
-      "end": 169.5,
+      "end": 187.0,
       "sources": [
+        "audio",
         "vision",
         "credits"
       ],
@@ -133,19 +109,20 @@
     },
     {
       "id": "choir",
-      "start": 171.5,
-      "end": 185.5,
+      "start": 189.0,
+      "end": 193.0,
       "sources": [
-        "vision",
+        "audio",
         "credits"
       ],
       "review": ""
     },
     {
       "id": "choir",
-      "start": 197.5,
+      "start": 197.0,
       "end": 201.5,
       "sources": [
+        "audio",
         "vision",
         "credits"
       ],
@@ -154,38 +131,9 @@
     {
       "id": "choir",
       "start": 205.5,
-      "end": 209.5,
+      "end": 244.0,
       "sources": [
-        "vision",
-        "credits"
-      ],
-      "review": ""
-    },
-    {
-      "id": "choir",
-      "start": 211.5,
-      "end": 217.5,
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "review": ""
-    },
-    {
-      "id": "choir",
-      "start": 219.5,
-      "end": 237.5,
-      "sources": [
-        "vision",
-        "credits"
-      ],
-      "review": ""
-    },
-    {
-      "id": "choir",
-      "start": 239.5,
-      "end": 242.5,
-      "sources": [
+        "audio",
         "vision",
         "credits"
       ],
@@ -202,14 +150,24 @@
       "review": ""
     },
     {
-      "id": "double-bass",
-      "start": 203.0,
-      "end": 218.0,
+      "id": "choir",
+      "start": 811.0,
+      "end": 816.0,
       "sources": [
         "audio",
-        "vision"
+        "credits"
       ],
-      "review": "нет в титрах"
+      "review": ""
+    },
+    {
+      "id": "choir",
+      "start": 818.0,
+      "end": 828.0,
+      "sources": [
+        "audio",
+        "credits"
+      ],
+      "review": ""
     },
     {
       "id": "flute",
@@ -223,7 +181,7 @@
     },
     {
       "id": "flute",
-      "start": 700.0,
+      "start": 709.5,
       "end": 724.0,
       "sources": [
         "audio",
@@ -533,18 +491,8 @@
     },
     {
       "id": "voice",
-      "start": 0.0,
-      "end": 171.0,
-      "sources": [
-        "audio",
-        "vision"
-      ],
-      "review": "нет в титрах"
-    },
-    {
-      "id": "voice",
-      "start": 173.0,
-      "end": 251.0,
+      "start": 56.5,
+      "end": 92.0,
       "sources": [
         "audio",
         "vision"
@@ -554,7 +502,7 @@
     {
       "id": "voice",
       "start": 302.0,
-      "end": 357.0,
+      "end": 356.0,
       "sources": [
         "audio",
         "vision"
@@ -563,7 +511,7 @@
     },
     {
       "id": "voice",
-      "start": 360.5,
+      "start": 365.5,
       "end": 391.0,
       "sources": [
         "audio",
@@ -574,7 +522,7 @@
     {
       "id": "voice",
       "start": 440.5,
-      "end": 466.0,
+      "end": 464.0,
       "sources": [
         "audio",
         "vision"
@@ -583,8 +531,8 @@
     },
     {
       "id": "voice",
-      "start": 473.0,
-      "end": 500.0,
+      "start": 475.0,
+      "end": 499.0,
       "sources": [
         "audio",
         "vision"
@@ -593,18 +541,8 @@
     },
     {
       "id": "voice",
-      "start": 555.5,
-      "end": 586.0,
-      "sources": [
-        "audio",
-        "vision"
-      ],
-      "review": "нет в титрах"
-    },
-    {
-      "id": "voice",
-      "start": 729.0,
-      "end": 774.0,
+      "start": 560.0,
+      "end": 584.0,
       "sources": [
         "audio",
         "vision"

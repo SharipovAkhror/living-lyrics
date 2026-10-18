@@ -5,8 +5,8 @@
   "noncommercialReason": "IRMAS на Zenodo помечен CC BY-NC-SA 4.0. Веса обучены и на этих записях.",
   "creditsUsed": false,
   "audioPrimary": "mix",
-  "threshold": 0.53,
-  "threshold95": 0.77,
+  "threshold": 0.56,
+  "threshold95": 0.79,
   "thresholdReached": true,
   "sources": {
     "mix": {
@@ -21,7 +21,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.931,
+          "confidence": 0.9436,
           "accepted": true
         },
         {
@@ -32,7 +32,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.8986,
+          "confidence": 0.9161,
           "accepted": true
         },
         {
@@ -54,7 +54,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9887,
+          "confidence": 0.9902,
           "accepted": true
         },
         {
@@ -65,7 +65,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9986,
+          "confidence": 0.9989,
           "accepted": true
         },
         {
@@ -81,13 +81,13 @@
         },
         {
           "start": 64.0,
-          "end": 84.0,
+          "end": 83.0,
           "id": "voice",
           "family": "voice",
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
-          "confidence": 0.9991,
+          "confidence": 0.999,
           "accepted": true
         },
         {
@@ -98,7 +98,7 @@
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
-          "confidence": 0.9877,
+          "confidence": 0.9874,
           "accepted": true
         },
         {
@@ -109,7 +109,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9913,
+          "confidence": 0.993,
           "accepted": true
         },
         {
@@ -120,7 +120,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9801,
+          "confidence": 0.982,
           "accepted": true
         },
         {
@@ -131,7 +131,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9989,
+          "confidence": 0.9991,
           "accepted": true
         },
         {
@@ -142,7 +142,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9877,
+          "confidence": 0.9893,
           "accepted": true
         },
         {
@@ -153,7 +153,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.8961,
+          "confidence": 0.9112,
           "accepted": true
         },
         {
@@ -164,7 +164,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9851,
+          "confidence": 0.988,
           "accepted": true
         },
         {
@@ -175,7 +175,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.984,
+          "confidence": 0.9864,
           "accepted": true
         },
         {
@@ -186,7 +186,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9907,
+          "confidence": 0.9912,
           "accepted": true
         },
         {
@@ -197,7 +197,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9901,
+          "confidence": 0.9905,
           "accepted": true
         },
         {
@@ -208,7 +208,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9886,
+          "confidence": 0.9891,
           "accepted": true
         },
         {
@@ -219,7 +219,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9939,
+          "confidence": 0.9948,
           "accepted": true
         },
         {
@@ -230,7 +230,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9972,
+          "confidence": 0.9976,
           "accepted": true
         },
         {
@@ -241,7 +241,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9074,
+          "confidence": 0.9146,
           "accepted": true
         },
         {
@@ -252,7 +252,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.971,
+          "confidence": 0.9763,
           "accepted": true
         },
         {
@@ -263,29 +263,29 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9424,
+          "confidence": 0.9464,
           "accepted": true
         },
         {
           "start": 247.0,
-          "end": 250.0,
+          "end": 254.0,
           "id": "guitar-acoustic",
           "family": "guitar",
           "name": "акустическая гитара",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9538,
+          "confidence": 0.9812,
           "accepted": true
         },
         {
           "start": 262.0,
-          "end": 266.0,
+          "end": 265.0,
           "id": "guitar-acoustic",
           "family": "guitar",
           "name": "акустическая гитара",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9126,
+          "confidence": 0.9851,
           "accepted": true
         },
         {
@@ -318,18 +318,7 @@
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
-          "confidence": 0.9998,
-          "accepted": true
-        },
-        {
-          "start": 362.0,
-          "end": 365.0,
-          "id": "voice",
-          "family": "voice",
-          "name": "голос",
-          "catalogKey": "voice",
-          "kind": "instrument",
-          "confidence": 0.9651,
+          "confidence": 0.9999,
           "accepted": true
         },
         {
@@ -340,7 +329,7 @@
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9703,
+          "confidence": 0.9682,
           "accepted": true
         },
         {
@@ -355,14 +344,25 @@
           "accepted": true
         },
         {
-          "start": 425.0,
-          "end": 429.0,
+          "start": 417.0,
+          "end": 420.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9038,
+          "confidence": 0.983,
+          "accepted": true
+        },
+        {
+          "start": 425.0,
+          "end": 430.0,
+          "id": "flute",
+          "family": "flute",
+          "name": "поперечная флейта",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9635,
           "accepted": true
         },
         {
@@ -373,7 +373,7 @@
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
-          "confidence": 0.9994,
+          "confidence": 0.9995,
           "accepted": true
         },
         {
@@ -384,7 +384,18 @@
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
-          "confidence": 0.9986,
+          "confidence": 0.9985,
+          "accepted": true
+        },
+        {
+          "start": 500.0,
+          "end": 503.0,
+          "id": "guitar-acoustic",
+          "family": "guitar",
+          "name": "акустическая гитара",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9948,
           "accepted": true
         },
         {
@@ -395,18 +406,29 @@
           "name": "акустическая гитара",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9901,
+          "confidence": 0.9952,
           "accepted": true
         },
         {
-          "start": 530.0,
-          "end": 533.0,
+          "start": 523.0,
+          "end": 526.0,
           "id": "guitar-acoustic",
           "family": "guitar",
           "name": "акустическая гитара",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.914,
+          "confidence": 0.988,
+          "accepted": true
+        },
+        {
+          "start": 530.0,
+          "end": 534.0,
+          "id": "guitar-acoustic",
+          "family": "guitar",
+          "name": "акустическая гитара",
+          "catalogKey": null,
+          "kind": "instrument",
+          "confidence": 0.9513,
           "accepted": true
         },
         {
@@ -417,7 +439,7 @@
           "name": "акустическая гитара",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9772,
+          "confidence": 0.9914,
           "accepted": true
         },
         {
@@ -439,18 +461,18 @@
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
-          "confidence": 0.9199,
+          "confidence": 0.9209,
           "accepted": true
         },
         {
-          "start": 713.0,
+          "start": 710.0,
           "end": 724.0,
           "id": "flute",
           "family": "flute",
           "name": "поперечная флейта",
           "catalogKey": null,
           "kind": "instrument",
-          "confidence": 0.9964,
+          "confidence": 0.9965,
           "accepted": true
         },
         {
@@ -461,7 +483,7 @@
           "name": "виолончель",
           "catalogKey": "cello",
           "kind": "instrument",
-          "confidence": 0.8691,
+          "confidence": 0.8982,
           "accepted": true
         },
         {
@@ -472,7 +494,7 @@
           "name": "голос",
           "catalogKey": "voice",
           "kind": "instrument",
-          "confidence": 0.9008,
+          "confidence": 0.9014,
           "accepted": true
         },
         {
@@ -483,7 +505,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9926,
+          "confidence": 0.9932,
           "accepted": true
         },
         {
@@ -494,7 +516,7 @@
           "name": "хор",
           "catalogKey": "choir",
           "kind": "instrument",
-          "confidence": 0.9889,
+          "confidence": 0.9901,
           "accepted": true
         }
       ],

@@ -61,12 +61,10 @@
           "said": [
             "flute"
           ],
-          "acceptedRight": [
-            "voice"
-          ],
+          "acceptedRight": [],
           "acceptedWrong": [],
           "disputed": false,
-          "verdict": "correct"
+          "verdict": "abstain"
         }
       ]
     },
@@ -88,12 +86,9 @@
             "choir",
             "voice"
           ],
-          "acceptedRight": [
-            "voice"
-          ],
+          "acceptedRight": [],
           "acceptedWrong": [
             "choir",
-            "double-bass",
             "orchestra"
           ],
           "disputed": true,
@@ -131,9 +126,7 @@
           "said": [
             "voice"
           ],
-          "acceptedRight": [
-            "voice"
-          ],
+          "acceptedRight": [],
           "acceptedWrong": [
             "orchestra"
           ],
@@ -190,11 +183,8 @@
           "said": [
             "flute"
           ],
-          "acceptedRight": [
-            "voice"
-          ],
+          "acceptedRight": [],
           "acceptedWrong": [
-            "double-bass",
             "orchestra"
           ],
           "disputed": false,
@@ -248,9 +238,7 @@
           "said": [
             "flute"
           ],
-          "acceptedRight": [
-            "voice"
-          ],
+          "acceptedRight": [],
           "acceptedWrong": [
             "orchestra"
           ],
@@ -270,9 +258,7 @@
             "flute",
             "guitar-acoustic"
           ],
-          "acceptedRight": [
-            "voice"
-          ],
+          "acceptedRight": [],
           "acceptedWrong": [
             "orchestra"
           ],
@@ -384,9 +370,7 @@
           "note": "",
           "source": "content/songs/karitas/lyrics.json",
           "said": [],
-          "acceptedRight": [
-            "voice"
-          ],
+          "acceptedRight": [],
           "acceptedWrong": [],
           "disputed": true,
           "verdict": "подпись секции спорит с видео"
@@ -430,9 +414,7 @@
           "said": [
             "guitar-acoustic"
           ],
-          "acceptedRight": [
-            "voice"
-          ],
+          "acceptedRight": [],
           "acceptedWrong": [
             "orchestra"
           ],
@@ -471,9 +453,7 @@
             "flute",
             "voice"
           ],
-          "acceptedRight": [
-            "voice"
-          ],
+          "acceptedRight": [],
           "acceptedWrong": [
             "orchestra"
           ],
@@ -544,9 +524,7 @@
           "note": "",
           "source": "content/songs/one/lyrics.json",
           "said": [],
-          "acceptedRight": [
-            "voice"
-          ],
+          "acceptedRight": [],
           "acceptedWrong": [],
           "disputed": true,
           "verdict": "подпись секции спорит с видео"
@@ -564,7 +542,9 @@
             "choir"
           ],
           "acceptedRight": [],
-          "acceptedWrong": [],
+          "acceptedWrong": [
+            "choir"
+          ],
           "disputed": true,
           "verdict": "подпись секции спорит с видео"
         }
