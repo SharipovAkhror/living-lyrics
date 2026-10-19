@@ -1,22 +1,38 @@
 """Start the replacement of a Living Lyrics chat as a background Claude session (chat rotation).
 
-The old chat has already written and pushed its hand-off (ops/handoff/<date>-<chat>.md). This
+The old chat has already written, committed and pushed its hand-off (ops/handoff/<date>-<chat>.md)
+in its own checkout and branch (main, or a worktree such as ../living-lyrics-wt/ll-business). This
 script starts the new chat under the same name, supervised by the Claude daemon (not by any chat,
 so archiving a chat never kills it), with Remote Control on so it shows in claude.ai and the
 desktop sidebar, and gives it its first task: read the rules, the status and the hand-off, go on.
 
-    python ops/agents/rotate_chat.py "LL · Tech" ops/handoff/2026-10-20-tech.md [--cwd <dir>] [--model <m>] [--effort <e>] [--dry-run]
+    python ops/agents/rotate_chat.py "LL · Tech" ops/handoff/2026-10-20-ll-tech.md [--cwd <dir>] [--model <m>] [--effort <e>] [--dry-run]
 
 Prints the new session's short id. The old chat then renames and archives itself
 (docs/process/chat-rotation.md, steps 5–6).
 """
 import json
+import shutil
 import subprocess
 import sys
 import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+
+
+def claude_bin() -> str:
+    """The claude executable. On Windows npm puts a claude.cmd shim on PATH; going through cmd.exe
+    would mangle the Cyrillic prompt and the quotes, so use the claude.exe the shim points to."""
+    found = shutil.which('claude') or 'claude'
+    if found.lower().endswith('.cmd'):
+        exe = Path(found).parent / 'node_modules' / '@anthropic-ai' / 'claude-code' / 'bin' / 'claude.exe'
+        if exe.is_file():
+            return str(exe)
+    return found
+
+
+CLAUDE = claude_bin()
 
 
 def run(cmd: list[str], cwd: Path) -> str:
@@ -26,15 +42,22 @@ def run(cmd: list[str], cwd: Path) -> str:
     return out.stdout.strip()
 
 
+def checkout(path: Path) -> tuple[Path, str]:
+    """The git checkout that holds `path` (the main one or a worktree) and its branch."""
+    top = Path(run(['git', 'rev-parse', '--show-toplevel'], path.parent))
+    return top, run(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], top)
+
+
 def pushed(handoff: Path) -> bool:
-    """The hand-off must be in origin/main: the new chat may start on another machine."""
-    rel = handoff.resolve().relative_to(REPO).as_posix()
-    subprocess.run(['git', 'fetch', '-q', 'origin', 'main'], cwd=REPO)
-    return subprocess.run(['git', 'cat-file', '-e', f'origin/main:{rel}'], cwd=REPO).returncode == 0
+    """The hand-off must be committed and pushed in its own branch: the old chat is about to go."""
+    top, branch = checkout(handoff)
+    rel = handoff.resolve().relative_to(top.resolve()).as_posix()
+    subprocess.run(['git', 'fetch', '-q', 'origin', branch], cwd=top)
+    return subprocess.run(['git', 'cat-file', '-e', f'origin/{branch}:{rel}'], cwd=top).returncode == 0
 
 
 def sessions() -> list[dict]:
-    return json.loads(run(['claude', 'agents', '--json'], REPO) or '[]')
+    return json.loads(run([CLAUDE, 'agents', '--json'], REPO) or '[]')
 
 
 def main() -> None:
@@ -59,15 +82,16 @@ def main() -> None:
     if not dry and not pushed(handoff):
         raise SystemExit(f'commit and push the hand-off first: {handoff}')
 
-    rel = handoff.resolve().relative_to(REPO).as_posix()
+    top, branch = checkout(handoff)
+    rel = handoff.resolve().relative_to(top.resolve()).as_posix()
     prompt = (
         f'Ты — новый чат «{name}» проекта Living Lyrics, замена прежнего чата с тем же именем (ротация). '
         f'Прочитай AGENTS.md, docs/STATUS.md, docs/process/chat-rotation.md и сдачу дел {rel} '
-        f'(из репозитория {REPO.as_posix()}), перейми фоновые процессы по списку в сдаче дел и продолжай работу с пункта «Первым делом». '
+        f'(папка {top.as_posix()}, ветка {branch}), перейми фоновые процессы по списку в сдаче дел и продолжай работу с пункта «Первым делом». '
         'Отчитайся главному чату «LL · Site (Main)» одной строкой, что принял дела '
         '(если ты сам главный чат — напиши владельцу одну строку: «чат обновлён, работа продолжается»).'
     )
-    cmd = ['claude', '--bg', '--remote-control', name, '-n', name, '--permission-mode', 'auto']
+    cmd = [CLAUDE, '--bg', '--remote-control', name, '-n', name, '--permission-mode', 'auto']
     if '--model' in opts:
         cmd += ['--model', opts['--model']]
     if '--effort' in opts:
