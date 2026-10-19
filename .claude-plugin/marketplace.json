@@ -1,11 +1,17 @@
 {
   "name": "living-lyrics",
-  "owner": { "name": "SharipovAkhror" },
+  "owner": {
+    "name": "SharipovAkhror"
+  },
   "plugins": [
     {
       "name": "ll-dashboard",
       "source": "./ops/dashboard-mod",
-      "description": "Living Lyrics dashboard: what the agents do, limits, readiness and word-sync progress"
+      "description": "Living Lyrics dashboard: what the agents do, limits, readiness and word-sync progress",
+      "author": {
+        "name": "SharipovAkhror"
+      }
     }
-  ]
+  ],
+  "description": "Living Lyrics: the dashboard mod for Claude Code"
 }

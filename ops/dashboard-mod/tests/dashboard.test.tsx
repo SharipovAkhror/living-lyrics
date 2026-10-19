@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { agentRows, bandLine, codename, geminiWindows, isDashboardAsk, songRows, summaryText, tokens } from '../hooks/register'
+import { agentRows, bandLine, codename, geminiWindows, isDashboardAsk, remoteLive, songRows, stateKey, summaryText, tokens } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -126,4 +126,26 @@ test('typing dashboard on the phone draws the live card in that message row', as
   }
   expect(isDashboardAsk('  /dashboard ')).toBe(true)
   expect(isDashboardAsk('покажи dashboard')).toBe(false)
+})
+
+test('a published state is aged by the time since it was written', async () => {
+  const published: Live = { at: '2026-10-19T10:00:00Z', grok: [{ name: 't1-sync', state: 'working', minutes: 2, step: '' }], gemini: [{ slug: 'one', minutes: 1 }] }
+  const out = remoteLive(published, Date.parse('2026-10-19T10:10:00Z'))
+  expect(out.grok[0]?.minutes).toBe(12)
+  expect(out.gemini[0]?.minutes).toBe(11)
+})
+
+test('a published state older than 45 minutes, or without a time, shows nothing', async () => {
+  const published: Live = { at: '2026-10-19T10:00:00Z', grok: [{ name: 't1-sync', state: 'working', minutes: 2, step: '' }], gemini: [] }
+  expect(remoteLive(published, Date.parse('2026-10-19T11:00:00Z'))).toEqual({ grok: [], gemini: [] })
+  expect(remoteLive({ grok: published.grok, gemini: [] }, Date.now())).toEqual({ grok: [], gemini: [] })
+  expect(remoteLive(null, Date.now())).toEqual({ grok: [], gemini: [] })
+})
+
+test('the publish key ignores minutes and steps but sees a state change', async () => {
+  const a: Live = { grok: [{ name: 't1', state: 'working', minutes: 1, step: 'a', model: 'm' }], gemini: [] }
+  const b: Live = { grok: [{ name: 't1', state: 'working', minutes: 9, step: 'b', model: 'm' }], gemini: [] }
+  const c: Live = { grok: [{ name: 't1', state: 'finished', minutes: 9, step: 'b', model: 'm' }], gemini: [] }
+  expect(stateKey(a)).toBe(stateKey(b))
+  expect(stateKey(a) === stateKey(c)).toBe(false)
 })

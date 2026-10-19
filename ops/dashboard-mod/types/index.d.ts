@@ -52,7 +52,8 @@ export type GrokRun = {
 
 export type GeminiRun = { slug: string; minutes: number }
 
-export type Live = { grok: GrokRun[]; gemini: GeminiRun[] }
+/** `at` is set on a published state (ops/live.json on the `live` branch): when it was produced. */
+export type Live = { grok: GrokRun[]; gemini: GeminiRun[]; at?: string }
 
 /** Claude plan windows as the status line has them. */
 export type Limit = { kind: string; percentUsed: number; resetsAt?: string }

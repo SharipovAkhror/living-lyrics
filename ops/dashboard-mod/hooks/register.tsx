@@ -13,6 +13,8 @@ import { ICON_CLAUDE, ICON_GEMINI, ICON_GROK } from './icons'
  * checkout, else fetched from GitHub (the repo is public), so the mod works on any computer.
  * Live Grok and Gemini state (hooks/agents_live.py) and the usage collector (ops/usage/collect.py,
  * every 10 min) run only where the executors work: the checkout with ../living-lyrics-wt beside it.
+ * That machine also publishes the live state to the `live` branch (ops/agents/publish_live.py, only
+ * when states change, plus a heartbeat); every other device reads it from there (raw.githubusercontent).
  */
 
 const PANE = 'll-dashboard'
@@ -20,6 +22,9 @@ const TITLE = 'Dashboard'
 const RAW = 'https://raw.githubusercontent.com/SharipovAkhror/living-lyrics/main'
 const BOARD = 'ops/board.json'
 const USAGE = 'ops/usage/latest.json'
+const LIVE_URL = 'https://raw.githubusercontent.com/SharipovAkhror/living-lyrics/refs/heads/live/ops/live.json'
+const PUBLISH = 'ops/agents/publish_live.py'
+const STALE_MIN = 45
 const POLL_MS = 30_000
 const REMOTE_MS = 120_000
 const COLLECT_MS = 600_000
@@ -59,6 +64,25 @@ function hhmm(iso?: string) {
   } catch {
     return t.toISOString().slice(11, 16)
   }
+}
+
+/** What a device without the executors shows of the published state: aged by the time since `at`, or nothing when it is stale. */
+export function remoteLive(published: Live | null | undefined, now: number): Live {
+  const empty: Live = { grok: [], gemini: [] }
+  const at = published?.at ? Date.parse(published.at) : Number.NaN
+  if (!published || Number.isNaN(at)) return empty
+  const age = Math.max(0, Math.floor((now - at) / 60_000))
+  if (age > STALE_MIN) return empty
+  return {
+    at: published.at,
+    grok: (published.grok ?? []).map(r => ({ ...r, minutes: r.minutes + age })),
+    gemini: (published.gemini ?? []).map(r => ({ ...r, minutes: r.minutes + age })),
+  }
+}
+
+/** The states that matter for publishing; minutes, steps and token counts change on every poll. */
+export function stateKey(l: Live) {
+  return JSON.stringify([l.grok.map(r => [r.name, r.state, r.model ?? '']), l.gemini.map(r => r.slug)])
 }
 
 export function tokens(n?: number) {
@@ -234,6 +258,9 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
       if (parsed) await update($, board, () => parsed as Board)
       const used = await fetchJson($, USAGE)
       if (used) await update($, usage, () => used as Usage)
+      const res = await $.http.fetch(LIVE_URL)
+      const next = remoteLive(res.ok ? (JSON.parse(res.text) as Live) : null, Date.now())
+      if (JSON.stringify(next) !== JSON.stringify(await read($, live))) await update($, live, () => next)
     } catch {
       // Offline: keep what is shown.
     }
@@ -243,7 +270,9 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
       const res = await $.process.run(['python', agentsScript($), place.repo], { timeoutMs: 25_000 })
       if (res.exitCode === 0) {
         const next = JSON.parse(res.stdout) as Live
-        if (JSON.stringify(next) !== JSON.stringify(await read($, live))) await update($, live, () => next)
+        const prev = await read($, live)
+        if (JSON.stringify(next) !== JSON.stringify(prev)) await update($, live, () => next)
+        if (stateKey(next) !== stateKey(prev)) await publishLive($)
       }
     } catch {
       // Python missing or slow: the board alone still draws.
@@ -255,6 +284,16 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
     if (JSON.stringify(next) !== JSON.stringify(await read($, limits))) await update($, limits, () => next)
   } catch {
     // Off a subscription the windows are empty.
+  }
+}
+
+/** Push the live state to the `live` branch; the script itself skips what is unchanged and keeps a heartbeat. */
+async function publishLive($: EngineInterface) {
+  if (!place.orchestrator || !place.repo) return
+  try {
+    await $.process.run(['python', `${place.repo}/${PUBLISH}`, place.repo], { cwd: place.repo, timeoutMs: 90_000 })
+  } catch {
+    // Offline or no push rights: other devices keep the last published state.
   }
 }
 
@@ -508,7 +547,10 @@ export const register: Register = on => {
     void refresh($, seen)
     $.clock.every(POLL_MS, () => refresh($, seen))
     void collectUsage($)
-    $.clock.every(COLLECT_MS, () => collectUsage($))
+    $.clock.every(COLLECT_MS, async () => {
+      await collectUsage($)
+      await publishLive($)
+    })
     return next(e)
   })
 

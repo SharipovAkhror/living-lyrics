@@ -9,7 +9,7 @@ _Обновлено: 2026-10-18 (задания и доска хода рабо�
 - Сайт: https://living-lyrics.vercel.app (пароль — Vercel → Settings → Environment Variables → `SITE_PASSWORD`). Ветка `main` деплоится автоматически.
 - Репозиторий: `SharipovAkhror/living-lyrics` (публичный). Vercel: команда `team_vKwfBgyY5JNLfiqxgWSD6R8A`, проект `prj_qSpZgGNjg0KoGNHaT0Rw3RcBZ7kX`.
 - Правила для любого агента — `AGENTS.md` (`CLAUDE.md` и `GEMINI.md` его подключают). Методология добавления песни — `docs/methodology/`.
-- Ход работы — `ops/board.json` (что идёт, что нужно от владельца, прогресс песен, путь до новых песен; описание — `ops/README.md`). Полные задания исполнителям — `docs/tasks/` (как выдать и принять — `docs/tasks/README.md`). Окно в доску — мод Dashboard для Claude Code (`ops/dashboard-mod/`), ставится на любой компьютер из этого репозитория (`ops/README.md`); отдельной страницы-артефакта больше нет (решение владельца 2026-10-19).
+- Ход работы — `ops/board.json` (что идёт, что нужно от владельца, прогресс песен, путь до новых песен; описание — `ops/README.md`). Полные задания исполнителям — `docs/tasks/` (как выдать и принять — `docs/tasks/README.md`). Окно в доску — мод Dashboard для Claude Code (`ops/dashboard-mod/`, v0.4.0): один источник — репозиторий-витрина `living-lyrics` (на ПК подключена как папка; на других устройствах `claude plugin install ll-dashboard --marketplace SharipovAkhror/living-lyrics`); живое состояние исполнителей выкладывает `ops/agents/publish_live.py` в ветку `live` (Vercel её не собирает), мод читает доску и состояние из GitHub; привязка к аккаунту claude.ai и пределы веб-версии — в `ops/README.md`. Отдельной страницы-артефакта больше нет (решение владельца 2026-10-19).
 
 ## Как работать
 
