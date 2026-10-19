@@ -53,9 +53,28 @@ export interface InstrumentDrive {
   breath: number;
   /** Beat phase 0…1 inside the current beat (for gentle sway); 0 when no beat was found. */
   beat: number;
+  /**
+   * Engraving brightness, about 0.35 before the musical entrance, then 0.60…1 with the stem.
+   * Omitted on the gallery and the example clip, which stay fully lit.
+   */
+  life?: number;
+  /** Soft halo, 0…1, the stem's loudness after the entrance. A hit adds a short flash on top. */
+  halo?: number;
+  /**
+   * Attack impulse, 0…1. The drawing scales by `1 + 0.04 * hit` and the halo flashes.
+   * Zero when motion is off, including the system reduce-motion switch. Omitted means no impulse.
+   */
+  hit?: number;
 }
 
-/** Which feature drives which motion, by instrument family (list.ts → family). */
+/**
+ * Which feature drives which motion, by instrument family (list.ts → family).
+ * Demucs writes four stems. Life and sustain read one of them (`stemTrack`):
+ * percussion reads `drums`, voices read `vocals`, the ensemble plate reads the mix (`loud`),
+ * and every other family reads `other`. Two instruments of one family therefore brighten together.
+ * `pulse` for a non-drum is the mix onset, and the stage multiplies it by that family's stem
+ * so a silent family does not strike on someone else's attack.
+ */
 export const FAMILY_DRIVE: Record<InstrumentInfo['family'], { pulse: FeatureTrack; sustain: FeatureTrack; breath?: FeatureTrack }> = {
   'струнные щипковые': { pulse: 'onset', sustain: 'other' },
   'струнные ударные': { pulse: 'onset', sustain: 'other' },
@@ -66,6 +85,24 @@ export const FAMILY_DRIVE: Record<InstrumentInfo['family'], { pulse: FeatureTrac
   голоса: { pulse: 'onset', sustain: 'vocals', breath: 'vocals' },
   ансамбль: { pulse: 'onset', sustain: 'loud' },
 };
+
+/** Brightness before the musical entrance. */
+export const LIFE_DIM = 0.35;
+/** Brightness after the entrance while this family's stem is silent. */
+export const LIFE_REST = 0.6;
+/** How far a hit may scale the drawing: 1 + this. */
+export const HIT_SCALE = 0.04;
+
+/**
+ * The stem that stands for a family. There are four. Plucked, hammered, bowed, wind and keys
+ * share `other`: the separator does not name them apart, and the stage does not pretend to.
+ */
+export function stemTrack(family: InstrumentInfo['family']): FeatureTrack {
+  if (family === 'ударные') return 'drums';
+  if (family === 'голоса') return 'vocals';
+  if (family === 'ансамбль') return 'loud';
+  return 'other';
+}
 
 export function featureAt(f: AudioFeatures | null, track: FeatureTrack, t: number): number {
   const arr = f?.tracks[track];
@@ -91,6 +128,57 @@ function beatPhase(beats: number[] | undefined, t: number) {
 }
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
+
+function smooth01(v: number) {
+  const t = clamp01(v);
+  return t * t * (3 - 2 * t);
+}
+
+/**
+ * How hard this family's stem just rose, 0…1. Reads two samples of the precomputed track,
+ * so a seek to the same second is the same impulse. Nothing is stored between frames.
+ */
+export function stemAttack(f: AudioFeatures | null, family: InstrumentInfo['family'], t: number): number {
+  const track = stemTrack(family);
+  const now = featureAt(f, track, t);
+  const prev = featureAt(f, track, Math.max(0, t - 0.08));
+  return clamp01((now - prev) / 0.2);
+}
+
+export interface PlateLife {
+  /** 0 before `playAt`, 1 after a short ramp. */
+  awake: number;
+  /** This family's stem, 0…1. */
+  stem: number;
+  /** Engraving brightness. */
+  brightness: number;
+  /** Halo strength, with the attack flash included unless motion is off. */
+  halo: number;
+  /** Attack impulse. Zero when motion is off. */
+  hit: number;
+}
+
+/**
+ * Brightness and halo for one plate. `playAt` is the musical entrance (`entries`), not the
+ * moment the plate was placed. Before it the plate is dim and still. After it, brightness
+ * rests near 0.60 and rises to 1 with the stem. `motionOff` keeps the brightness and drops the hit.
+ */
+export function plateLife(
+  f: AudioFeatures | null,
+  family: InstrumentInfo['family'],
+  t: number,
+  playAt: number,
+  motionOff = false,
+): PlateLife {
+  const stem = clamp01(featureAt(f, stemTrack(family), t));
+  const awake = Number.isFinite(playAt) ? smooth01((t - playAt) / 0.4) : 0;
+  const lit = LIFE_REST + (1 - LIFE_REST) * stem;
+  const brightness = LIFE_DIM + (lit - LIFE_DIM) * awake;
+  const hit = motionOff ? 0 : awake * stemAttack(f, family, t);
+  // Reduced motion keeps the brightness and drops the glow: the halo is part of the living motion.
+  const halo = motionOff ? 0 : Math.min(1, awake * stem + hit * 0.55);
+  return { awake, stem, brightness, halo, hit };
+}
 
 /** The drive for one instrument at time t of a passage that started at `start`. */
 export function driveAt(f: AudioFeatures | null, family: InstrumentInfo['family'], t: number, start: number): InstrumentDrive {

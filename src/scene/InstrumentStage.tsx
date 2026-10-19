@@ -101,9 +101,21 @@ export function assignPerformers(keys: string[], performers: string[] = []): (st
 }
 
 function poseSignature(frame: StagePose) {
-  const drive = (d: InstrumentDrive) => [d.draw, d.hatch, d.energy, d.pulse, d.sustain, d.breath, d.beat].map((n) => n.toFixed(3)).join(',');
+  const drive = (d: InstrumentDrive) =>
+    [d.draw, d.hatch, d.energy, d.pulse, d.sustain, d.breath, d.beat, d.life ?? 1, d.halo ?? 0, d.hit ?? 0].map((n) => n.toFixed(3)).join(',');
   const echoes = (frame.echoes ?? []).map((e) => `${e.presence.toFixed(3)}:${drive(e.drive)}`).join('|');
   return `${frame.time.toFixed(3)}#${(frame.drives ?? []).map(drive).join(';')}#${(frame.plates ?? []).map((n) => n.toFixed(3)).join(',')}#${echoes}`;
+}
+
+function artFilter(drive: InstrumentDrive) {
+  const life = drive.life ?? 1;
+  const halo = drive.halo ?? 0;
+  const flash = drive.hit ?? 0;
+  const brightness = `brightness(${life.toFixed(3)})`;
+  if (halo < 0.004 && flash < 0.004) return brightness;
+  const glow = `drop-shadow(0 0 ${(halo * 18).toFixed(2)}px var(--accent))`;
+  const flare = flash >= 0.004 ? ` drop-shadow(0 0 ${(flash * 12).toFixed(2)}px var(--accent))` : '';
+  return `${brightness} ${glow}${flare}`;
 }
 
 function applyPlate(el: HTMLElement, drive: InstrumentDrive, time: number, opacity: number) {
@@ -112,6 +124,8 @@ function applyPlate(el: HTMLElement, drive: InstrumentDrive, time: number, opaci
   el.style.opacity = opacity.toFixed(3);
   el.dataset.pulse = drive.pulse.toFixed(2);
   el.dataset.draw = drive.draw.toFixed(2);
+  const art = el.querySelector<HTMLElement>('.ist-art');
+  if (art) art.style.filter = artFilter(drive);
 }
 
 export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStageProps>(function InstrumentStage(

@@ -5,7 +5,7 @@
  * String influence is a cosine, so time 0 is a peak rather than a dead centre.
  * Skin and jingles follow pulse; the root leans with the beat and stands straight at beat 0 and 1.
  */
-import type { InstrumentDrive } from '@/instruments/animation';
+import { HIT_SCALE, type InstrumentDrive } from '@/instruments/animation';
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
@@ -26,6 +26,11 @@ export function skinWeight(drive: InstrumentDrive, time: number): number {
  */
 export function jingleShift(drive: InstrumentDrive, time: number, phase: number): number {
   return Math.cos(time * 14 + phase * Math.PI * 2) * drive.pulse;
+}
+
+/** Uniform scale for a hit. 1 at rest, at most 1.04. A missing `hit` (the gallery) does not pulse. */
+export function hitScale(drive: InstrumentDrive): number {
+  return 1 + HIT_SCALE * Math.min(1, Math.max(0, drive.hit ?? 0));
 }
 
 /** Radians. x is a small pitch, z is the visible lean. Both are zero at beat 0 and beat 1. */

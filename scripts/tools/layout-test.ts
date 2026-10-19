@@ -3,6 +3,7 @@
  *   npm run test:layout           → checks + a table of the automatic choice for typical screens
  * Exit code 1 on any failure.
  */
+import { LIFE_DIM, LIFE_REST, plateLife, type AudioFeatures } from '../../src/instruments/animation.ts';
 import { CHIP, LAYOUT_MODES, layoutInstruments, type Layout, type LayoutMode, type Rect, type Slot } from '../../src/instruments/layout.ts';
 import { castAt } from '../../src/scene/cast.ts';
 
@@ -151,16 +152,36 @@ if (wide5.mode !== 'prominence' || wide5.slots.length !== 4 || wide5.hidden.leng
 const mid5 = layoutInstruments(5, { w: 800, h: 480 });
 if (mid5.mode !== 'prominence' || mid5.slots.length !== 3 || mid5.hidden.length !== 2) fail('medium n=5', `${mid5.mode} shown ${mid5.slots.length}`);
 const phone5 = layoutInstruments(5, { w: 390, h: 600 });
-if (phone5.mode !== 'prominence' || phone5.slots.length > 3 || phone5.slots.length < 1) fail('phone n=5', `shown ${phone5.slots.length}`);
-if (phone5.slots.length > 1 && phone5.minArt < phone5.threshold - EPS) fail('phone n=5', 'companions below readable size');
-for (const L of [wide5, mid5, phone5]) {
-  const bottoms = L.slots.map((s) => s.y + s.art.y + s.art.h);
+if (phone5.mode !== 'prominence' || phone5.slots.length !== 4 || phone5.hidden.length !== 1) fail('phone n=5', `${phone5.mode} shown ${phone5.slots.length} hidden ${phone5.hidden.length}`);
+if (phone5.minArt < phone5.threshold - EPS) fail('phone n=5', 'companions below readable size');
+const phone3 = layoutInstruments(3, { w: 390, h: 520 });
+if (phone3.slots.length !== 3) fail('phone n=3', `shown ${phone3.slots.length}`);
+const phoneShort = layoutInstruments(4, { w: 369, h: 240 });
+if (phoneShort.slots.length !== 4) fail('phone stage', `shown ${phoneShort.slots.length} in 369×240`);
+function artBottoms(slots: Slot[]) {
+  return slots.map((s) => Math.round((s.y + s.art.y + s.art.h) * 10) / 10);
+}
+for (const L of [wide5, mid5, phone3]) {
+  const bottoms = artBottoms(L.slots);
   if (Math.max(...bottoms) - Math.min(...bottoms) > 0.2) fail(L.mode, 'art bottoms are not aligned');
   const lead = Math.max(L.slots[0].art.w, L.slots[0].art.h);
   L.slots.forEach((s, i) => {
     const scale = [1, 0.8, 0.7, 0.65][i];
     const side = Math.max(s.art.w, s.art.h);
-    if (Math.abs(side / lead - scale) > 0.04) fail('scale', `#${i} ${side / lead} ≠ ${scale}`);
+    if (Math.abs(side / lead - scale) > 0.04) fail('scale', `#${i} ${(side / lead).toFixed(3)} ≠ ${scale}`);
+  });
+}
+const phoneRows = artBottoms(phone5.slots);
+const topRow = phoneRows.slice(0, 2);
+const lowRow = phoneRows.slice(2);
+if (Math.max(...topRow) - Math.min(...topRow) > 0.2 || Math.max(...lowRow) - Math.min(...lowRow) > 0.2) fail('phone quad', 'a row does not share a baseline');
+if (Math.min(...lowRow) <= Math.max(...topRow) + 8) fail('phone quad', 'the two rows are not stacked');
+{
+  const lead = Math.max(phone5.slots[0].art.w, phone5.slots[0].art.h);
+  phone5.slots.forEach((s, i) => {
+    const scale = [1, 0.8, 0.7, 0.65][i];
+    const side = Math.max(s.art.w, s.art.h);
+    if (Math.abs(side / lead - scale) > 0.04) fail('phone scale', `#${i} ${(side / lead).toFixed(3)} ≠ ${scale}`);
   });
 }
 
@@ -201,7 +222,49 @@ const wideCast = castAt(between, 10, 1440).map((m) => m.key).join(',');
 if (wideCast !== 'violin,santur,bendir') fail('ensemble wide', wideCast);
 const phoneCast = castAt(between, 1.2, 390).map((m) => m.key).join(',');
 if (phoneCast !== 'violin,santur,bendir') fail('ensemble phone', phoneCast);
-if (castAt(between, 1.2, 390).some((m) => m.key === 'santur' && m.presence > 0.02)) fail('ensemble phone', 'later plate is already visible');
+const phoneLater = castAt(between, 30, 390).map((m) => m.key).join(',');
+if (phoneLater !== phoneCast) fail('ensemble phone', `roster changed inside the section: ${phoneLater}`);
+const standing = castAt(between, 1.2, 390);
+if (standing.some((m) => m.presence < 0.9)) fail('ensemble phone', 'a place is still empty after the cascade');
+const santur = standing.find((m) => m.key === 'santur');
+if (!santur || santur.playAt !== 3) fail('ensemble phone', `santur playAt ${santur?.playAt}`);
+const quiet = plateLife(null, 'струнные ударные', 1.2, 3, false);
+if (Math.abs(quiet.brightness - LIFE_DIM) > 0.02 || quiet.awake > 0.02 || quiet.hit > 0.02) fail('life dim', JSON.stringify(quiet));
+const silent: AudioFeatures = { rate: 10, duration: 8, tracks: { loud: [0, 0, 0, 0], other: [0, 0, 0, 0], drums: [0, 0, 0, 0], vocals: [0, 0, 0, 0] } };
+const rest = plateLife(silent, 'смычковые', 4, 1, false);
+if (Math.abs(rest.brightness - LIFE_REST) > 0.03 || rest.hit > 0.02) fail('life rest', JSON.stringify(rest));
+const loud: AudioFeatures = { rate: 10, duration: 8, tracks: { loud: [1, 1, 1, 1], other: [1, 1, 1, 1], drums: [0, 0, 1, 0], vocals: [0, 0, 0, 0] } };
+const full = plateLife(loud, 'смычковые', 4, 1, false);
+if (full.brightness < 0.95 || full.halo < 0.9) fail('life full', JSON.stringify(full));
+const struck = plateLife(loud, 'ударные', 0.18, 0, false);
+if (struck.hit < 0.2) fail('life hit', JSON.stringify(struck));
+const reduced = plateLife(loud, 'ударные', 0.18, 0, true);
+if (reduced.hit > 0.001 || reduced.halo > 0.001 || reduced.brightness < 0.5) fail('life reduced', JSON.stringify(reduced));
+const again = plateLife(loud, 'ударные', 0.18, 0, false);
+if (again.hit !== struck.hit || again.brightness !== struck.brightness) fail('life seek', 'a second read differed');
+const heldPrev = { start: 0, end: 6, instruments: ['ney', 'violin', 'daf'] };
+const heldNext = { start: 6, end: 20, instruments: ['oud', 'qanun', 'piano', 'flute'] };
+const held = castAt(heldNext, 10, 1440, 'full', [heldPrev]).map((m) => m.key).join(',');
+if (held !== 'ney,violin,daf') fail('hold', held);
+const released = castAt({ start: 8, end: 20, instruments: ['oud'] }, 10, 800, 'full', [heldPrev]).map((m) => m.key).join(',');
+if (released !== 'oud') fail('hold release', released);
+const sharedPrev = { start: 0, end: 30, instruments: ['violin', 'santur', 'daf', 'ney'] };
+const sharedNext = { start: 30, end: 60, instruments: ['oud', 'qanun', 'ney'] };
+const shared = castAt(sharedNext, 30.2, 1440, 'full', [sharedPrev]);
+if (shared.map((m) => m.key).join(',') !== 'oud,qanun,ney') fail('shared slots', shared.map((m) => m.key).join(','));
+const ney = shared.find((m) => m.key === 'ney');
+const oud = shared.find((m) => m.key === 'oud');
+if (!ney || ney.presence < 0.95 || ney.at !== 0) fail('shared stay', `ney ${ney?.presence} at ${ney?.at}`);
+if (!oud || oud.presence > 0.5 || oud.at !== 30) fail('shared enter', `oud ${oud?.presence}`);
+// A key that left and comes back after the hold is a new entrance, not the old one still standing.
+const returned = castAt({ start: 40, end: 60, instruments: ['ney'], entries: [{ key: 'ney', at: 42 }] }, 40.05, 800, 'full', [
+  heldPrev,
+  { start: 8, end: 40, instruments: ['oud'] },
+]);
+const back = returned[0];
+if (!back || back.key !== 'ney' || back.at !== 40 || back.playAt !== 42 || back.presence > 0.3) {
+  fail('return', `${back?.key} at ${back?.at} play ${back?.playAt} presence ${back?.presence}`);
+}
 const kept = castAt({ start: 0, end: 20, instruments: ['ney', 'ensemble'] }, 10, 800).map((m) => m.key).join(',');
 if (kept !== 'ney,ensemble') fail('ensemble with one', kept);
 const alone = castAt({ start: 0, end: 10, instruments: ['ensemble'] }, 5, 800).map((m) => m.key).join(',');
