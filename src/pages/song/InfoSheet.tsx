@@ -7,6 +7,18 @@ import { instrument } from '@/instruments/catalog';
 import { MarksSection } from './MarksSection';
 import { PartsSection } from './PartsSection';
 
+/** Event, venue, city and date, then the release name, year and label. The short caption is `version.label`. */
+function recordingDetail(song: Song): string | undefined {
+  const perf = song.performance;
+  const place = [perf?.event, perf?.venue, perf?.city, perf?.date].filter(Boolean).join(' · ');
+  const release = song.release;
+  const issued = [release?.album, release?.year != null ? String(release.year) : '', release?.label]
+    .filter((part) => part != null && String(part).length > 0)
+    .join(', ');
+  const text = [place, issued ? `релиз ${issued}` : ''].filter(Boolean).join('; ');
+  return text || undefined;
+}
+
 const TIMING: Record<Song['timing']['status'], string> = {
   draft: 'Черновые: время слов оценено, а не измерено по записи — возможны отставания',
   aligned: 'Выровнены по записи автоматически',
@@ -50,9 +62,6 @@ export function InfoSheet({
       if (lead) s.performers?.forEach((p) => players.get(instrument(lead)?.name ?? lead)?.add(p));
     }
   }
-  const perf = song.performance;
-  const where = [perf?.event, perf?.venue, perf?.city, perf?.date].filter(Boolean).join(' · ');
-
   return (
     <Sheet open={open} onClose={onClose} title="О песне" size="large">
       <div className="info-head">
@@ -62,6 +71,7 @@ export function InfoSheet({
             {song.titleOriginal}
           </div>
         )}
+        <div className="info-version t-subhead">{song.version.label}</div>
         <div className="t-subhead secondary">
           {song.artist}
           {song.featuring?.length ? ` · ${song.featuring.join(', ')}` : ''}
@@ -69,6 +79,13 @@ export function InfoSheet({
       </div>
 
       {pendingNote && <p className="sheet-wait t-footnote secondary">{pendingNote}</p>}
+
+      <Group header="Запись">
+        <Row title={song.version.label} detail={recordingDetail(song)} />
+        <Row title="Длительность" detail={formatTime(song.duration)} />
+        <Row title="Языки" detail={song.languages.map((l) => LANG_NAMES[l] ?? l).join(', ')} />
+        <Row title="Тайм-коды" detail={TIMING[song.timing.status]} />
+      </Group>
 
       <PartsSection
         song={song}
@@ -106,13 +123,6 @@ export function InfoSheet({
           ))}
         </Group>
       ) : null}
-
-      <Group header="Запись">
-        {where && <Row title={where} detail={song.release?.album} />}
-        <Row title="Длительность" detail={formatTime(song.duration)} />
-        <Row title="Языки" detail={song.languages.map((l) => LANG_NAMES[l] ?? l).join(', ')} />
-        <Row title="Тайм-коды" detail={TIMING[song.timing.status]} />
-      </Group>
 
       <Group>
         <a className="row row--button" href="/method" onClick={linkHandler('/method')}>

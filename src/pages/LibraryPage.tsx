@@ -26,7 +26,7 @@ export function LibraryPage() {
     const s = q.trim().toLowerCase();
     if (!s) return songs;
     return songs.filter((song) =>
-      [song.title, song.titleOriginal, song.artist, song.release?.album, ...(song.poets ?? []).map((p) => p.name), ...song.languages.map((l) => LANG_NAMES[l])]
+      [song.title, song.titleOriginal, song.version.label, song.artist, song.release?.album, ...(song.poets ?? []).map((p) => p.name), ...song.languages.map((l) => LANG_NAMES[l])]
         .filter(Boolean)
         .some((v) => v!.toLowerCase().includes(s)),
     );
@@ -52,7 +52,7 @@ export function LibraryPage() {
           <input
             type="search"
             className="search-input"
-            placeholder="Название, поэт, язык"
+            placeholder="Название, версия, поэт, язык"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             aria-label="Поиск"
@@ -120,6 +120,7 @@ function SongTile({ song }: { song: Song }) {
       />
       <span className="lib-tile-cap">
         <span className="lib-tile-title">{song.title}</span>
+        <span className="lib-tile-version">{song.version.label}</span>
         <span className="lib-tile-artist">{song.artist}</span>
       </span>
       {st && <span className={`chip chip--${st.tone} t-caption1`}>{st.text}</span>}

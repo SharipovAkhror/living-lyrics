@@ -42,6 +42,7 @@ export interface EngineOptions {
   slug: string;
   title: string;
   artist: string;
+  /** Lock screen and CarPlay album line: the version label (`song.version.label`), not the release title. */
   album?: string;
   duration: number;
   urls: { high?: string; saver?: string };
@@ -670,6 +671,7 @@ export class AudioEngine {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: this.opts.title,
       artist: this.opts.artist,
+      // Album on the lock screen and in CarPlay is the version, so two concerts of one song stay distinct.
       album: this.opts.album ?? '',
       artwork: this.artwork(),
     });
