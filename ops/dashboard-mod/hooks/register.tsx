@@ -540,6 +540,18 @@ async function dashboardTree($: EngineInterface, e: RenderInput<'Pane' | 'UserMe
   )
 }
 
+const ROTATE_AT = 60
+
+/** The rotation signal for a Living Lyrics chat whose context passed the threshold; null otherwise. */
+export function rotationNote(percent: number | undefined, cwd: string) {
+  if (percent === undefined || percent < ROTATE_AT || !/living-lyrics/i.test(cwd)) return null
+  return (
+    `Chat rotation: this chat's context is ${Math.round(percent)} % (threshold ${ROTATE_AT} %). ` +
+    'Finish the current step to a point you can hand over (commit, report), then rotate this chat per ' +
+    'docs/process/chat-rotation.md without waiting for the owner. Do not start it in the middle of a review, a merge or a question to the owner.'
+  )
+}
+
 /** What Claude is told when the owner types `dashboard`: answer with the summary, nothing else. */
 export function dashboardContext(summary: string) {
   return (
@@ -627,9 +639,18 @@ export const register: Register = on => {
 
   // A remote window (claude.ai, the phone over Remote Control) draws messages itself and never
   // shows the card, and a session cannot tell which windows watch it: the reply carries the summary.
+  // The same hook gives the chat-rotation signal (docs/process/chat-rotation.md) to Living Lyrics chats past the threshold.
   on('prompt.submit', async ($, e, next) => {
-    if (!isDashboardAsk(e.text)) return next(e)
-    const summary = summaryText(await read($, board), await read($, live), await read($, limits), await read($, usage))
-    return next({ ...e, context: [...(e.context ?? []), dashboardContext(summary)] })
+    const extra: string[] = []
+    if (isDashboardAsk(e.text)) {
+      extra.push(dashboardContext(summaryText(await read($, board), await read($, live), await read($, limits), await read($, usage))))
+    }
+    try {
+      const note = rotationNote((await $.session.usage()).context.percent, await $.session.cwd())
+      if (note) extra.push(note)
+    } catch {
+      // No usage figures (a -p run): no signal.
+    }
+    return extra.length ? next({ ...e, context: [...(e.context ?? []), ...extra] }) : next(e)
   })
 }

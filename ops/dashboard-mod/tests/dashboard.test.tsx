@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { agentRows, bandLine, codename, dashboardContext, geminiWindows, isDashboardAsk, remoteLive, songRows, stateKey, summaryText, tokens } from '../hooks/register'
+import { agentRows, bandLine, codename, dashboardContext, geminiWindows, isDashboardAsk, remoteLive, rotationNote, songRows, stateKey, summaryText, tokens } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -155,4 +155,12 @@ test('typing dashboard puts the whole summary into the reply for windows that dr
   expect(ctx).toContain('Grok · Sync')
   expect(ctx).toContain('Нужно от вас: Видео концертов')
   expect(ctx).toContain('ONE · хор 0/26')
+})
+
+test('the rotation signal comes at 60 % of context, only in Living Lyrics folders', async () => {
+  expect(rotationNote(59, 'C:/Users/User/Documents/GitHub/living-lyrics')).toBe(null)
+  expect(rotationNote(61, 'C:/Users/User/Documents/GitHub/living-lyrics')).toContain('docs/process/chat-rotation.md')
+  expect(rotationNote(80, 'C:/Users/User/Documents/GitHub/living-lyrics-wt/ll-business')).toContain('80 %')
+  expect(rotationNote(90, 'C:/Users/User/Documents/GitHub/tenek-brand')).toBe(null)
+  expect(rotationNote(undefined, 'C:/x/living-lyrics')).toBe(null)
 })
