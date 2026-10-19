@@ -27,6 +27,5 @@
 
 ## Где остановились (2026-10-20, LL · Tech)
 
-- Сделано: правило (`docs/process/chat-rotation.md`, кратко в `AGENTS.md`), `ops/handoff/`, `ops/agents/rotate_chat.py`, сигнал 60 % в моде Dashboard 0.4.3. Вживую ротированы LL · Site (Main) (сессия af8eed9e) и LL · Tech (сессия a05ce261) — обе фоновые под демоном Claude.
-- Не сделано: LL · Business остаётся обычным чатом под хостом `claude remote-control` старого главного чата — владелец ответил «Нет» на его ротацию сейчас. Поэтому старый главный чат («LL · Site · архив 2026-10-20») не архивируется: вместе с ним остановится хост LL · Business (и старого LL · Tech f9f12a86).
-- Дальше, когда владелец разрешит: LL · Business ротируется по правилу (сдача дел `ops/handoff/<дата>-ll-business.md` в ветке `ll-business`, `rotate_chat.py … --cwd …/living-lyrics-wt/ll-business`); затем архивируется старый главный чат, удаляется junction `~/.claude/dev-mods/377eb041…/ll-dashboard`, владелец присылает скриншот боковой панели (ровно три рабочих чата), T25 закрывается.
+- Сделано: правило (`docs/process/chat-rotation.md`, кратко в `AGENTS.md`), `ops/handoff/`, `ops/agents/rotate_chat.py`, сигнал 60 % в моде Dashboard. Вживую ротированы LL · Site (Main) (сессия af8eed9e) и LL · Tech (a05ce261). LL · Business не ротирован, а переподключён под демон тем же разговором (818d021f, `claude --bg --resume …`) — решение владельца. Все три — фоновые сессии под демоном Claude; старый главный чат архивировал себя и старый LL · Tech.
+- Осталось (junction старого главного чата в `~/.claude/dev-mods` уже убран): скриншот боковой панели от владельца (рабочие чаты под `living-lyrics`, архивные не мешают); закрыть T25.

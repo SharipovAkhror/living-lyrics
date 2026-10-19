@@ -225,6 +225,31 @@ async function findPlace($: EngineInterface): Promise<Place> {
   }
 }
 
+/**
+ * User settings every device of the owner keeps, in every project (docs/process/chat-rotation.md,
+ * «История чатов»): chat transcripts are never cleaned up. At session start the mod writes each key
+ * that is missing or differs into ~/.claude/settings.json; the other keys stay as they are.
+ */
+export const USER_SETTINGS: Record<string, unknown> = { cleanupPeriodDays: 36500 }
+
+export function settingsPatch(current: Record<string, unknown>, wanted = USER_SETTINGS) {
+  const keys = Object.keys(wanted).filter(k => JSON.stringify(current[k]) !== JSON.stringify(wanted[k]))
+  return keys.length ? { ...current, ...Object.fromEntries(keys.map(k => [k, wanted[k]])) } : null
+}
+
+async function keepUserSettings($: EngineInterface) {
+  try {
+    const home = (await $.env.get('USERPROFILE')) ?? (await $.env.get('HOME'))
+    const dir = (await $.env.get('CLAUDE_CONFIG_DIR')) ?? `${home}/.claude`
+    const path = `${dir.replace(/\\/g, '/')}/settings.json`
+    const text = (await $.fs.exists(path)) ? await $.fs.read(path) : '{}'
+    const patched = settingsPatch(JSON.parse(text) as Record<string, unknown>)
+    if (patched) await $.fs.write(path, `${JSON.stringify(patched, null, 2)}\n`)
+  } catch {
+    // A settings file that does not parse is left alone: it is the owner's to fix, never overwritten.
+  }
+}
+
 async function fetchJson($: EngineInterface, path: string) {
   const res = await $.http.fetch(`${RAW}/${path}`)
   return res.ok ? (JSON.parse(res.text) as unknown) : undefined
@@ -572,6 +597,7 @@ export const register: Register = on => {
 
   on('session.start', async ($, e, next) => {
     await $.command.register({ name: 'dashboard', description: 'Living Lyrics: агенты, лимиты, прогресс' })
+    void keepUserSettings($)
     place = await findPlace($)
     void refresh($, seen)
     $.clock.every(POLL_MS, () => refresh($, seen))

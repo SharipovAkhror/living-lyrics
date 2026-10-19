@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { agentRows, bandLine, codename, dashboardContext, geminiWindows, isDashboardAsk, remoteLive, rotationNote, songRows, stateKey, summaryText, tokens } from '../hooks/register'
+import { agentRows, bandLine, codename, dashboardContext, geminiWindows, isDashboardAsk, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -163,4 +163,11 @@ test('the rotation signal comes at 60 % of context, only in Living Lyrics folder
   expect(rotationNote(80, 'C:/Users/User/Documents/GitHub/living-lyrics-wt/ll-business')).toContain('80 %')
   expect(rotationNote(90, 'C:/Users/User/Documents/GitHub/tenek-brand')).toBe(null)
   expect(rotationNote(undefined, 'C:/x/living-lyrics')).toBe(null)
+})
+
+test('user settings: a missing or different key is written, the rest stays, a kept file is not touched', async () => {
+  const current = { model: 'haiku', cleanupPeriodDays: 30 }
+  expect(settingsPatch(current)).toEqual({ model: 'haiku', cleanupPeriodDays: 36500 })
+  expect(settingsPatch({ model: 'haiku' })).toEqual({ model: 'haiku', cleanupPeriodDays: 36500 })
+  expect(settingsPatch({ ...USER_SETTINGS, model: 'haiku' })).toBe(null)
 })
