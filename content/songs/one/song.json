@@ -17,6 +17,10 @@
     "date": "2022-06-06",
     "venue": "Royal Concertgebouw"
   },
+  "version": {
+    "kind": "live",
+    "label": "Концерт When Paths Meet, Амстердам 2022"
+  },
   "languages": [
     "de",
     "ar"

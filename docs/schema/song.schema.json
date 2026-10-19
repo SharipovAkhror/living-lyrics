@@ -61,6 +61,23 @@
       },
       "additionalProperties": false
     },
+    "version": {
+      "type": "object",
+      "description": "Какая это запись. Обязательное поле. label — короткая подпись по-русски рядом с названием. Концерт: «Концерт <название>, <город> <год>». Студия: «Студийная, <альбом> <год>».",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["live", "studio", "single", "other"]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Подпись для интерфейса. Только факты этой записи."
+        }
+      },
+      "required": ["kind", "label"],
+      "additionalProperties": false
+    },
     "languages": {
       "minItems": 1,
       "type": "array",
@@ -360,6 +377,7 @@
     "slug",
     "title",
     "artist",
+    "version",
     "languages",
     "duration",
     "palette",
