@@ -13,22 +13,6 @@ function statusOf(song: Song) {
   return null;
 }
 
-/** The cover paints `coverGlyph`, and falls back to the title when the glyph is absent. */
-function coverDrawsTitle(song: Song): boolean {
-  const glyph = (song.coverGlyph ?? song.title).trim().toLocaleLowerCase('en');
-  return glyph === song.title.trim().toLocaleLowerCase('en');
-}
-
-/**
- * Glass line under the cover. When the cover already draws the title, the line is the
- * opening part — the same quiet name the song header shows under the title. Otherwise
- * the title itself, which the cover does not paint.
- */
-function tileLead(song: Song): string {
-  if (!coverDrawsTitle(song)) return song.title;
-  return song.parts?.[0]?.title ?? '';
-}
-
 export function LibraryPage() {
   const dark = useAppliedTheme(useSettings().theme);
   const [q, setQ] = useState('');
@@ -114,7 +98,6 @@ function SongTile({ song }: { song: Song }) {
   }, [song.slug]);
 
   const st = statusOf(song);
-  const lead = tileLead(song);
   const warm = () => prefetchLyrics(song.slug);
   return (
     <a
@@ -134,8 +117,7 @@ function SongTile({ song }: { song: Song }) {
         alt=""
       />
       <span className="lib-tile-cap glass glass--strong">
-        {coverDrawsTitle(song) && <span className="visually-hidden">{song.title}</span>}
-        {lead && <span className="lib-tile-title">{lead}</span>}
+        <span className="lib-tile-title">{song.title}</span>
         <span className="lib-tile-artist">{song.artist}</span>
       </span>
       {st && <span className={`chip chip--${st.tone} t-caption1`}>{st.text}</span>}

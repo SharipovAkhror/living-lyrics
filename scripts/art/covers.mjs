@@ -1,5 +1,5 @@
 // Square song covers for the lock screen and CarPlay.
-// Same painting as the library card: palette.field and coverGlyph, no title and no artist.
+// A still frame of the song's living field: palette.field only, no letters and no marks.
 //   npm run art -- covers
 //   node scripts/art/covers.mjs
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -7,13 +7,12 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { chromium } from 'playwright';
 
+/** Fine grain, inlined so the screenshot does not depend on a second file loading. */
+const GRAIN =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E";
+
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const SIZES = [96, 192, 512, 1024];
-const ARABIC = /[\u0600-\u06FF]/;
-
-function fileUrl(path) {
-  return pathToFileURL(path).href;
-}
 
 function songs() {
   const dir = join(root, 'content/songs');
@@ -23,50 +22,93 @@ function songs() {
     .filter((song) => Array.isArray(song.palette?.field) && song.palette.field.length >= 3);
 }
 
-function escapeHtml(text) {
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+/** Same motion as src/scene/Field.tsx, frozen at one second so every cover is one settled frame. */
+function skyAt(t) {
+  const a = t * 0.011;
+  return {
+    x1: 50 + Math.sin(a) * 18,
+    y1: 38 + Math.cos(a * 0.73) * 16,
+    x2: 70 + Math.sin(a * 0.51 + 1.4) * 16,
+    y2: 64 + Math.cos(a * 0.44 + 0.5) * 14,
+    x3: 26 + Math.sin(a * 0.36 + 2.2) * 12,
+    y3: 76 + Math.cos(a * 0.66 + 1) * 10,
+  };
 }
 
+function lin(channel) {
+  const s = channel / 255;
+  return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+}
+
+function luminance(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+}
+
+function mix(hex, toward, amount) {
+  const n = parseInt(hex.slice(1), 16);
+  const m = parseInt(toward.slice(1), 16);
+  const ch = (shift) => Math.round(((n >> shift) & 255) * (1 - amount) + ((m >> shift) & 255) * amount);
+  const h = (v) => v.toString(16).padStart(2, '0');
+  return `#${h(ch(16))}${h(ch(8))}${h(ch(0))}`;
+}
+
+/**
+ * Colour field only. `coverGlyph` is intentionally unread: the word is no longer drawn.
+ * Washes sit where the living sky sits at t = 380s, spread across the square.
+ * The lightest stop is a fourth bloom and a small glow, so each song stays its own colour.
+ */
 export function coverHtml(song, size) {
-  const [a, b, c, d] = song.palette.field;
-  const base = d ?? c;
-  const glyph = song.coverGlyph ?? song.title;
-  const arabic = ARABIC.test(glyph);
-  const serif = fileUrl(join(root, 'node_modules/@fontsource/source-serif-4/files/source-serif-4-latin-600-normal.woff2'));
-  const hafs = fileUrl(join(root, 'public/fonts/KFGQPC-Uthmanic-Script-HAFS.otf'));
-  const face = arabic ? 'f-mushaf' : 'f-serif';
+  const colors = song.palette.field.slice();
+  const ranked = [...colors].sort((a, b) => luminance(a) - luminance(b));
+  const darkest = ranked[0];
+  const lightest = ranked[ranked.length - 1];
+  const [c1, c2, c3, c4] = colors;
+  const third = c4 ?? c3;
+  const glow = mix(lightest, '#ffffff', 0.22);
+  const p = skyAt(380);
+  const blur = Math.max(8, Math.round(size * 0.085));
+  const spots = [
+    { x: p.x1, y: p.y1, w: 62, h: 50, color: c1 },
+    { x: p.x2, y: p.y2, w: 56, h: 48, color: c2 },
+    { x: p.x3, y: p.y3, w: 52, h: 44, color: third },
+    { x: 82, y: 28, w: 46, h: 40, color: lightest },
+  ];
+  const blobs = spots
+    .map(
+      (s) =>
+        `<i class="blob" style="left:${s.x.toFixed(1)}%;top:${s.y.toFixed(1)}%;width:${s.w}%;height:${s.h}%;background:${s.color}"></i>`,
+    )
+    .join('');
   return `<!doctype html><meta charset="utf-8"><style>
-    @font-face { font-family: 'Source Serif 4'; src: url('${serif}') format('woff2'); font-weight: 600; font-style: normal; }
-    @font-face { font-family: 'KFGQPC Hafs'; src: url('${hafs}') format('opentype'); font-weight: 400; }
-    html, body { margin: 0; width: ${size}px; height: ${size}px; background: ${base}; }
-    .cover {
-      width: ${size}px; height: ${size}px; position: relative; overflow: hidden; border-radius: 0;
-      display: flex; align-items: center; justify-content: center;
-      background:
-        radial-gradient(120% 90% at 15% 10%, ${a} 0%, transparent 60%),
-        radial-gradient(110% 90% at 90% 20%, ${b} 0%, transparent 55%),
-        radial-gradient(120% 110% at 60% 100%, ${c} 0%, transparent 60%),
-        ${base};
+    html, body { margin: 0; width: ${size}px; height: ${size}px; background: ${darkest}; }
+    .cover { width: ${size}px; height: ${size}px; position: relative; overflow: hidden; background: ${darkest}; }
+    .blob {
+      position: absolute; border-radius: 50%; transform: translate(-50%, -50%);
+      filter: blur(${blur}px);
     }
-    .cover-grain {
-      position: absolute; inset: 0; opacity: 0.12; mix-blend-mode: overlay;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    .glow {
+      position: absolute; left: 78%; top: 22%; width: 42%; height: 36%;
+      border-radius: 50%; transform: translate(-50%, -50%);
+      background: radial-gradient(closest-side, ${glow} 0%, transparent 70%);
+      filter: blur(${Math.round(blur * 0.55)}px);
+      opacity: 0.9;
     }
-    .cover-glyph {
-      position: relative; padding: 0 10%; color: rgba(255, 255, 255, 0.94);
-      font-family: 'Source Serif 4', Palatino, Georgia, serif; font-weight: 600;
-      font-size: ${Math.round(size * 0.18)}px; line-height: 1.05; text-align: center;
-      text-shadow: 0 2px 22px rgba(0, 0, 0, 0.28);
+    .veil {
+      position: absolute; inset: 0;
+      background: radial-gradient(85% 78% at 46% 42%, transparent 42%, ${darkest} 100%);
+      opacity: 0.22;
     }
-    .cover-glyph.f-mushaf {
-      font-family: 'KFGQPC Hafs', serif; font-weight: 400;
-      font-size: ${Math.round(size * 0.15)}px; line-height: 1.6; white-space: nowrap;
+    .grain {
+      position: absolute; inset: 0; opacity: 0.2; mix-blend-mode: overlay;
+      background-image: url("${GRAIN}");
+      background-size: ${Math.max(64, Math.round(size * 0.18))}px;
     }
   </style>
-  <div class="cover"><div class="cover-grain"></div><span class="cover-glyph ${face}" dir="${arabic ? 'rtl' : 'ltr'}">${escapeHtml(glyph)}</span></div>`;
+  <div class="cover">${blobs}<div class="glow"></div><div class="veil"></div><div class="grain"></div></div>`;
 }
 
-/** True when every pixel of a PNG is opaque. */
+/** True when every sampled pixel of a PNG is opaque. */
 async function isOpaque(page, png) {
   const b64 = png.toString('base64');
   return page.evaluate(async (src) => {
@@ -94,7 +136,6 @@ export async function buildCovers() {
     for (const size of SIZES) {
       await page.setViewportSize({ width: size, height: size });
       await page.setContent(coverHtml(song, size), { waitUntil: 'load' });
-      await page.evaluate(() => document.fonts.ready);
       const png = await page.screenshot({ type: 'png', omitBackground: false, clip: { x: 0, y: 0, width: size, height: size } });
       const out = join(dir, `${size}.png`);
       writeFileSync(out, png);
