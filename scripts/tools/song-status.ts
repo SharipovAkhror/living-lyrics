@@ -459,7 +459,10 @@ const commentsReady = lines.length > 0 && fragmentsWithoutComment.length === 0 &
 const translitReady = noTranslit.length === 0;
 const instrumentsReady = unknownInstruments.length === 0;
 const qaReady = flagCount === 0 && review.length === 0;
-const coverReady = [96, 192, 512, 1024].every((size) => existsSync(join(root, 'public/covers', slug, `${size}.png`)));
+const coverFileExt = song.cover?.ext === 'jpg' ? 'jpg' : 'png';
+const coverReady = [96, 192, 512, 1024].every((size) =>
+  existsSync(join(root, 'public/covers', slug, `${size}.${coverFileExt}`)),
+);
 
 const rows: Row[] = [
   {
@@ -550,7 +553,7 @@ const rows: Row[] = [
     n: '—',
     name: 'обложка',
     state: coverReady ? 'да' : 'нет',
-    detail: coverReady ? 'public/covers: 96, 192, 512, 1024' : 'нет файла — npm run art -- covers',
+    detail: coverReady ? `public/covers: 96, 192, 512, 1024.${coverFileExt}` : 'нет файла — npm run art -- covers',
   },
   {
     n: '11',
@@ -880,7 +883,10 @@ if (!sourcesReady) {
     row: '—',
     file: 'docs/design/design-system.md',
     command: 'npm run art -- covers',
-    because: `Обложка — квадрат палитры и знака, без названия и исполнителя. Нужны public/covers/${slug}/96.png, 192.png, 512.png и 1024.png. Команда собирает обложки всех песен.`,
+    because:
+      song.cover?.kind === 'official'
+        ? `Официальная обложка${song.cover.releaseTitle ? ` «${song.cover.releaseTitle}»` : ''}. Нужны public/covers/${slug}/source.jpg и jpg 96, 192, 512, 1024. Команда уменьшает исходник и не рисует вместо него цветовое поле.`
+        : `Официального файла нет: квадрат цвета из palette.field, без букв. Нужны public/covers/${slug}/96.png, 192.png, 512.png и 1024.png. Команда рисует поле только для таких песен.`,
   };
 } else {
   const publish = rows.find((row) => row.name === 'публикация');

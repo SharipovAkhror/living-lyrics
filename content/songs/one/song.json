@@ -45,6 +45,13 @@
     ]
   },
   "coverGlyph": "ONE",
+  "cover": {
+    "kind": "official",
+    "ext": "jpg",
+    "source": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/f7/0e/75/f70e75de-2b7c-e0fc-81f5-121f4e1b4574/cover.jpg/3000x3000bb.jpg",
+    "retrieved": "2026-10-19",
+    "releaseTitle": "One (ONE: When Paths Meet) - EP"
+  },
   "audio": {
     "status": "ready",
     "high": "/audio/one/high.m4a",

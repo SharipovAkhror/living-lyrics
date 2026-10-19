@@ -16,7 +16,8 @@
 | `poets[]` | `{ name, lang?, era? }` | авторы текстов |
 | `duration` | секунды | длительность файла `high.m4a` |
 | `palette` | `{ accent, accentDark, field[3–4] }` | цвет песни (светлая/тёмная тема) и цвета живого фона |
-| `coverGlyph` | строка? | не используется: обложка — только цвет песни, без букв. Поле оставлено, старые файлы проходят проверку |
+| `coverGlyph` | строка? | не используется: буквы на обложку не выводятся. Поле оставлено, старые файлы проходят проверку |
+| `cover` | `{ kind: official\|field, ext: jpg\|png, source, retrieved?, releaseTitle? }` | откуда квадрат. `official` — файл релиза, jpg, исходник `public/covers/<slug>/source.jpg`. `field` — запасное цветовое поле, png. `source` — адрес исходника. `retrieved` — дата `ГГГГ-ММ-ДД`. `releaseTitle` — название релиза у источника. Нет поля — сайт ждёт png цветового поля |
 | `audio` | см. ниже | |
 | `timing` | `{ status: draft∣aligned∣verified, method, notes? }` | |
 | `credits[]` | `{ role, name }` | **только подтверждённые** |

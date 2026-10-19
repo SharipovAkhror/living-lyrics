@@ -43,6 +43,13 @@
     ]
   },
   "coverGlyph": "زنده شدم",
+  "cover": {
+    "kind": "official",
+    "ext": "jpg",
+    "source": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/4a/a3/34/4aa3346f-679f-f9c2-4887-8d2eaf811e1a/cover.jpg/3000x3000bb.jpg",
+    "retrieved": "2026-10-19",
+    "releaseTitle": "I Have Come Alive (Live) - Single"
+  },
   "audio": {
     "status": "ready",
     "high": "/audio/i-have-come-alive/high.m4a",

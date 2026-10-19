@@ -1,8 +1,10 @@
 // Square song covers for the lock screen and CarPlay.
-// A still frame of the song's living field: palette.field only, no letters and no marks.
+// An official release image (public/covers/<slug>/source.jpg) is resized to jpg.
+// A song without one gets a still of its living field: palette.field only, no letters.
 //   npm run art -- covers
 //   node scripts/art/covers.mjs
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { chromium } from 'playwright';
@@ -19,7 +21,44 @@ function songs() {
   return readdirSync(dir)
     .filter((name) => !name.startsWith('.'))
     .map((slug) => JSON.parse(readFileSync(join(dir, slug, 'song.json'), 'utf8')))
-    .filter((song) => Array.isArray(song.palette?.field) && song.palette.field.length >= 3);
+    .filter(
+      (song) =>
+        song.cover?.kind === 'official' ||
+        (Array.isArray(song.palette?.field) && song.palette.field.length >= 3),
+    );
+}
+
+let python;
+function pythonBin() {
+  if (python) return python;
+  for (const bin of ['python', 'python3']) {
+    const probe = spawnSync(bin, ['--version'], { stdio: 'ignore' });
+    if (probe.status === 0) return (python = bin);
+  }
+  throw new Error('python is required to resize official covers');
+}
+
+/** Resize source.jpg. Returns true when this song is official and must not be painted. */
+function resizeOfficial(song) {
+  const source = join(root, 'public/covers', song.slug, 'source.jpg');
+  const official = song.cover?.kind === 'official';
+  if (official && song.cover.ext !== 'jpg') {
+    throw new Error(`${song.slug}: official cover must use ext jpg`);
+  }
+  if (!official && existsSync(source)) {
+    throw new Error(`${song.slug}: source.jpg is present, but cover.kind is not official`);
+  }
+  if (!official) return false;
+  if (!existsSync(source)) {
+    throw new Error(`${song.slug}: cover.kind is official, but public/covers/${song.slug}/source.jpg is missing`);
+  }
+  const run = spawnSync(pythonBin(), [join(root, 'scripts/art/cover_resize.py'), song.slug], { stdio: 'inherit' });
+  if (run.status !== 0) throw new Error(`${song.slug}: cover resize failed`);
+  for (const size of SIZES) {
+    const png = join(root, 'public/covers', song.slug, `${size}.png`);
+    if (existsSync(png)) unlinkSync(png);
+  }
+  return true;
 }
 
 /** Same motion as src/scene/Field.tsx, frozen at one second so every cover is one settled frame. */
@@ -128,12 +167,22 @@ async function isOpaque(page, png) {
 
 export async function buildCovers() {
   const list = songs();
+  const fields = list.filter((song) => !resizeOfficial(song));
+  if (fields.length === 0) {
+    console.log(`covers: ${list.length} official, no colour field`);
+    return;
+  }
   const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || undefined });
   const page = await browser.newPage({ deviceScaleFactor: 1 });
-  for (const song of list) {
+  for (const song of fields) {
+    if (song.cover?.kind === 'field' && song.cover.ext !== 'png') {
+      throw new Error(`${song.slug}: field cover must use ext png`);
+    }
     const dir = join(root, 'public/covers', song.slug);
     mkdirSync(dir, { recursive: true });
     for (const size of SIZES) {
+      const jpg = join(dir, `${size}.jpg`);
+      if (existsSync(jpg)) unlinkSync(jpg);
       await page.setViewportSize({ width: size, height: size });
       await page.setContent(coverHtml(song, size), { waitUntil: 'load' });
       const png = await page.screenshot({ type: 'png', omitBackground: false, clip: { x: 0, y: 0, width: size, height: size } });
@@ -144,7 +193,7 @@ export async function buildCovers() {
     }
   }
   await browser.close();
-  console.log(`covers: ${list.length} songs, ${SIZES.join(' ')}`);
+  console.log(`covers: ${list.length - fields.length} official, ${fields.length} colour field, ${SIZES.join(' ')}`);
 }
 
 const invoked = process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url;

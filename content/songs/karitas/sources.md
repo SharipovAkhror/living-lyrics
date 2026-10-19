@@ -100,3 +100,15 @@ Francesca Thompson ни на одной открытой странице нет
 - Прямого аята в песне нет. Статья Аляутдинова о суфизме от 1 октября 2020 терминов этой песни не определяет.
 - James W. Redhouse, *A Turkish and English Lexicon* (1890), с. 1354, статья غوغا: для *kavga* в fuzuli-f8. Рядом со вздохами и стонами взято outcry, tumult.
 - Залог *amantissima* в строке — действительный, по форме причастия *amans*. Чтение Кэмпбелла most beloved — на странице 20 ноября 2014. Чтение Ньюман most loving названо при приёмке; страницы *Symphonia* 140 и 279 не открыты.
+
+## Обложка
+
+Снято 2026-10-19 через iTunes Lookup, без ключа: https://itunes.apple.com/lookup?id=1654660354
+
+Карточка называет релиз Karitas (ONE: When Paths Meet) - EP. Исполнители на карточке: Sami Yusuf, Cappella Amsterdam & Amsterdam Andalusian Orchestra. Дата релиза 2022-12-12. Длительность дорожки 951500 мс (951,5 с). Выше дата EP и потоковая длина 15:51 в этом проходе ещё не были открыты заново; эти две цифры теперь есть в ответе Lookup. collectionId 1654660348, trackId 1654660354. Страница того же релиза: https://music.apple.com/us/album/1654660348?i=1654660354
+
+Файл обложки, размер в адресе заменён с 100×100 на 3000×3000: https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/86/c0/55/86c05550-97a3-a9fe-aaae-a216198a4523/cover.jpg/3000x3000bb.jpg
+
+Запрос просил 3000×3000. Ответ Apple — JPEG 1440×1440. Он лежит как `public/covers/karitas/source.jpg`. 1024 и меньшие размеры — уменьшение этого файла, без растягивания.
+
+Альбом из `song.json`, When Paths Meet (Live at The Holland Festival), collectionId 1661656156. Дорожка там называется Karitas (Live at The Holland Festival), trackId 1661656179, та же дата 2022-12-12 и те же 951500 мс, общая обложка альбома `fdc5ba6b-1052-ddc5-7b11-0e9129411e7a`. На плитку положена обложка отдельного EP. Файл проекта — дорожка YouTube, 977,05 с. Времена в `canon.md` относятся к этому файлу.

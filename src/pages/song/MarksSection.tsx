@@ -143,7 +143,7 @@ function MarkRow({ mark, slug, onSeek }: { mark: Mark; slug: string; onSeek: (t:
         aria-label={`Удалить отметку ${formatTime(mark.t)}`}
         onClick={() => marksFor(slug).remove(mark.id)}
       >
-        <Icon name="xmark" size={14} weight={2.2} />
+        <Icon name="xmark" size={16} />
       </button>
     </div>
   );
