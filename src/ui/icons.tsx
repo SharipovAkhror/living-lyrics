@@ -2,10 +2,8 @@
  * Phosphor Icons, Fill weight. MIT licence.
  * Copyright (c) 2023 Phosphor Icons.
  * Paths copied from https://github.com/phosphor-icons/core
- * commit 2b75f3ad12b420c9504ef05df8d2564a28f8500e
- * (the same drawings as variant A on the retired comparison sheet).
+ * commit 2b75f3ad12b420c9504ef05df8d2564a28f8500e.
  * The site does not depend on the package. One grid, 256 units.
- * https://github.com/phosphor-icons/core
  *
  * Draw each glyph at a whole pixel size (16, 20, 22, 24 or 28).
  * The circle of info.circle already spans 208 units; the close plate spans 192.

@@ -9,7 +9,6 @@ import { SongPage } from '@/pages/song/SongPage';
 
 const MethodPage = lazy(() => import('@/pages/MethodPage').then((m) => ({ default: m.MethodPage })));
 const InstrumentsPage = lazy(() => import('@/pages/InstrumentsPage'));
-const IconsLab = lazy(() => import('@/pages/lab/IconsLab').then((m) => ({ default: m.IconsLab })));
 
 /** A quiet page while a lazy route's script arrives. The paper is already the app background. */
 function RouteFallback({ title, detail }: { title: string; detail: string }) {
@@ -72,13 +71,6 @@ export function App() {
       page = (
         <Suspense fallback={<RouteFallback title="Методология" detail="Открываем раздел" />}>
           <MethodPage doc={route.doc} />
-        </Suspense>
-      );
-      break;
-    case 'icons-lab':
-      page = (
-        <Suspense fallback={<RouteFallback title="Значки" detail="Открываем лист сравнения" />}>
-          <IconsLab />
         </Suspense>
       );
       break;

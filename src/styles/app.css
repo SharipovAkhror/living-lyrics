@@ -2245,35 +2245,6 @@ html.is-sheet-drag .empty {
   color: #fff;
   padding-left: 2px;
 }
-.cover {
-  position: relative;
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-.cover-grain {
-  position: absolute;
-  inset: 0;
-  opacity: 0.12;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-.cover-glyph {
-  position: relative;
-  padding: 0 10%;
-  color: rgba(255, 255, 255, 0.94);
-  font-size: clamp(28px, 7.5vw, 46px);
-  line-height: 1.05;
-  text-align: center;
-  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.28);
-}
-.cover-glyph.f-mushaf {
-  line-height: 1.6;
-  font-size: clamp(24px, 6vw, 38px);
-  white-space: nowrap;
-}
 .card-text {
   display: flex;
   flex-direction: column;
