@@ -244,7 +244,7 @@ export function Sheet({
           <div className="sheet-titlebar">
             {onBack ? (
               <button type="button" className="btn btn-plain sheet-back" onClick={onBack}>
-                <Icon name="chevron.left" size={18} />
+                <Icon name="chevron.left" size={20} />
                 <span>{backLabel ?? 'Назад'}</span>
               </button>
             ) : (

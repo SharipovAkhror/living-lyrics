@@ -143,9 +143,16 @@ a {
   opacity: 0.35;
   cursor: default;
 }
-.btn svg {
+.btn svg,
+.util svg,
+.mark-btn svg,
+.search svg,
+.hint svg,
+.row-icon svg,
+.comment-chevron {
   display: block;
   flex: none;
+  shape-rendering: geometricPrecision;
 }
 
 /* Circular glass button, as in iOS 26 toolbars. */

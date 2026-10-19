@@ -58,7 +58,7 @@ export function MethodPage({ doc }: { doc?: string }) {
     <div className="method">
       <header className="method-top">
         <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
-          <Icon name="chevron.left" size={20} weight={2.2} />
+          <Icon name="chevron.left" size={22} />
         </a>
         <span className="t-headline">Методология</span>
         <span style={{ width: 44 }} />

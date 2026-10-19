@@ -698,7 +698,8 @@
   border: 0;
   border-radius: var(--r-pill);
   background: none;
-  color: color-mix(in srgb, var(--ink) 62%, transparent);
+  /* 72 % ink stays muted and clears 3:1 on the glass over every song wash. */
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
   font: 500 13px/1.2 var(--font-ui);
   white-space: nowrap;
   cursor: pointer;

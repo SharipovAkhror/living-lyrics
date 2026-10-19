@@ -305,7 +305,7 @@ export function SettingsSheet({
             )}
             {!isIOS && (
               <div className="row row--control row--slider">
-                <Icon name="speaker.wave.2" size={18} className="tertiary" />
+                <Icon name="speaker.wave.2" size={20} className="tertiary" />
                 <Slider
                   label="Громкость"
                   min={0}
@@ -334,7 +334,7 @@ export function SettingsSheet({
           <Group header="Запись" footer={state?.source === 'local' ? 'Свой файл хранится только на этом устройстве.' : 'Подойдут m4a, mp3, wav и flac. Файл останется только на этом устройстве.'}>
             <Row icon={<Icon name="music.note" size={20} />} title={sourceLabel} detail={state?.error ?? undefined} />
             <Row icon={<Icon name="square.and.arrow.down" size={20} />} title="Подключить свой файл…" onClick={() => input.current?.click()} chevron />
-            {state?.source === 'local' && <Row icon={<Icon name="xmark" size={18} />} title="Убрать свой файл" onClick={() => void engine.detachFile()} />}
+            {state?.source === 'local' && <Row icon={<Icon name="xmark" size={20} />} title="Убрать свой файл" onClick={() => void engine.detachFile()} />}
             <input
               ref={input}
               type="file"

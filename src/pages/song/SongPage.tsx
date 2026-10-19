@@ -374,14 +374,14 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
 
       <header className="topbar glass">
         <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
-          <Icon name="chevron.left" size={20} weight={1.75} />
+          <Icon name="chevron.left" size={22} />
         </a>
         <div className="topbar-title">
           <div className="topbar-song">{song.title}</div>
           <div className="topbar-section">{sectionLabel}</div>
         </div>
         <button className="btn btn-circle btn-plain" onClick={() => setSheet('info')} aria-label="О песне">
-          <Icon name="info.circle" size={21} />
+          <Icon name="info.circle" size={22} />
         </button>
       </header>
 
@@ -390,7 +390,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           <button className="comment-head" onClick={() => setSettings({ commentOpen: !settings.commentOpen })} aria-expanded={settings.commentOpen}>
             <span className="comment-kicker">Пояснение</span>
             <span className="comment-preview">{settings.commentOpen ? '' : (settings.showHarakat ? comment.text : stripHarakat(comment.text)).replace(/\*+/g, '')}</span>
-            <Icon name="chevron.down" size={18} weight={1.75} className="comment-chevron" />
+            <Icon name="chevron.down" size={20} className="comment-chevron" />
           </button>
           <div className="comment-fold">
             <RichText key={comment.from.idx} text={comment.text} showHarakat={settings.showHarakat} className="comment-body" />
@@ -408,7 +408,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       )}
       {state?.source === 'silent' && !playing && !song.audio.high && !song.audio.saver && (
         <button className="hint" onClick={() => setSheet('settings')}>
-          <Icon name="music.note" size={15} />
+          <Icon name="music.note" size={16} />
           Аудио не подключено — подключить
         </button>
       )}
@@ -439,7 +439,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
                   title="Не совпадает"
                   aria-keyshortcuts="M"
                 >
-                  <Icon name="flag" size={18} />
+                  <Icon name="flag" size={20} />
                 </button>
                 <kbd className="mark-kbd" aria-hidden="true">
                   M
@@ -460,7 +460,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         )}
         <div className="transport">
           <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)">
-            <Icon name="backward" size={22} />
+            <Icon name="backward" size={24} />
           </button>
           <button
             className={`btn btn-circle btn-xl btn-ring${buffering ? ' is-buffering' : ''}`}
@@ -471,28 +471,28 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             {buffering && !playing ? (
               <span className="btn-buffer" />
             ) : (
-              <Icon name={playing ? 'pause' : 'play'} size={26} style={playing ? undefined : { marginLeft: 3 }} />
+              <Icon name={playing ? 'pause' : 'play'} size={28} />
             )}
           </button>
           <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)">
-            <Icon name="forward" size={22} />
+            <Icon name="forward" size={24} />
           </button>
         </div>
         <div className="utility">
           <button className="util" aria-label="Перевод" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
-            <Icon name="character.bubble" size={22} />
+            <Icon name="character.bubble" size={24} />
             <span className="util-label" aria-hidden="true">Перевод</span>
           </button>
           <button className="util" aria-label="Пояснение" aria-pressed={settings.showComment} onClick={() => setSettings({ showComment: !settings.showComment })}>
-            <Icon name="book.closed" size={22} />
+            <Icon name="book.closed" size={24} />
             <span className="util-label" aria-hidden="true">Пояснение</span>
           </button>
-          <button className="util" aria-label="Весь текст" onClick={() => setSheet('text')}>
-            <Icon name="list.bullet" size={22} />
+          <button className="util" aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={() => setSheet('text')}>
+            <Icon name="list.bullet" size={24} />
             <span className="util-label" aria-hidden="true">Весь текст</span>
           </button>
-          <button className="util" aria-label="Настройки" onClick={() => setSheet('settings')}>
-            <Icon name="slider.horizontal.3" size={22} />
+          <button className="util" aria-label="Настройки" aria-pressed={sheet === 'settings'} onClick={() => setSheet('settings')}>
+            <Icon name="slider.horizontal.3" size={24} />
             <span className="util-label" aria-hidden="true">Настройки</span>
           </button>
         </div>

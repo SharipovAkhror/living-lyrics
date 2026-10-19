@@ -38,7 +38,7 @@ function Catalogue() {
     <div className="ig">
       <header className="ig-top">
         <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
-          <Icon name="chevron.left" size={20} weight={2.2} />
+          <Icon name="chevron.left" size={22} />
         </a>
       </header>
 

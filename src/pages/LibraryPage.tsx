@@ -42,12 +42,12 @@ export function LibraryPage() {
               <Icon name="square.grid.2x2" size={20} />
             </a>
             <a className="btn btn-circle btn-quiet" href="/method" onClick={linkHandler('/method')} aria-label="Методология">
-              <Icon name="book.pages" size={21} />
+              <Icon name="book.pages" size={20} />
             </a>
           </div>
         </div>
         <label className="search">
-          <Icon name="magnifyingglass" size={17} weight={2} className="search-icon" />
+          <Icon name="magnifyingglass" size={20} className="search-icon" />
           <input
             type="search"
             className="search-input"
