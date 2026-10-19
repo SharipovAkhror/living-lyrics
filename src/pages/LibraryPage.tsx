@@ -118,7 +118,7 @@ function SongTile({ song }: { song: Song }) {
         sizes="(min-width: 1100px) 240px, (min-width: 700px) 30vw, 46vw"
         alt=""
       />
-      <span className="lib-tile-cap glass glass--strong">
+      <span className="lib-tile-cap">
         <span className="lib-tile-title">{song.title}</span>
         <span className="lib-tile-artist">{song.artist}</span>
       </span>

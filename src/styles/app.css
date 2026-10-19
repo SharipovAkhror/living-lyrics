@@ -2152,39 +2152,36 @@ html.is-sheet-drag .empty {
 }
 .lib-tile {
   position: relative;
-  display: block;
-  aspect-ratio: 1;
-  overflow: hidden;
-  border-radius: var(--r-md);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   color: inherit;
   transition: transform var(--dur-3) var(--ease-spring);
 }
 .lib-tile:active {
   transform: scale(0.96);
 }
+/* Official covers carry their own lettering, so the caption sits under the art, not on it. */
 .lib-tile-cover {
   display: block;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1;
   object-fit: cover;
+  border-radius: var(--r-md);
+  box-shadow: var(--glass-shadow, 0 8px 24px rgb(0 0 0 / 0.28));
 }
 .lib-tile-cap {
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  bottom: 8px;
   display: flex;
   flex-direction: column;
   gap: 1px;
-  padding: 10px 12px 9px;
-  border-radius: var(--r-sm);
+  padding: 0 2px;
 }
 .lib-tile-title,
 .lib-tile-artist {
   overflow: hidden;
 }
 .lib-tile-title {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.02em;
@@ -2196,9 +2193,9 @@ html.is-sheet-drag .empty {
 .lib-tile-artist {
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.3;
-  color: color-mix(in srgb, var(--ink) 74%, transparent);
+  color: color-mix(in srgb, var(--ink) 66%, transparent);
 }
 .lib-tile .chip {
   position: absolute;
