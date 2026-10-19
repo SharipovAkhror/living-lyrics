@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { agentRows, bandLine, codename, geminiWindows, isDashboardAsk, remoteLive, songRows, stateKey, summaryText, tokens } from '../hooks/register'
+import { agentRows, bandLine, codename, dashboardContext, geminiWindows, isDashboardAsk, remoteLive, songRows, stateKey, summaryText, tokens } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -148,4 +148,11 @@ test('the publish key ignores minutes and steps but sees a state change', async 
   const c: Live = { grok: [{ name: 't1', state: 'finished', minutes: 9, step: 'b', model: 'm' }], gemini: [] }
   expect(stateKey(a)).toBe(stateKey(b))
   expect(stateKey(a) === stateKey(c)).toBe(false)
+})
+
+test('typing dashboard puts the whole summary into the reply for windows that draw no card', async () => {
+  const ctx = dashboardContext(summaryText(BOARD, LIVE, [], null))
+  expect(ctx).toContain('Grok · Sync')
+  expect(ctx).toContain('Нужно от вас: Видео концертов')
+  expect(ctx).toContain('ONE · хор 0/26')
 })

@@ -540,6 +540,15 @@ async function dashboardTree($: EngineInterface, e: RenderInput<'Pane' | 'UserMe
   )
 }
 
+/** What Claude is told when the owner types `dashboard`: answer with the summary, nothing else. */
+export function dashboardContext(summary: string) {
+  return (
+    'The owner asked for the Dashboard. Some windows draw it as a card, remote windows do not, so reply with ' +
+    'exactly this summary as compact Markdown (keep the lines, no intro, no advice, no tools):\n\n' +
+    summary
+  )
+}
+
 const ASKS = new Set(['dashboard', '/dashboard', 'дашборд', '/дашборд', 'штаб'])
 
 export function isDashboardAsk(text: string) {
@@ -616,8 +625,11 @@ export const register: Register = on => {
     return dashboardTree($, e, e.viewport?.columns ?? 48)
   })
 
+  // A remote window (claude.ai, the phone over Remote Control) draws messages itself and never
+  // shows the card, and a session cannot tell which windows watch it: the reply carries the summary.
   on('prompt.submit', async ($, e, next) => {
     if (!isDashboardAsk(e.text)) return next(e)
-    return next({ ...e, context: [...(e.context ?? []), 'The owner opened the Dashboard: the mod draws it as a live card in place of this message. Reply with one short line, no summary.'] })
+    const summary = summaryText(await read($, board), await read($, live), await read($, limits), await read($, usage))
+    return next({ ...e, context: [...(e.context ?? []), dashboardContext(summary)] })
   })
 }
