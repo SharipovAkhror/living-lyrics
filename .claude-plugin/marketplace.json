@@ -1,0 +1,11 @@
+{
+  "name": "living-lyrics",
+  "owner": { "name": "SharipovAkhror" },
+  "plugins": [
+    {
+      "name": "ll-dashboard",
+      "source": "./ops/dashboard-mod",
+      "description": "Living Lyrics dashboard: what the agents do, limits, readiness and word-sync progress"
+    }
+  ]
+}

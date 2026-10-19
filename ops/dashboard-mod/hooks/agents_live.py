@@ -1,4 +1,4 @@
-"""What the agents of Living Lyrics are doing now, as JSON for the ll-shtab mod.
+"""What the agents of Living Lyrics are doing now, as JSON for the ll-dashboard mod.
 
 Grok: one task per folder in ../living-lyrics-wt; its session is
 ~/.grok/sessions/<percent-encoded folder>/<id>/ (chat_history.jsonl, events.jsonl).
@@ -16,7 +16,8 @@ import time
 import urllib.parse
 from pathlib import Path
 
-WT = Path('C:/Users/User/Documents/GitHub/living-lyrics-wt')
+# The worktrees sit beside the repository the mod passes in (its main checkout).
+WT = (Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path.cwd()).parent / 'living-lyrics-wt'
 SESSIONS = Path.home() / '.grok' / 'sessions'
 TAIL = 200_000
 

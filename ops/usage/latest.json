@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-19T12:48:09Z",
+  "updated": "2026-10-19T13:28:14Z",
   "grok": {
     "plan": "SuperGrok Heavy",
     "today": 19008990,
@@ -15,17 +15,17 @@
     "quota": {
       "gemini": {
         "weeklyRemaining": 97.09,
-        "weeklyResetIn": "121h 59m",
+        "weeklyResetIn": "121h 19m",
         "fiveHourRemaining": 100.0,
         "fiveHourResetIn": "",
-        "at": "2026-10-19T12:47:49Z"
+        "at": "2026-10-19T13:27:54Z"
       },
       "claude-gpt": {
         "weeklyRemaining": 100.0,
         "weeklyResetIn": "",
         "fiveHourRemaining": 100.0,
         "fiveHourResetIn": "",
-        "at": "2026-10-19T12:47:49Z"
+        "at": "2026-10-19T13:27:54Z"
       }
     },
     "runsToday": 0,

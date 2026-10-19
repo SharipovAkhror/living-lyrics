@@ -9,17 +9,19 @@ import { ICON_CLAUDE, ICON_GEMINI, ICON_GROK } from './icons'
  * and a Dashboard button. The pane shows each agent's limits, the agents by name and model with
  * their live state, what waits on the owner, word-sync progress and the latest hand-offs.
  * Layout follows the pane width (`bodyColumns`): narrow drops the secondary lines.
- * Claude writes the board file after every step; live state comes from hooks/agents_live.py;
- * Grok and Gemini usage from the repo's ops/usage/latest.json (ops/usage/collect.py, every 10 min).
+ * The board is the repo's ops/board.json: read from disk when the session runs in the repo's main
+ * checkout, else fetched from GitHub (the repo is public), so the mod works on any computer.
+ * Live Grok and Gemini state (hooks/agents_live.py) and the usage collector (ops/usage/collect.py,
+ * every 10 min) run only where the executors work: the checkout with ../living-lyrics-wt beside it.
  */
 
 const PANE = 'll-dashboard'
 const TITLE = 'Dashboard'
-const REPO = 'C:/Users/User/Documents/GitHub/living-lyrics'
-const BOARD_FILE = `${REPO}/ops/board.json`
-const USAGE_FILE = `${REPO}/ops/usage/latest.json`
-const COLLECT = `${REPO}/ops/usage/collect.py`
+const RAW = 'https://raw.githubusercontent.com/SharipovAkhror/living-lyrics/main'
+const BOARD = 'ops/board.json'
+const USAGE = 'ops/usage/latest.json'
 const POLL_MS = 30_000
+const REMOTE_MS = 120_000
 const COLLECT_MS = 600_000
 const NARROW = 56
 
@@ -180,6 +182,30 @@ function agentsScript($: EngineInterface) {
   return `${$.plugin.root}/hooks/agents_live.py`
 }
 
+/** Where the board comes from: the repo's main checkout on disk, or GitHub. */
+type Place = { repo: string | null; orchestrator: boolean }
+
+let place: Place = { repo: null, orchestrator: false }
+
+/** The session's folder when it is the repo's main checkout (a worktree's `.git` is a file). */
+async function findPlace($: EngineInterface): Promise<Place> {
+  try {
+    const cwd = (await $.session.cwd()).replace(/\\/g, '/').replace(/\/$/, '')
+    const git = await $.fs.stat(`${cwd}/.git`)
+    const file = await $.fs.stat(`${cwd}/${BOARD}`)
+    if (git.kind !== 'dir' || file.kind !== 'file') return { repo: null, orchestrator: false }
+    const wt = await $.fs.stat(`${cwd.replace(/\/[^/]+$/, '')}/living-lyrics-wt`).catch(() => undefined)
+    return { repo: cwd, orchestrator: wt?.kind === 'dir' }
+  } catch {
+    return { repo: null, orchestrator: false }
+  }
+}
+
+async function fetchJson($: EngineInterface, path: string) {
+  const res = await $.http.fetch(`${RAW}/${path}`)
+  return res.ok ? (JSON.parse(res.text) as unknown) : undefined
+}
+
 async function readJson($: EngineInterface, path: string, seen: Record<string, number>) {
   const stat = await $.fs.stat(path)
   if (seen[path] === stat.mtimeMs) return undefined
@@ -188,26 +214,40 @@ async function readJson($: EngineInterface, path: string, seen: Record<string, n
 }
 
 async function refresh($: EngineInterface, seen: Record<string, number>) {
-  try {
-    const parsed = await readJson($, BOARD_FILE, seen)
-    if (parsed) await update($, board, () => parsed as Board)
-  } catch {
-    // No board yet, or a half-written file: keep what is shown.
-  }
-  try {
-    const parsed = await readJson($, USAGE_FILE, seen)
-    if (parsed) await update($, usage, () => parsed as Usage)
-  } catch {
-    // No usage ledger yet.
-  }
-  try {
-    const res = await $.process.run(['python', agentsScript($)], { timeoutMs: 25_000 })
-    if (res.exitCode === 0) {
-      const next = JSON.parse(res.stdout) as Live
-      if (JSON.stringify(next) !== JSON.stringify(await read($, live))) await update($, live, () => next)
+  if (place.repo) {
+    try {
+      const parsed = await readJson($, `${place.repo}/${BOARD}`, seen)
+      if (parsed) await update($, board, () => parsed as Board)
+    } catch {
+      // No board yet, or a half-written file: keep what is shown.
     }
-  } catch {
-    // Python missing or slow: the board alone still draws.
+    try {
+      const parsed = await readJson($, `${place.repo}/${USAGE}`, seen)
+      if (parsed) await update($, usage, () => parsed as Usage)
+    } catch {
+      // No usage ledger yet.
+    }
+  } else if (Date.now() - (seen.remote ?? 0) >= REMOTE_MS) {
+    seen.remote = Date.now()
+    try {
+      const parsed = await fetchJson($, BOARD)
+      if (parsed) await update($, board, () => parsed as Board)
+      const used = await fetchJson($, USAGE)
+      if (used) await update($, usage, () => used as Usage)
+    } catch {
+      // Offline: keep what is shown.
+    }
+  }
+  if (place.orchestrator && place.repo) {
+    try {
+      const res = await $.process.run(['python', agentsScript($), place.repo], { timeoutMs: 25_000 })
+      if (res.exitCode === 0) {
+        const next = JSON.parse(res.stdout) as Live
+        if (JSON.stringify(next) !== JSON.stringify(await read($, live))) await update($, live, () => next)
+      }
+    } catch {
+      // Python missing or slow: the board alone still draws.
+    }
   }
   try {
     const u = await $.session.usage()
@@ -219,8 +259,9 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
 }
 
 async function collectUsage($: EngineInterface) {
+  if (!place.orchestrator || !place.repo) return
   try {
-    await $.process.run(['python', COLLECT], { cwd: REPO, timeoutMs: 120_000 })
+    await $.process.run(['python', `${place.repo}/ops/usage/collect.py`], { cwd: place.repo, timeoutMs: 120_000 })
   } catch {
     // agy or grok missing: the ledger keeps its last snapshot.
   }
@@ -463,6 +504,7 @@ export const register: Register = on => {
 
   on('session.start', async ($, e, next) => {
     await $.command.register({ name: 'dashboard', description: 'Living Lyrics: агенты, лимиты, прогресс' })
+    place = await findPlace($)
     void refresh($, seen)
     $.clock.every(POLL_MS, () => refresh($, seen))
     void collectUsage($)
