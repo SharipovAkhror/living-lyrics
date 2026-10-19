@@ -75,7 +75,7 @@ def main() -> None:
         raise SystemExit(__doc__)
     name, handoff = args[0], Path(args[1])
     if not handoff.is_absolute():
-        handoff = REPO / handoff
+        handoff = Path.cwd() / handoff
     cwd = Path(opts.get('--cwd', REPO))
     if not handoff.is_file():
         raise SystemExit(f'no hand-off file: {handoff}')
