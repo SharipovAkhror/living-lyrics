@@ -1,6 +1,6 @@
 {
  "metric": "letter",
- "threshold": 0.412102,
+ "threshold": 0.412103,
  "cap_met": true,
  "accepted": 72,
  "near": 63,
@@ -22,7 +22,7 @@
    "placed": 54,
    "cap_ok": true,
    "metric": "letter",
-   "threshold": 0.412102,
+   "threshold": 0.412103,
    "cap_met": true
   },
   {
