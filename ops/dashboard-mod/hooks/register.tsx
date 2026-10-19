@@ -270,9 +270,8 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
       const res = await $.process.run(['python', agentsScript($), place.repo], { timeoutMs: 25_000 })
       if (res.exitCode === 0) {
         const next = JSON.parse(res.stdout) as Live
-        const prev = await read($, live)
-        if (JSON.stringify(next) !== JSON.stringify(prev)) await update($, live, () => next)
-        if (stateKey(next) !== stateKey(prev)) await publishLive($)
+        if (JSON.stringify(next) !== JSON.stringify(await read($, live))) await update($, live, () => next)
+        await publishLive($, next)
       }
     } catch {
       // Python missing or slow: the board alone still draws.
@@ -287,11 +286,20 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
   }
 }
 
-/** Push the live state to the `live` branch; the script itself skips what is unchanged and keeps a heartbeat. */
-async function publishLive($: EngineInterface) {
+/**
+ * Push the live state to the `live` branch when its states differ from what this load last pushed.
+ * `published` is a plain variable, not state: it resets on every (re)load, so a fresh load always
+ * pushes once; the script skips an unchanged signature itself and keeps the heartbeat (`heartbeat`).
+ */
+let published: string | null = null
+
+async function publishLive($: EngineInterface, l: Live, heartbeat = false) {
   if (!place.orchestrator || !place.repo) return
+  const key = stateKey(l)
+  if (!heartbeat && key === published) return
   try {
-    await $.process.run(['python', `${place.repo}/${PUBLISH}`, place.repo], { cwd: place.repo, timeoutMs: 90_000 })
+    const res = await $.process.run(['python', `${place.repo}/${PUBLISH}`, place.repo, '--stdin'], { cwd: place.repo, stdin: JSON.stringify(l), timeoutMs: 90_000 })
+    if (res.exitCode === 0) published = key
   } catch {
     // Offline or no push rights: other devices keep the last published state.
   }
@@ -549,7 +557,7 @@ export const register: Register = on => {
     void collectUsage($)
     $.clock.every(COLLECT_MS, async () => {
       await collectUsage($)
-      await publishLive($)
+      await publishLive($, await read($, live), true)
     })
     return next(e)
   })
