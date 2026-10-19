@@ -1,0 +1,115 @@
+/* Comparison page only. The song chrome keeps the live player classes. */
+
+.lab-one {
+  min-height: 100dvh;
+}
+
+.lab-word {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--r-pill);
+  color: var(--ink);
+  font: 500 13px/1 var(--font-ui);
+  white-space: nowrap;
+}
+
+.lab-mark-word {
+  order: 2;
+  width: auto;
+  min-width: 0;
+  padding: 0 10px;
+  font: 500 13px/1 var(--font-ui);
+  white-space: nowrap;
+}
+
+.lab-words {
+  gap: 6px;
+  justify-content: center;
+}
+
+.lab-words .util {
+  flex-direction: row;
+  min-width: 0;
+  min-height: 32px;
+  padding: 7px 8px;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
+}
+
+.lab-words .util[aria-pressed='true'] {
+  color: var(--accent);
+}
+
+.lab-rest {
+  position: absolute;
+  z-index: 4;
+  left: 16px;
+  right: 16px;
+  top: 40%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 12px;
+  padding: 8px 12px 12px;
+  border-radius: var(--r-lg);
+  color: var(--ink);
+}
+
+.lab-rest p {
+  flex: 1 0 100%;
+  margin: 0;
+  text-align: center;
+  font: 500 13px/1.35 var(--font-ui);
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+}
+
+.lab-rest-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  vertical-align: -6px;
+}
+
+.lab-sheet {
+  display: flex;
+  gap: 28px;
+  width: max-content;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 28px 32px 40px;
+  background: #14120f;
+}
+
+.lab-sheet figure {
+  margin: 0;
+}
+
+.lab-sheet figcaption {
+  margin: 0 0 12px;
+  color: #f4efe8;
+  font: 600 28px/1 var(--font-ui);
+}
+
+.lab-phone {
+  position: relative;
+  width: 393px;
+  height: 852px;
+  overflow: hidden;
+  border-radius: 40px;
+}
+
+.lab-phone .song {
+  position: absolute;
+  inset: 0;
+  width: 393px;
+  height: 852px;
+}
+
+body:has(.lab-sheet) {
+  background: #14120f;
+}
