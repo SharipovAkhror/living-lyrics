@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 
 function skyAt(t: number) {
-  const a = t * 0.018;
+  const a = t * 0.011;
   return {
     x1: 50 + Math.sin(a) * 18,
     y1: 38 + Math.cos(a * 0.73) * 16,
@@ -32,7 +32,7 @@ function starField(): Star[] {
     return s / 4294967296;
   };
   const out: Star[] = [];
-  for (let i = 0; i < 48; i++) out.push({ x: next() * 100, y: next() * 100, r: 1.1 + next() * 1.3, p: next() * 6.28 });
+  for (let i = 0; i < 48; i++) out.push({ x: next() * 100, y: next() * 100, r: 0.6 + next() * 0.7, p: next() * 6.28 });
   return out;
 }
 
@@ -78,7 +78,8 @@ export function Field({
         const node = nodes[i];
         if (!node) continue;
         const tw = 0.5 + 0.5 * Math.sin(time * 0.22 + stars[i].p);
-        node.style.opacity = (dark ? 0.28 + tw * 0.62 : 0.16 + tw * 0.3).toFixed(3);
+        // Quiet enough that the glass panels stay the surface. Still a function of time.
+        node.style.opacity = (dark ? 0.04 + tw * 0.06 : 0.02 + tw * 0.03).toFixed(3);
       }
     };
 

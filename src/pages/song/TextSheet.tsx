@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Sheet } from '@/components/controls';
+import { Sheet } from '@/ui/controls';
 import type { Timeline } from '@/data/timeline';
 import { formatTime } from '@/data/library';
 import { instrument } from '@/instruments/catalog';

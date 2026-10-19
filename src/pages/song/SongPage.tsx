@@ -14,7 +14,7 @@ import { Scrubber } from '@/player/Scrubber';
 import { Scene } from '@/scene/Scene';
 import { Field } from '@/scene/Field';
 import { LEAD } from '@/scene/flow';
-import { Icon } from '@/icons/Icon';
+import { Icon } from '@/ui/icons';
 import { RichText } from '@/components/RichText';
 import { showHarakatText, stripHarakat } from '@/data/harakat';
 import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
@@ -332,7 +332,10 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   };
 
   return (
-    <div className={`song${comment ? ' has-comment' : ''}${settings.commentOpen ? ' comment-open' : ''}`}>
+    <div
+      className={`song${comment ? ' has-comment' : ''}${settings.commentOpen ? ' comment-open' : ''}`}
+      style={{ background: dark ? '#07060c' : (song.palette.field[2] ?? song.palette.field[0]) }}
+    >
       <Field colors={song.palette.field} dark={dark} clock={timeline ? clock : undefined} t={0} still={!timeline} />
       {leaving && (
         <div className="sky-leave" aria-hidden>
@@ -369,21 +372,21 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </div>
       )}
 
-      <header className="topbar">
-        <a className="btn btn-circle btn-quiet" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
+      <header className="topbar glass">
+        <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
           <Icon name="chevron.left" size={20} weight={1.75} />
         </a>
         <div className="topbar-title">
           <div className="topbar-song">{song.title}</div>
           <div className="topbar-section">{sectionLabel}</div>
         </div>
-        <button className="btn btn-circle btn-quiet" onClick={() => setSheet('info')} aria-label="О песне">
+        <button className="btn btn-circle btn-plain" onClick={() => setSheet('info')} aria-label="О песне">
           <Icon name="info.circle" size={21} />
         </button>
       </header>
 
       {comment && (
-        <aside className={`comment${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
+        <aside className={`comment glass${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
           <button className="comment-head" onClick={() => setSettings({ commentOpen: !settings.commentOpen })} aria-expanded={settings.commentOpen}>
             <span className="comment-kicker">Пояснение</span>
             <span className="comment-preview">{settings.commentOpen ? '' : (settings.showHarakat ? comment.text : stripHarakat(comment.text)).replace(/\*+/g, '')}</span>
@@ -396,7 +399,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       )}
 
       {state?.error && (
-        <div className="player-alert" role="alert">
+        <div className="player-alert glass" role="alert">
           <p>{state.error}</p>
           <button type="button" className="btn btn-capsule btn-sm btn-tinted" onClick={() => engine.retry()}>
             Повторить
@@ -410,7 +413,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </button>
       )}
 
-      <footer className="player">
+      <footer className="player glass">
         {timeline ? (
           <Scrubber
             timeline={timeline}
@@ -433,15 +436,14 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
                   onClick={placeMark}
                   disabled={!timeline}
                   aria-label="Не совпадает"
+                  title="Не совпадает"
                   aria-keyshortcuts="M"
                 >
-                  <span className="mark-btn-label" aria-hidden="true">
-                    Не совпадает
-                  </span>
-                  <kbd className="mark-kbd" aria-hidden="true">
-                    M
-                  </kbd>
+                  <Icon name="flag" size={18} />
                 </button>
+                <kbd className="mark-kbd" aria-hidden="true">
+                  M
+                </kbd>
               </div>
             }
           />
@@ -477,21 +479,21 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           </button>
         </div>
         <div className="utility">
-          <button className="util" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
+          <button className="util" aria-label="Перевод" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
             <Icon name="character.bubble" size={22} />
-            <span>Перевод</span>
+            <span className="util-label" aria-hidden="true">Перевод</span>
           </button>
-          <button className="util" aria-pressed={settings.showComment} onClick={() => setSettings({ showComment: !settings.showComment })}>
+          <button className="util" aria-label="Пояснение" aria-pressed={settings.showComment} onClick={() => setSettings({ showComment: !settings.showComment })}>
             <Icon name="book.closed" size={22} />
-            <span>Пояснение</span>
+            <span className="util-label" aria-hidden="true">Пояснение</span>
           </button>
-          <button className="util" onClick={() => setSheet('text')}>
+          <button className="util" aria-label="Весь текст" onClick={() => setSheet('text')}>
             <Icon name="list.bullet" size={22} />
-            <span>Весь текст</span>
+            <span className="util-label" aria-hidden="true">Весь текст</span>
           </button>
-          <button className="util" onClick={() => setSheet('settings')}>
+          <button className="util" aria-label="Настройки" onClick={() => setSheet('settings')}>
             <Icon name="slider.horizontal.3" size={22} />
-            <span>Настройки</span>
+            <span className="util-label" aria-hidden="true">Настройки</span>
           </button>
         </div>
       </footer>

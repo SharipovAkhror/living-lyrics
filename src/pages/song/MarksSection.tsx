@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Group } from '@/components/controls';
+import { Group } from '@/ui/controls';
 import { formatTime } from '@/data/library';
-import { Icon } from '@/icons/Icon';
+import { Icon } from '@/ui/icons';
 import { clientCommit, formatMarksReport, marksFor, todayISO, useMarks, type Mark } from '@/app/marks';
 
 const ARABIC = /[\u0600-\u06FF]/;

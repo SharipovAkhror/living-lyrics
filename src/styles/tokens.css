@@ -1,7 +1,8 @@
 /*
- * Design tokens. Cosmos: dawn paper in the light, a near-black sky in the dark.
- * Type sizes follow a comfortable reading scale. Hit targets stay at 44 px.
- * Surfaces are paper, not glass. The song accent arrives at runtime as
+ * Design tokens. Soft glass over the song's own colour.
+ * Panels are translucent, corners are 12 / 20 / 28 or fully round, and
+ * motion uses one spring (see src/ui/spring.ts). Nothing in the interface
+ * is smaller than 13 px. The song accent arrives at runtime as
  * --song-accent / --song-accent-dark (see src/app/theme.ts).
  */
 
@@ -9,6 +10,28 @@
   font-family: 'KFGQPC Hafs';
   src: url('/fonts/KFGQPC-Uthmanic-Script-HAFS.otf') format('opentype');
   font-display: swap;
+}
+
+/* Computed lengths. Without registration, max() inside a custom property does not resolve in font-size. */
+@property --lyric-latin {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 33px;
+}
+@property --lyric-arab {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 40px;
+}
+@property --lyric-tr {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 20px;
+}
+@property --lyric-note {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 17px;
 }
 
 :root {
@@ -37,8 +60,22 @@
   --t-callout: 16px;
   --t-subhead: 15px;
   --t-footnote: 13px;
-  --t-caption1: 12px;
-  --t-caption2: 11px;
+  --t-caption1: 13px;
+  --t-caption2: 13px;
+  /* Sung line on an 852 px-tall phone. Other screens scale with the height.
+     Registered so viewport units compute to a length. An unregistered max()
+     stays a token and font-size falls back to the body size. */
+  --lyric-latin: max(13px, calc(33 * 100dvh / 852));
+  --lyric-arab: max(13px, calc(40 * 100dvh / 852));
+  --lyric-tr: max(13px, calc(20 * 100dvh / 852));
+  --lyric-note: max(13px, calc(17 * 100dvh / 852));
+
+  /* Thick sheet. 80 % white still left the player labels readable, so the light
+     fill is an opaque mix: 92 % white and 8 % of the song's darkest field stop. */
+  --sheet-fill: color-mix(in srgb, #fff 92%, var(--song-field, #c9b8a4));
+  --sheet-fallback: color-mix(in srgb, #fffaf6 94%, var(--song-field, #c9b8a4));
+  --sheet-blur: 40px;
+  --sheet-saturate: 160%;
 
   /* Spacing (8-pt grid with 4-pt half steps) */
   --sp-1: 4px;
@@ -58,22 +95,22 @@
   --btn-lg: 56px;
   --btn-xl: 64px;
 
-  /* Radii: concentric — inner radius = outer radius − inset */
-  --r-xs: 8px;
+  /* 12 small, 20 cards, 28 sheets, pill for buttons. No sharp corners. */
+  --r-xs: 12px;
   --r-sm: 12px;
-  --r-md: 16px;
-  --r-lg: 22px;
+  --r-md: 20px;
+  --r-lg: 28px;
   --r-xl: 28px;
-  --r-2xl: 34px;
+  --r-2xl: 28px;
   --r-pill: 999px;
 
-  /* Motion. iOS default spring ≈ response 0.5, damping 0.825 → cubic approximation */
+  /* The same spring as src/ui/spring.ts, squeezed into 420 ms. */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
-  --dur-1: 120ms;
-  --dur-2: 220ms;
-  --dur-3: 360ms;
+  --ease-spring: linear(0, 0.0988 5.6%, 0.2945 11.1%, 0.5049 16.7%, 0.6833 22.2%, 0.8242 27.8%, 0.9212 33.3%, 0.981 38.9%, 1.013 44.4%, 1.0263 50%, 1.0285 55.6%, 1.025 61.1%, 1.0191 66.7%, 1.0132 72.2%, 1.0081 77.8%, 1.0044 83.3%, 1.0019 88.9%, 1.0003 94.4%, 1);
+  --dur-1: 160ms;
+  --dur-2: 280ms;
+  --dur-3: 420ms;
   --dur-4: 520ms;
 
   /* ===== Light appearance: dawn paper ===== */
@@ -107,18 +144,20 @@
   --plate-tint: transparent;
   --ink-ghost: rgba(26, 20, 15, 0.1);
 
-  /* Quiet paper for sheets and the few remaining raised surfaces. */
-  --glass-tint: rgba(247, 241, 232, 0.94);
-  --glass-tint-strong: #f7f1e8;
-  --glass-blur: 14px;
-  --glass-saturate: 110%;
-  --glass-rim: transparent;
-  --glass-rim-low: transparent;
-  --glass-edge: rgba(26, 20, 15, 0.08);
-  --glass-shadow: 0 18px 40px -28px rgba(26, 20, 15, 0.45);
-  --material-thick: rgba(247, 241, 232, 0.94);
-  --material-regular: rgba(247, 241, 232, 0.88);
-  --material-thin: rgba(247, 241, 232, 0.72);
+  /* Light glass: white 62 % over the field. Fallback is denser, for no blur. */
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-tint: rgba(255, 255, 255, 0.62);
+  --glass-tint-strong: rgba(255, 255, 255, 0.78);
+  --glass-fallback: rgba(255, 252, 248, 0.9);
+  --glass-blur: 28px;
+  --glass-saturate: 170%;
+  --glass-rim: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  --glass-rim-low: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  --glass-edge: rgba(255, 255, 255, 0.45);
+  --glass-shadow: 0 24px 64px -28px rgba(26, 20, 15, 0.28);
+  --material-thick: rgba(255, 252, 248, 0.9);
+  --material-regular: rgba(255, 255, 255, 0.72);
+  --material-thin: rgba(255, 255, 255, 0.55);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -145,15 +184,24 @@
     --ink-unsung: rgba(246, 240, 230, 0.42);
     --plate-tint: transparent;
     --ink-ghost: rgba(246, 240, 230, 0.1);
-    --glass-tint: rgba(16, 15, 22, 0.94);
-    --glass-tint-strong: #14131a;
-    --glass-rim: transparent;
-    --glass-rim-low: transparent;
-    --glass-edge: rgba(246, 240, 230, 0.1);
-    --glass-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.7);
-    --material-thick: rgba(16, 15, 22, 0.94);
-    --material-regular: rgba(16, 15, 22, 0.86);
-    --material-thin: rgba(16, 15, 22, 0.7);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-tint: rgba(255, 255, 255, 0.1);
+    --glass-tint-strong: rgba(255, 255, 255, 0.16);
+    --glass-fallback: rgba(14, 12, 18, 0.88);
+    --glass-blur: 28px;
+    --glass-saturate: 170%;
+    --glass-rim: inset 0 1px 0 rgba(255, 255, 255, 0.42);
+    --glass-rim-low: inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    --glass-edge: rgba(255, 255, 255, 0.16);
+    --glass-shadow: 0 28px 70px -24px rgba(0, 0, 0, 0.5);
+    --material-thick: rgba(14, 12, 18, 0.88);
+    --material-regular: rgba(20, 16, 24, 0.8);
+    --material-thin: rgba(255, 255, 255, 0.12);
+    /* Opaque mix. 78 % alpha of the field still left the labels readable through a 40 px blur. */
+    --sheet-fill: color-mix(in srgb, var(--song-field, #221820) 78%, #07060c);
+    --sheet-fallback: color-mix(in srgb, var(--song-field, #221820) 88%, #07060c);
+    --sheet-blur: 40px;
+    --sheet-saturate: 160%;
   }
 }
 
@@ -180,26 +228,49 @@
   --ink-unsung: rgba(246, 240, 230, 0.42);
   --plate-tint: transparent;
   --ink-ghost: rgba(246, 240, 230, 0.1);
-  --glass-tint: rgba(16, 15, 22, 0.94);
-  --glass-tint-strong: #14131a;
-  --glass-rim: transparent;
-  --glass-rim-low: transparent;
-  --glass-edge: rgba(246, 240, 230, 0.1);
-  --glass-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.7);
-  --material-thick: rgba(16, 15, 22, 0.94);
-  --material-regular: rgba(16, 15, 22, 0.86);
-  --material-thin: rgba(16, 15, 22, 0.7);
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-tint: rgba(255, 255, 255, 0.1);
+  --glass-tint-strong: rgba(255, 255, 255, 0.16);
+  --glass-fallback: rgba(14, 12, 18, 0.88);
+  --glass-blur: 28px;
+  --glass-saturate: 170%;
+  --glass-rim: inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  --glass-rim-low: inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  --glass-edge: rgba(255, 255, 255, 0.16);
+  --glass-shadow: 0 28px 70px -24px rgba(0, 0, 0, 0.5);
+  --material-thick: rgba(14, 12, 18, 0.88);
+  --material-regular: rgba(20, 16, 24, 0.8);
+  --material-thin: rgba(255, 255, 255, 0.12);
+  --sheet-fill: color-mix(in srgb, var(--song-field, #221820) 78%, #07060c);
+  --sheet-fallback: color-mix(in srgb, var(--song-field, #221820) 88%, #07060c);
+  --sheet-blur: 40px;
+  --sheet-saturate: 160%;
 }
 
 /* Accessibility: Reduce Transparency → frosted, nearly opaque surfaces. Increase Contrast → stronger edges. */
 @media (prefers-reduced-transparency: reduce) {
   :root {
+    --glass-bg: var(--bg-elevated);
     --glass-tint: var(--bg-elevated);
     --glass-tint-strong: var(--bg-elevated);
+    --glass-fallback: var(--bg-elevated);
     --material-thick: var(--bg-elevated);
     --material-regular: var(--bg-elevated);
     --material-thin: var(--bg-elevated);
     --plate-tint: var(--bg-elevated);
+    --sheet-fill: var(--bg-elevated);
+    --sheet-fallback: var(--bg-elevated);
+  }
+}
+
+/* Short and wide (car, low landscape). Type is not a fraction of the height:
+   at 480 px that fraction was 18 px for the line and 13 px for the translation. */
+@media (min-width: 700px) and (max-height: 640px) {
+  :root {
+    --lyric-latin: 30px;
+    --lyric-arab: 36px;
+    --lyric-tr: 18px;
+    --lyric-note: 16px;
   }
 }
 @media (prefers-contrast: more) {

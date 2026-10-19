@@ -1,5 +1,5 @@
 import type { FontPersian } from '@/app/settings';
-import { Group, Row, Sheet } from '@/components/controls';
+import { Group, Row, Sheet } from '@/ui/controls';
 import { LANG_NAMES, formatTime } from '@/data/library';
 import { linkHandler } from '@/app/router';
 import type { Lyrics, Song } from '@/data/schema';

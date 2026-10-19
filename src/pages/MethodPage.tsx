@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { marked } from 'marked';
 import { linkHandler, navigate } from '@/app/router';
-import { Icon } from '@/icons/Icon';
+import { Icon } from '@/ui/icons';
 
 const files = import.meta.glob('/docs/methodology/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
 
@@ -57,7 +57,7 @@ export function MethodPage({ doc }: { doc?: string }) {
   return (
     <div className="method">
       <header className="method-top">
-        <a className="btn btn-circle glass" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
+        <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
           <Icon name="chevron.left" size={20} weight={2.2} />
         </a>
         <span className="t-headline">Методология</span>
