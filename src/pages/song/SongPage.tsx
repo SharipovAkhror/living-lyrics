@@ -76,7 +76,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             slug: song.slug,
             title: song.title,
             artist: song.artist,
-            album: song.release?.album,
+            album: song.version.label,
             duration: song.duration,
             urls: { high: song.audio.high, saver: song.audio.saver },
             gainDb: song.audio.gainDb,
@@ -355,10 +355,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
                   {showHarakatText(song.titleOriginal, settings.showHarakat)}
                 </div>
               )}
-              <div className="intro-meta t-subhead">
-                {song.artist}
-                {song.performance?.event ? ` · ${song.performance.event}` : ''}
-              </div>
+              <div className="intro-meta t-subhead">{song.version.label}</div>
+              <div className="intro-meta t-subhead">{song.artist}</div>
               {poets && <div className="intro-poets t-footnote">{poets}</div>}
             </div>
           </div>
@@ -379,6 +377,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </a>
         <div className="topbar-title">
           <div className="topbar-song">{song.title}</div>
+          <div className="topbar-version">{song.version.label}</div>
           <div className="topbar-section">{sectionLabel}</div>
         </div>
         <button className="btn btn-circle btn-plain" onClick={() => setSheet('info')} aria-label="О песне">

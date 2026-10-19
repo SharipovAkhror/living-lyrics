@@ -275,6 +275,24 @@ export const SongSchema = z.object({
       date: z.string().optional(),
     })
     .optional(),
+  /**
+   * Which performance this slug is. The same song at another concert is a new slug
+   * (`karitas-amsterdam-2022`), not a second value on this one.
+   * `label` is the short Russian line shown with the title. Live: «Концерт <name>, <city> <year>».
+   * Studio: «Студийная, <album> <year>». Facts only, from the video the owner sent.
+   */
+  version: z.object(
+    {
+      kind: z.enum(['live', 'studio', 'single', 'other'], {
+        error: 'kind: live, studio, single или other',
+      }),
+      label: z
+        .string({ error: 'нужна подпись версии' })
+        .trim()
+        .min(1, { error: 'подпись версии пустая' }),
+    },
+    { error: 'нет поля version: { kind, label }' },
+  ),
   /** Languages actually sung, in order of appearance. */
   languages: z.array(LANG).min(1),
   /** Authors of the sung texts. */

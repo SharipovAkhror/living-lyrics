@@ -18,6 +18,10 @@
     "city": "Dubai",
     "date": "2021-10"
   },
+  "version": {
+    "kind": "live",
+    "label": "Концерт Beyond the Stars, Дубай 2021"
+  },
   "languages": [
     "en",
     "fa",

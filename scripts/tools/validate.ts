@@ -230,6 +230,17 @@ function check(slug: string): Issue[] {
   lyrics = parsed.data;
 
   if (song.slug !== slug) err('song.json', `slug "${song.slug}" ≠ folder "${slug}"`);
+  // `version` itself is required by SongSchema. These warnings only catch a label that drops a year the file already states.
+  if (song.version.kind === 'live' && !song.performance) {
+    warn('version', 'kind = live, а performance нет: подпись должна опираться на факты концерта');
+  }
+  const concertYear = song.performance?.date?.match(/^\d{4}/)?.[0];
+  if (song.version.kind === 'live' && concertYear && !song.version.label.includes(concertYear)) {
+    warn('version.label', `в подписи нет года концерта ${concertYear} из performance.date`);
+  }
+  if (song.version.kind === 'studio' && song.release?.year != null && !song.version.label.includes(String(song.release.year))) {
+    warn('version.label', `в подписи нет года релиза ${song.release.year}`);
+  }
   const sourcesPath = join(dir, 'sources.md');
   const sourcesText = existsSync(sourcesPath) ? readFileSync(sourcesPath, 'utf8') : '';
   if (!sourcesText) warn('sources.md', 'нет файла источников (sources.md)');

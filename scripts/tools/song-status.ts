@@ -119,7 +119,7 @@ const slug = slugArg;
 const dir = join(root, 'content/songs', slug);
 if (!existsSync(dir)) {
   fail(
-    `Папки content/songs/${slug} нет.\nКоманда:\n  npm run new-song -- ${slug} "Название" "Исполнитель"\nДальше: docs/methodology/01-intake.md`,
+    `Папки content/songs/${slug} нет.\nКоманда:\n  npm run new-song -- ${slug} "Название" "Исполнитель" <live|studio|single|other> "Подпись версии"\nДальше: docs/methodology/01-intake.md`,
   );
 }
 
@@ -465,6 +465,12 @@ const coverReady = [96, 192, 512, 1024].every((size) =>
 );
 
 const rows: Row[] = [
+  {
+    n: '—',
+    name: 'версия',
+    state: 'да',
+    detail: `${song.version.kind} · ${song.version.label}`,
+  },
   {
     n: '1',
     name: 'приём',
