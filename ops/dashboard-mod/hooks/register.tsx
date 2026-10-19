@@ -240,7 +240,8 @@ export function settingsPatch(current: Record<string, unknown>, wanted = USER_SE
 async function keepUserSettings($: EngineInterface) {
   try {
     const home = (await $.env.get('USERPROFILE')) ?? (await $.env.get('HOME'))
-    const dir = (await $.env.get('CLAUDE_CONFIG_DIR')) ?? `${home}/.claude`
+    const dir = (await $.env.get('CLAUDE_CONFIG_DIR')) ?? (home && `${home}/.claude`)
+    if (!dir) return
     const path = `${dir.replace(/\\/g, '/')}/settings.json`
     const text = (await $.fs.exists(path)) ? await $.fs.read(path) : '{}'
     const patched = settingsPatch(JSON.parse(text) as Record<string, unknown>)
