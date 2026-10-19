@@ -39,8 +39,8 @@
   --safe-b: env(safe-area-inset-bottom);
   /* Capsule content is about 166 px, plus the 10 px lift off the screen edge. */
   --player-h: calc(176px + var(--safe-b));
-  /* Title, a version that may wrap once, and the part line under it. */
-  --chrome-top: calc(var(--safe-t) + 104px);
+  /* Title, a one-line version and the part line under it. */
+  --chrome-top: calc(var(--safe-t) + 88px);
   --player-bottom: 0px;
   position: fixed;
   top: 0;
@@ -602,12 +602,11 @@
   color: color-mix(in srgb, var(--ink) 72%, transparent);
 }
 .topbar-version {
-  font-weight: 500;
-  color: color-mix(in srgb, var(--ink) 82%, transparent);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  white-space: normal;
+  font-weight: 400;
+  color: color-mix(in srgb, var(--ink) 68%, transparent);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .topbar-song,
 .topbar-version,
@@ -2211,9 +2210,9 @@ html.is-sheet-drag .empty {
 }
 .lib-tile-version {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.25;
-  color: color-mix(in srgb, var(--ink) 78%, transparent);
+  color: color-mix(in srgb, var(--ink) 66%, transparent);
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
