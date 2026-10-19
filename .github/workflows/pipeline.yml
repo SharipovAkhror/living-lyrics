@@ -29,6 +29,13 @@
 # 30 minutes, PHONEME_BUDGET_S). The prove job admits it from those clocks.
 # It does not run the model and does not install espeak-ng. Weights are not committed.
 # A failed measurement does not fall through to the 0.10 s attack test.
+# The align artifact also carries the encrypted four-stem cache. Prove unpacks
+# that before it falls back to the Actions cache. If the vocal stem is still
+# missing, prove separates the recording and does not skip the review.
+# Run 39332050100 saved large per-song model caches and the stem cache was
+# gone by the time prove started. A qa job may set "align_from_run" to a
+# finished run id: prove downloads that run's align artifacts and does not
+# align again. Do not combine align_from_run with an align stage.
 # An align job is one song. Run 39102852010 put three ladders in one 150 minute
 # job and was cancelled at the limit (I Have Come Alive and Karitas had aligned,
 # ONE was still inside large-v3, qa had not started). The commit step still
@@ -54,6 +61,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: pipeline-${{ github.ref }}
@@ -70,6 +78,9 @@ jobs:
       align_slugs: ${{ steps.jobs.outputs.align_slugs }}
       align_files: ${{ steps.jobs.outputs.align_files }}
       align_matrix: ${{ steps.jobs.outputs.align_matrix }}
+      prove_slugs: ${{ steps.jobs.outputs.prove_slugs }}
+      prove_files: ${{ steps.jobs.outputs.prove_files }}
+      reuse_run: ${{ steps.jobs.outputs.reuse_run }}
     steps:
       - uses: actions/checkout@v4
       - name: Collect jobs
@@ -93,7 +104,8 @@ jobs:
                       print(f'::error file={p}::не JSON: {e}')
                       continue
                   jobs.append({'slug': d.get('slug', p.stem), 'stages': d.get('stages', ['separate', 'align', 'qa']),
-                               'align': d.get('align', []), 'qa': d.get('qa', []), 'file': str(p)})
+                               'align': d.get('align', []), 'qa': d.get('qa', []),
+                               'align_from_run': str(d.get('align_from_run') or '').strip(), 'file': str(p)})
           ok = []
           for j in jobs:
               if not re.fullmatch(r'[a-z0-9-]+', j['slug']) or not pathlib.Path('content/songs', j['slug']).is_dir():
@@ -101,6 +113,24 @@ jobs:
                   continue
               ok.append(j)
           align_jobs = [j for j in ok if 'align' in j.get('stages', [])]
+          reuse_jobs = []
+          for j in ok:
+              rid = str(j.get('align_from_run') or '').strip()
+              if not rid:
+                  continue
+              if not re.fullmatch(r'[0-9]+', rid):
+                  print(f"::error::align_from_run не число: {j['slug']}")
+                  raise SystemExit(1)
+              reuse_jobs.append(j)
+          reuse_ids = {str(j.get('align_from_run')).strip() for j in reuse_jobs}
+          if reuse_jobs and align_jobs:
+              print('::error::align_from_run и стадия align в одном запуске')
+              raise SystemExit(1)
+          if len(reuse_ids) > 1:
+              print('::error::разные align_from_run')
+              raise SystemExit(1)
+          reuse_run = next(iter(reuse_ids)) if reuse_ids else ''
+          prove_jobs = align_jobs or reuse_jobs
           include = []
           for j in align_jobs:
               stages = [s for s in j['stages'] if s not in ('qa', 'calibrate')]
@@ -112,13 +142,17 @@ jobs:
               f.write(f"slugs={' '.join(j['slug'] for j in ok)}\n")
               f.write(f"align_slugs={' '.join(j['slug'] for j in align_jobs)}\n")
               f.write(f"align_files={' '.join(j['file'] for j in align_jobs if j['file'])}\n")
+              f.write(f"prove_slugs={' '.join(j['slug'] for j in prove_jobs)}\n")
+              f.write(f"prove_files={' '.join(j['file'] for j in prove_jobs if j['file'])}\n")
+              f.write(f"reuse_run={reuse_run}\n")
               f.write('align_matrix=' + json.dumps({'include': include}, separators=(',', ':')) + '\n')
-          print(json.dumps(include, ensure_ascii=False, indent=1))
+          print(json.dumps({'align': include, 'reuse_run': reuse_run,
+                            'prove': [j['slug'] for j in prove_jobs]}, ensure_ascii=False, indent=1))
           EOF
 
   run:
     needs: prepare
-    if: needs.prepare.outputs.align_count == '0' && needs.prepare.outputs.count != '0'
+    if: needs.prepare.outputs.align_count == '0' && needs.prepare.outputs.count != '0' && needs.prepare.outputs.reuse_run == ''
     runs-on: ubuntu-latest
     timeout-minutes: 150
     env:
@@ -625,10 +659,11 @@ jobs:
           rm -rf pipeline-pack
           # report/ is not named work/: a directory named work is gitignored, and the
           # upload would then drop the align report.
-          mkdir -p "pipeline-pack/content/songs/$SLUG" "pipeline-pack/docs/analysis" "pipeline-pack/report/$SLUG"
+          mkdir -p "pipeline-pack/content/songs/$SLUG" "pipeline-pack/docs/analysis" "pipeline-pack/report/$SLUG" pipeline-pack/stems
           cp "content/songs/$SLUG/lyrics.json" "content/songs/$SLUG/song.json" "pipeline-pack/content/songs/$SLUG/"
           cp -a "docs/analysis/$SLUG" pipeline-pack/docs/analysis/
           cp "work/$SLUG/align-report.json" "work/$SLUG/lyrics.before.json" "work/$SLUG/timing.json" "work/$SLUG/run.log" "pipeline-pack/report/$SLUG/"
+          find work/stem-cache -maxdepth 1 -type f -name "${SLUG}-*.flac.enc" -exec cp {} pipeline-pack/stems/ \; || true
       - name: Upload alignment
         if: success()
         uses: actions/upload-artifact@v4
@@ -640,9 +675,16 @@ jobs:
 
   prove:
     needs: [prepare, calibrate, align]
-    if: needs.prepare.outputs.align_count != '0' && needs.calibrate.result == 'success' && needs.align.result == 'success'
+    if: >-
+      always() &&
+      needs.prepare.result == 'success' &&
+      (
+        (needs.prepare.outputs.align_count != '0' && needs.calibrate.result == 'success' && needs.align.result == 'success')
+        ||
+        (needs.prepare.outputs.reuse_run != '' && needs.prepare.outputs.align_count == '0')
+      )
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       AUDIO_KEY: ${{ secrets.AUDIO_KEY }}
       PIP_DISABLE_PIP_VERSION_CHECK: '1'
@@ -651,8 +693,8 @@ jobs:
       MKL_NUM_THREADS: '4'
       TOKENIZERS_PARALLELISM: 'false'
       HF_HUB_DISABLE_TELEMETRY: '1'
-      ALIGN_SLUGS: ${{ needs.prepare.outputs.align_slugs }}
-      ALIGN_FILES: ${{ needs.prepare.outputs.align_files }}
+      ALIGN_SLUGS: ${{ needs.prepare.outputs.prove_slugs }}
+      ALIGN_FILES: ${{ needs.prepare.outputs.prove_files }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -686,16 +728,35 @@ jobs:
           python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           python -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available()); raise SystemExit('+cu' in torch.__version__)"
       - name: Download calibration and alignments
+        if: needs.prepare.outputs.reuse_run == ''
         uses: actions/download-artifact@v4
         with:
           pattern: 'align-*'
           path: incoming
           merge-multiple: true
       - name: Download calibration file
+        if: needs.prepare.outputs.reuse_run == ''
         uses: actions/download-artifact@v4
         with:
           name: calibration
           path: incoming-cal
+      - name: Download an earlier alignment
+        if: needs.prepare.outputs.reuse_run != ''
+        uses: actions/download-artifact@v4
+        with:
+          pattern: 'align-*'
+          path: incoming
+          merge-multiple: true
+          run-id: ${{ needs.prepare.outputs.reuse_run }}
+          github-token: ${{ github.token }}
+      - name: Download that run's calibration
+        if: needs.prepare.outputs.reuse_run != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: calibration
+          path: incoming-cal
+          run-id: ${{ needs.prepare.outputs.reuse_run }}
+          github-token: ${{ github.token }}
       - name: Measure the rule and check the songs
         id: run
         run: |
@@ -735,10 +796,32 @@ jobs:
             echo "worst=2" >> "$GITHUB_OUTPUT"
             exit 1
           fi
+          mkdir -p work/stem-cache
+          for stems_dir in "$src/stems" incoming/stems; do
+            if [ -d "$stems_dir" ]; then
+              cp -a "$stems_dir/." work/stem-cache/
+            fi
+          done
           while read -r slug; do
             [ -z "$slug" ] && continue
             (cd scripts/pipeline && python3 stem_cache.py unpack "$slug" ../../work/stem-cache) < /dev/null
+            if [ -f "work/$slug/stems/vocals.wav" ]; then
+              continue
+            fi
+            echo "$slug: в кэше нет голосового стема, считаю Demucs"
+            bash scripts/pipeline/sandbox/run.sh "$slug" separate < /dev/null
+            rc=$?
+            if [ $rc -ge 2 ] || [ ! -f "work/$slug/stems/vocals.wav" ]; then
+              echo "::error::$slug: голосовой стем не собран"
+              missing=1
+            else
+              (cd scripts/pipeline && python3 stem_cache.py pack "$slug" ../../work/stem-cache) < /dev/null || true
+            fi
           done < /tmp/calibrate.txt
+          if [ $missing -ne 0 ]; then
+            echo "worst=2" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
           echo "::group::aligner review"
           python3 scripts/pipeline/aligner_review.py --choose $(tr '\n' ' ' < /tmp/calibrate.txt)
           rc=$?
@@ -819,18 +902,18 @@ jobs:
           rm -rf pipeline-pack incoming incoming-cal
           git config user.name 'github-actions[bot]'
           git config user.email '41898283+github-actions[bot]@users.noreply.github.com'
-          for slug in ${{ needs.prepare.outputs.align_slugs }}; do
+          for slug in ${{ needs.prepare.outputs.prove_slugs }}; do
             git add "content/songs/$slug/lyrics.json" "content/songs/$slug/song.json" 2>/dev/null || true
             [ -f "docs/analysis/$slug-qa.md" ] && git add "docs/analysis/$slug-qa.md"
             [ -f "docs/analysis/$slug-pipeline.md" ] && git add "docs/analysis/$slug-pipeline.md"
             [ -d "docs/analysis/$slug" ] && git add "docs/analysis/$slug"
           done
           if [ -d docs/analysis/bench ]; then git add docs/analysis/bench; fi
-          for f in ${{ needs.prepare.outputs.align_files }}; do
+          for f in ${{ needs.prepare.outputs.prove_files }}; do
             git rm -q --ignore-unmatch "$f"
           done
           if git diff --cached --quiet; then echo 'нечего коммитить'; exit 0; fi
-          git commit -q -m "pipeline: ${{ needs.prepare.outputs.align_slugs }}" -m "Run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          git commit -q -m "pipeline: ${{ needs.prepare.outputs.prove_slugs }}" -m "Run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           for i in 1 2 3 4 5; do
             git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && exit 0
             sleep $((i * 5))
