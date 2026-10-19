@@ -248,6 +248,7 @@ async function testEngine() {
       duration: 977,
       urls: { high: '/audio/karitas/high.m4a' },
       gainDb: -2,
+      coverExt: 'jpg',
     });
     assert.equal(env.nav.audioSession.type, 'playback');
     assert.equal(env.liveContexts(), 0);
@@ -271,6 +272,7 @@ async function testEngine() {
     assert.equal(env.media.metadata?.init.title, 'Karitas');
     assert.equal(env.media.metadata?.init.artist, 'Sami Yusuf');
     assert.equal(env.media.metadata?.init.album, 'Karitas');
+    assert.ok(env.media.metadata?.init.artwork.some((item) => item.src === 'https://example.test/covers/karitas/512.jpg'));
     assert.ok(env.media.metadata?.init.artwork.some((item) => item.src === 'https://example.test/icons/icon-512.png'));
 
     env.documentMock.hidden = true;

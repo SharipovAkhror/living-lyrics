@@ -289,10 +289,40 @@ export const SongSchema = z.object({
     field: z.array(hex).min(3).max(4),
   }),
   /**
-   * Unused. Covers are painted from `palette.field` only; nothing is drawn on them.
-   * Kept so song files that still carry the old word continue to validate.
+   * Unused. Nothing is drawn from this word.
+   * Kept so song files that still carry the old glyph continue to validate.
    */
   coverGlyph: z.string().optional(),
+  /**
+   * Where `public/covers/<slug>/` comes from.
+   * `official` is a release image (jpg), resized from `source.jpg`.
+   * `field` is the colour-field fallback (png) when there is no official file.
+   */
+  cover: z
+    .object({
+      kind: z.enum(['official', 'field']),
+      ext: z.enum(['jpg', 'png']),
+      /** URL of the master, or a short note for a painted field. */
+      source: z.string().min(1),
+      /** YYYY-MM-DD when an official file was retrieved. */
+      retrieved: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional(),
+      /** Release title at the artwork source. */
+      releaseTitle: z.string().min(1).optional(),
+    })
+    .superRefine((cover, ctx) => {
+      const expected = cover.kind === 'official' ? 'jpg' : 'png';
+      if (cover.ext !== expected) {
+        ctx.addIssue({
+          code: 'custom',
+          message: cover.kind === 'official' ? 'официальная обложка — jpg' : 'поле — png',
+          path: ['ext'],
+        });
+      }
+    })
+    .optional(),
   audio: z.object({
     status: z.enum(['missing', 'ready']),
     /** Paths under /public. `high` is required when status is ready. */

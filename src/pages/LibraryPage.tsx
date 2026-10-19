@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { coverExt, coverUrl } from '@/data/covers';
 import { songs, LANG_NAMES } from '@/data/library';
 import type { Song } from '@/data/schema';
 import { prefetchLyrics } from '@/app/prefetch';
@@ -98,6 +99,7 @@ function SongTile({ song }: { song: Song }) {
   }, [song.slug]);
 
   const st = statusOf(song);
+  const ext = coverExt(song);
   const warm = () => prefetchLyrics(song.slug);
   return (
     <a
@@ -111,8 +113,8 @@ function SongTile({ song }: { song: Song }) {
     >
       <img
         className="lib-tile-cover"
-        src={`/covers/${song.slug}/512.png`}
-        srcSet={`/covers/${song.slug}/512.png 512w, /covers/${song.slug}/1024.png 1024w`}
+        src={coverUrl(song.slug, 512, ext)}
+        srcSet={`${coverUrl(song.slug, 512, ext)} 512w, ${coverUrl(song.slug, 1024, ext)} 1024w`}
         sizes="(min-width: 1100px) 240px, (min-width: 700px) 30vw, 46vw"
         alt=""
       />

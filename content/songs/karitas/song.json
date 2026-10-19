@@ -56,6 +56,13 @@
     ]
   },
   "coverGlyph": "Karitas",
+  "cover": {
+    "kind": "official",
+    "ext": "jpg",
+    "source": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/86/c0/55/86c05550-97a3-a9fe-aaae-a216198a4523/cover.jpg/3000x3000bb.jpg",
+    "retrieved": "2026-10-19",
+    "releaseTitle": "Karitas (ONE: When Paths Meet) - EP"
+  },
   "audio": {
     "status": "ready",
     "high": "/audio/karitas/high.m4a",

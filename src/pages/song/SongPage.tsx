@@ -80,6 +80,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             duration: song.duration,
             urls: { high: song.audio.high, saver: song.audio.saver },
             gainDb: song.audio.gainDb,
+            coverExt: song.cover?.ext,
           })
         : null,
     [song],

@@ -6,6 +6,7 @@
  * The audio session is `playback` (see background.ts). Hiding the page does not pause.
  * Without any audio file the engine runs a silent clock, so the Scene can still be previewed.
  */
+import { coverMime, coverUrl, type CoverExt } from '@/data/covers';
 import type { Peaks } from '@/data/schema';
 import {
   RESUME_GUARD_MS,
@@ -45,6 +46,8 @@ export interface EngineOptions {
   duration: number;
   urls: { high?: string; saver?: string };
   gainDb?: number;
+  /** Square files under public/covers. Omitted means the colour-field png. */
+  coverExt?: CoverExt;
 }
 
 type SessionCarrier = Navigator & {
@@ -645,7 +648,12 @@ export class AudioEngine {
   private artwork(): MediaImage[] {
     const origin = typeof location !== 'undefined' && location.origin && location.origin !== 'null' ? location.origin : '';
     const url = (path: string) => (origin ? `${origin}${path}` : path);
-    const cover = (size: number) => ({ src: url(`/covers/${this.opts.slug}/${size}.png`), sizes: `${size}x${size}`, type: 'image/png' });
+    const ext: CoverExt = this.opts.coverExt === 'jpg' ? 'jpg' : 'png';
+    const cover = (size: number) => ({
+      src: url(coverUrl(this.opts.slug, size, ext)),
+      sizes: `${size}x${size}`,
+      type: coverMime(ext),
+    });
     // The song square first. The site icon stays, for a player that cannot load the file.
     return [
       cover(1024),
