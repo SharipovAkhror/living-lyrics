@@ -122,7 +122,8 @@
       "additionalProperties": false
     },
     "coverGlyph": {
-      "type": "string"
+      "type": "string",
+      "description": "Не используется. Обложка рисуется только цветом песни, без букв и знаков. Поле оставлено, чтобы старые файлы песен проходили проверку."
     },
     "audio": {
       "type": "object",

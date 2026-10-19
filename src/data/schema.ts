@@ -288,7 +288,10 @@ export const SongSchema = z.object({
     /** 3–4 colours for the animated background field. */
     field: z.array(hex).min(3).max(4),
   }),
-  /** Short word or phrase drawn on the generated cover. */
+  /**
+   * Unused. Covers are painted from `palette.field` only; nothing is drawn on them.
+   * Kept so song files that still carry the old word continue to validate.
+   */
   coverGlyph: z.string().optional(),
   audio: z.object({
     status: z.enum(['missing', 'ready']),
