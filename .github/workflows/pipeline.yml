@@ -25,6 +25,9 @@
 # The largest of those places lines still open. The proof witness is chosen
 # per song and language by proved lines, after aligner-review and before the
 # attack measurement.
+# The phoneme witness is measured in the align job (espeak-ng and wav2vec2,
+# 30 minutes, PHONEME_BUDGET_S). The prove job admits it from those clocks.
+# It does not run the model and does not install espeak-ng. Weights are not committed.
 # A failed measurement does not fall through to the 0.10 s attack test.
 # An align job is one song. Run 39102852010 put three ladders in one 150 minute
 # job and was cancelled at the limit (I Have Come Alive and Karitas had aligned,
@@ -209,14 +212,15 @@ jobs:
           python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           python -m pip install -r scripts/pipeline/requirements.txt
           # stable-ts is the third word clock on a song run and on the bench. It is not in
-          # requirements.txt. espeak, phonemizer, audio-separator and NeMo stay bench-only:
+          # requirements.txt. The espeak-ng binary is the phoneme witness on an align
+          # job. The phonemizer package, audio-separator and NeMo stay bench-only:
           # they break the transformers import the song job needs. CPU torch is installed
           # again afterwards so none of them can swap in a CUDA wheel.
           if python3 -c "import json,sys; jobs=json.load(open('/tmp/jobs.json')); sys.exit(0 if any('align' in j.get('stages',[]) or 'bench' in j.get('stages',[]) for j in jobs) else 1)"; then
             python -m pip install stable-ts
+            sudo apt-get install -y -q espeak-ng
           fi
           if python3 -c "import json,sys; jobs=json.load(open('/tmp/jobs.json')); sys.exit(0 if any('bench' in j.get('stages',[]) for j in jobs) else 1)"; then
-            sudo apt-get install -y -q espeak-ng
             python -m pip install phonemizer 'audio-separator[cpu]'
             python -m pip install 'nemo_toolkit[asr]' || echo 'nemo: пакет на CPU не встал'
           fi
@@ -535,6 +539,9 @@ jobs:
       # large-v3-turbo and the 70 minute cap then skipped large-v3. This budget
       # starts it and still leaves the 150 minute job under 120 minutes.
       WHISPER_BUDGET_S: '5400'
+      # Phoneme models share this job with the Whisper ladder. 30 minutes keeps
+      # a slow song inside the 150 minute limit. An unfinished model is not measured.
+      PHONEME_BUDGET_S: '1800'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -577,7 +584,7 @@ jobs:
             stems-htdemucs4-v1-
       - name: Install ffmpeg and Python packages
         run: |
-          sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+          sudo apt-get update -q && sudo apt-get install -y -q ffmpeg espeak-ng
           python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           python -m pip install -r scripts/pipeline/requirements.txt
           python -m pip install stable-ts

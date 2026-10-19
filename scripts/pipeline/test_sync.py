@@ -1235,6 +1235,173 @@ def test_whisper_choice() -> None:
           ar_third == 10.0 and en_third == 50.0, f'{ar_third}, {en_third}')
 
 
+def test_phoneme() -> None:
+    import inspect
+
+    import attack_chance as A
+    import phoneme
+    import phoneme_choice as Phone
+
+    check('medieval German is not spoken with the modern German voice', phoneme.voice_for('gmh') is None)
+    check('ottoman Turkish is not spoken with the modern Turkish voice', phoneme.voice_for('ota') is None)
+    check('German keeps its own espeak voice', phoneme.voice_for('de') == 'de')
+    check('Latin keeps its own espeak voice', phoneme.voice_for('la') == 'la')
+    ids = ' '.join(spec['id'] for spec in phoneme.MODELS)
+    check('the phoneme models are not MMS adapters', 'mms' not in ids)
+    check('both phoneme models are Apache-2.0', all(spec['license'] == 'Apache-2.0' for spec in phoneme.MODELS))
+    check('MMS adapters are rejected in writing', 'не измерялись' in phoneme.MMS_REJECTION)
+    src = inspect.getsource(phoneme._espeak)
+    argv = next(line for line in src.splitlines() if '--sep=_' in line and 'espeak-ng' in line and line.strip().startswith('['))
+    check('espeak separates phones with --sep=_', '--ipa' in argv and '--ipa=3' not in argv, argv.strip())
+
+    vocab = {'<pad>': 0, '<s>': 1, '</s>': 2, '<unk>': 3, 'h': 4, 'a': 5, 'l': 6, 'o': 7, 'aɪ': 8}
+    ids_sep, names, skipped = phoneme.tokenize('h_a_l_o', vocab)
+    ids_greedy, names_g, skipped_g = phoneme.tokenize('halo', vocab)
+    check('underscore and greedy IPA agree', ids_sep == [4, 5, 6, 7] and ids_sep == ids_greedy and skipped == 0 and skipped_g == 0,
+          str((ids_sep, ids_greedy)))
+    check('a diphthong is one phone', phoneme.tokenize('haɪ', vocab)[0] == [4, 8])
+    ids_skip, _names, skipped = phoneme.tokenize('h_zz', vocab)
+    check('an unknown phone is skipped', ids_skip == [4] and skipped == 1, str((ids_skip, skipped)))
+    ids_stress, _names, skipped = phoneme.tokenize('h_ˈa', vocab)
+    check('stress marks are not phones', ids_stress == [4, 5] and skipped == 0, str(ids_stress))
+    check('special tokens are not phones', phoneme.tokenize('<pad>_a', vocab)[0] == [5])
+    check('a placed solo line is eligible', phoneme._eligible({'status': 'good', 'group': 'solo'}))
+    check('a weak line is not eligible', not phoneme._eligible({'status': 'weak', 'group': 'solo'}))
+    check('a line outside solo and choir is not eligible', not phoneme._eligible({'status': 'good', 'group': 'other'}))
+    t0, t1 = phoneme._window({'second_window': [1.0, 1.1]}, 10.0)
+    check('a short window is at least 0.4 s', t1 - t0 >= 0.4 - 1e-9, str((t0, t1)))
+
+    saved = phoneme.espeak_available
+    phoneme.espeak_available = lambda: False
+    try:
+        report = {'summary': {}, 'lines': [{'id': 'a', 'status': 'good', 'group': 'solo', 'lang': 'la', 'words': []}]}
+        phoneme.measure(np.zeros(1600, dtype=np.float32), report, budget_s_value=30)
+    finally:
+        phoneme.espeak_available = saved
+    models = report['summary']['phoneme']['models']
+    check('a missing espeak binary measures nothing',
+          len(models) == 2 and all(not row['complete'] and not row['ran'] and row['error'] == 'espeak-ng не найден' for row in models),
+          str(models))
+
+    only = [{'roman': 'ba', 'ctc_s': 1.0, 'second_s': 5.0, 'third_s': 5.2, 'phoneme_s': 1.02, 'phoneme_role': 'only'}]
+    got = Q.prove_words(only, [0.02], 0.10, witnesses='one')
+    check('role only proves from the phoneme start', got[0]['path'] == 'witness-phoneme', str(got[0]))
+    rescued = [{'roman': 'ba', 'ctc_s': 1.0, 'second_s': 1.5, 'third_s': 1.6, 'phoneme_s': 1.02, 'phoneme_role': 'or'}]
+    got = Q.prove_words(rescued, [0.02], 0.10, witnesses='two')
+    check('role or proves when both legacy clocks miss and the phoneme agrees', got[0]['path'] == 'witness-phoneme', str(got[0]))
+    already = [{'roman': 'ba', 'ctc_s': 1.0, 'second_s': 1.05, 'third_s': 1.08, 'phoneme_s': 1.02, 'phoneme_role': 'or'}]
+    got = Q.prove_words(already, [0.02], 0.10, witnesses='two')
+    check('role or keeps the legacy path when the clocks already agree', got[0]['path'] == 'witness-both', str(got[0]))
+    missing = [{'roman': 'ba', 'ctc_s': 1.0, 'second_s': 5.0, 'third_s': 5.2, 'phoneme_role': 'only'}]
+    got = Q.prove_words(missing, [0.02], 0.10, witnesses='one')
+    check('a missing phoneme clock is not a refutation', got[0]['path'] == 'fail' and got[0]['reason'] == 'no-phoneme', str(got[0]))
+    untouched = [{'roman': 'ba', 'ctc_s': 1.0, 'second_s': 1.05, 'third_s': 1.40}]
+    got = Q.prove_words(untouched, [0.02], 0.10, witnesses='two')
+    check('two of three still needs both clocks when the phoneme role is off', got[0]['path'] == 'fail', str(got[0]))
+
+    refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    both_far = {'ctc_s': 1.0, 'second_s': 1.40, 'third_s': 1.45, 'phoneme_s': 1.0}
+    check('a phoneme clock does not cancel a refutation',
+          Q.word_refuted(both_far, np.array([1.40]), refute) == 'witnesses-agree-elsewhere')
+    check('a phoneme clock alone does not refute',
+          Q.word_refuted({'ctc_s': 1.0, 'phoneme_s': 5.0}, np.array([5.0]), refute) is None)
+
+    rule = {'tol': 0.10, 'choir_tol': 0.20, 'agree_tol': 0.10, 'witnesses': 'two'}
+    peaks = np.arange(0.0, 3.0, 0.05)
+    legacy = [{'t': 1.0, 'group': 'solo', 'second': 1.0, 'third': 1.0, 'line': 'a', 'roman': 'ba'}]
+    stamped = [dict(legacy[0], phoneme=9.0, phoneme_role='off')]
+    check('an off role matches the legacy mask',
+          A.hit_rate(legacy, peaks, 0.0, rule) == A.hit_rate(stamped, peaks, 0.0, rule) == 1.0)
+    only_far = [dict(legacy[0], second=9.0, third=9.0, phoneme=9.0, phoneme_role='only')]
+    check('role only fails when the phoneme clock is far', A.hit_rate(only_far, peaks, 0.0, rule) == 0.0)
+    only_near = [dict(legacy[0], second=9.0, third=9.0, phoneme=1.0, phoneme_role='only')]
+    check('role only passes on its own clock', A.hit_rate(only_near, peaks, 0.0, rule) == 1.0)
+    rescued_probe = [dict(legacy[0], second=9.0, third=9.0, phoneme=1.0, phoneme_role='or')]
+    check('role or with two required clocks passes on the phoneme', A.hit_rate(rescued_probe, peaks, 0.0, rule) == 1.0)
+    check('a shifted probe leaves the phoneme clock where it was', A.hit_rate(rescued_probe, peaks, 0.15, rule) == 0.0)
+
+    check('a role over 15 % is not allowed', Phone.allowed_roles({'or': 0.16, 'only': 0.10}) == ['off', 'only'])
+    check('a missing chance stays off', Phone.allowed_roles({'or': None, 'only': None}) == ['off'])
+    check('fewer than 30 choir words cannot adopt a feature', not Phone.choir_ok(29, 0.01, 0.01, 5, 1, True))
+    check('a choir word chance over 15 % is refused', not Phone.choir_ok(40, 0.20, 0.01, 5, 1, True))
+    check('a choir line chance over 5 % is refused', not Phone.choir_ok(40, 0.01, 0.06, 5, 1, True))
+    check('a choir feature that does not prove more lines is refused', not Phone.choir_ok(40, 0.01, 0.01, 1, 1, True))
+    check('a choir feature that changes solo lines is refused', not Phone.choir_ok(40, 0.01, 0.01, 5, 1, False))
+    check('a choir feature inside both caps can be adopted', Phone.choir_ok(40, 0.01, 0.01, 5, 1, True))
+
+    def bits(real: bool, shifted: bool = False) -> np.ndarray:
+        grid = np.zeros((len(A.LINE_SHARES), 8), dtype=bool)
+        grid[:, 0] = real
+        if shifted:
+            grid[:, 1] = True
+            grid[:, 2] = True
+        return grid
+
+    def row(pass_off, pass_only) -> dict:
+        return {
+            'id': 'l', 'song': 's', 'lang': 'la', 'group': 'solo', 'family': 'mms', 'long': True,
+            'pass': {'base': {'off': pass_off, 'only': pass_only}},
+        }
+
+    admitted = Phone.select({('s', 'la'): ['off', 'only']}, [row(bits(False), bits(True))], 'base')
+    check('a phoneme role is admitted when the shifts do not pass',
+          admitted['within_limit'] and admitted['assignment'][('s', 'la')] == 'only' and admitted['proved'] == 1,
+          str(admitted['assignment']) + ' ' + str(admitted['proved']))
+    refused = Phone.select({('s', 'la'): ['off', 'only']}, [row(bits(False), bits(True, True))], 'base')
+    check('a phoneme role whose shift also passes stays off',
+          refused['assignment'][('s', 'la')] == 'off' and refused['proved'] == 0 and refused['within_limit'],
+          str(refused))
+
+    word = {'phones': {'m': 1.0}, 'vowels': {'m': 1.5}}
+    solo = {'phones': {'m': 2.0}, 'vowels': {'m': 2.5}}
+    song = {'slug': 's', 'use_choir_envelope': False, 'all_lines': [
+        {'lang': 'la', 'group': 'choir', 'words': [word]},
+        {'lang': 'la', 'group': 'solo', 'words': [solo]},
+    ]}
+    decision = {
+        'long': [['s', 'la']],
+        'pairs': [{'song': 's', 'lang': 'la', 'role': 'only', 'model': 'm', 'word_chance': 0.04}],
+        'choir_clock': 'vowel', 'choir_attack': 'envelope', 'kept': True,
+    }
+    Phone.apply([song], decision)
+    check('choir vowel nucleus replaces the phone start', word.get('phoneme') == 1.5 and word.get('phoneme_role') == 'only')
+    check('a solo line keeps the phone start', solo.get('phoneme') == 2.0)
+    check('the choir envelope flag is stamped', song.get('use_choir_envelope') is True)
+    Phone.clear([song])
+    check('clear removes the stamp', 'phoneme' not in word and 'phoneme_role' not in solo and song.get('use_choir_envelope') is False)
+
+    scopes = [
+        {'song': 'k', 'lang': 'la', 'witnesses': 'one'},
+        {'song': 'k', 'lang': 'xx', 'witnesses': 'one'},
+        {'song': 'k', 'lang': '*', 'witnesses': 'one'},
+    ]
+    kept = {
+        'kept': True,
+        'long': [['k', 'la']],
+        'pairs': [
+            {'song': 'k', 'lang': 'la', 'role': 'only', 'model': 'xlsr-53-espeak', 'word_chance': 0.04},
+            {'song': 'k', 'lang': '*', 'role': 'or', 'model': 'xlsr-53-espeak', 'word_chance': 0.02},
+        ],
+    }
+    A._stamp_phoneme_scopes(scopes, kept)
+    by = {row['lang']: row for row in scopes}
+    check('a long language keeps its own role', by['la']['phoneme'] == 'only' and by['la']['phoneme_model'] == 'xlsr-53-espeak')
+    check('a short language inherits the song role', by['xx']['phoneme'] == 'or' and abs(by['xx']['phoneme_chance'] - 0.02) < 1e-12,
+          str(by['xx']))
+    A._stamp_phoneme_scopes(scopes, dict(kept, kept=False))
+    check('a rejected stamp leaves every scope off', all(row['phoneme'] == 'off' and row['phoneme_model'] is None for row in scopes))
+    lookup = {'scopes': [
+        {'song': 'k', 'lang': 'az', 'phoneme': 'off', 'phoneme_model': None},
+        {'song': 'k', 'lang': '*', 'phoneme': 'only', 'phoneme_model': 'xlsr-53-espeak'},
+    ]}
+    check('an explicit off on a language wins over the song row', Q.phoneme_for(lookup, 'k', 'az') == ('off', None))
+    check('a missing language uses the song row', Q.phoneme_for(lookup, 'k', 'fa') == ('only', 'xlsr-53-espeak'))
+
+    rise = np.array([0.0, 0.0, 1.0, 0.0, 0.0])
+    peaks = Q.onset_peak_times(None, min_height=0.7, curve=rise)
+    check('an envelope curve peaks on its own', len(peaks) == 1 and abs(float(peaks[0]) - 0.02) < 1e-9, str(peaks))
+
+
 def main() -> int:
     test_viterbi()
     test_star_absorbs_a_hold()
@@ -1258,6 +1425,7 @@ def main() -> int:
     test_placement_chain()
     test_whisper_witness()
     test_whisper_choice()
+    test_phoneme()
     test_calibration()
     test_bench_summary()
     test_harakat()

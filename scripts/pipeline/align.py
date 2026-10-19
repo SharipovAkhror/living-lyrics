@@ -1771,6 +1771,14 @@ def main() -> None:
                        'cue_tol': Q.CUE_TOL, 'cue_lead': CUE_LEAD, 'cue_tail': CUE_TAIL, 'cue_overlap': CUE_OVERLAP},
         'summary': summary, 'sections': section_notes, 'lines': report_lines,
     }
+    # Phoneme clocks are a witness, not a placer. A failure here must not drop
+    # the Whisper clocks or the align report.
+    try:
+        import phoneme
+        phoneme.measure(x, report)
+    except Exception as e:
+        print(f'фонемный свидетель не посчитан ({e.__class__.__name__}: {e})', flush=True)
+        report.setdefault('summary', {})['phoneme_error'] = f'{e.__class__.__name__}: {e}'
     wd = work_dir(slug)
     (wd / 'align-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding='utf-8')
     clock_path = ROOT / 'docs' / 'analysis' / slug / 'whisper-clocks.json'

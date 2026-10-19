@@ -95,9 +95,14 @@ def onset_combo(sig: Signals) -> np.ndarray:
     return sum(ONSET_W[k] * sig.curves[k] for k in ONSET_W) / sum(ONSET_W.values())
 
 
-def onset_peak_times(sig: Signals, min_height: float = PEAK_HEIGHT, nms_s: float = 0.04) -> np.ndarray:
-    """Seconds of clear vocal attacks: local maxima of the onset curve, one per attack."""
-    c = onset_combo(sig)
+def onset_peak_times(sig: Signals, min_height: float = PEAK_HEIGHT, nms_s: float = 0.04,
+                     curve: np.ndarray | None = None) -> np.ndarray:
+    """Seconds of clear vocal attacks: local maxima of the onset curve, one per attack.
+
+    `curve` replaces the spectral combination. The envelope candidate passes the
+    level-rise curve at the same height and the same suppression.
+    """
+    c = onset_combo(sig) if curve is None else np.asarray(curve, dtype=float)
     n = len(c)
     if n < 3:
         return np.zeros(0)
@@ -136,6 +141,11 @@ def peaks_on_rise(sig: Signals, peaks: np.ndarray, min_height: float) -> np.ndar
         if v >= min_height and v >= float(rise[i - 1]) and v >= float(rise[i + 1]):
             keep.append(float(t))
     return np.asarray(keep, dtype=float)
+
+
+def envelope_peak_times(sig: Signals, min_height: float = PEAK_HEIGHT, nms_s: float = 0.04) -> np.ndarray:
+    """Peaks of the level-rise curve alone, at the same height as the spectral attacks."""
+    return onset_peak_times(sig, min_height=min_height, nms_s=nms_s, curve=sig.curves['rise'])
 
 
 def default_word_rule() -> dict:
@@ -198,10 +208,14 @@ def load_word_rule() -> dict:
             continue
         if not scope.get('song') or scope.get('lang') is None:
             continue
+        role = scope.get('phoneme') if scope.get('phoneme') in ('off', 'or', 'only') else 'off'
+        model = scope.get('phoneme_model')
         scopes.append({
             'song': str(scope['song']),
             'lang': str(scope['lang']),
             'witnesses': scope['witnesses'],
+            'phoneme': role,
+            'phoneme_model': model if isinstance(model, str) and model else None,
         })
     rule['scopes'] = scopes
     refute_in = chosen.get('refute') if isinstance(chosen.get('refute'), dict) else None
@@ -217,6 +231,8 @@ def load_word_rule() -> dict:
     rule['line_share'] = None if chosen.get('line_share') is None else float(chosen['line_share'])
     rule['line_chance'] = None if chosen.get('line_chance') is None else float(chosen['line_chance'])
     rule['line_min_words'] = int(chosen.get('line_min_words') or 2)
+    rule['choir_attack'] = chosen.get('choir_attack') if chosen.get('choir_attack') in ('spectral', 'envelope') else 'spectral'
+    rule['choir_clock'] = chosen.get('choir_clock') if chosen.get('choir_clock') in ('phone', 'vowel') else 'phone'
     blocked = []
     for name in chosen.get('blocked_primaries') or []:
         if isinstance(name, str) and name:
@@ -329,6 +345,50 @@ def witnesses_for(rule: dict | None, song: str | None, lang: str | None) -> str 
     return mode if mode in ('one', 'two') else None
 
 
+def phoneme_for(rule: dict | None, song: str | None, lang: str | None) -> tuple[str, str | None]:
+    """Phoneme role for one line. The language scope wins, including an explicit off.
+
+    A short language already carries the song role in its own scope. The song
+    row is only the fallback when that language is absent from the file.
+    """
+    rule = rule or {}
+    scopes = rule.get('scopes') or []
+    lang = lang or '?'
+
+    def read(scope: dict) -> tuple[str, str | None]:
+        role = scope.get('phoneme') if scope.get('phoneme') in ('or', 'only') else 'off'
+        model = scope.get('phoneme_model')
+        return role, model if isinstance(model, str) and model else None
+
+    for scope in scopes:
+        if song and scope.get('song') == song and scope.get('lang') == lang:
+            return read(scope)
+    for scope in scopes:
+        if song and scope.get('song') == song and scope.get('lang') == '*':
+            return read(scope)
+    return 'off', None
+
+
+def stamp_phoneme(words: list[dict] | None, role: str, model: str | None,
+                  choir_vowel: bool = False) -> list[dict] | None:
+    """Copy one model's phoneme clock onto phoneme_s. Missing clocks stay missing.
+
+    The vowel nucleus replaces the phone start only for a choir line when the
+    measured rule says so. Solo lines keep the phone start.
+    """
+    if not words or role not in ('or', 'only') or not model:
+        return words
+    out = []
+    for word in words:
+        item = dict(word)
+        table = item.get('vowel_models') if choir_vowel else item.get('phoneme_models')
+        clock = (table or {}).get(model)
+        item['phoneme_s'] = None if clock is None else float(clock)
+        item['phoneme_role'] = role
+        out.append(item)
+    return out
+
+
 def word_refuted(word: dict, peaks: np.ndarray | None, refute: dict | None) -> str | None:
     """Why this word contradicts MMS, or None when there is simply no proof.
 
@@ -406,6 +466,7 @@ REASON_RU = {
     'word-refuted': 'слово опровергнуто',
     'word-share': 'доказанных слов меньше доли строки',
     'primary-chance': 'случайный проход этого постановщика выше 5 %',
+    'no-phoneme': 'нет фонемного начала',
 }
 
 
@@ -535,7 +596,7 @@ def _witness_ok(clock, ctc_s: float, agree_tol: float) -> bool:
 
 def prove_words(align_words: list[dict] | None, presnap: list[float | None], tol: float,
                 require_second: bool = False, witnesses: str | None = None,
-                agree_tol: float = SECOND_WORD_TOL) -> list[dict]:
+                agree_tol: float = SECOND_WORD_TOL, phoneme_role: str | None = None) -> list[dict]:
     """How each lettered word is proved. Interpolation between neighbours is not a path.
 
     attack — |onset| is within the group tolerance (0.10 s solo, 0.20 s choir,
@@ -547,6 +608,10 @@ def prove_words(align_words: list[dict] | None, presnap: list[float | None], tol
     paths. The attack is still required. `one` needs the second or the third clock
     within `agree_tol` of the MMS start. `two` needs both. A missing clock is not
     an agreement. The second path is not used.
+    witness-phoneme — the attack is still required. Role `only` proves the word
+    from the phoneme start alone. Role `or` proves it when the phoneme start
+    agrees and the clocks the legacy mode already required do not. A missing
+    phoneme clock is not an agreement and not a refutation.
     fail — anything else. A consonant with no attack fails. A missing second start
     cannot take the second path. A missing CTC start fails.
     """
@@ -576,21 +641,44 @@ def prove_words(align_words: list[dict] | None, presnap: list[float | None], tol
             if abs_dt is not None and abs_dt <= tol:
                 second_ok = _witness_ok(second, float(ctc_s), agree_tol)
                 third_ok = _witness_ok(third, float(ctc_s), agree_tol)
-                need = 2 if witnesses == 'two' else 1
-                if int(second_ok) + int(third_ok) >= need:
-                    if second_ok and third_ok:
+                legacy_ok = (second_ok and third_ok) if witnesses == 'two' else (second_ok or third_ok)
+                role = phoneme_role if phoneme_role in ('or', 'only') else (word.get('phoneme_role') or 'off')
+                if role not in ('or', 'only'):
+                    role = 'off'
+                phoneme_ok = _witness_ok(word.get('phoneme_s'), float(ctc_s), agree_tol)
+                if role == 'only':
+                    ok = phoneme_ok
+                elif role == 'or':
+                    ok = bool(legacy_ok or phoneme_ok)
+                else:
+                    ok = legacy_ok
+                if ok:
+                    if role == 'only' or (role == 'or' and phoneme_ok and not legacy_ok):
+                        path = 'witness-phoneme'
+                    elif second_ok and third_ok:
                         path = 'witness-both'
                     elif third_ok:
                         path = 'witness-third'
                     else:
                         path = 'witness-second'
                     reason = 'pass'
-                elif second is None and third is None:
+                elif role == 'only' and word.get('phoneme_s') is None:
+                    reason = 'no-phoneme'
+                    detail = 'атака есть, фонемного начала нет'
+                elif role == 'only':
+                    reason = 'aligners-disagree'
+                    detail = 'фонемное начало не совпало'
+                elif second is None and third is None and (role != 'or' or word.get('phoneme_s') is None):
                     reason = 'no-second-aligner'
                     detail = 'атака есть, независимых начал нет'
                 else:
                     reason = 'aligners-disagree'
-                    detail = f'второй {"да" if second_ok else "нет"}, третий {"да" if third_ok else "нет"}'
+                    if role == 'or':
+                        detail = (f'второй {"да" if second_ok else "нет"}, '
+                                  f'третий {"да" if third_ok else "нет"}, '
+                                  f'фонема {"да" if phoneme_ok else "нет"}')
+                    else:
+                        detail = f'второй {"да" if second_ok else "нет"}, третий {"да" if third_ok else "нет"}'
             elif abs_dt is None:
                 detail = 'атаки рядом с началом выравнивателя нет'
             else:
@@ -755,6 +843,8 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
     peaks = onset_peak_times(sig, min_height=height)
     if rule.get('require_rise'):
         peaks = peaks_on_rise(sig, peaks, height)
+    env_peaks = envelope_peak_times(sig, min_height=height) if rule.get('choir_attack') == 'envelope' else None
+    choir_vowel = rule.get('choir_clock') == 'vowel'
     rows = []
     prev_ctc: float | None = None
     for (sec, line), _qa in zip(lines, qa_rows):
@@ -764,6 +854,11 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
         tol = float(rule['choir_tol']) if kind == 'choir' else float(rule['tol'])
         text_same = bool(rec) and rec.get('text') == T.line_text(line)
         align_words = apply_rule_times(_lettered(rec.get('words') if rec else None, len(words)), line.get('lang'), rule)
+        phone_role, phone_model = phoneme_for(rule, song, line.get('lang'))
+        align_words = stamp_phoneme(
+            align_words, phone_role, phone_model,
+            choir_vowel=bool(choir_vowel and kind == 'choir'))
+        line_peaks = env_peaks if kind == 'choir' and env_peaks is not None else peaks
         cue = cues.get(line['id'])
         cue_start = float(cue['start']) if cue and cue.get('start') is not None else None
         ctc_line = None
@@ -780,7 +875,7 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
                 continue
             t = float(aw['ctc_s'])
             owned = None if prev_ctc is None else prev_ctc + tol
-            dt = nearest_attack(t, peaks, owned)
+            dt = nearest_attack(t, line_peaks, owned)
             presnap.append(None if dt is None else dt)
             if dt is not None:
                 abs_pre.append(abs(dt))
@@ -805,7 +900,7 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
                               cue_start=cue_start, ctc_line_start=ctc_line,
                               structure_ok=True if rec is None else bool(rec.get('structure_ok', True)),
                               tol=tol, require_second=bool(rule.get('require_second')) and not mode,
-                              witnesses=mode, agree_tol=agree_tol, peaks=peaks, refute=refute,
+                              witnesses=mode, agree_tol=agree_tol, peaks=line_peaks, refute=refute,
                               line_share=line_share, line_min_words=line_min)
         found_line = (rec or {}).get('status') in ('good', 'weak')
         cue_delta = None
@@ -857,7 +952,10 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
     missing = [r for r in rows if r['reason'] == 'text-not-found']
     aligner_failed = [r for r in rows if r['reason'] == 'aligner-failed']
     by_lang: dict[str, dict] = {}
-    word_paths = {'attack': 0, 'second': 0, 'fail': 0, 'witness-second': 0, 'witness-third': 0, 'witness-both': 0}
+    word_paths = {
+        'attack': 0, 'second': 0, 'fail': 0,
+        'witness-second': 0, 'witness-third': 0, 'witness-both': 0, 'witness-phoneme': 0,
+    }
     consonant: list[float | None] = []
     soft: list[float | None] = []
     for r in rows:
@@ -1292,7 +1390,10 @@ def proof_md(proof: dict) -> list[str]:
             L.append('- Второй выравниватель на поставленных строках: ' + ', '.join(bits) + '. '
                      f'Слово доказано, когда атака сильная и {who} '
                      'совпадает с началом того, кто поставил строку, не дальше 0,10 с. '
-                     'Сам постановщик себе свидетелем не служит. Путь без атаки при этом правиле закрыт.')
+                     'Сам постановщик себе свидетелем не служит. Путь без атаки при этом правиле закрыт. '
+                     'Если для языка допущен фонемный свидетель, роль «или» добавляет его начало к уже нужным часам, '
+                     'а роль «только он» доказывает слово атакой и одним фонемным началом. '
+                     'Фонемные часы строку не ставят и слово не опровергают.')
         else:
             L.append('- Второй выравниватель на поставленных строках: ' + ', '.join(bits) + '. '
                      'Доказательством он служит только у слова на гласную или связного, если атаки ближе 0,3 с нет, '
@@ -1303,6 +1404,7 @@ def proof_md(proof: dict) -> list[str]:
         L.append(f"- Слова на поставленных строках. Только второй свидетель: {paths.get('witness-second', 0)}. "
                  f"Только третий (stable-ts): {paths.get('witness-third', 0)}. "
                  f"Оба: {paths.get('witness-both', 0)}. "
+                 f"Фонемный свидетель: {paths.get('witness-phoneme', 0)}. "
                  f"Не доказано: {paths.get('fail', 0)}. "
                  f"Интерполяция между соседними словами доказательством не считается.")
     else:

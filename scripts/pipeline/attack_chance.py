@@ -39,6 +39,15 @@ may still pass.
 Exit 2 when a song has no stem or no align report, when a required slice stays
 over 15 %, or when no K keeps the line chance at or under 5 %. qa must not run
 on an unmeasured rule.
+
+A phoneme witness is admitted after that choice, per song and language. Its
+word chance must stay at or under 15 %, and the same line measurement on the
+stamped clocks must stay at or under 5 % and prove strictly more lines. The
+search only proposes the stamp. The measurement after the stamp is the judge.
+A mismatch, or any error in that search, publishes the unstamped rule. The
+phoneme clock does not place a line and does not refute a word. A choir
+feature (the level-rise envelope, or the vowel nucleus) is kept only when the
+choir sample itself stays inside those caps and the solo lines do not change.
 """
 from __future__ import annotations
 
@@ -167,7 +176,16 @@ def hit_count(records: list[dict], peaks: np.ndarray, shift: float, rule: dict) 
             third = column('third')
             sec_ok = np.isfinite(sec) & (np.abs(sec - times) <= agree + 1e-12)
             third_ok = np.isfinite(third) & (np.abs(third - times) <= agree + 1e-12)
-            mask = mask & (sec_ok & third_ok if mode == 'two' else (sec_ok | third_ok))
+            legacy = sec_ok & third_ok if mode == 'two' else (sec_ok | third_ok)
+            roles = np.array([r.get('phoneme_role') or 'off' for r in rows])
+            phon = column('phoneme')
+            phon_ok = np.isfinite(phon) & (np.abs(phon - times) <= agree + 1e-12)
+            witness_ok = np.array(legacy, dtype=bool)
+            if np.any(roles != 'off'):
+                witness_ok = np.where(roles == 'only', phon_ok, witness_ok)
+                witness_ok = np.where(roles == 'or', legacy | phon_ok, witness_ok)
+                witness_ok = np.asarray(witness_ok, dtype=bool)
+            mask = mask & witness_ok
         elif rule.get('require_second'):
             seconds = np.array([np.nan if r.get('second') is None else float(r['second']) for r in rows])
             mask = mask & np.isfinite(seconds) & (np.abs(seconds - times) <= SECOND_TOL)
@@ -235,6 +253,8 @@ def true_proof(lines: list[dict], peaks: np.ndarray, rule: dict) -> tuple[int, i
                 'ctc_e': word.get('ctc_e'),
                 'second_s': word.get('second'),
                 'third_s': word.get('third'),
+                'phoneme_s': word.get('phoneme'),
+                'phoneme_role': word.get('phoneme_role'),
             })
             owned = None if prev is None else prev + tol
             dt = Q.nearest_attack(float(word['t']), peaks, owned)
@@ -356,6 +376,8 @@ def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = No
                 's': None if word.get('s') is None else float(word['s']),
                 'second_kind': word.get('second_kind'),
                 'third_kind': word.get('third_kind'),
+                'phones': word.get('phoneme_models') or {},
+                'vowels': word.get('vowel_models') or {},
             })
             prev_span = span
             prev_roman = word.get('roman')
@@ -553,6 +575,10 @@ def render_md(payload: dict) -> str:
         'Берётся наименьшее K, которое удерживает всех таких постановщиков: у него больше всего доказанных строк. '
         'Постановщик, который и при K = 1,00 выше 5 %, из доказательства исключается. Остальные при этом могут пройти.',
         '',
+        'Фонемный свидетель, если его часы есть в отчёте выравнивания, допускается отдельно. '
+        'Роль и модель — в столбце «фонема». Разбор пар — `docs/analysis/bench/phoneme-choice.md`, '
+        'хор — `docs/analysis/bench/chorus.md`. Пороги те же: слово не выше 15 %, строка не выше 5 %.',
+        '',
         _why_ru(chosen, payload.get('current_chance')),
         '',
         f"Правило: `{chosen.get('name')}`. Случайный проход строки {_ru(chosen.get('chance'), 3)}. "
@@ -564,14 +590,18 @@ def render_md(payload: dict) -> str:
         '«Проход правила» — проход того режима, который реально применён. '
         'У языка короче 30 слов это проход песни, а не его собственный.',
         '',
-        '| песня | язык | слов | один | оба | правило | проход правила | почему |',
-        '|---|---|---:|---:|---:|---|---:|---|',
+        '| песня | язык | слов | один | оба | правило | проход правила | почему | фонема |',
+        '|---|---|---:|---:|---:|---|---:|---|---|',
     ]
     for row in payload.get('scopes') or []:
         mode = {'one': 'один', 'two': 'оба'}.get(row.get('witnesses') or '', '—')
+        phone = {'or': 'или', 'only': 'только'}.get(row.get('phoneme') or '', 'нет')
+        model = row.get('phoneme_model') or ''
+        phone_cell = phone if phone == 'нет' or not model else f'{phone}, {model}'
         lines.append(
             f"| {row['song']} | {row['lang']} | {row['words']} | {_ru(row.get('one_chance'), 3)} | "
-            f"{_ru(row.get('two_chance'), 3)} | {mode} | {_ru(row.get('chance'), 3)} | {_why_label(row.get('why'))} |"
+            f"{_ru(row.get('two_chance'), 3)} | {mode} | {_ru(row.get('chance'), 3)} | {_why_label(row.get('why'))} | "
+            f"{phone_cell} |"
         )
     refute = chosen.get('refute') or {}
     lines += [
@@ -923,6 +953,8 @@ def _probe_parts(words: list[dict], peaks: np.ndarray, group: str | None, mode: 
             'ctc_e': word.get('ctc_e'),
             'second_s': word.get('second'),
             'third_s': word.get('third'),
+            'phoneme_s': word.get('phoneme'),
+            'phoneme_role': word.get('phoneme_role'),
         }
         align_words.append(item)
         owned = None if cursor is None else cursor + tol
@@ -940,7 +972,8 @@ def _probe_line(words: list[dict], peaks: np.ndarray, group: str | None, mode: s
 
 
 def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: dict,
-                     shift: float = 0.0, shuffle: bool = False, primary: str | None = None) -> list[dict]:
+                     shift: float = 0.0, shuffle: bool = False, primary: str | None = None,
+                     choir_peaks: np.ndarray | None = None) -> list[dict]:
     """One row per candidate line: proved words and refutation flags under this probe.
 
     The same shift and the same previous-line start as `line_pass_count`. K is not
@@ -972,8 +1005,9 @@ def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: 
                 item = dict(word)
                 item['t'] = float(word['t']) + float(shift)
                 moved.append(item)
+        use_peaks = choir_peaks if line.get('group') == 'choir' and choir_peaks is not None else peaks
         proved, flags = _probe_parts(
-            moved, peaks, line.get('group'), _mode_of_line(modes, line), refute, incoming[i])
+            moved, use_peaks, line.get('group'), _mode_of_line(modes, line), refute, incoming[i])
         out.append({
             'id': line.get('id'),
             'lang': line.get('lang') or '?',
@@ -986,14 +1020,16 @@ def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: 
 
 
 def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: dict, share: float,
-                    shift: float = 0.0, shuffle: bool = False, primary: str | None = None) -> tuple[int, int]:
+                    shift: float = 0.0, shuffle: bool = False, primary: str | None = None,
+                    choir_peaks: np.ndarray | None = None) -> tuple[int, int]:
     """Candidate lines that still pass after one shared shift, or after a rotation.
 
     The cue belongs to the real line and is not applied to the shifted first word.
     The previous line contributes its real, unshifted start. Inside the line the
     moved starts own the peaks. Witness clocks stay on the word they were measured for.
     """
-    parts = line_probe_parts(lines, peaks, modes, refute, shift=shift, shuffle=shuffle, primary=primary)
+    parts = line_probe_parts(lines, peaks, modes, refute, shift=shift, shuffle=shuffle, primary=primary,
+                             choir_peaks=choir_peaks)
     hits = sum(1 for item in parts if Q.line_word_ok(item['proved'], item['flags'], share))
     return hits, len(parts)
 
@@ -1008,16 +1044,19 @@ def measure_line_table(per_song: list[dict], modes: dict, refute: dict, primary:
         by_song = {}
         for song in per_song:
             peaks = song['sets'][(WITNESS_HEIGHT, False)]
+            choir_peaks = song.get('envelope_peaks') if song.get('use_choir_envelope') else None
             lines = song['all_lines']
             for mag in SHIFTS:
                 for sign in (mag, -mag):
-                    h, n = line_pass_count(lines, peaks, modes, cut, share, shift=sign, primary=primary)
+                    h, n = line_pass_count(lines, peaks, modes, cut, share, shift=sign, primary=primary,
+                                           choir_peaks=choir_peaks)
                     shift_hits[mag][0] += h
                     shift_hits[mag][1] += n
-            h, n = line_pass_count(lines, peaks, modes, cut, share, shuffle=True, primary=primary)
+            h, n = line_pass_count(lines, peaks, modes, cut, share, shuffle=True, primary=primary,
+                                   choir_peaks=choir_peaks)
             shuf[0] += h
             shuf[1] += n
-            h, n = line_pass_count(lines, peaks, modes, cut, share, primary=primary)
+            h, n = line_pass_count(lines, peaks, modes, cut, share, primary=primary, choir_peaks=choir_peaks)
             true_hits[0] += h
             true_hits[1] += n
             by_song[song['slug']] = h
@@ -1192,6 +1231,9 @@ def _public_scope(scope: dict) -> dict:
         'one_chance': _round(scope.get('one_chance')),
         'two_chance': _round(scope.get('two_chance')),
         'why': scope.get('why'),
+        'phoneme': scope.get('phoneme') if scope.get('phoneme') in ('or', 'only') else 'off',
+        'phoneme_model': scope.get('phoneme_model') if isinstance(scope.get('phoneme_model'), str) else None,
+        'phoneme_chance': _round(scope.get('phoneme_chance')),
     }
 
 
@@ -1249,6 +1291,80 @@ def collect_refutations(per_song: list[dict], refute: dict) -> list[dict]:
     return rows
 
 
+def _phoneme_error_decision(exc: BaseException) -> dict:
+    """A phoneme failure publishes the unstamped rule. It must not fail the run by itself."""
+    reason = f'error: {exc.__class__.__name__}: {exc}'
+    return {
+        'admitted': False,
+        'kept': False,
+        'rejected_reason': reason,
+        'pairs': [],
+        'long': [],
+        'k': None,
+        'chance': None,
+        'proved': None,
+        'search': None,
+        'choir_attack': 'spectral',
+        'choir_clock': 'phone',
+        'chorus': {
+            'adopted': False,
+            'variant': None,
+            'words': 0,
+            'word_chance': None,
+            'line_chance': None,
+            'proved': None,
+            'base_proved': None,
+            'why': 'замер не собран',
+            'describe': {},
+            'variants': [],
+            'error': reason,
+        },
+    }
+
+
+def _drop_phoneme_stamp(decision: dict, reason: str) -> None:
+    """The search proposed a stamp the official remeasure did not keep."""
+    decision['kept'] = False
+    decision['rejected_reason'] = reason
+    decision['choir_attack'] = 'spectral'
+    decision['choir_clock'] = 'phone'
+    chorus = decision.get('chorus')
+    if isinstance(chorus, dict) and chorus.get('adopted'):
+        chorus['adopted'] = False
+        chorus['why'] = 'перебор предложил признак, официальный пересчёт его не оставил'
+
+
+def _stamp_phoneme_scopes(scopes: list[dict], decision: dict) -> None:
+    """Copy a kept assignment onto scope rows. A short language inherits the song row.
+
+    An explicit language row wins in qa, including off, so a short language must
+    carry the song role on its own row. A rejected stamp leaves every row off.
+    """
+    import phoneme_choice as Phone
+
+    kept = bool(decision.get('kept'))
+    pairs = {(row['song'], row['lang']): row for row in decision.get('pairs') or []}
+    long = {
+        (row[0], row[1]) for row in decision.get('long') or []
+        if isinstance(row, (list, tuple)) and len(row) == 2
+    }
+    for scope in scopes:
+        scope['phoneme'] = 'off'
+        scope['phoneme_model'] = None
+        scope['phoneme_chance'] = None
+        if not kept:
+            continue
+        role, model = Phone._lookup(decision, scope['song'], str(scope['lang']))
+        if role not in ('or', 'only'):
+            continue
+        scope['phoneme'] = role
+        scope['phoneme_model'] = model
+        key = (scope['song'], str(scope['lang']))
+        src = pairs.get(key) if key in long else pairs.get((scope['song'], '*'))
+        if src is not None:
+            scope['phoneme_chance'] = src.get('word_chance')
+
+
 def _public_refute(row: dict) -> dict:
     out = {key: value for key, value in row.items() if key != 'by'}
     if out.get('rate') is not None:
@@ -1288,6 +1404,8 @@ def build_payload(slugs: list[str]) -> dict:
         per_song.append({
             'slug': slug, 'lines': lines, 'all_lines': all_lines,
             'sets': _peak_sets(sig), 'base': Q.onset_peak_times(sig),
+            'envelope_peaks': Q.envelope_peak_times(sig, min_height=WITNESS_HEIGHT),
+            'use_choir_envelope': False,
         })
     # The pooled grid stays in the file as context. The decision is the per-slice
     # witness mode plus the line share, not the winner of that grid.
@@ -1298,8 +1416,56 @@ def build_payload(slugs: list[str]) -> dict:
     refute_rows = measure_refute(per_song)
     refute = choose_refute(refute_rows)
     modes = {(row['song'], row['lang']): row['witnesses'] for row in scopes if row.get('witnesses') in ('one', 'two')}
-    primary_tables = measure_primary_tables(per_song, modes, refute)
-    picked = choose_with_primaries(primary_tables)
+    # Baseline first, with no phoneme stamp and the spectral attack. The search
+    # proposes a stamp. The same measurement after apply() keeps it only when
+    # the line chance stays at or under 5 % and more lines are proved.
+    baseline_tables = measure_primary_tables(per_song, modes, refute)
+    baseline_picked = choose_with_primaries(baseline_tables)
+    primary_tables = baseline_tables
+    picked = baseline_picked
+    decision: dict = {
+        'admitted': False, 'kept': False, 'rejected_reason': None, 'pairs': [], 'long': [],
+        'k': None, 'chance': None, 'proved': None, 'search': None,
+        'choir_attack': 'spectral', 'choir_clock': 'phone',
+        'chorus': {'adopted': False, 'why': 'часов нет', 'describe': {}, 'words': 0, 'variants': []},
+    }
+    try:
+        import phoneme_choice as Phone
+        decision = Phone.choose(per_song, modes, refute)
+        if decision.get('admitted'):
+            Phone.apply(per_song, decision)
+            stamped_tables = measure_primary_tables(per_song, modes, refute)
+            stamped = choose_with_primaries(stamped_tables)
+            base_n = int(baseline_picked.get('proved') or 0)
+            stamped_n = int(stamped.get('proved') or 0)
+            decision['baseline_proved'] = base_n
+            decision['official_proved'] = stamped_n
+            decision['official_chance'] = stamped.get('chance')
+            if stamped.get('within_limit') and stamped_n > base_n:
+                decision['kept'] = True
+                primary_tables = stamped_tables
+                picked = stamped
+            else:
+                Phone.clear(per_song)
+                _drop_phoneme_stamp(
+                    decision,
+                    f'официальный пересчёт: доказано {stamped_n} против {base_n}, '
+                    f'within_limit {bool(stamped.get("within_limit"))}',
+                )
+                primary_tables = baseline_tables
+                picked = baseline_picked
+        else:
+            Phone.clear(per_song)
+    except Exception as e:
+        try:
+            import phoneme_choice as Phone
+            Phone.clear(per_song)
+        except Exception:
+            pass
+        decision = _phoneme_error_decision(e)
+        primary_tables = baseline_tables
+        picked = baseline_picked
+        print(f'фонемный свидетель не допущен ({e.__class__.__name__}: {e})', flush=True)
     blocked = set(picked.get('blocked_primaries') or [])
     line_rows = []
     for share in LINE_SHARES:
@@ -1328,6 +1494,12 @@ def build_payload(slugs: list[str]) -> dict:
             'by_song': by_song,
             'shifts': {},
         })
+    _stamp_phoneme_scopes(scopes, decision)
+    if decision.get('kept'):
+        choir_attack = decision.get('choir_attack') if decision.get('choir_attack') in ('spectral', 'envelope') else 'spectral'
+        choir_clock = decision.get('choir_clock') if decision.get('choir_clock') in ('phone', 'vowel') else 'phone'
+    else:
+        choir_attack, choir_clock = 'spectral', 'phone'
     public_scopes = [_public_scope(row) for row in scopes]
     public_lines = [_public_line(row) for row in line_rows]
     public_refute = _public_refute(refute)
@@ -1359,6 +1531,8 @@ def build_payload(slugs: list[str]) -> dict:
         'why': 'per-slice',
         'bias': bias,
         'adopt': adopt,
+        'choir_attack': choir_attack,
+        'choir_clock': choir_clock,
     }
     density = []
     for song in per_song:
@@ -1382,6 +1556,7 @@ def build_payload(slugs: list[str]) -> dict:
         'line_table': public_lines,
         'density': density,
         'candidates': public_rows,
+        'phoneme': decision,
         '_refutations': collect_refutations(per_song, refute),
     }
 
@@ -1582,6 +1757,17 @@ def main(argv: list[str] | None = None) -> int:
         (out_dir / 'whisper-witness.md').write_text(render_witness(args.slugs), encoding='utf-8')
     except Exception as e:
         print(f'whisper-witness.md не записан ({e.__class__.__name__}: {e})')
+    phone = payload.get('phoneme') or {}
+    try:
+        import phoneme_choice as Phone
+        (out_dir / 'phoneme-choice.md').write_text(Phone.render_choice(phone), encoding='utf-8')
+    except Exception as e:
+        print(f'phoneme-choice.md не записан ({e.__class__.__name__}: {e})')
+    try:
+        import phoneme_choice as Phone
+        (out_dir / 'chorus.md').write_text(Phone.render_chorus(phone.get('chorus') or {}), encoding='utf-8')
+    except Exception as e:
+        print(f'chorus.md не записан ({e.__class__.__name__}: {e})')
     chosen = payload['chosen']
     refute = chosen.get('refute') or {}
     print(f"правило {chosen.get('name')}: случайный проход строки {chosen.get('chance')}, "
@@ -1596,6 +1782,8 @@ def main(argv: list[str] | None = None) -> int:
     for scope in chosen.get('scopes') or []:
         if scope.get('lang') == '*':
             print(f"{scope['song']}: {scope.get('witnesses')} проход {scope.get('chance')} ({scope.get('why')})")
+    print(f"фонема оставлена {bool(phone.get('kept'))}, поиск {phone.get('search')}, "
+          f"по перебору {phone.get('proved')}, хор {chosen.get('choir_attack')}/{chosen.get('choir_clock')}")
     if not chosen.get('within_limit'):
         return 2
     have = set(payload.get('songs') or [])
