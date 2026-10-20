@@ -3,7 +3,7 @@
  * occurs somewhere in canon.md. It does not ask whether that line is what is
  * sung at its time.
  *
- * Three guards, all from files already produced by the route:
+ * Four guards, all from files already produced by the route:
  * 1. A vocal-stem transcript segment (docs/analysis/<slug>/transcript.json)
  *    that matches a different line — not the same words repeated, and not a
  *    segment that simply spills into the neighbour — is an error.
@@ -13,9 +13,12 @@
  *    removing it brings the error back.
  * 3. When official json3 cues are on disk, a line in the cue's own language
  *    must match the cue's letters. A translation track is not that language
- *    and is not consulted. The cues are not in git; the check is skipped
- *    when the folder is absent (CI). It looks in work/subs and, for this
- *    checkout, in the sibling clone living-lyrics/work/subs.
+ *    and is not consulted. One cue often covers an immediate repeat of the
+ *    same letters: that repeat is not a missing cue. Two transcript segments
+ *    back to back that both match those letters still need two lines. The
+ *    cues are not in git; the check is skipped when the folder is absent
+ *    (CI). It looks in work/subs and, for this checkout, in the sibling
+ *    clone living-lyrics/work/subs.
  *
  * `npx tsx scripts/tools/sequence-check.ts --write` refreshes the recheck tables.
  */
@@ -255,11 +258,54 @@ export function judgeSequence(input: JudgeInput): SequenceIssue[] {
       });
     }
   }
+  // An immediate repeat: two transcript segments of the same letters, less than
+  // 2.5 s apart, and only one line of those letters under them.
+  const sorted = [...segments].sort((x, y) => x.start - y.start);
+  for (let i = 0; i < sorted.length; i++) {
+    const a = sorted[i];
+    const heardA = normLetters(a.text);
+    if (heardA.split(' ').length < 2) continue;
+    for (let j = i + 1; j < sorted.length; j++) {
+      const b = sorted[j];
+      if (b.start - a.end > 2.5) break;
+      if (b.start < a.end - 0.2) continue;
+      const heardB = normLetters(b.text);
+      const norms = new Set<string>();
+      for (const ln of lines) {
+        if (dice(ln.norm, heardA) < 0.72 || dice(ln.norm, heardB) < 0.72) continue;
+        norms.add(ln.norm);
+      }
+      for (const norm of norms) {
+        const copies = lines.filter(
+          (ln) =>
+            ln.norm === norm &&
+            ln.end > a.start + 0.2 &&
+            ln.start < b.end - 0.2,
+        );
+        if (copies.length >= 2) continue;
+        const owner = copies[0];
+        if (!owner) continue;
+        issues.push({
+          level: 'error',
+          where: owner.id,
+          msg: `транскрипт повторяет эти буквы дважды (${a.start.toFixed(1)}–${a.end.toFixed(1)} и ${b.start.toFixed(1)}–${b.end.toFixed(1)} с), а строка в окне одна (${owner.id})`,
+        });
+      }
+    }
+  }
   if (cues) {
     for (const ln of lines) {
       const track = sung[ln.lang];
       if (!track || !cues[track]) continue;
-      const hit = cues[track].find((c) => Math.abs(c.start - ln.start) < 0.8) ?? null;
+      const near = cues[track].find((c) => Math.abs(c.start - ln.start) < 0.8) ?? null;
+      // One official cue often holds an immediate repeat. The second line starts
+      // inside that cue and uses the same letters.
+      const hit =
+        near ??
+        cues[track].find(
+          (c) => ln.start >= c.start - 0.05 && ln.end <= c.end + 0.45 && lettersMatch(ln.norm, c.norm),
+        ) ??
+        null;
       if (!hit) {
         issues.push({ level: 'error', where: ln.id, msg: `нет реплики дорожки ${track} у ${ln.start.toFixed(1)} с` });
         continue;
@@ -396,6 +442,40 @@ export function sequenceSelfTest(): string | null {
     gemini: [{ start: 372.4, end: 379, text: 'شیخ نیم پیش نیم امر تو را بنده شدم', line: 'NONE', confidence: 'high' }],
   });
   if (rightLang.some((i) => i.level === 'error')) return 'персидская строка при двух персидских свидетелях отклонена';
+  const phrase = normLetters('في رحلة الفنون');
+  const covered = judgeSequence({
+    lines: [
+      { id: 'arabic-8', lang: 'ar', text: phrase, norm: phrase, start: 300.26, end: 302.34, flags: [] },
+      { id: 'arabic-8b', lang: 'ar', text: phrase, norm: phrase, start: 302.34, end: 304.4, flags: [] },
+    ],
+    segments: [
+      { start: 300.26, end: 302.34, text: phrase },
+      { start: 302.34, end: 304.4, text: phrase },
+    ],
+    alts: [],
+    cues: { ar: [{ n: 48, start: 300.25, end: 304.45, text: phrase, norm: phrase }] },
+    sung: { ar: 'ar' },
+  });
+  if (covered.some((i) => i.level === 'error')) return 'повтор внутри одной реплики отвергнут';
+  const once = judgeSequence({
+    lines: [{ id: 'arabic-8', lang: 'ar', text: phrase, norm: phrase, start: 300.26, end: 304.4, flags: [] }],
+    segments: [
+      { start: 300.26, end: 302.34, text: phrase },
+      { start: 302.34, end: 304.4, text: phrase },
+    ],
+    alts: [],
+    cues: null,
+    sung: {},
+  });
+  if (!once.some((i) => i.level === 'error' && i.where === 'arabic-8')) return 'сдвоенная фраза транскрипта не поймана';
+  const outside = judgeSequence({
+    lines: [{ id: 'arabic-8b', lang: 'ar', text: phrase, norm: phrase, start: 310, end: 312, flags: [] }],
+    segments: [],
+    alts: [],
+    cues: { ar: [{ n: 48, start: 300.25, end: 304.45, text: phrase, norm: phrase }] },
+    sung: { ar: 'ar' },
+  });
+  if (!outside.some((i) => i.level === 'error')) return 'строка вне реплики прошла';
   return null;
 }
 
@@ -508,6 +588,14 @@ if (isCli()) {
     if (write) {
       const table = buildTable(slug);
       const path = join(root, 'docs/analysis', slug, 'recheck.json');
+      if (existsSync(path)) {
+        try {
+          const previous = JSON.parse(readFileSync(path, 'utf8')) as { decisions?: unknown };
+          if (previous.decisions) (table as { decisions?: unknown }).decisions = previous.decisions;
+        } catch {
+          // A broken table is rewritten from the sources. Decisions are kept only when they parse.
+        }
+      }
       mkdirSync(dirname(path), { recursive: true });
       writeFileSync(path, JSON.stringify(table, null, 2) + '\n', 'utf8');
       const counts: Record<string, number> = {};
