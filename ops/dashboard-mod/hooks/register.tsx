@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register, RenderInput } from 'claude-code'
 
-import type { AgentName, Board, ChatRow, FeedItem, Group, Limit, Live, PipelineRun, QuotaGroup, Song, Task, Usage } from '../types'
+import type { AgentName, Board, ChatRow, FeedItem, Group, Hygiene, Limit, Live, PipelineRun, QuotaGroup, Song, Task, Usage } from '../types'
 import { ICON_CLAUDE, ICON_GEMINI, ICON_GROK } from './icons'
 
 /**
@@ -79,12 +79,13 @@ export function remoteLive(published: Live | null | undefined, now: number): Liv
     gemini: (published.gemini ?? []).map(r => ({ ...r, minutes: r.minutes + age })),
     chats: published.chats ?? [],
     pipeline: (published.pipeline ?? []).map(r => ({ ...r, minutes: r.minutes + age })),
+    hygiene: published.hygiene ?? null,
   }
 }
 
 /** The states that matter for publishing; minutes, steps and token counts change on every poll. */
 export function stateKey(l: Live) {
-  return JSON.stringify([l.grok.map(r => [r.name, r.state, r.model ?? '']), l.gemini.map(r => r.slug), (l.chats ?? []).map(c => [c.name, c.state]), (l.pipeline ?? []).map(r => r.title)])
+  return JSON.stringify([l.grok.map(r => [r.name, r.state, r.model ?? '']), l.gemini.map(r => r.slug), (l.chats ?? []).map(c => [c.name, c.state]), (l.pipeline ?? []).map(r => r.title), l.hygiene?.at ?? ''])
 }
 
 export function tokens(n?: number) {
@@ -217,6 +218,11 @@ export function summaryText(b: Board | null, l: Live, lim: Limit[], u: Usage | n
   const gem = geminiWindows(u?.gemini?.quota?.gemini).map(w => `${w.label} ${Math.round(w.used)} %`).join(', ')
   const parts = [cl ? `✻ Claude ${cl}` : '', gem ? `✦ Gemini ${gem}` : '', u?.grok ? `◼ Grok сегодня ${tokens(u.grok.today)} ток.` : ''].filter(Boolean)
   if (parts.length) out.push('', `**Израсходовано:** ${parts.join(' · ')}`)
+  const h = l.hygiene
+  if (h && (h.fixed.length || h.issues.length)) {
+    out.push('', `**Порядок** · ${hhmm(h.at)}${h.fixed.length ? ` · убрано ${h.fixed.length}` : ''}`, ...h.issues.slice(0, 3).map(i => `- ${i}`))
+    if (h.issues.length > 3) out.push(`- … ещё ${h.issues.length - 3}`)
+  }
   return out.join('\n')
 }
 
@@ -384,15 +390,15 @@ async function publishLive($: EngineInterface, l: Live, heartbeat = false) {
 }
 
 /** The orchestrator machine's chats and Actions runs; ops/agents/station_tick.py also pulls the main checkout. */
-let station: Pick<Live, 'chats' | 'pipeline'> = {}
+let station: Pick<Live, 'chats' | 'pipeline' | 'hygiene'> = {}
 
 async function stationTick($: EngineInterface) {
   if (!place.orchestrator || !place.repo) return
   try {
     const res = await $.process.run(['python', `${place.repo}/ops/agents/station_tick.py`, place.repo], { cwd: place.repo, timeoutMs: 60_000 })
     if (res.exitCode !== 0) return
-    const tick = JSON.parse(res.stdout) as { chats: ChatRow[]; pipeline: PipelineRun[] }
-    station = { chats: tick.chats, pipeline: tick.pipeline }
+    const tick = JSON.parse(res.stdout) as { chats: ChatRow[]; pipeline: PipelineRun[]; hygiene?: Hygiene | null }
+    station = { chats: tick.chats, pipeline: tick.pipeline, hygiene: tick.hygiene ?? null }
   } catch {
     // A tool missing on PATH: the rest of the dashboard still draws.
   }

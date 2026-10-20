@@ -61,7 +61,10 @@ export type ChatRow = { name: string; role?: string; reports_to?: string; state:
 /** A GitHub Actions run in progress. */
 export type PipelineRun = { name: string; title: string; minutes: number }
 
-export type Live = { grok: GrokRun[]; gemini: GeminiRun[]; chats?: ChatRow[]; pipeline?: PipelineRun[]; at?: string }
+/** The last hygiene run on the Station (ops/agents/hygiene.py): what it deleted, what needs someone. */
+export type Hygiene = { at: string; fixed: string[]; issues: string[] }
+
+export type Live = { grok: GrokRun[]; gemini: GeminiRun[]; chats?: ChatRow[]; pipeline?: PipelineRun[]; hygiene?: Hygiene | null; at?: string }
 
 /** Claude plan windows as the status line has them. */
 export type Limit = { kind: string; percentUsed: number; resetsAt?: string }
