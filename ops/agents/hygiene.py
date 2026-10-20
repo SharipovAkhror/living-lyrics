@@ -10,8 +10,8 @@ them, and paths in the docs that point to nothing.
 
     python ops/agents/hygiene.py [<repo>] [--apply] [--repo-only] [--json]
 
---repo-only skips what lives on the Station (worktrees, local branches, chats): the nightly cloud
-routine runs it that way. Every chat runs it at the end of a step (AGENTS.md); the Dashboard mod
+--repo-only skips what lives on the Station (worktrees, local branches, chats): the GitHub workflow
+.github/workflows/cleanup.yml runs it that way after every update of main. Every chat runs it at the end of a step (AGENTS.md); the Dashboard mod
 runs it hourly on the Station (station_tick.py) and shows the result.
 """
 import datetime
