@@ -100,8 +100,10 @@ export const setB = iconSet('b', 24, 1.75, {
   },
   'book.closed': {
     off: [stroke(book)],
-    // Closed silhouette. Filling the open Lucide centre-line left a slash.
-    on: [fill(rrect(5.3, 3.2, 13.5, 13.7, 1.8)), fill(rrect(3.9, 15.85, 16.2, 3.45, 1.25))],
+    // Closed cover, spine cut out. Filling the open Lucide path left a slash,
+    // and a separate page slab read as a top hat rather than the same book.
+    // The outer edge meets the 1.75 stroke of the line drawing.
+    on: [fill(rrect(3.73, 2.33, 16.55, 20.05, 2.2) + rrect(5.7, 4.85, 2.05, 12.15, 0.85))],
   },
   'music.note': {
     off: [stroke(note), stroke(circle(6.35, 17.45, 2.7)), stroke(circle(17.15, 15.55, 2.7))],

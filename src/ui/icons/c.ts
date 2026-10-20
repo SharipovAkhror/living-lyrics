@@ -78,8 +78,26 @@ const noteHead = ellipse(8.15, 16.85, 3.35, 2.45, -22);
 const noteFlag = 'M11.05 4.4c3.7.25 5.45 1.95 5.15 3.95-.25 1.6-1.75 2.5-3.65 2.15-.85-.15-1.4-.55-1.5-.95V4.4z';
 
 const lens = circle(10.55, 10.55, 6.35);
-const infoDisc = circle(12, 12, 9.05);
-const infoMark = circle(12, 7.85, 1.2) + rrect(11.05, 10.45, 1.9, 5.7, 0.95);
+/**
+ * Same construction as the search lens: a glass disc inside a solid ring.
+ * A bare translucent disc read as a grey blob at 16 px, and the stem sat
+ * so close to the dot that the two merged.
+ */
+const infoDisc = circle(12, 12, 8.2);
+const infoDot = circle(12, 7.85, 1.38);
+const infoStem = rrect(10.92, 11.15, 2.16, 5.9, 1.08);
+/** Arrow stops short of the bowl, so the two do not fuse into one wedge. */
+const downloadStem = 'M12 3.2V8.15';
+const downloadHead = roundPoly(
+  [
+    { x: 7.85, y: 7.15 },
+    { x: 16.15, y: 7.15 },
+    { x: 12, y: 11.15 },
+  ],
+  0.9,
+);
+const downloadTray = 'M5.2 14.9v3.7c0 1.2 1 2.15 2.2 2.15h9.2c1.2 0 2.2-.95 2.2-2.15v-3.7';
+const downloadBowl = 'M6.4 15.2v3.15c0 .7.55 1.25 1.3 1.25h8.6c.75 0 1.3-.55 1.3-1.25v-3.15z';
 
 const flagPole = 'M6.35 3.45V20.55';
 const flagFly = 'M6.35 4.4H17.15L14.9 8.15 17.15 11.9H6.35z';
@@ -131,7 +149,7 @@ export const setC = iconSet('c', 24, 2.15, {
     off: [fill(lens, GLASS), stroke(lens, 1.9), stroke('M15.2 15.2 19.9 19.9', 2.2)],
   },
   'info.circle': {
-    off: [fill(infoDisc, GLASS), fill(infoMark)],
+    off: [fill(infoDisc, GLASS), stroke(infoDisc, 2.15), fill(infoDot), fill(infoStem)],
   },
   flag: {
     off: [stroke(flagPole, 2.2), fill(flagFly, GLASS), stroke(flagFly, 1.7)],
@@ -140,17 +158,6 @@ export const setC = iconSet('c', 24, 2.15, {
     off: [fill(speaker), stroke(waveNear, 2.05), stroke(waveFar, 2.05, GLASS)],
   },
   'square.and.arrow.down': {
-    off: [
-      fill(rrect(4.3, 14.7, 15.4, 4.7, 1.7), GLASS),
-      stroke('M12 3.6v9.3', 2.25),
-      fill(roundPoly(
-        [
-          { x: 7.7, y: 10.3 },
-          { x: 16.3, y: 10.3 },
-          { x: 12, y: 15.35 },
-        ],
-        0.9,
-      )),
-    ],
+    off: [fill(downloadBowl, GLASS), stroke(downloadTray, 2.15), stroke(downloadStem, 2.15), fill(downloadHead)],
   },
 });
