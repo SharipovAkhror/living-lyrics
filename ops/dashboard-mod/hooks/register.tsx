@@ -97,6 +97,7 @@ export function tokens(n?: number) {
 /** Executor name from its worktree: `t1-sync` → `Sync`. Worktrees are named t<N>-<codename>. */
 export function codename(worktree?: string) {
   const word = (worktree ?? '').replace(/^t\d+[a-z]?-/, '').split('-')[0] ?? ''
+  if (word.toLowerCase() === 'iphone') return 'iPhone'
   return word ? word[0]!.toUpperCase() + word.slice(1) : ''
 }
 
@@ -340,6 +341,7 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
     const next: Limit[] = u.rateLimits.map(r => ({ kind: r.kind, percentUsed: r.percentUsed, resetsAt: r.resetsAt }))
     if (JSON.stringify(next) !== JSON.stringify(await read($, limits))) await update($, limits, () => next)
     await pushLimit($, next)
+    await saveCardState($)
   } catch {
     // Off a subscription the windows are empty.
   }
@@ -673,6 +675,69 @@ export function dashboardContext(summary: string) {
   )
 }
 
+/** The dashboard state the image card draws (card/render.mjs reads it on stdin). */
+export function cardDoc(b: Board | null, l: Live, lim: Limit[], u: Usage | null) {
+  if (!b) return null
+  return {
+    at: new Date().toISOString(),
+    roadmap: b.roadmap ? { title: b.roadmap.title, percent: b.roadmap.percent } : null,
+    goal: b.syncGoal ?? null,
+    you: b.tasks.filter(t => t.section === 'you').map(t => ({ title: t.title, how: t.how ?? t.what ?? '' })),
+    chats: l.chats ?? [],
+    agents: agentRows(b, l).map(r => ({ agent: r.agent, name: r.name, task: r.task, state: r.state, tone: r.tone, detail: r.detail })),
+    runs: l.pipeline ?? [],
+    songs: songRows(b.songs).map(({ label, group }) => ({ label, proven: group.proven, placed: group.placed ?? group.proven, total: group.total })),
+    hygiene: l.hygiene ? { fixed: l.hygiene.fixed.length, issues: l.hygiene.issues.slice(0, 3), more: Math.max(0, l.hygiene.issues.length - 3) } : null,
+    limits: {
+      claude: claudeWindows(lim).map(w => ({ label: w.label, used: Math.round(w.used), reset: w.reset })),
+      gemini: geminiWindows(u?.gemini?.quota?.gemini).map(w => ({ label: w.label, used: Math.round(w.used), reset: w.reset })),
+      grok: u?.grok ? { today: tokens(u.grok.today), week: u.grok.week ? tokens(u.grok.week) : '', plan: u.grok.plan ?? '' } : null,
+      plans: { claude: b.models?.claude ?? '', gemini: u?.gemini?.plan ?? '' },
+    },
+  }
+}
+
+let cardKey = ''
+
+/** The Station keeps the latest card state on disk, so the card can be redrawn and checked outside a chat. */
+async function saveCardState($: EngineInterface) {
+  if (!place.orchestrator) return
+  const doc = cardDoc(await read($, board), await read($, live), await read($, limits), await read($, usage))
+  const dir = await $.env.get('LOCALAPPDATA')
+  if (!doc || !dir) return
+  const { at: _at, ...rest } = doc
+  const key = JSON.stringify(rest)
+  if (key === cardKey) return
+  cardKey = key
+  try {
+    await $.fs.write(`${dir}/ll-dashboard/state.json`, JSON.stringify(doc))
+  } catch {
+    cardKey = ''
+  }
+}
+
+/** Draws the card; resolves the PNG's path, or null where the repo's Playwright is not at hand. */
+async function renderCard($: EngineInterface, doc: object) {
+  try {
+    const r = await $.process.run(['node', `${$.plugin.root}/card/render.mjs`, '-'], { stdin: JSON.stringify(doc), timeoutMs: 40_000 })
+    const path = r.stdout.trim()
+    return r.exitCode === 0 && path.endsWith('.png') ? path : null
+  } catch {
+    return null
+  }
+}
+
+/** The reply for an image card: send it inline, then one line; the text summary stays as the fallback. */
+export function cardContext(path: string, summary: string, waiting: number) {
+  return (
+    'The owner asked for the Dashboard, drawn as an image. Call SendUserFile once: files ["' + path.replace(/\\/g, '/') + '"], ' +
+    'display "render", status "normal", no caption. Then reply with one short line in Russian and nothing else: ' +
+    (waiting ? 'what waits on the owner (from the summary below).' : '«От вас ничего не нужно.»') +
+    ' No other tools. If SendUserFile is not available, reply with exactly this summary as compact Markdown instead:\n\n' +
+    summary
+  )
+}
+
 const ASKS = new Set(['dashboard', '/dashboard', 'дашборд', '/дашборд', 'штаб'])
 
 export function isDashboardAsk(text: string) {
@@ -759,7 +824,12 @@ export const register: Register = on => {
   on('prompt.submit', async ($, e, next) => {
     const extra: string[] = []
     if (isDashboardAsk(e.text)) {
-      extra.push(dashboardContext(summaryText(await read($, board), await read($, live), await read($, limits), await read($, usage))))
+      const [b, l, lim, u] = [await read($, board), await read($, live), await read($, limits), await read($, usage)]
+      const summary = summaryText(b, l, lim, u)
+      const doc = cardDoc(b, l, lim, u)
+      const png = doc ? await renderCard($, doc) : null
+      const waiting = b?.tasks.filter(t => t.section === 'you').length ?? 0
+      extra.push(png ? cardContext(png, summary, waiting) : dashboardContext(summary))
     }
     try {
       const note = rotationNote((await $.session.usage()).context.percent, await $.session.cwd())
