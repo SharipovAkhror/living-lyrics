@@ -1,9 +1,9 @@
 {
  "k": 0.25,
- "line_chance": 0.031862745098039214,
+ "line_chance": 0.03201970443349754,
  "proved": 104,
- "refuted": 39,
- "words": 952,
+ "refuted": 38,
+ "words": 949,
  "cut": [
   0.2,
   0.3
@@ -13,7 +13,7 @@
  "assignment": {
   "i-have-come-alive": {
    "ar": "large-v3-turbo",
-   "en": "large-v3-turbo",
+   "en": "medium",
    "fa": "small",
    "tr": "large-v3-turbo"
   },
@@ -50,7 +50,7 @@
   {
    "song": "i-have-come-alive",
    "lang": "en",
-   "model": "large-v3-turbo",
+   "model": "medium",
    "mode": "one",
    "why_scope": "slice-one",
    "proved": 12,
@@ -58,11 +58,11 @@
    "model_max": {
     "small": 12,
     "medium": 12,
-    "large-v3-turbo": 12
+    "large-v3-turbo": 7
    },
-   "word_chance": 0.14423076923076922,
+   "word_chance": 0.125,
    "line_chance": 0.0,
-   "median": 0.078,
+   "median": 0.093,
    "words": 52,
    "candidates": 14
   },
@@ -79,11 +79,11 @@
     "medium": 28,
     "large-v3-turbo": 28
    },
-   "word_chance": 0.056372549019607844,
-   "line_chance": 0.010638297872340425,
-   "median": 0.08,
-   "words": 204,
-   "candidates": 49
+   "word_chance": 0.05472636815920398,
+   "line_chance": 0.010869565217391304,
+   "median": 0.079,
+   "words": 201,
+   "candidates": 48
   },
   {
    "song": "i-have-come-alive",
@@ -214,8 +214,8 @@
    "word_ok": true,
    "proved": 87,
    "k": 0.25,
-   "line_chance": 0.014705882352941176,
-   "word_chance": 0.125,
+   "line_chance": 0.014778325123152709,
+   "word_chance": 0.1346153846153846,
    "by_song": {
     "i-have-come-alive": 68,
     "karitas": 14,
@@ -231,7 +231,7 @@
    "word_ok": true,
    "proved": 87,
    "k": 0.4,
-   "line_chance": 0.049019607843137254,
+   "line_chance": 0.04926108374384237,
    "word_chance": 0.1342281879194631,
    "by_song": {
     "i-have-come-alive": 64,
@@ -246,12 +246,12 @@
    "missing": [],
    "ok": true,
    "word_ok": true,
-   "proved": 88,
+   "proved": 83,
    "k": 0.25,
-   "line_chance": 0.014705882352941176,
-   "word_chance": 0.14423076923076922,
+   "line_chance": 0.014778325123152709,
+   "word_chance": 0.07213930348258707,
    "by_song": {
-    "i-have-come-alive": 67,
+    "i-have-come-alive": 62,
     "karitas": 17,
     "one": 4
    },
@@ -272,7 +272,7 @@
    "song": "i-have-come-alive",
    "ok": true,
    "k": 0.25,
-   "chance": 0.009259259259259259,
+   "chance": 0.009345794392523364,
    "proved": 68
   },
   {

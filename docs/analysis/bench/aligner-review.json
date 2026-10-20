@@ -8,16 +8,16 @@
  "agree_tol": 0.1,
  "closer": {
   "words": {
-   "n": 269,
-   "mms": 144,
-   "second": 115,
+   "n": 266,
+   "mms": 143,
+   "second": 113,
    "tie": 10,
    "no_peak": 0
   },
   "lines": {
-   "n": 69,
+   "n": 68,
    "mms": 41,
-   "second": 24,
+   "second": 23,
    "tie": 4,
    "no_peak": 0
   },
@@ -40,16 +40,16 @@
    },
    "fa": {
     "words": {
-     "n": 59,
-     "mms": 29,
-     "second": 28,
+     "n": 56,
+     "mms": 28,
+     "second": 26,
      "tie": 2,
      "no_peak": 0
     },
     "lines": {
-     "n": 18,
+     "n": 17,
      "mms": 9,
-     "second": 8,
+     "second": 7,
      "tie": 1,
      "no_peak": 0
     }
@@ -138,16 +138,16 @@
   "by_song": {
    "i-have-come-alive": {
     "words": {
-     "n": 87,
-     "mms": 47,
-     "second": 37,
+     "n": 84,
+     "mms": 46,
+     "second": 35,
      "tie": 3,
      "no_peak": 0
     },
     "lines": {
-     "n": 30,
+     "n": 29,
      "mms": 18,
-     "second": 11,
+     "second": 10,
      "tie": 1,
      "no_peak": 0
     }
@@ -190,11 +190,11 @@
   "en": {
    "words": 52,
    "third": 52,
-   "within_0_10": 31
+   "within_0_10": 32
   },
   "fa": {
-   "words": 204,
-   "third": 204,
+   "words": 201,
+   "third": 201,
    "within_0_10": 112
   },
   "tr": {
@@ -369,11 +369,11 @@
    "key": "whisperx|en"
   },
   {
-   "consonant_lines": 41,
+   "consonant_lines": 40,
    "train_lines": 20,
-   "hold_lines": 21,
+   "hold_lines": 20,
    "train_words": 69,
-   "hold_words": 81,
+   "hold_words": 78,
    "median_train": 0.01,
    "median_hold": 0.01,
    "line_median_train": 0.015,
@@ -382,15 +382,15 @@
    "offset": 0.0,
    "applied": false,
    "reason": "shift-under-0.02",
-   "hold_agree_before": 0.6667,
+   "hold_agree_before": 0.6897,
    "hold_agree_before_n": [
     60,
-    90
+    87
    ],
-   "hold_agree_if_train_offset": 0.6778,
+   "hold_agree_if_train_offset": 0.7011,
    "hold_agree_if_train_offset_n": [
     61,
-    90
+    87
    ],
    "key": "whisperx|fa"
   },
