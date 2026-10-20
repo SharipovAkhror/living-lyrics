@@ -9,16 +9,16 @@
  "closer": {
   "words": {
    "n": 255,
-   "mms": 132,
+   "mms": 135,
    "second": 106,
-   "tie": 17,
+   "tie": 14,
    "no_peak": 0
   },
   "lines": {
    "n": 61,
-   "mms": 35,
+   "mms": 37,
    "second": 18,
-   "tie": 8,
+   "tie": 6,
    "no_peak": 0
   },
   "by_lang": {
@@ -48,8 +48,8 @@
     },
     "lines": {
      "n": 13,
-     "mms": 4,
-     "second": 7,
+     "mms": 6,
+     "second": 5,
      "tie": 2,
      "no_peak": 0
     }
@@ -73,16 +73,16 @@
    "ar": {
     "words": {
      "n": 98,
-     "mms": 49,
-     "second": 37,
-     "tie": 12,
+     "mms": 47,
+     "second": 43,
+     "tie": 8,
      "no_peak": 0
     },
     "lines": {
      "n": 26,
-     "mms": 12,
-     "second": 8,
-     "tie": 6,
+     "mms": 11,
+     "second": 11,
+     "tie": 4,
      "no_peak": 0
     }
    },
@@ -121,15 +121,15 @@
    "de": {
     "words": {
      "n": 91,
-     "mms": 46,
-     "second": 45,
-     "tie": 0,
+     "mms": 51,
+     "second": 39,
+     "tie": 1,
      "no_peak": 0
     },
     "lines": {
      "n": 19,
-     "mms": 16,
-     "second": 3,
+     "mms": 17,
+     "second": 2,
      "tie": 0,
      "no_peak": 0
     }
@@ -139,15 +139,15 @@
    "i-have-come-alive": {
     "words": {
      "n": 78,
-     "mms": 45,
-     "second": 28,
+     "mms": 44,
+     "second": 29,
      "tie": 5,
      "no_peak": 0
     },
     "lines": {
      "n": 23,
-     "mms": 10,
-     "second": 11,
+     "mms": 12,
+     "second": 9,
      "tie": 2,
      "no_peak": 0
     }
@@ -155,9 +155,9 @@
    "karitas": {
     "words": {
      "n": 17,
-     "mms": 10,
+     "mms": 11,
      "second": 5,
-     "tie": 2,
+     "tie": 1,
      "no_peak": 0
     },
     "lines": {
@@ -171,16 +171,16 @@
    "one": {
     "words": {
      "n": 160,
-     "mms": 77,
-     "second": 73,
-     "tie": 10,
+     "mms": 80,
+     "second": 72,
+     "tie": 8,
      "no_peak": 0
     },
     "lines": {
      "n": 34,
      "mms": 21,
-     "second": 7,
-     "tie": 6,
+     "second": 9,
+     "tie": 4,
      "no_peak": 0
     }
    }
@@ -213,8 +213,8 @@
    "within_0_10": 25
   },
   "la": {
-   "words": 61,
-   "third": 59,
+   "words": 59,
+   "third": 57,
    "within_0_10": 4
   },
   "de": {

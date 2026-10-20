@@ -24,11 +24,11 @@
 | i-have-come-alive | coda-fa-5 | 9:08,09 | عِشْقْ | середина | мелизм | оба свидетеля в стороне | оба (whisperx, stable-ts) | mms | 547,350 | 547,325 | -0,782 |
 | i-have-come-alive | coda-fa-5 | 9:08,29 | آمَدْ | середина | нет | оба свидетеля в стороне | оба (whisperx, stable-ts) | mms | 548,700 | 548,665 | 0,343 |
 | i-have-come-alive | coda-fa-7 | 9:14,96 | آمَدْ | середина | мелизм | оба свидетеля в стороне | оба (whisperx, stable-ts) | mms | 555,170 | 555,260 | 0,255 |
-| karitas | fuzuli-f5-1 | 1:23,02 | degil | последнее | долгая гласная | один свидетель с атакой | stable-ts | mms-window | — | 81,773 | — |
-| karitas | fuzuli-f8-2 | 4:23,39 | ile | середина | нет | один свидетель с атакой | stable-ts | mms | — | 263,080 | — |
-| karitas | hildegard-h1-3 | 14:40,84 | habundat | середина | мелизм | один свидетель с атакой | stable-ts | mms | — | 880,420 | — |
-| karitas | hildegard-h5-3 | 14:53,56 | omnia | последнее | долгая гласная | один свидетель с атакой | stable-ts | mms | — | 893,000 | — |
-| karitas | hildegard-h5-4 | 15:13,24 | in | первое | нет | один свидетель с атакой | stable-ts | mms-ft | — | 912,580 | — |
+| karitas | hildegard-h3-1 | 1:58,11 | sidera | последнее | мелизм | один свидетель с атакой | stable-ts | mms | — | 117,660 | — |
+| karitas | fuzuli-f5-4 | 2:36,38 | arif | середина | нет | один свидетель с атакой | stable-ts | mms-window | — | 156,640 | — |
+| karitas | hildegard-h1-3 | 14:40,84 | habundat | середина | мелизм | один свидетель с атакой | stable-ts | mms | — | 880,400 | — |
+| karitas | hildegard-h3-3 | 14:48,40 | sidera | последнее | нет | один свидетель с атакой | stable-ts | mms | — | 888,092 | — |
+| karitas | fuzuli-f1-3 | 15:22,84 | idrâk | середина | нет | один свидетель с атакой | stable-ts | mms-window | — | 923,246 | — |
 | one | eckhart-1-1 | 0:00,00 | Daz | первое | нет | один свидетель с атакой | mms | second | 0,460 | — | — |
 | one | eckhart-2-2 | 0:41,60 | mich | середина | долгая гласная | оба свидетеля в стороне | оба (whisperx, stable-ts) | mms | 41,310 | 41,238 | -0,326 |
 | one | eckhart-f-01 | 12:09,42 | daz | первое | нет | оба свидетеля в стороне | оба (whisperx, stable-ts) | mms | 728,880 | 728,884 | -0,538 |
