@@ -20,7 +20,7 @@
 
 Персидская и арабская суфийская поэзия. Словарь: Lane для арабского, Steingass для персидского, Redhouse для османско-турецкого. Страницу статьи называют, только если она открыта.
 
-В этой сверке у Steingass открыта статья *pāyanda*, с. 236: firm, solid, lasting, perpetual. Остальные статьи Steingass по страницам не выписаны.
+В этой сверке у Steingass открыты и выписаны: *pāyanda*, с. 236 — firm, solid, lasting, perpetual; *amr*, с. 99 — order, command, также affair, business; *banda*, с. 202 — a servant, slave, bondman; *pesh*, с. 266 — before, in front, а также chief, superior, commander, leader; *pesh-rau*, с. 267 — a general, chief, leader, a guide, forerunner; *shudan*, с. 738 — to become; *shaikh*, с. 772 — a venerable old man, a chief, superior of the dervishes; *nīst*, с. 1442 — *nīstam*, I am not; *nīm*, с. 1444 — *nayam* (for *na am*), I am not, и *nīm*, a half. Остальные статьи Steingass по страницам не выписаны.
 
 Османско-турецкий словарь — James W. Redhouse, *A Turkish and English Lexicon* (Constantinople: American Mission, 1890), открыт на archive.org. Открыты: *göz*, с. 1591, оборот *göz tok* — satiated eye, contented mind; *tok*, с. 1258 — whose eyes are satisfied, not covetous; غوغا, с. 1354 — noisy multitude, outcry, tumult, а турецкое просторечное *qawghá* — contest, quarrel, brawl.
 
