@@ -1,6 +1,7 @@
 """Publish the executors' live state to the `live` branch so every device can read it.
 
-The state is what ops/dashboard-mod/hooks/agents_live.py prints (Grok tasks and Gemini runs);
+The state is what ops/dashboard-mod/hooks/agents_live.py prints (Grok tasks and Gemini runs),
+plus the registered chats and their state (registry.py);
 a cloud orchestrator can pipe the same JSON in with --stdin instead. It is written as
 ops/live.json on an orphan branch `live` (one commit, force-pushed: the branch holds only the
 latest state, so main and the history stay clean). The dashboard mod on other devices reads
@@ -20,6 +21,8 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+
+from registry import live_chats
 
 BRANCH = 'live'
 HEARTBEAT_MIN = 20
@@ -45,7 +48,8 @@ def signature(live: dict) -> str:
     """The states only: no minutes, steps or token counts, which change every poll."""
     grok = sorted((r.get('name', ''), r.get('state', ''), r.get('model', '')) for r in live.get('grok') or [])
     gemini = sorted(r.get('slug', '') for r in live.get('gemini') or [])
-    return hashlib.sha256(json.dumps([grok, gemini]).encode()).hexdigest()[:16]
+    chats = sorted((c.get('name', ''), c.get('state', '')) for c in live.get('chats') or [])
+    return hashlib.sha256(json.dumps([grok, gemini, chats]).encode()).hexdigest()[:16]
 
 
 def busy(live: dict) -> bool:
@@ -99,6 +103,11 @@ def main() -> int:
     cache = Path(git(repo, 'rev-parse', '--absolute-git-dir')) / 'll-live.json'
 
     live = collect(repo, '--stdin' in flags)
+    if 'chats' not in live:
+        try:
+            live['chats'] = live_chats(repo)
+        except Exception:  # no claude CLI here: publish the executors without the chats
+            pass
     sig = signature(live)
     try:
         last = json.loads(cache.read_text(encoding='utf-8'))

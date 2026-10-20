@@ -27,7 +27,8 @@ type Board = {
   songs: { id: string; title: string; state?: string; groups: Group[] }[];
   roadmap?: { title: string; percent: number };
 };
-type Live = { at?: string; grok: { name: string; state: string; minutes: number; step: string }[]; gemini: { slug: string; minutes: number }[] };
+type Chat = { name: string; reports_to?: string; state: string };
+type Live = { at?: string; chats?: Chat[]; grok: { name: string; state: string; minutes: number; step: string }[]; gemini: { slug: string; minutes: number }[] };
 type Quota = { weeklyRemaining?: number; fiveHourRemaining?: number };
 type Usage = { grok?: { plan?: string; today?: number }; gemini?: { plan?: string; quota?: Record<string, Quota> } };
 
@@ -53,6 +54,7 @@ function ago(minutes: number | null) {
 }
 
 const GROK_STATE: Record<string, string> = { working: 'работает', stalled: 'остановился', finished: 'закончил', none: 'ждёт' };
+const CHAT_STATE: Record<string, string> = { working: 'работает', waiting: 'ждёт ответа', idle: 'свободен', retired: 'спит', none: 'не запущен' };
 const STATUS: Record<string, string> = { running: 'идёт', waiting: 'ждёт', done: 'готово', rejected: 'отклонено' };
 
 function tokens(n?: number) {
@@ -142,6 +144,13 @@ export default function OpsPage() {
           <section className="ops-card glass" aria-labelledby="ops-agents">
             <h2 id="ops-agents" className="t-headline">Кто что делает</h2>
             <ul>
+              {fresh?.chats?.map((c) => (
+                <li key={c.name}>
+                  <p className="t-subhead">
+                    {c.name} <span className={`ops-chip ops-chip--${c.state}`}>{CHAT_STATE[c.state] ?? c.state}</span>
+                  </p>
+                </li>
+              ))}
               {board.claude && (
                 <li>
                   <p className="t-subhead">Claude</p>
