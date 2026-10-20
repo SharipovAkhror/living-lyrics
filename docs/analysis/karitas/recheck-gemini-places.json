@@ -1,0 +1,235 @@
+{
+ "source": "Gemini 3.8 Flash (agy), targeted listening on short clips of the official video audio, captions excluded; 2026-10-21. Same model as recheck-gemini.json: one witness, not two.",
+ "places": [
+  {
+   "place": 1,
+   "clip_s": [
+    53,
+    76
+   ],
+   "question": "In the Turkish lines, is the word «şeydâ» or «şeytan»? Give both occurrences with times.",
+   "answer": "The word is «şeydâ» in both occurrences (not «şeytan»): first at 59.2–60.7 s in line fuzuli-f3-1 («dil-i şeydâ içün»), and second at 70.9–72.5 s in line fuzuli-f4-1 («kâm-ı dil-i şeydâ nedir»).",
+   "segments": [
+    {
+     "start_s": 53.0,
+     "end_s": 54.3,
+     "heard": "nedir",
+     "matches_id": "fuzuli-f2-1"
+    },
+    {
+     "start_s": 55.7,
+     "end_s": 64.5,
+     "heard": "gerçi cânândan dil-i şeydâ içün kâm isterem",
+     "matches_id": "fuzuli-f3-1"
+    },
+    {
+     "start_s": 65.8,
+     "end_s": 73.8,
+     "heard": "sorsa cânân bilmezem kâm-ı dil-i şeydâ nedir",
+     "matches_id": "fuzuli-f4-1"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 2,
+   "clip_s": [
+    106,
+    115
+   ],
+   "question": "After «Karitas habundat in omnia», is there a separate choral «in omnia» repeat?",
+   "answer": "Yes, there is a separate choral «in omnia» repeat immediately following the soloist.",
+   "segments": [
+    {
+     "start_s": 106.0,
+     "end_s": 109.6,
+     "heard": "habundat in omnia",
+     "matches_id": "hildegard-h1-1"
+    },
+    {
+     "start_s": 109.7,
+     "end_s": 111.8,
+     "heard": "in omnia",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 112.0,
+     "end_s": 115.0,
+     "heard": "de imis excellentissima",
+     "matches_id": "hildegard-h2-1"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 3,
+   "clip_s": [
+    251,
+    264
+   ],
+   "question": "Is the line «ah u feryâdın fuzûlî incidipdir âlemi» sung here? When?",
+   "answer": "Yes, the line is clearly sung by Sami Yusuf between 254.6 s and 260.8 s (clip time 00:03.6–00:09.8).",
+   "segments": [
+    {
+     "start_s": 251.0,
+     "end_s": 254.5,
+     "heard": "dünyâ vü mâfîhâ nedir",
+     "matches_id": "fuzuli-f6-6"
+    },
+    {
+     "start_s": 254.6,
+     "end_s": 260.8,
+     "heard": "ah u feryâdın fuzûlî incidipdir âlemi",
+     "matches_id": "fuzuli-f7-2"
+    },
+    {
+     "start_s": 261.1,
+     "end_s": 264.0,
+     "heard": "ger belâ-yı aşk ile",
+     "matches_id": "fuzuli-f8-2"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 4,
+   "clip_s": [
+    288,
+    301
+   ],
+   "question": "Is «ياهو» (ya hu) called out here? When?",
+   "answer": "Yes, «ياهو» is called out from 291.3 to 298.3 s.",
+   "segments": [
+    {
+     "start_s": 291.3,
+     "end_s": 298.3,
+     "heard": "يَاهُو",
+     "matches_id": "call-y1"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 5,
+   "clip_s": [
+    483,
+    505
+   ],
+   "question": "How many times is «الكل لما سقيت تاهوا» sung, and when?",
+   "answer": "«الكل لما سقيت تاهوا» is sung 2 times: first from 486.3 s to 494.4 s, and second from 495.0 s to 504.1 s.",
+   "segments": [
+    {
+     "start_s": 486.3,
+     "end_s": 494.4,
+     "heard": "اَلْكُلُّ لَمَّا سَقَيْتَ تَاهُوا",
+     "matches_id": "shushtari-s2"
+    },
+    {
+     "start_s": 495.0,
+     "end_s": 504.1,
+     "heard": "اَلْكُلُّ لَمَّا سَقَيْتَ تَاهُوا",
+     "matches_id": "shushtari-s2"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 6,
+   "clip_s": [
+    527,
+    542
+   ],
+   "question": "How many times is «صبرت قلبي» sung, where does each pass end?",
+   "answer": "«صَبَّرْتُ قَلْبِي» is sung 2 times: the first pass ends at 532.4 s (530.2–532.4 s, «صَبَّرْتُ قَلْبِي» alone); the second pass of «صَبَّرْتُ قَلْبِي» ends at 535.2 s (533.4–535.2 s), continuing seamlessly in the same breath with «عَلَيْكُمْ فَأَجَابَنِي» to complete line sabr-p1 at 538.8 s (533.4–538.8 s). The preceding line nabulsi-n2 singing finishes at 529.4 s, and sabr-p2 begins at 539.4 s.",
+   "segments": [
+    {
+     "start_s": 530.2,
+     "end_s": 532.4,
+     "heard": "صَبَّرْتُ قَلْبِي",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 533.4,
+     "end_s": 538.8,
+     "heard": "صَبَّرْتُ قَلْبِي عَلَيْكُمْ فَأَجَابَنِي",
+     "matches_id": "sabr-p1"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 7,
+   "clip_s": [
+    936,
+    946
+   ],
+   "question": "Is a fragment of «öyle ser-mestem ki idrâk etmezem» sung here? Exactly which words?",
+   "answer": "No, no fragment of «öyle ser-mestem ki idrâk etmezem» is sung here.",
+   "segments": [
+    {
+     "start_s": 936.0,
+     "end_s": 936.7,
+     "heard": "isterem",
+     "matches_id": "fuzuli-f3-2"
+    },
+    {
+     "start_s": 936.7,
+     "end_s": 942.1,
+     "heard": "sorsa cânân bilmezem kâm-ı dil-i şeydâ nedir",
+     "matches_id": "fuzuli-f4-2"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 8,
+   "clip_s": [
+    958,
+    978
+   ],
+   "question": "Is another pass of the antiphon «Karitas habundat in omnia» sung here? Which lines?",
+   "answer": "Yes, another pass of the antiphon «Karitas habundat in omnia» is sung here. Lines H1 through H5 are sung: «Karitas habundat in omnia», «de imis excellentissima», «super sidera», «atque amantissima», and «in omnia». The final line H6 («quia summo regi osculum pacis dedit») is not sung.",
+   "segments": [
+    {
+     "start_s": 960.8,
+     "end_s": 964.2,
+     "heard": "Karitas habundat in omnia",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 964.2,
+     "end_s": 967.5,
+     "heard": "de imis excellentissima",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 967.5,
+     "end_s": 969.8,
+     "heard": "super sidera",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 970.7,
+     "end_s": 973.3,
+     "heard": "atque amantissima",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 973.3,
+     "end_s": 975.5,
+     "heard": "in omnia",
+     "matches_id": "NONE"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  }
+ ]
+}
