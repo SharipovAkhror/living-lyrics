@@ -65,11 +65,12 @@
   /* Library title. Serif, weight 600. 56 px from 800 px wide; the short
      landscape block below keeps 40 px so a car screen does not grow a poster. */
   --t-display: 40px;
-  /* Sung line on an 852 px-tall phone. Other screens scale with the height.
-     Registered so viewport units compute to a length. An unregistered max()
-     stays a token and font-size falls back to the body size. */
-  --lyric-latin: max(13px, calc(33 * 100dvh / 852));
-  --lyric-arab: max(13px, calc(40 * 100dvh / 852));
+  /* Sung line on an 852 px-tall phone. The desktop scale is a separate block
+     below, not this fraction on a tall window. Registered so viewport units
+     compute to a length. An unregistered max() stays a token and font-size
+     falls back to the body size. */
+  --lyric-latin: max(13px, calc(36 * 100dvh / 852));
+  --lyric-arab: max(13px, calc(42 * 100dvh / 852));
   --lyric-tr: max(13px, calc(20 * 100dvh / 852));
   --lyric-note: max(13px, calc(17 * 100dvh / 852));
 
@@ -276,6 +277,15 @@
 @media (min-width: 800px) {
   :root {
     --t-display: 56px;
+  }
+}
+/* A wide, tall window is a spread, not a taller phone. The sung line has its own size. */
+@media (min-width: 1100px) and (min-height: 641px) {
+  :root {
+    --lyric-latin: 50px;
+    --lyric-arab: 58px;
+    --lyric-tr: 22px;
+    --lyric-note: 17px;
   }
 }
 @media (min-width: 700px) and (max-height: 640px) {

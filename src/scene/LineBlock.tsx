@@ -77,16 +77,23 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
     const vh = window.innerHeight || 852;
     const vw = window.innerWidth || stage.w;
     const car = vw >= 700 && vh <= 640;
-    const width = Math.min(stage.w - (car ? 36 : 56), car ? 1100 : 720);
+    // Desktop is its own scale, not the phone size stretched by the window height.
+    const desk = vw >= 1100 && vh > 640;
+    const width = Math.min(stage.w - (car ? 28 : 40), car ? 1100 : desk ? 820 : 640);
     const arab = line.script === 'Arab' || line.script === 'Aran';
     const maxH = car
       ? Math.max(64, stage.h * (hasSubs ? 0.62 : 0.74))
-      : Math.max(72, stage.h * (hasSubs ? (arab ? 0.5 : 0.4) : 0.46));
+      : desk
+        ? Math.max(140, stage.h * (hasSubs ? 0.52 : 0.62))
+        : Math.max(80, stage.h * (hasSubs ? (arab ? 0.52 : 0.44) : 0.5));
     const floor = car ? (arab ? 34 : 28) : 13;
-    // Phone design size, scaled by the window: 33px Latin/Cyrillic, 40px Arabic and Persian, never below 13.
+    // Phone: 36px Latin/Cyrillic, 42px Arabic and Persian, scaled by the window, never below 13.
+    // Wide and tall: 50 / 58, so the sung line is a stage line and not a caption.
     const design = car
       ? Math.max(floor, (arab ? 36 : 30) * settings.textScale)
-      : (arab ? 40 : 33) * (vh / 852) * settings.textScale;
+      : desk
+        ? (arab ? 58 : 50) * settings.textScale
+        : (arab ? 42 : 36) * (Math.min(vh, 900) / 852) * settings.textScale;
     const upper = Math.max(floor, design);
     const lower = floor;
     el.style.width = `${width}px`;
@@ -123,9 +130,10 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
     const x = entrance === 'script' ? scriptShift(d, cue.rtl, stage.w, still) : 0;
     r.style.zIndex = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
     r.style.transform = `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0) scale(${s.scale.toFixed(4)})`;
-    r.style.opacity = entranceOpacity(d, entrance, s.opacity).toFixed(3);
+    const shown = entranceOpacity(d, entrance, s.opacity);
+    r.style.opacity = shown.toFixed(3);
     r.style.filter = entrance === 'flow' && !still && motion === 'full' && s.blur > 0.05 ? `blur(${s.blur.toFixed(2)}px)` : '';
-    r.style.visibility = s.opacity < 0.01 ? 'hidden' : 'visible';
+    r.style.visibility = shown < 0.04 ? 'hidden' : 'visible';
     r.classList.toggle('is-current', Math.abs(d) < 0.5);
     if (subs.current) subs.current.style.opacity = s.sub.toFixed(3);
 
@@ -135,8 +143,10 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
     // join (Arabic, Persian) are drawn once and never double at the joins.
     const o = orig.current;
     if (o) {
-      const lit = d <= 0 ? 1 : clamp01((0.5 - d) / 0.5);
-      o.style.setProperty('--litf', (wordSync ? (d < 0 ? 1 : 0) : lit).toFixed(3));
+      // The block's own opacity is the shadow on a neighbouring line. Dimming each word again
+      // made those lines disappear. Words light up only as this line becomes the current one.
+      const lit = d <= 0 ? 1 : d < 0.65 ? clamp01((0.65 - d) / 0.65) : 1;
+      o.style.setProperty('--litf', (wordSync ? (d < -0.2 || d > 0.65 ? 1 : 0) : lit).toFixed(3));
     }
     for (let i = 0; i < line.words.length; i++) {
       const el = words.current[i];

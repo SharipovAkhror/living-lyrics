@@ -59,16 +59,17 @@ export function flowPosition(plan: FlowPlan, t: number): number {
   return i - 1 + easeInOut(clamp01((t - begins[i]) / moves[i]));
 }
 
-/** Size of a non-current line relative to the current one. */
-export const SMALL = 0.62;
+/** Size of a non-current line relative to the current one. Close enough to read, clearly smaller than the line in the light. */
+export const SMALL = 0.78;
 
 /** Visual state of a block at distance d from the current position (d = index − position). */
 export function blockState(d: number) {
   const a = Math.abs(d);
   const scale = a >= 1 ? SMALL : 1 - (1 - SMALL) * a;
+  // Neighbours stay readable. A floor near zero turned the lines beside the active one into smudges.
   let opacity: number;
-  if (d >= 0) opacity = d <= 1 ? 1 : d <= 3 ? 1 - 0.3 * (d - 1) : Math.max(0, 0.4 - 0.4 * (d - 3));
-  else opacity = a <= 1 ? 1 - 0.6 * a : Math.max(0, 0.4 - 0.4 * (a - 1));
+  if (d >= 0) opacity = d <= 1 ? 1 : d <= 3 ? 1 - 0.18 * (d - 1) : Math.max(0.48, 0.64 - 0.06 * (d - 3));
+  else opacity = a <= 1 ? 1 - 0.28 * a : Math.max(0.48, 0.72 - 0.1 * (a - 1));
   const blur = d < -0.3 ? Math.min(2, (a - 0.3) * 2) : d > 1.3 ? Math.min(1.2, (d - 1.3) * 1.2) : 0;
   /** Translation: full for the current line, readable for the next one, gone for the rest. */
   const sub = d >= 0 ? (d <= 1 ? 1 - 0.4 * d : Math.max(0, 0.6 * (2 - d))) : clamp01(1 + d * 1.6);
@@ -211,14 +212,14 @@ export function scriptShift(d: number, rtl: boolean, stageW: number, motionOff: 
 export function entranceOpacity(d: number, entrance: LineEntrance, flowOpacity: number): number {
   if (entrance === 'flow') return flowOpacity;
   const a = Math.abs(d);
-  // Settle: the current line is the light. Neighbours stay faint so they do not compete with it.
+  // Settle: the current line is the light. The lines beside it stay readable, the ones further back step down, none of them vanish.
   if (entrance === 'settle') {
-    if (a <= 0.35) return 1;
-    if (a <= 0.75) return lerp(1, 0.1, (a - 0.35) / 0.4);
-    return Math.max(0, 0.1 * (1 - (a - 0.75) / 0.65));
+    if (a <= 0.28) return 1;
+    if (a <= 1.15) return lerp(1, 0.72, (a - 0.28) / 0.87);
+    return Math.max(0.55, 0.72 - 0.08 * (a - 1.15));
   }
   // Script: the line travelling in from the writing side stays readable until it arrives.
   if (a <= 0.35) return 1;
-  if (a <= 1.05) return 0.5 + 0.5 * (1 - (a - 0.35) / 0.7);
-  return Math.max(0, 0.28 * (1 - (a - 1.05) / 0.9));
+  if (a <= 1.05) return 0.62 + 0.38 * (1 - (a - 0.35) / 0.7);
+  return Math.max(0.5, 0.62 - 0.08 * (a - 1.05));
 }
