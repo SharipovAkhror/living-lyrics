@@ -1,0 +1,1176 @@
+{
+ "source": "Gemini 3.8 Flash (agy), by ear on the official video audio, captions excluded; 2026-10-20",
+ "clipOffsetApplied": false,
+ "segments": [
+  {
+   "confidence": "high",
+   "end_s": 102.3,
+   "heard": "I was dead",
+   "line": "L1",
+   "start_s": 100.8,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 104.8,
+   "heard": "I came alive",
+   "line": "L2",
+   "start_s": 102.5,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 106.9,
+   "heard": "I once wept",
+   "line": "L3",
+   "start_s": 105,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 109.1,
+   "heard": "Now I smile",
+   "line": "L4",
+   "start_s": 107.1,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 111.6,
+   "heard": "You have lit the fire",
+   "line": "L5",
+   "start_s": 109.3,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 113.8,
+   "heard": "I have come alive",
+   "line": "L6",
+   "start_s": 111.8,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 116,
+   "heard": "Lift me ever higher",
+   "line": "L7",
+   "start_s": 114,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 117.7,
+   "heard": "I have come alive",
+   "line": "L6",
+   "start_s": 116.1,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 119.6,
+   "heard": "I was sane",
+   "line": "L8",
+   "start_s": 117.8,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 121.7,
+   "heard": "You drove me mad",
+   "line": "L9",
+   "start_s": 119.8,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 123.6,
+   "heard": "You put chains",
+   "line": "L10",
+   "start_s": 121.8,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 125.5,
+   "heard": "On my hands",
+   "line": "L11",
+   "start_s": 123.7,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 127.8,
+   "heard": "You have lit the fire",
+   "line": "L5",
+   "start_s": 125.6,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 129.9,
+   "heard": "I have come alive",
+   "line": "L6",
+   "start_s": 127.9,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 132,
+   "heard": "Lift me ever higher",
+   "line": "L7",
+   "start_s": 130,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 134.5,
+   "heard": "I have come alive",
+   "line": "L6",
+   "start_s": 132.1,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 137.9,
+   "heard": "مُرْدِه بُدَمْ زِنْدِه شُدَمْ",
+   "line": "L12",
+   "start_s": 134.6,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 141.2,
+   "heard": "گِرْیِه بُدَمْ خَنْدِه شُدَمْ",
+   "line": "L13",
+   "start_s": 138,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 145.2,
+   "heard": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+   "line": "L14",
+   "start_s": 141.3,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 149.3,
+   "heard": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+   "line": "L15",
+   "start_s": 145.3,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 152.7,
+   "heard": "مُرْدِه بُدَمْ زِنْدِه شُدَمْ",
+   "line": "L12",
+   "start_s": 149.4,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 156,
+   "heard": "گِرْیِه بُدَمْ خَنْدِه شُدَمْ",
+   "line": "L13",
+   "start_s": 152.8,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 160,
+   "heard": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+   "line": "L14",
+   "start_s": 156.1,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 165.2,
+   "heard": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+   "line": "L15",
+   "start_s": 160.1,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 188,
+   "heard": "Gözüm toktur benim",
+   "line": "L16",
+   "start_s": 183.5,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 192.5,
+   "heard": "Canım pektir benim",
+   "line": "L17",
+   "start_s": 188.1,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 196.5,
+   "heard": "Aslan gibi ödüm var",
+   "line": "L18",
+   "start_s": 192.6,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 200.5,
+   "heard": "Parlayan Zühre'yim",
+   "line": "L19",
+   "start_s": 196.6,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 204,
+   "heard": "Dedi değilsin sen divane",
+   "line": "L20",
+   "start_s": 200.6,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 207.5,
+   "heard": "Lâyık değilsin bu eve",
+   "line": "L21",
+   "start_s": 204.1,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 211.5,
+   "heard": "Gittim divane oldum",
+   "line": "L22",
+   "start_s": 207.6,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 215.5,
+   "heard": "bağlandım zincirlere",
+   "line": "L23",
+   "start_s": 211.6,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 219,
+   "heard": "Bir ölüydüm canla doldum",
+   "line": "L24",
+   "start_s": 215.6,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 223,
+   "heard": "ağlar idim gülüş oldum",
+   "line": "L25",
+   "start_s": 219.1,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 227,
+   "heard": "Aşk devleti gelince ben",
+   "line": "L26",
+   "start_s": 223.1,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 232,
+   "heard": "sonsuzluk devleti buldum",
+   "line": "L27",
+   "start_s": 227.1,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 235.8,
+   "heard": "Bir ölüydüm canla doldum",
+   "line": "L24",
+   "start_s": 232.1,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 239.5,
+   "heard": "ağlar idim gülüş oldum",
+   "line": "L25",
+   "start_s": 235.9,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 243.5,
+   "heard": "Aşk devleti gelince ben",
+   "line": "L26",
+   "start_s": 239.6,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 248.5,
+   "heard": "sonsuzluk devleti buldum",
+   "line": "L27",
+   "start_s": 243.6,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 288,
+   "heard": "عَيْنَايَ مَلْآنَةٌ",
+   "line": "L28",
+   "start_s": 286,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 290,
+   "heard": "أَكْرِمْ بِهَا نَظْرَةً",
+   "line": "L29",
+   "start_s": 288.1,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 292,
+   "heard": "ضَوْئِي لَهُ بُعْدٌ",
+   "line": "L30",
+   "start_s": 290.1,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 294.5,
+   "heard": "أُمَثِّلُ الزُّهَرَةَ",
+   "line": "L31",
+   "start_s": 292.1,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 297.5,
+   "heard": "وَمَا أَنَا مَجْنُونٌ",
+   "line": "L32",
+   "start_s": 294.6,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 299.5,
+   "heard": "وَمَا أَنَا مَجْنُونٌ",
+   "line": "L32",
+   "start_s": 297.5,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 301.7,
+   "heard": "أُكَذِّبُ الظُّنُونَ",
+   "line": "L33",
+   "start_s": 299.7,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 303.9,
+   "heard": "أُصِبْتُ بِالْجُنُونِ",
+   "line": "L34",
+   "start_s": 301.9,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 306.5,
+   "heard": "فِي رِحْلَةِ الْفُنُونِ",
+   "line": "L35",
+   "start_s": 304.1,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 309.5,
+   "heard": "فِي رِحْلَةِ الْفُنُونِ",
+   "line": "L35",
+   "start_s": 306.8,
+   "voice": "both",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 312,
+   "heard": "صِرْتُ مُقَيَّدًا",
+   "line": "L36",
+   "start_s": 309.8,
+   "voice": "both",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 314.5,
+   "heard": "وَمَا أَنَا سَكْرَانُ",
+   "line": "L37",
+   "start_s": 312.2,
+   "voice": "both",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 317,
+   "heard": "بَلْ كُنْتُهُ بَعْدُ",
+   "line": "L38",
+   "start_s": 314.7,
+   "voice": "both",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 320.5,
+   "heard": "بِالطَّرَبِ شَبْعَانُ",
+   "line": "L39",
+   "start_s": 317.2,
+   "voice": "both",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 322.8,
+   "heard": "قَدْ قِيلَ لِي خَبِيثٌ",
+   "line": "L40",
+   "start_s": 320.8,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 325,
+   "heard": "وَوَاهِمٌ حَيْرَانُ",
+   "line": "L41",
+   "start_s": 323,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 327.2,
+   "heard": "بَلْ اَحْمَقُ بَلِيدٌ",
+   "line": "L42",
+   "start_s": 325.2,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 329.5,
+   "heard": "مُبْتَعِدٌ تَعْبَانُ",
+   "line": "L43",
+   "start_s": 327.4,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 332.5,
+   "heard": "مُبْتَعِدٌ تَعْبَانُ",
+   "line": "L43",
+   "start_s": 329.8,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 335,
+   "heard": "قِيلَ اَنَا شَمْعَةٌ",
+   "line": "L44",
+   "start_s": 332.8,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 337.5,
+   "heard": "قُطْبًا لِذَا الْمَجْلِسِ",
+   "line": "L45",
+   "start_s": 335.2,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 340,
+   "heard": "وَمَا أَنَا شَيْخٌ",
+   "line": "L46",
+   "start_s": 337.8,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 342.2,
+   "heard": "وَلَا اَنَا مُرِيدٌ",
+   "line": "L47",
+   "start_s": 340.2,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 344.5,
+   "heard": "وَلَا اَنَا زَعِيمٌ",
+   "line": "L48",
+   "start_s": 342.5,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 347,
+   "heard": "أُبْدِي أَوْ أُعِيدْ",
+   "line": "L49",
+   "start_s": 344.8,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 349.5,
+   "heard": "وَلَسْتُ كُلَّ ذَاكَ",
+   "line": "L50",
+   "start_s": 347.2,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 351.8,
+   "heard": "بَلْ خَادِمٌ مُطِيعٌ",
+   "line": "L51",
+   "start_s": 349.8,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 354,
+   "heard": "بَلْ خَادِمٌ مُطِيعٌ",
+   "line": "L51",
+   "start_s": 352,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 356.5,
+   "heard": "بَلْ خَادِمٌ مُطِيعٌ",
+   "line": "L51",
+   "start_s": 354.2,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 363,
+   "heard": "قَدْ كُنْتُ قَبْلَ مَيْتًا",
+   "line": "L52",
+   "start_s": 360,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 366.5,
+   "heard": "فِي ضَحْكَتِي نَبْعٌ وَرِيٌّ",
+   "line": "L53",
+   "start_s": 363.2,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 370,
+   "heard": "مَمْلَكَةَ الْعِشْقِ اَرَى",
+   "line": "L54",
+   "start_s": 366.8,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 373.5,
+   "heard": "مُنَعَّمٌ وَخَالِدٌ",
+   "line": "L55",
+   "start_s": 370.2,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 378,
+   "heard": "گفت که شیخی و سری",
+   "line": "NONE",
+   "start_s": 374,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 383,
+   "heard": "پیشرو و راهبری",
+   "line": "NONE",
+   "start_s": 378.5,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 387,
+   "heard": "شیخ نیم پیش نیم",
+   "line": "NONE",
+   "start_s": 383.5,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 391,
+   "heard": "امر تو را بنده شدم",
+   "line": "NONE",
+   "start_s": 387.2,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 395,
+   "heard": "امر تو را بنده شدم",
+   "line": "NONE",
+   "start_s": 391.2,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 414.5,
+   "heard": "فَأَحْيَا بِالْمُنَى وَأَمُوتُ شَوْقًا",
+   "line": "L58",
+   "start_s": 404,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 424.5,
+   "heard": "فَكَمْ أَحْيَا وَكَمْ أَمُوتُ",
+   "line": "L59",
+   "start_s": 417.5,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 430.5,
+   "heard": "Aşk devleti gelince ben",
+   "line": "L26",
+   "start_s": 425,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 438,
+   "heard": "شُکْرْ کُنَدْ کَاغَذِ تُو",
+   "line": "L60",
+   "start_s": 436,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 440.2,
+   "heard": "اَزْ شِکَرِ بِیحَدِّ تُو",
+   "line": "L61",
+   "start_s": 438.2,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 442.5,
+   "heard": "کَآمَدْ اُو دَرْ بَرِ مَنْ",
+   "line": "L62",
+   "start_s": 440.4,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 445.5,
+   "heard": "بَا وِیْ مَانَنْدِه شُدَمْ",
+   "line": "L63",
+   "start_s": 442.7,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 447.8,
+   "heard": "شُکْرْ کُنَدْ خَاکِ دُژَمْ",
+   "line": "L64",
+   "start_s": 445.8,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 450,
+   "heard": "اَزْ فَلَکْ وُ چَرْخْ بِه خَمْ",
+   "line": "L65",
+   "start_s": 448,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 452.2,
+   "heard": "کَزْ نَظَرْ وُ گَرْدِشِ اُو",
+   "line": "L66",
+   "start_s": 450.2,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 454.8,
+   "heard": "نُورْ پَذِیرَنْدِه شُدَمْ",
+   "line": "L67",
+   "start_s": 452.4,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 458,
+   "heard": "نُورْ پَذِیرَنْدِه شُدَمْ",
+   "line": "L67",
+   "start_s": 455,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 460.5,
+   "heard": "شُکْرْ کُنَدْ چَرْخِ فَلَکْ",
+   "line": "L68",
+   "start_s": 458.5,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 462.7,
+   "heard": "اَزْ مَلِکْ وُ مُلْکْ وُ مَلَکْ",
+   "line": "L69",
+   "start_s": 460.7,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 464.9,
+   "heard": "کَزْ کَرَمْ وُ بَخْشِشِ اُو",
+   "line": "L70",
+   "start_s": 462.9,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 468,
+   "heard": "رَوْشَنْ بَخْشَنْدِه شُدَمْ",
+   "line": "L71",
+   "start_s": 465.1,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 470.5,
+   "heard": "شُکْرْ کُنَدْ عَارِفِ حَقّْ",
+   "line": "L72",
+   "start_s": 468.5,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 472.7,
+   "heard": "کَزْ هَمِه بُرْدِیمْ سَبَقْ",
+   "line": "L73",
+   "start_s": 470.7,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 474.9,
+   "heard": "بَرْ زِبَرِ هَفْتْ طَبَقْ",
+   "line": "L74",
+   "start_s": 472.9,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 477.5,
+   "heard": "اَخْتَرِ رَخْشَنْدِه شُدَمْ",
+   "line": "L75",
+   "start_s": 475.1,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 480.5,
+   "heard": "اَخْتَرِ رَخْشَنْدِه شُدَمْ",
+   "line": "L75",
+   "start_s": 477.7,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 483.5,
+   "heard": "زُهْرِه بُدَمْ مَاهْ شُدَمْ",
+   "line": "L76",
+   "start_s": 481,
+   "voice": "both",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 486.2,
+   "heard": "چَرْخِ دُو صَدْ تَاهْ شُدَمْ",
+   "line": "L77",
+   "start_s": 483.7,
+   "voice": "both",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 489,
+   "heard": "زُهْرِه بُدَمْ مَاهْ شُدَمْ",
+   "line": "L76",
+   "start_s": 486.5,
+   "voice": "both",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 492,
+   "heard": "چَرْخِ دُو صَدْ تَاهْ شُدَمْ",
+   "line": "L77",
+   "start_s": 489.2,
+   "voice": "both",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 494.5,
+   "heard": "یُوسُفْ بُودَمْ",
+   "line": "L78",
+   "start_s": 492.5,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 498,
+   "heard": "زِ کُنُونْ یُوسُفِ زَایَنْدِه شُدَمْ",
+   "line": "L79",
+   "start_s": 494.7,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 500.5,
+   "heard": "اَزْ تُواَمْ اِیْ شُهْرِه قَمَرْ",
+   "line": "L80",
+   "start_s": 498.5,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 502.7,
+   "heard": "دَرْ مَنْ وُ دَرْ خُودْ بِنْگَرْ",
+   "line": "L81",
+   "start_s": 500.7,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 504.9,
+   "heard": "کَزْ اَثَرِ خَنْدِهٔ تُو",
+   "line": "L82",
+   "start_s": 502.9,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 508,
+   "heard": "گُلْشَنِ خَنْدَنْدِه شُدَمْ",
+   "line": "L83",
+   "start_s": 505.1,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 510.5,
+   "heard": "بَاشْ چُو شَطْرَنْجِ رَوَانْ",
+   "line": "L84",
+   "start_s": 508.5,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 512.7,
+   "heard": "خَامُشْ وُ خُودْ جُمْلِه زَبَانْ",
+   "line": "L85",
+   "start_s": 510.7,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 515,
+   "heard": "کَزْ رُخِ آنْ شَاهِ جَهَانْ",
+   "line": "L86",
+   "start_s": 512.9,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 518,
+   "heard": "فَرُّخْ وُ فَرْخُنْدِه شُدَمْ",
+   "line": "L87",
+   "start_s": 515.2,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 521,
+   "heard": "فَرُّخْ وُ فَرْخُنْدِه شُدَمْ",
+   "line": "L87",
+   "start_s": 518.2,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 524.5,
+   "heard": "فَرُّخْ وُ فَرْخُنْدِه شُدَمْ",
+   "line": "L87",
+   "start_s": 521.2,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 528.2,
+   "heard": "قَدْ كُنْتُ قَبْلَ مَيْتًا",
+   "line": "L52",
+   "start_s": 525,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 531.8,
+   "heard": "فِي ضَحْكَتِي نَبْعٌ وَرِيٌّ",
+   "line": "L53",
+   "start_s": 528.4,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 535.5,
+   "heard": "مَمْلَكَةَ الْعِشْقِ اَرَى",
+   "line": "L54",
+   "start_s": 532,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 539.5,
+   "heard": "مُنَعَّمٌ وَخَالِدٌ",
+   "line": "L55",
+   "start_s": 535.7,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 543.5,
+   "heard": "Bir ölüydüm canla doldum",
+   "line": "L24",
+   "start_s": 540,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 547,
+   "heard": "ağlar idim gülüş oldum",
+   "line": "L25",
+   "start_s": 543.8,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 550.8,
+   "heard": "Aşk devleti gelince ben",
+   "line": "L26",
+   "start_s": 547.2,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 554.8,
+   "heard": "sonsuzluk devleti buldum",
+   "line": "L27",
+   "start_s": 551,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 558.5,
+   "heard": "Aşk devleti gelince ben",
+   "line": "L26",
+   "start_s": 555,
+   "voice": "both",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 562.5,
+   "heard": "sonsuzluk devleti buldum",
+   "line": "L27",
+   "start_s": 558.8,
+   "voice": "both",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 566.5,
+   "heard": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+   "line": "L14",
+   "start_s": 563,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 570.2,
+   "heard": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+   "line": "L15",
+   "start_s": 566.8,
+   "voice": "solo",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 574,
+   "heard": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+   "line": "L14",
+   "start_s": 570.5,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 577.8,
+   "heard": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+   "line": "L15",
+   "start_s": 574.2,
+   "voice": "choir",
+   "window": 290
+  },
+  {
+   "confidence": "high",
+   "end_s": 581,
+   "heard": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+   "line": "L15",
+   "start_s": 578,
+   "voice": "both",
+   "window": 290
+  }
+ ]
+}
