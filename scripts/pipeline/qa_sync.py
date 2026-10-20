@@ -235,6 +235,23 @@ def load_word_rule() -> dict:
     rule['choir_attack'] = chosen.get('choir_attack') if chosen.get('choir_attack') in ('spectral', 'envelope') else 'spectral'
     rule['choir_clock'] = chosen.get('choir_clock') if chosen.get('choir_clock') in ('phone', 'vowel') else 'phone'
     rule['attack_fill'] = bool(chosen.get('attack_fill'))
+    roles = {}
+    for line_id, role in (chosen.get('line_roles') or {}).items():
+        if role in ('off', 'or', 'only'):
+            roles[str(line_id)] = role
+    rule['line_roles'] = roles
+    retime = {}
+    raw_retime = chosen.get('retime') if isinstance(chosen.get('retime'), dict) else {}
+    for slug, rows in raw_retime.items():
+        if not isinstance(rows, list):
+            continue
+        kept_rows = []
+        for row in rows:
+            if isinstance(row, dict) and row.get('id') and row.get('by') and isinstance(row.get('words'), list):
+                kept_rows.append(row)
+        if kept_rows:
+            retime[str(slug)] = kept_rows
+    rule['retime'] = retime
     blocked = []
     for name in chosen.get('blocked_primaries') or []:
         if isinstance(name, str) and name:
@@ -245,6 +262,83 @@ def load_word_rule() -> dict:
     if rule['witnesses'] or rule['scopes']:
         rule['require_second'] = False
     return rule
+
+
+def apply_saved_retime(slug: str, lyrics: dict, align_report: dict | None, rule: dict | None,
+                       sig: Signals) -> int:
+    """Write a measured handoff or Latin placement into the report and the lyrics.
+
+    The report keeps the pre-snap start, which is what the proof reads. The
+    published `s` moves onto a peak of height 0.5 within 0.10 s, the same snap
+    align.py uses. The cue does not move. Returns how many lines were rewritten.
+    """
+    rows = ((rule or {}).get('retime') or {}).get(slug) or []
+    if not rows or not align_report:
+        return 0
+    by_id = {line.get('id'): line for line in align_report.get('lines') or []}
+    peaks = onset_peak_times(sig, min_height=PEAK_HEIGHT)
+    changed = 0
+    prev_start = None
+    for _sec, lyr_line in T.vocal_lines(lyrics):
+        row = next((item for item in rows if item.get('id') == lyr_line.get('id')), None)
+        rec = by_id.get(lyr_line.get('id'))
+        if row is None or rec is None:
+            for word in lyr_line.get('words') or []:
+                prev_start = float(word['s'])
+            continue
+        report_words = rec.get('words') or []
+        lyr_words = lyr_line.get('words') or []
+        by_wi = {}
+        for item in row.get('words') or []:
+            if item.get('wi') is None:
+                continue
+            by_wi[int(item['wi'])] = item
+        first = None
+        for wi, (report_word, lyr_word) in enumerate(zip(report_words, lyr_words)):
+            item = by_wi.get(wi)
+            if item is None or item.get('ctc_s') is None or item.get('ctc_e') is None:
+                prev_start = float(lyr_word['s'])
+                continue
+            ctc_s = float(item['ctc_s'])
+            ctc_e = float(item['ctc_e'])
+            report_word['ctc_s'] = round(ctc_s, 3)
+            report_word['ctc_e'] = round(ctc_e, 3)
+            report_word['second_s'] = item.get('second_s')
+            report_word['third_s'] = item.get('third_s')
+            report_word['second_kind'] = item.get('second_kind')
+            report_word['third_kind'] = item.get('third_kind')
+            if row.get('by') == 'phoneme':
+                report_word['phoneme_models'] = {}
+                report_word['vowel_models'] = {}
+            snapped = ctc_s
+            if len(peaks):
+                dist = np.abs(np.asarray(peaks, dtype=float) - ctc_s)
+                peak = float(peaks[int(np.argmin(dist))])
+                if abs(peak - ctc_s) <= 0.10 + 1e-12 and peak > ((prev_start + 0.05) if prev_start is not None else 0.0):
+                    snapped = peak
+            start = T.r2(snapped)
+            end = T.r2(ctc_e)
+            if end < start + 0.04:
+                end = T.r2(start + 0.04)
+            lyr_word['s'] = start
+            lyr_word['e'] = end
+            report_word['s'] = start
+            report_word['e'] = end
+            if report_word.get('roman') and first is None:
+                first = ctc_s
+            prev_start = start
+        # A row that matched no lettered word must not mark the line placed.
+        if first is None:
+            continue
+        rec['status'] = 'good'
+        rec['structure_ok'] = True
+        rec['placed_by'] = row.get('by')
+        rec['ctc_start'] = round(first, 3)
+        lyr_line['placedBy'] = row.get('by')
+        changed += 1
+    if changed:
+        T.enforce_order(lyrics)
+    return changed
 
 
 def apply_rule_times(words: list[dict] | None, lang: str | None, rule: dict | None) -> list[dict] | None:
@@ -917,6 +1011,11 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
         text_same = bool(rec) and rec.get('text') == T.line_text(line)
         align_words = apply_rule_times(_lettered(rec.get('words') if rec else None, len(words)), line.get('lang'), rule)
         phone_role, phone_model = phoneme_for(rule, song, line.get('lang'))
+        override = (rule.get('line_roles') or {}).get(line['id'])
+        if override in ('off', 'or', 'only'):
+            phone_role = override
+            if override == 'off':
+                phone_model = None
         align_words = stamp_phoneme(
             align_words, phone_role, phone_model,
             choir_vowel=bool(choir_vowel and kind == 'choir'))
@@ -1758,7 +1857,7 @@ def main() -> int:
     ap.add_argument('--tag', default='', help='suffix for the output files: qa-sync-<tag>.{md,json}')
     ap.add_argument('--baseline', default=None, help='an earlier qa-sync json to compare with')
     ap.add_argument('--fix', action='store_true', help='shift lines where the evidence is strong and save lyrics.json')
-    ap.add_argument('--apply', action='store_true', help='set timing-draft and song.json timing from the proof; does not change word text or times')
+    ap.add_argument('--apply', action='store_true', help='set timing-draft and song.json timing from the proof; does not change word text. Word times change only when the measurement kept a handoff or a Latin placement')
     ap.add_argument('--strict', action='store_true', help='low confidence also fails')
     ap.add_argument('--selftest', action='store_true', help='measure the detector on artificially shifted lines')
     ap.add_argument('--max-lag', type=float, default=MAX_LAG, help='search range, ± seconds (default 2)')
@@ -1775,6 +1874,14 @@ def main() -> int:
         print(f'ВНИМАНИЕ: нет вокального стема, проверяю по полному миксу {audio.name}: атаки инструментов мешают')
     sig = Signals(load_audio(audio, F.SR))
     lines = T.vocal_lines(lyrics)
+    align_path = work_dir(slug) / 'align-report.json'
+    use_report = args.lyrics is None and align_path.exists()
+    align_report = json.loads(align_path.read_text(encoding='utf-8')) if use_report else None
+    rule = load_word_rule()
+    rule['song'] = slug
+    if align_report is not None and apply_saved_retime(slug, lyrics, align_report, rule, sig):
+        if args.apply:
+            align_path.write_text(json.dumps(align_report, ensure_ascii=False, indent=1), encoding='utf-8')
 
     groups = [sec['id'] for sec, _ in lines]
     word_lists = [line['words'] for _, line in lines]
@@ -1818,17 +1925,12 @@ def main() -> int:
     summary = summarise(results)
     # The proof uses the alignment report only for the lyrics align.py just wrote. A check of an
     # older copy (--lyrics … --tag before) must not borrow that report.
-    align_path = work_dir(slug) / 'align-report.json'
-    use_report = args.lyrics is None and align_path.exists()
-    align_report = json.loads(align_path.read_text(encoding='utf-8')) if use_report else None
     proof = None
     if use_report or args.apply:
         cue_path = ROOT / 'docs' / 'analysis' / slug / 'cues.json'
         cues = {}
         if cue_path.exists():
             cues = {r['line']: r for r in json.loads(cue_path.read_text(encoding='utf-8')) if r.get('line')}
-        rule = load_word_rule()
-        rule['song'] = slug
         proof = build_proof(sig, lines, results, align_report, cues, word_rule=rule)
     if args.apply and proof is not None and song.get('timing', {}).get('status') == 'verified':
         print('song.json: timing.status = verified — qa_sync --apply ничего не меняет')

@@ -45,13 +45,17 @@ word chance must stay at or under 15 %, and the same line measurement on the
 stamped clocks must stay at or under 5 % and prove strictly more lines. The
 search only proposes the stamp. The measurement after the stamp is the judge.
 A mismatch, or any error in that search, publishes the unstamped rule. The
-phoneme clock does not place a line and does not refute a word. A choir
-feature (the level-rise envelope, or the vowel nucleus) is kept only when the
-choir sample itself stays inside those caps and the solo lines do not change.
+witness role does not place a line and does not refute a word. A separate
+pass may hand a refuted line to a later placer, and may place a still-open
+Latin line from the phoneme aligner. Each of those is kept only when proved
+lines rise and every gate still holds. A choir feature (the level-rise
+envelope, or the vowel nucleus) is kept only when the choir sample itself
+stays inside those caps and the solo lines do not change.
 """
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import sys
 
@@ -59,7 +63,7 @@ import numpy as np
 
 import placement as P
 import qa_sync as Q
-from common import ROOT, load_audio, vocal_stem, work_dir
+from common import ROOT, load_audio, song_dir, vocal_stem, work_dir
 
 LIMIT = 0.15
 SHIFTS = (0.15, 0.25, 0.40)
@@ -340,6 +344,34 @@ def _ru(x: float | None, nd: int = 3) -> str:
     return f'{float(x):.{nd}f}'.replace('.', ',')
 
 
+def _phoneme_clock(word: dict) -> float | None:
+    """First completed espeak model's start. A missing key is a model that did not run."""
+    table = word.get('phoneme_models') or {}
+    for name in ('xlsr-53-espeak', 'lv-60-espeak'):
+        if name not in table:
+            continue
+        value = table.get(name)
+        return None if value is None else float(value)
+    return None
+
+
+def _report_index(report: dict) -> tuple[dict, dict, dict]:
+    """Next cue, report order and the raw line, keyed by id.
+
+    The next cue is the following line's cue, not the next cue that exists.
+    A line with no cue leaves the previous line uncapped.
+    """
+    raw_lines = report.get('lines') or []
+    next_by: dict = {}
+    upcoming = None
+    for raw in reversed(raw_lines):
+        next_by[raw.get('id')] = upcoming
+        upcoming = None if raw.get('cue_start') is None else float(raw['cue_start'])
+    order = {raw.get('id'): index for index, raw in enumerate(raw_lines)}
+    by_id = {raw.get('id'): raw for raw in raw_lines}
+    return next_by, order, by_id
+
+
 def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = None,
                  only_good: bool = True) -> list[dict]:
     """Word rows in report order. `only_good` keeps placed lines, which is the word-chance pool.
@@ -347,9 +379,12 @@ def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = No
     The line measurement asks for every line that has a pre-snap start, including
     ones that were not placed, so peak ownership can cross them the way qa does.
     `placed` records the original status. A line with no lettered start is left out.
+    `wi` is the index in the report word list, punctuation included. `i` stays the
+    index among lettered words. Raw placer clocks stay beside the witness slots.
     """
     lines = []
     timing = {'bias': bias or {}, 'adopt': adopt or {}}
+    next_by, order, _by_id = _report_index(report)
     for line in report.get('lines') or []:
         good = line.get('status') == 'good'
         if only_good and not good:
@@ -357,13 +392,13 @@ def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = No
         words = []
         adjusted = Q.apply_rule_times(line.get('words') or [], line.get('lang'), timing) or []
         kept = []
-        for word in adjusted:
+        for wi, word in enumerate(adjusted):
             if not word.get('roman') or word.get('ctc_s') is None:
                 continue
-            kept.append(word)
+            kept.append((wi, word))
         prev_span = None
         prev_roman = None
-        for index, word in enumerate(kept):
+        for index, (wi, word) in enumerate(kept):
             span = None
             if word.get('ctc_e') is not None:
                 span = float(word['ctc_e']) - float(word['ctc_s'])
@@ -378,14 +413,19 @@ def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = No
                 'line': line['id'],
                 'w': word.get('w') or '',
                 'i': index,
+                'wi': wi,
                 'n': len(kept),
                 'prev_span': prev_span,
                 'prev_roman': prev_roman,
                 's': None if word.get('s') is None else float(word['s']),
                 'second_kind': word.get('second_kind'),
                 'third_kind': word.get('third_kind'),
-                'phones': word.get('phoneme_models') or {},
-                'vowels': word.get('vowel_models') or {},
+                'phones': dict(word.get('phoneme_models') or {}),
+                'vowels': dict(word.get('vowel_models') or {}),
+                'clock_mms': None if word.get('clock_mms') is None else float(word['clock_mms']),
+                'clock_second': None if word.get('clock_second') is None else float(word['clock_second']),
+                'clock_stable': None if word.get('clock_stable') is None else float(word['clock_stable']),
+                'clock_phoneme': _phoneme_clock(word),
             })
             prev_span = span
             prev_roman = word.get('roman')
@@ -403,6 +443,9 @@ def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = No
             'placed_by': placed_by,
             'cue_start': None if line.get('cue_start') is None else float(line['cue_start']),
             'ctc_start': None if line.get('ctc_start') is None else float(line['ctc_start']),
+            'section': line.get('section'),
+            'next_cue': next_by.get(line['id']),
+            'order': order.get(line['id'], 0),
             'span': (min(w['t'] for w in words) - 0.05, end + 0.05),
             'words': words,
         })
@@ -1139,7 +1182,7 @@ def choose_k(rows: list[dict]) -> dict:
     return out
 
 
-PRIMARY_FAMILIES = ('mms', 'stable-ts', 'second')
+PRIMARY_FAMILIES = ('mms', 'stable-ts', 'second', 'phoneme')
 
 
 def measure_primary_tables(per_song: list[dict], modes: dict, refute: dict) -> dict[str, list[dict]]:
@@ -1576,6 +1619,411 @@ def _empty_fill(base_proved: int, why: str) -> dict:
     }
 
 
+def _modes_of(scopes: list[dict]) -> dict:
+    return {
+        (row['song'], row['lang']): row['witnesses']
+        for row in scopes if row.get('witnesses') in ('one', 'two')
+    }
+
+
+def _snapshot(per_song: list[dict]) -> list[tuple]:
+    return [(song, copy.deepcopy(song['all_lines'])) for song in per_song]
+
+
+def _refresh_placed(song: dict) -> None:
+    song['lines'] = [line for line in song['all_lines'] if line.get('placed')]
+
+
+def _restore(per_song: list[dict], snap: list[tuple]) -> None:
+    for song, lines in snap:
+        song['all_lines'] = lines
+        _refresh_placed(song)
+
+
+def _remeasure(per_song: list[dict], refute: dict) -> tuple:
+    """Scopes and the line grid on the lines as they stand. The refute cut is not retuned."""
+    scope_rows = measure_scope_rows(per_song)
+    scopes, scopes_ok = assign_scopes(scope_rows)
+    modes = _modes_of(scopes)
+    tables = measure_primary_tables(per_song, modes, refute)
+    picked = choose_with_primaries(tables)
+    return scopes, scopes_ok, modes, tables, picked
+
+
+def _rises(scopes_ok: bool, picked: dict, baseline_n: int) -> bool:
+    if not scopes_ok or not picked.get('within_limit'):
+        return False
+    return int(picked.get('proved') or 0) > int(baseline_n)
+
+
+def _section_bounds(slug: str) -> dict[str, tuple[float, float]]:
+    """Vocal section id to (start, end). Missing lyrics leaves the section check off."""
+    path = song_dir(slug) / 'lyrics.json'
+    if not path.exists():
+        return {}
+    try:
+        lyrics = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    out = {}
+    for sec in lyrics.get('sections') or []:
+        if sec.get('kind') != 'vocal' or sec.get('id') is None:
+            continue
+        if sec.get('start') is None or sec.get('end') is None:
+            continue
+        out[str(sec['id'])] = (float(sec['start']), float(sec['end']))
+    return out
+
+
+def _retouch_spans(line: dict) -> None:
+    prev_span = None
+    prev_roman = None
+    words = line.get('words') or []
+    for word in words:
+        word['prev_span'] = prev_span
+        word['prev_roman'] = prev_roman
+        word['n'] = len(words)
+        if word.get('ctc_e') is None:
+            prev_span = None
+        else:
+            prev_span = float(word['ctc_e']) - float(word['t'])
+        prev_roman = word.get('roman')
+    if words:
+        end = max(word['ctc_e'] if word.get('ctc_e') is not None else word['t'] for word in words)
+        line['span'] = (min(float(word['t']) for word in words) - 0.05, float(end) + 0.05)
+        line['ctc_start'] = float(words[0]['t'])
+
+
+def _write_placer(line: dict, proposal: dict) -> bool:
+    """Replace the lettered starts. A phoneme placer is not left as its own witness."""
+    starts = proposal.get('starts') or []
+    ends = proposal.get('ends') or []
+    witnesses = proposal.get('witnesses') or []
+    words = line.get('words') or []
+    if len(words) != len(starts) or len(words) != len(ends):
+        return False
+    if witnesses and len(witnesses) != len(words):
+        return False
+    for index, word in enumerate(words):
+        word['t'] = float(starts[index])
+        word['ctc_e'] = float(ends[index])
+        if witnesses:
+            second, second_kind, third, third_kind = witnesses[index]
+            word['second'] = None if second is None else float(second)
+            word['third'] = None if third is None else float(third)
+            word['second_kind'] = second_kind
+            word['third_kind'] = third_kind
+        if proposal.get('by') == 'phoneme':
+            word['phones'] = {}
+            word['vowels'] = {}
+            word.pop('phoneme', None)
+            word.pop('phoneme_role', None)
+    line['placed'] = True
+    line['placed_by'] = proposal.get('by')
+    _retouch_spans(line)
+    return True
+
+
+def _retime_row(slug: str, line: dict, proposal: dict) -> dict:
+    witnesses = proposal.get('witnesses') or []
+    words = []
+    for index, word in enumerate(line.get('words') or []):
+        second = third = second_kind = third_kind = None
+        if index < len(witnesses):
+            second, second_kind, third, third_kind = witnesses[index]
+        words.append({
+            'wi': word.get('wi'),
+            'ctc_s': round(float(proposal['starts'][index]), 3),
+            'ctc_e': round(float(proposal['ends'][index]), 3),
+            'second_s': None if second is None else float(second),
+            'third_s': None if third is None else float(third),
+            'second_kind': second_kind,
+            'third_kind': third_kind,
+        })
+    return {'song': slug, 'id': line.get('id'), 'by': proposal.get('by'), 'words': words}
+
+
+def _group_retime(moves: list[dict]) -> dict[str, list[dict]]:
+    out: dict[str, list[dict]] = {}
+    for row in moves:
+        item = {key: value for key, value in row.items() if key != 'song'}
+        out.setdefault(str(row.get('song') or ''), []).append(item)
+    return out
+
+
+def _apply_handoffs(per_song: list[dict], refute: dict, sections: dict, allow_phoneme: bool) -> list[dict]:
+    moves = []
+    for song in per_song:
+        peaks = song['sets'][(WITNESS_HEIGHT, False)]
+        bounds = sections.get(song['slug']) or {}
+        for line in song['all_lines']:
+            if not line.get('placed') or line.get('group') not in ('solo', 'choir'):
+                continue
+            proposal = P.handoff_proposal(
+                line, line.get('next_cue'), peaks, refute,
+                bounds.get(line.get('section')), allow_phoneme=allow_phoneme)
+            if not proposal or not _write_placer(line, proposal):
+                continue
+            moves.append(_retime_row(song['slug'], line, proposal))
+        _refresh_placed(song)
+    return moves
+
+
+def _latin_words(rec: dict, starts: list) -> list[tuple] | None:
+    """Lettered words whose phoneme start exists. One missing lettered start refuses the line."""
+    out = []
+    for wi, word in enumerate(rec.get('words') or []):
+        if not word.get('roman'):
+            continue
+        start = starts[wi] if wi < len(starts) else None
+        if start is None:
+            return None
+        out.append((wi, word, float(start)))
+    return out or None
+
+
+def _line_from_report(slug: str, rec: dict, words_src: list[tuple], order: int, next_cue) -> dict:
+    words = []
+    prev_span = None
+    prev_roman = None
+    for index, (wi, word, start) in enumerate(words_src):
+        item = {
+            't': float(start),
+            'ctc_e': None,
+            'second': None if word.get('second_s') is None else float(word['second_s']),
+            'third': None if word.get('third_s') is None else float(word['third_s']),
+            'roman': word.get('roman') or '',
+            'group': rec.get('group') or 'solo',
+            'lang': rec.get('lang') or '?',
+            'line': rec['id'],
+            'w': word.get('w') or '',
+            'i': index,
+            'wi': wi,
+            'n': len(words_src),
+            'prev_span': prev_span,
+            'prev_roman': prev_roman,
+            's': None if word.get('s') is None else float(word['s']),
+            'second_kind': word.get('second_kind'),
+            'third_kind': word.get('third_kind'),
+            'phones': {},
+            'vowels': {},
+            'clock_mms': None if word.get('clock_mms') is None else float(word['clock_mms']),
+            'clock_second': None if word.get('clock_second') is None else float(word['clock_second']),
+            'clock_stable': None if word.get('clock_stable') is None else float(word['clock_stable']),
+            'clock_phoneme': float(start),
+        }
+        words.append(item)
+        prev_roman = item['roman']
+    return {
+        'id': rec['id'],
+        'lang': rec.get('lang') or '?',
+        'group': rec.get('group') or 'solo',
+        'song': slug,
+        'placed': False,
+        'placed_by': None,
+        'cue_start': None if rec.get('cue_start') is None else float(rec['cue_start']),
+        'ctc_start': None,
+        'section': rec.get('section'),
+        'next_cue': next_cue,
+        'order': order,
+        'span': (words[0]['t'] - 0.05, words[-1]['t'] + 0.05) if words else (0.0, 0.0),
+        'words': words,
+    }
+
+
+def _apply_latin(per_song: list[dict], sections: dict) -> list[dict]:
+    """Place still-open Latin lines from the aligner's stored phoneme starts."""
+    moves = []
+    for song in per_song:
+        proposals = song.get('latin_place') or {}
+        if not proposals:
+            continue
+        by_id = {line['id']: line for line in song['all_lines']}
+        report_by = song.get('report_by_id') or {}
+        next_by = song.get('next_by_id') or {}
+        order_by = song.get('order_by_id') or {}
+        bounds = sections.get(song['slug']) or {}
+        pending = []
+        for line_id, spec in proposals.items():
+            rec = report_by.get(line_id)
+            if not isinstance(spec, dict) or rec is None:
+                continue
+            if rec.get('lang') != 'la' or rec.get('status') == 'good':
+                continue
+            if rec.get('group') not in ('solo', 'choir'):
+                continue
+            existing = by_id.get(line_id)
+            if existing is not None and existing.get('placed'):
+                continue
+            words_src = _latin_words(rec, list(spec.get('starts') or []))
+            if not words_src:
+                continue
+            lettered = [start for _wi, _word, start in words_src]
+            replace = existing is None or len(existing.get('words') or []) != len(words_src)
+            if replace:
+                target = _line_from_report(
+                    song['slug'], rec, words_src, int(order_by.get(line_id) or 0), next_by.get(line_id))
+            else:
+                target = existing
+            proposal = P.consider_phoneme_place(
+                lettered, target.get('cue_start'), target.get('next_cue'), bounds.get(rec.get('section')))
+            if not proposal:
+                continue
+            proposal['witnesses'] = [
+                P.witness_slots('phoneme', word.get('clock_mms'), word.get('clock_second'), word.get('clock_stable'))
+                for word in target.get('words') or []
+            ]
+            if not _write_placer(target, proposal):
+                continue
+            if replace:
+                if existing is not None:
+                    song['all_lines'] = [
+                        line for line in song['all_lines'] if line.get('id') != line_id
+                    ]
+                pending.append(target)
+            moves.append(_retime_row(song['slug'], target, proposal))
+        if pending:
+            song['all_lines'].extend(pending)
+            song['all_lines'].sort(key=lambda line: int(line.get('order') or 0))
+        _refresh_placed(song)
+    return moves
+
+
+def _measure_placement(per_song: list[dict], refute: dict, baseline_n: int) -> tuple:
+    """Handoff, then the Latin phoneme placer. Each stays only when the gates rise.
+
+    A phoneme family still over 5 % is not published: handoff is retried without
+    it, and a blocked Latin step is dropped whole. The refute cut is the one
+    already chosen. Returns retime rows and, when something was kept, the
+    measurement that matches the lines left in place.
+    """
+    origin = _snapshot(per_song)
+    stable = origin
+    sections = {song['slug']: _section_bounds(song['slug']) for song in per_song}
+    retime: dict[str, list[dict]] = {}
+    kept = None
+    base_n = int(baseline_n)
+
+    def adopt(scopes, modes, tables, picked, moves) -> None:
+        nonlocal kept, base_n, stable
+        kept = (scopes, modes, tables, picked)
+        base_n = int(picked.get('proved') or 0)
+        for slug, rows in _group_retime(moves).items():
+            retime.setdefault(slug, []).extend(rows)
+        stable = _snapshot(per_song)
+
+    try:
+        moves = _apply_handoffs(per_song, refute, sections, True)
+        if not moves:
+            print('передача: опровергнутых строк для следующего постановщика нет', flush=True)
+        else:
+            scopes, ok, modes, tables, picked = _remeasure(per_song, refute)
+            blocked = set(picked.get('blocked_primaries') or [])
+            if _rises(ok, picked, baseline_n) and 'phoneme' not in blocked:
+                adopt(scopes, modes, tables, picked, moves)
+                print(f"передача: оставлена, доказано {picked.get('proved')} против {baseline_n}", flush=True)
+            else:
+                _restore(per_song, origin)
+                why = 'фонемный постановщик выше 5 %' if 'phoneme' in blocked else 'порог не удержан'
+                moves = _apply_handoffs(per_song, refute, sections, False)
+                if not moves:
+                    print(f'передача не оставлена ({why})', flush=True)
+                else:
+                    scopes, ok, modes, tables, picked = _remeasure(per_song, refute)
+                    blocked = set(picked.get('blocked_primaries') or [])
+                    if _rises(ok, picked, baseline_n) and 'phoneme' not in blocked:
+                        adopt(scopes, modes, tables, picked, moves)
+                        print(f"передача без фонемы: оставлена ({why}), доказано {picked.get('proved')}", flush=True)
+                    else:
+                        _restore(per_song, origin)
+                        print(f'передача не оставлена ({why})', flush=True)
+        before_latin = _snapshot(per_song)
+        latin_moves = _apply_latin(per_song, sections)
+        if latin_moves:
+            scopes, ok, modes, tables, picked = _remeasure(per_song, refute)
+            blocked = set(picked.get('blocked_primaries') or [])
+            if _rises(ok, picked, base_n) and 'phoneme' not in blocked:
+                was = base_n
+                adopt(scopes, modes, tables, picked, latin_moves)
+                print(f"латынь: поставлена, доказано {picked.get('proved')} против {was}", flush=True)
+            else:
+                _restore(per_song, before_latin)
+                print(
+                    f"латынь не оставлена: доказано {picked.get('proved')} против {base_n}, "
+                    f"within_limit {bool(picked.get('within_limit'))}, "
+                    f"фонема исключена {'phoneme' in blocked}",
+                    flush=True,
+                )
+        else:
+            print('латынь: предложений нет', flush=True)
+    except Exception as e:
+        _restore(per_song, stable)
+        print(f'постановка не допущена ({e.__class__.__name__}: {e})', flush=True)
+        return (retime, kept) if kept is not None else ({}, None)
+    if kept is None:
+        return retime, None
+    return retime, kept
+
+
+def _accept_stamp(per_song: list[dict], decision: dict, modes: dict, refute: dict,
+                  baseline_picked: dict) -> tuple:
+    """Official remeasure of a phoneme stamp. A per-line mix remeasures word chance too.
+
+    The pair stamp does not. A mix that misses either gate is cleared and the
+    pair stamp is measured again, on the modes from before the mix. If that
+    also misses, the stamp is dropped and the unstamped rule stands.
+    """
+    import phoneme_choice as Phone
+
+    Phone.apply(per_song, decision)
+    base_n = int(baseline_picked.get('proved') or 0)
+    overrides = dict(decision.get('line_roles') or {})
+    measure_modes = modes
+    new_scopes = None
+    if overrides:
+        scope_rows = measure_scope_rows(per_song)
+        trial_scopes, trial_ok = assign_scopes(scope_rows)
+        if not trial_ok:
+            decision['line_roles'] = {}
+            decision['cover_rejected'] = 'проход слова смеси выше 15 %'
+            Phone.apply(per_song, decision)
+            overrides = {}
+        else:
+            measure_modes = _modes_of(trial_scopes)
+            new_scopes = trial_scopes
+    tables = measure_primary_tables(per_song, measure_modes, refute)
+    stamped = choose_with_primaries(tables)
+    stamped_n = int(stamped.get('proved') or 0)
+    ok = bool(stamped.get('within_limit')) and stamped_n > base_n
+    if overrides and not ok:
+        decision['line_roles'] = {}
+        decision['cover_rejected'] = (
+            f'покрытие не удержало порог: доказано {stamped_n} против {base_n}, '
+            f'within_limit {bool(stamped.get("within_limit"))}'
+        )
+        Phone.apply(per_song, decision)
+        tables = measure_primary_tables(per_song, modes, refute)
+        stamped = choose_with_primaries(tables)
+        stamped_n = int(stamped.get('proved') or 0)
+        ok = bool(stamped.get('within_limit')) and stamped_n > base_n
+        new_scopes = None
+    decision['baseline_proved'] = base_n
+    decision['official_proved'] = stamped_n
+    decision['official_chance'] = stamped.get('chance')
+    if ok:
+        decision['kept'] = True
+        return True, tables, stamped, new_scopes
+    Phone.clear(per_song)
+    reason = (
+        f'официальный пересчёт: доказано {stamped_n} против {base_n}, '
+        f'within_limit {bool(stamped.get("within_limit"))}'
+    )
+    if decision.get('cover_rejected'):
+        reason = f"{decision['cover_rejected']}; {reason}"
+    _drop_phoneme_stamp(decision, reason)
+    return False, None, None, None
+
+
 def build_payload(slugs: list[str]) -> dict:
     import features as F
 
@@ -1597,15 +2045,21 @@ def build_payload(slugs: list[str]) -> dict:
             raise SystemExit(f'{slug}: нет вокального стема')
         report = json.loads(report_path.read_text(encoding='utf-8'))
         sig = Q.Signals(load_audio(audio, F.SR))
+        next_by, order_by, report_by = _report_index(report)
         all_lines = placed_lines(report, bias, adopt, only_good=False)
         for line in all_lines:
             line['song'] = slug
         lines = [line for line in all_lines if line.get('placed')]
+        phone_summary = (report.get('summary') or {}).get('phoneme') or {}
         per_song.append({
             'slug': slug, 'lines': lines, 'all_lines': all_lines,
             'sets': _peak_sets(sig), 'base': Q.onset_peak_times(sig),
             'envelope_peaks': Q.envelope_peak_times(sig, min_height=WITNESS_HEIGHT),
             'use_choir_envelope': False,
+            'latin_place': phone_summary.get('latin_place') or {},
+            'report_by_id': report_by,
+            'next_by_id': next_by,
+            'order_by_id': order_by,
         })
     print(f'атака: пики {len(per_song)} песен', flush=True)
     # The pooled grid stays in the file as context. The decision is the per-slice
@@ -1624,6 +2078,11 @@ def build_payload(slugs: list[str]) -> dict:
     baseline_tables = measure_primary_tables(per_song, modes, refute)
     baseline_picked = choose_with_primaries(baseline_tables)
     print(f"атака: без фонемы доказано {baseline_picked.get('proved')}", flush=True)
+    placement_retime, placed_kept = _measure_placement(
+        per_song, refute, int(baseline_picked.get('proved') or 0))
+    if placed_kept is not None:
+        scopes, modes, baseline_tables, baseline_picked = placed_kept
+        scopes_ok = True
     primary_tables = baseline_tables
     picked = baseline_picked
     decision: dict = {
@@ -1641,26 +2100,17 @@ def build_payload(slugs: list[str]) -> dict:
             flush=True,
         )
         if decision.get('admitted'):
-            Phone.apply(per_song, decision)
             print('атака: официальный пересчёт со штампом', flush=True)
-            stamped_tables = measure_primary_tables(per_song, modes, refute)
-            stamped = choose_with_primaries(stamped_tables)
-            base_n = int(baseline_picked.get('proved') or 0)
-            stamped_n = int(stamped.get('proved') or 0)
-            decision['baseline_proved'] = base_n
-            decision['official_proved'] = stamped_n
-            decision['official_chance'] = stamped.get('chance')
-            if stamped.get('within_limit') and stamped_n > base_n:
-                decision['kept'] = True
+            kept_stamp, stamped_tables, stamped, new_scopes = _accept_stamp(
+                per_song, decision, modes, refute, baseline_picked)
+            if kept_stamp:
                 primary_tables = stamped_tables
                 picked = stamped
+                if new_scopes is not None:
+                    scopes = new_scopes
+                    modes = _modes_of(scopes)
+                    scopes_ok = True
             else:
-                Phone.clear(per_song)
-                _drop_phoneme_stamp(
-                    decision,
-                    f'официальный пересчёт: доказано {stamped_n} против {base_n}, '
-                    f'within_limit {bool(stamped.get("within_limit"))}',
-                )
                 primary_tables = baseline_tables
                 picked = baseline_picked
         else:
@@ -1753,6 +2203,8 @@ def build_payload(slugs: list[str]) -> dict:
         'choir_attack': choir_attack,
         'choir_clock': choir_clock,
         'attack_fill': bool(fill_report.get('kept')),
+        'line_roles': dict(decision.get('line_roles') or {}) if decision.get('kept') else {},
+        'retime': placement_retime,
     }
     density = []
     for song in per_song:

@@ -1771,8 +1771,11 @@ def main() -> None:
                        'cue_tol': Q.CUE_TOL, 'cue_lead': CUE_LEAD, 'cue_tail': CUE_TAIL, 'cue_overlap': CUE_OVERLAP},
         'summary': summary, 'sections': section_notes, 'lines': report_lines,
     }
-    # Phoneme clocks are a witness, not a placer. A failure here must not drop
-    # the Whisper clocks or the align report.
+    # Phoneme clocks are a witness. The same pass may propose starts for
+    # still-unplaced Latin lines under summary.phoneme.latin_place. Those
+    # starts are not written into the lyrics here: the prove job keeps a
+    # placement only when proved lines rise and the gates still hold.
+    # A failure must not drop the Whisper clocks or the align report.
     try:
         import phoneme
         phoneme.measure(x, report)

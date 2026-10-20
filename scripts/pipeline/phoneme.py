@@ -273,6 +273,20 @@ def _eligible(line: dict) -> bool:
     return line.get('status') == 'good' and line.get('group') in ('solo', 'choir')
 
 
+def _latin_open(line: dict) -> bool:
+    """A Latin solo or choir line the first pass did not place.
+
+    The phoneme model places it only as a proposal. It is not a witness of
+    that line, and an MMS adapter is not used: this model does not share the
+    MMS contour.
+    """
+    return (
+        str(line.get('lang') or '') == 'la'
+        and line.get('status') != 'good'
+        and line.get('group') in ('solo', 'choir')
+    )
+
+
 def _load(model_id: str):
     """CTC model and its vocab. The processor is not loaded: its tokenizer imports phonemizer."""
     import json
@@ -319,7 +333,9 @@ def measure(x, report: dict, budget_s_value: float | None = None) -> dict:
 
 
 def _measure(x: np.ndarray, report: dict, budget: float, summary: dict) -> None:
-    lines = [line for line in (report.get('lines') or []) if _eligible(line)]
+    raw_lines = list(report.get('lines') or [])
+    lines = [line for line in raw_lines if _eligible(line)]
+    latin_lines = [line for line in raw_lines if _latin_open(line)]
     no_voice = sorted({str(line.get('lang') or '?') for line in lines if voice_for(line.get('lang')) is None})
     summary['no_voice'] = no_voice
     if not espeak_available():
@@ -346,7 +362,7 @@ def _measure(x: np.ndarray, report: dict, budget: float, summary: dict) -> None:
                 f'оценка {estimate:.0f} с не входит в остаток {remaining:.0f} с')
             summary['models'].append(_skipped(spec, why))
             continue
-        row, elapsed = _run_model(spec, x, lines, cache, summary, deadline)
+        row, elapsed = _run_model(spec, x, lines, cache, summary, deadline, latin_lines)
         summary['models'].append(row)
         # The next model runs only after a finished one. An unfinished model is
         # not measured, and its elapsed time is not a budget estimate.
@@ -361,8 +377,42 @@ def _skipped(spec: dict, why: str) -> dict:
     }
 
 
+def _place_latin(spec: dict, x: np.ndarray, latin_lines: list[dict], cache: dict,
+                 summary: dict, deadline: float, model, extractor, vocab, blank) -> None:
+    """Starts for still-open Latin lines. Not written onto phoneme_models.
+
+    The prove job decides whether a start becomes the placer. A failure here
+    does not drop the witness clocks of the lines that were already placed.
+    """
+    placed = summary.setdefault('latin_place', {})
+    if not latin_lines or model is None:
+        return
+    duration = len(x) / float(SR)
+    name = spec['name']
+    for line in latin_lines:
+        if time.monotonic() > deadline:
+            print(f'фонемы {name}: латинская постановка остановлена бюджетом', flush=True)
+            break
+        try:
+            times = _line_clocks(x, line, duration, vocab, blank, model, extractor, cache, summary)
+        except Exception as e:
+            print(f'фонемы {name}: латынь {line.get("id")} ({e.__class__.__name__}: {e})', flush=True)
+            continue
+        starts = []
+        words = line.get('words') or []
+        for word, pair in zip(words, times):
+            if not word.get('roman'):
+                starts.append(None)
+                continue
+            start = pair[0]
+            starts.append(None if start is None else float(start))
+        while len(starts) < len(words):
+            starts.append(None)
+        placed[line['id']] = {'model': name, 'starts': starts}
+
+
 def _run_model(spec: dict, x: np.ndarray, lines: list[dict], cache: dict,
-               summary: dict, deadline: float) -> tuple[dict, float]:
+               summary: dict, deadline: float, latin_lines: list[dict] | None = None) -> tuple[dict, float]:
     started = time.monotonic()
     name = spec['name']
     clocks: dict[str, list[tuple[float | None, float | None]]] = {}
@@ -399,6 +449,14 @@ def _run_model(spec: dict, x: np.ndarray, lines: list[dict], cache: dict,
         if attempted and errors * 2 > attempted:
             complete = False
             error = error or 'ошибки больше чем на половине строк'
+        if complete and not summary.get('latin_done'):
+            try:
+                _place_latin(
+                    spec, x, list(latin_lines or []), cache, summary, deadline,
+                    model, extractor, vocab, blank)
+            except Exception as e:
+                print(f'фонемы {name}: латинская постановка не записана ({e.__class__.__name__}: {e})', flush=True)
+            summary['latin_done'] = True
     except Exception as e:
         complete = False
         error = f'{e.__class__.__name__}: {e}'

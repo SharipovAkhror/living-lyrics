@@ -43,11 +43,11 @@ AGREE = 0.10
 
 
 def primary_family(name: str | None) -> str:
-    """`mms`, `stable-ts` or `second`. Every MMS window is the MMS clock."""
+    """`mms`, `stable-ts`, `phoneme` or `second`. Every MMS window is the MMS clock."""
     if not name or str(name).startswith('mms'):
         return 'mms'
-    if name == 'stable-ts':
-        return 'stable-ts'
+    if name in ('stable-ts', 'phoneme'):
+        return name
     return 'second'
 
 
@@ -165,7 +165,91 @@ def witness_slots(placed_by: str | None, mms: float | None, second: float | None
         return mms, 'mms', second, 'whisperx'
     if family == 'second':
         return mms, 'mms', stable, 'stable-ts'
+    if family == 'phoneme':
+        # The phoneme placer is not a witness of itself. MMS and stable-ts, or the second clock.
+        if stable is not None:
+            return mms, 'mms', stable, 'stable-ts'
+        return mms, 'mms', second, 'whisperx'
     return second, 'whisperx', stable, 'stable-ts'
+
+
+# A refuted line may move to a later placer. Phoneme is last and only when its clock exists.
+HANDOFF_AFTER = {
+    'mms': ('stable-ts', 'second', 'phoneme'),
+    'stable-ts': ('second', 'phoneme'),
+    'second': ('phoneme',),
+    'phoneme': (),
+}
+
+
+def _placer_clock(word: dict, name: str) -> float | None:
+    key = {
+        'stable-ts': 'clock_stable',
+        'second': 'clock_second',
+        'phoneme': 'clock_phoneme',
+    }.get(name, 'clock_mms')
+    value = word.get(key)
+    return None if value is None else float(value)
+
+
+def handoff_proposal(line: dict, next_cue: float | None, peaks, refute: dict | None,
+                     section: tuple[float, float] | None = None,
+                     allow_phoneme: bool = True) -> dict | None:
+    """Give a refuted line to the next placer that places it and does not refute.
+
+    The current placer stays when no later one both lands inside 0.30 s and
+    leaves every lettered word unrefuted. The line is not unplaced.
+    """
+    import qa_sync as Q
+
+    words = list(line.get('words') or [])
+    if len(words) < 2 or not refute:
+        return None
+    if not any(Q.word_refuted(
+            {'ctc_s': word.get('t'), 'second_s': word.get('second'), 'third_s': word.get('third')},
+            peaks, refute) for word in words):
+        return None
+    family = primary_family(line.get('placed_by'))
+    cue = line.get('cue_start')
+    for name in HANDOFF_AFTER.get(family, ()):
+        if name == 'phoneme' and not allow_phoneme:
+            continue
+        starts = [_placer_clock(word, name) for word in words]
+        if any(start is None for start in starts):
+            continue
+        ends = ends_from_starts(starts, next_cue)
+        if not judge(starts, ends, cue, next_cue, section).get('placed'):
+            continue
+        witnesses = []
+        refuted = False
+        for word, start in zip(words, starts):
+            slot = witness_slots(
+                name, _placer_clock(word, 'mms'), _placer_clock(word, 'second'),
+                _placer_clock(word, 'stable-ts'))
+            witnesses.append(slot)
+            if Q.word_refuted({'ctc_s': start, 'second_s': slot[0], 'third_s': slot[2]}, peaks, refute):
+                refuted = True
+                break
+        if refuted:
+            continue
+        return {
+            'by': name,
+            'starts': [float(start) for start in starts],
+            'ends': [float(end) for end in ends],
+            'witnesses': witnesses,
+        }
+    return None
+
+
+def consider_phoneme_place(starts: list, cue, next_cue, section: tuple[float, float] | None = None) -> dict | None:
+    """A phoneme start places a still-open line only inside the same 0.30 s gate."""
+    if cue is None or not starts or any(start is None for start in starts):
+        return None
+    floats = [float(start) for start in starts]
+    ends = ends_from_starts(floats, next_cue)
+    if not judge(floats, ends, float(cue), next_cue, section).get('placed'):
+        return None
+    return {'by': 'phoneme', 'starts': floats, 'ends': [float(end) for end in ends]}
 
 
 def in_dispute_band(delta: float | None) -> bool:

@@ -859,6 +859,69 @@ def test_placement_chain() -> None:
           P.witness_slots('second', 1.0, 2.0, 3.0) == (1.0, 'mms', 3.0, 'stable-ts'))
     check('an MMS window leaves the other two as witnesses',
           P.witness_slots('mms-ft', 1.0, 2.0, 3.0) == (2.0, 'whisperx', 3.0, 'stable-ts'))
+    check('a phoneme placer is its own family', P.primary_family('phoneme') == 'phoneme')
+    check('a phoneme placer leaves MMS and stable-ts as witnesses',
+          P.witness_slots('phoneme', 1.0, 2.0, 3.0) == (1.0, 'mms', 3.0, 'stable-ts'))
+    check('a phoneme placer uses the second clock when stable-ts is missing',
+          P.witness_slots('phoneme', 1.0, 2.0, None) == (1.0, 'mms', 2.0, 'whisperx'))
+    refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    handed = {
+        'id': 'h', 'placed_by': 'mms', 'cue_start': 1.0,
+        'words': [
+            {'t': 1.00, 'second': 1.25, 'third': 1.27, 'roman': 'aa', 'wi': 0,
+             'clock_mms': 1.00, 'clock_second': 1.25, 'clock_stable': 1.27},
+            {'t': 1.40, 'second': 1.70, 'third': 1.72, 'roman': 'bb', 'wi': 1,
+             'clock_mms': 1.40, 'clock_second': 1.70, 'clock_stable': 1.72},
+        ],
+    }
+    moved = P.handoff_proposal(handed, 3.0, np.zeros(0), refute)
+    check('a refuted MMS line moves to stable-ts',
+          moved is not None and moved['by'] == 'stable-ts'
+          and abs(moved['starts'][0] - 1.27) < 1e-9 and abs(moved['starts'][1] - 1.72) < 1e-9,
+          str(moved))
+    stuck = {
+        'id': 'stuck', 'placed_by': 'mms', 'cue_start': 1.0,
+        'words': [
+            {'t': 1.00, 'second': 1.25, 'third': 1.27, 'roman': 'aa', 'wi': 0,
+             'clock_mms': 1.00, 'clock_second': 2.50, 'clock_stable': 2.40},
+            {'t': 1.40, 'second': 1.70, 'third': 1.72, 'roman': 'bb', 'wi': 1,
+             'clock_mms': 1.40, 'clock_second': 2.90, 'clock_stable': 2.80},
+        ],
+    }
+    stayed = P.handoff_proposal(stuck, 3.0, np.zeros(0), refute)
+    check('a line stays where it is when every later placer misses',
+          stayed is None and stuck['words'][0]['t'] == 1.00, str(stayed))
+    quiet = {
+        'id': 'quiet', 'placed_by': 'mms', 'cue_start': 1.0,
+        'words': [
+            {'t': 1.00, 'second': 1.02, 'third': 1.04, 'roman': 'aa',
+             'clock_mms': 1.00, 'clock_second': 1.20, 'clock_stable': 1.10},
+            {'t': 1.40, 'second': 1.42, 'third': 1.44, 'roman': 'bb',
+             'clock_mms': 1.40, 'clock_second': 1.60, 'clock_stable': 1.50},
+        ],
+    }
+    check('a line that is not refuted is not handed on',
+          P.handoff_proposal(quiet, 3.0, np.zeros(0), refute) is None)
+    check('0.31 s does not let the phoneme aligner place a line',
+          P.consider_phoneme_place([1.31, 1.80], 1.0, 3.0) is None)
+    placed_phone = P.consider_phoneme_place([1.20, 1.70], 1.0, 3.0)
+    check('a phoneme start inside 0.30 s can place an open line',
+          placed_phone is not None and placed_phone['by'] == 'phoneme', str(placed_phone))
+    cleared = {
+        'placed': True, 'placed_by': 'mms',
+        'words': [
+            {'t': 1.0, 'wi': 0, 'roman': 'a', 'phones': {'xlsr-53-espeak': 9.0}, 'vowels': {'xlsr-53-espeak': 9.1}},
+            {'t': 1.4, 'wi': 1, 'roman': 'b', 'phones': {'xlsr-53-espeak': 9.2}, 'vowels': {}},
+        ],
+    }
+    wrote = A._write_placer(cleared, {
+        'by': 'phoneme', 'starts': [1.1, 1.5], 'ends': [1.5, 1.9],
+        'witnesses': [(1.0, 'mms', 1.2, 'stable-ts'), (1.4, 'mms', 1.55, 'stable-ts')],
+    })
+    check('a phoneme placer is not left as its own witness',
+          wrote and cleared['placed_by'] == 'phoneme' and cleared['words'][0]['phones'] == {}
+          and cleared['words'][0]['t'] == 1.1 and 'phoneme' not in cleared['words'][0],
+          str(cleared['words'][0]))
     band = P.dispute_row('eckhart-f-02', 'de', 'choir', 1.0, 1.5, 1.52, 1.48, np.array([1.50]))
     check('three clocks within 0.10 s on an attack are a dispute',
           band is not None and band['agree'] and band['attack'] and abs(band['delta'] - 0.5) < 1e-9, str(band))
@@ -1274,6 +1337,11 @@ def test_phoneme() -> None:
     check('a placed solo line is eligible', phoneme._eligible({'status': 'good', 'group': 'solo'}))
     check('a weak line is not eligible', not phoneme._eligible({'status': 'weak', 'group': 'solo'}))
     check('a line outside solo and choir is not eligible', not phoneme._eligible({'status': 'good', 'group': 'other'}))
+    check('an open Latin solo line can be placed', phoneme._latin_open({'lang': 'la', 'status': 'weak', 'group': 'solo'}))
+    check('an open Latin choir line can be placed', phoneme._latin_open({'lang': 'la', 'status': 'draft', 'group': 'choir'}))
+    check('a placed Latin line is not placed again', not phoneme._latin_open({'lang': 'la', 'status': 'good', 'group': 'solo'}))
+    check('a weak line in another language is not the Latin placer',
+          not phoneme._latin_open({'lang': 'de', 'status': 'weak', 'group': 'solo'}))
     t0, t1 = phoneme._window({'second_window': [1.0, 1.1]}, 10.0)
     check('a short window is at least 0.4 s', t1 - t0 >= 0.4 - 1e-9, str((t0, t1)))
 
@@ -1499,7 +1567,8 @@ def test_phoneme() -> None:
         assignment, picked, within = slow_select(pair_roles, line_rows, 'base')
         same = all(got['assignment'].get(key, 'off') == assignment.get(key, 'off') for key in pair_roles)
         within_ok = bool(got['within_limit']) == bool(within and picked.get('within_limit'))
-        proved_ok = int(got['proved']) == int(picked.get('proved') or 0)
+        count = int(got.get('count_proved', got['proved']))
+        proved_ok = int(got['proved']) == int(picked.get('proved') or 0) and count == int(picked.get('proved') or 0)
         chance_ok = got.get('chance') == picked.get('chance')
         k_ok = got.get('k') == picked.get('k')
         check(label, same and within_ok and proved_ok and chance_ok and k_ok,
@@ -1570,6 +1639,123 @@ def test_phoneme() -> None:
             'pass': {'base': grid},
         })
     agree(random_roles, random_rows, 'the summed search matches the product on a mixed sample')
+
+    def cover_grid(real: bool, shift: bool = False) -> np.ndarray:
+        grid = np.zeros((len(A.LINE_SHARES), 8), dtype=bool)
+        grid[:, 0] = real
+        if shift:
+            grid[:, 1] = True
+            grid[:, 2] = True
+        return grid
+
+    def cover_line(line_id: str, only_real: bool, or_real: bool, only_shift: bool = False, or_shift: bool = False) -> dict:
+        return {
+            'id': line_id, 'song': 's', 'lang': 'la', 'group': 'solo', 'family': 'mms', 'long': True,
+            'pass': {'base': {
+                'off': cover_grid(False),
+                'only': cover_grid(only_real, only_shift),
+                'or': cover_grid(or_real, or_shift),
+            }},
+        }
+
+    quiet = [cover_line(f'q{i}', True, True) for i in range(18)]
+    kept_cover = Phone.select(
+        {('s', 'la'): ['off', 'or', 'only']},
+        quiet + [cover_line('keep-a', True, False), cover_line('keep-b', False, True)],
+        'base')
+    check('a within-limit role keeps the line the count-max missed',
+          kept_cover['assignment'][('s', 'la')] == 'or'
+          and kept_cover['proved'] == 19 and kept_cover['count_proved'] == 19
+          and kept_cover['cover_proved'] == 20
+          and kept_cover['line_roles'].get('keep-a') == 'only'
+          and 'keep-b' not in kept_cover['line_roles']
+          and kept_cover['lost'] == [],
+          str((kept_cover['assignment'], kept_cover['proved'], kept_cover['cover_proved'],
+               kept_cover['line_roles'], kept_cover['lost'])))
+    blocked_cover = Phone.select(
+        {('s', 'la'): ['off', 'or', 'only']},
+        quiet + [
+            cover_line('shift-a', True, False, only_shift=True),
+            cover_line('shift-b', False, True, or_shift=True),
+        ],
+        'base')
+    check('a mix over 5 % does not keep the extra line and does not drop the winner',
+          blocked_cover['assignment'][('s', 'la')] == 'or'
+          and blocked_cover['proved'] == 19 and blocked_cover['count_proved'] == 19
+          and blocked_cover['line_roles'] == {}
+          and blocked_cover['lost'] == ['shift-a']
+          and blocked_cover['lost_chance'] is not None and float(blocked_cover['lost_chance']) > 0.05,
+          str((blocked_cover['proved'], blocked_cover['line_roles'], blocked_cover['lost'], blocked_cover['lost_chance'])))
+    facts = Phone.counterfactuals(
+        kept_cover['assignment'], {('s', 'la'): ['off', 'or', 'only']},
+        quiet + [cover_line('keep-a', True, False), cover_line('keep-b', False, True)],
+        'base', kept_cover.get('k'))
+    only_row = next(row for row in facts if row['role'] == 'only')
+    check('a dropped role reports its line count and its line chance',
+          only_row['within_limit'] and only_row['proved'] == 19 and only_row['pair_proved'] == 19
+          and 'keep-a' in only_row['gained'] and 'keep-b' in only_row['lost_ids']
+          and only_row['chance'] is not None and float(only_row['chance']) <= 0.05,
+          str(only_row))
+
+    word_line = {'phones': {'m': 1.0}, 'vowels': {'m': 9.0}}
+    other_line = {'phones': {'m': 2.0}, 'vowels': {'m': 9.0}}
+    role_song = {'slug': 's', 'use_choir_envelope': False, 'all_lines': [
+        {'id': 'solo-a', 'lang': 'la', 'group': 'solo', 'words': [word_line]},
+        {'id': 'solo-b', 'lang': 'la', 'group': 'solo', 'words': [other_line]},
+    ]}
+    Phone.apply([role_song], {
+        'long': [['s', 'la']],
+        'pairs': [{'song': 's', 'lang': 'la', 'role': 'or', 'model': 'm'}],
+        'line_roles': {'solo-b': 'only'},
+        'choir_clock': 'phone', 'choir_attack': 'spectral',
+    })
+    check('a line role replaces the pair role',
+          word_line.get('phoneme_role') == 'or' and other_line.get('phoneme_role') == 'only'
+          and other_line.get('phoneme') == 2.0,
+          str((word_line.get('phoneme_role'), other_line.get('phoneme_role'), other_line.get('phoneme'))))
+    Phone.clear([role_song])
+
+    empty = Phone.choose([], {}, {'both_far': 0.20, 'only_far': 0.30})
+    variant_names = [row.get('variant') for row in (empty.get('chorus') or {}).get('variants') or []]
+    check('every choir feature is listed even when none is adopted',
+          variant_names == ['envelope', 'vowel', 'both'] and empty['chorus'].get('adopted') is False,
+          str(variant_names))
+
+    lyrics = {'sections': [{'id': 's', 'kind': 'vocal', 'start': 0, 'end': 10, 'lines': [{
+        'id': 'h',
+        'words': [{'w': 'aa', 's': 0.10, 'e': 0.40}, {'w': 'bb', 's': 0.50, 'e': 0.90}],
+    }]}]}
+    report = {'lines': [{
+        'id': 'h', 'status': 'weak', 'placed_by': 'mms', 'structure_ok': False,
+        'words': [
+            {'w': 'aa', 'roman': 'aa', 's': 0.10, 'e': 0.40, 'ctc_s': 9.0, 'ctc_e': 9.4,
+             'phoneme_models': {'xlsr-53-espeak': 1.0}},
+            {'w': 'bb', 'roman': 'bb', 's': 0.50, 'e': 0.90, 'ctc_s': 9.4, 'ctc_e': 9.8,
+             'phoneme_models': {'xlsr-53-espeak': 1.4}},
+        ],
+    }]}
+    rule = {'retime': {'song': [{
+        'id': 'h', 'by': 'phoneme',
+        'words': [
+            {'wi': 0, 'ctc_s': 1.00, 'ctc_e': 1.40, 'second_s': 1.0, 'third_s': 1.25,
+             'second_kind': 'mms', 'third_kind': 'whisperx'},
+            {'wi': 1, 'ctc_s': 1.45, 'ctc_e': 1.90, 'second_s': 1.4, 'third_s': 1.70,
+             'second_kind': 'mms', 'third_kind': 'whisperx'},
+        ],
+    }]}}
+    saved_peaks = Q.onset_peak_times
+    Q.onset_peak_times = lambda *args, **kwargs: np.array([1.05, 1.50])
+    try:
+        rewritten = Q.apply_saved_retime('song', lyrics, report, rule, None)
+    finally:
+        Q.onset_peak_times = saved_peaks
+    published = lyrics['sections'][0]['lines'][0]['words']
+    stored = report['lines'][0]
+    check('a kept placement rewrites the pre-snap start and snaps the published one',
+          rewritten == 1 and stored['status'] == 'good' and stored['placed_by'] == 'phoneme'
+          and stored['words'][0]['ctc_s'] == 1.0 and published[0]['s'] == 1.05
+          and stored['words'][0]['phoneme_models'] == {} and published[1]['s'] == 1.50,
+          str((stored['status'], stored['words'][0], published)))
 
 
 def main() -> int:
