@@ -6,6 +6,7 @@ export type Route =
   | { name: 'song'; slug: string }
   | { name: 'method'; doc?: string }
   | { name: 'instruments' }
+  | { name: 'ops' }
   | { name: 'notfound' };
 
 export function parse(path: string): Route {
@@ -17,6 +18,7 @@ export function parse(path: string): Route {
   m = p.match(/^\/song\/([a-z0-9-]+)\/edit$/);
   if (m) return { name: 'song', slug: m[1] };
   if (p === '/instruments') return { name: 'instruments' };
+  if (p === '/ops') return { name: 'ops' };
   m = p.match(/^\/method(?:\/([a-z0-9-]+))?$/);
   if (m) return { name: 'method', doc: m[1] };
   return { name: 'notfound' };
