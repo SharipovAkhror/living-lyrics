@@ -3,8 +3,10 @@
 1. Keeps the main checkout on origin/main: the chats push from worktrees, so the board and the mod's
    own code on disk would lag. Fast-forward only, and only when no file dirty here (the usage
    collector rewrites ops/usage/*) changed upstream; anything else is left as it is.
-2. Prints the chats of the registry with their state (registry.py) and the GitHub Actions runs in
-   progress, as JSON: {"chats": [...], "pipeline": [{"name", "title", "minutes"}]}.
+2. Runs hygiene.py --apply once an hour (safe deletions; the rest is reported).
+3. Prints the chats of the registry with their state (registry.py), the GitHub Actions runs in
+   progress and the last hygiene result, as JSON:
+   {"chats": [...], "pipeline": [{"name", "title", "minutes"}], "hygiene": {"at", "fixed", "issues"}}.
 
     python ops/agents/station_tick.py [<repo>]
 """
@@ -15,6 +17,8 @@ import sys
 from pathlib import Path
 
 from registry import live_chats
+
+HYGIENE_S = 3600
 
 
 def git(repo: Path, *args: str) -> subprocess.CompletedProcess:
@@ -54,6 +58,26 @@ def pipeline(repo: Path) -> list[dict]:
     return runs
 
 
+def hygiene(repo: Path) -> dict | None:
+    """hygiene.py --apply once an hour; the last result is kept in .git and returned every tick."""
+    cache = Path(git(repo, 'rev-parse', '--absolute-git-dir').stdout.strip()) / 'll-hygiene.json'
+    try:
+        last = json.loads(cache.read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        last = None
+    at = datetime.datetime.fromisoformat(last['at'].replace('Z', '+00:00')) if last else None
+    if at and (datetime.datetime.now(datetime.timezone.utc) - at).total_seconds() < HYGIENE_S:
+        return last
+    out = subprocess.run([sys.executable, str(Path(__file__).with_name('hygiene.py')), str(repo), '--apply', '--json'],
+                         capture_output=True, encoding='utf-8', errors='replace', timeout=240)
+    try:
+        last = json.loads(out.stdout)
+    except ValueError:
+        return last
+    cache.write_text(json.dumps(last, ensure_ascii=False), encoding='utf-8')
+    return last
+
+
 def main() -> None:
     sys.stdout.reconfigure(encoding='utf-8')
     repo = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[2]
@@ -62,7 +86,7 @@ def main() -> None:
         chats = live_chats(repo)
     except Exception:  # no claude CLI on PATH
         chats = []
-    print(json.dumps({'sync': state, 'chats': chats, 'pipeline': pipeline(repo)}, ensure_ascii=False))
+    print(json.dumps({'sync': state, 'chats': chats, 'pipeline': pipeline(repo), 'hygiene': hygiene(repo)}, ensure_ascii=False))
 
 
 if __name__ == '__main__':
