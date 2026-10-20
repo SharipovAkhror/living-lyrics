@@ -1,0 +1,39 @@
+Снимок экрана Antigravity CLI (agy) 1.4.3, команда /usage.
+Каталог: основной checkout living-lyrics (уже доверенный).
+Станция, 2026-10-21 03:10 (+05). Почта убрана.
+
+Шапка, из которой collect.py берёт план:
+  Antigravity CLI 1.4.3
+  Gemini 3.8 Flash (High)
+  (Google AI Pro)
+
+Панель Models & Quota:
+
+  GEMINI MODELS
+    Models within this group: Gemini Flash, Gemini Pro
+
+    Weekly Limit Remaining
+    91.89%
+    Refreshes in 88h 37m
+
+    Five Hour Limit Remaining
+    93.24%
+    Refreshes in 4h 31m
+
+  CLAUDE AND GPT MODELS
+    Models within this group: Claude Opus, Claude Sonnet, GPT-OSS
+
+    Weekly Limit Remaining
+    100.00%
+    Quota available
+
+    Five Hour Limit Remaining
+    100.00%
+    Quota available
+
+Суток, абсолютных токенов и отдельного времени сброса у полных 100 % нет:
+вместо времени написано «Quota available».
+
+Команды agy --help и agy help подкоманды usage не содержат.
+В ~/.gemini/antigravity-cli/settings.json плана и квот нет (только список
+доверенных папок). В jetski_state.pbtxt квот нет.
