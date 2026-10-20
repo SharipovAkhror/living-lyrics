@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { agentRows, bandLine, barText, codename, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
+import { agentRows, bandLine, codename, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -120,7 +120,8 @@ test('the chat summary names each executor, the usage and what waits on the owne
   expect(text).toMatch(/✻ Claude 5 ч 23 % · ✦ Gemini 5 ч 6 %, неделя 2 % · ◼ Grok сегодня 178 М ток\./)
   expect(text).toMatch(/Нужно от вас:\*\* Видео концертов/)
   expect(text).toMatch(/цель 90 %/)
-  expect(text).toContain('`▰▰▰▰▰▱▱▱▹▱` ONE · соло 20/37')
+  expect(text).toContain('- ONE · соло — **54 %** (20/37)')
+  expect(text).not.toContain('![')
   expect(summaryText(null, LIVE, [], null)).toBe('Dashboard: данных пока нет.')
 })
 
@@ -172,7 +173,7 @@ test('typing dashboard puts the whole summary into the reply for windows that dr
   const ctx = dashboardContext(summaryText(BOARD, LIVE, [], null))
   expect(ctx).toContain('Grok · Sync')
   expect(ctx).toContain('Нужно от вас:** Видео концертов')
-  expect(ctx).toContain('ONE · хор 0/26')
+  expect(ctx).toContain('ONE · хор — **0 %** (0/26)')
 })
 
 test('the chat card lists the chats and the Actions runs the orchestrator published', async () => {
@@ -180,7 +181,6 @@ test('the chat card lists the chats and the Actions runs the orchestrator publis
   expect(text).toContain('- ✻ Main — свободен')
   expect(text).toContain('- ✻ Site — работает')
   expect(text).toContain('- ⚙ **GitHub · pipeline** — Proof of ONE · 12 мин')
-  expect(barText(1, 0.9)).toBe('▰▰▰▰▰▰▰▰▰▰')
 })
 
 test('the rotation signal comes at 60 % of context, only in Living Lyrics folders', async () => {
