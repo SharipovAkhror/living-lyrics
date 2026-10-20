@@ -1401,6 +1401,138 @@ def test_phoneme() -> None:
     peaks = Q.onset_peak_times(None, min_height=0.7, curve=rise)
     check('an envelope curve peaks on its own', len(peaks) == 1 and abs(float(peaks[0]) - 0.02) < 1e-9, str(peaks))
 
+    def scan_attack(t, peak_times, owned):
+        usable = peak_times
+        if owned is not None and len(peak_times):
+            usable = peak_times[peak_times > owned]
+        if len(usable) == 0:
+            return None
+        return float(usable[int(np.argmin(np.abs(usable - t)))] - t)
+
+    tied = np.array([0.0, 1.0, 2.0])
+    check('an equal gap keeps the earlier peak', Q.nearest_attack(0.5, tied, None) == scan_attack(0.5, tied, None) == -0.5)
+    check('a peak at or before owned is not usable', Q.nearest_attack(0.5, tied, 0.0) == 0.5)
+    check('no peak after owned has no attack', Q.nearest_attack(0.5, tied, 2.0) is None)
+    check('an empty peak list has no attack', Q.nearest_attack(0.5, np.zeros(0), None) is None)
+    rng = np.random.default_rng(20261020)
+    cloud = np.sort(rng.uniform(0.0, 80.0, 400))
+    owned_values = [None, 0.0, 1.25, 40.0, 79.9, 80.0]
+    mismatches = 0
+    for t in list(cloud[::17]) + [-1.0, 0.0, 80.0, 90.0]:
+        for owned in owned_values:
+            got = Q.nearest_attack(float(t), cloud, owned)
+            ref = scan_attack(float(t), cloud, owned)
+            if got != ref and not (got is None and ref is None):
+                mismatches += 1
+    check('sorted nearest-attack matches the filtered scan', mismatches == 0, str(mismatches))
+    near_miss = 0
+    for t in rng.uniform(-1.0, 81.0, 80):
+        for tol in (0.0, 0.04, 0.10, 0.5):
+            got = Q._peak_near(float(t), cloud, tol)
+            ref = bool(np.min(np.abs(cloud - float(t))) <= tol + 1e-12)
+            if got != ref:
+                near_miss += 1
+    check('a sorted peak neighbourhood matches the full scan', near_miss == 0, str(near_miss))
+    check('no peaks are not near', Q._peak_near(1.0, np.zeros(0), 0.1) is False)
+    check('missing peaks are not near', Q._peak_near(1.0, None, 0.1) is False)
+
+    def slow_select(pair_roles, line_rows, variant='base'):
+        assignments, how = Phone._assignments(pair_roles)
+        if how != 'exact':
+            raise AssertionError(how)
+        best = None
+        best_rank = None
+        for assignment in assignments:
+            picked = Phone._score(assignment, line_rows, variant)
+            if not picked.get('within_limit'):
+                continue
+            rank = Phone._rank(picked, assignment)
+            if best_rank is None or rank > best_rank:
+                best_rank = rank
+                best = (dict(assignment), picked)
+        if best is None:
+            assignment = {key: 'off' for key in pair_roles}
+            picked = Phone._score(assignment, line_rows, variant)
+            return assignment, picked, False
+        return best[0], best[1], True
+
+    def agree(pair_roles, line_rows, label):
+        got = Phone.select(pair_roles, line_rows, 'base')
+        assignment, picked, within = slow_select(pair_roles, line_rows, 'base')
+        same = all(got['assignment'].get(key, 'off') == assignment.get(key, 'off') for key in pair_roles)
+        within_ok = bool(got['within_limit']) == bool(within and picked.get('within_limit'))
+        proved_ok = int(got['proved']) == int(picked.get('proved') or 0)
+        chance_ok = got.get('chance') == picked.get('chance')
+        k_ok = got.get('k') == picked.get('k')
+        check(label, same and within_ok and proved_ok and chance_ok and k_ok,
+              str((got['assignment'], assignment, got['proved'], picked.get('proved'), got.get('chance'), picked.get('chance'), got.get('k'), picked.get('k'))))
+
+    blank = np.zeros((len(A.LINE_SHARES), 8), dtype=bool)
+    proved_only = blank.copy()
+    proved_only[:, 0] = True
+    tie_row = {
+        'id': 'tie', 'song': 's', 'lang': 'la', 'group': 'solo', 'family': 'mms', 'long': True,
+        'pass': {'base': {'off': blank, 'or': proved_only, 'only': proved_only.copy()}},
+    }
+    agree({('s', 'la'): ['off', 'or', 'only']}, [tie_row], 'an equal phoneme role keeps the earlier one')
+    listed_backwards = {
+        'id': 'back', 'song': 's', 'lang': 'la', 'group': 'solo', 'family': 'mms', 'long': True,
+        'pass': {'base': {'off': proved_only, 'only': proved_only.copy()}},
+    }
+    agree({('s', 'la'): ['only', 'off']}, [listed_backwards], 'fewer admissions win when off is not listed first')
+
+    def pass_grid(real: bool, shift: bool) -> np.ndarray:
+        grid = np.zeros((len(A.LINE_SHARES), 8), dtype=bool)
+        grid[:, 0] = real
+        if shift:
+            grid[:, 1] = True
+            grid[:, 2] = True
+        return grid
+
+    blocked_family = [
+        {
+            'id': 'mms', 'song': 's', 'lang': 'la', 'group': 'solo', 'family': 'mms', 'long': True,
+            'pass': {'base': {'off': pass_grid(True, True), 'only': pass_grid(True, True)}},
+        },
+        {
+            'id': 'stable', 'song': 's', 'lang': 'la', 'group': 'solo', 'family': 'stable-ts', 'long': True,
+            'pass': {'base': {'off': pass_grid(True, False), 'only': pass_grid(True, False)}},
+        },
+    ]
+    agree({('s', 'la'): ['off', 'only']}, blocked_family, 'a placer over 5 % at K = 1 is dropped before the role is chosen')
+    over_both = [
+        dict(blocked_family[0]),
+        {
+            'id': 'stable', 'song': 's', 'lang': 'la', 'group': 'solo', 'family': 'stable-ts', 'long': True,
+            'pass': {'base': {'off': pass_grid(True, True), 'only': pass_grid(True, True)}},
+        },
+    ]
+    agree({('s', 'la'): ['off']}, over_both, 'every placer over 5 % leaves the assignment outside the cap')
+
+    rng = np.random.default_rng(11)
+    families = ('mms', 'stable-ts', 'second')
+    random_roles = {
+        ('s', 'a'): ['off', 'or', 'only'],
+        ('s', 'b'): ['off', 'only'],
+        ('s', '*'): ['off', 'or'],
+        ('t', 'a'): ['off', 'or', 'only'],
+    }
+    random_rows = []
+    for i in range(18):
+        lang = ('a', 'b', 'c')[i % 3]
+        song = 's' if i < 12 else 't'
+        grid = {}
+        for role in ('off', 'or', 'only'):
+            cell = rng.random((len(A.LINE_SHARES), 8)) < (0.04 if role == 'off' else 0.08)
+            cell[:, 0] = rng.random(len(A.LINE_SHARES)) < 0.7
+            grid[role] = cell
+        random_rows.append({
+            'id': f'r{i}', 'song': song, 'lang': lang, 'group': 'solo' if i % 5 else 'choir',
+            'family': families[i % 3], 'long': lang != 'c',
+            'pass': {'base': grid},
+        })
+    agree(random_roles, random_rows, 'the summed search matches the product on a mixed sample')
+
 
 def main() -> int:
     test_viterbi()

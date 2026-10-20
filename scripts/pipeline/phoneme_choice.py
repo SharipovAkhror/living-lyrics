@@ -154,14 +154,18 @@ def _score(assignment: dict, line_rows: list[dict], variant: str) -> dict:
     return A.choose_with_primaries(_tables(assignment, line_rows, variant))
 
 
-def _assignments(pair_roles: dict) -> tuple[list[dict], str]:
+def _plan(pair_roles: dict) -> tuple[dict, list[tuple], int, str]:
+    """Split pairs into a fixed role and a product. `off` stays first in every list.
+
+    The product order is the order of `pair_roles`, and inside a pair the order of
+    `allowed`. itertools.product walks that same order: the last pair changes fastest.
+    """
     fixed = {}
     search: list[tuple] = []
     for key, roles in pair_roles.items():
         clean = [role for role in roles if role in ROLES]
         if 'off' not in clean:
             clean = ['off', *clean]
-        # Keep the listed order, drop duplicates.
         ordered = []
         for role in clean:
             if role not in ordered:
@@ -173,14 +177,19 @@ def _assignments(pair_roles: dict) -> tuple[list[dict], str]:
     width = 1
     for _key, roles in search:
         width *= len(roles)
-    if width > MAX_EXACT:
+    how = 'greedy' if width > MAX_EXACT else 'exact'
+    return fixed, search, width, how
+
+
+def _assignments(pair_roles: dict) -> tuple[list[dict], str]:
+    fixed, search, _width, how = _plan(pair_roles)
+    if how == 'greedy':
         return _greedy_space(fixed, search), 'greedy'
-    out = []
     if not search:
-        out.append(dict(fixed))
-        return out, 'exact'
+        return [dict(fixed)], 'exact'
     keys = [key for key, _roles in search]
     lists = [roles for _key, roles in search]
+    out = []
     for combo in itertools.product(*lists):
         assignment = dict(fixed)
         assignment.update(zip(keys, combo))
@@ -259,6 +268,189 @@ def _group_line_chance(assignment: dict, line_rows: list[dict], variant: str, gr
     return worst
 
 
+def _pair_key(line: dict) -> tuple:
+    """The pair whose role this line reads. A short language reads the song row."""
+    song, lang = line['song'], line['lang']
+    if line.get('long'):
+        return (song, lang)
+    return (song, '*')
+
+
+def _reduce_passes(counts: np.ndarray) -> np.ndarray:
+    """(…, 8) probe sums → proved, three shift-pair sums, shuffle.
+
+    Probe 0 is the unshifted line. Probes 1–6 are the three magnitudes, each
+    with both signs. Probe 7 is the within-line rotation. The line chance is
+    the max of (sign pair) / (2N) and shuffle / N, the same four rates `_tables` takes.
+    """
+    proved = counts[..., 0]
+    shifts = counts[..., 1:7].reshape(counts.shape[:-1] + (3, 2)).sum(axis=-1)
+    shuffle = counts[..., 7]
+    return np.stack([proved, shifts[..., 0], shifts[..., 1], shifts[..., 2], shuffle], axis=-1)
+
+
+def _choose_k_batch(proved: np.ndarray, chance: np.ndarray, candidates: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Per assignment, the same K `choose_with_primaries` would keep.
+
+    `proved` and `chance` are (assignments, families, shares). A family with no
+    candidate line is unused. A family still over 5 % at K = 1 is removed and
+    the choice repeats. Equal chances block the earlier family. Equal proved
+    counts keep the smaller share.
+    """
+    width, n_families, n_shares = proved.shape
+    limit = A.LINE_LIMIT + 1e-12
+    k_at_one = n_shares - 1
+    for i, share in enumerate(A.LINE_SHARES):
+        if abs(float(share) - 1.0) < 1e-9:
+            k_at_one = i
+            break
+    alive = np.broadcast_to(candidates > 0, (width, n_families)).copy()
+    pending = np.ones(width, dtype=bool)
+    best_k = np.full(width, -1, dtype=np.int32)
+    best_proved = np.full(width, -1, dtype=np.int64)
+    best_chance = np.full(width, np.nan)
+    for _round in range(n_families):
+        if not pending.any():
+            break
+        used = alive.any(axis=1)
+        share_ok = np.empty((width, n_shares), dtype=bool)
+        proved_sum = np.empty((width, n_shares), dtype=np.int64)
+        chance_max = np.empty((width, n_shares), dtype=np.float64)
+        for share_i in range(n_shares):
+            ch = chance[:, :, share_i]
+            bad = alive & (ch > limit)
+            share_ok[:, share_i] = used & ~bad.any(axis=1)
+            proved_sum[:, share_i] = (proved[:, :, share_i] * alive).sum(axis=1)
+            chance_max[:, share_i] = np.where(alive, ch, -np.inf).max(axis=1)
+        round_k = np.full(width, -1, dtype=np.int32)
+        round_proved = np.full(width, -1, dtype=np.int64)
+        round_chance = np.full(width, np.nan)
+        for share_i in range(n_shares - 1, -1, -1):
+            take = pending & share_ok[:, share_i] & (proved_sum[:, share_i] >= round_proved)
+            round_k[take] = share_i
+            round_proved[take] = proved_sum[take, share_i]
+            round_chance[take] = chance_max[take, share_i]
+        found = pending & (round_k >= 0)
+        best_k[found] = round_k[found]
+        best_proved[found] = round_proved[found]
+        best_chance[found] = round_chance[found]
+        pending[found] = False
+        if not pending.any():
+            break
+        at_one = np.where(alive, chance[:, :, k_at_one], -np.inf)
+        worst = np.argmax(at_one, axis=1)
+        worst_chance = at_one[np.arange(width), worst]
+        can_block = pending & np.isfinite(worst_chance) & (worst_chance > limit)
+        if not can_block.any():
+            break
+        alive[np.arange(width)[can_block], worst[can_block]] = False
+        pending = can_block
+    return best_k >= 0, best_k, best_proved, best_chance
+
+
+def _select_exact_fast(pair_roles: dict, line_rows: list[dict], variant: str,
+                       fixed: dict, search: list[tuple], width: int) -> dict:
+    """Same assignment as walking the product, without building one dict per combination.
+
+    Each line's eight probes are already known for every role. An assignment's
+    family totals are the sum of those rows. Run 39344308679 spent the prove
+    job inside that walk: 3**12 combinations, each scoring every line in Python.
+    """
+    families = list(A.PRIMARY_FAMILIES)
+    n_families = len(families)
+    n_shares = len(A.LINE_SHARES)
+    family_index = {name: i for i, name in enumerate(families)}
+    search_index = {key: i for i, (key, _roles) in enumerate(search)}
+    base = np.zeros((n_families, n_shares, 8), dtype=np.int32)
+    pair_counts = [
+        np.zeros((len(roles), n_families, n_shares, 8), dtype=np.int32)
+        for _key, roles in search
+    ]
+    candidates = np.zeros(n_families, dtype=np.int32)
+    for line in line_rows:
+        family = line.get('family') or 'mms'
+        fi = family_index.get(family)
+        if fi is None:
+            continue
+        candidates[fi] += 1
+        bits = line['pass'][variant]
+        key = _pair_key(line)
+        slot = search_index.get(key)
+        if slot is None:
+            base[fi] += np.asarray(bits['off'], dtype=np.int32)
+            continue
+        for ri, role in enumerate(search[slot][1]):
+            pair_counts[slot][ri, fi] += np.asarray(bits[role], dtype=np.int32)
+    base_r = _reduce_passes(base)
+    pair_r = [_reduce_passes(counts) for counts in pair_counts]
+    strides: list[int] = []
+    stride = 1
+    for _key, roles in reversed(search):
+        strides.append(stride)
+        stride *= len(roles)
+    strides.reverse()
+    role_counts = [len(roles) for _key, roles in search]
+    # Index 0 is not always `off`: the listed order is kept when `off` is already present.
+    on_flags = [
+        np.array([0 if role == 'off' else 1 for role in roles], dtype=np.int32)
+        for _key, roles in search
+    ]
+    base_admissions = sum(1 for role in fixed.values() if role != 'off')
+    best: tuple | None = None
+    chunk = 65536
+    active = candidates > 0
+    with np.errstate(divide='ignore', invalid='ignore'):
+        for start in range(0, width, chunk):
+            stop = min(width, start + chunk)
+            idx = np.arange(start, stop)
+            n = stop - start
+            total = np.empty((n,) + base_r.shape, dtype=np.int32)
+            total[:] = base_r
+            admissions = np.full(n, base_admissions, dtype=np.int32)
+            for i, (stride_i, n_roles) in enumerate(zip(strides, role_counts)):
+                role_i = (idx // stride_i) % n_roles
+                total += pair_r[i][role_i]
+                admissions += on_flags[i][role_i]
+            proved = total[..., 0]
+            safe = np.maximum(candidates, 1).astype(np.float64)
+            shift_rate = total[..., 1:4].astype(np.float64) / (2.0 * safe[None, :, None, None])
+            shuffle_rate = total[..., 4].astype(np.float64) / safe[None, :, None]
+            chance = np.maximum(shift_rate.max(axis=-1), shuffle_rate)
+            chance[:, ~active] = 0.0
+            within, _k, proved_sum, chance_out = _choose_k_batch(proved, chance, candidates)
+            valid = np.flatnonzero(within)
+            valid = valid[np.isfinite(chance_out[valid])]
+            if len(valid) == 0:
+                continue
+            order = np.lexsort((
+                idx[valid], admissions[valid], chance_out[valid], -proved_sum[valid].astype(np.int64),
+            ))
+            win = int(valid[int(order[0])])
+            rank = (
+                int(proved_sum[win]), -float(chance_out[win]),
+                -int(admissions[win]), -int(idx[win]),
+            )
+            if best is None or rank > best[0]:
+                best = (rank, int(idx[win]))
+    if best is None:
+        assignment = {key: 'off' for key in pair_roles}
+        picked = _score(assignment, line_rows, variant)
+        return _public_select(assignment, picked, 'exact', False)
+    winner = int(best[1])
+    assignment = dict(fixed)
+    for stride_i, (key, roles) in zip(strides, search):
+        assignment[key] = roles[(winner // stride_i) % len(roles)]
+    for key in pair_roles:
+        assignment.setdefault(key, 'off')
+    picked = _score(assignment, line_rows, variant)
+    if not picked.get('within_limit'):
+        raise RuntimeError(
+            f'phoneme search winner {winner} is outside the line cap '
+            f'(proved {picked.get("proved")}, chance {picked.get("chance")})'
+        )
+    return _public_select(assignment, picked, 'exact', True)
+
+
 def select(pair_roles: dict, line_rows: list[dict], variant: str = 'base') -> dict:
     """Best role assignment for one attack/clock variant.
 
@@ -267,24 +459,12 @@ def select(pair_roles: dict, line_rows: list[dict], variant: str = 'base') -> di
     The all-off assignment stays available, so a witness that only adds false
     passes is left off.
     """
-    assignments, how = _assignments(pair_roles)
-    best = None
-    best_rank = None
+    _fixed, _search, width, how = _plan(pair_roles)
+    if width >= 1000:
+        print(f'фонемный свидетель: перебор {how}, комбинаций {width}', flush=True)
     if how == 'greedy':
         return _select_greedy(pair_roles, line_rows, variant)
-    for assignment in assignments:
-        picked = _score(assignment, line_rows, variant)
-        if not picked.get('within_limit'):
-            continue
-        rank = _rank(picked, assignment)
-        if _better(rank, best_rank):
-            best_rank = rank
-            best = (assignment, picked)
-    if best is None:
-        assignment = {key: 'off' for key in pair_roles}
-        picked = _score(assignment, line_rows, variant)
-        return _public_select(assignment, picked, 'exact', False)
-    return _public_select(best[0], best[1], 'exact', True)
+    return _select_exact_fast(pair_roles, line_rows, variant, _fixed, _search, width)
 
 
 def _select_greedy(pair_roles: dict, line_rows: list[dict], variant: str) -> dict:
@@ -698,6 +878,7 @@ def choose(per_song: list[dict], modes: dict, refute: dict) -> dict:
     roles = _pair_roles(pairs)
     print('фонемный свидетель: считаю пробы строк', flush=True)
     line_rows = _build_rows(per_song, pair_by, long, modes, refute)
+    print(f'фонемный свидетель: пробы строк {len(line_rows)}', flush=True)
     base = select(roles, line_rows, 'base')
     _apply_assignment(pairs, base['assignment'])
     choir_cache: dict = {}

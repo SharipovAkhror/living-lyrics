@@ -1407,6 +1407,7 @@ def build_payload(slugs: list[str]) -> dict:
             'envelope_peaks': Q.envelope_peak_times(sig, min_height=WITNESS_HEIGHT),
             'use_choir_envelope': False,
         })
+    print(f'атака: пики {len(per_song)} песен', flush=True)
     # The pooled grid stays in the file as context. The decision is the per-slice
     # witness mode plus the line share, not the winner of that grid.
     rows = _evaluate_pooled(per_song)
@@ -1419,8 +1420,10 @@ def build_payload(slugs: list[str]) -> dict:
     # Baseline first, with no phoneme stamp and the spectral attack. The search
     # proposes a stamp. The same measurement after apply() keeps it only when
     # the line chance stays at or under 5 % and more lines are proved.
+    print('атака: базовый проход строк', flush=True)
     baseline_tables = measure_primary_tables(per_song, modes, refute)
     baseline_picked = choose_with_primaries(baseline_tables)
+    print(f"атака: без фонемы доказано {baseline_picked.get('proved')}", flush=True)
     primary_tables = baseline_tables
     picked = baseline_picked
     decision: dict = {
@@ -1432,8 +1435,14 @@ def build_payload(slugs: list[str]) -> dict:
     try:
         import phoneme_choice as Phone
         decision = Phone.choose(per_song, modes, refute)
+        print(
+            f"фонема предложена: {bool(decision.get('admitted'))}, "
+            f"поиск {decision.get('search')}, доказано {decision.get('proved')}",
+            flush=True,
+        )
         if decision.get('admitted'):
             Phone.apply(per_song, decision)
+            print('атака: официальный пересчёт со штампом', flush=True)
             stamped_tables = measure_primary_tables(per_song, modes, refute)
             stamped = choose_with_primaries(stamped_tables)
             base_n = int(baseline_picked.get('proved') or 0)

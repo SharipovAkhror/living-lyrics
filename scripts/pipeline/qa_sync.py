@@ -290,13 +290,35 @@ def nearest_attack(t: float, peaks: np.ndarray, owned: float | None) -> float | 
     `owned` is the previous word's pre-snap start plus WORD_TOL. A peak at or before that belongs
     to the previous word and is not evidence about this one. No distance cap: the number in the
     report is the real gap, and the proof fails when it is over WORD_TOL.
+
+    `peaks` is sorted ascending, as onset_peak_times returns it. Two equal gaps keep the earlier
+    peak, the same peak argmin keeps on the filtered array.
     """
-    usable = peaks
-    if owned is not None and len(peaks):
-        usable = peaks[peaks > owned]
-    if len(usable) == 0:
+    n = len(peaks)
+    if n == 0:
         return None
-    return float(usable[int(np.argmin(np.abs(usable - t)))] - t)
+    start = 0
+    if owned is not None:
+        start = int(np.searchsorted(peaks, float(owned), side='right'))
+        if start >= n:
+            return None
+    t = float(t)
+    i = int(np.searchsorted(peaks, t, side='left'))
+    if i < start:
+        i = start
+    best_i = -1
+    best_d = None
+    earlier = i - 1
+    if earlier >= start:
+        best_i = earlier
+        best_d = abs(float(peaks[earlier]) - t)
+    if i < n:
+        dist = abs(float(peaks[i]) - t)
+        if best_d is None or dist < best_d:
+            best_i = i
+    if best_i < 0:
+        return None
+    return float(peaks[best_i]) - t
 
 
 def song_proven(passed: int, n: int) -> bool:
@@ -418,9 +440,19 @@ def word_refuted(word: dict, peaks: np.ndarray | None, refute: dict | None) -> s
 
 
 def _peak_near(t: float, peaks: np.ndarray | None, tol: float) -> bool:
+    """True when a sorted peak list has one peak within `tol` of `t`."""
     if peaks is None or len(peaks) == 0:
         return False
-    return bool(np.min(np.abs(np.asarray(peaks, dtype=float) - float(t))) <= tol + 1e-12)
+    t = float(t)
+    i = int(np.searchsorted(peaks, t, side='left'))
+    best = None
+    if i < len(peaks):
+        best = abs(float(peaks[i]) - t)
+    if i > 0:
+        dist = abs(float(peaks[i - 1]) - t)
+        if best is None or dist < best:
+            best = dist
+    return best is not None and best <= tol + 1e-12
 
 
 def line_word_ok(proved: list[dict], refuted: list[str | None], share: float, minimum: int = 2) -> bool:
