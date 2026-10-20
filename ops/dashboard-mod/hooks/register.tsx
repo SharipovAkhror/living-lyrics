@@ -364,11 +364,13 @@ export function panelDoc(b: Board | null, l: Live, lim: Limit[], u: Usage | null
     chats: l.chats ?? [],
     agents: agentRows(b, l).map(r => ({ agent: r.agent, name: r.name, task: r.task, state: r.state, tone: r.tone, detail: r.detail })),
     runs: l.pipeline ?? [],
+    hygiene: l.hygiene ? { fixed: l.hygiene.fixed.length, issues: l.hygiene.issues.slice(0, 3), more: Math.max(0, l.hygiene.issues.length - 3) } : null,
     songs: songRows(b.songs).map(({ label, group }) => ({ label, proven: group.proven, placed: group.placed ?? group.proven, total: group.total })),
     limits: {
-      claude: claudeWindows(lim).map(w => ({ label: w.label, used: Math.round(w.used) })),
-      gemini: geminiWindows(u?.gemini?.quota?.gemini).map(w => ({ label: w.label, used: Math.round(w.used) })),
-      grok: u?.grok ? `${tokens(u.grok.today)} ток.` : '',
+      claude: claudeWindows(lim).map(w => ({ label: w.label, used: Math.round(w.used), reset: w.reset })),
+      gemini: geminiWindows(u?.gemini?.quota?.gemini).map(w => ({ label: w.label, used: Math.round(w.used), reset: w.reset })),
+      grok: u?.grok ? { today: tokens(u.grok.today), week: tokens(u.grok.week), plan: u.grok.plan ?? '' } : null,
+      plans: { claude: b.models?.claude ?? '', gemini: u?.gemini?.plan ?? '' },
     },
   }
 }
