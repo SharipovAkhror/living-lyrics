@@ -185,13 +185,6 @@ function meterText(fraction: number, width = 10) {
 
 const CHAT_STATE: Record<string, string> = { working: 'работает', waiting: 'ждёт ответа', idle: 'свободен', retired: 'спит', none: 'не запущен' }
 
-/** A bar of ten cells for a chat line; the cell where `goal` (0…1) falls is marked when not yet filled. */
-export function barText(fraction: number, goal?: number, width = 10) {
-  const n = Math.round(Math.max(0, Math.min(1, fraction)) * width)
-  const g = goal === undefined ? -1 : Math.min(width - 1, Math.max(0, Math.round(goal * width) - 1))
-  return Array.from({ length: width }, (_, i) => (i < n ? '▰' : i === g ? '▹' : '▱')).join('')
-}
-
 /**
  * The dashboard as chat lines (markdown). Where nothing a mod draws is shown (claude.ai/code and the
  * phone over Remote Control, cloud sessions), /dashboard answers with this text, so it carries the
@@ -200,9 +193,8 @@ export function barText(fraction: number, goal?: number, width = 10) {
 export function summaryText(b: Board | null, l: Live, lim: Limit[], u: Usage | null) {
   if (!b) return 'Dashboard: данных пока нет.'
   const head = [`**Living Lyrics** · ${hhmm(b.updated)}`, b.roadmap ? `${b.roadmap.title.toLowerCase()} ${b.roadmap.percent} %` : ''].filter(Boolean)
-  // Test (owner, 2026-10-21): do remote windows draw markdown images? If not, this line shows as text.
-  const icons = ['claude-color', 'grok', 'gemini-color'].map(n => `![${n}](${RAW}/ops/dashboard-mod/icons/${n}.svg)`).join(' ')
-  const out = [`${icons} ${head.join(' · ')}`]
+  // Plain text only: remote windows draw markdown images as click-to-load boxes and bar glyphs as tofu.
+  const out = [head.join(' · ')]
   const you = b.tasks.filter(t => t.section === 'you')
   out.push('', you.length ? `⚑ **Нужно от вас:** ${you.map(t => t.title).join('; ')}` : 'От вас ничего не нужно.')
 
@@ -218,10 +210,11 @@ export function summaryText(b: Board | null, l: Live, lim: Limit[], u: Usage | n
     for (const r of runs) out.push(`- ⚙ **GitHub · ${r.name}** — ${r.title} · ${ago(r.minutes)}`)
   }
   if (b.songs.length) {
-    const goal = b.syncGoal === undefined ? undefined : b.syncGoal / 100
     out.push('', `**Подсветка по словам**${b.syncGoal === undefined ? '' : ` · цель ${b.syncGoal} %`}`)
     for (const { label, group } of songRows(b.songs)) {
-      out.push(`- \`${barText(group.proven / Math.max(1, group.total), goal)}\` ${label} ${group.proven}/${group.total}`)
+      const pct = Math.round((group.proven / Math.max(1, group.total)) * 100)
+      const done = b.syncGoal !== undefined && pct >= b.syncGoal ? ' ✓' : ''
+      out.push(`- ${label} — **${pct} %** (${group.proven}/${group.total})${done}`)
     }
   }
   const cl = claudeWindows(lim).map(w => `${w.label} ${Math.round(w.used)} %`).join(', ')
