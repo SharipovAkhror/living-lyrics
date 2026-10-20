@@ -225,6 +225,32 @@ async function findPlace($: EngineInterface): Promise<Place> {
   }
 }
 
+/**
+ * User settings every device of the owner keeps, in every project (docs/process/chat-rotation.md,
+ * «История чатов»): chat transcripts are never cleaned up. At session start the mod writes each key
+ * that is missing or differs into ~/.claude/settings.json; the other keys stay as they are.
+ */
+export const USER_SETTINGS: Record<string, unknown> = { cleanupPeriodDays: 36500 }
+
+export function settingsPatch(current: Record<string, unknown>, wanted = USER_SETTINGS) {
+  const keys = Object.keys(wanted).filter(k => JSON.stringify(current[k]) !== JSON.stringify(wanted[k]))
+  return keys.length ? { ...current, ...Object.fromEntries(keys.map(k => [k, wanted[k]])) } : null
+}
+
+async function keepUserSettings($: EngineInterface) {
+  try {
+    const home = (await $.env.get('USERPROFILE')) ?? (await $.env.get('HOME'))
+    const dir = (await $.env.get('CLAUDE_CONFIG_DIR')) ?? (home && `${home}/.claude`)
+    if (!dir) return
+    const path = `${dir.replace(/\\/g, '/')}/settings.json`
+    const text = (await $.fs.exists(path)) ? await $.fs.read(path) : '{}'
+    const patched = settingsPatch(JSON.parse(text) as Record<string, unknown>)
+    if (patched) await $.fs.write(path, `${JSON.stringify(patched, null, 2)}\n`)
+  } catch {
+    // A settings file that does not parse is left alone: it is the owner's to fix, never overwritten.
+  }
+}
+
 async function fetchJson($: EngineInterface, path: string) {
   const res = await $.http.fetch(`${RAW}/${path}`)
   return res.ok ? (JSON.parse(res.text) as unknown) : undefined
@@ -270,9 +296,8 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
       const res = await $.process.run(['python', agentsScript($), place.repo], { timeoutMs: 25_000 })
       if (res.exitCode === 0) {
         const next = JSON.parse(res.stdout) as Live
-        const prev = await read($, live)
-        if (JSON.stringify(next) !== JSON.stringify(prev)) await update($, live, () => next)
-        if (stateKey(next) !== stateKey(prev)) await publishLive($)
+        if (JSON.stringify(next) !== JSON.stringify(await read($, live))) await update($, live, () => next)
+        await publishLive($, next)
       }
     } catch {
       // Python missing or slow: the board alone still draws.
@@ -287,11 +312,20 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
   }
 }
 
-/** Push the live state to the `live` branch; the script itself skips what is unchanged and keeps a heartbeat. */
-async function publishLive($: EngineInterface) {
+/**
+ * Push the live state to the `live` branch when its states differ from what this load last pushed.
+ * `published` is a plain variable, not state: it resets on every (re)load, so a fresh load always
+ * pushes once; the script skips an unchanged signature itself and keeps the heartbeat (`heartbeat`).
+ */
+let published: string | null = null
+
+async function publishLive($: EngineInterface, l: Live, heartbeat = false) {
   if (!place.orchestrator || !place.repo) return
+  const key = stateKey(l)
+  if (!heartbeat && key === published) return
   try {
-    await $.process.run(['python', `${place.repo}/${PUBLISH}`, place.repo], { cwd: place.repo, timeoutMs: 90_000 })
+    const res = await $.process.run(['python', `${place.repo}/${PUBLISH}`, place.repo, '--stdin'], { cwd: place.repo, stdin: JSON.stringify(l), timeoutMs: 90_000 })
+    if (res.exitCode === 0) published = key
   } catch {
     // Offline or no push rights: other devices keep the last published state.
   }
@@ -532,6 +566,27 @@ async function dashboardTree($: EngineInterface, e: RenderInput<'Pane' | 'UserMe
   )
 }
 
+const ROTATE_AT = 60
+
+/** The rotation signal for a Living Lyrics chat whose context passed the threshold; null otherwise. */
+export function rotationNote(percent: number | undefined, cwd: string) {
+  if (percent === undefined || percent < ROTATE_AT || !/living-lyrics/i.test(cwd)) return null
+  return (
+    `Chat rotation: this chat's context is ${Math.round(percent)} % (threshold ${ROTATE_AT} %). ` +
+    'Finish the current step to a point you can hand over (commit, report), then rotate this chat per ' +
+    'docs/process/chat-rotation.md without waiting for the owner. Do not start it in the middle of a review, a merge or a question to the owner.'
+  )
+}
+
+/** What Claude is told when the owner types `dashboard`: answer with the summary, nothing else. */
+export function dashboardContext(summary: string) {
+  return (
+    'The owner asked for the Dashboard. Some windows draw it as a card, remote windows do not, so reply with ' +
+    'exactly this summary as compact Markdown (keep the lines, no intro, no advice, no tools):\n\n' +
+    summary
+  )
+}
+
 const ASKS = new Set(['dashboard', '/dashboard', 'дашборд', '/дашборд', 'штаб'])
 
 export function isDashboardAsk(text: string) {
@@ -543,13 +598,14 @@ export const register: Register = on => {
 
   on('session.start', async ($, e, next) => {
     await $.command.register({ name: 'dashboard', description: 'Living Lyrics: агенты, лимиты, прогресс' })
+    void keepUserSettings($)
     place = await findPlace($)
     void refresh($, seen)
     $.clock.every(POLL_MS, () => refresh($, seen))
     void collectUsage($)
     $.clock.every(COLLECT_MS, async () => {
       await collectUsage($)
-      await publishLive($)
+      await publishLive($, await read($, live), true)
     })
     return next(e)
   })
@@ -608,8 +664,20 @@ export const register: Register = on => {
     return dashboardTree($, e, e.viewport?.columns ?? 48)
   })
 
+  // A remote window (claude.ai, the phone over Remote Control) draws messages itself and never
+  // shows the card, and a session cannot tell which windows watch it: the reply carries the summary.
+  // The same hook gives the chat-rotation signal (docs/process/chat-rotation.md) to Living Lyrics chats past the threshold.
   on('prompt.submit', async ($, e, next) => {
-    if (!isDashboardAsk(e.text)) return next(e)
-    return next({ ...e, context: [...(e.context ?? []), 'The owner opened the Dashboard: the mod draws it as a live card in place of this message. Reply with one short line, no summary.'] })
+    const extra: string[] = []
+    if (isDashboardAsk(e.text)) {
+      extra.push(dashboardContext(summaryText(await read($, board), await read($, live), await read($, limits), await read($, usage))))
+    }
+    try {
+      const note = rotationNote((await $.session.usage()).context.percent, await $.session.cwd())
+      if (note) extra.push(note)
+    } catch {
+      // No usage figures (a -p run): no signal.
+    }
+    return extra.length ? next({ ...e, context: [...(e.context ?? []), ...extra] }) : next(e)
   })
 }

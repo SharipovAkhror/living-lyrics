@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { agentRows, bandLine, codename, geminiWindows, isDashboardAsk, remoteLive, songRows, stateKey, summaryText, tokens } from '../hooks/register'
+import { agentRows, bandLine, codename, dashboardContext, geminiWindows, isDashboardAsk, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -148,4 +148,26 @@ test('the publish key ignores minutes and steps but sees a state change', async 
   const c: Live = { grok: [{ name: 't1', state: 'finished', minutes: 9, step: 'b', model: 'm' }], gemini: [] }
   expect(stateKey(a)).toBe(stateKey(b))
   expect(stateKey(a) === stateKey(c)).toBe(false)
+})
+
+test('typing dashboard puts the whole summary into the reply for windows that draw no card', async () => {
+  const ctx = dashboardContext(summaryText(BOARD, LIVE, [], null))
+  expect(ctx).toContain('Grok · Sync')
+  expect(ctx).toContain('Нужно от вас: Видео концертов')
+  expect(ctx).toContain('ONE · хор 0/26')
+})
+
+test('the rotation signal comes at 60 % of context, only in Living Lyrics folders', async () => {
+  expect(rotationNote(59, 'C:/Users/User/Documents/GitHub/living-lyrics')).toBe(null)
+  expect(rotationNote(61, 'C:/Users/User/Documents/GitHub/living-lyrics')).toContain('docs/process/chat-rotation.md')
+  expect(rotationNote(80, 'C:/Users/User/Documents/GitHub/living-lyrics-wt/ll-business')).toContain('80 %')
+  expect(rotationNote(90, 'C:/Users/User/Documents/GitHub/tenek-brand')).toBe(null)
+  expect(rotationNote(undefined, 'C:/x/living-lyrics')).toBe(null)
+})
+
+test('user settings: a missing or different key is written, the rest stays, a kept file is not touched', async () => {
+  const current = { model: 'haiku', cleanupPeriodDays: 30 }
+  expect(settingsPatch(current)).toEqual({ model: 'haiku', cleanupPeriodDays: 36500 })
+  expect(settingsPatch({ model: 'haiku' })).toEqual({ model: 'haiku', cleanupPeriodDays: 36500 })
+  expect(settingsPatch({ ...USER_SETTINGS, model: 'haiku' })).toBe(null)
 })
