@@ -1407,6 +1407,38 @@ def test_phoneme() -> None:
     peaks = Q.onset_peak_times(None, min_height=0.7, curve=rise)
     check('an envelope curve peaks on its own', len(peaks) == 1 and abs(float(peaks[0]) - 0.02) < 1e-9, str(peaks))
 
+    spectral = np.array([1.50])
+    envelope = np.array([1.05])
+    check('a spectral gap of 0.40 s stays without the fill',
+          abs(Q.nearest_attack(1.10, spectral, None) - 0.40) < 1e-9)
+    filled = Q.fill_attack(1.10, spectral, envelope, None, 0.10)
+    check('the envelope fills a spectral gap outside 0.10 s', filled is not None and abs(filled - (1.05 - 1.10)) < 1e-9, str(filled))
+    kept_dt = Q.fill_attack(1.46, spectral, envelope, None, 0.10)
+    check('a spectral peak inside 0.10 s is kept', kept_dt is not None and abs(kept_dt - (1.50 - 1.46)) < 1e-9, str(kept_dt))
+    far = Q.fill_attack(1.10, spectral, np.array([2.00]), None, 0.10)
+    check('a far envelope leaves the spectral gap', far is not None and abs(far - 0.40) < 1e-9, str(far))
+    alone = Q.fill_attack(1.10, spectral, None, None, 0.10)
+    check('no envelope leaves the spectral gap', alone is not None and abs(alone - 0.40) < 1e-9, str(alone))
+    empty_fill = Q.fill_attack(1.10, np.zeros(0), envelope, None, 0.10)
+    check('an empty spectral list can use the envelope',
+          empty_fill is not None and abs(empty_fill - (1.05 - 1.10)) < 1e-9, str(empty_fill))
+    probe_word = {
+        't': 1.10, 'roman': 'am', 'ctc_e': 1.40,
+        'second': 1.10, 'third': 1.12, 'group': 'solo',
+    }
+    probe_refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    bare, bare_flags = A._probe_parts([probe_word], spectral, 'solo', 'one', probe_refute, None)
+    check('without the fill the word is not proved', bare[0]['path'] == 'fail' and not bare_flags[0], str(bare[0]))
+    filled_words, filled_flags = A._probe_parts(
+        [probe_word], spectral, 'solo', 'one', probe_refute, None, fill_peaks=envelope)
+    check('the fill proves the word and does not refute it',
+          filled_words[0]['path'] != 'fail' and not filled_flags[0], str(filled_words[0]['path']))
+    check('a word chance over 15 % refuses the fill', not A.fill_ok(40, 0.16, True, 5, 1))
+    check('a line chance over 5 % refuses the fill', not A.fill_ok(40, 0.01, False, 5, 1))
+    check('a fill that does not prove more lines is refused', not A.fill_ok(40, 0.01, True, 4, 4))
+    check('a fill inside both caps can be kept', A.fill_ok(40, 0.01, True, 5, 4))
+    check('fewer than 30 words cannot adopt the fill', not A.fill_ok(29, 0.01, True, 5, 1))
+
     def scan_attack(t, peak_times, owned):
         usable = peak_times
         if owned is not None and len(peak_times):

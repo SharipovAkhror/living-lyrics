@@ -161,6 +161,7 @@ def default_word_rule() -> dict:
         'peak_height': PEAK_HEIGHT,
         'require_rise': False,
         'require_second': False,
+        'attack_fill': False,
     }
 
 
@@ -233,6 +234,7 @@ def load_word_rule() -> dict:
     rule['line_min_words'] = int(chosen.get('line_min_words') or 2)
     rule['choir_attack'] = chosen.get('choir_attack') if chosen.get('choir_attack') in ('spectral', 'envelope') else 'spectral'
     rule['choir_clock'] = chosen.get('choir_clock') if chosen.get('choir_clock') in ('phone', 'vowel') else 'phone'
+    rule['attack_fill'] = bool(chosen.get('attack_fill'))
     blocked = []
     for name in chosen.get('blocked_primaries') or []:
         if isinstance(name, str) and name:
@@ -319,6 +321,26 @@ def nearest_attack(t: float, peaks: np.ndarray, owned: float | None) -> float | 
     if best_i < 0:
         return None
     return float(peaks[best_i]) - t
+
+
+def fill_attack(t: float, primary: np.ndarray, fallback: np.ndarray | None,
+                owned: float | None, tol: float) -> float | None:
+    """Spectral gap when it is inside the group tolerance, otherwise the envelope gap.
+
+    A spectral peak inside `tol` is kept even when the envelope peak is closer, so a
+    word already proved by the spectral attack does not move. The envelope is used
+    only when it itself is inside `tol`. It does not refute: the caller still passes
+    the spectral peaks to word_refuted. No fallback leaves the spectral gap alone.
+    """
+    primary_dt = nearest_attack(t, primary, owned)
+    if fallback is None or len(fallback) == 0:
+        return primary_dt
+    if primary_dt is not None and abs(primary_dt) <= float(tol) + 1e-12:
+        return primary_dt
+    alt = nearest_attack(t, fallback, owned)
+    if alt is not None and abs(alt) <= float(tol) + 1e-12:
+        return alt
+    return primary_dt
 
 
 def song_share_label() -> str:
@@ -881,7 +903,9 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
     peaks = onset_peak_times(sig, min_height=height)
     if rule.get('require_rise'):
         peaks = peaks_on_rise(sig, peaks, height)
-    env_peaks = envelope_peak_times(sig, min_height=height) if rule.get('choir_attack') == 'envelope' else None
+    fill_on = bool(rule.get('attack_fill'))
+    env_for_choir = rule.get('choir_attack') == 'envelope'
+    env_peaks = envelope_peak_times(sig, min_height=height) if (env_for_choir or fill_on) else None
     choir_vowel = rule.get('choir_clock') == 'vowel'
     rows = []
     prev_ctc: float | None = None
@@ -896,7 +920,8 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
         align_words = stamp_phoneme(
             align_words, phone_role, phone_model,
             choir_vowel=bool(choir_vowel and kind == 'choir'))
-        line_peaks = env_peaks if kind == 'choir' and env_peaks is not None else peaks
+        line_peaks = env_peaks if kind == 'choir' and env_for_choir and env_peaks is not None else peaks
+        fallback = env_peaks if fill_on else None
         cue = cues.get(line['id'])
         cue_start = float(cue['start']) if cue and cue.get('start') is not None else None
         ctc_line = None
@@ -913,7 +938,10 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
                 continue
             t = float(aw['ctc_s'])
             owned = None if prev_ctc is None else prev_ctc + tol
-            dt = nearest_attack(t, line_peaks, owned)
+            if fallback is not None:
+                dt = fill_attack(t, line_peaks, fallback, owned, tol)
+            else:
+                dt = nearest_attack(t, line_peaks, owned)
             presnap.append(None if dt is None else dt)
             if dt is not None:
                 abs_pre.append(abs(dt))
@@ -1034,6 +1062,7 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
         'fill_lines': len(passed) + len(choir_passed),
         'placed_by': _placed_by_counts(rows),
         'word_paths': word_paths,
+        'attack_fill': fill_on,
         'onset_consonant': _onset_stat(consonant), 'onset_soft': _onset_stat(soft),
     }
 
@@ -1436,6 +1465,10 @@ def proof_md(proof: dict) -> list[str]:
             L.append('- Второй выравниватель на поставленных строках: ' + ', '.join(bits) + '. '
                      'Доказательством он служит только у слова на гласную или связного, если атаки ближе 0,3 с нет, '
                      'и только когда его начало не дальше 0,10 с. Для согласной атака по-прежнему нужна.')
+    if proof.get('attack_fill'):
+        L.append('- Атака. Где спектрального пика внутри допуска группы нет, слово может опереться '
+                 'на пик огибающей внутри того же допуска. Спектральный пик внутри допуска остаётся. '
+                 'Огибающая слово не опровергает и строку не ставит.')
     L.append(f"- Сдвиг строки целиком — отдельная тревога с порогом {ru(TOL)} с. В pass/fail слова он не входит.")
     paths = proof.get('word_paths') or {}
     if proof.get('witnesses'):
