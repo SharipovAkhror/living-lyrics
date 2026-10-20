@@ -2493,6 +2493,9 @@
             "ru": "и я не шейх"
           },
           "translit": "Ва ма ана шайх",
+          "flags": [
+            "text-unverified"
+          ],
           "placedBy": "mms-window"
         },
         {
@@ -2521,7 +2524,8 @@
           },
           "translit": "Ва ля ана за‘им",
           "flags": [
-            "timing-draft"
+            "timing-draft",
+            "text-unverified"
           ],
           "placedBy": "mms-window"
         },
@@ -2551,7 +2555,8 @@
           },
           "translit": "Баль хадим мути‘",
           "flags": [
-            "timing-draft"
+            "timing-draft",
+            "text-unverified"
           ]
         }
       ]

@@ -13,6 +13,7 @@ import { LyricsSchema, SongSchema, type Lyrics, type Song } from '../../src/data
 import { harakatWarning } from '../../src/data/harakat.ts';
 import { INSTRUMENTS } from '../../src/instruments/list.ts';
 import { MODE_COUNTS, modeFit } from '../../src/instruments/layout.ts';
+import { checkSequence, sequenceSelfTest } from './sequence-check.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const args = process.argv.slice(2);
@@ -426,6 +427,7 @@ function check(slug: string): Issue[] {
   for (const l of langsSeen) if (!song.languages.includes(l)) warn('song.json', `строки на языке ${l} есть, но он не указан в languages`);
 
   checkParts(song, lyrics, sourcesText, err, warn);
+  issues.push(...checkSequence(slug));
   checkRouteFiles(slug, lyrics, err, warn);
   return issues;
 }
@@ -614,6 +616,12 @@ if (isCli()) {
     writeFileSync(join(root, 'docs/schema/song.schema.json'), JSON.stringify(z.toJSONSchema(SongSchema), null, 2) + '\n');
     writeFileSync(join(root, 'docs/schema/lyrics.schema.json'), JSON.stringify(z.toJSONSchema(LyricsSchema), null, 2) + '\n');
     console.log('schemas → docs/schema/');
+  }
+
+  const self = sequenceSelfTest();
+  if (self) {
+    console.log(`\n✗ sequence-check  ${self}`);
+    process.exit(1);
   }
 
   const slugs = readdirSync(join(root, 'content/songs')).filter((d) => !only.length || only.includes(d));
