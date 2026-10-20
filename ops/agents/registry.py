@@ -3,7 +3,7 @@
 A card is an ordinary Claude Code agent definition (a chat starts from it with
 `claude --agent <name> --bg`), plus a few fields of ours in its frontmatter: `chat` (the chat's
 name and address), `cwd`, `branch`, `reports_to`. Adding a chat = one card + rotate_chat.py.
-keep_chats.py, rotate_chat.py and publish_live.py read the cards from here; the live state of each
+keep_chats.py and rotate_chat.py read the cards from here; the live state of each
 chat comes from `claude agents --json`.
 
     python ops/agents/registry.py [<repo>]      # the chats with their live state, as JSON

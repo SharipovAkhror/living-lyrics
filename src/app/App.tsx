@@ -9,7 +9,6 @@ import { SongPage } from '@/pages/song/SongPage';
 
 const MethodPage = lazy(() => import('@/pages/MethodPage').then((m) => ({ default: m.MethodPage })));
 const InstrumentsPage = lazy(() => import('@/pages/InstrumentsPage'));
-const OpsPage = lazy(() => import('@/pages/OpsPage'));
 
 /** A quiet page while a lazy route's script arrives. The paper is already the app background. */
 function RouteFallback({ title, detail }: { title: string; detail: string }) {
@@ -65,13 +64,6 @@ export function App() {
       page = (
         <Suspense fallback={<RouteFallback title="Инструменты" detail="Открываем каталог" />}>
           <InstrumentsPage />
-        </Suspense>
-      );
-      break;
-    case 'ops':
-      page = (
-        <Suspense fallback={<RouteFallback title="Ход работы" detail="Открываем доску" />}>
-          <OpsPage />
         </Suspense>
       );
       break;
