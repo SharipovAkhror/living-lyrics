@@ -42,15 +42,21 @@ on an unmeasured rule.
 
 A phoneme witness is admitted after that choice, per song and language. Its
 word chance must stay at or under 15 %, and the same line measurement on the
-stamped clocks must stay at or under 5 % and prove strictly more lines. The
-search only proposes the stamp. The measurement after the stamp is the judge.
-A mismatch, or any error in that search, publishes the unstamped rule. The
-witness role does not place a line and does not refute a word. A separate
+stamped clocks must stay at or under 5 %. The search only proposes the stamp.
+The witness role does not place a line and does not refute a word. A separate
 pass may hand a refuted line to a later placer, and may place a still-open
-Latin line from the phoneme aligner. Each of those is kept only when proved
-lines rise and every gate still holds. A choir feature (the level-rise
-envelope, or the vowel nucleus) is kept only when the choir sample itself
-stays inside those caps and the solo lines do not change.
+Latin line from the phoneme aligner. A choir-wide vowel clock stays off unless
+its own measurement fits. Filling a missing spectral attack, a syllable nucleus
+on a long sung vowel, and a wider gate for a translation cue are separate
+configurations of the same kind.
+
+Every configuration that stays inside both caps is joined with the baseline.
+A line is proved when any joined configuration proves it. The join is one
+configuration: its word chance and its line chance are measured again on the
+shifted probes, and it is kept only when the line chance is still at or under
+5 %. A line the baseline proved is left out only when keeping it would put
+that chance over 5 %, and the chance that blocked it is recorded. A higher
+total does not replace a lower one.
 """
 from __future__ import annotations
 
@@ -158,25 +164,50 @@ def _near_mask(times: np.ndarray, peaks: np.ndarray, tol: float) -> np.ndarray:
     return dist <= tol + 1e-12
 
 
-def hit_count(records: list[dict], peaks: np.ndarray, shift: float, rule: dict,
-              fill_peaks: np.ndarray | None = None) -> tuple[int, int]:
-    """How many probe times pass this rule's attack test, and how many were tested.
+def _vowel_clock(word: dict) -> float | None:
+    """Syllable-nucleus time. A stamped `vowel` wins; otherwise the finished espeak model."""
+    if word.get('vowel') is not None:
+        return float(word['vowel'])
+    table = word.get('vowels') or {}
+    for name in ('xlsr-53-espeak', 'lv-60-espeak'):
+        if table.get(name) is not None:
+            return float(table[name])
+    return None
 
-    `fill_peaks` adds the envelope. A time hits when either curve is inside the
-    group tolerance. The line probe still prefers the spectral peak when that
-    peak is already inside the tolerance; for this binary rate the two agree.
+
+def hit_mask(records: list[dict], peaks: np.ndarray, shift: float, rule: dict,
+             fill_peaks: np.ndarray | None = None) -> np.ndarray:
+    """One boolean per record, in input order. Empty input returns an empty array.
+
+    `fill_peaks` adds the envelope. A nucleus clock, when the rule asks for it,
+    covers a long vowel whose spectral peak is outside the group tolerance.
+    The nucleus stays on the unshifted word: the shifted start hits only when
+    it lands within tolerance of that fixed clock.
     """
     if not records:
-        return 0, 0
-    hits = 0
-    for group, tol in (('solo', float(rule['tol'])), ('choir', float(rule['choir_tol'])), ('other', float(rule['tol']))):
-        rows = [r for r in records if r.get('group', 'solo') == group]
-        if not rows:
-            continue
+        return np.zeros(0, dtype=bool)
+    out = np.zeros(len(records), dtype=bool)
+    groups = {}
+    for index, rec in enumerate(records):
+        groups.setdefault(rec.get('group', 'solo'), []).append(index)
+    for group, indexes in groups.items():
+        tol = float(rule['choir_tol']) if group == 'choir' else float(rule['tol'])
+        rows = [records[i] for i in indexes]
         times = np.array([float(r['t']) + shift for r in rows], dtype=float)
         mask = _near_mask(times, peaks, tol)
         if fill_peaks is not None and len(fill_peaks):
             mask = mask | _near_mask(times, fill_peaks, tol)
+        if rule.get('nucleus'):
+            vowels = np.array([np.nan if _vowel_clock(r) is None else _vowel_clock(r) for r in rows])
+            long = np.array([
+                Q.long_vowel(
+                    r.get('roman') or '',
+                    r.get('own_t', r.get('t')),
+                    r.get('own_e', r.get('ctc_e')),
+                ) for r in rows
+            ])
+            nucleus_ok = long & np.isfinite(vowels) & (np.abs(vowels - times) <= tol + 1e-12)
+            mask = mask | nucleus_ok
         mode = rule.get('witnesses')
         if mode in ('one', 'two'):
             agree = float(rule.get('agree_tol', SECOND_TOL))
@@ -201,8 +232,22 @@ def hit_count(records: list[dict], peaks: np.ndarray, shift: float, rule: dict,
         elif rule.get('require_second'):
             seconds = np.array([np.nan if r.get('second') is None else float(r['second']) for r in rows])
             mask = mask & np.isfinite(seconds) & (np.abs(seconds - times) <= SECOND_TOL)
-        hits += int(mask.sum())
-    return hits, len(records)
+        out[np.array(indexes, dtype=int)] = mask
+    return out
+
+
+def hit_count(records: list[dict], peaks: np.ndarray, shift: float, rule: dict,
+              fill_peaks: np.ndarray | None = None) -> tuple[int, int]:
+    """How many probe times pass this rule's attack test, and how many were tested.
+
+    `fill_peaks` adds the envelope. A time hits when either curve is inside the
+    group tolerance. The line probe still prefers the spectral peak when that
+    peak is already inside the tolerance; for this binary rate the two agree.
+    """
+    if not records:
+        return 0, 0
+    mask = hit_mask(records, peaks, shift, rule, fill_peaks=fill_peaks)
+    return int(mask.sum()), len(records)
 
 
 def hit_rate(records: list[dict], peaks: np.ndarray, shift: float, rule: dict) -> float | None:
@@ -442,6 +487,8 @@ def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = No
             'placed': good,
             'placed_by': placed_by,
             'cue_start': None if line.get('cue_start') is None else float(line['cue_start']),
+            'cue_end': None if line.get('cue_end') is None else float(line['cue_end']),
+            'cue_lang': line.get('cue_lang'),
             'ctc_start': None if line.get('ctc_start') is None else float(line['ctc_start']),
             'section': line.get('section'),
             'next_cue': next_by.get(line['id']),
@@ -982,12 +1029,14 @@ def choose_refute(rows: list[dict]) -> dict:
     return out
 
 
-def _line_candidate(line: dict) -> bool:
+def _line_candidate(line: dict, translation_half: float | None = None) -> bool:
     """A placed solo or choir line with a cue and at least two lettered words.
 
     A one-word line can never meet the minimum of two proved words, so it is
     left out of both the numerator and the denominator of the line chance.
     An uncued line cannot be proved either, and is left out for the same reason.
+    A same-language cue stays inside 0.30 s. A translation cue may use the
+    measured half when the caller is pricing that wider gate.
     """
     if not line.get('placed') or line.get('group') not in ('solo', 'choir'):
         return False
@@ -998,6 +1047,10 @@ def _line_candidate(line: dict) -> bool:
     start = line.get('ctc_start')
     if cue is None or start is None:
         return False
+    if (translation_half is not None
+            and P.cue_is_translation(line.get('lang'), line.get('cue_lang'))):
+        return P.in_translation_window(
+            float(start), float(cue), line.get('prev_end'), line.get('next_cue'), float(translation_half))
     return round(abs(float(start) - float(cue)), 3) <= Q.PROOF_CUE_TOL
 
 
@@ -1010,12 +1063,15 @@ def _mode_of_line(modes: dict, line: dict) -> str:
 
 def _probe_parts(words: list[dict], peaks: np.ndarray, group: str | None, mode: str,
                  refute: dict, prev: float | None,
-                 fill_peaks: np.ndarray | None = None) -> tuple[list[dict], list[str | None]]:
+                 fill_peaks: np.ndarray | None = None,
+                 nucleus: bool = False) -> tuple[list[dict], list[str | None]]:
     """Proved-word rows and refutation flags. The share K is applied by the caller.
 
     `fill_peaks` may supply the attack when the spectral peak is outside the
     group tolerance. Refutation still reads `peaks`, so the envelope cannot
     refute a word and cannot move a spectral hit that was already inside.
+    `nucleus` may supply that attack from the word's own vowel clock when the
+    romanisation is a long sung vowel. The clock is not shifted.
     """
     tol = 0.20 if group == 'choir' else 0.10
     align_words = []
@@ -1026,10 +1082,13 @@ def _probe_parts(words: list[dict], peaks: np.ndarray, group: str | None, mode: 
             'roman': word.get('roman') or 'x',
             'ctc_s': float(word['t']),
             'ctc_e': word.get('ctc_e'),
+            'own_t': word.get('own_t', word.get('t')),
+            'own_e': word.get('own_e', word.get('ctc_e')),
             'second_s': word.get('second'),
             'third_s': word.get('third'),
             'phoneme_s': word.get('phoneme'),
             'phoneme_role': word.get('phoneme_role'),
+            'vowel_s': _vowel_clock(word) if nucleus else None,
         }
         align_words.append(item)
         owned = None if cursor is None else cursor + tol
@@ -1039,7 +1098,8 @@ def _probe_parts(words: list[dict], peaks: np.ndarray, group: str | None, mode: 
         else:
             presnap.append(Q.nearest_attack(t, peaks, owned))
         cursor = t
-    proved = Q.prove_words(align_words, presnap, tol, witnesses=mode, agree_tol=SECOND_TOL)
+    proved = Q.prove_words(
+        align_words, presnap, tol, witnesses=mode, agree_tol=SECOND_TOL, nucleus=nucleus)
     flags = [Q.word_refuted(word, peaks, refute) for word in align_words]
     return proved, flags
 
@@ -1053,7 +1113,9 @@ def _probe_line(words: list[dict], peaks: np.ndarray, group: str | None, mode: s
 def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: dict,
                      shift: float = 0.0, shuffle: bool = False, primary: str | None = None,
                      choir_peaks: np.ndarray | None = None,
-                     fill_peaks: np.ndarray | None = None) -> list[dict]:
+                     fill_peaks: np.ndarray | None = None,
+                     nucleus: bool = False,
+                     translation_half: float | None = None) -> list[dict]:
     """One row per candidate line: proved words and refutation flags under this probe.
 
     The same shift and the same previous-line start as `line_pass_count`. K is not
@@ -1067,7 +1129,7 @@ def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: 
             prev = float(line['words'][-1]['t'])
     out = []
     for i, line in enumerate(lines):
-        if not _line_candidate(line):
+        if not _line_candidate(line, translation_half):
             continue
         family = P.primary_family(line.get('placed_by'))
         if primary is not None and family != primary:
@@ -1078,17 +1140,28 @@ def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: 
             rotated = src[1:] + src[:1]
             for word, donor in zip(src, rotated):
                 item = dict(word)
+                item['own_t'] = float(word['t'])
+                item['own_e'] = word.get('ctc_e')
                 item['t'] = float(donor['t'])
                 moved.append(item)
         else:
             for word in src:
                 item = dict(word)
+                item['own_t'] = float(word['t'])
+                item['own_e'] = word.get('ctc_e')
                 item['t'] = float(word['t']) + float(shift)
                 moved.append(item)
+        window_fail = False
+        if (translation_half is not None and moved
+                and P.cue_is_translation(line.get('lang'), line.get('cue_lang'))
+                and line.get('cue_start') is not None):
+            window_fail = not P.in_translation_window(
+                float(moved[0]['t']), float(line['cue_start']),
+                line.get('prev_end'), line.get('next_cue'), float(translation_half))
         use_peaks = choir_peaks if line.get('group') == 'choir' and choir_peaks is not None else peaks
         proved, flags = _probe_parts(
             moved, use_peaks, line.get('group'), _mode_of_line(modes, line), refute, incoming[i],
-            fill_peaks=fill_peaks)
+            fill_peaks=fill_peaks, nucleus=nucleus)
         out.append({
             'id': line.get('id'),
             'lang': line.get('lang') or '?',
@@ -1096,6 +1169,7 @@ def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: 
             'family': family,
             'proved': proved,
             'flags': flags,
+            'window_fail': window_fail,
         })
     return out
 
@@ -1303,6 +1377,378 @@ def _public_primary(row: dict) -> dict:
         'by_song': row.get('by_song') or {},
         'shifts': {key: _round(value) for key, value in (row.get('shifts') or {}).items()},
     }
+
+
+def _share_index(share) -> int | None:
+    if share is None:
+        return None
+    for index, item in enumerate(LINE_SHARES):
+        if abs(float(item) - float(share)) < 1e-9:
+            return index
+    return None
+
+
+def _copy_line_map(lines: dict) -> dict:
+    out = {}
+    for lid, info in (lines or {}).items():
+        out[str(lid)] = {
+            'family': info.get('family') or 'mms',
+            'bits': np.array(info.get('bits'), dtype=bool),
+            'song': info.get('song'),
+        }
+    return out
+
+
+def _copy_word_map(words: dict) -> dict:
+    out = {}
+    for lid, mat in (words or {}).items():
+        arr = np.asarray(mat, dtype=bool)
+        if arr.size == 0:
+            continue
+        if arr.ndim == 1:
+            arr = arr.reshape(1, -1)
+        out[str(lid)] = arr[:, :7].copy()
+    return out
+
+
+def _or_line_map(dst: dict, src: dict) -> None:
+    for lid, info in (src or {}).items():
+        key = str(lid)
+        bits = np.array(info.get('bits'), dtype=bool)
+        prev = dst.get(key)
+        if prev is None:
+            dst[key] = {'family': info.get('family') or 'mms', 'bits': bits, 'song': info.get('song')}
+        else:
+            prev['bits'] = prev['bits'] | bits
+
+
+def _or_word_map(dst: dict, src: dict, only: set | None = None) -> None:
+    for lid, mat in (src or {}).items():
+        key = str(lid)
+        if only is not None and key not in only:
+            continue
+        arr = np.asarray(mat, dtype=bool)
+        if arr.size == 0:
+            continue
+        if arr.ndim == 1:
+            arr = arr.reshape(1, -1)
+        arr = arr[:, :7]
+        prev = dst.get(key)
+        if prev is None or prev.shape != arr.shape:
+            dst[key] = arr.copy()
+        else:
+            dst[key] = prev | arr
+
+
+def _true_ids(lines: dict, ki: int) -> list[str]:
+    out = []
+    for lid, info in lines.items():
+        bits = np.asarray(info.get('bits'), dtype=bool)
+        if bits.shape[0] > ki and bool(bits[ki, 0]):
+            out.append(str(lid))
+    return out
+
+
+def _family_line_chance(lines: dict, ki: int) -> tuple[float | None, list[str], int]:
+    """Max over placers of the pooled shift rate, the proved ids, and the candidate count.
+
+    Same reduction as the phoneme tables: each magnitude pools both signs, the
+    shuffle is its own rate, and the line chance is the max of those rates.
+    """
+    by_family: dict[str, list[tuple[str, np.ndarray]]] = {}
+    for lid, info in lines.items():
+        bits = np.asarray(info.get('bits'), dtype=bool)
+        if bits.ndim != 2 or bits.shape[1] < 8 or bits.shape[0] <= ki:
+            continue
+        family = info.get('family') or 'mms'
+        by_family.setdefault(family, []).append((str(lid), bits))
+    chances = []
+    proved: list[str] = []
+    candidates = 0
+    for rows in by_family.values():
+        count = len(rows)
+        if count == 0:
+            continue
+        candidates += count
+        probe = [0] * 8
+        for lid, bits in rows:
+            if bool(bits[ki, 0]):
+                proved.append(lid)
+            for col in range(8):
+                probe[col] += int(bool(bits[ki, col]))
+        rates = []
+        for index, _mag in enumerate(SHIFTS):
+            hits = probe[1 + 2 * index] + probe[2 + 2 * index]
+            rates.append(hits / (2 * count))
+        rates.append(probe[7] / count)
+        chances.append(max(rates))
+    if not chances:
+        return None, proved, candidates
+    return max(chances), proved, candidates
+
+
+def _word_chance_from(words: dict) -> float | None:
+    """Max of the three pooled shift rates and the within-line rotation.
+
+    Each mask is one word: six signed shifts, then the rotation.
+    """
+    mats = []
+    for mat in (words or {}).values():
+        arr = np.asarray(mat, dtype=bool)
+        if arr.size == 0:
+            continue
+        if arr.ndim == 1:
+            arr = arr.reshape(1, -1)
+        if arr.shape[1] < 7:
+            continue
+        mats.append(arr[:, :7])
+    if not mats:
+        return None
+    stack = np.concatenate(mats, axis=0)
+    count = int(stack.shape[0])
+    if count == 0:
+        return None
+    rates = []
+    for index in range(3):
+        hits = int(stack[:, 2 * index].sum() + stack[:, 2 * index + 1].sum())
+        rates.append(hits / (2 * count))
+    rates.append(float(stack[:, 6].sum()) / count)
+    return max(rates)
+
+
+def _extra_rate(maps: list[dict], line_ids, ki: int) -> float | None:
+    """Pooled ±half passes of the translation lines that are in this join.
+
+    A line pays only when a joined member recorded the wider probe for it.
+    """
+    hits = 0
+    count = 0
+    seen = set()
+    for lid in line_ids:
+        key = str(lid)
+        if key in seen:
+            continue
+        pair = None
+        for item in maps:
+            if key not in (item or {}):
+                continue
+            value = item[key]
+            arr = np.asarray(value, dtype=bool)
+            if arr.ndim == 1 and arr.size >= 2:
+                pair = (bool(arr[0]), bool(arr[1]))
+            elif arr.ndim == 2 and arr.shape[0] > ki and arr.shape[1] >= 2:
+                pair = (bool(arr[ki, 0]), bool(arr[ki, 1]))
+            break
+        if pair is None:
+            continue
+        seen.add(key)
+        count += 1
+        hits += int(pair[0]) + int(pair[1])
+    if count == 0:
+        return None
+    return hits / (2 * count)
+
+
+def _add_proved_lines(dst_lines: dict, dst_words: dict, member: dict, ids: list[str],
+                      baseline_ids: set[str]) -> None:
+    """Add lines this member proves. A baseline line keeps its own probe bits."""
+    lines = member.get('lines') or {}
+    words = member.get('words') or {}
+    for lid in ids:
+        if lid in baseline_ids:
+            continue
+        info = lines.get(lid)
+        if info is None:
+            continue
+        dst_lines[lid] = {
+            'family': info.get('family') or 'mms',
+            'bits': np.array(info.get('bits'), dtype=bool),
+            'song': info.get('song'),
+        }
+        if lid in words:
+            _or_word_map(dst_words, {lid: words[lid]})
+
+
+def admit_union(members: list[dict], baseline_name: str = 'baseline') -> dict:
+    """Join every admitted configuration with the baseline.
+
+    The full join ORs the probe bits. It is kept when that chance is still at
+    or under 5 % and the word chance is still at or under 15 %. Otherwise the
+    baseline stays and other lines are added one by one while the same caps
+    hold. A baseline line is never removed here. K stays the baseline K.
+    """
+    usable = [item for item in members if item]
+    base = next((item for item in usable if item.get('baseline') or item.get('name') == baseline_name), None)
+    empty = {
+        'proved': [], 'k': None, 'chance': None, 'word_chance': None, 'within_limit': False,
+        'full_or': False, 'lost': [], 'lost_chance': None, 'lost_detail': {}, 'word_lost': [],
+        'line_member': {}, 'members': [], 'baseline_ids': [], 'candidates': 0,
+    }
+    if base is None:
+        return empty
+    ki = _share_index(base.get('k'))
+    if ki is None:
+        return empty
+    base_lines = _copy_line_map(base.get('lines') or {})
+    base_words = _copy_word_map(base.get('words') or {})
+    _base_chance, base_proved, _base_n = _family_line_chance(base_lines, ki)
+    baseline_ids = set(base_proved)
+
+    def evaluate(lines: dict, words: dict, extras: list[dict]) -> tuple:
+        chance, proved, count = _family_line_chance(lines, ki)
+        extra = _extra_rate(extras, list(lines), ki)
+        if extra is not None:
+            chance = extra if chance is None else max(float(chance), float(extra))
+        return chance, _word_chance_from(words), proved, count
+
+    def fits(chance, word_chance, proved) -> bool:
+        if chance is None or float(chance) > LINE_LIMIT + 1e-12:
+            return False
+        if not baseline_ids <= set(proved):
+            return False
+        # The word cap can refuse an extra line. It cannot drop a baseline line,
+        # and a baseline that already passed its own slices is not failed here
+        # when the only proved lines are that baseline.
+        if word_chance is not None and float(word_chance) > LIMIT + 1e-12:
+            if set(proved) - baseline_ids:
+                return False
+        return True
+
+    def line_blocked(chance) -> bool:
+        return chance is None or float(chance) > LINE_LIMIT + 1e-12
+
+    admitted = [item for item in usable if item is not base and item.get('within_limit')]
+    full_lines = _copy_line_map(base_lines)
+    full_words = _copy_word_map(base_words)
+    full_extra = [dict(base.get('extra') or {})]
+    for item in admitted:
+        _or_line_map(full_lines, item.get('lines') or {})
+        _or_word_map(full_words, item.get('words') or {})
+        full_extra.append(dict(item.get('extra') or {}))
+    full_chance, full_wc, full_proved, full_n = evaluate(full_lines, full_words, full_extra)
+    full_ok = fits(full_chance, full_wc, full_proved)
+    line_member = {lid: str(base.get('name') or baseline_name) for lid in baseline_ids}
+    if full_ok:
+        current_lines, current_words, current_extra = full_lines, full_words, full_extra
+        current_chance, current_wc, current_n = full_chance, full_wc, full_n
+        used = [str(base.get('name') or baseline_name)]
+        for item in admitted:
+            name = str(item.get('name') or '')
+            if name and name not in used:
+                used.append(name)
+            for lid in _true_ids(item.get('lines') or {}, ki):
+                if lid not in line_member:
+                    line_member[lid] = name
+        full_flag = True
+    else:
+        current_lines = _copy_line_map(base_lines)
+        current_words = _copy_word_map(base_words)
+        current_extra = [dict(base.get('extra') or {})]
+        current_chance, current_wc, _proved, current_n = evaluate(current_lines, current_words, current_extra)
+        used = [str(base.get('name') or baseline_name)]
+        full_flag = False
+
+    lost_detail: dict[str, float] = {}
+    word_lost: list[str] = []
+
+    def commit(lines, words, extras, chance, word_chance, count, name: str, added: list[str]) -> None:
+        nonlocal current_lines, current_words, current_extra, current_chance, current_wc, current_n
+        current_lines, current_words, current_extra = lines, words, extras
+        current_chance, current_wc, current_n = chance, word_chance, count
+        if name and name not in used:
+            used.append(name)
+        for lid in added:
+            if lid not in line_member:
+                line_member[lid] = name
+
+    def try_ids(item: dict, ids: list[str]) -> bool:
+        if not ids:
+            return False
+        name = str(item.get('name') or '')
+        trial_lines = _copy_line_map(current_lines)
+        trial_words = _copy_word_map(current_words)
+        _add_proved_lines(trial_lines, trial_words, item, ids, baseline_ids)
+        trial_extra = list(current_extra)
+        if item.get('extra'):
+            trial_extra.append(dict(item.get('extra') or {}))
+        chance, word_chance, proved, count = evaluate(trial_lines, trial_words, trial_extra)
+        if fits(chance, word_chance, proved) and all(lid in proved for lid in ids):
+            commit(trial_lines, trial_words, trial_extra, chance, word_chance, count, name, ids)
+            return True
+        if line_blocked(chance):
+            recorded = float(chance) if chance is not None else 1.0
+            for lid in ids:
+                if lid in line_member:
+                    continue
+                prev = lost_detail.get(lid)
+                if prev is None or recorded > prev:
+                    lost_detail[lid] = recorded
+        else:
+            for lid in ids:
+                if lid not in line_member and lid not in word_lost:
+                    word_lost.append(lid)
+        return False
+
+    pool = []
+    seen = set()
+    for item in usable:
+        if item is base or id(item) in seen:
+            continue
+        if not item.get('within_limit') and not item.get('partial'):
+            continue
+        seen.add(id(item))
+        pool.append(item)
+    for item in pool:
+        if full_flag and item.get('within_limit') and not item.get('partial'):
+            continue
+        fresh = [lid for lid in _true_ids(item.get('lines') or {}, ki) if lid not in line_member]
+        fresh.sort()
+        if item.get('within_limit') and len(fresh) > 1:
+            if try_ids(item, fresh):
+                continue
+        for lid in fresh:
+            if lid in line_member:
+                continue
+            try_ids(item, [lid])
+
+    final_chance, final_wc, final_proved, final_n = evaluate(current_lines, current_words, current_extra)
+    lost = sorted(lid for lid in lost_detail if lid not in final_proved and lid not in baseline_ids)
+    lost_chance = None
+    if lost:
+        lost_chance = max(lost_detail[lid] for lid in lost)
+    return {
+        'proved': sorted(final_proved),
+        'k': float(LINE_SHARES[ki]),
+        'chance': final_chance,
+        'word_chance': final_wc,
+        'within_limit': fits(final_chance, final_wc, final_proved),
+        'full_or': full_flag,
+        'lost': lost,
+        'lost_chance': lost_chance,
+        'lost_detail': {lid: lost_detail[lid] for lid in lost},
+        'word_lost': sorted(lid for lid in word_lost if lid not in final_proved),
+        'line_member': {lid: line_member[lid] for lid in final_proved if lid in line_member},
+        'members': used,
+        'baseline_ids': sorted(baseline_ids),
+        'candidates': final_n,
+    }
+
+
+def pass_keeps_baseline(result: dict, baseline_ids) -> bool:
+    """False when a baseline line is missing and no line-cap above 5 % explains it."""
+    proved = set(result.get('proved') or [])
+    detail = result.get('lost_detail') or {}
+    lost = set(result.get('lost') or [])
+    for lid in baseline_ids:
+        key = str(lid)
+        if key in proved:
+            continue
+        chance = detail.get(key)
+        if chance is None and key in lost:
+            chance = result.get('lost_chance')
+        if chance is None or float(chance) <= LINE_LIMIT + 1e-12:
+            return False
+    return True
 
 
 def _public_scope(scope: dict) -> dict:
@@ -1822,6 +2268,8 @@ def _line_from_report(slug: str, rec: dict, words_src: list[tuple], order: int, 
         'placed': False,
         'placed_by': None,
         'cue_start': None if rec.get('cue_start') is None else float(rec['cue_start']),
+        'cue_end': None if rec.get('cue_end') is None else float(rec['cue_end']),
+        'cue_lang': rec.get('cue_lang'),
         'ctc_start': None,
         'section': rec.get('section'),
         'next_cue': next_cue,
@@ -1866,7 +2314,8 @@ def _apply_latin(per_song: list[dict], sections: dict) -> list[dict]:
             else:
                 target = existing
             proposal = P.consider_phoneme_place(
-                lettered, target.get('cue_start'), target.get('next_cue'), bounds.get(rec.get('section')))
+                lettered, target.get('cue_start'), target.get('next_cue'), bounds.get(rec.get('section')),
+                limit=P.cue_accept_limit(target.get('lang'), target.get('cue_lang')))
             if not proposal:
                 continue
             proposal['witnesses'] = [
@@ -2024,6 +2473,462 @@ def _accept_stamp(per_song: list[dict], decision: dict, modes: dict, refute: dic
     return False, None, None, None
 
 
+def _stamp_neighbours(per_song: list[dict]) -> None:
+    """Previous cue end, so a translation window can stop at the neighbour."""
+    for song in per_song:
+        ordered = sorted(song.get('all_lines') or [], key=lambda line: int(line.get('order') or 0))
+        for index, line in enumerate(ordered):
+            prev = None
+            for earlier in range(index - 1, -1, -1):
+                if ordered[earlier].get('cue_end') is not None:
+                    prev = float(ordered[earlier]['cue_end'])
+                    break
+            line['prev_end'] = prev
+
+
+def _probe_columns() -> list[tuple[float, bool]]:
+    columns = [(0.0, False)]
+    for mag in SHIFTS:
+        columns.append((float(mag), False))
+        columns.append((-float(mag), False))
+    columns.append((0.0, True))
+    return columns
+
+
+def _capture_word_masks(per_song: list[dict], modes: dict, *, fill: bool = False,
+                        nucleus: bool = False, translation_half: float | None = None,
+                        blocked: set | None = None) -> dict:
+    """Ordinary shift masks. A blocked placer is scored for ownership and then left out.
+
+    A translation line outside 0.30 s enters only when this member is pricing the
+    wider gate. Its words then pay the ordinary shifts. The ±half probe stays a
+    line probe, not a second word shift.
+    """
+    blocked = blocked or set()
+    out = {}
+    for song in per_song:
+        peaks = song['sets'][(WITNESS_HEIGHT, False)]
+        fill_peaks = song.get('envelope_peaks') if fill else None
+        for line in song.get('all_lines') or []:
+            if not _line_candidate(line, translation_half):
+                continue
+            if P.primary_family(line.get('placed_by')) in blocked:
+                continue
+            rule = dict(_fill_rule(_mode_of_line(modes, line)))
+            if nucleus:
+                rule['nucleus'] = True
+            recs = []
+            for word in line.get('words') or []:
+                item = dict(word)
+                item['own_t'] = float(word['t'])
+                item['own_e'] = word.get('ctc_e')
+                recs.append(item)
+            if not recs:
+                continue
+            use_peaks = peaks
+            if (line.get('group') == 'choir' and song.get('use_choir_envelope')
+                    and song.get('envelope_peaks') is not None):
+                use_peaks = song['envelope_peaks']
+            cols = []
+            for mag in SHIFTS:
+                for sign in (mag, -mag):
+                    cols.append(hit_mask(recs, use_peaks, float(sign), rule, fill_peaks=fill_peaks))
+            if len(recs) >= 2:
+                rotated = recs[1:] + recs[:1]
+                shuffled = []
+                for word, donor in zip(recs, rotated):
+                    moved = dict(word)
+                    moved['t'] = float(donor['t'])
+                    shuffled.append(moved)
+                shuffle_mask = hit_mask(shuffled, use_peaks, 0.0, rule, fill_peaks=fill_peaks)
+            else:
+                shuffle_mask = np.zeros(len(recs), dtype=bool)
+            mat = np.zeros((len(recs), 7), dtype=bool)
+            for wi in range(len(recs)):
+                for col in range(6):
+                    mat[wi, col] = bool(cols[col][wi])
+                mat[wi, 6] = bool(shuffle_mask[wi]) if wi < len(shuffle_mask) else False
+            out[str(line.get('id'))] = mat
+    return out
+
+
+def _capture_state(per_song: list[dict], modes: dict, refute: dict, *, fill: bool = False,
+                   nucleus: bool = False, translation_half: float | None = None,
+                   blocked: set | None = None) -> tuple[dict, dict, dict]:
+    """Eight probe columns, plus the ±half columns of a translation cue."""
+    cut = _refute_cut(float(refute.get('both_far', 0.20)), float(refute.get('only_far', 0.30)))
+    blocked = blocked or set()
+    _stamp_neighbours(per_song)
+    lines_out: dict = {}
+    extra: dict = {}
+    for song in per_song:
+        peaks = song['sets'][(WITNESS_HEIGHT, False)]
+        choir = song.get('envelope_peaks') if song.get('use_choir_envelope') else None
+        fill_peaks = song.get('envelope_peaks') if fill else None
+        rows = list(song.get('all_lines') or [])
+        col_parts = []
+        for shift, shuffle in _probe_columns():
+            parts = line_probe_parts(
+                rows, peaks, modes, cut, shift=shift, shuffle=shuffle,
+                choir_peaks=choir, fill_peaks=fill_peaks,
+                nucleus=nucleus, translation_half=translation_half)
+            col_parts.append({item['id']: item for item in parts})
+        wide_cols = []
+        if translation_half is not None:
+            for sign in (float(translation_half), -float(translation_half)):
+                parts = line_probe_parts(
+                    rows, peaks, modes, cut, shift=sign, choir_peaks=choir,
+                    fill_peaks=fill_peaks, nucleus=nucleus, translation_half=translation_half)
+                wide_cols.append({item['id']: item for item in parts})
+        by_id = {line.get('id'): line for line in rows}
+        for lid in (col_parts[0] if col_parts else {}):
+            source = by_id.get(lid)
+            family = P.primary_family((source or {}).get('placed_by'))
+            if family in blocked:
+                continue
+            bits = np.zeros((len(LINE_SHARES), 8), dtype=bool)
+            song_name = song.get('slug')
+            for col, part in enumerate(col_parts):
+                item = part.get(lid)
+                if item is None or item.get('window_fail'):
+                    continue
+                family = item.get('family') or family
+                song_name = item.get('song') or song_name
+                for share_i, share in enumerate(LINE_SHARES):
+                    bits[share_i, col] = Q.line_word_ok(item['proved'], item['flags'], share)
+            lines_out[str(lid)] = {'family': family, 'bits': bits, 'song': song_name}
+            if not wide_cols or source is None:
+                continue
+            if not P.cue_is_translation(source.get('lang'), source.get('cue_lang')):
+                continue
+            grid = np.zeros((len(LINE_SHARES), 2), dtype=bool)
+            for sign_i, part in enumerate(wide_cols):
+                item = part.get(lid)
+                if item is None or item.get('window_fail'):
+                    continue
+                for share_i, share in enumerate(LINE_SHARES):
+                    grid[share_i, sign_i] = Q.line_word_ok(item['proved'], item['flags'], share)
+            extra[str(lid)] = grid
+    words = _capture_word_masks(
+        per_song, modes, fill=fill, nucleus=nucleus,
+        translation_half=translation_half, blocked=blocked)
+    return lines_out, words, extra
+
+
+def _member_from_state(name: str, per_song: list[dict], modes: dict, refute: dict, k,
+                       *, baseline: bool = False, fill: bool = False, nucleus: bool = False,
+                       translation_half: float | None = None, blocked: set | None = None,
+                       partial: bool = False, min_words: int = 0) -> dict:
+    lines, words, extra = _capture_state(
+        per_song, modes, refute, fill=fill, nucleus=nucleus,
+        translation_half=translation_half, blocked=blocked)
+    ki = _share_index(k)
+    chance, proved, _count = (None, [], 0) if ki is None else _family_line_chance(lines, ki)
+    if translation_half is not None and ki is not None and extra:
+        rate = _extra_rate([extra], list(lines), ki)
+        if rate is not None:
+            chance = rate if chance is None else max(float(chance), float(rate))
+    word_chance = _word_chance_from(words)
+    word_n = 0
+    for mat in words.values():
+        word_n += int(np.asarray(mat).shape[0])
+    enough = word_n >= int(min_words)
+    within = (
+        enough and ki is not None and chance is not None
+        and float(chance) <= LINE_LIMIT + 1e-12
+        and (word_chance is None or float(word_chance) <= LIMIT + 1e-12)
+    )
+    return {
+        'name': name,
+        'baseline': baseline,
+        'within_limit': bool(baseline or within),
+        'partial': bool(partial and enough and not baseline),
+        'k': None if ki is None else float(LINE_SHARES[ki]),
+        'lines': lines,
+        'words': words,
+        'extra': extra,
+        'chance': chance,
+        'word_chance': word_chance,
+        'proved_n': len(proved),
+    }
+
+
+def _quiet_flags(per_song: list[dict]) -> None:
+    for song in per_song:
+        song['use_attack_fill'] = False
+        song['use_choir_envelope'] = False
+
+
+def _phoneme_member(name: str, per_song: list[dict], decision: dict, modes: dict, refute: dict, k,
+                    *, fill: bool = False) -> dict | None:
+    """The word-witness stamp, without the choir-wide vowel clock or envelope."""
+    if not decision or not decision.get('admitted'):
+        return None
+    import phoneme_choice as Phone
+
+    stamped = dict(decision)
+    stamped['choir_attack'] = 'spectral'
+    stamped['choir_clock'] = 'phone'
+    Phone.apply(per_song, stamped)
+    _quiet_flags(per_song)
+    if fill:
+        for song in per_song:
+            song['use_attack_fill'] = True
+    try:
+        return _member_from_state(
+            name, per_song, modes, refute, k, fill=fill, partial=True, blocked=set())
+    finally:
+        Phone.clear(per_song)
+        _quiet_flags(per_song)
+
+
+def _moves_for(members_moves: list[tuple[str, list[dict]]], line_member: dict) -> dict[str, list[dict]]:
+    """Retimes only for lines the join assigned to the placer that moved them."""
+    by_song: dict[str, list[dict]] = {}
+    seen = set()
+    for name, moves in members_moves:
+        for row in moves or []:
+            lid = str(row.get('id') or '')
+            if line_member.get(lid) != name or (name, lid) in seen:
+                continue
+            seen.add((name, lid))
+            song = str(row.get('song') or '')
+            item = {key: value for key, value in row.items() if key != 'song'}
+            by_song.setdefault(song, []).append(item)
+    return by_song
+
+
+def _union_overlay(per_song: list[dict], origin: list, origin_modes: dict, refute: dict,
+                   origin_picked: dict, decision: dict, placement_kept: bool,
+                   scopes_ok: bool) -> dict | None:
+    """Join the baseline with every other cap-holding configuration.
+
+    The live lines are restored on the way out. A second phoneme search runs
+    only when placement has already replaced the baseline, so the pre-placement
+    stamp is still a member.
+    """
+    k = origin_picked.get('k')
+    if _share_index(k) is None:
+        print('объединение: у базового прохода нет доли K', flush=True)
+        return None
+    blocked = set(origin_picked.get('blocked_primaries') or [])
+    live = _snapshot(per_song)
+    moves: list[tuple[str, list[dict]]] = []
+    try:
+        _restore(per_song, origin)
+        _quiet_flags(per_song)
+        sections = {song['slug']: _section_bounds(song['slug']) for song in per_song}
+        print('объединение: базовый проход', flush=True)
+        members = [_member_from_state(
+            'baseline', per_song, origin_modes, refute, k,
+            baseline=True, blocked=blocked, partial=False)]
+        print(
+            f"объединение: база доказала {members[0]['proved_n']}, "
+            f"проход строки {members[0]['chance']}",
+            flush=True,
+        )
+        print('объединение: заливка на базовых строках', flush=True)
+        for song in per_song:
+            song['use_attack_fill'] = True
+        try:
+            members.append(_member_from_state(
+                'fill', per_song, origin_modes, refute, k, fill=True, partial=True, min_words=MIN_WORDS))
+        finally:
+            _quiet_flags(per_song)
+        print(
+            f"объединение: заливка {members[-1]['proved_n']}, "
+            f"проход строки {members[-1]['chance']}, слова {members[-1]['word_chance']}, "
+            f"внутри {members[-1]['within_limit']}",
+            flush=True,
+        )
+        print('объединение: ядро слога', flush=True)
+        members.append(_member_from_state(
+            'nucleus', per_song, origin_modes, refute, k, nucleus=True, partial=True))
+        print(
+            f"объединение: ядро {members[-1]['proved_n']}, "
+            f"проход строки {members[-1]['chance']}, внутри {members[-1]['within_limit']}",
+            flush=True,
+        )
+        print('объединение: окно переводной реплики', flush=True)
+        members.append(_member_from_state(
+            'wide', per_song, origin_modes, refute, k,
+            translation_half=P.TRANSLATION_HALF, partial=True))
+        print(
+            f"объединение: окно {members[-1]['proved_n']}, "
+            f"проход строки {members[-1]['chance']}, внутри {members[-1]['within_limit']}",
+            flush=True,
+        )
+        origin_decision = decision
+        if placement_kept:
+            print('объединение: фонемный поиск на базовых строках', flush=True)
+            import phoneme_choice as Phone
+            origin_decision = Phone.choose(per_song, origin_modes, refute)
+        phone = _phoneme_member('phoneme', per_song, origin_decision, origin_modes, refute, k)
+        if phone is not None:
+            members.append(phone)
+            print(
+                f"объединение: фонема {phone['proved_n']}, проход строки {phone['chance']}, "
+                f"внутри {phone['within_limit']}",
+                flush=True,
+            )
+            both = _phoneme_member(
+                'phoneme-fill', per_song, origin_decision, origin_modes, refute, k, fill=True)
+            if both is not None:
+                members.append(both)
+                print(
+                    f"объединение: фонема и заливка {both['proved_n']}, "
+                    f"проход строки {both['chance']}, внутри {both['within_limit']}",
+                    flush=True,
+                )
+        _restore(per_song, origin)
+        _quiet_flags(per_song)
+        hand_moves = _apply_handoffs(per_song, refute, sections, True)
+        if hand_moves:
+            hand = _member_from_state(
+                'handoff', per_song, origin_modes, refute, k,
+                translation_half=P.TRANSLATION_HALF, partial=True)
+            members.append(hand)
+            moves.append(('handoff', hand_moves))
+            print(
+                f"объединение: передача {hand['proved_n']}, проход строки {hand['chance']}, "
+                f"внутри {hand['within_limit']}",
+                flush=True,
+            )
+            if origin_decision and origin_decision.get('admitted'):
+                mixed = _phoneme_member(
+                    'handoff-phoneme', per_song, origin_decision, origin_modes, refute, k)
+                if mixed is not None:
+                    members.append(mixed)
+                    print(
+                        f"объединение: передача и фонема {mixed['proved_n']}, "
+                        f"проход строки {mixed['chance']}, внутри {mixed['within_limit']}",
+                        flush=True,
+                    )
+        _restore(per_song, origin)
+        _quiet_flags(per_song)
+        latin_moves = _apply_latin(per_song, sections)
+        if latin_moves:
+            latin = _member_from_state(
+                'latin', per_song, origin_modes, refute, k,
+                translation_half=P.TRANSLATION_HALF, partial=True)
+            members.append(latin)
+            moves.append(('latin', latin_moves))
+            print(
+                f"объединение: латынь {latin['proved_n']}, проход строки {latin['chance']}, "
+                f"внутри {latin['within_limit']}",
+                flush=True,
+            )
+        result = admit_union(members)
+        print(
+            f"объединение: доказано {len(result.get('proved') or [])}, "
+            f"проход строки {result.get('chance')}, слов {result.get('word_chance')}, "
+            f"полное {result.get('full_or')}, внутри {result.get('within_limit')}, "
+            f"снято {result.get('lost')}",
+            flush=True,
+        )
+        if not result.get('within_limit'):
+            return None
+        return {
+            'result': result,
+            'decision': origin_decision,
+            'retime': _moves_for(moves, result.get('line_member') or {}),
+            'wide_measured': True,
+        }
+    finally:
+        _restore(per_song, live)
+        _quiet_flags(per_song)
+
+
+def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: bool) -> None:
+    """Publish the join. Baseline lines keep the baseline clocks."""
+    result = overlay['result']
+    origin_decision = overlay.get('decision') or decision
+    line_member = result.get('line_member') or {}
+    baseline_ids = set(result.get('baseline_ids') or [])
+    proved = set(result.get('proved') or [])
+    line_fill = sorted(lid for lid, name in line_member.items() if name in ('fill', 'phoneme-fill') and lid in proved)
+    line_nucleus = sorted(lid for lid, name in line_member.items() if name == 'nucleus' and lid in proved)
+    phone_names = {'phoneme', 'phoneme-fill', 'handoff-phoneme'}
+    phone_ids = {lid for lid, name in line_member.items() if name in phone_names}
+    roles = {}
+    pair_role = {}
+    if origin_decision and origin_decision.get('admitted'):
+        import phoneme_choice as Phone
+        for row in origin_decision.get('pairs') or []:
+            role = row.get('role') if row.get('role') in ('or', 'only') else 'off'
+            pair_role[(row.get('song'), row.get('lang'))] = (role, row.get('model'), row.get('word_chance'))
+        for lid, role in (origin_decision.get('line_roles') or {}).items():
+            if role in ('or', 'only'):
+                roles[str(lid)] = role
+    # A line the join did not assign to the phoneme stamp does not take `only`:
+    # that role replaces the clocks that proved the baseline line.
+    for scope in chosen.get('scopes') or []:
+        key = (scope.get('song'), scope.get('lang'))
+        role, model, chance = pair_role.get(key, ('off', None, None))
+        if role == 'off' and scope.get('lang') != '*':
+            role, model, chance = pair_role.get((scope.get('song'), '*'), ('off', None, None))
+        use_pair = bool(result.get('full_or')) and role in ('or', 'only') and 'phoneme' in (result.get('members') or [])
+        scope['phoneme'] = role if use_pair else 'off'
+        scope['phoneme_model'] = model if isinstance(model, str) and (use_pair or phone_ids) else None
+        scope['phoneme_chance'] = _round(chance) if use_pair else None
+    if not (result.get('full_or') and 'phoneme' in (result.get('members') or [])):
+        roles = {lid: role for lid, role in roles.items() if lid in phone_ids}
+        for lid in phone_ids:
+            roles.setdefault(lid, 'or')
+    for lid in baseline_ids:
+        if roles.get(lid) == 'only' or (not roles.get(lid) and any(
+                pair_role.get(key, ('off',))[0] == 'only' for key in pair_role)):
+            # Per-line `only` is the dangerous one. A pair-level `only` is already
+            # replaced below when the full join did not publish it.
+            if roles.get(lid) == 'only':
+                roles[lid] = 'off'
+    for lid, role in list(roles.items()):
+        if role == 'only' and lid in baseline_ids:
+            roles[lid] = 'off'
+    chosen['line_roles'] = {lid: role for lid, role in roles.items() if role in ('or', 'only', 'off') and role != 'off'}
+    chosen['line_fill'] = line_fill
+    chosen['line_nucleus'] = line_nucleus
+    chosen['attack_fill'] = False
+    chosen['choir_attack'] = 'spectral'
+    chosen['choir_clock'] = 'phone'
+    wide_ids = sorted(
+        lid for lid, name in line_member.items() if name == 'wide' and lid in proved)
+    full_wide = bool(result.get('full_or') and 'wide' in (result.get('members') or []))
+    wide_on = full_wide or bool(wide_ids)
+    # Null means every translation line. A list means only those lines paid for
+    # the wider probe. Publishing the half without that list would let the proof
+    # accept a far line the join never measured.
+    chosen['translation_half'] = float(P.TRANSLATION_HALF) if wide_on else None
+    chosen['line_wide'] = None if full_wide else wide_ids
+    chosen['retime'] = overlay.get('retime') or {}
+    chosen['line_chance'] = _round(result.get('chance'))
+    chosen['chance'] = chosen['line_chance']
+    chosen['true_proved'] = len(result.get('proved') or [])
+    chosen['true_total'] = int(result.get('candidates') or 0)
+    chosen['true_rate'] = None if not chosen['true_total'] else _round(chosen['true_proved'] / chosen['true_total'])
+    chosen['within_limit'] = bool(scopes_ok and result.get('within_limit'))
+    chosen['union'] = {
+        'full_or': bool(result.get('full_or')),
+        'chance': _round(result.get('chance')),
+        'word_chance': _round(result.get('word_chance')),
+        'proved': len(result.get('proved') or []),
+        'baseline': len(baseline_ids),
+        'members': list(result.get('members') or []),
+        'lost': list(result.get('lost') or []),
+        'lost_chance': _round(result.get('lost_chance')),
+        'word_lost': list(result.get('word_lost') or []),
+        'line_fill': line_fill,
+        'line_nucleus': line_nucleus,
+        'line_wide': chosen['line_wide'],
+        'translation_half': chosen['translation_half'],
+    }
+    if origin_decision is not None and phone_ids:
+        origin_decision['kept'] = True
+        decision['kept'] = True
+        decision['line_roles'] = dict(chosen['line_roles'])
+    decision['union'] = chosen['union']
+
+
 def build_payload(slugs: list[str]) -> dict:
     import features as F
 
@@ -2078,6 +2983,9 @@ def build_payload(slugs: list[str]) -> dict:
     baseline_tables = measure_primary_tables(per_song, modes, refute)
     baseline_picked = choose_with_primaries(baseline_tables)
     print(f"атака: без фонемы доказано {baseline_picked.get('proved')}", flush=True)
+    origin_modes = dict(modes)
+    origin_picked = baseline_picked
+    origin_lines = _snapshot(per_song)
     placement_retime, placed_kept = _measure_placement(
         per_song, refute, int(baseline_picked.get('proved') or 0))
     if placed_kept is not None:
@@ -2206,6 +3114,20 @@ def build_payload(slugs: list[str]) -> dict:
         'line_roles': dict(decision.get('line_roles') or {}) if decision.get('kept') else {},
         'retime': placement_retime,
     }
+    try:
+        overlay = _union_overlay(
+            per_song, origin_lines, origin_modes, refute, origin_picked, decision,
+            placed_kept is not None, scopes_ok)
+    except Exception as exc:
+        overlay = None
+        print(f'объединение не собрано ({exc.__class__.__name__}: {exc})', flush=True)
+    if overlay:
+        _apply_union_choice(chosen, decision, overlay, scopes_ok)
+        if overlay.get('decision') is not None:
+            decision = overlay['decision']
+            decision['kept'] = bool(chosen.get('line_roles') or 'phoneme' in (chosen.get('union') or {}).get('members') or [])
+            decision['line_roles'] = dict(chosen.get('line_roles') or {})
+            decision['union'] = chosen.get('union')
     density = []
     for song in per_song:
         density.extend(density_table(song['slug'], song['lines'], song['base']))

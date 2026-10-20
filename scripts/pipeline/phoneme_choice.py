@@ -423,6 +423,7 @@ def _select_exact_fast(pair_roles: dict, line_rows: list[dict], variant: str,
     best: tuple | None = None
     chunk = 65536
     active = candidates > 0
+    slot_seen = [set() for _key, _roles in search]
     with np.errstate(divide='ignore', invalid='ignore'):
         for start in range(0, width, chunk):
             stop = min(width, start + chunk)
@@ -443,6 +444,11 @@ def _select_exact_fast(pair_roles: dict, line_rows: list[dict], variant: str,
             chance[:, ~active] = 0.0
             within, k_at, proved_sum, chance_out = _choose_k_batch(proved, chance, candidates)
             _track_sources(line_meta, idx, strides, within, k_at, proved_sum, chance_out, admissions)
+            if within.any():
+                take_idx = idx[within]
+                for slot_i, (stride_i, n_roles) in enumerate(zip(strides, role_counts)):
+                    seen_roles = (take_idx // stride_i) % n_roles
+                    slot_seen[slot_i].update(int(value) for value in np.unique(seen_roles))
             valid = np.flatnonzero(within)
             valid = valid[np.isfinite(chance_out[valid])]
             if len(valid) == 0:
@@ -458,10 +464,11 @@ def _select_exact_fast(pair_roles: dict, line_rows: list[dict], variant: str,
             if best is None or rank > best[0]:
                 best = (rank, int(idx[win]))
     sources = _sources_from_meta(line_meta)
+    role_pool = _role_pool(search, slot_seen, fixed)
     if best is None:
         assignment = {key: 'off' for key in pair_roles}
         picked = _score(assignment, line_rows, variant)
-        return _public_select(assignment, picked, 'exact', False, {'sources': sources})
+        return _public_select(assignment, picked, 'exact', False, {'sources': sources, 'role_pool': role_pool})
     winner = int(best[1])
     assignment = dict(fixed)
     for stride_i, (key, roles) in zip(strides, search):
@@ -474,7 +481,7 @@ def _select_exact_fast(pair_roles: dict, line_rows: list[dict], variant: str,
             f'phoneme search winner {winner} is outside the line cap '
             f'(proved {picked.get("proved")}, chance {picked.get("chance")})'
         )
-    return _public_select(assignment, picked, 'exact', True, {'sources': sources})
+    return _public_select(assignment, picked, 'exact', True, {'sources': sources, 'role_pool': role_pool})
 
 
 def select(pair_roles: dict, line_rows: list[dict], variant: str = 'base') -> dict:
@@ -499,13 +506,35 @@ def select(pair_roles: dict, line_rows: list[dict], variant: str = 'base') -> di
     return _adopt_cover(pair_roles, line_rows, variant, got)
 
 
+def _remember_role(pool: dict, key, role: str) -> None:
+    if role not in ROLES:
+        return
+    found = pool.setdefault(key, [])
+    if role not in found:
+        found.append(role)
+
+
+def _role_pool(search: list[tuple], slot_seen: list[set], fixed: dict) -> dict:
+    """Roles that appear in at least one within-limit assignment, per pair."""
+    pool = {}
+    for (key, roles), seen in zip(search, slot_seen):
+        pool[key] = [roles[index] for index in range(len(roles)) if index in seen]
+    for key, role in fixed.items():
+        _remember_role(pool, key, role)
+    return pool
+
+
 def _select_greedy(pair_roles: dict, line_rows: list[dict], variant: str) -> dict:
     """One pass: each pair tries `or` and `only` and keeps a step that still fits and proves more."""
     assignment = {key: 'off' for key in pair_roles}
     picked = _score(assignment, line_rows, variant)
+    pool = {key: [] for key in pair_roles}
+    if picked.get('within_limit'):
+        for key, role in assignment.items():
+            _remember_role(pool, key, role)
     if not picked.get('within_limit'):
         sources = _pair_sources(pair_roles, line_rows, variant, assignment, picked)
-        return _public_select(assignment, picked, 'greedy', False, {'sources': sources})
+        return _public_select(assignment, picked, 'greedy', False, {'sources': sources, 'role_pool': pool})
     for key, roles in pair_roles.items():
         current = _rank(picked, assignment)
         for role in roles:
@@ -516,13 +545,14 @@ def _select_greedy(pair_roles: dict, line_rows: list[dict], variant: str) -> dic
             got = _score(trial, line_rows, variant)
             if not got.get('within_limit'):
                 continue
+            _remember_role(pool, key, role)
             rank = _rank(got, trial)
             if rank > current:
                 assignment = trial
                 picked = got
                 current = rank
     sources = _pair_sources(pair_roles, line_rows, variant, assignment, picked)
-    return _public_select(assignment, picked, 'greedy', True, {'sources': sources})
+    return _public_select(assignment, picked, 'greedy', True, {'sources': sources, 'role_pool': pool})
 
 
 def _public_select(assignment: dict, picked: dict, how: str, within: bool,
@@ -667,14 +697,42 @@ def _pair_sources(pair_roles: dict, line_rows: list[dict], variant: str,
     return sources
 
 
+def _or_role_rows(line_rows: list[dict], variant: str, role_pool: dict) -> list[dict]:
+    """One row per line, whose bits are the OR of every role the pair used."""
+    rows = []
+    for line in line_rows:
+        key = _pair_key(line)
+        roles = role_pool.get(key) or []
+        bits = (line.get('pass') or {}).get(variant) or {}
+        acc = None
+        for role in roles:
+            cell = bits.get(role)
+            if cell is None:
+                continue
+            arr = np.asarray(cell, dtype=bool)
+            acc = arr.copy() if acc is None else (acc | arr)
+        if acc is None and bits.get('off') is not None:
+            acc = np.asarray(bits.get('off'), dtype=bool)
+        if acc is None:
+            continue
+        copied = dict(line)
+        copied['pass'] = {variant: {'off': acc, 'or': acc, 'only': acc}}
+        rows.append(copied)
+    return rows
+
+
 def _adopt_cover(pair_roles: dict, line_rows: list[dict], variant: str, got: dict) -> dict:
     """Keep every line some within-limit assignment proves, unless the mix exceeds 5 %.
 
-    The published assignment, proved count, chance and K stay the count-max.
+    The published count stays the count-max. Before that mix is accepted, the
+    OR of every role that appeared in a within-limit assignment is scored on
+    the shifted probes. The mix can only understate that OR, so an OR above
+    5 % is not accepted as a block. A missing role pool keeps the older mix.
     `line_roles` only names lines whose role differs. A line the mix cannot keep
     is listed in `lost` with the chance that blocked it.
     """
     sources = got.pop('sources', None) or {}
+    role_pool = got.pop('role_pool', None)
     assignment = got['assignment']
     picked = got.get('picked') or {}
     winner_ids = _ids_at(
@@ -700,7 +758,20 @@ def _adopt_cover(pair_roles: dict, line_rows: list[dict], variant: str, got: dic
     lost_chance = None
     overrides: dict = {}
     adopted = None
-    if full:
+    or_blocks = False
+    if role_pool and full:
+        or_rows = _or_role_rows(line_rows, variant, role_pool)
+        or_assignment = {key: 'off' for key in assignment}
+        or_scored = _score(or_assignment, or_rows, variant)
+        or_ids = _ids_at(
+            or_assignment, or_rows, variant, or_scored.get('k'),
+            blocked=or_scored.get('blocked_primaries')) if or_scored.get('within_limit') else set()
+        if not (or_scored.get('within_limit') and winner_ids <= set(or_ids)):
+            or_blocks = True
+            chance = _shown_chance(or_scored)
+            if chance is not None:
+                lost_chance = float(chance)
+    if full and not or_blocks:
         scored = _score(assignment, line_rows, variant, full)
         ids = _ids_at(
             assignment, line_rows, variant, scored.get('k'), full,

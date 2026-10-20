@@ -19,6 +19,13 @@ import numpy as np
 import calibrate_score as Cal
 
 CUE_TOL = 0.30
+# 90th percentile of |Gemini hearing − cue| on the 13 I Have Come Alive
+# translation lines whose own recheck block hears that line's text (2.006 s,
+# docs/analysis/i-have-come-alive/recheck.json). Karitas and ONE p90s of the
+# same match are 0.56 s and 0.63 s. The half is the widest of those p90s,
+# rounded up to the cent so the measured p90 sits inside. It is not the 7 s
+# outlier on rumi-18-2: that hearing is stored on a later line, not on its block.
+TRANSLATION_HALF = 2.01
 # Margins around the span [this cue, next cue]. Lead is before this cue, tail is
 # after the next cue's start. The ordinary cue window is not in this list.
 WINDOW_MARGINS = (
@@ -114,15 +121,73 @@ def spans_inside(spans: list | None, section: tuple[float, float] | None, slack:
     return True
 
 
+def lang_primary(code: str | None) -> str:
+    """ISO 639 primary subtag. `en` and `en-GB` are the same language."""
+    if not code:
+        return ''
+    return str(code).strip().lower().replace('_', '-').split('-')[0]
+
+
+def cue_is_translation(line_lang: str | None, cue_lang: str | None) -> bool:
+    """True when the subtitle cue is not in the line's language.
+
+    A missing language is not called a translation: the 0.30 s gate stays.
+    """
+    line = lang_primary(line_lang)
+    cue = lang_primary(cue_lang)
+    if not line or not cue:
+        return False
+    return line != cue
+
+
+def cue_accept_limit(line_lang: str | None, cue_lang: str | None, half: float | None = None) -> float:
+    """Same-language cues stay at 0.30 s. A translation cue may use `half`."""
+    span = TRANSLATION_HALF if half is None else half
+    if span is None or not cue_is_translation(line_lang, cue_lang):
+        return CUE_TOL
+    return float(span)
+
+
+def translation_span(cue: float, prev_end: float | None, next_start: float | None,
+                     half: float) -> tuple[float, float]:
+    """Acceptance window for one translation cue.
+
+    ±`half` around the cue, tightened by the previous line's end and the next
+    line's start when those neighbours exist. The intersection is the bound:
+    a neighbour gap of many seconds does not become the search.
+    """
+    half = max(0.0, float(half))
+    lo = float(cue) - half
+    hi = float(cue) + half
+    if prev_end is not None:
+        lo = max(lo, float(prev_end))
+    if next_start is not None:
+        hi = min(hi, float(next_start))
+    if hi < lo:
+        lo = hi = float(cue)
+    return lo, hi
+
+
+def in_translation_window(start: float, cue: float, prev_end: float | None,
+                          next_start: float | None, half: float) -> bool:
+    lo, hi = translation_span(cue, prev_end, next_start, half)
+    return lo - 1e-9 <= float(start) <= hi + 1e-9
+
+
 def judge(starts: list[float | None], ends: list[float | None], cue_start: float | None,
-          next_cue: float | None, section: tuple[float, float] | None = None) -> dict:
-    """Structure and |first start − cue|. `placed` needs both, and a cue."""
+          next_cue: float | None, section: tuple[float, float] | None = None,
+          limit: float | None = None) -> dict:
+    """Structure and |first start − cue|. `placed` needs both, and a cue.
+
+    `limit` defaults to 0.30 s. A translation cue passes its own measured half.
+    """
     if not starts or any(s is None or e is None for s, e in zip(starts, ends)):
         why = 'missing' if not starts or any(s is None for s in starts) else 'eaten'
         return {'structure_ok': False, 'structure': why, 'delta': None, 'near': False, 'placed': False}
     ok, why = Cal.structural(starts, ends, next_cue, section)
+    tol = CUE_TOL if limit is None else float(limit)
     delta = None if cue_start is None or starts[0] is None else abs(float(starts[0]) - float(cue_start))
-    near = delta is not None and round(delta, 3) <= CUE_TOL
+    near = delta is not None and round(delta, 3) <= tol
     return {
         'structure_ok': ok, 'structure': why, 'delta': None if delta is None else round(delta, 3),
         'near': near, 'placed': bool(ok and near and cue_start is not None),
@@ -211,6 +276,7 @@ def handoff_proposal(line: dict, next_cue: float | None, peaks, refute: dict | N
         return None
     family = primary_family(line.get('placed_by'))
     cue = line.get('cue_start')
+    limit = cue_accept_limit(line.get('lang'), line.get('cue_lang'))
     for name in HANDOFF_AFTER.get(family, ()):
         if name == 'phoneme' and not allow_phoneme:
             continue
@@ -218,7 +284,7 @@ def handoff_proposal(line: dict, next_cue: float | None, peaks, refute: dict | N
         if any(start is None for start in starts):
             continue
         ends = ends_from_starts(starts, next_cue)
-        if not judge(starts, ends, cue, next_cue, section).get('placed'):
+        if not judge(starts, ends, cue, next_cue, section, limit=limit).get('placed'):
             continue
         witnesses = []
         refuted = False
@@ -241,13 +307,17 @@ def handoff_proposal(line: dict, next_cue: float | None, peaks, refute: dict | N
     return None
 
 
-def consider_phoneme_place(starts: list, cue, next_cue, section: tuple[float, float] | None = None) -> dict | None:
-    """A phoneme start places a still-open line only inside the same 0.30 s gate."""
+def consider_phoneme_place(starts: list, cue, next_cue, section: tuple[float, float] | None = None,
+                           limit: float | None = None) -> dict | None:
+    """A phoneme start places a still-open line inside the cue gate.
+
+    Same-language cues stay at 0.30 s. A translation cue may pass `limit`.
+    """
     if cue is None or not starts or any(start is None for start in starts):
         return None
     floats = [float(start) for start in starts]
     ends = ends_from_starts(floats, next_cue)
-    if not judge(floats, ends, float(cue), next_cue, section).get('placed'):
+    if not judge(floats, ends, float(cue), next_cue, section, limit=limit).get('placed'):
         return None
     return {'by': 'phoneme', 'starts': floats, 'ends': [float(end) for end in ends]}
 

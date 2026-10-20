@@ -535,8 +535,28 @@ def test_placement_and_cue_lock() -> None:
 
 
 def test_cued_lines_stay_near_the_cue() -> None:
-    """The site takes a line's start from its first word. That start stays within 0.30 s of the cue."""
+    """The site takes a line's start from its first word.
+
+    A same-language cue stays within 0.30 s. A translation cue may sit further
+    only when the measured rule publishes a numeric half, and only out to that
+    half. A missing key or a null half keeps 0.30 s.
+    """
+    import placement as P
+
     root = Path(__file__).resolve().parents[2]
+    chosen = {}
+    rule_path = root / 'docs' / 'analysis' / 'bench' / 'attack-chance.json'
+    if rule_path.exists():
+        try:
+            chosen = json.loads(rule_path.read_text(encoding='utf-8')).get('chosen') or {}
+        except (OSError, json.JSONDecodeError):
+            chosen = {}
+    half = None
+    if 'translation_half' in chosen and chosen.get('translation_half') is not None:
+        half = float(chosen['translation_half'])
+    wide = None
+    if 'line_wide' in chosen and chosen.get('line_wide') is not None:
+        wide = {str(item) for item in chosen.get('line_wide') or []}
     for slug in ('i-have-come-alive', 'karitas', 'one'):
         lyrics = json.loads((root / 'content' / 'songs' / slug / 'lyrics.json').read_text(encoding='utf-8'))
         cues = {row['line']: row for row in json.loads((root / 'docs' / 'analysis' / slug / 'cues.json').read_text(encoding='utf-8'))}
@@ -547,7 +567,11 @@ def test_cued_lines_stay_near_the_cue() -> None:
                 continue
             seen += 1
             gap = abs(float(line['words'][0]['s']) - float(cue['start']))
-            check(f'{slug} {line["id"]} within 0.30 s of its cue', round(gap, 3) <= 0.30, f'{gap:.3f} s')
+            translated = P.cue_is_translation(line.get('lang'), cue.get('lang'))
+            limit = 0.30
+            if translated and half is not None and (wide is None or line['id'] in wide):
+                limit = half
+            check(f'{slug} {line["id"]} within {limit:.2f} s of its cue', round(gap, 3) <= limit, f'{gap:.3f} s')
         check(f'{slug} has cued lines', seen > 0, str(seen))
 
 
@@ -1758,6 +1782,151 @@ def test_phoneme() -> None:
           str((stored['status'], stored['words'][0], published)))
 
 
+def test_translation_window() -> None:
+    """Same-language cues stay at 0.30 s. A translation cue can use the measured half."""
+    import placement as P
+
+    check('a same-language cue, including the region, stays at 0.30 s',
+          P.cue_accept_limit('en', 'en-GB') == P.CUE_TOL)
+    check('a missing language is not a translation',
+          P.cue_accept_limit('fa', None) == P.CUE_TOL and P.cue_accept_limit(None, 'en-GB') == P.CUE_TOL)
+    check('a Persian line on an English cue uses the measured half',
+          P.cue_accept_limit('fa', 'en-GB') == P.TRANSLATION_HALF)
+    near = P.judge([0.30, 0.80], [0.80, 1.20], 0.0, None)
+    check('exactly 0.30 s is placed', near.get('placed') is True, str(near))
+    over = P.judge([0.31, 0.81], [0.81, 1.21], 0.0, None)
+    check('0.31 s is not placed at the default gate', over.get('placed') is False and over.get('near') is False, str(over))
+    wide = P.judge([1.50, 2.00], [2.00, 2.40], 0.0, None, limit=2.01)
+    check('1.50 s is placed when the translation half is the limit', wide.get('placed') is True, str(wide))
+    fenced = P.translation_span(10.0, 9.5, 10.4, 2.01)
+    check('the neighbour fence is tighter than the half',
+          abs(fenced[0] - 9.5) < 1e-9 and abs(fenced[1] - 10.4) < 1e-9, str(fenced))
+    check('a start inside that fence is accepted',
+          P.in_translation_window(10.2, 10.0, 9.5, 10.4, 2.01))
+    check('a start past the next cue is not accepted',
+          not P.in_translation_window(10.5, 10.0, 9.5, 10.4, 2.01))
+
+    words = [{
+        'roman': 'aa', 'ctc_s': 1.0, 'ctc_e': 1.2,
+        'second_s': 1.02, 'third_s': 1.03, 'vowel_s': 1.0,
+    }]
+    held = Q.prove_words(words, [0.40], 0.10, witnesses='two', nucleus=True)
+    plain = Q.prove_words(words, [0.40], 0.10, witnesses='two', nucleus=False)
+    check('a long vowel uses the nucleus when the spectral attack is outside tolerance',
+          held and held[0]['path'] == 'nucleus' and held[0]['reason'] == 'pass', str(held))
+    check('without the nucleus the same word is not proved',
+          plain and plain[0]['path'] == 'fail', str(plain))
+    consonant = [{
+        'roman': 'ba', 'ctc_s': 1.0, 'ctc_e': 2.0,
+        'second_s': 1.02, 'third_s': 1.03, 'vowel_s': 1.0,
+        'own_t': 1.0, 'own_e': 1.2,
+    }]
+    not_held = Q.prove_words(consonant, [0.40], 0.10, witnesses='two', nucleus=True)
+    check('a shifted span does not turn a short consonant into a nucleus',
+          not_held and not_held[0]['path'] == 'fail', str(not_held))
+
+    lyrics = {'sections': [{'kind': 'vocal', 'id': 's', 'lines': [
+        {'id': 'far', 'lang': 'fa', 'words': [{'w': 'a', 's': 10.50, 'e': 11.00}, {'w': 'b', 's': 11.00, 'e': 11.40}]},
+        {'id': 'en', 'lang': 'en', 'words': [{'w': 'c', 's': 12.10, 'e': 12.50}]},
+    ]}]}
+    report = {'lines': [
+        {'id': 'far', 'status': 'good', 'placed_by': 'mms', 'ctc_start': 10.50},
+        {'id': 'en', 'status': 'good', 'placed_by': 'mms', 'ctc_start': 12.10},
+    ]}
+    cues = {
+        'far': {'lang': 'en-GB', 'start': 10.0, 'end': 11.8},
+        'en': {'lang': 'en', 'start': 12.0, 'end': 13.0},
+    }
+    rejected = {'translation_measured': True, 'translation_half': None, 'line_wide': []}
+    n = Q.reject_wide_translation(lyrics, report, rejected, cues)
+    far = lyrics['sections'][0]['lines'][0]['words']
+    check('a rejected translation window returns the line to the cue',
+          n == 1 and abs(far[0]['s'] - 10.0) < 1e-9
+          and report['lines'][0]['status'] == 'weak' and report['lines'][0]['placed_by'] is None
+          and abs(lyrics['sections'][0]['lines'][1]['words'][0]['s'] - 12.10) < 1e-9,
+          str((n, far, report['lines'][0])))
+    kept_lyrics = {'sections': [{'kind': 'vocal', 'id': 's', 'lines': [
+        {'id': 'far', 'lang': 'fa', 'words': [{'w': 'a', 's': 10.50, 'e': 11.00}, {'w': 'b', 's': 11.00, 'e': 11.40}]},
+    ]}]}
+    kept_report = {'lines': [{'id': 'far', 'status': 'good', 'placed_by': 'mms', 'ctc_start': 10.50}]}
+    admitted = {'translation_measured': True, 'translation_half': 2.01, 'line_wide': ['far']}
+    n_keep = Q.reject_wide_translation(kept_lyrics, kept_report, admitted, cues)
+    check('a line the join paid for keeps its wider start',
+          n_keep == 0 and kept_lyrics['sections'][0]['lines'][0]['words'][0]['s'] == 10.50
+          and kept_report['lines'][0]['status'] == 'good',
+          str((n_keep, kept_report['lines'][0])))
+    outside = {'sections': [{'kind': 'vocal', 'id': 's', 'lines': [
+        {'id': 'far', 'lang': 'fa', 'words': [{'w': 'a', 's': 13.00, 'e': 13.40}]},
+    ]}]}
+    outside_report = {'lines': [{'id': 'far', 'status': 'good', 'placed_by': 'mms', 'ctc_start': 13.00}]}
+    n_out = Q.reject_wide_translation(
+        outside, outside_report,
+        {'translation_measured': True, 'translation_half': 2.01, 'line_wide': None}, cues)
+    check('a start outside the measured half is still returned to the cue',
+          n_out == 1 and abs(outside['sections'][0]['lines'][0]['words'][0]['s'] - 10.0) < 1e-9,
+          str(outside['sections'][0]['lines'][0]['words']))
+
+
+def test_monotone_union() -> None:
+    """A join keeps every baseline line unless holding it pushes the line pass over 5 %."""
+    import attack_chance as A
+
+    def grid(cols: tuple[int, ...] = ()) -> np.ndarray:
+        bits = np.zeros((len(A.LINE_SHARES), 8), dtype=bool)
+        bits[:, 0] = True
+        for col in cols:
+            bits[:, col] = True
+        return bits
+
+    def pack(name: str, ids: list[str], *, baseline: bool = False, within: bool = True,
+             partial: bool = False, cols: dict | None = None) -> dict:
+        cols = cols or {}
+        return {
+            'name': name,
+            'baseline': baseline,
+            'within_limit': within or baseline,
+            'partial': partial,
+            'k': 0.25,
+            'lines': {
+                lid: {'family': 'mms', 'bits': grid(tuple(cols.get(lid, ()))), 'song': 's'}
+                for lid in ids
+            },
+            'words': {},
+            'extra': {},
+        }
+
+    quiet = [f'q{i:02d}' for i in range(18)]
+    base = pack('baseline', quiet + ['A'], baseline=True)
+    other = pack('other', quiet + ['B'])
+    joined = A.admit_union([base, other])
+    check('the full join keeps the baseline line and the extra line',
+          joined.get('full_or') is True and joined.get('within_limit') is True
+          and 'A' in joined['proved'] and 'B' in joined['proved']
+          and abs(float(joined['chance']) - 0.0) < 1e-12
+          and A.pass_keeps_baseline(joined, joined['baseline_ids']),
+          str((joined['proved'], joined['chance'], joined['full_or'])))
+    dropped = {'proved': quiet + ['B'], 'lost': [], 'lost_detail': {}, 'lost_chance': None}
+    check('dropping a baseline line without a cap reason fails',
+          not A.pass_keeps_baseline(dropped, quiet + ['A']))
+    capped = {
+        'proved': quiet, 'lost': ['A'], 'lost_detail': {'A': 0.10}, 'lost_chance': 0.10,
+    }
+    check('a drop whose line pass is above 5 % is the allowed cap reason',
+          A.pass_keeps_baseline(capped, quiet + ['A']))
+
+    partial = pack(
+        'partial', ['shift-a', 'shift-b'], within=False, partial=True,
+        cols={'shift-a': (1, 2), 'shift-b': (1, 2)})
+    partial['within_limit'] = False
+    added = A.admit_union([base, partial])
+    check('one extra line at exactly 5 % stays and the next one is lost',
+          'A' in added['proved'] and 'shift-a' in added['proved'] and 'shift-b' not in added['proved']
+          and added.get('lost') == ['shift-b']
+          and added.get('lost_chance') is not None and float(added['lost_chance']) > 0.05
+          and A.pass_keeps_baseline(added, added['baseline_ids']),
+          str((added['proved'], added['lost'], added['lost_chance'], added['chance'])))
+
+
 def main() -> int:
     test_viterbi()
     test_star_absorbs_a_hold()
@@ -1774,6 +1943,8 @@ def main() -> int:
     test_cue_times_stay()
     test_placement_and_cue_lock()
     test_cued_lines_stay_near_the_cue()
+    test_translation_window()
+    test_monotone_union()
     test_section_edges()
     test_bias_and_witnesses()
     test_attack_chance()

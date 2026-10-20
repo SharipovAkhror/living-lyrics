@@ -552,13 +552,14 @@ def lock_written_cues(lyrics: dict, cues: dict[str, dict], placed_ids: set[str],
             continue
         cue_s = float(cue['start'])
         placed = line['id'] in placed_ids
+        limit = P.cue_accept_limit(line.get('lang'), cue.get('lang'))
         changed = False
         for _ in range(8):
             first = float(words[0]['s'])
             gap = first - cue_s
-            if placed and round(abs(gap), 3) <= Q.CUE_TOL:
+            if placed and round(abs(gap), 3) <= limit:
                 break
-            goal = T.r2(cue_s) if not placed else T.r2(cue_s + (1.0 if gap > 0 else -1.0) * (Q.CUE_TOL - 0.01))
+            goal = T.r2(cue_s) if not placed else T.r2(cue_s + (1.0 if gap > 0 else -1.0) * (limit - 0.01))
             if not placed and abs(first - goal) <= 0.001:
                 break
             delta = goal - first
@@ -572,21 +573,32 @@ def lock_written_cues(lyrics: dict, cues: dict[str, dict], placed_ids: set[str],
     return moved
 
 
-def keep_cue_time(status: str, has_cue: bool, drift: float | None = None) -> bool:
+def keep_cue_time(status: str, has_cue: bool, drift: float | None = None,
+                  limit: float | None = None) -> bool:
     """Cue times stay unless the aligner is confident and agrees with the cue.
 
     A person placed the subtitle cue, and that start is the line's anchor. `drift` is
     |aligner line start − cue start| in seconds, before any snap. A confident aligner
-    further than CUE_TOL still publishes the cue (the line is not proved). None means
-    the aligner did not place the line. A line with no cue is not locked.
+    further than the gate still publishes the cue (the line is not proved). The gate
+    is 0.30 s. A translation cue may pass its measured half. None means the aligner
+    did not place the line. A line with no cue is not locked.
     """
+    tol = Q.CUE_TOL if limit is None else float(limit)
     if not has_cue:
         return False
     if status != 'good':
         return True
-    if drift is None or round(float(drift), 3) > Q.CUE_TOL:
+    if drift is None or round(float(drift), 3) > tol:
         return True
     return False
+
+
+def _cue_limit(unit: Unit, cues: dict[str, dict]) -> float:
+    """0.30 s for the line's own language. The measured half for a translation cue."""
+    cue = cues.get(unit.id)
+    if not cue:
+        return P.CUE_TOL
+    return P.cue_accept_limit(unit.line.get('lang'), cue.get('lang'))
 
 
 def line_drift(starts: list[float | None], roman: list[str], cue_start: float | None) -> float | None:
@@ -634,6 +646,17 @@ def cue_pass(lp: np.ndarray, units: list[Unit], cues: dict[str, dict], duration:
         nxt_t = (float(nxt['start']), float(nxt['end'])) if nxt else None
         win = cue_window(float(cue['start']), float(cue['end']), prev_t, nxt_t,
                          float(u.sec['start']), float(u.sec['end']), duration)
+        if P.cue_is_translation(u.line.get('lang'), cue.get('lang')):
+            # The ordinary window stays. A translation cue also searches ± the
+            # measured half, fenced by the neighbour cues and the section.
+            prev_end = None if prev is None else float(prev['end'])
+            next_start = None if nxt is None else float(nxt['start'])
+            lo, hi = P.translation_span(float(cue['start']), prev_end, next_start, P.TRANSLATION_HALF)
+            lo = max(0.0, lo, float(u.sec['start']) - CUE_SECTION_PAD)
+            hi = min(float(duration), hi, float(u.sec['end']) + CUE_SECTION_PAD)
+            if hi < lo:
+                lo = hi = float(cue['start'])
+            win = (min(win[0], lo), max(win[1], hi))
         t0 = max(0, int(win[0] * FPS))
         t1 = min(len(lp), int(win[1] * FPS))
         placed = align_stars(lp[t0:t1], [u]) if t1 > t0 else None
@@ -903,13 +926,14 @@ def _section(unit: Unit) -> tuple[float, float]:
 
 
 def _placement_attempt(by: str, seconds, roman, cue_start, next_cue, window,
-                       section: tuple[float, float] | None = None) -> dict:
+                       section: tuple[float, float] | None = None,
+                       limit: float | None = None) -> dict:
     if not seconds:
         window_out = None if window is None else [round(float(window[0]), 2), round(float(window[1]), 2)]
         return {'by': by, 'placed': False, 'structure_ok': False, 'structure': 'missing',
                 'delta': None, 'near': False, 'window': window_out}
     starts, ends = P.lettered_pairs(seconds, roman)
-    judged = P.judge(starts, ends, cue_start, next_cue, section)
+    judged = P.judge(starts, ends, cue_start, next_cue, section, limit=limit)
     # Lettered starts are in the structural check. Punctuation still has a time,
     # and the validator warns on every word, so the full list is checked too.
     if judged.get('placed') and not P.spans_inside(seconds, section):
@@ -952,7 +976,8 @@ def rescue_mms_windows(lp: np.ndarray, units: list[Unit], conf: list[dict], pass
             if P.same_window(win, original):
                 continue
             seconds = star_seconds(lp, u, win[0], win[1])
-            attempt = _placement_attempt('mms-window', seconds, u.roman, cue_s, nxt, win, _section(u))
+            attempt = _placement_attempt(
+                'mms-window', seconds, u.roman, cue_s, nxt, win, _section(u), _cue_limit(u, cues))
             if attempt['placed'] and seconds is not None:
                 _adopt(c, 'mms-window', seconds, attempt)
                 placed += 1
@@ -1039,7 +1064,9 @@ def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, di
                 seconds = star_seconds(clip, u, rel0, rel1)
                 if seconds:
                     seconds = [None if span is None else [span[0] + t0, span[1] + t0] for span in seconds]
-                attempt = _placement_attempt('mms-ft', seconds, u.roman, float(cue['start']), nxt, (t0, t1), _section(u))
+                attempt = _placement_attempt(
+                    'mms-ft', seconds, u.roman, float(cue['start']), nxt, (t0, t1), _section(u),
+                    _cue_limit(u, cues))
                 if attempt['placed'] and seconds is not None:
                     _adopt(c, 'mms-ft', seconds, attempt)
                     print(f"ft {u.id}: |Δ| {attempt['delta']}", flush=True)
@@ -1212,10 +1239,12 @@ def adopt_engines(units: list[Unit], conf: list[dict], cues: dict[str, dict],
         s3 = third_starts.get(u.id)
         if s3 is not None and len(s3) == len(u.line['words']):
             seconds = seconds_from_engine(s3, u.roman, nxt)
-            attempt = _placement_attempt('stable-ts', seconds, u.roman, cue_s, nxt, window, _section(u))
+            attempt = _placement_attempt(
+                'stable-ts', seconds, u.roman, cue_s, nxt, window, _section(u), _cue_limit(u, cues))
         else:
             seconds = None
-            attempt = _placement_attempt('stable-ts', None, u.roman, cue_s, nxt, window, _section(u))
+            attempt = _placement_attempt(
+                'stable-ts', None, u.roman, cue_s, nxt, window, _section(u), _cue_limit(u, cues))
         _mark_engine(c, 'stable', attempt)
         if c.get('placed_by') is None and attempt['placed'] and seconds is not None:
             # _mark_engine already stored the attempt. Do not store it twice.
@@ -1225,10 +1254,12 @@ def adopt_engines(units: list[Unit], conf: list[dict], cues: dict[str, dict],
         s2 = second_starts.get(u.id)
         if s2 is not None and len(s2) == len(u.line['words']):
             seconds = seconds_from_engine(s2, u.roman, nxt)
-            attempt = _placement_attempt('second', seconds, u.roman, cue_s, nxt, window, _section(u))
+            attempt = _placement_attempt(
+                'second', seconds, u.roman, cue_s, nxt, window, _section(u), _cue_limit(u, cues))
         else:
             seconds = None
-            attempt = _placement_attempt('second', None, u.roman, cue_s, nxt, window, _section(u))
+            attempt = _placement_attempt(
+                'second', None, u.roman, cue_s, nxt, window, _section(u), _cue_limit(u, cues))
         _mark_engine(c, 'second', attempt)
         if c.get('placed_by') is None and attempt['placed'] and seconds is not None:
             c['attempts'].pop()
@@ -1259,7 +1290,8 @@ def assemble_times(units: list[Unit], conf: list[dict], cues: dict[str, dict], d
         ctc_ends.append(raw_e)
         cue = cues.get(u.id)
         drift = line_drift(raw, u.roman, None if cue is None else float(cue['start']))
-        keep = keep_cue_time(c['status'], cue is not None, drift)
+        limit = None if cue is None else _cue_limit(u, cues)
+        keep = keep_cue_time(c['status'], cue is not None, drift, limit=limit)
         use_aligner = (not keep) and c['status'] != 'draft'
         publish.append(use_aligner)
         if use_aligner:
@@ -1459,7 +1491,8 @@ def main() -> None:
         cue = cues.get(u.id)
         raw_drift = [None if w is None else w['f0'] / FPS for w in placed_words]
         delta = line_drift(raw_drift, u.roman, None if cue is None else float(cue['start']))
-        near = delta is not None and round(delta, 3) <= Q.PROOF_CUE_TOL
+        accept = _cue_limit(u, cues)
+        near = delta is not None and round(delta, 3) <= accept
         score_ok = (not missing) and metric_value is not None and float(metric_value) >= threshold
         status = placement_status(missing or r is None, score_ok, structure_ok, near, cue is not None)
         placed_now = status == 'good'
@@ -1554,7 +1587,7 @@ def main() -> None:
         cue = cues.get(u.id)
         if cue is None:
             continue
-        clamp_block(ws, float(cue['start']), Q.CUE_TOL)
+        clamp_block(ws, float(cue['start']), _cue_limit(u, cues))
 
     # Borrowed checkpoints on every cued line of tr, az and la. The cue window, not the
     # phrase the first aligner already placed, so a language is not graded only on the
@@ -1677,6 +1710,7 @@ def main() -> None:
             'anchor_start': round(p['window'][0], 2), 'agree': round(agree, 2),
             'cue_start': None if cue is None else round(float(cue['start']), 3),
             'cue_end': None if cue is None else round(float(cue['end']), 3),
+            'cue_lang': None if cue is None else cue.get('lang'),
             'ctc_start': None if ctc_line is None else round(ctc_line, 3),
             'time_source': c['placed_by'] if pub and c.get('placed_by') else ('cue' if cue is not None else 'draft'),
             'placed_by': c.get('placed_by'),

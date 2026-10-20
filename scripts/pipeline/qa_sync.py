@@ -257,6 +257,19 @@ def load_word_rule() -> dict:
         if isinstance(name, str) and name:
             blocked.append(name)
     rule['blocked_primaries'] = blocked
+    rule['line_fill'] = [str(line_id) for line_id in (chosen.get('line_fill') or []) if line_id]
+    rule['line_nucleus'] = [str(line_id) for line_id in (chosen.get('line_nucleus') or []) if line_id]
+    if 'translation_half' in chosen and chosen.get('translation_half') is not None:
+        rule['translation_half'] = float(chosen['translation_half'])
+    else:
+        rule['translation_half'] = None
+    rule['translation_measured'] = 'translation_half' in chosen
+    # Missing or null: every translation line may use the half. A list restricts
+    # the wider gate to the lines whose shift cost the join actually paid.
+    if 'line_wide' in chosen and chosen.get('line_wide') is not None:
+        rule['line_wide'] = [str(line_id) for line_id in chosen.get('line_wide') or [] if line_id]
+    else:
+        rule['line_wide'] = None
     # A measured file decides witnesses per song and language. The global flag is
     # only the fallback for a file that still names one mode for every line.
     if rule['witnesses'] or rule['scopes']:
@@ -719,6 +732,19 @@ def _vowel_char(ch: str) -> bool:
     return base in _VOWELS or ch.lower() in _VOWELS
 
 
+def long_vowel(roman: str, ctc_s: float | None, ctc_e: float | None) -> bool:
+    """A held sung vowel: every letter is a vowel, or the letter span is a melisma.
+
+    A consonant with a short vowel in front is not this. Legato alone is not this.
+    """
+    letters = [ch for ch in (roman or '') if ch.isalpha()]
+    if letters and all(_vowel_char(ch) for ch in letters):
+        return True
+    if ctc_s is not None and ctc_e is not None and float(ctc_e) - float(ctc_s) >= MELISMA_SPAN:
+        return True
+    return False
+
+
 def word_soft(roman: str, ctc_s: float | None, ctc_e: float | None, prev_e: float | None) -> bool:
     """A vowel, a legato continuation, or a melisma. The onset detector often sees none of these.
 
@@ -750,7 +776,8 @@ def _witness_ok(clock, ctc_s: float, agree_tol: float) -> bool:
 
 def prove_words(align_words: list[dict] | None, presnap: list[float | None], tol: float,
                 require_second: bool = False, witnesses: str | None = None,
-                agree_tol: float = SECOND_WORD_TOL, phoneme_role: str | None = None) -> list[dict]:
+                agree_tol: float = SECOND_WORD_TOL, phoneme_role: str | None = None,
+                nucleus: bool = False) -> list[dict]:
     """How each lettered word is proved. Interpolation between neighbours is not a path.
 
     attack — |onset| is within the group tolerance (0.10 s solo, 0.20 s choir,
@@ -786,6 +813,15 @@ def prove_words(align_words: list[dict] | None, presnap: list[float | None], tol
             prev_e,
         )
         abs_dt = None if dt is None else abs(float(dt))
+        nucleus_used = False
+        span_s = word.get('own_t', ctc_s)
+        span_e = word.get('own_e', ctc_e)
+        if (nucleus and ctc_s is not None and long_vowel(roman, span_s, span_e)
+                and (abs_dt is None or abs_dt > tol + 1e-12)):
+            vowel = word.get('vowel_s')
+            if vowel is not None and abs(float(vowel) - float(ctc_s)) <= tol + 1e-12:
+                abs_dt = abs(float(vowel) - float(ctc_s))
+                nucleus_used = True
         second = word.get('second_s')
         third = word.get('third_s')
         path, reason, detail = 'fail', 'onset', ''
@@ -807,7 +843,9 @@ def prove_words(align_words: list[dict] | None, presnap: list[float | None], tol
                 else:
                     ok = legacy_ok
                 if ok:
-                    if role == 'only' or (role == 'or' and phoneme_ok and not legacy_ok):
+                    if nucleus_used:
+                        path = 'nucleus'
+                    elif role == 'only' or (role == 'or' and phoneme_ok and not legacy_ok):
                         path = 'witness-phoneme'
                     elif second_ok and third_ok:
                         path = 'witness-both'
@@ -839,7 +877,7 @@ def prove_words(align_words: list[dict] | None, presnap: list[float | None], tol
                 detail = f'до притяжения дальше всего {abs_dt:.3f} с'
         elif abs_dt is not None and abs_dt <= tol:
             if not require_second:
-                path, reason = 'attack', 'pass'
+                path, reason = ('nucleus', 'pass') if nucleus_used else ('attack', 'pass')
             elif second is None:
                 reason = 'no-second-aligner'
                 detail = 'атака есть, второго начала нет'
@@ -879,7 +917,8 @@ def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presn
                tol: float | None = None, require_second: bool = False, witnesses: str | None = None,
                agree_tol: float = SECOND_WORD_TOL, peaks: np.ndarray | None = None,
                refute: dict | None = None, line_share: float | None = None,
-               line_min_words: int = 2) -> dict:
+               line_min_words: int = 2, cue_tol: float | None = None,
+               nucleus: bool = False) -> dict:
     """Whether one line may lose timing-draft.
 
     Without `line_share`, the first failing word sets the reason: each lettered
@@ -913,9 +952,10 @@ def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presn
     has_cue = cue_start is not None
     drift = None
     agrees = False
+    gate = PROOF_CUE_TOL if cue_tol is None else float(cue_tol)
     if has_cue and ctc_line_start is not None:
         drift = abs(float(ctc_line_start) - float(cue_start))
-        agrees = round(drift, 3) <= PROOF_CUE_TOL
+        agrees = round(drift, 3) <= gate
     if ctc_status in ('draft', None):
         if has_cue:
             return fail('aligner-failed', 'постановки нет')
@@ -932,7 +972,7 @@ def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presn
                 return fail('cue-disagree', 'нет реплики')
             if ctc_line_start is None:
                 return fail('cue-disagree', 'нет начала выравнивателя')
-            return fail('cue-disagree', f'{drift:.3f} с при допуске {PROOF_CUE_TOL:.1f} с')
+            return fail('cue-disagree', f'{drift:.3f} с при допуске {gate:.2f} с')
         if not structure_ok:
             return fail('aligner-failed', 'структурные проверки')
         return fail('low-confidence', ctc_status or 'нет оценки')
@@ -942,11 +982,11 @@ def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presn
     if ctc_line_start is None:
         return fail('cue-disagree', 'нет начала выравнивателя')
     if not agrees:
-        return fail('cue-disagree', f'{drift:.3f} с при допуске {PROOF_CUE_TOL:.1f} с')
+        return fail('cue-disagree', f'{drift:.3f} с при допуске {gate:.2f} с')
     if not align_words or len(presnap) != len(align_words):
         return fail('no-report', 'нет допритяжного времени')
     proved = prove_words(align_words, presnap, tol, require_second=require_second,
-                         witnesses=witnesses, agree_tol=agree_tol)
+                         witnesses=witnesses, agree_tol=agree_tol, nucleus=nucleus)
     if not proved:
         if has_cue:
             return fail('aligner-failed', 'в строке не осталось букв')
@@ -998,12 +1038,15 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
     if rule.get('require_rise'):
         peaks = peaks_on_rise(sig, peaks, height)
     fill_on = bool(rule.get('attack_fill'))
+    line_fill = set(rule.get('line_fill') or [])
+    line_nucleus = set(rule.get('line_nucleus') or [])
     env_for_choir = rule.get('choir_attack') == 'envelope'
-    env_peaks = envelope_peak_times(sig, min_height=height) if (env_for_choir or fill_on) else None
+    env_peaks = envelope_peak_times(sig, min_height=height) if (env_for_choir or fill_on or line_fill) else None
     choir_vowel = rule.get('choir_clock') == 'vowel'
     rows = []
     prev_ctc: float | None = None
-    for (sec, line), _qa in zip(lines, qa_rows):
+    ordered_ids = [line['id'] for _, line in lines]
+    for index, ((sec, line), _qa) in enumerate(zip(lines, qa_rows)):
         rec = by_id.get(line['id'])
         words = line['words']
         kind = T.group(sec, line)
@@ -1019,15 +1062,44 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
         align_words = stamp_phoneme(
             align_words, phone_role, phone_model,
             choir_vowel=bool(choir_vowel and kind == 'choir'))
+        use_nucleus = line['id'] in line_nucleus
+        if use_nucleus and align_words:
+            stamped = []
+            for aw in align_words:
+                item = dict(aw)
+                if item.get('vowel_s') is None:
+                    table = item.get('vowel_models') or {}
+                    clock = None
+                    for name in ('xlsr-53-espeak', 'lv-60-espeak'):
+                        if table.get(name) is not None:
+                            clock = float(table[name])
+                            break
+                    if clock is None and phone_model and table.get(phone_model) is not None:
+                        clock = float(table[phone_model])
+                    item['vowel_s'] = clock
+                stamped.append(item)
+            align_words = stamped
         line_peaks = env_peaks if kind == 'choir' and env_for_choir and env_peaks is not None else peaks
-        fallback = env_peaks if fill_on else None
+        fallback = env_peaks if (fill_on or line['id'] in line_fill) else None
         cue = cues.get(line['id'])
         cue_start = float(cue['start']) if cue and cue.get('start') is not None else None
         ctc_line = None
-        for aw in align_words:
+        for aw in align_words or []:
             if aw.get('roman') and aw.get('ctc_s') is not None:
                 ctc_line = float(aw['ctc_s'])
                 break
+        cue_tol = None
+        half = rule.get('translation_half')
+        wide_ids = rule.get('line_wide')
+        wide_ok = wide_ids is None or line['id'] in wide_ids
+        if (half is not None and wide_ok and cue is not None and ctc_line is not None and cue_start is not None
+                and P.cue_is_translation(line.get('lang'), cue.get('lang'))):
+            prev_cue = next((cues[ordered_ids[j]].get('end') for j in range(index - 1, -1, -1)
+                             if ordered_ids[j] in cues and cues[ordered_ids[j]].get('end') is not None), None)
+            next_cue = next((cues[ordered_ids[j]].get('start') for j in range(index + 1, len(ordered_ids))
+                             if ordered_ids[j] in cues and cues[ordered_ids[j]].get('start') is not None), None)
+            if P.in_translation_window(ctc_line, cue_start, prev_cue, next_cue, float(half)):
+                cue_tol = float(half)
         presnap: list[float | None] = []
         abs_pre: list[float] = []
         agree: list[float] = []
@@ -1066,7 +1138,8 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
                               structure_ok=True if rec is None else bool(rec.get('structure_ok', True)),
                               tol=tol, require_second=bool(rule.get('require_second')) and not mode,
                               witnesses=mode, agree_tol=agree_tol, peaks=line_peaks, refute=refute,
-                              line_share=line_share, line_min_words=line_min)
+                              line_share=line_share, line_min_words=line_min, cue_tol=cue_tol,
+                              nucleus=use_nucleus)
         found_line = (rec or {}).get('status') in ('good', 'weak')
         cue_delta = None
         if found_line and cue_start is not None and ctc_line is not None:
@@ -1120,6 +1193,7 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
     word_paths = {
         'attack': 0, 'second': 0, 'fail': 0,
         'witness-second': 0, 'witness-third': 0, 'witness-both': 0, 'witness-phoneme': 0,
+        'nucleus': 0,
     }
     consonant: list[float | None] = []
     soft: list[float | None] = []
@@ -1849,6 +1923,72 @@ def render_md(meta: dict, summary: dict, results: list[dict], words: list[dict],
     return '\n'.join(L)
 
 
+def reject_wide_translation(lyrics: dict, align_report: dict | None, rule: dict | None,
+                            cues: dict) -> int:
+    """Pull a translation line back onto its cue when the measured window does not cover it.
+
+    The report stops being placed, so the proof does not treat a far start as
+    sung time. Same-language lines stay. A file that never measured the window
+    (no `translation_half` key) is left alone: those lines were aligned at 0.30 s.
+    """
+    if not rule or not rule.get('translation_measured') or not align_report:
+        return 0
+    half = rule.get('translation_half')
+    allowed = rule.get('line_wide')
+    allowed_ids = None if allowed is None else set(allowed)
+    by_id = {rec.get('id'): rec for rec in align_report.get('lines') or []}
+    vocal = list(T.vocal_lines(lyrics))
+    ids = [line['id'] for _sec, line in vocal]
+    moved = 0
+    for index, (_sec, line) in enumerate(vocal):
+        cue = cues.get(line['id'])
+        words = line.get('words') or []
+        if cue is None or cue.get('start') is None or not words:
+            continue
+        if not P.cue_is_translation(line.get('lang'), cue.get('lang')):
+            continue
+        cue_s = float(cue['start'])
+        published = float(words[0]['s'])
+        rec = by_id.get(line['id'])
+        ctc = None if rec is None else rec.get('ctc_start')
+        if ctc is None and rec is not None:
+            for word in rec.get('words') or []:
+                if word.get('roman') and word.get('ctc_s') is not None:
+                    ctc = word.get('ctc_s')
+                    break
+        far_published = round(abs(published - cue_s), 3) > PROOF_CUE_TOL
+        far_ctc = ctc is not None and round(abs(float(ctc) - cue_s), 3) > PROOF_CUE_TOL
+        if not far_published and not far_ctc:
+            continue
+        covered = False
+        if half is not None and (allowed_ids is None or line['id'] in allowed_ids):
+            prev = next(
+                (cues[ids[j]].get('end') for j in range(index - 1, -1, -1)
+                 if ids[j] in cues and cues[ids[j]].get('end') is not None),
+                None)
+            nxt = next(
+                (cues[ids[j]].get('start') for j in range(index + 1, len(ids))
+                 if ids[j] in cues and cues[ids[j]].get('start') is not None),
+                None)
+            heard = float(ctc) if ctc is not None else published
+            covered = P.in_translation_window(heard, cue_s, prev, nxt, float(half))
+        if covered:
+            continue
+        delta = cue_s - published
+        if abs(delta) >= 0.001:
+            for word in words:
+                word['s'] = T.r2(float(word['s']) + delta)
+                if word.get('e') is not None:
+                    word['e'] = T.r2(float(word['e']) + delta)
+        if rec is not None:
+            rec['status'] = 'weak'
+            rec['placed_by'] = None
+        moved += 1
+    if moved:
+        T.enforce_order(lyrics)
+    return moved
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     ap.add_argument('slug')
@@ -1931,6 +2071,11 @@ def main() -> int:
         cues = {}
         if cue_path.exists():
             cues = {r['line']: r for r in json.loads(cue_path.read_text(encoding='utf-8')) if r.get('line')}
+        if args.apply and align_report is not None:
+            pulled = reject_wide_translation(lyrics, align_report, rule, cues)
+            if pulled:
+                align_path.write_text(json.dumps(align_report, ensure_ascii=False, indent=1), encoding='utf-8')
+                print(f'переводные реплики вне допущенного окна возвращены на реплику: {pulled}')
         proof = build_proof(sig, lines, results, align_report, cues, word_rule=rule)
     if args.apply and proof is not None and song.get('timing', {}).get('status') == 'verified':
         print('song.json: timing.status = verified — qa_sync --apply ничего не меняет')
