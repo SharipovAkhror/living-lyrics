@@ -2498,13 +2498,12 @@
             }
           ],
           "tr": {
-            "ru": "Я не шейх"
+            "ru": "я не шейх"
           },
           "translit": "Шейх ниям",
           "comment": "**Шейх** (شیخ) — старец и глава дервишей. Steingass, с. 772: venerable old man, chief, superior of the dervishes. **Ниям** (نیم) здесь «я не», не «половина»: Steingass, с. 1444, *nayam* — I am not, а *nīm* — a half. Первое полустишие бейта Арберри читает «you are shaikh and headman». Здесь спето только «я не шейх».",
           "flags": [
-            "timing-draft",
-            "translation-draft"
+            "timing-draft"
           ]
         },
         {
@@ -2524,13 +2523,12 @@
             }
           ],
           "tr": {
-            "ru": "я не вожак"
+            "ru": "я не предводитель"
           },
           "translit": "Пиш ниям",
-          "comment": "**Пиш** (پیش) — и «впереди», и «вождь». Steingass, с. 266: before, in front; chief, leader. В строке оставлен ведущий: Арберри, с. 184, I am not a leader. «Впереди» сюда не вошло. В первом полустишии стоит **пишров** (پیشرو). Steingass, с. 267: leader, guide, forerunner. Этого слова в спетой строке нет.",
+          "comment": "**Пиш** (پیش) — и «впереди», и «вождь». Steingass, с. 266: before, in front; chief, superior, commander, leader. В строке «предводитель»: Арберри, с. 184, I am not a leader. «Вожак» — поводырь и вожак стаи. «Ведущий» как имя — ведущий передачи. «Впереди» сюда не вошло. В первом полустишии стоит **пишров** (پیشرو). Steingass, с. 267: leader, guide, forerunner. Этого слова в спетой строке нет.",
           "flags": [
-            "timing-draft",
-            "translation-draft"
+            "timing-draft"
           ]
         },
         {
@@ -2565,13 +2563,12 @@
             }
           ],
           "tr": {
-            "ru": "я стал рабом твоего приказа"
+            "ru": "я стал рабом твоего повеления"
           },
           "translit": "Амр-е то ра банде шодам",
-          "comment": "**Амр** (امر) — приказ. Steingass, с. 99: order, command; в той же статье есть и «дело». **Банде** (بنده) — слуга и раб. Steingass, с. 202: servant, slave, bondman. В строке «раб»: Арберри, с. 184, slave to your command. «Слуга» и «дело» в перевод не вошли.",
+          "comment": "**Амр** (امر) — приказ, не воля. Steingass, с. 99: order, command; в той же статье есть и «дело». **Банде** (بنده) — слуга и раб. Steingass, с. 202: servant, slave, bondman. В строке «раб» и «повеление»: Арберри, с. 184, slave to your command. «Повеление» — устаревшее имя того же приказа. «Слуга», «дело» и «покорился» в перевод не вошли.",
           "flags": [
-            "timing-draft",
-            "translation-draft"
+            "timing-draft"
           ]
         },
         {
@@ -2606,12 +2603,11 @@
             }
           ],
           "tr": {
-            "ru": "я стал рабом твоего приказа"
+            "ru": "я стал рабом твоего повеления"
           },
           "translit": "Амр-е то ра банде шодам",
           "flags": [
-            "timing-draft",
-            "translation-draft"
+            "timing-draft"
           ]
         }
       ]
