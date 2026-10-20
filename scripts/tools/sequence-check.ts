@@ -163,7 +163,40 @@ function lettersMatch(lyric: string, cue: string): boolean {
   return fold(cue).includes(fold(lyric));
 }
 
-type JudgeInput = { lines: Line[]; segments: Segment[]; alts: Alt[]; cues: Record<string, Cue[]> | null; sung: Record<string, string> };
+type GeminiSeg = { start: number; end: number; text: string; line: string; confidence: string };
+
+type JudgeInput = {
+  lines: Line[];
+  segments: Segment[];
+  alts: Alt[];
+  cues: Record<string, Cue[]> | null;
+  sung: Record<string, string>;
+  gemini?: GeminiSeg[] | null;
+};
+
+/** Language a witness phrase is closest to. Persian-only letters decide even a rough transcript. */
+function witnessLang(text: string, lines: Line[], alts: Alt[]): string | null {
+  const raw = text.trim();
+  if (!raw) return null;
+  const heard = normLetters(raw);
+  const words = heard.split(' ').filter(Boolean);
+  const persianLetter = /[گپچژ]/.test(raw);
+  if (words.length < 2 && !persianLetter) return null;
+  let best = 0;
+  let lang: string | null = null;
+  const take = (code: string, norm: string) => {
+    const score = dice(heard, norm);
+    if (score > best) {
+      best = score;
+      lang = code;
+    }
+  };
+  for (const ln of lines) take(ln.lang, ln.norm);
+  for (const alt of alts) take(/[گپچژ]/.test(alt.text) || alt.text.includes('ی') ? 'fa' : 'ar', alt.norm);
+  if (persianLetter) return best >= 0.45 && lang ? lang : 'fa';
+  if (best >= 0.55 && lang) return lang;
+  return null;
+}
 
 /**
  * A transcript phrase against the line on screen.
@@ -174,7 +207,7 @@ type JudgeInput = { lines: Line[]; segments: Segment[]; alts: Alt[]; cues: Recor
  */
 export function judgeSequence(input: JudgeInput): SequenceIssue[] {
   const issues: SequenceIssue[] = [];
-  const { lines, segments, alts, cues, sung } = input;
+  const { lines, segments, alts, cues, sung, gemini } = input;
   for (const seg of segments) {
     const heard = normLetters(seg.text);
     if (heard.split(' ').length < 2) continue;
@@ -240,6 +273,28 @@ export function judgeSequence(input: JudgeInput): SequenceIssue[] {
       }
     }
   }
+  // A line drawn in one language while Whisper and Gemini both hear another.
+  // text-unverified does not waive this: that flag is what hid the old error.
+  if (gemini?.length) {
+    for (const ln of lines) {
+      const whisperText = segments
+        .filter((s) => Math.min(s.end, ln.end) - Math.max(s.start, ln.start) > 0.35)
+        .map((s) => s.text)
+        .join(' ');
+      const geminiText = gemini
+        .filter((s) => Math.min(s.end, ln.end) - Math.max(s.start, ln.start) > 0.35)
+        .map((s) => s.text)
+        .join(' ');
+      const heardByWhisper = witnessLang(whisperText, lines, alts);
+      const heardByGemini = witnessLang(geminiText, lines, alts);
+      if (!heardByWhisper || !heardByGemini || heardByWhisper !== heardByGemini || heardByWhisper === ln.lang) continue;
+      issues.push({
+        level: 'error',
+        where: ln.id,
+        msg: `на ${ln.start.toFixed(1)}–${ln.end.toFixed(1)} с оба свидетеля слышат язык «${heardByWhisper}», на экране «${ln.lang}»`,
+      });
+    }
+  }
   return issues;
 }
 
@@ -260,7 +315,7 @@ export function checkSequence(slug: string): SequenceIssue[] {
   const cues = meta && dir ? loadCues(dir, meta.video) : null;
   const sung = meta?.sung ?? {};
   if (segments) {
-    issues.push(...judgeSequence({ lines, segments, alts: loadAlts(slug), cues, sung }));
+    issues.push(...judgeSequence({ lines, segments, alts: loadAlts(slug), cues, sung, gemini: loadGemini(slug) }));
   }
   return issues;
 }
@@ -310,8 +365,41 @@ export function sequenceSelfTest(): string | null {
   });
   if (spanned.some((i) => i.level === 'error')) return 'фраза на две строки принята за обмен с более ранним повтором';
   if (dice(normLetters(heard), normLetters(verse)) < 0.5) return 'порог бейта 8 разъехался с нормой букв';
+  const persianReply = 'شیخ نیم پیش نیم امر تو را بنده شدم';
+  const bothHearPersian = {
+    segments: [{ start: 372.16, end: 379.52, text: heard }],
+    alts: [{ id: 'rumi-beyt-8-response', text: verse, norm: normLetters(verse) }],
+    cues: null,
+    sung: {},
+    gemini: [{ start: 374, end: 383, text: 'گفت که شیخی و سری پیشرو و راهبری', line: 'NONE', confidence: 'high' }],
+  };
+  const wrongLang = judgeSequence({ ...bothHearPersian, lines: [line([])] });
+  if (!wrongLang.some((i) => i.level === 'error' && i.where === 'arabic-23b' && i.msg.includes('язык'))) {
+    return 'строка чужого языка при двух свидетелях не поймана';
+  }
+  const flaggedLang = judgeSequence({ ...bothHearPersian, lines: [line(['text-unverified'])] });
+  if (!flaggedLang.some((i) => i.level === 'error' && i.msg.includes('язык'))) {
+    return 'флаг text-unverified снял чужой язык';
+  }
+  const faLine: Line = {
+    id: 'rumi-8-1',
+    lang: 'fa',
+    text: persianReply,
+    norm: normLetters(persianReply),
+    start: 372.16,
+    end: 379.52,
+    flags: ['timing-draft'],
+  };
+  const rightLang = judgeSequence({
+    ...bothHearPersian,
+    lines: [faLine],
+    gemini: [{ start: 372.4, end: 379, text: 'شیخ نیم پیش نیم امر تو را بنده شدم', line: 'NONE', confidence: 'high' }],
+  });
+  if (rightLang.some((i) => i.level === 'error')) return 'персидская строка при двух персидских свидетелях отклонена';
   return null;
 }
+
+type GeminiCell = { line: string; heard: string; start: number; end: number; confidence: string };
 
 type RecheckLine = {
   id: string;
@@ -322,10 +410,27 @@ type RecheckLine = {
   cue: { n: number; track: string; role: 'original' | 'translation'; text: string } | null;
   whisper: string;
   verdict: 'agree' | 'subtitle' | 'whisper' | 'translation-only' | 'conflict' | 'weak';
-  gemini: null;
+  gemini: GeminiCell[] | null;
 };
 
-function buildTable(slug: string): { slug: string; checked: string; gemini: 'pending'; frames: string; lines: RecheckLine[] } {
+function loadGemini(slug: string): GeminiSeg[] | null {
+  const path = join(root, 'docs/analysis', slug, 'recheck-gemini.json');
+  if (!existsSync(path)) return null;
+  const raw = JSON.parse(readFileSync(path, 'utf8')) as {
+    segments?: { start_s?: number; end_s?: number; heard?: string; line?: string; confidence?: string }[];
+  };
+  return (raw.segments ?? [])
+    .filter((s) => (s.heard ?? '').trim())
+    .map((s) => ({
+      start: s.start_s ?? 0,
+      end: s.end_s ?? 0,
+      text: (s.heard ?? '').trim(),
+      line: s.line ?? 'NONE',
+      confidence: s.confidence ?? '',
+    }));
+}
+
+function buildTable(slug: string): { slug: string; checked: string; gemini: 'pending' | 'filled'; frames: string; lines: RecheckLine[] } {
   const lines = loadLines(slug);
   const segments = loadSegments(slug) ?? [];
   const alts = loadAlts(slug);
@@ -333,6 +438,7 @@ function buildTable(slug: string): { slug: string; checked: string; gemini: 'pen
   const dir = subsDir();
   const cues = meta && dir ? loadCues(dir, meta.video) : {};
   const sung = meta?.sung ?? {};
+  const gemini = loadGemini(slug);
   const rows: RecheckLine[] = lines.map((ln) => {
     const track = sung[ln.lang] ?? null;
     const role: 'original' | 'translation' = track ? 'original' : 'translation';
@@ -357,6 +463,11 @@ function buildTable(slug: string): { slug: string; checked: string; gemini: 'pen
     else if (roleUsed === 'original' && hit && lettersMatch(ln.norm, hit.norm)) verdict = own >= 0.4 ? 'agree' : heard ? 'weak' : 'subtitle';
     else if (own >= 0.4) verdict = 'whisper';
     else if (roleUsed === 'translation') verdict = 'translation-only';
+    const geminiHits: GeminiCell[] | null = gemini
+      ? gemini
+          .filter((s) => Math.min(s.end, ln.end) - Math.max(s.start, ln.start) > 0.3)
+          .map((s) => ({ line: s.line, heard: s.text, start: s.start, end: s.end, confidence: s.confidence }))
+      : null;
     return {
       id: ln.id,
       lang: ln.lang,
@@ -366,13 +477,13 @@ function buildTable(slug: string): { slug: string; checked: string; gemini: 'pen
       cue: hit ? { n: hit.n, track: pool.length ? (track as string) : 'en-GB', role: roleUsed, text: hit.text } : null,
       whisper: heard,
       verdict,
-      gemini: null,
+      gemini: geminiHits,
     };
   });
   return {
     slug,
     checked: '2026-10-20',
-    gemini: 'pending',
+    gemini: gemini ? 'filled' : 'pending',
     frames: FRAMES[slug] ?? 'Кадры официального видео не снимались.',
     lines: rows,
   };
