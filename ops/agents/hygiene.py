@@ -35,6 +35,27 @@ def merged(repo: Path, ref: str) -> bool:
     return git(repo, 'merge-base', '--is-ancestor', ref, 'origin/main').returncode == 0
 
 
+def board_worktrees(repo: Path) -> set[str]:
+    try:
+        board = json.loads((repo / 'ops' / 'board.json').read_text(encoding='utf-8'))
+        return {t['worktree'] for t in board.get('tasks', []) if t.get('worktree') and t.get('section') in ('now', 'you', 'later')}
+    except (OSError, ValueError, KeyError):
+        return set()
+
+
+def safe_to_delete(repo: Path, ref: str, on_board: set[str]) -> bool:
+    """Merged and really finished. A branch freshly cut from main (tip == origin/main, no commits yet)
+    also passes is-ancestor, so skip it, anything younger than a day, and branches of tasks on the board."""
+    if not merged(repo, ref):
+        return False
+    tip = git(repo, 'rev-parse', ref).stdout.strip()
+    if tip == git(repo, 'rev-parse', 'origin/main').stdout.strip():
+        return False
+    if age_days(repo, ref) < 1:
+        return False
+    return ref.removeprefix('origin/').rsplit('/', 1)[-1] not in on_board
+
+
 def age_days(repo: Path, ref: str) -> float:
     out = git(repo, 'log', '-1', '--format=%ct', ref).stdout.strip()
     return (datetime.datetime.now().timestamp() - int(out)) / 86400 if out else 0
@@ -67,16 +88,17 @@ def grok_states(main: Path) -> dict[str, str]:
 
 
 def check_branches(repo: Path, apply: bool, fixed: list, issues: list) -> None:
+    on_board = board_worktrees(repo)
     for line in git(repo, 'branch', '-r', '--format=%(refname:short)').stdout.split():
         name = line.removeprefix('origin/')
         if name in PROTECTED or not line.startswith('origin/'):
             continue
-        if merged(repo, line):
+        if safe_to_delete(repo, line, on_board):
             if apply and git(repo, 'push', '-q', 'origin', '--delete', name).returncode == 0:
                 fixed.append(f'удалена влитая ветка на GitHub: {name}')
             else:
                 issues.append(f'влитая ветка на GitHub ещё не удалена: {name}')
-        elif age_days(repo, line) > STALE_DAYS:
+        elif not merged(repo, line) and age_days(repo, line) > STALE_DAYS:
             issues.append(f'ветка {name} не влита и не менялась {int(age_days(repo, line))} дн.')
 
 
@@ -84,11 +106,7 @@ def check_local(repo: Path, apply: bool, fixed: list, issues: list) -> None:
     trees = worktrees(repo)
     main = trees[0]['path']
     states = grok_states(main)
-    try:
-        board = json.loads((repo / 'ops' / 'board.json').read_text(encoding='utf-8'))
-        on_board = {t['worktree'] for t in board.get('tasks', []) if t.get('worktree') and t.get('section') in ('now', 'you', 'later')}
-    except (OSError, ValueError, KeyError):
-        on_board = set()
+    on_board = board_worktrees(repo)
     wt_root = (main.parent / 'living-lyrics-wt').resolve()
     for t in trees[1:]:
         path, branch = t['path'], t.get('branch', '')
@@ -115,7 +133,7 @@ def check_local(repo: Path, apply: bool, fixed: list, issues: list) -> None:
     for name in git(repo, 'branch', '--format=%(refname:short)').stdout.split():
         if name in PROTECTED or name in checked_out:
             continue
-        if merged(repo, name):
+        if safe_to_delete(repo, name, on_board):
             if apply and git(repo, 'branch', '-d', name).returncode == 0:
                 fixed.append(f'удалена влитая локальная ветка {name}')
             else:
