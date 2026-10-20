@@ -47,7 +47,7 @@ const SONG: Record<string, string> = { 'i-have-come-alive': 'I Have Come Alive',
 type Tone = 'working' | 'stalled' | 'review' | 'idle'
 const TONE: Record<Tone, string> = { working: 'success', stalled: 'warning', review: 'suggestion', idle: 'inactive' }
 
-export type Row = { agent: AgentName; name: string; task: string; state: string; tone: Tone; detail: string; model: string }
+export type Row = { agent: AgentName; name: string; task: string; state: string; tone: Tone; detail: string; model: string; age?: number }
 
 function ago(minutes: number) {
   if (minutes < 1) return 'сейчас'
@@ -132,7 +132,7 @@ export function agentRows(b: Board | null, l: Live): Row[] {
       : run.state === 'finished' ? 'готово · Claude проверяет'
       : 'ещё не начал'
     const tone: Tone = run.state === 'working' ? 'working' : run.state === 'stalled' ? 'stalled' : run.state === 'finished' ? 'review' : 'idle'
-    rows.push({ agent: 'grok', name, task: t.title, state, tone, detail: run.step, model })
+    rows.push({ agent: 'grok', name, task: t.title, state, tone, detail: run.step, model, ...(run.age === undefined ? {} : { age: run.age }) })
   }
   for (const t of now.filter(t => t.agent === 'gemini')) {
     const run = l.gemini[0]
@@ -342,6 +342,7 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
     if (JSON.stringify(next) !== JSON.stringify(await read($, limits))) await update($, limits, () => next)
     await pushLimit($, next)
     await saveCardState($)
+    await writePanel($)
   } catch {
     // Off a subscription the windows are empty.
   }
@@ -697,6 +698,102 @@ export function cardDoc(b: Board | null, l: Live, lim: Limit[], u: Usage | null)
   }
 }
 
+/**
+ * The live panel: a private claude.ai artifact (ops/dashboard-mod/panel.html) the Claude app shows
+ * beside a chat, phone included. It draws one document of its own database, `dashboard/now`, which
+ * the Station's mod writes whenever the content changes, plus a heartbeat so the page can tell a
+ * live Station from a silent one. A write is an ArtifactData call of the mod's own, no model turn;
+ * the tool.check hook below lets exactly these calls through (the owner allows it once).
+ */
+export const PANEL_URL = 'https://claude.ai/artifact/UxZtjaBuWo2eDXW3fSC6tp'
+const PANEL_HEARTBEAT_MS = 10 * 60_000
+const TREND_EVERY_MS = 15 * 60_000
+const TREND_KEEP_MS = 7 * 86_400_000
+
+/** One sample of the plan windows, in % used (Grok: tokens today). */
+export type TrendPoint = { t: number; c5?: number; cw?: number; g5?: number; gw?: number; gk?: number }
+
+/** The trend with a new sample when the last is older than TREND_EVERY_MS; a week is kept. */
+export function trendNext(prev: TrendPoint[], lim: Limit[], u: Usage | null, now: number): TrendPoint[] {
+  const last = prev[prev.length - 1]
+  if (last && now - last.t < TREND_EVERY_MS) return prev
+  const c = (kind: string) => lim.find(l => l.kind === kind)?.percentUsed
+  const q = u?.gemini?.quota?.gemini
+  const p: TrendPoint = { t: now }
+  const c5 = c('five_hour'), cw = c('seven_day')
+  if (c5 !== undefined) p.c5 = Math.round(c5)
+  if (cw !== undefined) p.cw = Math.round(cw)
+  if (q?.fiveHourRemaining !== undefined) p.g5 = Math.round(100 - q.fiveHourRemaining)
+  if (q?.weeklyRemaining !== undefined) p.gw = Math.round(100 - q.weeklyRemaining)
+  if (u?.grok?.today !== undefined) p.gk = u.grok.today
+  if (Object.keys(p).length === 1) return prev
+  return [...prev.filter(x => now - x.t < TREND_KEEP_MS), p]
+}
+
+/** When each chat entered its current state: kept while the state holds, reset when it changes. */
+export function chatSince(prev: Record<string, { state: string; at: number }>, chats: ChatRow[], now: number) {
+  const next: Record<string, { state: string; at: number }> = {}
+  for (const c of chats) next[c.name] = prev[c.name]?.state === c.state ? prev[c.name]! : { state: c.state, at: now }
+  return next
+}
+
+/** The panel's document: the card's state plus trends, durations, tasks and the roadmap steps. */
+export function panelDoc(b: Board | null, l: Live, lim: Limit[], u: Usage | null, trend: TrendPoint[], since: Record<string, { state: string; at: number }>, now: number) {
+  const base = cardDoc(b, l, lim, u)
+  if (!b || !base) return null
+  const mins = (at?: number) => (at === undefined ? null : Math.max(0, Math.round((now - at) / 60_000)))
+  return {
+    ...base,
+    chats: (l.chats ?? []).map(c => ({ name: c.name, state: c.state, minutes: mins(since[c.name]?.at) })),
+    agents: agentRows(b, l).map(r => ({ agent: r.agent, name: r.name, task: r.task, state: r.state, tone: r.tone, detail: r.detail, age: r.age ?? null })),
+    tasks: b.tasks.filter(t => t.section === 'now').map(t => ({ id: t.id, title: t.title, agent: t.agent ?? '', now: t.now ?? '', next: t.next ?? '' })),
+    steps: b.roadmap?.steps.map(s => ({ name: s.name, weight: s.weight, done: s.done })) ?? [],
+    trend,
+  }
+}
+
+let panel = { key: '', at: 0, version: 0 }
+
+function versionIn(text: string) {
+  const m = text.match(/"version":\s*(\d+)|version (\d+)/)
+  return m ? Number(m[1] ?? m[2]) : 0
+}
+
+async function writePanel($: EngineInterface) {
+  if (!place.orchestrator) return
+  const now = Date.now()
+  const [b, l, lim, u] = [await read($, board), await read($, live), await read($, limits), await read($, usage)]
+  const trend = trendNext(((await $.store.get('panel-trend')) as TrendPoint[] | undefined) ?? [], lim, u, now)
+  await $.store.set('panel-trend', trend)
+  const since = chatSince(((await $.store.get('chat-since')) as Record<string, { state: string; at: number }> | undefined) ?? {}, l.chats ?? [], now)
+  await $.store.set('chat-since', since)
+  const doc = panelDoc(b, l, lim, u, trend, since, now)
+  if (!doc) return
+  const { at: _at, chats: _chats, ...stable } = doc
+  const key = JSON.stringify({ ...stable, chats: (l.chats ?? []).map(c => [c.name, c.state]) })
+  if (key === panel.key && now - panel.at < PANEL_HEARTBEAT_MS) return
+  panel = { ...panel, key, at: now }
+  const where = { url: PANEL_URL, collection: 'dashboard', doc_id: 'now' }
+  try {
+    if (!panel.version) {
+      const got = await $.tool.call({ tool: 'ArtifactData', action: 'get', ...where })
+      panel.version = versionIn(String(got.text ?? ''))
+    }
+    const set = () => $.tool.call({ tool: 'ArtifactData', action: 'set', ...where, data: doc, ...(panel.version ? { if_version: panel.version } : {}) })
+    let res = await set()
+    if (res.isError || res.deny) {
+      // Written meanwhile from elsewhere: take the version the refusal names and write once more.
+      panel.version = versionIn(String(res.text ?? res.deny ?? ''))
+      res = await set()
+    }
+    panel.version = res.isError || res.deny ? 0 : versionIn(String(res.text ?? '')) || panel.version + 1
+    if (res.isError || res.deny) panel.key = ''
+  } catch {
+    // Offline, or the tool is absent in this session: the next refresh tries again.
+    panel = { key: '', at: 0, version: 0 }
+  }
+}
+
 let cardKey = ''
 
 /** The Station keeps the latest card state on disk, so the card can be redrawn and checked outside a chat. */
@@ -772,6 +869,14 @@ export const register: Register = on => {
 
   // /dashboard hands off to the model: the word goes in as the owner's prompt, the prompt.submit hook
   // below draws the image card and Claude sends it, so one action shows the card on the phone too.
+  // The panel writes are this mod's own calls to its own artifact: allowed without a prompt. Any
+  // other ArtifactData call, the model's included, takes the usual permission path.
+  on('tool.check', { tool: 'ArtifactData' }, async ($, e, next) => {
+    const input = e.input as { url?: string; collection?: string; doc_id?: string } | undefined
+    const own = next.origin.plugin === 'll-dashboard' && input?.url === PANEL_URL && input.collection === 'dashboard' && input.doc_id === 'now'
+    return own ? { decision: 'allow' } : next(e)
+  })
+
   on('command.run', { command: 'dashboard' }, async $ => {
     await refresh($, seen)
     void $.ui.open({ id: PANE, title: TITLE }).catch(() => undefined)

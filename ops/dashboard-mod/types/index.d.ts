@@ -47,6 +47,8 @@ export type GrokRun = {
   name: string
   state: 'working' | 'stalled' | 'finished' | 'none'
   minutes: number
+  /** Minutes since the session started. */
+  age?: number
   step: string
   tokens?: number
   model?: string

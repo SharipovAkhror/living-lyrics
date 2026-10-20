@@ -1,6 +1,6 @@
 import { expect, mock, test } from 'claude-code/testing'
 
-import { agentRows, bandLine, cardContext, cardDoc, codename, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
+import { agentRows, bandLine, cardContext, cardDoc, chatSince, codename, PANEL_URL, panelDoc, trendNext, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -231,4 +231,38 @@ test('/dashboard hands the word to the model, so the image card comes as the rep
   await $.command.run({ command: 'dashboard' })
   await clock.advance(100)
   expect(sent).toEqual(['дашборд'])
+})
+
+test('the limit trend takes a sample every 15 minutes and keeps a week', async () => {
+  const lim = [{ kind: 'five_hour', percentUsed: 26.4 }, { kind: 'seven_day', percentUsed: 3 }]
+  const u = { grok: { today: 1000 }, gemini: { quota: { gemini: { fiveHourRemaining: 98, weeklyRemaining: 93 } } } }
+  const t0 = 1_000_000_000_000
+  const one = trendNext([], lim, u, t0)
+  expect(one).toEqual([{ t: t0, c5: 26, cw: 3, g5: 2, gw: 7, gk: 1000 }])
+  expect(trendNext(one, lim, u, t0 + 60_000)).toBe(one)
+  expect(trendNext(one, lim, u, t0 + 15 * 60_000).length).toBe(2)
+  expect(trendNext(one, lim, u, t0 + 8 * 86_400_000).length).toBe(1)
+  expect(trendNext([], [], null, t0)).toEqual([])
+})
+
+test('a chat keeps its since-time while its state holds', async () => {
+  const a = chatSince({}, [{ name: 'LL · Main', state: 'working' }], 100)
+  expect(chatSince(a, [{ name: 'LL · Main', state: 'working' }], 900)['LL · Main']?.at).toBe(100)
+  expect(chatSince(a, [{ name: 'LL · Main', state: 'idle' }], 900)['LL · Main']).toEqual({ state: 'idle', at: 900 })
+})
+
+test('the panel document adds trend, durations, tasks and roadmap steps to the card', async () => {
+  const live: Live = { ...LIVE, chats: [{ name: 'LL · Main', state: 'working' }], grok: [{ ...LIVE.grok[0]!, age: 95 }] }
+  const doc = panelDoc(BOARD, live, [], null, [{ t: 1, c5: 5 }], { 'LL · Main': { state: 'working', at: 0 } }, 30 * 60_000)
+  expect(doc?.chats).toEqual([{ name: 'LL · Main', state: 'working', minutes: 30 }])
+  expect(doc?.agents.find(a => a.agent === 'grok')?.age).toBe(95)
+  expect(doc?.tasks.map(t => t.id)).toEqual(['t1', 'g'])
+  expect(doc?.trend).toEqual([{ t: 1, c5: 5 }])
+  expect(panelDoc(null, live, [], null, [], {}, 0)).toBe(null)
+})
+
+test('a panel write from anyone but the mod takes the usual permission path', async ($, on) => {
+  on('tool.check', () => ({ decision: 'ask' }) as never)
+  const own = await $.tool.check({ tool: 'ArtifactData', input: { url: PANEL_URL, collection: 'dashboard', doc_id: 'now', action: 'set' } } as never)
+  expect(own.decision).toBe('ask')
 })
