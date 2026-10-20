@@ -6,10 +6,11 @@ script starts the new chat under the same name, supervised by the Claude daemon 
 so archiving a chat never kills it), with Remote Control on so it shows in claude.ai and the
 desktop sidebar, and gives it its first task: read the rules, the status and the hand-off, go on.
 
-    python ops/agents/rotate_chat.py "LL · Tech" ops/handoff/2026-10-20-ll-tech.md [--cwd <dir>] [--model <m>] [--effort <e>] [--dry-run]
+    python ops/agents/rotate_chat.py "LL · Tech" ops/handoff/2026-10-20-ll-tech.md [--cwd <dir>] [--model <m>] [--effort <e>] [--keep-old] [--dry-run]
 
-Prints the new session's short id. The old chat then renames and archives itself
-(docs/process/chat-rotation.md, steps 5–6).
+Prints the new session's short id, then archives the old chat(s) of that name: `claude stop` for a
+background session (archived on claude.ai at once), a reminder for a desktop-app session.
+`--keep-old` leaves them running (docs/process/chat-rotation.md, steps 4–6).
 """
 import json
 import shutil
@@ -60,6 +61,19 @@ def sessions() -> list[dict]:
     return json.loads(run([CLAUDE, 'agents', '--json'], REPO) or '[]')
 
 
+def retire(old: list[dict]) -> None:
+    """Archive the chats the new one replaces. `claude stop` on a background session archives it on
+    claude.ai at once (the transcript stays). The old chat usually runs this script itself, so this is
+    the last thing it does. A desktop-app session can't be stopped from here: it archives itself."""
+    for s in old:
+        sid = s.get('id') or s.get('sessionId', '')[:8]
+        if s.get('kind') != 'background':
+            print(f'archive by hand (archive_session in the app): {s.get("name")} · {sid}', flush=True)
+            continue
+        print(f'archiving the old chat: {s.get("name")} · {sid}', flush=True)
+        subprocess.run([CLAUDE, 'stop', sid], capture_output=True)
+
+
 def main() -> None:
     sys.stdout.reconfigure(encoding='utf-8')
     args = [a for a in sys.argv[1:]]
@@ -70,7 +84,8 @@ def main() -> None:
             opts[flag] = args[i + 1]
             del args[i:i + 2]
     dry = '--dry-run' in args
-    args = [a for a in args if a != '--dry-run']
+    keep_old = '--keep-old' in args
+    args = [a for a in args if a not in ('--dry-run', '--keep-old')]
     if len(args) != 2:
         raise SystemExit(__doc__)
     name, handoff = args[0], Path(args[1])
@@ -101,13 +116,16 @@ def main() -> None:
         print(json.dumps({'cwd': str(cwd), 'cmd': cmd}, ensure_ascii=False, indent=2))
         return
 
-    before = {s.get('sessionId') for s in sessions()}
+    old = [s for s in sessions() if s.get('name') == name]
+    before = {s.get('sessionId') for s in old}
     out = run(cmd, cwd)
     print(out.splitlines()[0] if out else '')
     for _ in range(20):
         new = [s for s in sessions() if s.get('name') == name and s.get('sessionId') not in before]
         if new:
-            print(f'new chat: {name} · {new[0].get("sessionId")} · {new[0].get("status")}')
+            print(f'new chat: {name} · {new[0].get("sessionId")} · {new[0].get("status")}', flush=True)
+            if not keep_old:
+                retire(old)
             return
         time.sleep(1)
     raise SystemExit(f'the new chat «{name}» did not show up in `claude agents`; check `claude agents` by hand')

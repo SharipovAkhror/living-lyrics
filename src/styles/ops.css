@@ -1,0 +1,97 @@
+/* /ops — work status for the owner (src/pages/OpsPage.tsx). Loaded with the lazy route only. */
+.ops {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 var(--gutter) calc(env(safe-area-inset-bottom) + 40px);
+  display: grid;
+  gap: var(--sp-3);
+}
+.ops-top {
+  position: sticky;
+  top: calc(env(safe-area-inset-top) + 8px);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: calc(env(safe-area-inset-top) + 8px);
+  padding: 6px 8px;
+  border-radius: var(--r-lg);
+  background: var(--glass-fallback);
+  box-shadow: var(--glass-shadow), var(--glass-rim), var(--glass-rim-low);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .ops-top {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  }
+}
+.ops-card {
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  display: grid;
+  gap: var(--sp-1);
+}
+.ops-card h2 {
+  margin: 0 0 var(--sp-1);
+}
+.ops-card p {
+  margin: 0;
+}
+.ops-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-2);
+}
+.ops-card--you {
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--system-orange) 55%, transparent), var(--glass-shadow);
+}
+.ops-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+.ops-chip {
+  display: inline-block;
+  margin-left: var(--sp-1);
+  padding: 0 var(--sp-2);
+  border-radius: var(--r-pill);
+  background: var(--fill-3);
+  color: var(--label-2);
+  font-size: var(--t-caption1);
+  line-height: 20px;
+  white-space: nowrap;
+}
+.ops-chip--working,
+.ops-chip--running {
+  background: color-mix(in srgb, var(--system-green) 18%, transparent);
+  color: var(--label);
+}
+.ops-chip--stalled,
+.ops-chip--rejected {
+  background: color-mix(in srgb, var(--system-orange) 20%, transparent);
+  color: var(--label);
+}
+.ops-song {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px var(--sp-2);
+  align-items: baseline;
+}
+.ops-bar {
+  grid-column: 1 / -1;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--fill-3);
+  overflow: hidden;
+}
+.ops-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--label-2);
+}
