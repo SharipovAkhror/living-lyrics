@@ -5,13 +5,14 @@
  * commit 2b75f3ad12b420c9504ef05df8d2564a28f8500e.
  * The site does not depend on the package. One grid, 256 units.
  *
- * Draw each glyph at a whole pixel size (16, 20, 22, 24 or 28).
- * The circle of info.circle already spans 208 units; the close plate spans 192.
- * A further pixel would land on a half pixel inside an even button, so it is not added.
+ * This is the current set (direction "now"). It stays the default until
+ * the owner picks a direction. Draw each glyph at a whole pixel size
+ * (16, 20, 22, 24 or 28).
  */
-import type { CSSProperties } from 'react';
+import { fill, iconSet } from './geom';
+import type { Glyph, IconName } from './types';
 
-const paths: Record<string, string> = {
+const paths: Record<IconName, string> = {
   'chevron.left': 'M168,48V208a8,8,0,0,1-13.66,5.66l-80-80a8,8,0,0,1,0-11.32l80-80A8,8,0,0,1,168,48Z',
   'chevron.right': 'M181.66,133.66l-80,80A8,8,0,0,1,88,208V48a8,8,0,0,1,13.66-5.66l80,80A8,8,0,0,1,181.66,133.66Z',
   'chevron.down': 'M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,48,88H208a8,8,0,0,1,5.66,13.66Z',
@@ -35,43 +36,8 @@ const paths: Record<string, string> = {
   'square.and.arrow.down': 'M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40A8,8,0,0,0,168,96H136V32a8,8,0,0,0-16,0V96H88a8,8,0,0,0-5.66,13.66Z',
 };
 
-export type IconName = keyof typeof paths;
+const glyphs = Object.fromEntries(
+  (Object.entries(paths) as [IconName, string][]).map(([name, d]) => [name, { off: [fill(d)] } satisfies Glyph]),
+) as Record<IconName, Glyph>;
 
-export function Icon({
-  name,
-  size = 24,
-  className,
-  style,
-  label,
-}: {
-  name: IconName | string;
-  size?: number;
-  /** Kept so older call sites compile. The set is one weight. */
-  weight?: number;
-  className?: string;
-  style?: CSSProperties;
-  /** Accessible label. Omit when the parent control already has one. */
-  label?: string;
-}) {
-  const d = paths[name];
-  if (!d) return null;
-  const px = Math.round(size);
-  return (
-    <svg
-      width={px}
-      height={px}
-      viewBox="0 0 256 256"
-      className={className}
-      style={style}
-      fill="currentColor"
-      fillRule="evenodd"
-      shapeRendering="geometricPrecision"
-      role={label ? 'img' : undefined}
-      aria-label={label}
-      aria-hidden={label ? undefined : true}
-      focusable="false"
-    >
-      <path d={d} />
-    </svg>
-  );
-}
+export const setNow = iconSet('now', 256, 16, glyphs);
