@@ -113,7 +113,7 @@ def test_solo() -> None:
     n_solo = sum(T.is_solo(sec, line) for sec, line in pairs)
     n_choir = sum(T.is_choir(sec, line) for sec, line in pairs)
     n = len(pairs)
-    check('IHCA solo count', n_solo == 120 and n_choir == 0 and n == 120, f'{n_solo} solo, {n_choir} choir of {n}')
+    check('IHCA solo count', n_solo == 122 and n_choir == 0 and n == 122, f'{n_solo} solo, {n_choir} choir of {n}')
 
 
 def _bursts() -> tuple[np.ndarray, Q.Signals]:
