@@ -14,7 +14,7 @@ const InstrumentsPage = lazy(() => import('@/pages/InstrumentsPage'));
 function RouteFallback({ title, detail }: { title: string; detail: string }) {
   return (
     <div className="empty">
-      <p className="t-title3">{title}</p>
+      <p className="empty-title">{title}</p>
       <p className="t-body secondary">{detail}</p>
     </div>
   );
@@ -77,7 +77,8 @@ export function App() {
     default:
       page = (
         <div className="empty">
-          <p className="t-title3">Страница не найдена</p>
+          <p className="empty-title">Страница не найдена</p>
+          <p className="t-body secondary">Такого адреса на сайте нет.</p>
           <a className="btn btn-capsule btn-tinted" href="/">
             К списку песен
           </a>

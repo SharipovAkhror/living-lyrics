@@ -8,6 +8,7 @@ import { useSettings } from '@/app/settings';
 import { useAppliedTheme } from '@/app/theme';
 import { Icon } from '@/ui/icons';
 import { Field } from '@/scene/Field';
+import { Status } from '@/components/Status';
 
 function statusOf(song: Song) {
   if (song.audio.status === 'missing') return { text: 'Без аудио', tone: 'muted' as const };
@@ -37,7 +38,7 @@ export function LibraryPage() {
       <Field colors={wash} dark={dark} clock={clock} />
       <header className="lib-head">
         <div className="lib-titlebar">
-          <h1 className="t-large-title">Песни</h1>
+          <h1 className="lib-title">Песни</h1>
           <div className="lib-actions">
             <a className="btn btn-circle btn-quiet" href="/instruments" onClick={linkHandler('/instruments')} aria-label="Инструменты: галерея гравюр">
               <Icon name="square.grid.2x2" size={20} />
@@ -67,8 +68,22 @@ export function LibraryPage() {
           </li>
         ))}
       </ul>
-      {list.length === 0 && <p className="lib-empty t-body secondary">Ничего не найдено.</p>}
-      <footer className="lib-foot t-footnote tertiary">
+      {list.length === 0 && (
+        <Status
+          className="lib-empty status--stack glass"
+          icon="magnifyingglass"
+          title="Ничего не найдено"
+          live="status"
+          action={
+            <button type="button" className="btn btn-capsule btn-tinted" onClick={() => setQ('')}>
+              Очистить поиск
+            </button>
+          }
+        >
+          По этому запросу песен нет.
+        </Status>
+      )}
+      <footer className="lib-foot t-footnote secondary">
         Тексты, переводы и пояснения — {songs.length} {plural(songs.length, 'песня', 'песни', 'песен')}. Как добавить новую — в разделе «Методология».
       </footer>
     </div>
@@ -115,7 +130,7 @@ function SongTile({ song }: { song: Song }) {
         className="lib-tile-cover"
         src={coverUrl(song.slug, 512, ext)}
         srcSet={`${coverUrl(song.slug, 512, ext)} 512w, ${coverUrl(song.slug, 1024, ext)} 1024w`}
-        sizes="(min-width: 1100px) 240px, (min-width: 700px) 30vw, 46vw"
+        sizes="(min-width: 800px) 360px, 46vw"
         alt=""
       />
       <span className="lib-tile-cap">

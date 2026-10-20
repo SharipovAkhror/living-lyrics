@@ -22,14 +22,30 @@
 }
 
 .empty {
+  margin: 0;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--sp-4);
-  padding: var(--sp-6);
+  padding:
+    calc(env(safe-area-inset-top) + var(--sp-6))
+    var(--sp-6)
+    calc(env(safe-area-inset-bottom) + var(--sp-6));
   text-align: center;
+}
+.empty-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: var(--t-title2);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.empty p {
+  margin: 0;
+  max-width: 28em;
 }
 
 /* ===================== Song page ===================== */
@@ -37,10 +53,11 @@
   /* Time row, rail, transport ring and the labelled tasks. The safe area is counted once, inside the player. */
   --safe-t: env(safe-area-inset-top);
   --safe-b: env(safe-area-inset-bottom);
-  /* Capsule content is about 166 px, plus the 10 px lift off the screen edge. */
+  /* Capsule content is about 168 px, plus the 10 px lift off the screen edge. */
   --player-h: calc(176px + var(--safe-b));
-  /* Title, a one-line version and the part line under it. */
-  --chrome-top: calc(var(--safe-t) + 88px);
+  /* Title and one quiet meta line. A status card adds --alert-space so it does not cover the verse. */
+  --chrome-top: calc(var(--safe-t) + 76px);
+  --alert-space: 0px;
   --player-bottom: 0px;
   position: fixed;
   top: 0;
@@ -51,6 +68,9 @@
   overflow: hidden;
   background: var(--bg);
   overscroll-behavior: none;
+}
+.song:has(.player-alert, .hint) {
+  --alert-space: 72px;
 }
 
 .scene,
@@ -80,20 +100,12 @@
   justify-content: center;
 }
 .load-error {
-  position: absolute;
-  z-index: 3;
-  left: 24px;
-  right: 24px;
-  top: 62%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  text-align: center;
-  color: var(--ink);
+  position: static;
+  width: min(340px, 100%);
+  margin-top: var(--sp-4);
 }
-.load-error p {
-  margin: 0;
+.scene--hold .scene-stage {
+  overflow: auto;
 }
 .field {
   z-index: 0;
@@ -139,7 +151,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: var(--chrome-top);
+  top: calc(var(--chrome-top) + var(--alert-space, 0px));
   bottom: calc(var(--player-bottom) + var(--player-h) + 12px);
   touch-action: pan-y;
   user-select: none;
@@ -324,7 +336,8 @@
   color: var(--accent);
   font-weight: 600;
 }
-.fb-tr em {
+.fb-tr em,
+.tl-tr em {
   font-style: italic;
 }
 .fb-tr,
@@ -382,9 +395,9 @@
 
 /* Title card: block −1 of the flow. */
 .fb--intro {
-  gap: 6px;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  gap: var(--sp-2);
+  padding-top: var(--sp-2);
+  padding-bottom: var(--sp-2);
   cursor: default;
 }
 /* Shown before the timed flow exists, in the same place the title card settles. */
@@ -395,22 +408,22 @@
 .intro-title {
   font-family: var(--font-serif);
   font-weight: 600;
-  font-size: clamp(44px, 10vw, 104px);
-  line-height: 1;
+  font-size: clamp(34px, 8vw, 64px);
+  line-height: 1.05;
   letter-spacing: -0.02em;
   color: var(--ink);
 }
 .intro-original {
-  font-size: clamp(26px, 5vw, 44px);
+  font-size: clamp(22px, 4vw, 34px);
   line-height: 2.15;
-  color: color-mix(in srgb, var(--ink) 70%, transparent);
+  color: var(--ink-2);
 }
 .intro-meta {
-  margin-top: 8px;
-  color: color-mix(in srgb, var(--ink) 68%, transparent);
+  margin-top: var(--sp-2);
+  color: var(--ink-2);
 }
 .intro-poets {
-  color: color-mix(in srgb, var(--ink) 52%, transparent);
+  color: var(--ink-3);
 }
 
 /* ----- Instrumental passages in the flow ----- */
@@ -591,30 +604,20 @@
   text-align: start;
 }
 .topbar-song {
-  font-size: 16px;
-  line-height: 1.25;
+  font-size: var(--t-headline);
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: -0.02em;
   color: var(--ink);
 }
-.topbar-version,
-.topbar-section {
-  font-size: 13px;
-  line-height: 1.3;
-  color: color-mix(in srgb, var(--ink) 72%, transparent);
-}
-.topbar-version {
-  font-weight: 400;
-  color: color-mix(in srgb, var(--ink) 68%, transparent);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+.topbar-meta {
+  font-size: var(--t-footnote);
+  line-height: 18px;
+  color: var(--ink-2);
 }
 .topbar-song,
-.topbar-version,
-.topbar-section {
+.topbar-meta {
   overflow: hidden;
-}
-.topbar-song,
-.topbar-section {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -625,29 +628,84 @@
   left: 12px;
   right: 12px;
   bottom: calc(10px + var(--safe-b, env(safe-area-inset-bottom)));
-  padding: 4px 12px 4px;
+  padding: var(--sp-2) var(--sp-3);
   border-radius: var(--r-lg);
   transition: opacity var(--dur-3) var(--ease-out);
+}
+/* Designed status: recording error, missing text, empty search, a sheet that is still opening. */
+.status {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: var(--hit);
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  color: var(--ink);
+}
+.status-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--ink-2);
+}
+.status-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.status-title,
+.status-copy {
+  margin: 0;
+}
+.status-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: var(--t-title3);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+.status-copy {
+  font-size: var(--t-subhead);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.status > .btn {
+  flex: none;
+  white-space: nowrap;
+}
+.status--stack {
+  flex-direction: column;
+  text-align: center;
+  padding: var(--sp-6) var(--sp-5);
+  gap: var(--sp-3);
+}
+.status--stack .status-text {
+  align-items: center;
+}
+.status--stack .status-copy,
+.status--stack .status-title {
+  text-align: center;
 }
 .player-alert {
   position: absolute;
   z-index: 4;
+  top: var(--chrome-top);
   left: 16px;
   right: 16px;
-  top: calc(var(--chrome-top) + 6px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 8px 8px 8px 14px;
-  border-radius: var(--r-md);
-  color: var(--ink);
+  width: min(480px, calc(100% - 32px));
+  height: fit-content;
+  margin-inline: auto;
 }
-.player-alert p {
-  margin: 0;
-  font: 500 13px/1.35 var(--font-ui);
+.sheet .status {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  box-shadow: none;
 }
 .btn-ring.is-buffering {
   position: relative;
@@ -657,9 +715,12 @@
   position: absolute;
   inset: -3px;
   border-radius: inherit;
-  border: 1.5px solid transparent;
-  border-top-color: var(--accent);
+  border: 2px solid color-mix(in srgb, var(--on-accent) 28%, transparent);
+  border-top-color: var(--on-accent);
   animation: btn-buffer 0.9s linear infinite;
+}
+.btn-ring.is-buffering:has(.btn-buffer)::after {
+  content: none;
 }
 @keyframes btn-buffer {
   to {
@@ -667,17 +728,17 @@
   }
 }
 .btn-buffer {
-  width: 8px;
-  height: 8px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: var(--accent);
+  background: none;
+  border: 2px solid color-mix(in srgb, var(--on-accent) 28%, transparent);
+  border-top-color: var(--on-accent);
+  animation: btn-buffer 0.9s linear infinite;
 }
+/* The wait card is a .status row. This only keeps it off the sheet edge. */
 .sheet-wait {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 4px 0 12px;
+  margin: var(--sp-2) 0 var(--sp-3);
 }
 .transport {
   display: flex;
@@ -688,7 +749,7 @@
   padding: 0;
 }
 .transport .btn-plain {
-  color: color-mix(in srgb, var(--ink) 72%, transparent);
+  color: var(--ink-2);
 }
 .btn-lg-hit {
   min-width: 44px;
@@ -697,23 +758,23 @@
 .utility {
   display: flex;
   justify-content: space-around;
-  padding: 0 0 2px;
+  padding: 0;
 }
 .util {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: var(--sp-1);
   min-width: 64px;
-  min-height: 44px;
-  padding: 2px 6px;
+  min-height: var(--hit);
+  padding: var(--sp-1) 6px;
   border: 0;
   border-radius: var(--r-pill);
   background: none;
-  /* 72 % ink stays muted and clears 3:1 on the glass over every song wash. */
-  color: color-mix(in srgb, var(--ink) 72%, transparent);
-  font: 500 13px/1.2 var(--font-ui);
+  /* --ink-2 is 72 % and stays muted on the glass over every song wash. */
+  color: var(--ink-2);
+  font: 500 var(--t-footnote) / 1.2 var(--font-ui);
   white-space: nowrap;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -728,6 +789,7 @@
 }
 .util[aria-pressed='true'] {
   color: var(--accent);
+  font-weight: 600;
 }
 
 /* One labelled control. It stays in the player (paused or playing) so the stage does not jump. */
@@ -749,7 +811,7 @@
   border: 0;
   border-radius: var(--r-pill);
   background: color-mix(in srgb, var(--ink) 7%, transparent);
-  color: color-mix(in srgb, var(--ink) 58%, transparent);
+  color: var(--ink-2);
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -839,8 +901,8 @@
 }
 .scrub-now,
 .scrub-remain {
-  color: color-mix(in srgb, var(--ink) 70%, transparent);
-  font-size: 13px;
+  color: var(--ink-2);
+  font-size: var(--t-footnote);
   font-variant-numeric: tabular-nums;
 }
 .scrub-track {
@@ -908,8 +970,8 @@
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
-  font-size: 15px;
-  color: color-mix(in srgb, var(--ink) 72%, transparent);
+  font-size: var(--t-subhead);
+  color: var(--ink-2);
 }
 .comment-preview {
   flex: 1;
@@ -917,12 +979,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: color-mix(in srgb, var(--ink) 72%, transparent);
+  color: var(--ink-2);
 }
 .comment-chevron {
   flex: none;
   margin-inline-start: auto;
-  color: color-mix(in srgb, var(--ink) 55%, transparent);
+  color: var(--ink-3);
   transition: transform var(--dur-3) var(--ease-spring);
 }
 .comment:not(.is-open) .comment-chevron {
@@ -969,24 +1031,42 @@
 .hint {
   position: absolute;
   z-index: 4;
-  left: 64px;
-  right: 64px;
-  top: calc(env(safe-area-inset-top) + 52px);
+  top: var(--chrome-top);
+  left: 16px;
+  right: 16px;
+  width: min(420px, calc(100% - 32px));
+  margin-inline: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-height: 32px;
-  padding: 0;
+  gap: var(--sp-2);
+  min-height: var(--hit);
+  padding: 0 var(--sp-4);
   border: 0;
-  background: none;
-  color: color-mix(in srgb, var(--ink) 55%, transparent);
-  font-size: 13px;
+  border-radius: var(--r-pill);
+  background: var(--glass-fallback);
+  box-shadow: var(--glass-rim);
+  color: var(--ink-2);
+  font-size: var(--t-footnote);
   cursor: pointer;
 }
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .hint {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  }
+}
 
-/* Wide screens: the player stays a column. The comment becomes a card on the right once there is height for it. */
+/* Wide screens: the header and the player stay a column, not a stripe across the window.
+   The comment becomes a card on the right once there is height for it. */
 @media (min-width: 800px) {
+  .topbar {
+    left: 24px;
+    right: 24px;
+    width: min(720px, calc(100% - 48px));
+    margin-inline: auto;
+  }
   .player {
     left: 50%;
     right: auto;
@@ -1034,31 +1114,42 @@
     opacity: 1;
     transform: none;
   }
+  .song.has-comment .topbar {
+    left: 24px;
+    right: 412px;
+    width: min(720px, calc(100% - 48px));
+    margin-inline: auto;
+  }
   .song.has-comment .player {
     left: 24px;
-    right: auto;
-    width: min(640px, calc(100% - 430px));
+    right: 412px;
+    width: min(640px, calc(100% - 48px));
+    margin-inline: auto;
     transform: none;
   }
+  .song.has-comment .player-alert,
   .song.has-comment .hint {
-    left: 64px;
-    right: 456px;
+    left: 24px;
+    right: 412px;
+    width: min(480px, calc(100% - 48px));
+    margin-inline: auto;
   }
 }
 
 /* Short landscape: the car screen. One capsule row, a one-line footnote, a large line. */
 @media (min-width: 700px) and (max-height: 640px) {
   .song {
-    --chrome-top: calc(var(--safe-t) + 44px);
+    --chrome-top: calc(var(--safe-t) + 64px);
     /* 84 px capsule plus the 10 px lift off the bottom edge. */
     --player-h: calc(94px + var(--safe-b));
   }
   .topbar {
     top: calc(var(--safe-t) + 4px);
+    left: 12px;
+    right: 12px;
+    width: auto;
+    margin-inline: 0;
     padding: 4px 6px;
-  }
-  .topbar-section {
-    display: none;
   }
   .scene-stage {
     bottom: calc(var(--player-h) + 8px);
@@ -1070,9 +1161,7 @@
   .song.has-comment.comment-open .scene-stage {
     bottom: calc(var(--player-h) + 120px);
   }
-  .song:has(.player-alert) .scene-stage {
-    top: calc(var(--chrome-top) + 48px);
-  }
+
   .player,
   .song.has-comment .player {
     left: 12px;
@@ -1158,7 +1247,7 @@
     padding: 4px 0;
     gap: 4px;
   }
-  .comment-kicker { font-size: 15px; }
+  .comment-kicker { font-size: var(--t-subhead); }
   .comment-preview { display: none; }
   .comment-chevron {
     display: block;
@@ -1254,7 +1343,7 @@
   }
 }
 .sheet-head {
-  padding: 8px 16px 4px;
+  padding: var(--sp-2) var(--sp-4) var(--sp-2);
   touch-action: none;
   cursor: grab;
   flex: none;
@@ -1264,7 +1353,7 @@
   height: 5px;
   border-radius: var(--r-pill);
   background: var(--label-3);
-  margin: 0 auto 6px;
+  margin: 0 auto var(--sp-2);
 }
 .sheet-titlebar {
   display: grid;
@@ -1329,7 +1418,7 @@ html.is-sheet-drag .empty {
 }
 .sheet-body {
   overflow: auto;
-  padding: 0 16px 22px;
+  padding: 0 var(--sp-4) var(--sp-6);
   overscroll-behavior: contain;
 }
 .set-stage {
@@ -1420,13 +1509,13 @@ html.is-sheet-drag .empty {
 }
 
 .group {
-  margin-top: 20px;
+  margin-top: var(--sp-6);
 }
 .group:first-child {
-  margin-top: 6px;
+  margin-top: var(--sp-2);
 }
 .group-header {
-  margin: 0 0 7px 16px;
+  margin: 0 0 var(--sp-2) var(--sp-4);
   font-weight: 400;
   color: var(--label-2);
 }
@@ -1577,7 +1666,7 @@ html.is-sheet-drag .empty {
   box-shadow: none;
 }
 .group-footer {
-  margin: 7px 16px 0;
+  margin: var(--sp-2) var(--sp-4) 0;
   color: var(--label-2);
 }
 .row {
@@ -1587,7 +1676,7 @@ html.is-sheet-drag .empty {
   gap: 12px;
   width: 100%;
   min-height: 52px;
-  padding: 9px 16px;
+  padding: var(--sp-2) var(--sp-4);
   border: 0;
   background: none;
   color: var(--label);
@@ -2014,15 +2103,16 @@ html.is-sheet-drag .empty {
   padding: 0;
 }
 .tl-section {
-  padding: 18px 8px 6px;
+  padding: var(--sp-5) var(--sp-2) var(--sp-2);
   color: var(--accent);
   font-weight: 600;
 }
 .tl-row {
   display: flex;
-  gap: 12px;
+  gap: var(--sp-3);
   width: 100%;
-  padding: 10px 8px;
+  min-height: var(--hit);
+  padding: var(--sp-3) var(--sp-2);
   border: 0;
   border-radius: var(--r-sm);
   background: none;
@@ -2036,6 +2126,7 @@ html.is-sheet-drag .empty {
 }
 .tl-row.is-current {
   background: color-mix(in srgb, var(--accent) 13%, transparent);
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 .tl-repeat {
   align-self: flex-start;
@@ -2045,8 +2136,8 @@ html.is-sheet-drag .empty {
   color: var(--label-2);
 }
 .tl-time {
-  min-width: 36px;
-  padding-top: 5px;
+  min-width: 48px;
+  padding-top: var(--sp-1);
   color: var(--label-3);
 }
 .tl-text {
@@ -2076,23 +2167,29 @@ html.is-sheet-drag .empty {
   margin: 0 auto;
   padding: calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + 40px);
 }
+.lib-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
 .lib-titlebar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 6px 4px 10px;
+  margin: 0;
+  gap: var(--sp-3);
 }
-.lib-titlebar h1 {
+.lib-title {
   margin: 0;
   font-family: var(--font-serif);
-  font-weight: 500;
-  font-size: clamp(42px, 12vw, 72px);
-  line-height: 1.02;
-  letter-spacing: -0.03em;
+  font-weight: 600;
+  font-size: var(--t-display);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
 }
 .lib-actions {
   display: flex;
-  gap: 10px;
+  gap: var(--sp-2);
 }
 .search {
   display: flex;
@@ -2101,7 +2198,7 @@ html.is-sheet-drag .empty {
   height: 44px;
   padding: 0 2px;
   border-bottom: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
-  color: color-mix(in srgb, var(--ink) 55%, transparent);
+  color: var(--ink-3);
 }
 .search-input {
   flex: 1;
@@ -2153,30 +2250,38 @@ html.is-sheet-drag .empty {
   list-style: none;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin: 22px 0 0;
+  gap: var(--sp-4);
+  margin: var(--sp-6) 0 0;
   padding: 0;
 }
 @media (min-width: 700px) {
   .lib-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-@media (min-width: 1100px) {
-  .lib-list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    /* Empty tracks collapse, so three songs fill the row instead of leaving a hole. */
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--sp-6);
   }
 }
 .lib-tile {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--sp-2);
   color: inherit;
   transition: transform var(--dur-3) var(--ease-spring);
 }
 .lib-tile:active {
   transform: scale(0.96);
+}
+@media (hover: hover) and (pointer: fine) {
+  .lib-tile-cover {
+    transition: transform var(--dur-3) var(--ease-spring);
+  }
+  .lib-tile:hover .lib-tile-cover {
+    transform: translateY(-3px);
+  }
+  .lib-tile:active {
+    transform: scale(0.98);
+  }
 }
 /* Official covers carry their own lettering, so the caption sits under the art, not on it. */
 .lib-tile-cover {
@@ -2199,7 +2304,7 @@ html.is-sheet-drag .empty {
   overflow: hidden;
 }
 .lib-tile-title {
-  font-size: 17px;
+  font-size: var(--t-headline);
   font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.02em;
@@ -2209,10 +2314,10 @@ html.is-sheet-drag .empty {
   white-space: normal;
 }
 .lib-tile-version {
-  font-size: 13px;
+  font-size: var(--t-footnote);
   font-weight: 400;
   line-height: 1.25;
-  color: color-mix(in srgb, var(--ink) 66%, transparent);
+  color: var(--ink-2);
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -2221,23 +2326,17 @@ html.is-sheet-drag .empty {
 .lib-tile-artist {
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: 14px;
+  font-size: var(--t-footnote);
   line-height: 1.3;
-  color: color-mix(in srgb, var(--ink) 66%, transparent);
+  color: var(--ink-3);
 }
-/* Short landscape: the large title plus a two-line version used to push the artist off the first screen. */
+/* Short landscape: the display token stays 40 px. Tighten only the gaps. */
 @media (min-width: 700px) and (max-height: 640px) {
-  .lib-titlebar {
-    margin: 0 4px 6px;
-  }
-  .lib-titlebar h1 {
-    font-size: 52px;
-  }
   .lib-list {
-    margin-top: 12px;
+    margin-top: var(--sp-3);
   }
   .lib-tile {
-    gap: 4px;
+    gap: var(--sp-1);
   }
 }
 .lib-tile .chip {
@@ -2314,11 +2413,11 @@ html.is-sheet-drag .empty {
   color: color-mix(in srgb, var(--system-orange) 70%, var(--label));
 }
 .lib-empty {
-  margin-top: 40px;
-  text-align: center;
+  margin: var(--sp-10) auto 0;
+  width: min(420px, 100%);
 }
 .lib-foot {
-  margin-top: 48px;
+  margin-top: var(--sp-10);
   text-align: center;
 }
 

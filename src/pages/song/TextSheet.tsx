@@ -6,6 +6,8 @@ import { instrument } from '@/instruments/catalog';
 import { fontClass } from '@/scene/fonts';
 import type { Settings } from '@/app/settings';
 import { showHarakatText } from '@/data/harakat';
+import { Status } from '@/components/Status';
+import { TrText } from '@/scene/LineBlock';
 
 export function TextSheet({
   open,
@@ -40,14 +42,20 @@ export function TextSheet({
   if (!timeline) {
     return (
       <Sheet open={open} onClose={onClose} title="Весь текст" size="large">
-        <div className="sheet-wait">
-          <p className="t-body secondary">{error ?? 'Текст ещё открывается'}</p>
-          {error && onRetry && (
-            <button type="button" className="btn btn-capsule btn-tinted" onClick={onRetry}>
-              Повторить
-            </button>
-          )}
-        </div>
+        <Status
+          className="sheet-wait"
+          icon={error ? 'book.closed' : 'list.bullet'}
+          live={error ? 'alert' : 'status'}
+          action={
+            error && onRetry ? (
+              <button type="button" className="btn btn-capsule btn-tinted" onClick={onRetry}>
+                Повторить
+              </button>
+            ) : undefined
+          }
+        >
+          {error ?? 'Текст ещё открывается'}
+        </Status>
       </Sheet>
     );
   }
@@ -71,7 +79,11 @@ export function TextSheet({
                       {c.line.words.map((w) => showHarakatText(w.w, settings.showHarakat)).join(' ')}
                     </span>
                     {c.repeat > 0 && <span className="tl-repeat t-caption1">повтор</span>}
-                    {settings.showTranslation && <span className="tl-tr t-subhead secondary">{c.line.tr.ru}</span>}
+                    {settings.showTranslation && (
+                      <span className="tl-tr t-subhead secondary">
+                        <TrText text={c.line.tr.ru} />
+                      </span>
+                    )}
                   </span>
                 ) : (
                   <span className="tl-text">

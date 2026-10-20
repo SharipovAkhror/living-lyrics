@@ -16,6 +16,7 @@ import { Field } from '@/scene/Field';
 import { LEAD } from '@/scene/flow';
 import { Icon } from '@/ui/icons';
 import { RichText } from '@/components/RichText';
+import { Status } from '@/components/Status';
 import { showHarakatText, stripHarakat } from '@/data/harakat';
 import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
 import { preloadInstruments } from '@/instruments/catalog';
@@ -318,7 +319,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const buffering = !!state?.buffering;
   const playLabel = buffering ? (playing ? 'Буферизация' : 'Загрузка записи') : playing ? 'Пауза' : 'Воспроизвести';
   const ownerCue = timeline && owner >= 0 ? timeline.cues[owner] : null;
-  const sectionLabel = headerLine(song, ownerCue);
+  const partLabel = headerLine(song, ownerCue);
+  const metaLabel = partLabel && partLabel !== song.version.label ? `${song.version.label} · ${partLabel}` : song.version.label;
   const comment = timeline && settings.showComment && owner >= 0 ? commentFor(timeline, owner) : null;
   const allLines = lyrics?.sections.flatMap((s) => (s.kind === 'vocal' ? s.lines : [])) ?? [];
   const arabScript = /[\u0600-\u06FF]/;
@@ -358,16 +360,22 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               <div className="intro-meta t-subhead">{song.version.label}</div>
               <div className="intro-meta t-subhead">{song.artist}</div>
               {poets && <div className="intro-poets t-footnote">{poets}</div>}
+              {loadError && (
+                <Status
+                  className="load-error glass"
+                  icon="book.closed"
+                  live="alert"
+                  action={
+                    <button type="button" className="btn btn-capsule btn-tinted" onClick={() => setTextAttempt((n) => n + 1)}>
+                      Повторить
+                    </button>
+                  }
+                >
+                  {loadError}
+                </Status>
+              )}
             </div>
           </div>
-          {loadError && (
-            <div className="load-error" role="alert">
-              <p>{loadError}</p>
-              <button type="button" className="btn btn-capsule btn-tinted" onClick={() => setTextAttempt((n) => n + 1)}>
-                Повторить
-              </button>
-            </div>
-          )}
         </div>
       )}
 
@@ -377,8 +385,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </a>
         <div className="topbar-title">
           <div className="topbar-song">{song.title}</div>
-          <div className="topbar-version">{song.version.label}</div>
-          <div className="topbar-section">{sectionLabel}</div>
+          <div className="topbar-meta" title={metaLabel}>
+            {metaLabel}
+          </div>
         </div>
         <button className="btn btn-circle btn-plain" onClick={() => setSheet('info')} aria-label="О песне">
           <Icon name="info.circle" size={22} />
@@ -399,12 +408,18 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       )}
 
       {state?.error && (
-        <div className="player-alert glass" role="alert">
-          <p>{state.error}</p>
-          <button type="button" className="btn btn-capsule btn-sm btn-tinted" onClick={() => engine.retry()}>
-            Повторить
-          </button>
-        </div>
+        <Status
+          className="player-alert glass"
+          icon="music.note"
+          live="alert"
+          action={
+            <button type="button" className="btn btn-capsule btn-tinted" onClick={() => engine.retry()}>
+              Повторить
+            </button>
+          }
+        >
+          {state.error}
+        </Status>
       )}
       {state?.source === 'silent' && !playing && !song.audio.high && !song.audio.saver && (
         <button className="hint" onClick={() => setSheet('settings')}>
@@ -469,7 +484,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             aria-busy={buffering}
           >
             {buffering && !playing ? (
-              <span className="btn-buffer" />
+              <span className="btn-buffer" aria-hidden="true" />
             ) : (
               <Icon name={playing ? 'pause' : 'play'} size={28} />
             )}
@@ -532,7 +547,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
 function NotFound() {
   return (
     <div className="empty">
-      <p className="t-title3">Песня не найдена</p>
+      <p className="empty-title">Песня не найдена</p>
+      <p className="t-body secondary">В библиотеке нет песни с таким адресом.</p>
       <a className="btn btn-capsule btn-tinted" href="/" onClick={linkHandler('/')}>
         К списку песен
       </a>
