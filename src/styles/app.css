@@ -53,10 +53,12 @@
   /* Time row, rail, transport ring and the labelled tasks. The safe area is counted once, inside the player. */
   --safe-t: env(safe-area-inset-top);
   --safe-b: env(safe-area-inset-bottom);
-  /* Capsule content is about 168 px, plus the 10 px lift off the screen edge. */
-  --player-h: calc(176px + var(--safe-b));
-  /* Title and one quiet meta line. A status card adds --alert-space so it does not cover the verse. */
-  --chrome-top: calc(var(--safe-t) + 76px);
+  /* Phone floor: one scrub row and one control row. The safe area sits inside the floor. */
+  --player-h: calc(120px + var(--safe-b));
+  /* Melted top rail: back, cover, title. A status card adds --alert-space so it does not cover the verse. */
+  --chrome-top: calc(var(--safe-t) + 64px);
+  --col-left: 0px;
+  --col-right: 0px;
   --alert-space: 0px;
   --player-bottom: 0px;
   position: fixed;
@@ -149,16 +151,16 @@
 
 .scene-stage {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: var(--col-left);
+  right: var(--col-right);
   top: calc(var(--chrome-top) + var(--alert-space, 0px));
-  bottom: calc(var(--player-bottom) + var(--player-h) + 12px);
+  bottom: var(--player-h);
   touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
 }
 .song.has-comment .scene-stage {
-  bottom: calc(var(--player-h) + 76px);
+  bottom: calc(var(--player-h) + 52px);
 }
 /* The 286px reserve is taller than the player. On a low window that empty band
    was the whole stage, and the plates had nowhere to stand. */
@@ -586,17 +588,27 @@
 .topbar {
   position: absolute;
   z-index: 5;
-  top: calc(var(--safe-t, env(safe-area-inset-top)) + 8px);
-  left: 12px;
-  right: 12px;
-  padding: 6px 8px;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: calc(var(--safe-t, env(safe-area-inset-top)) + 4px) 8px 8px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  border-radius: var(--r-lg);
+  gap: 10px;
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+  /* A rail that melts into the field, not a pill floating in it. */
+  box-shadow: var(--glass-rim), var(--glass-rim-low);
   transition:
     opacity var(--dur-3) var(--ease-out),
     transform var(--dur-3) var(--ease-spring);
+}
+.now-art {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 8px 16px -10px rgba(26, 20, 15, 0.45);
 }
 .topbar-title {
   flex: 1;
@@ -625,12 +637,36 @@
 .player {
   position: absolute;
   z-index: 5;
-  left: 12px;
-  right: 12px;
-  bottom: calc(10px + var(--safe-b, env(safe-area-inset-bottom)));
-  padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--r-lg);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 4px 8px calc(8px + var(--safe-b, env(safe-area-inset-bottom)));
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  display: flex;
+  flex-direction: column;
+  /* The floor of the room. The song colour lives in the play disc, not in a second chrome. */
+  box-shadow:
+    var(--glass-rim),
+    var(--glass-rim-low),
+    0 -16px 36px -24px rgba(26, 20, 15, 0.35);
   transition: opacity var(--dur-3) var(--ease-out);
+}
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 56px;
+}
+.player .btn-xl {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+}
+.player .btn-ring {
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 42%, transparent),
+    0 10px 22px -12px color-mix(in srgb, var(--accent) 75%, black);
 }
 /* Designed status: recording error, missing text, empty search, a sheet that is still opening. */
 .status {
@@ -743,9 +779,10 @@
 .transport {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  max-width: 280px;
-  margin: 0 auto;
+  justify-content: flex-start;
+  gap: 2px;
+  flex: none;
+  margin: 0;
   padding: 0;
 }
 .transport .btn-plain {
@@ -757,7 +794,9 @@
 }
 .utility {
   display: flex;
-  justify-content: space-around;
+  flex: 1;
+  justify-content: flex-end;
+  gap: 0;
   padding: 0;
 }
 .util {
@@ -790,6 +829,85 @@
 .util[aria-pressed='true'] {
   color: var(--accent);
   font-weight: 600;
+}
+/* A very narrow phone cannot hold seven targets of 44 in one row. The tasks drop to their own row. */
+@media (max-width: 370px) {
+  .song {
+    --player-h: calc(168px + var(--safe-b));
+  }
+  .player-row {
+    flex-wrap: wrap;
+  }
+  .player .utility {
+    flex: 1 0 100%;
+    justify-content: space-around;
+  }
+}
+/* On a tall phone the note is the lip of the floor, not a third pill over the verse.
+   The stage ends at the floor, so opening the note does not jump the lines. */
+@media (max-width: 799px) and (min-height: 641px) {
+  .song.has-comment {
+    /* 46 lip + 44 scrub + 56 transport + 8 bottom padding. */
+    --player-h: calc(154px + var(--safe-b));
+  }
+  .song.has-comment .scene-stage {
+    bottom: var(--player-h);
+  }
+  .song.has-comment .player {
+    padding-top: 46px;
+  }
+  .song.has-comment .comment:not(.is-open) {
+    z-index: 6;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--player-h) - 46px);
+    height: 46px;
+    margin: 0;
+    padding: 0 18px;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  }
+  .song.has-comment .comment:not(.is-open) .comment-head {
+    min-height: 44px;
+    padding: 0;
+  }
+  .song.has-comment .comment.is-open {
+    z-index: 6;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--player-h) - 46px);
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+  }
+}
+@media (max-width: 370px) and (min-height: 641px) {
+  .song.has-comment {
+    /* The four tasks wrap onto a second row. */
+    --player-h: calc(198px + var(--safe-b));
+  }
+}
+/* On the phone the four tasks stay as quiet icons. The name is the accessible name. Words return on a wide window. */
+@media (max-width: 799px) {
+  .util {
+    position: relative;
+    width: 44px;
+    min-width: 44px;
+    padding: 0;
+  }
+  .util-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
 }
 
 /* One labelled control. It stays in the player (paused or playing) so the stage does not jump. */
@@ -967,10 +1085,11 @@
 }
 .comment-kicker {
   flex: none;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 400;
-  font-size: var(--t-subhead);
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-weight: 600;
+  font-size: var(--t-footnote);
+  letter-spacing: 0;
   color: var(--ink-2);
 }
 .comment-preview {
@@ -1058,43 +1177,100 @@
   }
 }
 
-/* Wide screens: the header and the player stay a column, not a stripe across the window.
-   The comment becomes a card on the right once there is height for it. */
+/* From here the page is a column, not a phone floor stretched across the window. */
 @media (min-width: 800px) {
+  .song {
+    --col-left: max(28px, calc((100% - 720px) / 2));
+    --col-right: max(28px, calc((100% - 720px) / 2));
+    --chrome-top: calc(var(--safe-t) + 92px);
+    --player-h: calc(148px + var(--safe-b));
+  }
+  .topbar,
+  .player {
+    left: var(--col-left);
+    right: var(--col-right);
+    width: auto;
+    margin: 0;
+    transform: none;
+  }
   .topbar {
-    left: 24px;
-    right: 24px;
-    width: min(720px, calc(100% - 48px));
-    margin-inline: auto;
+    top: 16px;
+    padding: 8px 10px;
+    border-radius: var(--r-lg);
   }
   .player {
-    left: 50%;
-    right: auto;
-    width: min(640px, calc(100% - 48px));
-    transform: translateX(-50%);
+    bottom: 18px;
+    padding: 8px 14px 10px;
+    border-radius: var(--r-lg);
+  }
+  .now-art {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+  }
+  .player .utility {
+    margin-left: 8px;
+    padding-left: 12px;
+    border-left: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  }
+  .player-alert,
+  .hint {
+    left: var(--col-left);
+    right: var(--col-right);
+    width: auto;
   }
 }
 
+/* A spread: lyric column, and the note as a margin beside the active line. */
 @media (min-width: 1100px) and (min-height: 641px) {
+  .song {
+    --col-left: max(40px, calc((100% - 820px) / 2));
+    --col-right: max(40px, calc((100% - 820px) / 2));
+  }
+  .song.has-comment {
+    --col-left: max(48px, calc((100% - 1120px) / 2));
+    --col-right: calc(100% - var(--col-left) - 760px);
+  }
   .song.has-comment .scene-stage {
-    right: 392px;
     bottom: calc(var(--player-h) + 16px);
+  }
+  .song.has-comment .topbar {
+    right: max(28px, calc((100% - 1120px) / 2));
+  }
+  .now-art {
+    width: 52px;
+    height: 52px;
+  }
+  .player .btn-xl {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    min-height: 64px;
+  }
+  .flow-plate {
+    width: min(100%, 680px);
+    margin-left: calc(min(100%, 680px) / -2);
+  }
+  .fb-subs {
+    margin-top: 14px;
   }
   .comment {
     left: auto;
-    right: 20px;
-    top: calc(var(--chrome-top) + 8px);
+    right: max(28px, calc((100% - 1120px) / 2));
     bottom: auto;
-    width: 340px;
+    top: clamp(calc(var(--chrome-top) + 4px), var(--note-y, 22vh), calc(100dvh - var(--player-h) - 200px));
+    width: min(320px, calc(var(--col-right) - 36px));
     height: auto;
-    max-height: calc(100dvh - var(--chrome-top) - var(--player-h) - 28px);
+    max-height: min(42dvh, 380px);
     display: flex;
     flex-direction: column;
-    padding: 8px 18px 16px;
+    padding: 16px 18px 18px;
   }
   .comment-head {
     pointer-events: none;
     cursor: default;
+    min-height: 28px;
+    padding: 0 0 8px;
   }
   .comment-preview,
   .comment-chevron {
@@ -1108,40 +1284,34 @@
     transition: none;
   }
   .comment-body {
-    max-height: calc(100dvh - var(--chrome-top) - var(--player-h) - 140px);
+    max-height: min(36dvh, 320px);
     height: auto;
     overflow: auto;
     opacity: 1;
     transform: none;
-  }
-  .song.has-comment .topbar {
-    left: 24px;
-    right: 412px;
-    width: min(720px, calc(100% - 48px));
-    margin-inline: auto;
-  }
-  .song.has-comment .player {
-    left: 24px;
-    right: 412px;
-    width: min(640px, calc(100% - 48px));
-    margin-inline: auto;
-    transform: none;
+    line-height: 1.55;
+    font-size: var(--lyric-note);
   }
   .song.has-comment .player-alert,
   .song.has-comment .hint {
-    left: 24px;
-    right: 412px;
-    width: min(480px, calc(100% - 48px));
-    margin-inline: auto;
+    left: var(--col-left);
+    right: var(--col-right);
+    width: auto;
+    margin-inline: 0;
   }
 }
 
 /* Short landscape: the car screen. One capsule row, a one-line footnote, a large line. */
 @media (min-width: 700px) and (max-height: 640px) {
   .song {
+    --col-left: 12px;
+    --col-right: 12px;
     --chrome-top: calc(var(--safe-t) + 64px);
     /* 84 px capsule plus the 10 px lift off the bottom edge. */
     --player-h: calc(94px + var(--safe-b));
+  }
+  .now-art {
+    display: none;
   }
   .topbar {
     top: calc(var(--safe-t) + 4px);
@@ -1150,6 +1320,7 @@
     width: auto;
     margin-inline: 0;
     padding: 4px 6px;
+    border-radius: var(--r-lg);
   }
   .scene-stage {
     bottom: calc(var(--player-h) + 8px);
@@ -1166,17 +1337,21 @@
   .song.has-comment .player {
     left: 12px;
     right: 12px;
+    bottom: calc(10px + var(--safe-b));
     width: auto;
     height: 84px;
     max-height: 110px;
     box-sizing: border-box;
     transform: none;
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 6px;
     padding: 6px 10px;
     flex-wrap: nowrap;
+    border-radius: var(--r-lg);
   }
+  .player-row,
   .player .scrub,
   .player .scrub-top,
   .player .scrub-meta,
@@ -2124,9 +2299,24 @@ html.is-sheet-drag .empty {
 .tl-row:active {
   background: var(--fill-3);
 }
+.tl {
+  padding-top: 8px;
+}
+.sheet-head {
+  position: relative;
+  z-index: 2;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+}
+.tl-row:not(.is-current) .tl-orig,
+.tl-row:not(.is-current) .tl-tr {
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+}
 .tl-row.is-current {
-  background: color-mix(in srgb, var(--accent) 13%, transparent);
-  box-shadow: inset 3px 0 0 var(--accent);
+  background: radial-gradient(90% 160% at 12% 50%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 72%);
+  box-shadow: none;
+}
+.tl-row.is-current .tl-orig {
+  color: var(--ink);
 }
 .tl-repeat {
   align-self: flex-start;
@@ -2187,9 +2377,65 @@ html.is-sheet-drag .empty {
   line-height: 1.05;
   letter-spacing: -0.02em;
 }
+.lib-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.lib-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--ink-2);
+  font-size: var(--t-footnote);
+  font-variant-numeric: tabular-nums;
+}
 .lib-actions {
   display: flex;
   gap: var(--sp-2);
+}
+.lib-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: var(--r-pill);
+  color: var(--ink-2);
+  background: var(--glass-fallback);
+  box-shadow: var(--glass-rim), 0 8px 18px -14px rgba(26, 20, 15, 0.28);
+  text-decoration: none;
+}
+.lib-nav-label {
+  display: none;
+  font-size: var(--t-footnote);
+  font-weight: 600;
+  color: var(--ink);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lib-nav {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  }
+}
+@media (min-width: 800px) {
+  .lib-nav {
+    width: auto;
+    padding: 0 16px 0 12px;
+  }
+  .lib-nav-label {
+    display: inline;
+  }
 }
 .search {
   display: flex;
@@ -2226,18 +2472,25 @@ html.is-sheet-drag .empty {
   z-index: 0;
 }
 .lib-head,
-.lib-list,
-.lib-empty,
-.lib-foot {
+.lib-hero,
+.lib-shelf,
+.lib-empty {
   position: relative;
   z-index: 1;
 }
 .search {
+  width: min(520px, 100%);
   border: 0;
   border-radius: var(--r-pill);
   padding: 0 14px;
   background: var(--glass-fallback);
   box-shadow: var(--glass-shadow), var(--glass-rim);
+}
+.search:focus-within {
+  box-shadow:
+    var(--glass-shadow),
+    var(--glass-rim),
+    0 0 0 1px color-mix(in srgb, var(--ink) 28%, transparent);
 }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .search {
@@ -2246,114 +2499,203 @@ html.is-sheet-drag .empty {
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   }
 }
-.lib-list {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--sp-4);
-  margin: var(--sp-6) 0 0;
-  padding: 0;
-}
-@media (min-width: 700px) {
-  .lib-list {
-    /* Empty tracks collapse, so three songs fill the row instead of leaving a hole. */
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: var(--sp-6);
-  }
-}
-.lib-tile {
-  position: relative;
+.lib-hero {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-2);
+  gap: 16px;
+  margin-top: 28px;
+  padding: 12px;
+  border-radius: var(--r-lg);
   color: inherit;
+  text-decoration: none;
+  box-shadow:
+    var(--glass-shadow),
+    var(--glass-rim),
+    0 22px 44px -24px color-mix(in srgb, var(--glow, var(--ink)) 55%, transparent);
   transition: transform var(--dur-3) var(--ease-spring);
 }
-.lib-tile:active {
-  transform: scale(0.96);
+.lib-hero:active {
+  transform: scale(0.985);
 }
-@media (hover: hover) and (pointer: fine) {
-  .lib-tile-cover {
-    transition: transform var(--dur-3) var(--ease-spring);
-  }
-  .lib-tile:hover .lib-tile-cover {
-    transform: translateY(-3px);
-  }
-  .lib-tile:active {
-    transform: scale(0.98);
-  }
-}
-/* Official covers carry their own lettering, so the caption sits under the art, not on it. */
-.lib-tile-cover {
+.lib-hero-cover {
   display: block;
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
   border-radius: var(--r-md);
-  box-shadow: var(--glass-shadow, 0 8px 24px rgb(0 0 0 / 0.28));
+  box-shadow: 0 16px 32px -18px color-mix(in srgb, var(--glow, #000) 70%, transparent);
 }
-.lib-tile-cap {
+.lib-hero-copy {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  padding: 0 2px;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  padding: 2px 6px 8px;
 }
-.lib-tile-title,
-.lib-tile-version,
-.lib-tile-artist {
-  overflow: hidden;
+.lib-hero-kicker {
+  font-size: var(--t-footnote);
+  font-weight: 600;
+  color: var(--ink-2);
 }
-.lib-tile-title {
+.lib-hero-occasion {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(22px, 4vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.lib-hero-version,
+.lib-hero-artist,
+.lib-hero-with,
+.lib-hero-langs {
+  font-size: var(--t-subhead);
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+.lib-hero-artist {
+  color: var(--ink);
+  font-weight: 600;
+}
+.lib-hero-go {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 6px;
+  padding: 0 18px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: var(--t-subhead);
+  font-weight: 600;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 40%, transparent),
+    0 10px 22px -12px color-mix(in srgb, var(--accent) 70%, black);
+}
+.lib-shelf {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 0;
+}
+.lib-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  min-height: 116px;
+  padding: 10px;
+  border-radius: var(--r-md);
+  color: inherit;
+  text-decoration: none;
+  background: color-mix(in srgb, var(--glass-bg) 72%, transparent);
+  box-shadow:
+    var(--glass-rim),
+    0 14px 30px -20px color-mix(in srgb, var(--glow, var(--ink)) 45%, transparent);
+  transition: transform var(--dur-3) var(--ease-spring);
+}
+.lib-row:active {
+  transform: scale(0.985);
+}
+.lib-row-cover {
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+.lib-row-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.lib-row-lead {
   font-size: var(--t-headline);
   font-weight: 600;
-  line-height: 1.15;
+  line-height: 1.25;
   letter-spacing: -0.02em;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  white-space: normal;
+  overflow: hidden;
 }
-.lib-tile-version {
-  font-size: var(--t-footnote);
-  font-weight: 400;
-  line-height: 1.25;
-  color: var(--ink-2);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  white-space: normal;
-}
-.lib-tile-artist {
-  white-space: nowrap;
-  text-overflow: ellipsis;
+.lib-row-version,
+.lib-row-artist {
   font-size: var(--t-footnote);
   line-height: 1.3;
-  color: var(--ink-3);
+  color: var(--ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-/* Short landscape: the display token stays 40 px. Tighten only the gaps. */
+@media (hover: hover) and (pointer: fine) {
+  .lib-hero-cover,
+  .lib-row-cover {
+    transition: transform var(--dur-3) var(--ease-spring);
+  }
+  .lib-hero:hover .lib-hero-cover,
+  .lib-row:hover .lib-row-cover {
+    transform: translateY(-4px) scale(1.015);
+  }
+  .lib-hero:active,
+  .lib-row:active {
+    transform: scale(0.985);
+  }
+}
+@media (min-width: 800px) {
+  .lib-hero {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 28px;
+    padding: 16px;
+  }
+  .lib-hero-cover {
+    width: min(42%, 380px);
+    flex: none;
+  }
+  .lib-hero-copy {
+    justify-content: center;
+    padding: 12px 18px 12px 4px;
+  }
+  .lib-shelf {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+  }
+}
 @media (min-width: 700px) and (max-height: 640px) {
-  .lib-list {
-    margin-top: var(--sp-3);
+  .lib-hero {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 12px;
+    padding: 8px;
   }
-  .lib-tile {
-    gap: var(--sp-1);
+  .lib-hero-cover {
+    width: 120px;
+    height: 120px;
+    aspect-ratio: auto;
+  }
+  .lib-hero-occasion {
+    font-size: 22px;
+  }
+  .lib-shelf {
+    margin-top: 12px;
   }
 }
-.lib-tile .chip {
+.lib-hero .chip,
+.lib-row .chip {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 18px;
+  left: 18px;
   margin: 0;
   background: var(--glass-fallback);
   color: var(--label);
   box-shadow: var(--glass-rim);
-}
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .lib-tile .chip {
-    background: var(--glass-tint-strong);
-    -webkit-backdrop-filter: blur(16px) saturate(var(--glass-saturate));
-    backdrop-filter: blur(16px) saturate(var(--glass-saturate));
-  }
 }
 .card {
   display: flex;
@@ -2589,12 +2931,23 @@ html.is-sheet-drag .empty {
   text-align: right;
 }
 
-/* Library to song: a crossfade, so the paper never flashes between the two skies. */
+/* Library to song: the cover that was touched travels into the rail. The rest of the page crossfades. */
 ::view-transition-old(root) {
   animation: vt-out var(--dur-3) var(--ease-spring) both;
 }
 ::view-transition-new(root) {
   animation: vt-in var(--dur-3) var(--ease-spring) both;
+}
+::view-transition-group(song-poster) {
+  animation-duration: var(--dur-3);
+  animation-timing-function: var(--ease-spring);
+}
+::view-transition-old(song-poster),
+::view-transition-new(song-poster) {
+  height: 100%;
+  object-fit: cover;
+  overflow: hidden;
+  border-radius: var(--r-md);
 }
 @keyframes vt-out {
   to {

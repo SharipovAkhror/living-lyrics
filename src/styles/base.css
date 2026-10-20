@@ -287,6 +287,12 @@ a {
   .lib-tile:active,
   .lib-tile:hover,
   .lib-tile:hover .lib-tile-cover,
+  .lib-hero:active,
+  .lib-hero:hover,
+  .lib-hero:hover .lib-hero-cover,
+  .lib-row:active,
+  .lib-row:hover,
+  .lib-row:hover .lib-row-cover,
   .mark-btn:active,
   .row--button:active {
     transform: none;
@@ -323,6 +329,12 @@ html[data-motion='off'] .util:active,
 html[data-motion='off'] .lib-tile:active,
 html[data-motion='off'] .lib-tile:hover,
 html[data-motion='off'] .lib-tile:hover .lib-tile-cover,
+html[data-motion='off'] .lib-hero:active,
+html[data-motion='off'] .lib-hero:hover,
+html[data-motion='off'] .lib-hero:hover .lib-hero-cover,
+html[data-motion='off'] .lib-row:active,
+html[data-motion='off'] .lib-row:hover,
+html[data-motion='off'] .lib-row:hover .lib-row-cover,
 html[data-motion='off'] .mark-btn:active,
 html[data-motion='off'] .row--button:active {
   transform: none;

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { formatTime, getSong, loadLyrics, loadPeaks } from '@/data/library';
+import { coverExt, coverUrl } from '@/data/covers';
+import { rememberSong } from '@/app/continue';
 import { marksFor, momentAt } from '@/app/marks';
 import type { Lyrics, Peaks } from '@/data/schema';
 import { buildTimeline, commentFor, type Cue } from '@/data/timeline';
@@ -90,6 +92,11 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     useCallback((fn: () => void) => engine?.subscribe(fn) ?? (() => {}), [engine]),
     () => engine?.state ?? null,
   );
+
+  useEffect(() => {
+    if (!song) return;
+    rememberSong(song.slug);
+  }, [song]);
 
   useEffect(() => {
     if (!song) return;
@@ -383,6 +390,14 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
           <Icon name="chevron.left" size={22} />
         </a>
+        <img
+          className="now-art"
+          alt=""
+          width={96}
+          height={96}
+          src={coverUrl(song.slug, 192, coverExt(song))}
+          style={{ viewTransitionName: 'song-poster' }}
+        />
         <div className="topbar-title">
           <div className="topbar-song">{song.title}</div>
           <div className="topbar-meta" title={metaLabel}>
@@ -473,43 +488,45 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             </div>
           </div>
         )}
-        <div className="transport">
-          <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)">
-            <Icon name="backward" size={24} />
-          </button>
-          <button
-            className={`btn btn-circle btn-xl btn-ring${buffering ? ' is-buffering' : ''}`}
-            onClick={togglePlay}
-            aria-label={playLabel}
-            aria-busy={buffering}
-          >
-            {buffering && !playing ? (
-              <span className="btn-buffer" aria-hidden="true" />
-            ) : (
-              <Icon name={playing ? 'pause' : 'play'} size={28} />
-            )}
-          </button>
-          <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)">
-            <Icon name="forward" size={24} />
-          </button>
-        </div>
-        <div className="utility">
-          <button className="util" aria-label="Перевод" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
-            <Icon name="character.bubble" size={24} />
-            <span className="util-label" aria-hidden="true">Перевод</span>
-          </button>
-          <button className="util" aria-label="Пояснение" aria-pressed={settings.showComment} onClick={() => setSettings({ showComment: !settings.showComment })}>
-            <Icon name="book.closed" size={24} />
-            <span className="util-label" aria-hidden="true">Пояснение</span>
-          </button>
-          <button className="util" aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={() => setSheet('text')}>
-            <Icon name="list.bullet" size={24} />
-            <span className="util-label" aria-hidden="true">Весь текст</span>
-          </button>
-          <button className="util" aria-label="Настройки" aria-pressed={sheet === 'settings'} onClick={() => setSheet('settings')}>
-            <Icon name="slider.horizontal.3" size={24} />
-            <span className="util-label" aria-hidden="true">Настройки</span>
-          </button>
+        <div className="player-row">
+          <div className="transport">
+            <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)">
+              <Icon name="backward" size={24} />
+            </button>
+            <button
+              className={`btn btn-circle btn-xl btn-ring${buffering ? ' is-buffering' : ''}`}
+              onClick={togglePlay}
+              aria-label={playLabel}
+              aria-busy={buffering}
+            >
+              {buffering && !playing ? (
+                <span className="btn-buffer" aria-hidden="true" />
+              ) : (
+                <Icon name={playing ? 'pause' : 'play'} size={28} />
+              )}
+            </button>
+            <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)">
+              <Icon name="forward" size={24} />
+            </button>
+          </div>
+          <div className="utility">
+            <button className="util" aria-label="Перевод" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
+              <Icon name="character.bubble" size={24} />
+              <span className="util-label" aria-hidden="true">Перевод</span>
+            </button>
+            <button className="util" aria-label="Пояснение" aria-pressed={settings.showComment} onClick={() => setSettings({ showComment: !settings.showComment })}>
+              <Icon name="book.closed" size={24} />
+              <span className="util-label" aria-hidden="true">Пояснение</span>
+            </button>
+            <button className="util" aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={() => setSheet('text')}>
+              <Icon name="list.bullet" size={24} />
+              <span className="util-label" aria-hidden="true">Весь текст</span>
+            </button>
+            <button className="util" aria-label="Настройки" aria-pressed={sheet === 'settings'} onClick={() => setSheet('settings')}>
+              <Icon name="slider.horizontal.3" size={24} />
+              <span className="util-label" aria-hidden="true">Настройки</span>
+            </button>
+          </div>
         </div>
       </footer>
 

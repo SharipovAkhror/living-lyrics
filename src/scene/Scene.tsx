@@ -147,6 +147,12 @@ export function Scene({ song, timeline, settings, features, clock, onOwnerChange
         p.style.visibility = o < 0.01 ? 'hidden' : 'visible';
         p.style.transform = `translate3d(0, ${(top + h / 2 - glow / 2).toFixed(1)}px, 0)`;
         p.style.height = `${glow.toFixed(1)}px`;
+        // The margin note shares this frame: its top is the active line's top. A seek lands both together.
+        const host = stageRef.current?.closest('.song') as HTMLElement | null;
+        if (host && (b0 || b1)) {
+          const y = (stageRef.current?.offsetTop ?? 0) + top + 2;
+          host.style.setProperty('--note-y', `${y.toFixed(1)}px`);
+        }
       }
 
       const owner = Math.max(-1, Math.min(timeline.cues.length - 1, Math.round(pos)));
