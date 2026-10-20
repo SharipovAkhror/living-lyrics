@@ -2498,9 +2498,10 @@
             }
           ],
           "tr": {
-            "ru": "нет русского перевода"
+            "ru": "Я не шейх"
           },
           "translit": "Шейх ниям",
+          "comment": "**Шейх** (شیخ) — старец и глава дервишей. Steingass, с. 772: venerable old man, chief, superior of the dervishes. **Ниям** (نیم) здесь «я не», не «половина»: Steingass, с. 1444, *nayam* — I am not, а *nīm* — a half. Первое полустишие бейта Арберри читает «you are shaikh and headman». Здесь спето только «я не шейх».",
           "flags": [
             "timing-draft",
             "translation-draft"
@@ -2523,9 +2524,10 @@
             }
           ],
           "tr": {
-            "ru": "нет русского перевода"
+            "ru": "я не вожак"
           },
           "translit": "Пиш ниям",
+          "comment": "**Пиш** (پیش) — и «впереди», и «вождь». Steingass, с. 266: before, in front; chief, leader. В строке оставлен ведущий: Арберри, с. 184, I am not a leader. «Впереди» сюда не вошло. В первом полустишии стоит **пишров** (پیشرو). Steingass, с. 267: leader, guide, forerunner. Этого слова в спетой строке нет.",
           "flags": [
             "timing-draft",
             "translation-draft"
@@ -2563,9 +2565,10 @@
             }
           ],
           "tr": {
-            "ru": "нет русского перевода"
+            "ru": "я стал рабом твоего приказа"
           },
           "translit": "Амр-е то ра банде шодам",
+          "comment": "**Амр** (امر) — приказ. Steingass, с. 99: order, command; в той же статье есть и «дело». **Банде** (بنده) — слуга и раб. Steingass, с. 202: servant, slave, bondman. В строке «раб»: Арберри, с. 184, slave to your command. «Слуга» и «дело» в перевод не вошли.",
           "flags": [
             "timing-draft",
             "translation-draft"
@@ -2603,7 +2606,7 @@
             }
           ],
           "tr": {
-            "ru": "нет русского перевода"
+            "ru": "я стал рабом твоего приказа"
           },
           "translit": "Амр-е то ра банде шодам",
           "flags": [
