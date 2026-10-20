@@ -12,3 +12,17 @@ Owner's words (2026-10-20): "come up with a minimalist, beautiful way to display
 - It must not touch the song pages' bundle or speed budgets (T19).
 
 Done when: the owner opens it from his phone and sees the current state; screenshots (iPhone 393×852 light/dark) are sent; validate, typecheck and build pass.
+
+## Correction (owner, 2026-10-20) and where we stopped
+
+"Web version" meant **Claude Code on the web** (claude.ai/code: Remote Control sessions from the Station and, ideally, cloud sessions, in a laptop or phone browser), not our site. The `/ops` page on the site was built (commit 05cd3b3) and then removed by the owner's decision; the chat registry stays (`.claude/agents/ll-*.md`, `ops/agents/registry.py`).
+
+What renders where (docs: https://code.claude.com/docs/en/plugins/mods/overview#where-mods-run):
+- A mod's hooks run in a Remote Control session, on the Station; **what it draws (pane, band, chat card) shows only in the terminal on the Station**, not in claude.ai/code or the mobile app.
+- A cloud session draws nothing from a mod.
+- Where nothing draws, the docs suggest "a line in the transcript or a command's text reply". The mod already has both: `/dashboard` answers with the summary text (no model turn), and the word `dashboard` makes Claude's reply carry the summary (one short turn).
+
+Options for the owner (asked by LL · Main):
+1. `/dashboard` in any Remote Control session — a text summary as the command's reply; free (no model turn). Needs a 10-second check that claude.ai/code shows a local command's reply.
+2. The word «дашборд» / `dashboard` — Claude answers with the same summary; works everywhere, including cloud sessions once a repo skill `.claude/skills/dashboard` reads `ops/board.json` and the `live` branch; costs a short turn.
+3. A status line posted by the mod into LL · Main's transcript when the board or the agents' states change (`$.session.append`, a notice the model doesn't read) — appears in the web without asking; risk of clutter, and whether claude.ai/code shows such notices needs a check.

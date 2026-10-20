@@ -19,6 +19,8 @@ import sys
 import time
 from pathlib import Path
 
+from registry import cards
+
 REPO = Path(__file__).resolve().parents[2]
 
 
@@ -107,6 +109,10 @@ def main() -> None:
         '(если ты сам LL · Main — напиши владельцу одну строку: «чат обновлён, работа продолжается»).'
     )
     cmd = [CLAUDE, '--bg', '--remote-control', name, '-n', name, '--permission-mode', 'auto']
+    # The chat's role card (.claude/agents/ll-*.md) becomes its agent: role text, model, tools.
+    card = next((c for c in cards(REPO) if c['chat'] == name), None)
+    if card:
+        cmd += ['--agent', card['name']]
     if '--model' in opts:
         cmd += ['--model', opts['--model']]
     if '--effort' in opts:
