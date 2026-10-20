@@ -189,7 +189,9 @@ export function barText(fraction: number, goal?: number, width = 10) {
 export function summaryText(b: Board | null, l: Live, lim: Limit[], u: Usage | null) {
   if (!b) return 'Dashboard: данных пока нет.'
   const head = [`**Living Lyrics** · ${hhmm(b.updated)}`, b.roadmap ? `${b.roadmap.title.toLowerCase()} ${b.roadmap.percent} %` : ''].filter(Boolean)
-  const out = [head.join(' · ')]
+  // Test (owner, 2026-10-21): do remote windows draw markdown images? If not, this line shows as text.
+  const icons = ['claude-color', 'grok', 'gemini-color'].map(n => `![${n}](${RAW}/ops/dashboard-mod/icons/${n}.svg)`).join(' ')
+  const out = [`${icons} ${head.join(' · ')}`]
   const you = b.tasks.filter(t => t.section === 'you')
   out.push('', you.length ? `⚑ **Нужно от вас:** ${you.map(t => t.title).join('; ')}` : 'От вас ничего не нужно.')
 

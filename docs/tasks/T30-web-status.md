@@ -26,3 +26,9 @@ Options for the owner (asked by LL · Main):
 1. `/dashboard` in any Remote Control session — a text summary as the command's reply; free (no model turn). Needs a 10-second check that claude.ai/code shows a local command's reply.
 2. The word «дашборд» / `dashboard` — Claude answers with the same summary; works everywhere, including cloud sessions once a repo skill `.claude/skills/dashboard` reads `ops/board.json` and the `live` branch; costs a short turn.
 3. A status line posted by the mod into LL · Main's transcript when the board or the agents' states change (`$.session.append`, a notice the model doesn't read) — appears in the web without asking; risk of clutter, and whether claude.ai/code shows such notices needs a check.
+
+## Try: a live panel artifact (2026-10-21)
+
+- `ops/dashboard-mod/panel.html`, published as a private artifact https://claude.ai/artifact/UxZtjaBuWo2eDXW3fSC6tp. It has the same blocks as the pane: owner items, chats, agents and Actions runs with icons, word-sync bars against the goal, usage; light and dark. It reads one document, `dashboard/now`, from its own database and redraws when that document changes; only the owner writes. The page can't fetch GitHub itself (artifact CSP).
+- Seeded once by hand on 2026-10-21. If the owner picks it: the mod on the Station writes the document on every state change (`ArtifactData` through `$.tool.call`), and the artifact gets pinned in the claude.ai sidebar.
+- `/dashboard` card: one test line of markdown images (Lobe icons from raw.githubusercontent), to see whether remote windows draw images.

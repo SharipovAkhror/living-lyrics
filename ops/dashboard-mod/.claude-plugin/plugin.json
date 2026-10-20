@@ -1,6 +1,6 @@
 {
   "name": "ll-dashboard",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Living Lyrics dashboard: what Claude, Grok and Gemini are doing, plan limits, word-sync progress",
   "types": "./types/index.d.ts",
   "author": {
