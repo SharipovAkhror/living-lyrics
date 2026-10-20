@@ -52,141 +52,141 @@
   {
     "kind": "instrumental",
     "start": 324.75,
-    "end": 328.0
+    "end": 328.05
   },
   {
     "kind": "vocal",
-    "start": 328.0,
+    "start": 328.05,
     "end": 341.4
   },
   {
     "kind": "instrumental",
     "start": 341.4,
-    "end": 355.1
+    "end": 355.05
   },
   {
     "kind": "vocal",
-    "start": 355.1,
-    "end": 362.85
+    "start": 355.05,
+    "end": 362.65
   },
   {
     "kind": "instrumental",
-    "start": 362.85,
-    "end": 384.15
+    "start": 362.65,
+    "end": 403.05
   },
   {
     "kind": "vocal",
-    "start": 384.15,
-    "end": 384.2
+    "start": 403.05,
+    "end": 404.55
   },
   {
     "kind": "instrumental",
-    "start": 384.2,
-    "end": 403.0
-  },
-  {
-    "kind": "vocal",
-    "start": 403.0,
-    "end": 404.5
-  },
-  {
-    "kind": "instrumental",
-    "start": 404.5,
+    "start": 404.55,
     "end": 427.9
   },
   {
     "kind": "vocal",
     "start": 427.9,
-    "end": 631.9
+    "end": 631.85
   },
   {
     "kind": "instrumental",
-    "start": 631.9,
-    "end": 676.8
+    "start": 631.85,
+    "end": 650.05
   },
   {
     "kind": "vocal",
-    "start": 676.8,
-    "end": 679.55
+    "start": 650.05,
+    "end": 650.15
   },
   {
     "kind": "instrumental",
-    "start": 679.55,
+    "start": 650.15,
+    "end": 676.75
+  },
+  {
+    "kind": "vocal",
+    "start": 676.75,
+    "end": 676.85
+  },
+  {
+    "kind": "instrumental",
+    "start": 676.85,
     "end": 682.9
   },
   {
     "kind": "vocal",
     "start": 682.9,
-    "end": 683.4
+    "end": 683.15
   },
   {
     "kind": "instrumental",
-    "start": 683.4,
-    "end": 687.4
+    "start": 683.15,
+    "end": 688.05
   },
   {
     "kind": "vocal",
-    "start": 687.4,
-    "end": 705.25
+    "start": 688.05,
+    "end": 705.4
   },
   {
     "kind": "instrumental",
-    "start": 705.25,
-    "end": 714.85
+    "start": 705.4,
+    "end": 714.4
   },
   {
     "kind": "vocal",
-    "start": 714.85,
+    "start": 714.4,
     "end": 720.6
   },
   {
     "kind": "instrumental",
     "start": 720.6,
-    "end": 732.55
+    "end": 732.6
   },
   {
     "kind": "vocal",
-    "start": 732.55,
-    "end": 750.3
+    "start": 732.6,
+    "end": 749.8
   },
   {
     "kind": "instrumental",
-    "start": 750.3,
-    "end": 760.6
+    "start": 749.8,
+    "end": 760.3
   },
   {
     "kind": "vocal",
-    "start": 760.6,
-    "end": 812.95
+    "start": 760.3,
+    "end": 812.3
   },
   {
     "kind": "instrumental",
-    "start": 812.95,
+    "start": 812.3,
     "end": 834.55
   },
   {
     "kind": "vocal",
     "start": 834.55,
-    "end": 860.5
+    "end": 861.0
   },
   {
     "kind": "instrumental",
-    "start": 860.5,
-    "end": 866.15
+    "start": 861.0,
+    "end": 866.2
   },
   {
     "kind": "vocal",
-    "start": 866.15,
+    "start": 866.2,
     "end": 950.3
   },
   {
     "kind": "instrumental",
     "start": 950.3,
-    "end": 961.45
+    "end": 961.35
   },
   {
     "kind": "vocal",
-    "start": 961.45,
+    "start": 961.35,
     "end": 977.0
   }
 ]
