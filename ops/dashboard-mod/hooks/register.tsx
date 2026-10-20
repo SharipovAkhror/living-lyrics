@@ -100,6 +100,8 @@ export function codename(worktree?: string) {
   return word ? word[0]!.toUpperCase() + word.slice(1) : ''
 }
 
+const STALE_REVIEW_MIN = 6 * 60
+
 /** Claude first, then each Grok executor with its live state, then Gemini. */
 export function agentRows(b: Board | null, l: Live): Row[] {
   if (!b) return []
@@ -107,7 +109,15 @@ export function agentRows(b: Board | null, l: Live): Row[] {
     { agent: 'claude', name: 'Claude · Lead', task: b.claude ?? 'оркестрирует', state: '', tone: 'working', detail: '', model: b.models?.claude ?? '' },
   ]
   const now = b.tasks.filter(t => t.section === 'now')
-  for (const t of now.filter(t => t.agent === 'grok')) {
+  // A finished Grok session older than STALE_REVIEW_MIN was reviewed long ago: drop its row.
+  const stale = (r?: Live['grok'][number]) => r?.state === 'finished' && r.minutes > STALE_REVIEW_MIN
+  const grokTasks = now.filter(t => t.agent === 'grok' && !stale(t.worktree ? l.grok.find(r => r.name === t.worktree) : undefined))
+  // Live folders with a running or stalled Grok that no board task names still get a row.
+  const named = new Set(b.tasks.map(t => t.worktree).filter(Boolean))
+  for (const r of l.grok.filter(r => (r.state === 'working' || r.state === 'stalled') && !named.has(r.name))) {
+    grokTasks.push({ id: r.name, section: 'now', agent: 'grok', worktree: r.name, title: r.name } satisfies Task)
+  }
+  for (const t of grokTasks) {
     const run = t.worktree ? l.grok.find(r => r.name === t.worktree) : undefined
     const name = `Grok · ${codename(t.worktree) || 'Task'}`
     const model = run?.model || b.models?.grok || ''

@@ -35,6 +35,21 @@ test('agents are Claude first, then each Grok task with its live state, then Gem
   expect(rows[2]?.state).toBe('смотрит Karitas · 3 мин')
 })
 
+test('a long-finished Grok drops off; a running folder no task names still shows', async () => {
+  const live: Live = {
+    grok: [
+      { name: 't1-sync', state: 'finished', minutes: 3070, step: 'Готово.' },
+      { name: 't28-icons', state: 'working', minutes: 2, step: 'Рисую.' },
+    ],
+    gemini: [],
+  }
+  const rows = agentRows(BOARD, live)
+  expect(rows.map(r => r.name)).toEqual(['Claude · Lead', 'Grok · Icons', 'Gemini · Watch'])
+  expect(rows[1]?.state).toBe('работает · 2 мин')
+  const fresh = agentRows(BOARD, { grok: [{ name: 't1-sync', state: 'finished', minutes: 30, step: '' }], gemini: [] })
+  expect(fresh[1]?.state).toBe('готово · Claude проверяет')
+})
+
 test('the band leaves Claude out and counts what waits on the owner', async () => {
   const line = bandLine(BOARD, LIVE)
   expect(line?.rows.map(r => r.agent)).toEqual(['grok', 'gemini'])
