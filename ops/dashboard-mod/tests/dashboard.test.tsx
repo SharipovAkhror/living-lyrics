@@ -1,4 +1,4 @@
-import { expect, test } from 'claude-code/testing'
+import { expect, mock, test } from 'claude-code/testing'
 
 import { agentRows, bandLine, cardContext, cardDoc, codename, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
 import type { Board, Live } from '../types'
@@ -218,4 +218,17 @@ test('the image card state carries every block, and its reply sends the PNG with
   expect(ctx).toContain('display "render"')
   expect(ctx.endsWith('SUMMARY')).toBe(true)
   expect(codename('t27-iphone')).toBe('iPhone')
+})
+
+test('/dashboard hands the word to the model, so the image card comes as the reply', async ($, on) => {
+  const clock = mock.clock(on)
+  const sent: string[] = []
+  on('prompt.submit', ($, e, next) => {
+    if (e.origin.kind === 'plugin') sent.push(e.text)
+    return { drop: 'test' } as never
+  })
+  on('ui.open', () => ({ value: { isPlaced: false, reason: 'test' } }) as never)
+  await $.command.run({ command: 'dashboard' })
+  await clock.advance(100)
+  expect(sent).toEqual(['дашборд'])
 })

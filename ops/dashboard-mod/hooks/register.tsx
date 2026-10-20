@@ -770,12 +770,14 @@ export const register: Register = on => {
     return result
   })
 
+  // /dashboard hands off to the model: the word goes in as the owner's prompt, the prompt.submit hook
+  // below draws the image card and Claude sends it, so one action shows the card on the phone too.
   on('command.run', { command: 'dashboard' }, async $ => {
     await refresh($, seen)
-    const opened = await $.ui.open({ id: PANE, title: TITLE })
-    const surfaces = await $.session.surfaces()
-    const where = `Экраны сессии: ${surfaces.length ? surfaces.join(', ') : 'нет'}; панель ${opened.isPlaced ? 'открыта' : `не открыта (${opened.reason})`}.`
-    return { text: `${summaryText(await read($, board), await read($, live), await read($, limits), await read($, usage))}\n\n${where}` }
+    void $.ui.open({ id: PANE, title: TITLE }).catch(() => undefined)
+    // A submit from inside command.run would wait on the turn this hook holds: send it just after.
+    $.clock.after(50, () => void $.prompt.submit({ text: 'дашборд', asUser: true }).catch(() => undefined))
+    return {}
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
