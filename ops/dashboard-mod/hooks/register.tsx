@@ -340,6 +340,16 @@ async function collectUsage($: EngineInterface) {
   }
 }
 
+/** Respawn a work chat the Claude daemon retired after 8 h idle (ops/agents/keep_chats.py). */
+async function keepChats($: EngineInterface) {
+  if (!place.orchestrator || !place.repo) return
+  try {
+    await $.process.run(['python', `${place.repo}/ops/agents/keep_chats.py`, place.repo], { cwd: place.repo, timeoutMs: 60_000 })
+  } catch {
+    // claude missing from PATH: the chats wait for a manual `claude respawn`.
+  }
+}
+
 /** The dashboard tree, for the pane on a computer and for a chat card on any surface (the phone too). */
 async function dashboardTree($: EngineInterface, e: RenderInput<'Pane' | 'UserMessage'>, columns: number) {
   const b = await read($, board)
@@ -604,6 +614,7 @@ export const register: Register = on => {
     $.clock.every(POLL_MS, () => refresh($, seen))
     void collectUsage($)
     $.clock.every(COLLECT_MS, async () => {
+      await keepChats($)
       await collectUsage($)
       await publishLive($, await read($, live), true)
     })
