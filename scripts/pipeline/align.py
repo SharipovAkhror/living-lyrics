@@ -46,7 +46,7 @@ How it works:
    whose words the measured rule proves. The default, when no rule file exists, is an
    attack within 0.10 s (0.20 s choir), or, for a vowel, legato or melisma with no
    attack within 0.30 s, a second aligner within 0.10 s. The song becomes `aligned`
-   only when every group that exists is at least 80 % proved.
+   only when every group that exists is at least 90 % proved. The goal remains every line.
 
 Writes lyrics.json (word s/e and the timing-draft flag; a vocal section end may move
 forward, or a word end may be cut, so a word does not sit past the section. Starts are
@@ -1789,7 +1789,7 @@ def main() -> None:
 
     timing_note = (f'align.py {t_start:%Y-%m-%d}: времена слов записаны, все строки помечены timing-draft. '
                    f'Выравниватель уверен в {n_good} из {n}, не нашёл текст в {n_draft}. '
-                   f'Статус aligned ставит только qa_sync.py --apply, если каждая группа строк (соло и хор, где она есть) доказана не меньше чем на 80 %. '
+                   f'Статус aligned ставит только qa_sync.py --apply, если каждая группа строк (соло и хор, где она есть) доказана не меньше чем на 90 %. '
                    f'Отчёт выравнивания: work/{slug}/align-report.json.')
     # status stays draft until qa_sync proves lines. method records that these times came from MMS_FA.
     new_timing = {'status': 'draft', 'method': 'mms-fa', 'notes': timing_note}

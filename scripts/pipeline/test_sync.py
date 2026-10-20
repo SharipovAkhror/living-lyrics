@@ -330,26 +330,32 @@ def test_anchor_fence() -> None:
 
 
 def test_song_status() -> None:
+    check('the publication bar is 0.90', Q.SONG_SHARE == 0.90, str(Q.SONG_SHARE))
     check('one of 38 solos is not a song', not Q.song_proven(1, 38))
-    check('30 of 38 is under 80%', not Q.song_proven(30, 38))
-    check('31 of 38 clears 80%', Q.song_proven(31, 38))
+    check('34 of 38 is under 90%', not Q.song_proven(34, 38))
+    check('35 of 38 clears 90%', Q.song_proven(35, 38))
+    check('108 of 120 meets 90%', Q.song_proven(108, 120))
+    check('107 of 120 is under 90%', not Q.song_proven(107, 120))
+    check('31 of 38 no longer clears the bar', not Q.song_proven(31, 38))
+    check('9 of 10 meets 90%', Q.song_proven(9, 10))
+    check('8 of 10 is under 90%', not Q.song_proven(8, 10))
     check('no solo lines is not a song', not Q.song_proven(0, 0))
-    check('a choir under 80% blocks the song', not Q.song_ready([(31, 38), (1, 10)]))
-    check('an empty choir does not block', Q.song_ready([(31, 38), (0, 0)]))
-    check('both groups clear 80%', Q.song_ready([(31, 38), (8, 10)]))
+    check('a choir under 90% blocks the song', not Q.song_ready([(35, 38), (8, 10)]))
+    check('an empty choir does not block', Q.song_ready([(35, 38), (0, 0)]))
+    check('both groups clear 90%', Q.song_ready([(35, 38), (9, 10)]))
     check('no groups is not a song', not Q.song_ready([]))
     # timing_payload follows the flag build_proof already computed.
     proof = {
-        'aligned': True, 'solo': 38, 'passed': 31, 'failed_solo': 7, 'lines': [],
-        'reasons': {'onset': 7},
+        'aligned': True, 'solo': 38, 'passed': 35, 'failed_solo': 3, 'lines': [],
+        'reasons': {'onset': 3},
         'onset_median': 0.04, 'onset_p90': 0.08,
     }
     payload = Q.timing_payload('i-have-come-alive', proof, {'lines': []})
-    check('proved song is aligned', payload['status'] == 'aligned' and '80' in payload['notes'], payload['notes'][:120])
+    check('proved song is aligned', payload['status'] == 'aligned' and '90' in payload['notes'], payload['notes'][:120])
     proof['aligned'] = False
     proof['passed'] = 1
     payload = Q.timing_payload('i-have-come-alive', proof, {'lines': []})
-    check('unproved song stays draft', payload['status'] == 'draft' and '80' in payload['notes'], payload['notes'][:160])
+    check('unproved song stays draft', payload['status'] == 'draft' and '90' in payload['notes'], payload['notes'][:160])
 
 
 def test_build_proof_independent() -> None:
@@ -376,7 +382,7 @@ def test_build_proof_independent() -> None:
         rec('snapped', 'good', [0.70, 1.70, 2.70], [0.72, 1.72, 2.72], roman='b'),
     ]}, {'snapped': {'line': 'snapped', 'start': 0.70, 'end': 3.2}})
     check('snapped line does not prove itself', (not snap['lines'][0]['pass']) and snap['lines'][0]['reason'] == 'onset', str(snap['lines'][0]))
-    # A fair line and a text-not-found line. One proven solo of two is under 80 %.
+    # A fair line and a text-not-found line. One proven solo of two is under 90 %.
     proof = Q.build_proof(sig, [(sec, line('fair')), (sec, line('missing'))], qa * 2, {'lines': [
         rec('fair', 'good', [1.02, 2.02, 3.02], [1.04, 2.03, 3.05]),
         rec('missing', 'draft', [1.02, 2.02, 3.02], [1.04, 2.03, 3.05]),
