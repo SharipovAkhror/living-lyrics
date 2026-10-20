@@ -340,8 +340,70 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
     const next: Limit[] = u.rateLimits.map(r => ({ kind: r.kind, percentUsed: r.percentUsed, resetsAt: r.resetsAt }))
     if (JSON.stringify(next) !== JSON.stringify(await read($, limits))) await update($, limits, () => next)
     await pushLimit($, next)
+    await writePanel($)
   } catch {
     // Off a subscription the windows are empty.
+  }
+}
+
+/**
+ * The live panel: a private claude.ai artifact (ops/dashboard-mod/panel.html) that the Claude app
+ * shows beside a chat, phone included. It draws one document of its own database, `dashboard/now`;
+ * the orchestrator machine writes it here whenever its content changes, plus a heartbeat so the page
+ * can tell a live Station from a silent one. A write is an ArtifactData tool call, no model turn.
+ */
+const PANEL_URL = 'https://claude.ai/artifact/UxZtjaBuWo2eDXW3fSC6tp'
+const PANEL_HEARTBEAT_MS = 600_000
+
+export function panelDoc(b: Board | null, l: Live, lim: Limit[], u: Usage | null) {
+  if (!b) return null
+  return {
+    roadmap: b.roadmap ? { title: b.roadmap.title, percent: b.roadmap.percent } : null,
+    goal: b.syncGoal ?? null,
+    you: b.tasks.filter(t => t.section === 'you').map(t => ({ title: t.title, how: t.how ?? t.what ?? '' })),
+    chats: l.chats ?? [],
+    agents: agentRows(b, l).map(r => ({ agent: r.agent, name: r.name, task: r.task, state: r.state, tone: r.tone, detail: r.detail })),
+    runs: l.pipeline ?? [],
+    songs: songRows(b.songs).map(({ label, group }) => ({ label, proven: group.proven, placed: group.placed ?? group.proven, total: group.total })),
+    limits: {
+      claude: claudeWindows(lim).map(w => ({ label: w.label, used: Math.round(w.used) })),
+      gemini: geminiWindows(u?.gemini?.quota?.gemini).map(w => ({ label: w.label, used: Math.round(w.used) })),
+      grok: u?.grok ? `${tokens(u.grok.today)} ток.` : '',
+    },
+  }
+}
+
+let panel = { key: '', at: 0, version: 0 }
+
+function versionIn(text: string) {
+  const m = text.match(/"version":\s*(\d+)|version (\d+)/)
+  return m ? Number(m[1] ?? m[2]) : 0
+}
+
+async function writePanel($: EngineInterface) {
+  if (!place.orchestrator) return
+  const doc = panelDoc(await read($, board), await read($, live), await read($, limits), await read($, usage))
+  if (!doc) return
+  const key = JSON.stringify(doc)
+  if (key === panel.key && Date.now() - panel.at < PANEL_HEARTBEAT_MS) return
+  panel = { ...panel, key, at: Date.now() }
+  const where = { url: PANEL_URL, collection: 'dashboard', doc_id: 'now' }
+  try {
+    if (!panel.version) {
+      const got = await $.tool.call({ tool: 'ArtifactData', action: 'get', ...where })
+      panel.version = versionIn(String(got.text ?? ''))
+    }
+    const data = { ...doc, at: new Date().toISOString() }
+    let res = await $.tool.call({ tool: 'ArtifactData', action: 'set', ...where, data, ...(panel.version ? { if_version: panel.version } : {}) })
+    if (res.isError || res.deny) {
+      // Someone else wrote it meanwhile: take the version the refusal names and write once more.
+      panel.version = versionIn(String(res.text ?? res.deny ?? ''))
+      res = await $.tool.call({ tool: 'ArtifactData', action: 'set', ...where, data, ...(panel.version ? { if_version: panel.version } : {}) })
+    }
+    panel.version = res.isError || res.deny ? 0 : versionIn(String(res.text ?? '')) || panel.version + 1
+  } catch {
+    // Offline, or the tool is absent in this session: the next change tries again.
+    panel = { key: '', at: 0, version: 0 }
   }
 }
 
@@ -697,6 +759,13 @@ export const register: Register = on => {
       await publishLive($, await read($, live), true)
     })
     return next(e)
+  })
+
+  // The panel writes are this mod's own calls to its own artifact: allow them without a prompt or a
+  // classifier round. Any other ArtifactData call, the model's included, takes the usual path.
+  on('tool.check', { tool: 'ArtifactData' }, async ($, e, next) => {
+    const input = e.input as { url?: string } | undefined
+    return next.origin.plugin === 'll-dashboard' && input?.url === PANEL_URL ? { decision: 'allow' } : next(e)
   })
 
   on('turn.complete', async ($, e, next) => {
