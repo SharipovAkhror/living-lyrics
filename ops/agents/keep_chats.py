@@ -4,7 +4,8 @@ The daemon stops a background session that has sat idle at its prompt for about 
 (daemon.log: `bg retire <id>: idle-prompt, idle 8h`). A stopped session has no inbox, so
 messages from the other chats no longer reach it. This script finds each work chat (by name,
 background kind) that has lost its process and runs `claude respawn <id>` for it: the same
-session and conversation, never a new copy. Archived chats (« · архив » in the name) are skipped.
+session and conversation, never a new copy. Archived chats (« · архив » in the name) and
+sessions stopped on purpose (`claude stop`, state `stopped`) are skipped.
 
 The Dashboard mod runs it every 10 minutes on the orchestrator machine. Several sessions there
 run the mod, so a stamp in <repo>/.git/ll-keep-chats.json makes runs closer than 5 minutes no-ops.
@@ -18,7 +19,7 @@ import sys
 import time
 from pathlib import Path
 
-WORK_CHATS = {'LL · Main', 'LL · Site (Main)', 'LL · Site', 'LL · Tech', 'LL · Business'}
+WORK_CHATS = {'LL · Main', 'LL · Site', 'LL · Tech', 'LL · Business'}
 MIN_GAP_S = 300
 
 
@@ -36,7 +37,7 @@ def retired(sessions: list[dict]) -> list[dict]:
     """Work chats in the background whose process is gone."""
     return [
         s for s in sessions
-        if s.get('kind') == 'background' and s.get('name') in WORK_CHATS and not s.get('pid')
+        if s.get('kind') == 'background' and s.get('name') in WORK_CHATS and not s.get('pid') and s.get('state') != 'stopped'
     ]
 
 
