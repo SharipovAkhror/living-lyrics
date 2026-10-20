@@ -1,7 +1,7 @@
 {
   "slug": "karitas",
   "checked": "2026-10-20",
-  "gemini": "pending",
+  "gemini": "filled",
   "frames": "Кадры официального видео не снимались.",
   "lines": [
     {
@@ -18,7 +18,15 @@
       },
       "whisper": "Ki idrak etmezen dünya nedir?",
       "verdict": "agree",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L1",
+          "heard": "öyle ser-mestem ki idrâk etmezem dünyâ nedir",
+          "start": 37.3,
+          "end": 45.4,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f2-1",
@@ -34,7 +42,15 @@
       },
       "whisper": "Ben kim olsa ki olan kimdir? / Mey-i sahba nedir?",
       "verdict": "agree",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L2",
+          "heard": "men kimem sâkî olan kimdir mey û sahbâ nedir",
+          "start": 46.8,
+          "end": 54.6,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f3-1",
@@ -50,7 +66,15 @@
       },
       "whisper": "Gerçi canandan dili şeytan için kâm isterem.",
       "verdict": "agree",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L3",
+          "heard": "gerçi cânândan dil-i şeydâ içün kâm isterem",
+          "start": 55.4,
+          "end": 64.2,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f4-1",
@@ -66,7 +90,15 @@
       },
       "whisper": "Sorsa canan bilmezem kâmı dili şeytan nedir?",
       "verdict": "agree",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L4",
+          "heard": "sorsa cânân bilmezem kâm-ı dil-i şeydâ nedir",
+          "start": 65.6,
+          "end": 73.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f5-1",
@@ -82,7 +114,22 @@
       },
       "whisper": "Hikmeti dünyayı harif oldur",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 76.4,
+          "end": 82.6,
+          "confidence": "high"
+        },
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 82.9,
+          "end": 89.9,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f6-1",
@@ -98,7 +145,15 @@
       },
       "whisper": "Hikmeti dünyayı harif oldur",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 82.9,
+          "end": 89.9,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f5-2",
@@ -114,7 +169,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 90.1,
+          "end": 96.4,
+          "confidence": "high"
+        },
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 96.6,
+          "end": 103.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f6-2",
@@ -130,7 +200,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 96.6,
+          "end": 103.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h1-1",
@@ -146,7 +224,22 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L7",
+          "heard": "Karitas habundat in omnia",
+          "start": 104.5,
+          "end": 109.4,
+          "confidence": "high"
+        },
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 109.5,
+          "end": 112.4,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h2-1",
@@ -162,7 +255,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L8",
+          "heard": "de imis excellentissima",
+          "start": 112.6,
+          "end": 116.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h3-1",
@@ -178,7 +279,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L9",
+          "heard": "super sidera",
+          "start": 117,
+          "end": 120.6,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h4-1",
@@ -194,7 +303,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "atque amantissima",
+          "start": 120.8,
+          "end": 124.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h5-1",
@@ -210,7 +327,22 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "atque amantissima",
+          "start": 120.8,
+          "end": 124.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 125,
+          "end": 128.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h6-1",
@@ -226,7 +358,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L12",
+          "heard": "quia summo regi osculum pacis dedit",
+          "start": 128.8,
+          "end": 136.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f5-3",
@@ -242,7 +382,22 @@
       },
       "whisper": "Hikmeti dünyayı mavi harif oldur",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 138.5,
+          "end": 144.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 144.7,
+          "end": 151.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f6-3",
@@ -258,7 +413,22 @@
       },
       "whisper": "Hikmeti dünyayı mavi harif oldur / Hikmeti dünyayı mavi harif oldur",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 144.7,
+          "end": 151.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 151.7,
+          "end": 157.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f5-4",
@@ -274,7 +444,22 @@
       },
       "whisper": "Hikmeti dünyayı mavi harif oldur",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 151.7,
+          "end": 157.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 158,
+          "end": 164.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f6-4",
@@ -290,7 +475,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 158,
+          "end": 164.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f7-1",
@@ -306,7 +499,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L13",
+          "heard": "ah u feryâdın fuzûlî incidipdir âlemi",
+          "start": 165,
+          "end": 171.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f8-1",
@@ -322,7 +523,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L14",
+          "heard": "ger belâ-yı aşk ile hoşnûd isen kavga nedir.",
+          "start": 171.6,
+          "end": 178.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h1-2",
@@ -338,7 +547,22 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L7",
+          "heard": "Karitas habundat in omnia",
+          "start": 195.5,
+          "end": 200.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 200.6,
+          "end": 203.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h2-2",
@@ -354,7 +578,22 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 200.6,
+          "end": 203.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L8",
+          "heard": "de imis excellentissima",
+          "start": 203.6,
+          "end": 207.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h3-2",
@@ -370,7 +609,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L9",
+          "heard": "super sidera",
+          "start": 207.6,
+          "end": 211,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h4-2",
@@ -386,7 +633,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "atque amantissima",
+          "start": 211.2,
+          "end": 215.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h5-2",
@@ -402,7 +657,29 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "atque amantissima",
+          "start": 211.2,
+          "end": 215.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 215.7,
+          "end": 219,
+          "confidence": "high"
+        },
+        {
+          "line": "L12",
+          "heard": "quia summo regi osculum pacis dedit",
+          "start": 219.2,
+          "end": 227.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h6-2",
@@ -418,7 +695,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L12",
+          "heard": "quia summo regi osculum pacis dedit",
+          "start": 219.2,
+          "end": 227.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f5-5",
@@ -434,7 +719,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 228.8,
+          "end": 235.2,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f6-5",
@@ -450,7 +743,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 235.4,
+          "end": 241.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f5-6",
@@ -466,7 +767,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 242.6,
+          "end": 248.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f6-6",
@@ -482,7 +791,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 248.7,
+          "end": 254.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f7-2",
@@ -498,7 +815,7 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": []
     },
     {
       "id": "fuzuli-f8-2",
@@ -514,7 +831,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L14",
+          "heard": "ger belâ-yı aşk ile hoşnûd isen kavga nedir",
+          "start": 260.9,
+          "end": 267.6,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "call-y1",
@@ -530,7 +855,7 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": []
     },
     {
       "id": "fuzuli-f1a",
@@ -546,7 +871,15 @@
       },
       "whisper": "Öyle sermezdim ki idraket",
       "verdict": "agree",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L16",
+          "heard": "öyle ser-mestem ki idrâk etmezem",
+          "start": 427.8,
+          "end": 432.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f1-2",
@@ -562,7 +895,15 @@
       },
       "whisper": "Ki idraket dünyayı nadir",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L1",
+          "heard": "öyle ser-mestem ki idrâk etmezem dünyâ nedir",
+          "start": 437.2,
+          "end": 445,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "call-y2-1",
@@ -578,7 +919,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L17",
+          "heard": "يَا مَوْلَانَا",
+          "start": 452.8,
+          "end": 458,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "call-y2-2",
@@ -594,7 +943,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L17",
+          "heard": "يَا مَوْلَانَا",
+          "start": 459.2,
+          "end": 466,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-s1-1",
@@ -610,7 +967,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L18",
+          "heard": "يَا سَاقِيَ الْقَوْمِ مِنْ شَذَاهُ",
+          "start": 467.5,
+          "end": 478.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-s1-2",
@@ -626,7 +991,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L18",
+          "heard": "يَا سَاقِيَ الْقَوْمِ مِنْ شَذَاهُ",
+          "start": 480.2,
+          "end": 485.2,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-s2",
@@ -642,7 +1015,22 @@
       },
       "whisper": "Tehtar",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L19",
+          "heard": "اَلْكُلُّ لَمَّا سَقَيْتَ تَاهُوا",
+          "start": 486.2,
+          "end": 494,
+          "confidence": "high"
+        },
+        {
+          "line": "L19",
+          "heard": "اَلْكُلُّ لَمَّا سَقَيْتَ تَاهُوا",
+          "start": 495.2,
+          "end": 501.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "nabulsi-n1",
@@ -658,7 +1046,15 @@
       },
       "whisper": "Cemaat",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L20",
+          "heard": "عَيْنِي لِغَيْرِ جَمَالِكُمْ لَا تَنْظُرُ",
+          "start": 509.5,
+          "end": 518.3,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "nabulsi-n2",
@@ -674,7 +1070,15 @@
       },
       "whisper": "Wasiwakum fi khatiri",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L21",
+          "heard": "وَ سِوَاكُمْ فِي خَاطِرِي لَا يَخْطُرُ",
+          "start": 520.5,
+          "end": 528.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "sabr-p1",
@@ -690,7 +1094,29 @@
       },
       "whisper": "Bortu kalb / Bortu kalbi alaykum / لا صبر لي لا صبر لي كيف أصبر",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "صَبَّرْتُ قَلْبِي",
+          "start": 530.2,
+          "end": 532.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L22",
+          "heard": "صَبَّرْتُ قَلْبِي عَلَيْكُمْ فَأَجَابَنِي",
+          "start": 533.8,
+          "end": 539,
+          "confidence": "high"
+        },
+        {
+          "line": "L23",
+          "heard": "لَا صَبْرَ لِي، لَا صَبْرَ لِي، كَيْفَ أَصْبِرُ؟",
+          "start": 539.7,
+          "end": 548,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "sabr-p2",
@@ -706,7 +1132,15 @@
       },
       "whisper": "لا صبر لي لا صبر لي كيف أصبر",
       "verdict": "agree",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L23",
+          "heard": "لَا صَبْرَ لِي، لَا صَبْرَ لِي، كَيْفَ أَصْبِرُ؟",
+          "start": 539.7,
+          "end": 548,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h1-3",
@@ -722,7 +1156,22 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L7",
+          "heard": "Karitas habundat in omnia",
+          "start": 878.8,
+          "end": 884,
+          "confidence": "high"
+        },
+        {
+          "line": "L8",
+          "heard": "de imis excellentissima",
+          "start": 884.3,
+          "end": 887.3,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h2-3",
@@ -738,7 +1187,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L8",
+          "heard": "de imis excellentissima",
+          "start": 884.3,
+          "end": 887.3,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h3-3",
@@ -754,7 +1211,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L9",
+          "heard": "super sidera",
+          "start": 887.5,
+          "end": 890,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h4-3",
@@ -770,7 +1235,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "atque amantissima",
+          "start": 890.2,
+          "end": 892.4,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h5-3",
@@ -786,7 +1259,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 892.6,
+          "end": 895.1,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h6-3",
@@ -802,7 +1283,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L12",
+          "heard": "quia summo regi osculum pacis dedit",
+          "start": 895.4,
+          "end": 900.3,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h1-4",
@@ -818,7 +1307,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L7",
+          "heard": "Karitas habundat in omnia",
+          "start": 900.6,
+          "end": 905.3,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h2-4",
@@ -834,7 +1331,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L8",
+          "heard": "de imis excellentissima",
+          "start": 905.5,
+          "end": 908.2,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h3-4",
@@ -850,7 +1355,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L9",
+          "heard": "super sidera",
+          "start": 908.4,
+          "end": 910.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h4-4",
@@ -866,7 +1379,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "atque amantissima",
+          "start": 911,
+          "end": 913.2,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h5-4",
@@ -882,7 +1403,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 913.4,
+          "end": 915.9,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "hildegard-h6-4",
@@ -898,7 +1427,15 @@
       },
       "whisper": "",
       "verdict": "translation-only",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L12",
+          "heard": "quia summo regi osculum pacis dedit",
+          "start": 916.2,
+          "end": 921,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f1-3",
@@ -914,7 +1451,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L1",
+          "heard": "öyle ser-mestem ki idrâk etmezem dünyâ nedir",
+          "start": 921.2,
+          "end": 926.2,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f2-2",
@@ -930,7 +1475,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L2",
+          "heard": "men kimem sâkî olan kimdir mey û sahbâ nedir",
+          "start": 926.4,
+          "end": 931.3,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f3-2",
@@ -946,7 +1499,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L3",
+          "heard": "gerçi cânândan dil-i şeydâ içün kâm isterem",
+          "start": 931.4,
+          "end": 936.3,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "fuzuli-f4-2",
@@ -962,7 +1523,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L4",
+          "heard": "sorsa cânân bilmezem kâm-ı dil-i şeydâ nedir",
+          "start": 936.5,
+          "end": 940,
+          "confidence": "high"
+        },
+        {
+          "line": "L16",
+          "heard": "öyle ser-mestem ki idrâk etmezem",
+          "start": 940.2,
+          "end": 942.3,
+          "confidence": "high"
+        }
+      ]
     }
   ]
 }

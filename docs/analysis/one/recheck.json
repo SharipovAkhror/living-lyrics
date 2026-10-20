@@ -1,7 +1,7 @@
 {
   "slug": "one",
   "checked": "2026-10-20",
-  "gemini": "pending",
+  "gemini": "filled",
   "frames": "Кадры официального видео не снимались.",
   "lines": [
     {
@@ -18,7 +18,15 @@
       },
       "whisper": "تَعَسِسَ السَّيْفِ",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L1",
+          "heard": "Daz ouge, da inne ich got sihe",
+          "start": 0.8,
+          "end": 4.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-1-2",
@@ -34,7 +42,22 @@
       },
       "whisper": "تَعَسِسَ السَّيْفِ",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "daz ist daz selbe ouge",
+          "start": 5.8,
+          "end": 9.8,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "da inne mich got sihet",
+          "start": 13,
+          "end": 17,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-1-3",
@@ -50,7 +73,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "min ouge und gotes ouge",
+          "start": 17.6,
+          "end": 21,
+          "confidence": "high"
+        },
+        {
+          "line": "L19",
+          "heard": "daz ist ein ouge",
+          "start": 21.6,
+          "end": 25.6,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-2-1",
@@ -66,7 +104,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L1",
+          "heard": "Daz ouge, da inne ich got sihe",
+          "start": 27.5,
+          "end": 32,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-2-2",
@@ -82,7 +128,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "daz ist daz selbe ouge",
+          "start": 32.6,
+          "end": 37.2,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "da inne mich got sihet",
+          "start": 40.6,
+          "end": 45,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-2-3",
@@ -98,7 +159,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "min ouge und gotes ouge",
+          "start": 45.6,
+          "end": 49,
+          "confidence": "high"
+        },
+        {
+          "line": "L19",
+          "heard": "daz ist ein ouge",
+          "start": 49.6,
+          "end": 53.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-1-1",
@@ -114,7 +190,22 @@
       },
       "whisper": "بعد الفناء",
       "verdict": "agree",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "خَرَجْتُ فِي حِينٍ",
+          "start": 57.8,
+          "end": 62.8,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "بَعْدَ الْفَنَا",
+          "start": 65.5,
+          "end": 69.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-1-2",
@@ -130,7 +221,22 @@
       },
       "whisper": "إِلَى",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "وَمِنْ هُنَا",
+          "start": 71.2,
+          "end": 74.8,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "بَقِيتُ بِلَا أَنَا",
+          "start": 76,
+          "end": 81,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-1-3",
@@ -146,7 +252,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "وَمَنْ أَنَا",
+          "start": 82.2,
+          "end": 85.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L7",
+          "heard": "يَا أَنَا إِلَّا أَنَا",
+          "start": 85.8,
+          "end": 90,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-2-1",
@@ -162,7 +283,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "خَرَجْتُ فِي حِينٍ",
+          "start": 91.5,
+          "end": 96.5,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "بَعْدَ الْفَنَا",
+          "start": 97,
+          "end": 101.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-2-2",
@@ -178,7 +314,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "وَمِنْ هُنَا",
+          "start": 102.8,
+          "end": 106.5,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "بَقِيتُ بِلَا أَنَا",
+          "start": 107,
+          "end": 112,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-2-3",
@@ -194,7 +345,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "وَمَنْ أَنَا",
+          "start": 113.5,
+          "end": 118,
+          "confidence": "high"
+        },
+        {
+          "line": "L7",
+          "heard": "يَا أَنَا إِلَّا أَنَا",
+          "start": 118.8,
+          "end": 123.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-2-tail-1",
@@ -210,7 +376,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L7",
+          "heard": "يَا أَنَا إِلَّا أَنَا",
+          "start": 124,
+          "end": 129.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L8",
+          "heard": "إِلَّا أَنَا",
+          "start": 130,
+          "end": 135.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-2-tail-2",
@@ -226,7 +407,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L8",
+          "heard": "إِلَّا أَنَا",
+          "start": 130,
+          "end": 135.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-3-1",
@@ -242,7 +431,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L1",
+          "heard": "Daz ouge, da inne ich got sihe",
+          "start": 137.5,
+          "end": 142,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "daz ist daz selbe ouge",
+          "start": 142.5,
+          "end": 147,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-3-2",
@@ -258,7 +462,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "daz ist daz selbe ouge",
+          "start": 142.5,
+          "end": 147,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "da inne mich got sihet",
+          "start": 149,
+          "end": 153,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-3-3",
@@ -274,7 +493,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "min ouge und gotes ouge",
+          "start": 153.5,
+          "end": 157,
+          "confidence": "high"
+        },
+        {
+          "line": "L19",
+          "heard": "daz ist ein ouge",
+          "start": 157.5,
+          "end": 161.2,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-4-1",
@@ -290,7 +524,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L1",
+          "heard": "Daz ouge, da inne ich got sihe",
+          "start": 162,
+          "end": 166.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-4-2",
@@ -306,7 +548,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "daz ist daz selbe ouge",
+          "start": 167,
+          "end": 171.8,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "da inne mich got sihet",
+          "start": 173,
+          "end": 177.2,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-4-3",
@@ -322,7 +579,29 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "da inne mich got sihet",
+          "start": 173,
+          "end": 177.2,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "min ouge und gotes ouge",
+          "start": 177.5,
+          "end": 181.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L19",
+          "heard": "daz ist ein ouge",
+          "start": 182.2,
+          "end": 186.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-3-1",
@@ -338,7 +617,29 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "خَرَجْتُ فِي حِينٍ",
+          "start": 191,
+          "end": 195.8,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "بَعْدَ الْفَنَا",
+          "start": 196,
+          "end": 200.5,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "وَمِنْ هُنَا",
+          "start": 201,
+          "end": 205.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-3-2",
@@ -354,7 +655,29 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "وَمِنْ هُنَا",
+          "start": 201,
+          "end": 205.5,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "بَقِيتُ بِلَا أَنَا",
+          "start": 206,
+          "end": 210.5,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "وَمَنْ أَنَا",
+          "start": 211,
+          "end": 215.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-3-3",
@@ -370,7 +693,29 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "وَمَنْ أَنَا",
+          "start": 211,
+          "end": 215.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L7",
+          "heard": "يَا أَنَا إِلَّا أَنَا",
+          "start": 216,
+          "end": 220,
+          "confidence": "high"
+        },
+        {
+          "line": "L7",
+          "heard": "يَا أَنَا إِلَّا أَنَا",
+          "start": 220.2,
+          "end": 225,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-3-tail",
@@ -386,7 +731,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L7",
+          "heard": "يَا أَنَا إِلَّا أَنَا",
+          "start": 220.2,
+          "end": 225,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "وَمَنْ أَنَا",
+          "start": 226,
+          "end": 230.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "shushtari-4-3",
@@ -402,7 +762,29 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "وَمَنْ أَنَا",
+          "start": 226,
+          "end": 230.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L7",
+          "heard": "يَا أَنَا إِلَّا أَنَا",
+          "start": 236,
+          "end": 240.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L8",
+          "heard": "إِلَّا أَنَا",
+          "start": 241,
+          "end": 245.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b1a",
@@ -418,7 +800,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L9",
+          "heard": "سُقَيْتُ كَأْسَ الْهَوَى قَدِيمًا",
+          "start": 303.8,
+          "end": 308.9,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b1b",
@@ -434,7 +824,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "مِنْ غَيْرِ أَرْضٍ وَلَا سَمَاءِ",
+          "start": 309.2,
+          "end": 314.6,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b2a",
@@ -450,7 +848,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L11",
+          "heard": "أَصْبَحْتُ فِيهِ فَرِيدَ عَصْرِي",
+          "start": 315,
+          "end": 320.3,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b2b",
@@ -466,7 +872,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L12",
+          "heard": "بَيْنَ الْوَرَى حَامِلًا لِوَائِي",
+          "start": 320.7,
+          "end": 326.2,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b3a",
@@ -482,7 +896,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L13",
+          "heard": "لِي مَذْهَبٌ مَذْهَبٌ عَجِيبٌ",
+          "start": 332.8,
+          "end": 337.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b3b",
@@ -498,7 +920,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L14",
+          "heard": "بِالْحُسْنِ قَدْ فَاقَ يَا هَنَائِي",
+          "start": 338.2,
+          "end": 343.6,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b4a",
@@ -514,7 +944,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L15",
+          "heard": "يَا مَنْ هُمُ لِلْجَمِيلِ أَهْلٌ",
+          "start": 344,
+          "end": 349.4,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b4b",
@@ -530,7 +968,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L16",
+          "heard": "إِنْ لَمْ تَمُنُّوا فَيَا شَقَائِي",
+          "start": 349.8,
+          "end": 355.4,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b5a",
@@ -546,7 +992,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L17",
+          "heard": "حَشَاكُمُ يَا أُهَيْلَ نَجْدٍ",
+          "start": 367.2,
+          "end": 372.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b5b",
@@ -562,7 +1016,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L18",
+          "heard": "أَنْ تَقْطَعُوا مِنْكُمُ رَجَائِي",
+          "start": 372.9,
+          "end": 378.3,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b4a-2",
@@ -578,7 +1040,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L15",
+          "heard": "يَا مَنْ هُمُ لِلْجَمِيلِ أَهْلٌ",
+          "start": 378.8,
+          "end": 384.1,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b4b-2",
@@ -594,7 +1064,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L16",
+          "heard": "إِنْ لَمْ تَمُنُّوا فَيَا شَقَائِي",
+          "start": 384.5,
+          "end": 390.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b5a-2",
@@ -610,7 +1088,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L17",
+          "heard": "حَشَاكُمُ يَا أُهَيْلَ نَجْدٍ",
+          "start": 442.5,
+          "end": 447.9,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b5b-2",
@@ -626,7 +1112,15 @@
       },
       "whisper": "أنت",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L18",
+          "heard": "أَنْ تَقْطَعُوا مِنْكُمُ رَجَائِي",
+          "start": 448.3,
+          "end": 453.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b4a-3",
@@ -642,7 +1136,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L15",
+          "heard": "يَا مَنْ هُمُ لِلْجَمِيلِ أَهْلٌ",
+          "start": 453.9,
+          "end": 459.2,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b4b-3",
@@ -658,7 +1160,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L16",
+          "heard": "إِنْ لَمْ تَمُنُّوا فَيَا شَقَائِي",
+          "start": 459.6,
+          "end": 464.9,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b5a-3",
@@ -674,7 +1184,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L17",
+          "heard": "حَشَاكُمُ يَا أُهَيْلَ نَجْدٍ",
+          "start": 476.6,
+          "end": 481.9,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b5b-3",
@@ -690,7 +1208,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L18",
+          "heard": "أَنْ تَقْطَعُوا مِنْكُمُ رَجَائِي",
+          "start": 482.3,
+          "end": 487.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b4a-4",
@@ -706,7 +1232,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L18",
+          "heard": "أَنْ تَقْطَعُوا مِنْكُمُ رَجَائِي",
+          "start": 482.3,
+          "end": 487.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L15",
+          "heard": "يَا مَنْ هُمُ لِلْجَمِيلِ أَهْلٌ",
+          "start": 487.9,
+          "end": 493.1,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b4b-4",
@@ -722,7 +1263,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L15",
+          "heard": "يَا مَنْ هُمُ لِلْجَمِيلِ أَهْلٌ",
+          "start": 487.9,
+          "end": 493.1,
+          "confidence": "high"
+        },
+        {
+          "line": "L16",
+          "heard": "إِنْ لَمْ تَمُنُّوا فَيَا شَقَائِي",
+          "start": 493.5,
+          "end": 499.1,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b1a-2",
@@ -738,7 +1294,15 @@
       },
       "whisper": "إن غيري أرمي",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L9",
+          "heard": "سُقَيْتُ كَأْسَ الْهَوَى قَدِيمًا",
+          "start": 561.2,
+          "end": 565.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b1b-2",
@@ -754,7 +1318,15 @@
       },
       "whisper": "إن غيري أرمي",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "مِنْ غَيْرِ أَرْضٍ وَلَا سَمَاءِ",
+          "start": 566.6,
+          "end": 571.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b2a-2",
@@ -770,7 +1342,15 @@
       },
       "whisper": "أصبحت فيه",
       "verdict": "agree",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L11",
+          "heard": "أَصْبَحْتُ فِيهِ فَرِيدَ عَصْرِي",
+          "start": 572.4,
+          "end": 577.1,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "qasida-b2b-2",
@@ -786,7 +1366,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L12",
+          "heard": "بَيْنَ الْوَرَى حَامِلًا لِوَائِي",
+          "start": 577.8,
+          "end": 583,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-01",
@@ -802,7 +1390,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L19",
+          "heard": "daz ist ein ouge",
+          "start": 729.3,
+          "end": 731.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-02",
@@ -818,7 +1414,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L20",
+          "heard": "und ein gesiht",
+          "start": 731.5,
+          "end": 733.7,
+          "confidence": "high"
+        },
+        {
+          "line": "L21",
+          "heard": "und ein bekennen",
+          "start": 733.7,
+          "end": 735.9,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-03",
@@ -834,7 +1445,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L21",
+          "heard": "und ein bekennen",
+          "start": 733.7,
+          "end": 735.9,
+          "confidence": "high"
+        },
+        {
+          "line": "L22",
+          "heard": "und ein minnen",
+          "start": 735.9,
+          "end": 738.6,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-04",
@@ -850,7 +1476,15 @@
       },
       "whisper": "تَعَسِسَ السَّيْفِ",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L22",
+          "heard": "und ein minnen",
+          "start": 735.9,
+          "end": 738.6,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-05",
@@ -866,7 +1500,15 @@
       },
       "whisper": "تَعَسِسَ السَّيْفِ",
       "verdict": "weak",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L19",
+          "heard": "daz ist ein ouge",
+          "start": 738.6,
+          "end": 740.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-06",
@@ -882,7 +1524,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L20",
+          "heard": "und ein gesiht",
+          "start": 740.8,
+          "end": 743,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-07",
@@ -898,7 +1548,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L19",
+          "heard": "daz ist ein ouge",
+          "start": 743,
+          "end": 745.3,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-08",
@@ -914,7 +1572,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L20",
+          "heard": "und ein gesiht",
+          "start": 745.3,
+          "end": 747.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L21",
+          "heard": "und ein bekennen",
+          "start": 747.5,
+          "end": 749.7,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-09",
@@ -930,7 +1603,22 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L21",
+          "heard": "und ein bekennen",
+          "start": 747.5,
+          "end": 749.7,
+          "confidence": "high"
+        },
+        {
+          "line": "L22",
+          "heard": "und ein minnen",
+          "start": 749.7,
+          "end": 752.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-10",
@@ -946,7 +1634,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L22",
+          "heard": "und ein minnen",
+          "start": 749.7,
+          "end": 752.5,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-11",
@@ -962,7 +1658,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L19",
+          "heard": "daz ist ein ouge",
+          "start": 752.5,
+          "end": 754.8,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-12",
@@ -978,7 +1682,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L20",
+          "heard": "und ein gesiht",
+          "start": 754.8,
+          "end": 757,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-13",
@@ -994,7 +1706,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L21",
+          "heard": "und ein bekennen",
+          "start": 757,
+          "end": 759.2,
+          "confidence": "high"
+        }
+      ]
     },
     {
       "id": "eckhart-f-14",
@@ -1010,7 +1730,15 @@
       },
       "whisper": "",
       "verdict": "subtitle",
-      "gemini": null
+      "gemini": [
+        {
+          "line": "L22",
+          "heard": "und ein minnen",
+          "start": 759.2,
+          "end": 762.5,
+          "confidence": "high"
+        }
+      ]
     }
   ]
 }
