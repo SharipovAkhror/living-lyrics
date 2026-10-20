@@ -405,6 +405,7 @@
     "grok": "grok-4.7",
     "gemini": "gemini-3.8-flash-high"
   },
+  "syncGoal": 90,
   "roadmap": {
     "title": "До новых песен",
     "percent": 84,

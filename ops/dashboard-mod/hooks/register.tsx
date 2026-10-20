@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register, RenderInput } from 'claude-code'
 
-import type { AgentName, Board, FeedItem, Group, Limit, Live, QuotaGroup, Song, Task, Usage } from '../types'
+import type { AgentName, Board, ChatRow, FeedItem, Group, Limit, Live, PipelineRun, QuotaGroup, Song, Task, Usage } from '../types'
 import { ICON_CLAUDE, ICON_GEMINI, ICON_GROK } from './icons'
 
 /**
@@ -77,12 +77,14 @@ export function remoteLive(published: Live | null | undefined, now: number): Liv
     at: published.at,
     grok: (published.grok ?? []).map(r => ({ ...r, minutes: r.minutes + age })),
     gemini: (published.gemini ?? []).map(r => ({ ...r, minutes: r.minutes + age })),
+    chats: published.chats ?? [],
+    pipeline: (published.pipeline ?? []).map(r => ({ ...r, minutes: r.minutes + age })),
   }
 }
 
 /** The states that matter for publishing; minutes, steps and token counts change on every poll. */
 export function stateKey(l: Live) {
-  return JSON.stringify([l.grok.map(r => [r.name, r.state, r.model ?? '']), l.gemini.map(r => r.slug)])
+  return JSON.stringify([l.grok.map(r => [r.name, r.state, r.model ?? '']), l.gemini.map(r => r.slug), (l.chats ?? []).map(c => [c.name, c.state]), (l.pipeline ?? []).map(r => r.title)])
 }
 
 export function tokens(n?: number) {
@@ -170,30 +172,49 @@ function meterText(fraction: number, width = 10) {
   return '█'.repeat(n) + '░'.repeat(width - n)
 }
 
+const CHAT_STATE: Record<string, string> = { working: 'работает', waiting: 'ждёт ответа', idle: 'свободен', retired: 'спит', none: 'не запущен' }
+
+/** A bar of ten cells for a chat line; the cell where `goal` (0…1) falls is marked when not yet filled. */
+export function barText(fraction: number, goal?: number, width = 10) {
+  const n = Math.round(Math.max(0, Math.min(1, fraction)) * width)
+  const g = goal === undefined ? -1 : Math.min(width - 1, Math.max(0, Math.round(goal * width) - 1))
+  return Array.from({ length: width }, (_, i) => (i < n ? '▰' : i === g ? '▹' : '▱')).join('')
+}
+
 /**
- * The dashboard as a few chat lines: the phone app places no panes and draws no band, but it
- * shows a command's output row, so /dashboard answers with this everywhere.
+ * The dashboard as chat lines (markdown). Where nothing a mod draws is shown (claude.ai/code and the
+ * phone over Remote Control, cloud sessions), /dashboard answers with this text, so it carries the
+ * pane's content: what waits on the owner, chats, executors and runs, word sync, usage.
  */
 export function summaryText(b: Board | null, l: Live, lim: Limit[], u: Usage | null) {
   if (!b) return 'Dashboard: данных пока нет.'
-  const out = [`**Living Lyrics** · ${hhmm(b.updated)}`, '']
-  for (const r of agentRows(b, l).filter(r => r.agent !== 'claude')) {
-    out.push(`- **${r.name}** — ${r.task}${r.state ? ` · ${r.state}` : ''}`)
-  }
-  const gem = geminiWindows(u?.gemini?.quota?.gemini).map(w => `${w.label} ${Math.round(w.used)} %`).join(', ')
-  const cl = claudeWindows(lim).map(w => `${w.label} ${Math.round(w.used)} %`).join(', ')
-  const parts = [
-    gem ? `Gemini ${gem}` : '',
-    u?.grok ? `Grok сегодня ${tokens(u.grok.today)} ток.` : '',
-    cl ? `Claude ${cl}` : '',
-  ].filter(Boolean)
-  if (parts.length) out.push('', `Израсходовано: ${parts.join(' · ')}`)
-  if (b.roadmap) out.push(`${b.roadmap.title}: ${b.roadmap.percent} %`)
-  if (b.songs.length) {
-    out.push(`Подсветка (нужно 80 %): ${songRows(b.songs).map(s => `${s.label} ${s.group.proven}/${s.group.total}`).join(', ')}`)
-  }
+  const head = [`**Living Lyrics** · ${hhmm(b.updated)}`, b.roadmap ? `${b.roadmap.title.toLowerCase()} ${b.roadmap.percent} %` : ''].filter(Boolean)
+  const out = [head.join(' · ')]
   const you = b.tasks.filter(t => t.section === 'you')
-  out.push(you.length ? `Нужно от вас: ${you.map(t => t.title).join('; ')}` : 'От вас ничего не нужно.')
+  out.push('', you.length ? `⚑ **Нужно от вас:** ${you.map(t => t.title).join('; ')}` : 'От вас ничего не нужно.')
+
+  const chats = l.chats ?? []
+  if (chats.length) {
+    out.push('', '**Чаты**', ...chats.map((c: ChatRow) => `- ✻ ${c.name.replace(/^LL · /, '')} — ${CHAT_STATE[c.state] ?? c.state}`))
+  }
+  const rows = agentRows(b, l).filter(r => r.agent !== 'claude')
+  const runs = l.pipeline ?? []
+  if (rows.length || runs.length) {
+    out.push('', '**Исполнители**')
+    for (const r of rows) out.push(`- ${GLYPH[r.agent].mark} **${r.name}** — ${r.task}${r.state ? ` · ${r.state}` : ''}`)
+    for (const r of runs) out.push(`- ⚙ **GitHub · ${r.name}** — ${r.title} · ${ago(r.minutes)}`)
+  }
+  if (b.songs.length) {
+    const goal = b.syncGoal === undefined ? undefined : b.syncGoal / 100
+    out.push('', `**Подсветка по словам**${b.syncGoal === undefined ? '' : ` · цель ${b.syncGoal} %`}`)
+    for (const { label, group } of songRows(b.songs)) {
+      out.push(`- \`${barText(group.proven / Math.max(1, group.total), goal)}\` ${label} ${group.proven}/${group.total}`)
+    }
+  }
+  const cl = claudeWindows(lim).map(w => `${w.label} ${Math.round(w.used)} %`).join(', ')
+  const gem = geminiWindows(u?.gemini?.quota?.gemini).map(w => `${w.label} ${Math.round(w.used)} %`).join(', ')
+  const parts = [cl ? `✻ Claude ${cl}` : '', gem ? `✦ Gemini ${gem}` : '', u?.grok ? `◼ Grok сегодня ${tokens(u.grok.today)} ток.` : ''].filter(Boolean)
+  if (parts.length) out.push('', `**Израсходовано:** ${parts.join(' · ')}`)
   return out.join('\n')
 }
 
@@ -295,7 +316,7 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
     try {
       const res = await $.process.run(['python', agentsScript($), place.repo], { timeoutMs: 25_000 })
       if (res.exitCode === 0) {
-        const next = JSON.parse(res.stdout) as Live
+        const next = { ...(JSON.parse(res.stdout) as Live), ...station }
         if (JSON.stringify(next) !== JSON.stringify(await read($, live))) await update($, live, () => next)
         await publishLive($, next)
       }
@@ -328,6 +349,21 @@ async function publishLive($: EngineInterface, l: Live, heartbeat = false) {
     if (res.exitCode === 0) published = key
   } catch {
     // Offline or no push rights: other devices keep the last published state.
+  }
+}
+
+/** The orchestrator machine's chats and Actions runs; ops/agents/station_tick.py also pulls the main checkout. */
+let station: Pick<Live, 'chats' | 'pipeline'> = {}
+
+async function stationTick($: EngineInterface) {
+  if (!place.orchestrator || !place.repo) return
+  try {
+    const res = await $.process.run(['python', `${place.repo}/ops/agents/station_tick.py`, place.repo], { cwd: place.repo, timeoutMs: 60_000 })
+    if (res.exitCode !== 0) return
+    const tick = JSON.parse(res.stdout) as { chats: ChatRow[]; pipeline: PipelineRun[] }
+    station = { chats: tick.chats, pipeline: tick.pipeline }
+  } catch {
+    // A tool missing on PATH: the rest of the dashboard still draws.
   }
 }
 
@@ -533,7 +569,7 @@ async function dashboardTree($: EngineInterface, e: RenderInput<'Pane' | 'UserMe
 
       {b.songs.length ? (
         <Box flexDirection="column">
-          {label('Подсветка по словам · порог 80 %')}
+          {label(b.syncGoal === undefined ? 'Подсветка по словам' : `Подсветка по словам · цель ${b.syncGoal} %`)}
           {songRows(b.songs).map(({ label: name, group }: { label: string; group: Group }, i) => (
             <Box key={`s${i}`} flexDirection="row" columnGap={1} alignItems="center">
               <Box flexGrow={1} flexShrink={1}>
@@ -541,7 +577,7 @@ async function dashboardTree($: EngineInterface, e: RenderInput<'Pane' | 'UserMe
                   {name}
                 </Text>
               </Box>
-              {meter(group.proven / Math.max(1, group.total), barW, 0.8, (group.placed ?? group.proven) / Math.max(1, group.total))}
+              {meter(group.proven / Math.max(1, group.total), barW, b.syncGoal === undefined ? undefined : b.syncGoal / 100, (group.placed ?? group.proven) / Math.max(1, group.total))}
               <Box width={7} justifyContent="flex-end">
                 <Text size="caption" tabular dimColor>
                   {group.proven}/{group.total}
@@ -612,6 +648,8 @@ export const register: Register = on => {
     place = await findPlace($)
     void refresh($, seen)
     $.clock.every(POLL_MS, () => refresh($, seen))
+    void stationTick($)
+    $.clock.every(REMOTE_MS, () => stationTick($))
     void collectUsage($)
     $.clock.every(COLLECT_MS, async () => {
       await keepChats($)

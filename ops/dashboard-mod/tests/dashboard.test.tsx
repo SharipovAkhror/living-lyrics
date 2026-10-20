@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { agentRows, bandLine, codename, dashboardContext, geminiWindows, isDashboardAsk, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
+import { agentRows, bandLine, barText, codename, dashboardContext, geminiWindows, isDashboardAsk, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -15,6 +15,7 @@ const BOARD: Board = {
   ],
   songs: [{ id: 'one', title: 'ONE', groups: [{ name: 'Соло', proven: 20, placed: 33, total: 37 }, { name: 'Хор', proven: 0, placed: 22, total: 26 }] }],
   feed: [{ at: '2026-10-18T10:00:00Z', from: 'claude', to: 'gemini', text: 'Посмотреть концерт' }],
+  syncGoal: 90,
 }
 
 const LIVE: Live = {
@@ -100,9 +101,11 @@ test('the chat summary names each executor, the usage and what waits on the owne
     grok: { plan: 'SuperGrok Heavy', today: 178282571 },
     gemini: { plan: 'Google AI Pro', quota: { gemini: { fiveHourRemaining: 94, weeklyRemaining: 98 } } },
   })
-  expect(text).toMatch(/\*\*Grok · Sync\*\* — Подсветка по словам · остановился · 7 мин/)
-  expect(text).toMatch(/Gemini 5 ч 6 %, неделя 2 % · Grok сегодня 178 М ток\. · Claude 5 ч 23 %/)
-  expect(text).toMatch(/Нужно от вас: Видео концертов/)
+  expect(text).toMatch(/◼ \*\*Grok · Sync\*\* — Подсветка по словам · остановился · 7 мин/)
+  expect(text).toMatch(/✻ Claude 5 ч 23 % · ✦ Gemini 5 ч 6 %, неделя 2 % · ◼ Grok сегодня 178 М ток\./)
+  expect(text).toMatch(/Нужно от вас:\*\* Видео концертов/)
+  expect(text).toMatch(/цель 90 %/)
+  expect(text).toContain('`▰▰▰▰▰▱▱▱▹▱` ONE · соло 20/37')
   expect(summaryText(null, LIVE, [], null)).toBe('Dashboard: данных пока нет.')
 })
 
@@ -153,8 +156,16 @@ test('the publish key ignores minutes and steps but sees a state change', async 
 test('typing dashboard puts the whole summary into the reply for windows that draw no card', async () => {
   const ctx = dashboardContext(summaryText(BOARD, LIVE, [], null))
   expect(ctx).toContain('Grok · Sync')
-  expect(ctx).toContain('Нужно от вас: Видео концертов')
+  expect(ctx).toContain('Нужно от вас:** Видео концертов')
   expect(ctx).toContain('ONE · хор 0/26')
+})
+
+test('the chat card lists the chats and the Actions runs the orchestrator published', async () => {
+  const text = summaryText(BOARD, { ...LIVE, chats: [{ name: 'LL · Main', state: 'idle' }, { name: 'LL · Site', state: 'working' }], pipeline: [{ name: 'pipeline', title: 'Proof of ONE', minutes: 12 }] }, [], null)
+  expect(text).toContain('- ✻ Main — свободен')
+  expect(text).toContain('- ✻ Site — работает')
+  expect(text).toContain('- ⚙ **GitHub · pipeline** — Proof of ONE · 12 мин')
+  expect(barText(1, 0.9)).toBe('▰▰▰▰▰▰▰▰▰▰')
 })
 
 test('the rotation signal comes at 60 % of context, only in Living Lyrics folders', async () => {
