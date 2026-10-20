@@ -225,8 +225,8 @@ a {
   letter-spacing: -0.23px;
 }
 .btn-capsule.btn-sm {
-  height: 32px;
-  min-height: 32px;
+  height: var(--hit);
+  min-height: var(--hit);
   padding: 0 var(--sp-3);
   font-size: var(--t-footnote);
 }
@@ -257,6 +257,13 @@ a {
 
 /* ---------- Reduce Motion: fades only, no travel and no spring. ---------- */
 @media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: var(--dur-fade);
+    --dur-2: var(--dur-fade);
+    --dur-3: var(--dur-fade);
+    --dur-4: var(--dur-fade);
+    --ease-spring: cubic-bezier(0.2, 0, 0, 1);
+  }
   *,
   *::before,
   *::after {
@@ -272,7 +279,51 @@ a {
   .tl-row,
   .group {
     transition-property: opacity !important;
-    transition-duration: 200ms !important;
+    transition-duration: var(--dur-fade) !important;
     animation: none !important;
   }
+  .btn:active:not(:disabled),
+  .util:active,
+  .lib-tile:active,
+  .lib-tile:hover,
+  .lib-tile:hover .lib-tile-cover,
+  .mark-btn:active,
+  .row--button:active {
+    transform: none;
+  }
+}
+/* The in-app "Без анимации" switch. The media query above does not see it. */
+html[data-motion='off'] {
+  --dur-1: var(--dur-fade);
+  --dur-2: var(--dur-fade);
+  --dur-3: var(--dur-fade);
+  --dur-4: var(--dur-fade);
+  --ease-spring: cubic-bezier(0.2, 0, 0, 1);
+}
+html[data-motion='off'] *,
+html[data-motion='off'] *::before,
+html[data-motion='off'] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+}
+html[data-motion='off'] .sheet-root,
+html[data-motion='off'] .sheet-backdrop,
+html[data-motion='off'] .set-page,
+html[data-motion='off'] .comment-body,
+html[data-motion='off'] .sky-leave,
+html[data-motion='off'] .tl-row,
+html[data-motion='off'] .group {
+  transition-property: opacity !important;
+  transition-duration: var(--dur-fade) !important;
+  animation: none !important;
+}
+html[data-motion='off'] .btn:active:not(:disabled),
+html[data-motion='off'] .util:active,
+html[data-motion='off'] .lib-tile:active,
+html[data-motion='off'] .lib-tile:hover,
+html[data-motion='off'] .lib-tile:hover .lib-tile-cover,
+html[data-motion='off'] .mark-btn:active,
+html[data-motion='off'] .row--button:active {
+  transform: none;
 }

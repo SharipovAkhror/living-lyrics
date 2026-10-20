@@ -62,6 +62,9 @@
   --t-footnote: 13px;
   --t-caption1: 13px;
   --t-caption2: 13px;
+  /* Library title. Serif, weight 600. 56 px from 800 px wide; the short
+     landscape block below keeps 40 px so a car screen does not grow a poster. */
+  --t-display: 40px;
   /* Sung line on an 852 px-tall phone. Other screens scale with the height.
      Registered so viewport units compute to a length. An unregistered max()
      stays a token and font-size falls back to the body size. */
@@ -112,6 +115,8 @@
   --dur-2: 280ms;
   --dur-3: 420ms;
   --dur-4: 520ms;
+  /* What "no animation" keeps: a soft fade, no travel. */
+  --dur-fade: 200ms;
 
   /* ===== Light appearance: dawn paper ===== */
   --bg: #efe6da;
@@ -143,6 +148,9 @@
   /* The light behind the current line is a wash, not a plate. */
   --plate-tint: transparent;
   --ink-ghost: rgba(26, 20, 15, 0.1);
+  /* Quiet ink, two steps. They follow --ink, so the dark theme does not repeat them. */
+  --ink-2: color-mix(in srgb, var(--ink) 72%, transparent);
+  --ink-3: color-mix(in srgb, var(--ink) 56%, transparent);
 
   /* Light glass: white 62 % over the field. Fallback is denser, for no blur. */
   --glass-bg: rgba(255, 255, 255, 0.62);
@@ -265,8 +273,14 @@
 
 /* Short and wide (car, low landscape). Type is not a fraction of the height:
    at 480 px that fraction was 18 px for the line and 13 px for the translation. */
+@media (min-width: 800px) {
+  :root {
+    --t-display: 56px;
+  }
+}
 @media (min-width: 700px) and (max-height: 640px) {
   :root {
+    --t-display: 40px;
     --lyric-latin: 30px;
     --lyric-arab: 36px;
     --lyric-tr: 18px;
