@@ -1,6 +1,7 @@
 """Publish the executors' live state to the `live` branch so every device can read it.
 
-The state is what ops/dashboard-mod/hooks/agents_live.py prints (Grok tasks and Gemini runs);
+The state is what ops/dashboard-mod/hooks/agents_live.py prints (Grok tasks and Gemini runs), plus
+the chats and Actions runs the mod adds from ops/agents/station_tick.py;
 a cloud orchestrator can pipe the same JSON in with --stdin instead. It is written as
 ops/live.json on an orphan branch `live` (one commit, force-pushed: the branch holds only the
 latest state, so main and the history stay clean). The dashboard mod on other devices reads
@@ -45,7 +46,9 @@ def signature(live: dict) -> str:
     """The states only: no minutes, steps or token counts, which change every poll."""
     grok = sorted((r.get('name', ''), r.get('state', ''), r.get('model', '')) for r in live.get('grok') or [])
     gemini = sorted(r.get('slug', '') for r in live.get('gemini') or [])
-    return hashlib.sha256(json.dumps([grok, gemini]).encode()).hexdigest()[:16]
+    chats = sorted((c.get('name', ''), c.get('state', '')) for c in live.get('chats') or [])
+    runs = sorted(r.get('title', '') for r in live.get('pipeline') or [])
+    return hashlib.sha256(json.dumps([grok, gemini, chats, runs]).encode()).hexdigest()[:16]
 
 
 def busy(live: dict) -> bool:

@@ -1,6 +1,6 @@
-import { expect, test } from 'claude-code/testing'
+import { expect, mock, test } from 'claude-code/testing'
 
-import { agentRows, bandLine, codename, dashboardContext, geminiWindows, isDashboardAsk, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
+import { agentRows, bandLine, cardContext, cardDoc, codename, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -15,6 +15,7 @@ const BOARD: Board = {
   ],
   songs: [{ id: 'one', title: 'ONE', groups: [{ name: 'Соло', proven: 20, placed: 33, total: 37 }, { name: 'Хор', proven: 0, placed: 22, total: 26 }] }],
   feed: [{ at: '2026-10-18T10:00:00Z', from: 'claude', to: 'gemini', text: 'Посмотреть концерт' }],
+  syncGoal: 90,
 }
 
 const LIVE: Live = {
@@ -32,6 +33,21 @@ test('agents are Claude first, then each Grok task with its live state, then Gem
   expect(rows[1]?.tone).toBe('stalled')
   expect(rows[1]?.detail).toBe('Жду прогон.')
   expect(rows[2]?.state).toBe('смотрит Karitas · 3 мин')
+})
+
+test('a long-finished Grok drops off; a running folder no task names still shows', async () => {
+  const live: Live = {
+    grok: [
+      { name: 't1-sync', state: 'finished', minutes: 3070, step: 'Готово.' },
+      { name: 't28-icons', state: 'working', minutes: 2, step: 'Рисую.' },
+    ],
+    gemini: [],
+  }
+  const rows = agentRows(BOARD, live)
+  expect(rows.map(r => r.name)).toEqual(['Claude · Lead', 'Grok · Icons', 'Gemini · Watch'])
+  expect(rows[1]?.state).toBe('работает · 2 мин')
+  const fresh = agentRows(BOARD, { grok: [{ name: 't1-sync', state: 'finished', minutes: 30, step: '' }], gemini: [] })
+  expect(fresh[1]?.state).toBe('готово · Claude проверяет')
 })
 
 test('the band leaves Claude out and counts what waits on the owner', async () => {
@@ -100,9 +116,12 @@ test('the chat summary names each executor, the usage and what waits on the owne
     grok: { plan: 'SuperGrok Heavy', today: 178282571 },
     gemini: { plan: 'Google AI Pro', quota: { gemini: { fiveHourRemaining: 94, weeklyRemaining: 98 } } },
   })
-  expect(text).toMatch(/\*\*Grok · Sync\*\* — Подсветка по словам · остановился · 7 мин/)
-  expect(text).toMatch(/Gemini 5 ч 6 %, неделя 2 % · Grok сегодня 178 М ток\. · Claude 5 ч 23 %/)
-  expect(text).toMatch(/Нужно от вас: Видео концертов/)
+  expect(text).toMatch(/◼ \*\*Grok · Sync\*\* — Подсветка по словам · остановился · 7 мин/)
+  expect(text).toMatch(/✻ Claude 5 ч 23 % · ✦ Gemini 5 ч 6 %, неделя 2 % · ◼ Grok сегодня 178 М ток\./)
+  expect(text).toMatch(/Нужно от вас:\*\* Видео концертов/)
+  expect(text).toMatch(/цель 90 %/)
+  expect(text).toContain('- ONE · соло — **54 %** (20/37)')
+  expect(text).not.toContain('![')
   expect(summaryText(null, LIVE, [], null)).toBe('Dashboard: данных пока нет.')
 })
 
@@ -153,8 +172,15 @@ test('the publish key ignores minutes and steps but sees a state change', async 
 test('typing dashboard puts the whole summary into the reply for windows that draw no card', async () => {
   const ctx = dashboardContext(summaryText(BOARD, LIVE, [], null))
   expect(ctx).toContain('Grok · Sync')
-  expect(ctx).toContain('Нужно от вас: Видео концертов')
-  expect(ctx).toContain('ONE · хор 0/26')
+  expect(ctx).toContain('Нужно от вас:** Видео концертов')
+  expect(ctx).toContain('ONE · хор — **0 %** (0/26)')
+})
+
+test('the chat card lists the chats and the Actions runs the orchestrator published', async () => {
+  const text = summaryText(BOARD, { ...LIVE, chats: [{ name: 'LL · Main', state: 'idle' }, { name: 'LL · Site', state: 'working' }], pipeline: [{ name: 'pipeline', title: 'Proof of ONE', minutes: 12 }] }, [], null)
+  expect(text).toContain('- ✻ Main — свободен')
+  expect(text).toContain('- ✻ Site — работает')
+  expect(text).toContain('- ⚙ **GitHub · pipeline** — Proof of ONE · 12 мин')
 })
 
 test('the rotation signal comes at 60 % of context, only in Living Lyrics folders', async () => {
@@ -165,9 +191,44 @@ test('the rotation signal comes at 60 % of context, only in Living Lyrics folder
   expect(rotationNote(undefined, 'C:/x/living-lyrics')).toBe(null)
 })
 
+test('the weekly limit pushes once per window, from 95 %', async () => {
+  const week = (percentUsed: number) => [{ kind: 'five_hour', percentUsed: 99 }, { kind: 'seven_day', percentUsed, resetsAt: '2026-10-23T04:00:00Z' }]
+  expect(limitPush(week(94), undefined)).toBe(null)
+  expect(limitPush(week(96), undefined)?.text).toMatch(/^Недельный лимит Claude: 96 %/)
+  expect(limitPush(week(99), '2026-10-23T04:00:00Z')).toBe(null)
+  expect(limitPush(week(99), '2026-10-16T04:00:00Z')?.key).toBe('2026-10-23T04:00:00Z')
+})
+
 test('user settings: a missing or different key is written, the rest stays, a kept file is not touched', async () => {
   const current = { model: 'haiku', cleanupPeriodDays: 30 }
   expect(settingsPatch(current)).toEqual({ model: 'haiku', cleanupPeriodDays: 36500 })
   expect(settingsPatch({ model: 'haiku' })).toEqual({ model: 'haiku', cleanupPeriodDays: 36500 })
   expect(settingsPatch({ ...USER_SETTINGS, model: 'haiku' })).toBe(null)
+})
+
+test('the image card state carries every block, and its reply sends the PNG with the text as fallback', async () => {
+  const doc = cardDoc(BOARD, LIVE, [{ kind: 'five_hour', percentUsed: 23, resetsAt: '2026-10-21T04:00:00Z' }], { grok: { plan: 'SuperGrok Heavy', today: 38_000_000 } })
+  expect(doc?.limits.claude[0]).toEqual({ label: '5 ч', used: 23, reset: expect.stringContaining('сброс') })
+  expect(doc?.limits.grok?.today).toBe('38 М')
+  expect(doc?.you.map(t => t.title)).toEqual(['Видео концертов'])
+  expect(doc?.agents.map(a => a.agent)).toEqual(['claude', 'grok', 'gemini'])
+  expect(cardDoc(null, LIVE, [], null)).toBe(null)
+  const ctx = cardContext('C:\\Temp\\card.png', 'SUMMARY', 1)
+  expect(ctx).toContain('files ["C:/Temp/card.png"]')
+  expect(ctx).toContain('display "render"')
+  expect(ctx.endsWith('SUMMARY')).toBe(true)
+  expect(codename('t27-iphone')).toBe('iPhone')
+})
+
+test('/dashboard hands the word to the model, so the image card comes as the reply', async ($, on) => {
+  const clock = mock.clock(on)
+  const sent: string[] = []
+  on('prompt.submit', ($, e, next) => {
+    if (e.origin.kind === 'plugin') sent.push(e.text)
+    return { drop: 'test' } as never
+  })
+  on('ui.open', () => ({ value: { isPlaced: false, reason: 'test' } }) as never)
+  await $.command.run({ command: 'dashboard' })
+  await clock.advance(100)
+  expect(sent).toEqual(['дашборд'])
 })
