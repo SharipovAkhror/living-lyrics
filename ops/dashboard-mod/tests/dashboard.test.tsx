@@ -1,6 +1,6 @@
-import { expect, test } from 'claude-code/testing'
+import { expect, mock, test } from 'claude-code/testing'
 
-import { agentRows, bandLine, codename, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
+import { agentRows, bandLine, cardContext, cardDoc, codename, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -204,4 +204,31 @@ test('user settings: a missing or different key is written, the rest stays, a ke
   expect(settingsPatch(current)).toEqual({ model: 'haiku', cleanupPeriodDays: 36500 })
   expect(settingsPatch({ model: 'haiku' })).toEqual({ model: 'haiku', cleanupPeriodDays: 36500 })
   expect(settingsPatch({ ...USER_SETTINGS, model: 'haiku' })).toBe(null)
+})
+
+test('the image card state carries every block, and its reply sends the PNG with the text as fallback', async () => {
+  const doc = cardDoc(BOARD, LIVE, [{ kind: 'five_hour', percentUsed: 23, resetsAt: '2026-10-21T04:00:00Z' }], { grok: { plan: 'SuperGrok Heavy', today: 38_000_000 } })
+  expect(doc?.limits.claude[0]).toEqual({ label: '5 ч', used: 23, reset: expect.stringContaining('сброс') })
+  expect(doc?.limits.grok?.today).toBe('38 М')
+  expect(doc?.you.map(t => t.title)).toEqual(['Видео концертов'])
+  expect(doc?.agents.map(a => a.agent)).toEqual(['claude', 'grok', 'gemini'])
+  expect(cardDoc(null, LIVE, [], null)).toBe(null)
+  const ctx = cardContext('C:\\Temp\\card.png', 'SUMMARY', 1)
+  expect(ctx).toContain('files ["C:/Temp/card.png"]')
+  expect(ctx).toContain('display "render"')
+  expect(ctx.endsWith('SUMMARY')).toBe(true)
+  expect(codename('t27-iphone')).toBe('iPhone')
+})
+
+test('/dashboard hands the word to the model, so the image card comes as the reply', async ($, on) => {
+  const clock = mock.clock(on)
+  const sent: string[] = []
+  on('prompt.submit', ($, e, next) => {
+    if (e.origin.kind === 'plugin') sent.push(e.text)
+    return { drop: 'test' } as never
+  })
+  on('ui.open', () => ({ value: { isPlaced: false, reason: 'test' } }) as never)
+  await $.command.run({ command: 'dashboard' })
+  await clock.advance(100)
+  expect(sent).toEqual(['дашборд'])
 })
