@@ -1,23 +1,30 @@
 /**
  * Direction C, «Стекло». Duotone, heavier, for the soft-glass look.
- * 24 grid. Primary shapes are solid. The second tone is the same ink at
- * 42% — a glass body, not a drop shadow. Corners are rounder than A
- * (about 2.6 to 3). Pressed tabs raise the glass body to full ink and
- * cut the detail out, so the state changes without changing the metaphor.
- * Transport stays solid: a translucent glyph on the accent disc looks unfinished.
+ * 24 grid. Primary shapes are solid. The second tone is the same ink —
+ * a glass body, not a drop shadow or an offset.
+ * Large bodies stay at 42%. Thin marks and small cloth (slider tracks,
+ * the flag, the note flag) use a stronger second tone: at 42% they
+ * disappear on the player glass.
+ * Pressed tabs use the same outer path and the same stroke, so the
+ * contour does not jump; the glass body goes to full ink.
+ * Play and pause stay solid. They sit in `--on-accent` on a solid
+ * song-colour disc, and a second tone there is a hole in that disc.
+ * Skip, note and the chevrons are duotone with the rest of the set.
  */
-import { circle, ellipse, fill, iconSet, rrect, roundPoly, stroke } from './geom';
-import type { Mark } from './types';
+import { capsule, circle, ellipse, fill, iconSet, noteSheet, rrect, roundPoly, stroke } from './geom';
+import type { Glyph, Mark } from './types';
 
 const GLASS = 0.42;
+/** Second tone for strokes and small shapes that vanish at 42% on the player. */
+const GLASS_INK = 0.74;
 
 const play = roundPoly(
   [
-    { x: 7.9, y: 4.35 },
-    { x: 19.7, y: 12 },
-    { x: 7.9, y: 19.65 },
+    { x: 7.35, y: 4.15 },
+    { x: 21.0, y: 12 },
+    { x: 7.35, y: 19.85 },
   ],
-  2.2,
+  1.85,
 );
 
 const backTri = roundPoly(
@@ -37,26 +44,39 @@ const fwdTri = roundPoly(
   1.7,
 );
 
+/** Same speech bubble as A and B, so the three sets differ in material, not in the object. */
 const bubble =
-  'M12 3.7c4.15 0 7.45 2.7 7.45 6.15 0 3.2-2.85 5.8-6.7 6.1l-2.7 2.7c-.4.4-1.05.08-.95-.45l.5-2.4C6.3 14.9 4.4 12.7 4.4 9.85 4.4 6.4 7.85 3.7 12 3.7z';
-const bubbleHoles = rrect(8.05, 7.7, 7.5, 1.85, 0.92) + rrect(8.05, 10.85, 5.15, 1.85, 0.92);
+  'M12 3.55c4.55 0 8.15 2.95 8.15 6.7 0 3.55-3.2 6.45-7.45 6.7l-3.05 2.85c-.42.38-1.08.05-.98-.48l.62-2.55C6.15 15.85 3.7 13.35 3.7 10.25 3.7 6.5 7.45 3.55 12 3.55z';
+const bubbleA = 'M7.95 8.2H14.55';
+const bubbleB = 'M7.95 11.6H12.05';
+const bubbleLineSw = 1.7;
+const bubbleSw = 1.9;
+const bubbleHoles =
+  capsule(7.95, 8.2, 14.55, 8.2, bubbleLineSw) + capsule(7.95, 11.6, 12.05, 11.6, bubbleLineSw);
 
-const book = rrect(4.15, 3.05, 15.7, 17.9, 3);
-const bookSpine = rrect(6.15, 5.2, 2.7, 13.5, 1);
-const bookTitle = rrect(10.15, 7.55, 6.15, 1.75, 0.85);
+/** Folded sheet. A glass slab with a slit read as a door. */
+const sheet = noteSheet(4.85, 3.65, 14.3, 16.5, 2.2, 5.05);
+const sheetCrease = 'M13.05 5.05 L17.85 9.85';
+const glossTop = 'M7.15 12.15H15.35';
+const glossBot = 'M7.15 15.5H12.45';
+const glossSw = 1.85;
+const glossHoles =
+  capsule(7.15, 12.15, 15.35, 12.15, glossSw) +
+  capsule(7.15, 15.5, 12.45, 15.5, glossSw) +
+  capsule(13.05, 5.05, 17.85, 9.85, 1.35);
+const sheetSw = 2.05;
 
 const listY = [6.9, 12, 17.1];
 const dots = listY.map((y) => fill(circle(5.2, y, 1.55)));
 const bars = (opacity?: number) => listY.map((y) => fill(rrect(8.35, y - 1.25, 11.15, 2.5, 1.25), opacity));
 
 const knobs = [
-  { y: 6.8, cx: 15.6 },
-  { y: 12, cx: 8.5 },
-  { y: 17.2, cx: 12.4 },
+  { y: 8.4, cx: 15.35 },
+  { y: 15.6, cx: 8.65 },
 ];
 
 function tracks(opacity: number | undefined, sw: number): Mark {
-  return stroke(`M3.55 ${knobs[0]!.y}H20.45M3.55 ${knobs[1]!.y}H20.45M3.55 ${knobs[2]!.y}H20.45`, sw, opacity);
+  return stroke(`M3.7 ${knobs[0]!.y}H20.3M3.7 ${knobs[1]!.y}H20.3`, sw, opacity);
 }
 function knobPills(w: number, h: number): Mark[] {
   return knobs.map(({ y, cx }) => fill(rrect(cx - w / 2, y - h / 2, w, h, h / 2)));
@@ -73,11 +93,12 @@ const grid = cells.map(({ x, y, opacity }) => fill(rrect(x, y, 7.8, 7.8, 2.6), o
 const pageL = 'M12 6.35C9.25 4.9 6.35 4.75 3.6 5.85v12.15c2.75-1.05 5.55-.9 8.4.5V6.35z';
 const pageR = 'M12 6.35C14.75 4.9 17.65 4.75 20.4 5.85v12.15c-2.75-1.05-5.55-.9-8.4.5V6.35z';
 
-const noteHead = ellipse(8.15, 16.85, 3.35, 2.45, -22);
-/** Filled flag joined to the stem. A translucent stroke read as a smudge at 16 px. */
-const noteFlag = 'M11.05 4.4c3.7.25 5.45 1.95 5.15 3.95-.25 1.6-1.75 2.5-3.65 2.15-.85-.15-1.4-.55-1.5-.95V4.4z';
+const noteHead = ellipse(7.9, 17.15, 3.75, 2.75, -26);
+const noteStem = 'M11.05 15.45V4.45';
+/** Open hook in the second tone. A closed flag read as a hollow P. */
+const noteFlag = 'M11.05 4.45c3.5 1 5.5 2.45 4.7 4.55';
 
-const lens = circle(10.55, 10.55, 6.35);
+const lens = circle(10.55, 10.55, 6.15);
 /**
  * Same construction as the search lens: a glass disc inside a solid ring.
  * A bare translucent disc read as a grey blob at 16 px, and the stem sat
@@ -107,7 +128,6 @@ const speaker =
 const waveNear = 'M14.85 9.05a4.15 4.15 0 0 1 0 5.9';
 const waveFar = 'M17.55 6.55a7.6 7.6 0 0 1 0 10.9';
 
-const chev = 2.25;
 const chevron = {
   left: 'M14.7 6.9 9.2 12l5.5 5.1',
   right: 'M9.3 6.9 14.8 12l-5.5 5.1',
@@ -115,49 +135,66 @@ const chevron = {
   up: 'M6.9 14.7 12 9.2l5.1 5.5',
 };
 
+/** Glass body under a solid core. Concentric, not a shadow. */
+function glassStroke(d: string, core = 2.6, body = 4.5): Glyph {
+  return { off: [stroke(d, body, 0.5), stroke(d, core)] };
+}
+
 export const setC = iconSet('c', 24, 2.15, {
-  'chevron.left': { off: [stroke(chevron.left, chev)] },
-  'chevron.right': { off: [stroke(chevron.right, chev)] },
-  'chevron.down': { off: [stroke(chevron.down, chev)] },
-  'chevron.up': { off: [stroke(chevron.up, chev)] },
-  xmark: { off: [stroke('M7.35 7.35 16.65 16.65M16.65 7.35 7.35 16.65', chev)] },
+  'chevron.left': glassStroke(chevron.left),
+  'chevron.right': glassStroke(chevron.right),
+  'chevron.down': glassStroke(chevron.down),
+  'chevron.up': glassStroke(chevron.up),
+  // A thick glass cross blobs at the centre, so the arms stay solid and short.
+  xmark: { off: [stroke('M8.15 8.15 15.85 15.85M15.85 8.15 8.15 15.85', 2.45)] },
   play: { off: [fill(play)] },
   pause: {
-    off: [fill(rrect(5.35, 4.15, 5.05, 15.7, 2)), fill(rrect(13.6, 4.15, 5.05, 15.7, 2))],
+    off: [fill(rrect(5.15, 4.2, 5.15, 15.6, 2.05)), fill(rrect(13.7, 4.2, 5.15, 15.6, 2.05))],
   },
-  backward: { off: [fill(rrect(3.9, 4.85, 2.45, 14.3, 1.2)), fill(backTri)] },
-  forward: { off: [fill(rrect(17.65, 4.85, 2.45, 14.3, 1.2)), fill(fwdTri)] },
+  backward: {
+    off: [fill(backTri, GLASS_INK), stroke(backTri, 1.9), fill(rrect(3.9, 4.85, 2.45, 14.3, 1.2))],
+  },
+  forward: {
+    off: [fill(fwdTri, GLASS_INK), stroke(fwdTri, 1.9), fill(rrect(17.65, 4.85, 2.45, 14.3, 1.2))],
+  },
   'character.bubble': {
-    off: [fill(bubble, GLASS), stroke(bubble, 1.6), stroke('M8.2 8.6h7.3M8.2 11.75h5', 1.9)],
-    on: [fill(bubble + bubbleHoles)],
+    off: [fill(bubble, GLASS), stroke(bubble, bubbleSw), stroke(bubbleA, bubbleLineSw), stroke(bubbleB, bubbleLineSw)],
+    on: [fill(bubble + bubbleHoles), stroke(bubble, bubbleSw)],
   },
   'book.closed': {
-    off: [fill(book, GLASS), fill(bookSpine), fill(bookTitle)],
-    on: [fill(book + bookSpine)],
+    off: [
+      fill(sheet, GLASS_INK),
+      stroke(sheet, sheetSw),
+      stroke(sheetCrease, 1.6),
+      stroke(glossTop, glossSw),
+      stroke(glossBot, glossSw),
+    ],
+    on: [fill(sheet + glossHoles), stroke(sheet, sheetSw)],
   },
   'music.note': {
-    off: [fill(noteHead), stroke('M11.05 15.65V4.4', 2.3), fill(noteFlag)],
+    off: [fill(noteHead), stroke(noteStem, 2.45), stroke(noteFlag, 3.35, GLASS_INK)],
   },
   'list.bullet': { off: [...bars(GLASS), ...dots], on: [...bars(1), ...dots] },
   'slider.horizontal.3': {
-    off: [tracks(GLASS, 2.4), ...knobPills(5.1, 3.7)],
-    on: [tracks(1, 2.7), ...knobPills(5.6, 4.15)],
+    off: [tracks(GLASS_INK, 2.15), ...knobPills(5.15, 3.25)],
+    on: [tracks(1, 2.35), ...knobPills(5.45, 3.5)],
   },
   'square.grid.2x2': { off: grid },
   'book.pages': { off: [fill(pageL, GLASS), fill(pageR)] },
   magnifyingglass: {
-    off: [fill(lens, GLASS), stroke(lens, 1.9), stroke('M15.2 15.2 19.9 19.9', 2.2)],
+    // Light well, heavy ring. A tinted disc read as a mirror.
+    off: [fill(lens, 0.28), stroke(lens, 2.35), stroke('M15.05 15.05 19.9 19.9', 2.4)],
   },
   'info.circle': {
     off: [fill(infoDisc, GLASS), stroke(infoDisc, 2.15), fill(infoDot), fill(infoStem)],
   },
   flag: {
-    off: [stroke(flagPole, 2.2), fill(flagFly, GLASS), stroke(flagFly, 1.7)],
+    off: [stroke(flagPole, 2.35), fill(flagFly, GLASS_INK), stroke(flagFly, 1.85)],
   },
   'speaker.wave.2': {
     off: [fill(speaker), stroke(waveNear, 2.05), stroke(waveFar, 2.05, GLASS)],
   },
   'square.and.arrow.down': {
-    off: [fill(downloadBowl, GLASS), stroke(downloadTray, 2.15), stroke(downloadStem, 2.15), fill(downloadHead)],
+    off: [fill(downloadBowl, GLASS_INK), stroke(downloadTray, 2.15), stroke(downloadStem, 2.15), fill(downloadHead)],
   },
 });

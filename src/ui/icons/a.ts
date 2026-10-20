@@ -1,20 +1,23 @@
 /**
  * Direction A, «Перо». Drawn for this site.
  * 24 grid, 1.75 stroke, round caps and joins, corner radius about 2.
- * Idle tab glyphs are line. Pressed tab glyphs are the same figure filled.
- * Transport stays filled: the play control is a solid disc, and a hairline
- * triangle inside it looks unfinished.
+ * Idle tab glyphs are line. Pressed tab glyphs are the same figure filled:
+ * the fill is traced again with the same stroke so the outer edge does not
+ * jump between states.
+ * Transport stays filled. The play triangle is optically larger than its
+ * bounding box suggests, so at 16–20 px it keeps the weight of the other glyphs.
+ * The comment tab is a folded sheet (a note on this line). Methodology stays an open book.
  */
-import { circle, ellipse, fill, iconSet, rrect, roundPoly, stroke } from './geom';
+import { capsule, circle, ellipse, fill, iconSet, noteSheet, rrect, roundPoly, stroke } from './geom';
 import type { Glyph, Mark } from './types';
 
 const play = roundPoly(
   [
-    { x: 8.55, y: 4.7 },
-    { x: 19.35, y: 12 },
-    { x: 8.55, y: 19.3 },
+    { x: 7.55, y: 4.35 },
+    { x: 20.95, y: 12 },
+    { x: 7.55, y: 19.65 },
   ],
-  1.85,
+  1.5,
 );
 
 const backTri = roundPoly(
@@ -39,33 +42,41 @@ const fwdTri = roundPoly(
 const bubble =
   'M12 3.55c4.55 0 8.15 2.95 8.15 6.7 0 3.55-3.2 6.45-7.45 6.7l-3.05 2.85c-.42.38-1.08.05-.98-.48l.62-2.55C6.15 15.85 3.7 13.35 3.7 10.25 3.7 6.5 7.45 3.55 12 3.55z';
 
-/** Two text slots knocked out of the filled bubble. */
-const bubbleLines =
-  rrect(7.7, 7.85, 8.3, 1.7, 0.85) + rrect(7.7, 11.05, 5.5, 1.7, 0.85);
+/** Two short lines, clear of the outline. One centred line read as a minus. */
+const bubbleA = 'M7.95 8.2H14.55';
+const bubbleB = 'M7.95 11.6H12.05';
+const bubbleSw = 1.45;
+const bubbleHoles = capsule(7.95, 8.2, 14.55, 8.2, bubbleSw) + capsule(7.95, 11.6, 12.05, 11.6, bubbleSw);
 
-const bookOuter = rrect(4.45, 3.15, 15.15, 17.7, 2.35);
-/** Binding, close to the left edge so the filled book does not read as a letter. */
-const bookSpine = rrect(5.95, 5.15, 2.2, 13.7, 0.8);
-
-/** Stroke centreline of the cover, so the ink meets the filled cover's edge. */
-const bookStroke = rrect(5.325, 4.025, 13.4, 15.95, 1.5);
+/**
+ * A sheet with the corner folded: a note on this line.
+ * Methodology keeps the open book, so the two are not two books.
+ */
+const sheet = noteSheet(4.85, 3.65, 14.3, 16.5, 2.15, 5.05);
+const sheetCrease = 'M13.05 5.05 L17.85 9.85';
+const glossTop = 'M7.15 12.15H15.35';
+const glossBot = 'M7.15 15.5H12.45';
+const glossSw = 1.55;
+const glossHoles =
+  capsule(7.15, 12.15, 15.35, 12.15, glossSw) +
+  capsule(7.15, 15.5, 12.45, 15.5, glossSw) +
+  capsule(13.05, 5.05, 17.85, 9.85, 1.3);
 
 const listY = [6.85, 12, 17.15];
 const listDots = (r: number) => listY.map((y) => fill(circle(5.15, y, r)));
 const listLines = stroke('M8.85 6.85H19.25M8.85 12H19.25M8.85 17.15H19.25');
-const listBars = listY.map((y) => fill(rrect(8.7, y - 1.15, 10.6, 2.3, 1.15)));
+const listBars = listY.map((y) => fill(rrect(8.7, y - 1.05, 10.5, 2.1, 1.05)));
 
-/** Knob centre x per row, top to bottom. */
-const knobs: { y: number; cx: number }[] = [
-  { y: 6.75, cx: 15.55 },
-  { y: 12, cx: 8.55 },
-  { y: 17.25, cx: 12.35 },
+/** Two faders. Three tracks closed up at 16 px; the centres stay put when pressed. */
+const faders: { y: number; cx: number }[] = [
+  { y: 8.4, cx: 15.35 },
+  { y: 15.6, cx: 8.65 },
 ];
 
 function slider(track: number, knobW: number, knobH: number): Mark[] {
   return [
-    stroke(`M3.7 ${knobs[0]!.y}H20.3M3.7 ${knobs[1]!.y}H20.3M3.7 ${knobs[2]!.y}H20.3`, track),
-    ...knobs.map(({ y, cx }) => fill(rrect(cx - knobW / 2, y - knobH / 2, knobW, knobH, knobH / 2))),
+    stroke(`M3.85 ${faders[0]!.y}H20.15M3.85 ${faders[1]!.y}H20.15`, track),
+    ...faders.map(({ y, cx }) => fill(rrect(cx - knobW / 2, y - knobH / 2, knobW, knobH, knobH / 2))),
   ];
 }
 
@@ -82,9 +93,10 @@ const gridFill = cells.map(([x, y]) => fill(rrect(x - 0.85, y - 0.85, 8.95, 8.95
 const pages =
   'M12 6.05C9.25 4.5 6.35 4.35 3.6 5.5v12.7c2.85-1.15 5.7-.95 8.4.7 2.7-1.65 5.55-1.85 8.4-.7V5.5C17.65 4.35 14.75 4.5 12 6.05z';
 
-const noteHead = ellipse(8.15, 16.85, 3.25, 2.4, -22);
-const noteStem = 'M10.85 15.55V4.85';
-const noteFlag = 'M10.85 4.85c3.15.55 4.85 2.15 4.55 4.55';
+const noteHead = ellipse(7.9, 17.15, 3.75, 2.75, -26);
+const noteStem = 'M11.05 15.45V4.45';
+/** Open hook, heavy enough to sit with the filled head. A closed flag read as a P. */
+const noteFlag = 'M11.05 4.45c3.5 1 5.5 2.45 4.7 4.55';
 
 const searchRing = circle(10.6, 10.6, 6.15);
 const infoRing = circle(12, 12, 8.3);
@@ -118,27 +130,32 @@ export const setA = iconSet('a', 24, 1.75, {
   'chevron.right': line(chevron.right),
   'chevron.down': line(chevron.down),
   'chevron.up': line(chevron.up),
-  xmark: line('M7.15 7.15 16.85 16.85M16.85 7.15 7.15 16.85'),
+  // Shorter and a hair lighter than the chevrons: two strokes otherwise outweigh one.
+  xmark: line('M8.2 8.2 15.8 15.8M15.8 8.2 8.2 15.8', 1.6),
   play: { off: [fill(play)] },
-  pause: { off: [fill(rrect(5.85, 4.45, 4.55, 15.1, 1.6)), fill(rrect(13.6, 4.45, 4.55, 15.1, 1.6))] },
+  pause: { off: [fill(rrect(5.3, 4.4, 4.9, 15.2, 1.7)), fill(rrect(13.8, 4.4, 4.9, 15.2, 1.7))] },
   backward: { off: [fill(rrect(4.2, 5.05, 2.15, 13.9, 1.05)), fill(backTri)] },
   forward: { off: [fill(rrect(17.65, 5.05, 2.15, 13.9, 1.05)), fill(fwdTri)] },
   'character.bubble': {
-    off: [stroke(bubble), stroke('M7.85 8.7h8.1M7.85 11.9h5.4', 1.6)],
-    on: [fill(bubble + bubbleLines)],
+    off: [stroke(bubble), stroke(bubbleA, bubbleSw), stroke(bubbleB, bubbleSw)],
+    on: [fill(bubble + bubbleHoles), stroke(bubble)],
   },
   'book.closed': {
-    off: [stroke(bookStroke), stroke('M7.05 4.2v15.6'), stroke('M10.15 8.15h6.2M10.15 11.35h4.3', 1.55)],
-    on: [fill(bookOuter + bookSpine)],
+    off: [stroke(sheet), stroke(sheetCrease, 1.45), stroke(glossTop, glossSw), stroke(glossBot, glossSw)],
+    on: [fill(sheet + glossHoles), stroke(sheet)],
   },
-  'music.note': { off: [fill(noteHead), stroke(noteStem), stroke(noteFlag)] },
-  'list.bullet': { off: [...listDots(1.15), listLines], on: [...listDots(1.35), ...listBars] },
-  'slider.horizontal.3': { off: slider(1.75, 4.7, 3.35), on: slider(2.55, 5.5, 3.9) },
+  'music.note': { off: [fill(noteHead), stroke(noteStem, 2.3), stroke(noteFlag, 3.15)] },
+  'list.bullet': { off: [...listDots(1.15), listLines], on: [...listDots(1.62), ...listBars] },
+  'slider.horizontal.3': { off: slider(1.75, 5.15, 3.2), on: slider(2.05, 5.5, 3.55) },
   'square.grid.2x2': { off: gridStroke, on: gridFill },
   'book.pages': { off: [stroke(pages), stroke('M12 6.05v12.85')] },
   magnifyingglass: {
     off: [stroke(searchRing), stroke('M15.15 15.15 19.85 19.85')],
-    on: [fill(circle(10.6, 10.6, 7.025) + circle(10.6, 10.6, 4.35)), stroke('M15.7 15.7 19.85 19.85', 2.4)],
+    // Solid lens. A ring with a large hole read as a target. Separate fills so the handle does not punch the disc.
+    on: [
+      fill(circle(10.6, 10.6, 7.025)),
+      fill(capsule(10.6 + 4.7 * Math.SQRT1_2, 10.6 + 4.7 * Math.SQRT1_2, 19.9, 19.9, 2.7)),
+    ],
   },
   'info.circle': {
     off: [stroke(infoRing), fill(infoDot), stroke('M12 10.7v5.55')],
