@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { agentRows, bandLine, barText, codename, dashboardContext, geminiWindows, isDashboardAsk, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
+import { agentRows, bandLine, barText, codename, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -174,6 +174,14 @@ test('the rotation signal comes at 60 % of context, only in Living Lyrics folder
   expect(rotationNote(80, 'C:/Users/User/Documents/GitHub/living-lyrics-wt/ll-business')).toContain('80 %')
   expect(rotationNote(90, 'C:/Users/User/Documents/GitHub/tenek-brand')).toBe(null)
   expect(rotationNote(undefined, 'C:/x/living-lyrics')).toBe(null)
+})
+
+test('the weekly limit pushes once per window, from 95 %', async () => {
+  const week = (percentUsed: number) => [{ kind: 'five_hour', percentUsed: 99 }, { kind: 'seven_day', percentUsed, resetsAt: '2026-10-23T04:00:00Z' }]
+  expect(limitPush(week(94), undefined)).toBe(null)
+  expect(limitPush(week(96), undefined)?.text).toMatch(/^Недельный лимит Claude: 96 %/)
+  expect(limitPush(week(99), '2026-10-23T04:00:00Z')).toBe(null)
+  expect(limitPush(week(99), '2026-10-16T04:00:00Z')?.key).toBe('2026-10-23T04:00:00Z')
 })
 
 test('user settings: a missing or different key is written, the rest stays, a kept file is not touched', async () => {

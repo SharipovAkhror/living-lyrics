@@ -328,8 +328,37 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
     const u = await $.session.usage()
     const next: Limit[] = u.rateLimits.map(r => ({ kind: r.kind, percentUsed: r.percentUsed, resetsAt: r.resetsAt }))
     if (JSON.stringify(next) !== JSON.stringify(await read($, limits))) await update($, limits, () => next)
+    await pushLimit($, next)
   } catch {
     // Off a subscription the windows are empty.
+  }
+}
+
+const PUSH_AT = 95
+
+/**
+ * The phone push for the weekly Claude limit: once per weekly window (`key`), when it crosses
+ * PUSH_AT. `sent` is the window last pushed, kept in $.store, which every session on the machine
+ * shares, so several open sessions push once between them.
+ */
+export function limitPush(lim: Limit[], sent: unknown) {
+  const week = lim.find(l => l.kind === 'seven_day')
+  if (!week || week.percentUsed < PUSH_AT) return null
+  const key = week.resetsAt ?? 'week'
+  if (sent === key) return null
+  const reset = week.resetsAt ? `, сброс ${new Date(week.resetsAt).toLocaleString('ru-RU', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}` : ''
+  return { key, text: `Недельный лимит Claude: ${Math.round(week.percentUsed)} %${reset}. Скоро работа встанет.` }
+}
+
+async function pushLimit($: EngineInterface, lim: Limit[]) {
+  const push = limitPush(lim, await $.store.get('limit-push'))
+  if (!push) return
+  await $.store.set('limit-push', push.key)
+  try {
+    await $.tool.call({ tool: 'PushNotification', message: push.text, status: 'proactive' })
+  } catch {
+    // No push here (Remote Control off, or the tool absent): a desktop notification at least.
+    await $.ui.notify(push.text, { title: 'Living Lyrics' }).catch(() => undefined)
   }
 }
 
