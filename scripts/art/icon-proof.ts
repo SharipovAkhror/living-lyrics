@@ -4,7 +4,7 @@
  * Writes work/t28-icons/proof.html (gitignored).
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { glyphAt, OPTICAL, type Optical } from './icons/qalam';
+import { glyphAt, opticalFor, OPTICAL } from './icons/qalam';
 import { ICON_NAMES, type Mark } from '../../src/ui/icons/types';
 
 let maskSeq = 0;
@@ -29,8 +29,7 @@ function marks(list: Mark[], sw: number): string {
 }
 
 function svg(name: (typeof ICON_NAMES)[number], state: 'off' | 'on', px: number): string {
-  const optical: Optical = px <= 18 ? 16 : px <= 22 ? 20 : px <= 28 ? 24 : 32;
-  const glyph = glyphAt(name, optical);
+  const glyph = glyphAt(name, opticalFor(px));
   const body = state === 'on' && glyph.on ? glyph.on : glyph.off;
   return `<svg width="${px}" height="${px}" viewBox="0 0 24 24" fill="none" shape-rendering="geometricPrecision">${marks(body, 1.78)}</svg>`;
 }
@@ -39,7 +38,7 @@ const tabs = ['character.bubble', 'book.closed', 'list.bullet', 'slider.horizont
 
 function sheet(): string {
   const cells = ICON_NAMES.map((name) => {
-    const sizes = [16, 20, 24, 32].map((px) => svg(name, 'off', px)).join('');
+    const sizes = [16, 20, 24, 28, 32].map((px) => svg(name, 'off', px)).join('');
     const pair = `<div class="pair"><span>off</span>${svg(name, 'off', 48)}<span>on</span>${svg(name, 'on', 48)}</div>`;
     return `<figure><div class="sizes">${sizes}</div><div class="big">${svg(name, 'off', 72)}</div>${pair}<figcaption>${name}</figcaption></figure>`;
   }).join('');

@@ -1,7 +1,8 @@
 /**
  * Site icons. One family, Qalam (`scripts/art/icons/qalam.ts`).
  * Callers keep `import { Icon } from '@/ui/icons'`.
- * The pixel size picks an optical master: 16, 20, 24 or 32.
+ * The pixel size picks an optical master: 16, 20, 24, 28 or 32.
+ * The outline is snapped to that exact CSS size.
  */
 import { useId, type CSSProperties } from 'react';
 import { glyphAt, opticalFor } from '../../../scripts/art/icons/qalam';
@@ -86,7 +87,7 @@ export function Icon({
   const reactId = useId().replace(/:/g, '');
   if (!(ICON_NAMES as readonly string[]).includes(name)) return null;
   const px = Math.round(size);
-  const glyph = glyphAt(name as IconName, opticalFor(px));
+  const glyph = glyphAt(name as IconName, opticalFor(px), px);
   const pair = Boolean(glyph.on);
   const vb = 24;
   return (

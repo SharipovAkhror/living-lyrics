@@ -315,6 +315,7 @@ const NIB_CONTRAST: Record<number, number> = {
   16: 1.06,
   20: 1.18,
   24: 1.46,
+  28: 1.66,
   32: 1.86,
 };
 
@@ -449,55 +450,515 @@ function nibShape(nib: Nib): Pt[] {
   ];
 }
 
-function convexHull(pts: Pt[]): Pt[] {
-  const src = [...pts].sort((a, b) => a.x - b.x || a.y - b.y);
-  const cross = (o: Pt, a: Pt, b: Pt) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
-  const lower: Pt[] = [];
-  for (const p of src) {
-    while (lower.length >= 2 && cross(lower[lower.length - 2]!, lower[lower.length - 1]!, p) <= 1e-9) lower.pop();
-    lower.push(p);
-  }
-  const upper: Pt[] = [];
-  for (let i = src.length - 1; i >= 0; i--) {
-    const p = src[i]!;
-    while (upper.length >= 2 && cross(upper[upper.length - 2]!, upper[upper.length - 1]!, p) <= 1e-9) upper.pop();
-    upper.push(p);
-  }
-  lower.pop();
-  upper.pop();
-  return lower.concat(upper);
+function sub(a: Pt, b: Pt): Pt {
+  return { x: a.x - b.x, y: a.y - b.y };
 }
 
-/** One straight run of the nib. The hull is the stroke; ends are the nib itself. */
-function segmentHull(a: Pt, b: Pt, nib: Nib): Pt[] {
-  const shape = nibShape(nib);
-  return convexHull([...shape.map((p) => add(a, p)), ...shape.map((p) => add(b, p))]);
+function mul(a: Pt, k: number): Pt {
+  return { x: a.x * k, y: a.y * k };
+}
+
+function unitVec(v: Pt): Pt {
+  const l = Math.hypot(v.x, v.y) || 1;
+  return { x: v.x / l, y: v.y / l };
+}
+
+function far(a: Pt, b: Pt): boolean {
+  return Math.hypot(a.x - b.x, a.y - b.y) > 0.03;
+}
+
+/** Left-hand normal. Y grows downward, so a stroke to the right has its left side up. */
+function port(t: Pt): Pt {
+  return { x: t.y, y: -t.x };
+}
+
+function supportIndex(verts: Pt[], dir: Pt): number {
+  let best = 0;
+  let bestD = -Infinity;
+  for (let i = 0; i < verts.length; i++) {
+    const d = verts[i]!.x * dir.x + verts[i]!.y * dir.y;
+    if (d > bestD + 1e-9) {
+      bestD = d;
+      best = i;
+    }
+  }
+  return best;
+}
+
+/** Boundary walk from `from` to `to`, not including `from`. `ccw` follows mathematical order. */
+function walkVerts(verts: Pt[], from: number, to: number, ccw: boolean): Pt[] {
+  const n = verts.length;
+  if (from === to) return [];
+  const out: Pt[] = [];
+  let i = from;
+  for (let guard = 0; guard < n; guard++) {
+    i = ccw ? (i + 1) % n : (i - 1 + n) % n;
+    out.push(verts[i]!);
+    if (i === to) return out;
+  }
+  return out;
 }
 
 /**
- * Open stroke as one filled path per segment.
- * Segments share the nib at each joint, so a nonzero fill is the union
- * and the elbow flares instead of rounding over.
+ * Nib vertices as the outward normal turns from `from` to `to` the short way.
+ * The arrival vertex is included. The start vertex is not.
  */
-export function qalamStroke(points: Pt[], nib: Nib): string {
-  const usable = points.filter((p, i) => i === 0 || Math.hypot(p.x - points[i - 1]!.x, p.y - points[i - 1]!.y) > 0.04);
-  let d = '';
-  for (let i = 0; i < usable.length - 1; i++) d += polyPath(segmentHull(usable[i]!, usable[i + 1]!, nib));
-  return d;
+function roll(verts: Pt[], from: Pt, to: Pt, at: Pt): Pt[] {
+  const a0 = Math.atan2(from.y, from.x);
+  let delta = Math.atan2(to.y, to.x) - a0;
+  while (delta <= -Math.PI) delta += Math.PI * 2;
+  while (delta > Math.PI) delta -= Math.PI * 2;
+  if (Math.abs(delta) < 1e-3) return [];
+  const steps = Math.max(3, Math.ceil(Math.abs(delta) / (Math.PI / 24)));
+  const out: Pt[] = [];
+  let last = supportIndex(verts, from);
+  for (let s = 1; s <= steps; s++) {
+    const ang = a0 + (delta * s) / steps;
+    const idx = supportIndex(verts, { x: Math.cos(ang), y: Math.sin(ang) });
+    if (idx === last) continue;
+    for (const v of walkVerts(verts, last, idx, delta > 0)) out.push(add(v, at));
+    last = idx;
+  }
+  return out;
+}
+
+/** The cap is the nib chain from `fromN` to `toN` that faces `via`. */
+function capChain(verts: Pt[], fromN: Pt, toN: Pt, via: Pt, at: Pt): Pt[] {
+  const i0 = supportIndex(verts, fromN);
+  const i1 = supportIndex(verts, toN);
+  const score = (chain: Pt[]) => {
+    let m = verts[i0]!.x * via.x + verts[i0]!.y * via.y;
+    for (const v of chain) m = Math.max(m, v.x * via.x + v.y * via.y);
+    return m;
+  };
+  const cw = walkVerts(verts, i0, i1, false);
+  const ccw = walkVerts(verts, i0, i1, true);
+  const chosen = score(ccw) >= score(cw) ? ccw : cw;
+  return chosen.map((v) => add(v, at));
+}
+
+function pushFar(out: Pt[], p: Pt): void {
+  const prev = out[out.length - 1];
+  if (!prev || far(prev, p)) out.push(p);
+}
+
+function sidePoint(verts: Pt[], at: Pt, tangent: Pt, side: 1 | -1): Pt {
+  return add(verts[supportIndex(verts, mul(port(tangent), side))]!, at);
+}
+
+/** One side of a sweep. `side` 1 is the left of the direction of travel. */
+function offsetSide(pts: Pt[], segs: Pt[], verts: Pt[], side: 1 | -1, closed: boolean): Pt[] {
+  const chain: Pt[] = [];
+  const count = segs.length;
+  if (!closed) chain.push(sidePoint(verts, pts[0]!, segs[0]!, side));
+  for (let i = 0; i < count; i++) {
+    const next = closed ? (i + 1) % count : i + 1;
+    pushFar(chain, sidePoint(verts, pts[next]!, segs[i]!, side));
+    if (closed || i + 1 < count) {
+      const n1 = mul(port(segs[i]!), side);
+      const n2 = mul(port(segs[next % count]!), side);
+      for (const p of roll(verts, n1, n2, pts[next]!)) pushFar(chain, p);
+    }
+  }
+  if (chain.length > 1 && !far(chain[0]!, chain[chain.length - 1]!)) chain.pop();
+  return chain;
+}
+
+function tangentsOf(pts: Pt[], closed: boolean): Pt[] {
+  const out: Pt[] = [];
+  const n = closed ? pts.length : pts.length - 1;
+  for (let i = 0; i < n; i++) out.push(unitVec(sub(pts[(i + 1) % pts.length]!, pts[i]!)));
+  return out;
+}
+
+function usablePoints(points: Pt[], closed: boolean): Pt[] {
+  const out: Pt[] = [];
+  for (const p of points) {
+    const prev = out[out.length - 1];
+    if (!prev || far(prev, p)) out.push(p);
+  }
+  if (closed && out.length > 2 && !far(out[0]!, out[out.length - 1]!)) out.pop();
+  return out;
+}
+
+function shoelace(pts: Pt[]): number {
+  let a = 0;
+  for (let i = 0; i < pts.length; i++) {
+    const p = pts[i]!;
+    const q = pts[(i + 1) % pts.length]!;
+    a += p.x * q.y - q.x * p.y;
+  }
+  return a / 2;
+}
+
+/** Clockwise-on-screen is the positive shoelace here, and SVG fills it. */
+function wind(pts: Pt[], positive: boolean): Pt[] {
+  if (pts.length < 3) return pts;
+  const pos = shoelace(pts) > 0;
+  return pos === positive ? pts : [...pts].reverse();
 }
 
 /**
- * Closed centreline as a nib ring.
- * Each segment is its own hull. A nonzero fill leaves the middle open,
- * because a hull only covers the nib swept along that segment.
+ * Grid step for a master drawn at `px` CSS pixels on the 24 board.
+ * An integer step is one CSS pixel, so the same edge is whole device
+ * pixels at both @2x and @3x.
  */
-export function qalamLoop(points: Pt[], nib: Nib): string {
-  if (points.length < 3) return '';
-  const first = points[0]!;
-  const last = points[points.length - 1]!;
-  const open = Math.hypot(first.x - last.x, first.y - last.y) < 0.04 ? points.slice(0, -1) : points;
-  if (open.length < 3) return '';
-  return qalamStroke([...open, open[0]!], nib);
+export function pixelUnit(px: number): number {
+  return px > 0 ? 24 / px : 0;
+}
+
+function snapTo(v: number, unit: number): number {
+  return Math.round(v / unit) * unit;
+}
+
+/** Place a stroke so both edges land on the CSS-pixel grid. */
+function snapCenter(center: number, extent: number, unit: number): number {
+  const edge = snapTo(center - extent / 2, unit);
+  return edge + extent / 2;
+}
+
+const SIN35 = Math.sin(QATT_RAD);
+const COS35 = Math.cos(QATT_RAD);
+
+function extents(nib: Nib): { h: number; v: number } {
+  return {
+    h: nib.broad * SIN35 + nib.hair * COS35,
+    v: nib.broad * COS35 + nib.hair * SIN35,
+  };
+}
+
+/**
+ * Round the nib so a horizontal run and a vertical run are whole CSS pixels.
+ * The 35° corner stays. When the pair cannot be built at this angle without
+ * a hair under one pixel, the pen scales uniformly onto the horizontal pixel
+ * and the contrast ratio is kept.
+ */
+function hintNib(nib: Nib, unit: number): Nib {
+  if (unit <= 0) return nib;
+  const { h, v } = extents(nib);
+  const lighter = (css: number) => {
+    const down = Math.max(1, Math.floor(css + 1e-6));
+    // Prefer the lighter whole pixel. A stem that rounds up looks heavy at 20–24.
+    return css - down <= 0.82 ? down : Math.ceil(css - 1e-6);
+  };
+  const hs = lighter(h / unit);
+  const vs = lighter(v / unit);
+  const den = COS35 * COS35 - SIN35 * SIN35;
+  const hair = ((hs * COS35 - vs * SIN35) / den) * unit;
+  const broad = ((vs * COS35 - hs * SIN35) / den) * unit;
+  if (hair < unit * 0.9 || broad < unit * 0.9) {
+    // 35° cannot put two different whole-pixel widths on the axes without a
+    // hair under one pixel. Keep the contrast and land the horizontal run;
+    // `snapAxisRuns` then pulls the other edge onto the grid.
+    const k = (hs * unit) / h;
+    return { broad: nib.broad * k, hair: nib.hair * k };
+  }
+  return { broad, hair };
+}
+
+/**
+ * Move long axis-aligned edges onto the CSS-pixel grid.
+ * A 35° nib's horizontal and vertical projections differ by a fraction of a
+ * pixel, so one edge of the sweep is already on the grid and the other is
+ * not. The diagonal caps stay where the pen put them.
+ */
+function snapAxisRuns(pts: Pt[], unit: number): Pt[] {
+  if (unit <= 0 || pts.length < 3) return pts;
+  const n = pts.length;
+  const out = pts.map((p) => ({ ...p }));
+  for (const axis of ['y', 'x'] as const) {
+    const other = axis === 'y' ? 'x' : 'y';
+    const used = new Array<boolean>(n).fill(false);
+    for (let s = 0; s < n; s++) {
+      if (used[s]) continue;
+      const run = [s];
+      used[s] = true;
+      for (let step = 1; step < n; step++) {
+        const i = (s + step) % n;
+        if (used[i]) break;
+        const prev = out[run[run.length - 1]!]!;
+        const cur = out[i]!;
+        const dAxis = Math.abs(cur[axis] - prev[axis]);
+        const dOther = Math.abs(cur[other] - prev[other]);
+        if (dAxis <= 0.28 && dOther > dAxis) {
+          run.push(i);
+          used[i] = true;
+        } else break;
+      }
+      const span = Math.abs(out[run[run.length - 1]!]![other] - out[run[0]!]![other]);
+      let lo = Infinity;
+      let hi = -Infinity;
+      for (const i of run) {
+        lo = Math.min(lo, out[i]![axis]);
+        hi = Math.max(hi, out[i]![axis]);
+      }
+      // A real stem is already straight. A curve drifts, and snapping it
+      // would flatten a valley or a corner into a step.
+      if (run.length < 2 || span < unit * 1.15 || hi - lo > 0.4) continue;
+      const avg = run.reduce((sum, i) => sum + out[i]![axis], 0) / run.length;
+      const target = snapTo(avg, unit);
+      for (const i of run) out[i]![axis] = target;
+    }
+  }
+  return out;
+}
+
+function alignOpen(pts: Pt[], nib: Nib, unit: number): Pt[] {
+  if (unit <= 0 || pts.length < 2) return pts;
+  const { h, v } = extents(nib);
+  const out = pts.map((p) => ({ ...p }));
+  let axis = false;
+  for (let i = 0; i < out.length - 1; i++) {
+    const a = out[i]!;
+    const b = out[i + 1]!;
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const len = Math.hypot(dx, dy);
+    if (len < unit * 0.75) continue;
+    if (Math.abs(dy) < 0.16 && Math.abs(dx) > len * 0.94) {
+      const y = snapCenter((a.y + b.y) / 2, h, unit);
+      a.y = y;
+      b.y = y;
+      axis = true;
+    } else if (Math.abs(dx) < 0.16 && Math.abs(dy) > len * 0.94) {
+      const x = snapCenter((a.x + b.x) / 2, v, unit);
+      a.x = x;
+      b.x = x;
+      axis = true;
+    }
+  }
+  // A chevron has no stem to phase. Landing its joints on the pixel grid
+  // keeps the diagonal from crawling between pixels.
+  if (!axis && out.length <= 6) return out.map((p) => ({ x: snapTo(p.x, unit), y: snapTo(p.y, unit) }));
+  return out;
+}
+
+/** Snap long straight runs of a plate so the frame sits on the pixel grid. Curves are left alone. */
+function alignLoop(pts: Pt[], nib: Nib, unit: number): Pt[] {
+  if (unit <= 0 || pts.length < 4) return pts;
+  const { h, v } = extents(nib);
+  const out = pts.map((p) => ({ ...p }));
+  const n = out.length;
+  for (let i = 0; i < n; i++) {
+    const a = out[i]!;
+    const b = out[(i + 1) % n]!;
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const len = Math.hypot(dx, dy);
+    if (len < unit * 1.4) continue;
+    if (Math.abs(dy) < 0.16 && Math.abs(dx) > len * 0.94) {
+      const y = snapCenter((a.y + b.y) / 2, h, unit);
+      a.y = y;
+      b.y = y;
+    } else if (Math.abs(dx) < 0.16 && Math.abs(dy) > len * 0.94) {
+      const x = snapCenter((a.x + b.x) / 2, v, unit);
+      a.x = x;
+      b.x = x;
+    }
+  }
+  return out;
+}
+
+/**
+ * One clean outline of the nib swept along `points`.
+ * Joins are the pen rolling onto its corner. Caps are the nib edge itself.
+ * `unit` snaps stems onto the CSS-pixel grid of that master. 0 leaves the pen raw.
+ */
+function sweep(points: Pt[], nib: Nib, closed: boolean, unit: number): Pt[][] {
+  const hinted = hintNib(nib, unit);
+  const src = usablePoints(points, closed);
+  if (src.length < (closed ? 3 : 2)) return [];
+  const placed = closed ? alignLoop(src, hinted, unit) : alignOpen(src, hinted, unit);
+  const segs = tangentsOf(placed, closed);
+  if (segs.length === 0) return [];
+  const verts = nibShape(hinted);
+  const left = offsetSide(placed, segs, verts, 1, closed);
+  const right = offsetSide(placed, segs, verts, -1, closed);
+  if (left.length < 2 || right.length < 2) return [];
+  if (closed) {
+    const outer = wind(left, true);
+    const inner = wind(right, false);
+    const hole = Math.abs(shoelace(outer)) >= Math.abs(shoelace(inner)) ? inner : wind(left, false);
+    const rim = Math.abs(shoelace(outer)) >= Math.abs(shoelace(inner)) ? outer : wind(right, true);
+    return [snapAxisRuns(rim, unit), snapAxisRuns(hole, unit)];
+  }
+  const lastT = segs[segs.length - 1]!;
+  const firstT = segs[0]!;
+  const endCap = capChain(verts, port(lastT), mul(port(lastT), -1), lastT, placed[placed.length - 1]!);
+  const startCap = capChain(verts, mul(port(firstT), -1), port(firstT), mul(firstT, -1), placed[0]!);
+  const ring: Pt[] = [];
+  for (const p of left) pushFar(ring, p);
+  for (const p of endCap) pushFar(ring, p);
+  for (let i = right.length - 1; i >= 0; i--) pushFar(ring, right[i]!);
+  for (const p of startCap) pushFar(ring, p);
+  if (ring.length > 1 && !far(ring[0]!, ring[ring.length - 1]!)) ring.pop();
+  return [wind(snapAxisRuns(ring, unit), true)];
+}
+
+/**
+ * CSS-pixel step while a master is built. `glyphAt` sets it.
+ * The signature diagram leaves it at 0 and draws the raw pen.
+ */
+let builtUnit = 0;
+
+export function beginGlyph(unit: number): void {
+  builtUnit = unit;
+}
+
+export function endGlyph(): void {
+  builtUnit = 0;
+}
+
+/**
+ * Open stroke as one filled outline.
+ * The nib rolls through the corner, so a cut meets the next run on a pen edge
+ * instead of a stack of segment hulls.
+ */
+export function qalamStroke(points: Pt[], nib: Nib, unit = builtUnit): string {
+  const parts = sweep(points, nib, false, unit);
+  return parts.map((pts) => polyPath(pts)).join('');
+}
+
+/**
+ * Closed centreline as one ring. Outer and inner have opposite winding,
+ * so a nonzero fill leaves the counter open without a mask.
+ */
+export function qalamLoop(points: Pt[], nib: Nib, unit = builtUnit): string {
+  const parts = sweep(points, nib, true, unit);
+  return parts.map((pts) => polyPath(pts)).join('');
+}
+
+/**
+ * Closed frame of constant width. The 35° cuts live in `pts` as straight
+ * edges. A nib sweep along those edges folds, because the cut is already
+ * the pen's flat; this keeps the cut a single clean line.
+ * `stroke` and `unit` are grid units. `unit` is one CSS pixel.
+ */
+export function frameRing(pts: Pt[], stroke: number, unit: number): string {
+  if (pts.length < 3 || stroke <= 0) return '';
+  const half = stroke / 2;
+  const src = snapFrame(simplifyFrame(dedupe(pts)), half, unit);
+  const outer = dropSpikes(offsetPoly(src, half));
+  const inner = dropSpikes(offsetPoly(src, -half));
+  if (outer.length < 3 || inner.length < 3) return '';
+  return polyPath(wind(outer, true)) + polyPath(wind(inner, false));
+}
+
+/**
+ * A 35° cut is already a straight edge. The parallel offset still leaves a
+ * hairpin shorter than a pixel where the miter folds. That nick reads as a
+ * defect, so the vertex goes and the two neighbours meet.
+ */
+function dropSpikes(pts: Pt[]): Pt[] {
+  let cur = dedupe(pts);
+  for (let pass = 0; pass < 4 && cur.length >= 4; pass++) {
+    const next: Pt[] = [];
+    const n = cur.length;
+    let dropped = false;
+    for (let i = 0; i < n; i++) {
+      const a = cur[(i - 1 + n) % n]!;
+      const b = cur[i]!;
+      const c = cur[(i + 1) % n]!;
+      const abx = b.x - a.x;
+      const aby = b.y - a.y;
+      const bcx = c.x - b.x;
+      const bcy = c.y - b.y;
+      const lab = Math.hypot(abx, aby);
+      const lbc = Math.hypot(bcx, bcy);
+      const dot = lab > 1e-6 && lbc > 1e-6 ? (abx * bcx + aby * bcy) / (lab * lbc) : 1;
+      // 132° is about -0.67. Both legs stay under a pixel, so this is a nick.
+      const hairpin = dot < -0.66 && lab < 0.75 && lbc < 0.75;
+      const spur = Math.min(lab, lbc) < 0.14 && Math.max(lab, lbc) < 1.2 && dot < 0.2;
+      if (hairpin || spur) {
+        dropped = true;
+        continue;
+      }
+      next.push(b);
+    }
+    if (!dropped || next.length < 3) break;
+    cur = dedupe(next);
+  }
+  return cur;
+}
+
+/** Drop samples that sit on a straight run so the offset does not zigzag. */
+function simplifyFrame(pts: Pt[]): Pt[] {
+  if (pts.length < 4) return pts;
+  const out: Pt[] = [];
+  const n = pts.length;
+  for (let i = 0; i < n; i++) {
+    const a = pts[(i - 1 + n) % n]!;
+    const b = pts[i]!;
+    const c = pts[(i + 1) % n]!;
+    const abx = b.x - a.x;
+    const aby = b.y - a.y;
+    const bcx = c.x - b.x;
+    const bcy = c.y - b.y;
+    const lab = Math.hypot(abx, aby) || 1;
+    const lbc = Math.hypot(bcx, bcy) || 1;
+    const dot = (abx * bcx + aby * bcy) / (lab * lbc);
+    if (dot > 0.992 && lab < 1.1 && lbc < 1.1) continue;
+    out.push(b);
+  }
+  return out.length >= 3 ? out : pts;
+}
+
+/** Put long axis edges so both sides of a `stroke`-wide frame land on pixels. */
+function snapFrame(pts: Pt[], half: number, unit: number): Pt[] {
+  if (unit <= 0 || pts.length < 4) return pts;
+  const out = pts.map((p) => ({ ...p }));
+  const n = out.length;
+  const stroke = half * 2;
+  for (let i = 0; i < n; i++) {
+    const a = out[i]!;
+    const b = out[(i + 1) % n]!;
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const len = Math.hypot(dx, dy);
+    if (len < unit * 1.4) continue;
+    if (Math.abs(dy) < 0.2 && Math.abs(dx) > len * 0.94) {
+      const y = snapCenter((a.y + b.y) / 2, stroke, unit);
+      a.y = y;
+      b.y = y;
+    } else if (Math.abs(dx) < 0.2 && Math.abs(dy) > len * 0.94) {
+      const x = snapCenter((a.x + b.x) / 2, stroke, unit);
+      a.x = x;
+      b.x = x;
+    }
+  }
+  return out;
+}
+
+/** Parallel curve. Positive `dist` follows the left normal (outward for a clockwise plate). */
+function offsetPoly(pts: Pt[], dist: number): Pt[] {
+  const n = pts.length;
+  const out: Pt[] = [];
+  for (let i = 0; i < n; i++) {
+    const prev = pts[(i - 1 + n) % n]!;
+    const cur = pts[i]!;
+    const next = pts[(i + 1) % n]!;
+    const t0 = unitVec(sub(cur, prev));
+    const t1 = unitVec(sub(next, cur));
+    const n0 = port(t0);
+    const n1 = port(t1);
+    let nx = n0.x + n1.x;
+    let ny = n0.y + n1.y;
+    const len = Math.hypot(nx, ny) || 1;
+    nx /= len;
+    ny /= len;
+    const dot = nx * n0.x + ny * n0.y;
+    const raw = Math.abs(dot) > 0.35 ? dist / dot : dist;
+    const cap = Math.abs(dist) * 1.8;
+    const m = Math.max(-cap, Math.min(cap, raw));
+    out.push({ x: cur.x + nx * m, y: cur.y + ny * m });
+  }
+  return dedupe(out);
+}
+
+/** Outer silhouette of a closed nib stroke, filled solid. Play option C uses it. */
+export function qalamOuter(points: Pt[], nib: Nib, unit = builtUnit): string {
+  const parts = sweep(points, nib, true, unit);
+  return parts[0] ? polyPath(parts[0]) : '';
 }
 
 /** Closed polygon path. Fill with nonzero. */
@@ -523,7 +984,7 @@ export function nibPlate(x: number, y: number, w: number, h: number, cut: number
       { x: x + dx, y: bottom },
       { x, y: bottom - dy },
     ],
-    [radius, 0.16, 0.16, radius, 0.16, 0.16],
-    3,
+    [radius, 0, 0, radius, 0, 0],
+    4,
   );
 }
