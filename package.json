@@ -18,7 +18,9 @@
     "test:layout": "tsx scripts/tools/layout-test.ts",
     "shots": "node scripts/tools/screenshots.mjs",
     "predev": "node scripts/tools/audio-crypt.mjs decrypt",
-    "audio:encrypt": "node scripts/tools/audio-crypt.mjs encrypt"
+    "audio:encrypt": "node scripts/tools/audio-crypt.mjs encrypt",
+    "perf:iphone": "node scripts/perf/long-run.mjs",
+    "perf:settings": "node scripts/perf/settings-trace.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "5.3.0",

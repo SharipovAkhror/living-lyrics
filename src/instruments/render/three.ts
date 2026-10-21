@@ -25,6 +25,7 @@ import type { InstrumentDrive, InstrumentRenderer } from '@/instruments/animatio
  */
 export type VolumeLook = 'engraving' | 'materials';
 import { hitScale, jingleShift, skinWeight, stringWeight, sway } from './pose';
+import { stageCovered, watchCover } from '../../scene/cover';
 
 import './stage3d.css';
 
@@ -514,7 +515,11 @@ function applyPose(THREE: THREE, model: ViewModel, drive: InstrumentDrive, time:
   for (const mat of model.pbr) mat.opacity = model.presence * shade * drive.draw;
 }
 
+let inkCache: { key: string; color: import('three').Color } | null = null;
+
 function readInk(THREE: THREE, el: HTMLElement) {
+  const key = `${document.documentElement.dataset.theme ?? ''}|${isDark() ? 'd' : 'l'}`;
+  if (inkCache?.key === key) return inkCache.color;
   const color = new THREE.Color('#6b4a12');
   try {
     const raw = getComputedStyle(el).color;
@@ -522,6 +527,7 @@ function readInk(THREE: THREE, el: HTMLElement) {
   } catch {
     /* computed colour can be a color-mix the parser rejects; keep the fallback ink */
   }
+  inkCache = { key, color };
   return color;
 }
 
@@ -681,8 +687,9 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
     aim();
   };
 
+  const ordered: Slot[] = [];
   function draw() {
-    if (disposed || !onScreen) return;
+    if (disposed || !onScreen || stageCovered()) return;
     const rect = host.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const bw = Math.max(1, Math.round(rect.width * dpr));
@@ -694,7 +701,9 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
     renderer.setViewport(0, 0, bw, bh);
     renderer.clear(true, true, false);
     renderer.setScissorTest(true);
-    const ordered = [...slots].sort((a, b) => a.z - b.z);
+    ordered.length = 0;
+    for (const slot of slots) ordered.push(slot);
+    ordered.sort((a, b) => a.z - b.z);
     for (const slot of ordered) {
       slot.model.uniforms.uInk.value.copy(ink);
       if (slot.model.presence <= 0.001) continue;
@@ -724,9 +733,10 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
   }
 
   const schedule = () => {
-    if (raf || disposed) return;
+    if (raf || disposed || stageCovered()) return;
     raf = requestAnimationFrame(() => {
       raf = 0;
+      if (stageCovered()) return;
       draw();
     });
   };
@@ -810,8 +820,14 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
     return model;
   }
 
-  const themeObs = new MutationObserver(() => schedule());
-  themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'style'] });
+  const themeObs = new MutationObserver(() => {
+    inkCache = null;
+    if (!stageCovered()) schedule();
+  });
+  themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  const unwatchCover = watchCover(() => {
+    if (!stageCovered()) schedule();
+  });
   const scheme = window.matchMedia('(prefers-color-scheme: dark)');
   const onScheme = () => schedule();
   scheme.addEventListener('change', onScheme);
@@ -922,11 +938,15 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
       token++;
       if (raf) cancelAnimationFrame(raf);
       themeObs.disconnect();
+      unwatchCover();
       scheme.removeEventListener('change', onScheme);
       seen.disconnect();
       resized.disconnect();
       for (const slot of slots) dropModel(slot.model);
       slots = [];
+      // A removed canvas keeps its GPU buffer until the size is cleared.
+      canvas.width = 1;
+      canvas.height = 1;
       renderer.dispose();
       renderer.forceContextLoss();
     },

@@ -14,6 +14,7 @@ import { harakatWarning } from '../../src/data/harakat.ts';
 import { INSTRUMENTS } from '../../src/instruments/list.ts';
 import { MODE_COUNTS, modeFit } from '../../src/instruments/layout.ts';
 import { checkSequence, sequenceSelfTest } from './sequence-check.ts';
+import { letterAtoms, persianOrthographyIssues, persianSelfTest } from './persian-letters.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const args = process.argv.slice(2);
@@ -250,7 +251,8 @@ function check(slug: string): Issue[] {
   const sourcesText = existsSync(sourcesPath) ? readFileSync(sourcesPath, 'utf8') : '';
   if (!sourcesText) warn('sources.md', 'нет файла источников (sources.md)');
   const canonPath = join(dir, 'canon.md');
-  const canon = existsSync(canonPath) ? letters(readFileSync(canonPath, 'utf8')) : null;
+  const canonRaw = existsSync(canonPath) ? readFileSync(canonPath, 'utf8') : null;
+  const canon = canonRaw ? letters(canonRaw) : null;
   if (!canon) warn('canon.md', 'нет оригиналов текста (canon.md): строки не с чем сверить (docs/methodology/04-text.md)');
 
   // Audio
@@ -398,6 +400,12 @@ function check(slug: string): Issue[] {
       const ems = line.words.filter((w) => w.em).length;
       if (ems > 1) warn(lw, `ключевых слов (em) ${ems} — нужно не больше одного`);
       if (ems >= 1 && !hasEmphasisPair(line.tr.ru)) warn(lw, 'в оригинале есть em, а в переводе нет пары **…**');
+      if (line.lang === 'fa') {
+        for (const issue of persianOrthographyIssues(line.words.map((w) => w.w), canonRaw)) {
+          if (issue.level === 'error') err(lw, issue.msg);
+          else warn(lw, issue.msg);
+        }
+      }
       if (ARABIC_SCRIPTS.has(line.script)) {
         const gap = harakatWarning(line.words.map((w) => w.w).join(' '));
         if (gap) warn(lw, gap);
@@ -625,6 +633,17 @@ if (isCli()) {
   const self = sequenceSelfTest();
   if (self) {
     console.log(`\n✗ sequence-check  ${self}`);
+    process.exit(1);
+  }
+  const orth = persianSelfTest();
+  if (orth) {
+    console.log(`\n✗ persian-letters  ${orth}`);
+    process.exit(1);
+  }
+  const foldSample = 'أَخْتَرِ رَخْشَنْدِه';
+  const folded = letterAtoms(foldSample).map((a) => a.fold).join('');
+  if (folded !== letters(foldSample)) {
+    console.log(`\n✗ persian-letters  свёртка не совпала с letters(): ${folded} ≠ ${letters(foldSample)}`);
     process.exit(1);
   }
 

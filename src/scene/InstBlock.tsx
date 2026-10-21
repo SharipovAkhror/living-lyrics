@@ -9,9 +9,13 @@ import type { BlockUpdater } from './LineBlock';
 import { InstrumentStage, assignPerformers, type InstrumentStageHandle, type StagePose } from './InstrumentStage';
 import { castAt, castSignature, isVoicePassage, type CastMember } from './cast';
 import { stageDrive } from './stageDrive';
+import { bisect } from '@/app/bisect';
+import { isPhone } from '@/ui/phone';
 
 interface Props {
   cue: InstCue;
+  /** Phone slot that has left the window. The host and its engravings stay mounted. */
+  parked?: boolean;
   timeline: Timeline;
   /** Timing is measured: countdowns like «Голос через 0:12» can be trusted. */
   timed: boolean;
@@ -50,7 +54,7 @@ function frameFor(members: CastMember[], features: AudioFeatures | null, t: numb
  * brightens and moves; the others stay dim until their entrance. Who plays, and when the voice returns, stays under the drawings.
  * A passage that is only voice or choir keeps that engraving and does not invent an orchestra.
  */
-function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features, register, onPick }: Props) {
+function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion, stage, features, register, onPick }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const compact = useRef<HTMLDivElement>(null);
   const full = useRef<HTMLDivElement>(null);
@@ -68,6 +72,7 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
   const animRef = useRef(anim);
   const castSig = useRef('');
   const frameRef = useRef<StagePose | null>(null);
+  const painted = useRef({ z: '', transform: '', opacity: '', vis: '', height: '', compact: '', fullO: '', fullS: '' });
 
   // A short wide screen (the car) gives the drawings the height and keeps the note short.
   // The box never asks for more height than the stage has: a 160px floor used to be crushed
@@ -91,14 +96,38 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
   const echoes = cast.filter((m) => m.place === 'echo');
 
   useLayoutEffect(() => {
+    if (parked) {
+      register(cue.idx, null);
+      const r = root.current;
+      if (r) {
+        r.style.visibility = 'hidden';
+        r.style.pointerEvents = 'none';
+        r.style.zIndex = '0';
+      }
+      painted.current = { z: '', transform: '', opacity: '', vis: '', height: '', compact: '', fullO: '', fullS: '' };
+      return;
+    }
+    if (root.current) root.current.style.pointerEvents = '';
     if (!compact.current) return;
     compactH.current = compact.current.offsetHeight;
     register(cue.idx, call, { main: 0, sub: 0, compact: compactH.current, full: fullH });
   });
 
+  // A reused phone slot would otherwise keep the previous section's roster.
+  // Presence is not cleared: dropping it below the mount threshold removed the engravings.
+  useLayoutEffect(() => {
+    if (!isPhone()) return;
+    const members = castAt(section, section.start, stageSize.w, motion, earlier);
+    castSig.current = castSignature(members);
+    setCast(members);
+    // The roster inputs are current when the cue changes. Listing them would refit every frame.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cue.idx]);
+
   // Pose after every commit, including the commit that mounts the stage. On a wide box the
   // roster does not change, so a cast-only effect would leave the first frame at presence 0.
   useLayoutEffect(() => {
+    if (parked) return;
     const frame = frameRef.current;
     if (frame && anim.presence > 0.02) stageRef.current?.pose(frame);
   });
@@ -107,33 +136,72 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
   const call = useRef<BlockUpdater>((t, d, top, wait) => updater.current(t, d, top, wait)).current;
   updater.current = (t, d, top) => {
     const r = root.current;
-    if (!r) return;
+    if (!r || bisect('placement')) return;
     const s = blockState(d);
     const p = s.presence;
-    r.style.zIndex = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
-    r.style.transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
-    r.style.opacity = entranceOpacity(d, entrance, s.opacity).toFixed(3);
-    r.style.visibility = s.opacity < 0.01 ? 'hidden' : 'visible';
-    r.style.height = `${(compactH.current + (fullH - compactH.current) * p).toFixed(1)}px`;
-    if (compact.current) compact.current.style.opacity = (1 - clamp01(p * 2.5)).toFixed(3);
+    const z = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
+    const transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
+    const opacity = entranceOpacity(d, entrance, s.opacity).toFixed(3);
+    const vis = s.opacity < 0.01 ? 'hidden' : 'visible';
+    const grown = compactH.current + (fullH - compactH.current) * p;
+    const height = `${grown.toFixed(1)}px`;
+    const box = painted.current;
+    if (box.z !== z) {
+      box.z = z;
+      r.style.zIndex = z;
+    }
+    if (box.transform !== transform) {
+      box.transform = transform;
+      r.style.transform = transform;
+    }
+    if (box.opacity !== opacity) {
+      box.opacity = opacity;
+      r.style.opacity = opacity;
+    }
+    if (box.vis !== vis) {
+      box.vis = vis;
+      r.style.visibility = vis;
+    }
+    if (box.height !== height) {
+      box.height = height;
+      r.style.height = height;
+    }
+    if (compact.current) {
+      const compactO = (1 - clamp01(p * 2.5)).toFixed(3);
+      if (box.compact !== compactO) {
+        box.compact = compactO;
+        compact.current.style.opacity = compactO;
+      }
+    }
     if (full.current) {
-      full.current.style.opacity = clamp01(p * 1.6 - 0.4).toFixed(3);
-      full.current.style.transform = `scale(${(0.94 + 0.06 * p).toFixed(4)})`;
+      const fullO = clamp01(p * 1.6 - 0.4).toFixed(3);
+      const fullS = `scale(${(0.94 + 0.06 * p).toFixed(4)})`;
+      if (box.fullO !== fullO) {
+        box.fullO = fullO;
+        full.current.style.opacity = fullO;
+      }
+      if (box.fullS !== fullS) {
+        box.fullS = fullS;
+        full.current.style.transform = fullS;
+      }
     }
     const members = castAt(section, t, stageSize.w, motion, earlier);
     const sig = castSignature(members);
     const frame = frameFor(members, features, t, motion);
     frameRef.current = frame;
-    if (sig !== castSig.current) {
-      castSig.current = sig;
-      setCast(members);
-    } else if (p > 0.02) {
-      stageRef.current?.pose(frame);
+    if (!bisect('instruments')) {
+      if (!bisect('react') && sig !== castSig.current) {
+        castSig.current = sig;
+        setCast(members);
+      } else if (p > 0.02) {
+        stageRef.current?.pose(frame);
+      }
     }
-    const q = (v: number) => Math.round(v * 50) / 50;
+    const steps = 50;
+    const q = (v: number) => Math.round(v * steps) / steps;
     const next = { progress: q(motion === 'off' ? 1 : clamp01((t - (cue.start - 0.3)) / 2.6)), presence: q(p) };
     const cur = animRef.current;
-    if (next.presence !== cur.presence || next.progress !== cur.progress) {
+    if (!bisect('react') && (next.presence !== cur.presence || next.progress !== cur.progress)) {
       animRef.current = next;
       setAnim(next);
     }
@@ -147,13 +215,13 @@ function InstBlockImpl({ cue, timeline, timed, entrance, motion, stage, features
   useLayoutEffect(() => () => register(cue.idx, null), [cue.idx, register]);
 
   return (
-    <div ref={root} className="fb fb--inst" onClick={() => onPick(cue.idx)} style={{ visibility: 'hidden' }}>
+    <div ref={root} className="fb fb--inst" aria-hidden={parked || undefined} onClick={() => onPick(cue.idx)} style={{ visibility: 'hidden' }}>
       <div ref={compact} className="fb-inst-compact t-subhead">
         <span className="fb-inst-kicker">{title ?? 'Инструменты'}</span>
         {title ? '' : ` ${names.join(' · ')}`}
       </div>
       <div ref={full} className="fb-inst-full" style={{ height: fullH }}>
-        {anim.presence > 0.02 && heroes.length > 0 && (
+        {(heroes.length > 0 && !bisect('instruments') && (isPhone() || anim.presence > 0.02)) && (
           <InstrumentStage
             ref={stageRef}
             keys={heroes.map((m) => m.key)}
