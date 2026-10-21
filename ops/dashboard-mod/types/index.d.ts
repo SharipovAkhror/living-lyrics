@@ -47,6 +47,8 @@ export type GrokRun = {
   name: string
   state: 'working' | 'stalled' | 'finished' | 'none'
   minutes: number
+  /** Minutes since the session started. */
+  age?: number
   step: string
   tokens?: number
   model?: string
@@ -56,7 +58,7 @@ export type GeminiRun = { slug: string; minutes: number }
 
 /** `at` is set on a published state (ops/live.json on the `live` branch): when it was produced. */
 /** A chat of the registry (.claude/agents/ll-*.md) and its state on the orchestrator machine. */
-export type ChatRow = { name: string; role?: string; reports_to?: string; state: string }
+export type ChatRow = { name: string; role?: string; reports_to?: string; state: string; /** When waiting: the tool call it waits on. */ waiting_for?: string }
 
 /** A GitHub Actions run in progress. */
 export type PipelineRun = { name: string; title: string; minutes: number }
