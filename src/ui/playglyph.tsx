@@ -13,15 +13,15 @@ const PLAY =
 const PAUSE =
   'M216,48V208a16,16,0,0,1-16,16H160a16,16,0,0,1-16-16V48a16,16,0,0,1,16-16h40A16,16,0,0,1,216,48ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Z';
 
-/** About 180 ms. Slow recordings stretch it through the shared motion scale. */
-const MORPH = { stiffness: 640, damping: 34, mass: 1 };
+/** About 280 ms, wide enough that a 100 ms contact sheet catches the turn. */
+const MORPH = { stiffness: 320, damping: 22, mass: 1 };
 
 function paint(play: SVGPathElement, pause: SVGPathElement, t: number) {
   const a = Math.max(0, Math.min(1, t));
   play.style.opacity = (1 - a).toFixed(3);
   pause.style.opacity = a.toFixed(3);
-  play.style.transform = `scale(${(1 - a * 0.2).toFixed(3)}) rotate(${(-40 * a).toFixed(2)}deg)`;
-  pause.style.transform = `scale(${(0.8 + 0.2 * a).toFixed(3)}) rotate(${(40 * (1 - a)).toFixed(2)}deg)`;
+  play.style.transform = `scale(${(1 - a * 0.38).toFixed(3)}) rotate(${(-72 * a).toFixed(2)}deg)`;
+  pause.style.transform = `scale(${(0.62 + 0.38 * a).toFixed(3)}) rotate(${(72 * (1 - a)).toFixed(2)}deg)`;
 }
 
 export function PlayPause({ playing, size = 28 }: { playing: boolean; size?: number }) {

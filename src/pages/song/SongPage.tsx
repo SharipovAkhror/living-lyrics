@@ -59,20 +59,33 @@ function useShortLandscape() {
   return on;
 }
 
+/** A frosted circle and a hairline cross. The filled close plate is a black box. */
+function CloseDisc({ label, onClick }: { label: string; onClick: () => void }) {
+  return <button type="button" className="close-disc" aria-label={label} onClick={onClick} />;
+}
+
 /** Portrait note. Not a dialog: the settings test takes the first one, and the grabber class is theirs. */
 function NoteCard({
   text,
   textKey,
   showHarakat,
   onClose,
+  leaving,
 }: {
   text: string;
   textKey: number;
   showHarakat: boolean;
   onClose: () => void;
+  leaving?: boolean;
 }) {
   const ref = useRef<HTMLElement>(null);
   const drag = useRef<{ y: number; id: number } | null>(null);
+  useLayoutEffect(() => {
+    if (leaving && ref.current) ref.current.style.transform = '';
+    const body = ref.current?.querySelector('.comment-body');
+    if (!(body instanceof HTMLElement)) return;
+    body.classList.toggle('is-faded', body.scrollHeight > body.clientHeight + 8);
+  }, [leaving, text]);
   const move = (clientY: number) => {
     const card = ref.current;
     const d = drag.current;
@@ -83,7 +96,7 @@ function NoteCard({
   return (
     <aside
       ref={ref}
-      className="note-card"
+      className={`note-card${leaving ? ' is-leaving' : ''}`}
       role="region"
       aria-label="Пояснение"
       onPointerDown={(e) => {
@@ -111,9 +124,7 @@ function NoteCard({
       <div className="note-grab" aria-hidden="true" />
       <div className="note-card-head">
         <span className="comment-kicker">Пояснение</span>
-        <button type="button" className="btn btn-circle btn-plain" style={{ marginInlineStart: 'auto' }} aria-label="Закрыть пояснение" onClick={onClose}>
-          <Icon name="xmark" size={20} />
-        </button>
+        <CloseDisc label="Закрыть пояснение" onClick={onClose} />
       </div>
       <RichText key={textKey} text={text} showHarakat={showHarakat} className="comment-body" />
     </aside>
@@ -379,6 +390,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     setOwner((prev) => (prev === next ? prev : next));
   }, [timeline, deepLink]);
   const [sheet, setSheet] = useState<SheetName>(null);
+  const [noteDismiss, setNoteDismiss] = useState(false);
+  const openTimer = useRef(0);
   const settingsHeld = useHeld(sheet === 'settings');
   const infoHeld = useHeld(sheet === 'info');
   const textHeld = useHeld(sheet === 'text');
@@ -393,7 +406,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const columns = useStageFrame(settings.showComment && !!noteText);
   // Landscape keeps the drawer inside the player. Portrait and the tablet get a card above the floor.
   const floorNote = noteText && settings.showComment && !columns.frame.marginNote && shortLand ? noteText : null;
-  const portraitNote = noteText && settings.showComment && !columns.frame.marginNote && !shortLand ? noteText : null;
+  const portraitNote =
+    noteText && settings.showComment && !columns.frame.marginNote && !shortLand && !sheet ? noteText : null;
   useEffect(() => {
     if (playing) setResumeAt(null);
   }, [playing]);
@@ -464,10 +478,28 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   }, [timeline, engine, settings.pauseAfterLine, playing]);
 
   const togglePlay = useCallback(() => engine?.toggle(), [engine]);
-  const openSheet = useCallback((name: SheetName) => {
-    coverStage();
-    setSheet(name);
-  }, []);
+  const openSheet = useCallback(
+    (name: SheetName) => {
+      window.clearTimeout(openTimer.current);
+      const cardUp = !!(portraitNote && !noteDismiss);
+      if (shortLand && settings.commentOpen) setSettings({ commentOpen: false });
+      if (!cardUp) {
+        setNoteDismiss(false);
+        coverStage();
+        setSheet(name);
+        return;
+      }
+      // The note leaves before the sheet rises. Two panels never share the screen.
+      setNoteDismiss(true);
+      openTimer.current = window.setTimeout(() => {
+        coverStage();
+        setSheet(name);
+        setNoteDismiss(false);
+      }, 200);
+    },
+    [portraitNote, noteDismiss, shortLand, settings.commentOpen],
+  );
+  useEffect(() => () => window.clearTimeout(openTimer.current), []);
 
   // A mismatch mark records the clock and the line on stage. It does not pause, seek, or open a sheet.
   const [toast, setToast] = useState<{ id: string; t: number } | null>(null);
@@ -549,7 +581,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       }
       root.style.setProperty('--player-h', `${Math.max(0, rootBox.bottom - coverTop)}px`);
       const banner = root.querySelector('.player-alert');
-      const bannerH = banner instanceof HTMLElement ? Math.ceil(banner.getBoundingClientRect().height) + 14 : 0;
+      const bannerH = banner instanceof HTMLElement ? Math.ceil(banner.getBoundingClientRect().height) + 8 : 0;
       root.style.setProperty('--banner-h', `${bannerH}px`);
     };
     const ro = new ResizeObserver(apply);
@@ -709,6 +741,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           textKey={portraitNote.from.idx}
           showHarakat={settings.showHarakat}
           onClose={() => setSettings({ showComment: false })}
+          leaving={noteDismiss}
         />
       )}
 
@@ -721,7 +754,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </div>
       )}
       {state?.source === 'silent' && !playing && !song.audio.high && !song.audio.saver && (
-        <button type="button" className="hint" onClick={() => setSheet('settings')}>
+        <button type="button" className="hint" onClick={() => openSheet('settings')}>
           Аудио не подключено
         </button>
       )}
@@ -858,9 +891,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           <GlassLayers />
           <div className="comment-head">
             <span className="comment-kicker">Пояснение</span>
-            <button type="button" className="comment-close" aria-label="Закрыть пояснение" onClick={() => setSettings({ showComment: false })}>
-              <Icon name="xmark" size={20} />
-            </button>
+            <CloseDisc label="Закрыть пояснение" onClick={() => setSettings({ showComment: false })} />
           </div>
           <RichText key={noteText.from.idx} text={noteText.text} showHarakat={settings.showHarakat} className="comment-body" />
         </aside>

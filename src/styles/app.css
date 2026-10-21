@@ -947,7 +947,7 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 .player-alert {
   position: absolute;
   z-index: 7;
-  top: calc(var(--chrome-top) - 2px);
+  top: calc(var(--chrome-top) - 6px);
   /* Centred in the lyric column. A viewport centre drifts toward the margin note. */
   left: var(--col-left, 0px);
   right: var(--col-right, 0px);
@@ -1319,7 +1319,7 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 }
 .scrub-preview {
   position: absolute;
-  z-index: 3;
+  z-index: 6;
   left: 0;
   bottom: calc(100% + 8px);
   width: max-content;
@@ -1328,8 +1328,8 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   padding: 0;
   border-radius: 14px;
   overflow: hidden;
-  background: color-mix(in srgb, var(--bg-elevated) 94%, transparent);
-  box-shadow: 0 10px 28px -16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: var(--bg-elevated);
+  box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.55), inset 0 0 0 1px color-mix(in srgb, var(--ink) 14%, transparent);
   pointer-events: none;
   transform-origin: center bottom;
 }
@@ -1655,20 +1655,40 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   pointer-events: auto;
   cursor: default;
 }
-.comment-close {
+.close-disc {
+  position: relative;
   flex: none;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
+  margin-inline-start: auto;
+  padding: 0;
   display: grid;
   place-items: center;
   border: 0;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--ink) 8%, transparent);
-  color: var(--ink-2);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  color: color-mix(in srgb, var(--ink) 70%, transparent);
   cursor: pointer;
 }
-.comment-close:active {
-  transform: scale(0.96);
+.close-disc::before,
+.close-disc::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 11px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: currentColor;
+}
+.close-disc::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.close-disc::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+.close-disc:active {
+  transform: scale(0.92);
 }
 .comment.is-margin .comment-body {
   max-height: none;
@@ -2990,6 +3010,9 @@ html.is-sheet-drag .sheet-grabber {
   border-radius: var(--r-md);
   box-shadow: 0 16px 32px -18px color-mix(in srgb, var(--glow, #000) 70%, transparent);
 }
+.lib-hero-bleed {
+  display: none;
+}
 .lib-hero-copy {
   display: flex;
   flex-direction: column;
@@ -3078,7 +3101,7 @@ html.is-sheet-drag .sheet-grabber {
 .lib-row-copy {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
 }
 .lib-row-lead {
@@ -3096,6 +3119,9 @@ html.is-sheet-drag .sheet-grabber {
   color: var(--ink-2);
   white-space: normal;
   text-wrap: pretty;
+}
+.lib-row-version {
+  color: var(--ink-3);
 }
 @media (hover: hover) and (pointer: fine) {
   .lib-hero-cover,
@@ -3124,7 +3150,15 @@ html.is-sheet-drag .sheet-grabber {
   }
   .lib-hero-copy {
     justify-content: center;
-    padding: 12px 18px 12px 4px;
+    gap: 4px;
+    padding: 8px 12px 8px 4px;
+  }
+  .lib-hero-title {
+    font-size: clamp(2rem, 2.6vw, 2.75rem);
+    letter-spacing: -0.03em;
+  }
+  .lib-hero-go {
+    margin-top: 16px;
   }
   .lib-shelf {
     display: grid;
@@ -3595,24 +3629,26 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
   .library {
     max-width: 1200px;
   }
-  /* Same cover, quiet, so the right of the wide hero is not an empty field. */
+  /* The cover's own colour, blurred behind the glass. A sharp second copy read as a duplicate. */
   .lib-hero-bleed {
     display: block;
     position: absolute;
-    z-index: 0;
-    top: 12%;
-    right: 5%;
-    width: 38%;
-    aspect-ratio: 1;
+    z-index: -2;
+    inset: 0;
     overflow: hidden;
-    border-radius: 50%;
-    opacity: 0.5;
+    border-radius: inherit;
     pointer-events: none;
   }
-  .lib-hero-bleed img {
-    width: 100%;
-    height: 100%;
+  .lib-hero-bleed-img {
+    position: absolute;
+    top: -28%;
+    right: -12%;
+    width: 78%;
+    height: 156%;
     object-fit: cover;
+    filter: blur(42px) saturate(1.25);
+    opacity: 0.85;
+    mask-image: linear-gradient(90deg, transparent 0%, #000 42%);
   }
   .lib-hero-cover,
   .lib-hero-copy {
@@ -3902,6 +3938,136 @@ html[data-sheet='1'] .song {
     background: rgba(0, 0, 0, 0.45);
     z-index: -1;
   }
+  /* Scrubber across the top. Transport in the middle. Tasks on the right. */
+  .player,
+  .song.has-comment .player {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    height: auto;
+    max-height: none;
+    gap: 0;
+    padding: 2px 12px 4px;
+  }
+  .player .scrub,
+  .player .player-row,
+  .player .transport,
+  .player .utility {
+    display: flex;
+  }
+  .player .scrub {
+    order: 0;
+    width: 100%;
+    height: 28px;
+    min-height: 28px;
+  }
+  .player .scrub-track {
+    height: 28px;
+    order: 3;
+    flex: 1 1 auto;
+  }
+  .player-row,
+  .player .player-row {
+    order: 1;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+  }
+  .player .transport {
+    grid-column: 2;
+    justify-content: center;
+  }
+  .player .utility {
+    grid-column: 3;
+    justify-self: end;
+    justify-content: flex-end;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    gap: 2px;
+  }
+  .player-alert {
+    min-height: 28px;
+    padding: 1px 10px 1px 12px;
+    gap: 8px;
+  }
+  .player-alert p {
+    font-size: 0.8125rem;
+  }
+  .player-alert .floor-retry {
+    min-height: 28px;
+  }
+}
+
+/* A phone portrait is too narrow for four Russian labels. Icons from here up to the tablet. */
+@media (max-width: 429px) and (min-height: 521px) {
+  .utility {
+    grid-template-columns: repeat(4, minmax(44px, 1fr));
+    justify-items: center;
+    gap: 4px;
+  }
+  .util {
+    flex-direction: column;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    gap: 0;
+  }
+  .util-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .player-alert {
+    min-height: 32px;
+    padding: 2px 10px 2px 12px;
+    gap: 8px;
+  }
+  .player-alert p {
+    font-size: 0.8125rem;
+  }
+  .player-alert .floor-retry {
+    min-height: 32px;
+    padding: 0 4px;
+  }
+}
+
+@media (min-width: 800px) {
+  .set-page.is-enter .group {
+    animation: sheet-row 340ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .set-page.is-enter .group:nth-child(2) { animation-delay: 50ms; }
+  .set-page.is-enter .group:nth-child(3) { animation-delay: 90ms; }
+  .set-page.is-enter .group:nth-child(4) { animation-delay: 130ms; }
+  .set-page.is-enter .group:nth-child(5) { animation-delay: 170ms; }
+  .set-page.is-enter .group:nth-child(6) { animation-delay: 210ms; }
+}
+@keyframes sheet-row {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .note-card {
+    transition: none;
+  }
 }
 
 /* Tall phone, no note in the floor: drop the dock's own padding so the stage
@@ -3998,6 +4164,9 @@ html[data-sheet='1'] .song {
   .lib-hero-title {
     font-size: clamp(2.5rem, 3vw, 3.5rem);
   }
+  .lib-hero-copy {
+    max-width: 40rem;
+  }
   .lib-shelf {
     margin-top: 0;
   }
@@ -4020,17 +4189,22 @@ html[data-sheet='1'] .song {
   z-index: 5;
   left: max(10px, var(--col-left, 10px));
   right: max(10px, var(--col-right, 10px));
-  bottom: calc(var(--floor-h, 168px) + 8px);
+  bottom: var(--floor-h, 168px);
   display: flex;
   flex-direction: column;
-  max-height: min(22dvh, 200px);
+  max-height: min(24dvh, 196px);
   margin: 0;
-  padding: 6px 12px 8px;
+  padding: 4px 14px 0;
   overflow: hidden;
   border: 1px solid var(--dock-line);
-  border-radius: 22px;
+  border-bottom: 0;
+  border-radius: 22px 22px 12px 12px;
   background: var(--dock-solid);
   box-shadow: 0 -12px 32px -24px rgba(0, 0, 0, 0.45);
+  transition: transform 200ms cubic-bezier(0.32, 0, 0.67, 0);
+}
+.note-card.is-leaving {
+  transform: translate3d(0, 110%, 0);
 }
 .note-grab {
   width: 36px;
@@ -4040,14 +4214,25 @@ html[data-sheet='1'] .song {
   background: var(--ink);
   opacity: 0.45;
 }
-.note-card-head { display: flex; align-items: center; min-height: 44px; }
+.note-card-head { display: flex; align-items: center; min-height: 36px; }
 .note-card .comment-body {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   max-height: none;
   margin: 0;
-  padding: 0;
-  overflow: auto;
+  padding: 0 0 24px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   opacity: 1;
   transform: none;
+}
+.note-card .comment-body.is-faded {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 82%, transparent 100%);
+}
+@media (max-height: 640px) {
+  .note-card {
+    max-height: min(28dvh, 168px);
+  }
 }

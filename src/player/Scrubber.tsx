@@ -111,6 +111,7 @@ export function Scrubber({
     let widthTarget = 0;
     let haveWidth = false;
     let labelSpring: SpringState = { x: 1, v: 0 };
+    let smoothX = -1;
     const width = () => track.current?.getBoundingClientRect().width ?? 1;
 
     const paint = (t: number, dt: number) => {
@@ -172,7 +173,9 @@ export function Scrubber({
         node.style.transformOrigin = 'center bottom';
         const drawn = haveWidth ? Math.max(1, widthSpring.x) : node.scrollWidth;
         node.style.width = `${drawn.toFixed(1)}px`;
-        node.style.transform = `translate3d(${(p * w).toFixed(2)}px, 0, 0) scale(${scale.toFixed(3)})`;
+        const tipX = p * w;
+        smoothX = smoothX < 0 ? tipX : smoothX + (tipX - smoothX) * 0.22;
+        node.style.transform = `translate3d(${smoothX.toFixed(2)}px, 0, 0) scale(${scale.toFixed(3)})`;
         const body = bubbleBody.current;
         if (body) {
           const ly = (1 - Math.max(0, Math.min(1, labelSpring.x))) * 4;
@@ -184,6 +187,7 @@ export function Scrubber({
         node.style.opacity = '0';
         lastPreview = '';
         haveWidth = false;
+        smoothX = -1;
       }
     };
 

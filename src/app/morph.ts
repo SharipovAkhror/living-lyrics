@@ -24,10 +24,13 @@ interface RiseGroup {
 }
 
 const RISES: RiseGroup[] = [
-  { sel: '.topbar-title', delay: 0, dist: 12 },
-  { sel: '.fb', delay: 0.04, dist: 16 },
-  { sel: '.ist-chip', delay: 0.08, dist: 12 },
-  { sel: '.player', delay: 0.12, dist: 24 },
+  // The cover is still crossing the middle for the first fifth of a second.
+  // The title and the verse wait until that path is clear. The floor slides
+  // up with the flight, from below the screen, instead of appearing at the end.
+  { sel: '.topbar-title', delay: 0.16, dist: 10 },
+  { sel: '.fb', delay: 0.22, dist: 14 },
+  { sel: '.ist-chip', delay: 0.28, dist: 10 },
+  { sel: '.player', delay: 0.02, dist: 96 },
 ];
 
 let node: HTMLImageElement | null = null;

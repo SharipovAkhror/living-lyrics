@@ -162,11 +162,21 @@ function tone(song: Song, dark: boolean): CSSProperties {
   } as CSSProperties;
 }
 
-function Cover({ song, className, sizes }: { song: Song; className: string; sizes: string }) {
+function Cover({
+  song,
+  className,
+  sizes,
+  poster = true,
+}: {
+  song: Song;
+  className: string;
+  sizes: string;
+  poster?: boolean;
+}) {
   const ext = coverExt(song);
   return (
     <img
-      data-poster=""
+      {...(poster ? { 'data-poster': '' } : {})}
       className={className}
       src={coverUrl(song.slug, 512, ext)}
       srcSet={`${coverUrl(song.slug, 512, ext)} 512w, ${coverUrl(song.slug, 1024, ext)} 1024w`}
@@ -193,7 +203,7 @@ function Hero({ song, continued, dark }: { song: Song; continued: boolean; dark:
     >
       <GlassLayers />
       <span className="lib-hero-bleed" aria-hidden="true">
-        <img src={coverUrl(song.slug, 512, coverExt(song))} alt="" />
+        <Cover song={song} className="lib-hero-bleed-img" sizes="640px" poster={false} />
       </span>
       <Cover song={song} className="lib-hero-cover" sizes="(min-width: 800px) 380px, 92vw" />
       <span className="lib-hero-copy">

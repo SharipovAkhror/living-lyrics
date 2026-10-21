@@ -209,7 +209,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
             });
           }
         } else {
-          setMounted(list);
+          // Commit before this frame paints. A hidden new block and a removed
+          // old one would otherwise be one empty frame when a seek crosses
+          // from a line into an instrumental break.
+          flushSync(() => setMounted(list));
         }
       }
       if (!liveH) return;
