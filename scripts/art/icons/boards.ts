@@ -1,19 +1,19 @@
 /**
  * Studio boards for the Qalam family.
  * Usage: npx tsx scripts/art/icons/boards.ts
- * Writes HTML and PNG into work/t28-icons/own4/ (gitignored).
+ * Writes HTML and PNG into work/t28-icons/own5/ (gitignored).
  * Also opens the song page at 393×852, light and dark, then stops the dev server.
  * Pass --fast to skip the song page. The 1× proof is shot at deviceScaleFactor 1.
  */
 import { spawn, type ChildProcess } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
-import { chromium, type Page } from 'playwright';
+import { chromium, webkit, type Browser, type Page } from 'playwright';
 import { ICON_NAMES, type IconName, type Mark } from '../../../src/ui/icons/types';
 import { QATT_ACROSS, QATT_EDGE, circle, nibFor, nibLozenge, nuqta, pt, qalamStroke } from './pen';
-import { glyphAt, opticalFor, type Optical } from './qalam';
+import { glyphAt, glyphTransport, opticalFor, type Optical } from './qalam';
 
-const OUT = 'work/t28-icons/own4';
+const OUT = 'work/t28-icons/own5';
 const FAST = process.argv.includes('--fast');
 const LABELS: Record<IconName, string> = {
   'chevron.left': 'Назад',
@@ -72,9 +72,15 @@ function marks(list: Mark[], fallback: number, cap: 'butt' | 'round' = 'butt'): 
 
 function qalam(name: IconName, state: 'off' | 'on', px: number, optical?: Optical): string {
   const master = optical ?? opticalFor(px);
-  const glyph = glyphAt(name, master);
+  // Snap to the master, then let the SVG scale. A 72 px cell of master 24 is a true 3×.
+  const glyph = glyphAt(name, master, master);
   const body = state === 'on' && glyph.on ? glyph.on : glyph.off;
   return `<svg width="${px}" height="${px}" viewBox="0 0 24 24" fill="none" shape-rendering="geometricPrecision">${marks(body, 1.78)}</svg>`;
+}
+
+function transportInner(variant: 'a' | 'b' | 'c', name: 'play' | 'pause'): string {
+  const glyph = glyphTransport(variant, name, 28, 28);
+  return marks(glyph.off, 1.78);
 }
 
 function glass(snap: Snap, name: IconName, px: number): string {
@@ -197,17 +203,17 @@ function specimen(dark: boolean): string {
 }
 
 function sizes(): string {
-  const head = [16, 20, 24, 32, 48].map((n) => `<th>${n}</th>`).join('');
+  const head = [16, 20, 24, 28, 32, 48].map((n) => `<th>${n}</th>`).join('');
   const row = (dark: boolean) =>
     ICON_NAMES.map((name) => {
-      const cells = [16, 20, 24, 32, 48].map((px) => `<td>${qalam(name, 'off', px)}</td>`).join('');
+      const cells = [16, 20, 24, 28, 32, 48].map((px) => `<td>${qalam(name, 'off', px)}</td>`).join('');
       return `<tr><td class="name">${LABELS[name]}</td>${cells}</tr>`;
     }).join('');
   const table = (dark: boolean) =>
     page(
       dark ? 'sizes-dark' : 'sizes-light',
       dark,
-      `<h1>${dark ? 'Тёмная' : 'Светлая'}</h1><p class="lede">Покой на 16, 20, 24, 32 и 48. 48 берёт мастер 32.</p><div class="sizes"><table><thead><tr><th class="name"></th>${head}</tr></thead><tbody>${row(dark)}</tbody></table></div>`,
+      `<h1>${dark ? 'Тёмная' : 'Светлая'}</h1><p class="lede">Покой на 16, 20, 24, 28, 32 и 48. 28 — мастер пуска. 48 берёт мастер 32.</p><div class="sizes"><table><thead><tr><th class="name"></th>${head}</tr></thead><tbody>${row(dark)}</tbody></table></div>`,
     );
   return table(false) + table(true);
 }
@@ -243,14 +249,14 @@ function proof(dark: boolean): string {
 
 function player(dark: boolean): string {
   const tab = (name: IconName, label: string, on: boolean) =>
-    `<div class="tab${on ? ' on' : ''}">${qalam(name, on ? 'on' : 'off', 72)}<span>${label}</span></div>`;
+    `<div class="tab${on ? ' on' : ''}">${qalam(name, on ? 'on' : 'off', 72, 24)}<span>${label}</span></div>`;
   return page(
     dark ? 'player-dark' : 'player-light',
     dark,
-    `<h1>${dark ? 'Тёмная' : 'Светлая'}</h1><p class="lede">Плеер и вкладки в три раза. Поле — палитра «I Have Come Alive».</p>
+    `<h1>${dark ? 'Тёмная' : 'Светлая'}</h1><p class="lede">Плеер и вкладки в три раза от мастеров страницы: вкладки 24, пуск 28, флаг 20. Поле — палитра «I Have Come Alive».</p>
     <div class="player">
-      <div class="scrub"><span>1:12</span><div class="rail"><i></i></div><span>−8:28</span><span class="flag">${qalam('flag', 'off', 60)}</span></div>
-      <div class="transport">${qalam('backward', 'off', 72)}<div class="disc">${qalam('play', 'off', 84)}</div>${qalam('forward', 'off', 72)}</div>
+      <div class="scrub"><span>1:12</span><div class="rail"><i></i></div><span>−8:28</span><span class="flag">${qalam('flag', 'off', 60, 20)}</span></div>
+      <div class="transport">${qalam('backward', 'off', 72, 24)}<div class="disc">${qalam('play', 'off', 84, 28)}</div>${qalam('forward', 'off', 72, 24)}</div>
       <div class="tabs">${tab('character.bubble', 'Перевод', true)}${tab('book.closed', 'Пояснение', false)}${tab('list.bullet', 'Весь текст', false)}${tab('slider.horizontal.3', 'Настройки', false)}</div>
     </div>`,
   );
@@ -339,7 +345,7 @@ function signature(): string {
   return page(
     'signature',
     false,
-    `<h1>Подпись</h1><p class="lede">Одно перо на каждый знак. Срез 35° — тот же угол, что штрих гравюр. На 16 и 20 контраст тихий, на 32 перо читается. Точка — нукта.</p>
+    `<h1>Подпись</h1><p class="lede">Одно перо на каждый знак. Срез 35° — тот же угол, что штрих гравюр. На 16 и 20 контраст тихий, на 32 перо читается. Точка — нукта. Пуск на сайте — вариант А, без насечки.</p>
     <div class="dna">
       <div class="panel"><h3>Угол</h3>${nibPicture()}<p>Длинная грань — срез. Ею кончается каждый открытый штрих. Отдельной фаски нет: конец и есть перо.</p></div>
       <div class="panel"><h3>Контраст</h3>${directionRow(20, 'мастер 20')}${directionRow(32, 'мастер 32')}<p>Ход вдоль среза тонкий, ход поперёк шире. Горизонталь и вертикаль лежат между ними: 35° близко к 45°. На мастере 20 отношение около 1,18, тонкий ход не тоньше 1,6 px. На мастере 32 отношение около 1,86.</p></div>
@@ -349,7 +355,7 @@ function signature(): string {
     <p class="note">Слева настоящие 20 px, справа 48 px с мастера 32. Силуэт один. На крупном размере контраст и лишние нукты читаются, на мелком остаётся имя знака.</p>
     <div class="minis">${glyphs}</div>
     <h2>Нажатие, мастер 32 в 48 px</h2>
-    <p class="note">Слева покой, справа нажатие. Черта шире тем же пером. Пластина заливается, край остаётся, письмо вырезается. Сплошное тело чуть крупнее. У пуска верхняя грань уже почти совпадает со срезом, поэтому перо видно на основании, а не второй фаской на вершине. Остриё скруглено как угол пластины.</p>
+    <p class="note">Слева покой, справа нажатие. Черта шире на один пиксель. Перевод и пояснение не заливаются: тяжелеет кольцо и письмо. Методология — один кодекс, не две плашки. Пуск — скруглённый треугольник без насечки, центр массы на середине кнопки.</p>
     <div class="minis">${pressed}</div>`,
   );
 }
@@ -413,8 +419,230 @@ async function shootPhone(browser: Awaited<ReturnType<typeof chromium.launch>>):
         await context.close();
       }
     }
+    await shootCrisp();
+    await shootPlayOptions();
   } finally {
     stop(proc);
+  }
+}
+
+const THEME_SCRIPT = (value: string) => {
+  localStorage.setItem(
+    'living-lyrics.settings.v2',
+    JSON.stringify({ theme: value, showTranslation: true, showComment: false, motion: 'off' }),
+  );
+};
+
+async function openSong(browser: Browser, theme: 'light' | 'dark', dpr: number, path = '/song/i-have-come-alive'): Promise<{ page: Page; close: () => Promise<void> }> {
+  const context = await browser.newContext({
+    viewport: { width: 393, height: 852 },
+    deviceScaleFactor: dpr,
+    isMobile: true,
+    hasTouch: true,
+    colorScheme: theme,
+  });
+  await context.addInitScript(THEME_SCRIPT, theme);
+  const page = await context.newPage();
+  await page.goto(`http://127.0.0.1:5174${path}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.waitForSelector('.ll-ico', { timeout: 20000 });
+  await page.waitForTimeout(350);
+  return { page, close: () => context.close() };
+}
+
+/** 1× device-pixel crop and the same crop at ×8, nearest neighbour, pixels visible. */
+async function shootCrisp(): Promise<void> {
+  const passes: { id: string; engine: 'webkit' | 'chromium'; dpr: number; theme: 'light' | 'dark'; title: string }[] = [
+    { id: 'webkit-light', engine: 'webkit', dpr: 3, theme: 'light', title: 'WebKit, iPhone 393×852, 3×, светлая' },
+    { id: 'webkit-dark', engine: 'webkit', dpr: 3, theme: 'dark', title: 'WebKit, iPhone 393×852, 3×, тёмная' },
+    { id: 'chromium-light', engine: 'chromium', dpr: 2, theme: 'light', title: 'Chromium, 393×852, 2×, светлая' },
+    { id: 'chromium-dark', engine: 'chromium', dpr: 2, theme: 'dark', title: 'Chromium, 393×852, 2×, тёмная' },
+  ];
+  let web: Browser | null = null;
+  let chrome: Browser | null = null;
+  const blocks: string[] = [];
+  try {
+    web = await webkit.launch();
+    chrome = await chromium.launch();
+    for (const pass of passes) {
+      const browser = pass.engine === 'webkit' ? web : chrome;
+      const song = await openSong(browser, pass.theme, pass.dpr);
+      const lib = await openSong(browser, pass.theme, pass.dpr, '/');
+      try {
+        const dir = `${OUT}/crops/${pass.id}`;
+        mkdirSync(dir, { recursive: true });
+        const cells = await cropIcons(song.page, dir, 'song');
+        const method = await cropIcons(lib.page, dir, 'lib');
+        const methodCell = method.find((cell) => cell.label.includes('Методология'));
+        const all = methodCell ? [...cells, methodCell] : cells;
+        blocks.push(`<section><h2>${pass.title}</h2><div class="row">${all.map(cellHtml).join('')}</div></section>`);
+      } finally {
+        await song.close();
+        await lib.close();
+      }
+    }
+  } finally {
+    await web?.close();
+    await chrome?.close();
+  }
+  const html = `<!doctype html><meta charset="utf-8"><title>Чёткость</title><style>
+    ${FONTS}
+    body { margin: 0; background: #fff; font-family: 'Inter Variable', sans-serif; color: #1a140f; }
+    article { padding: 28px 32px 48px; width: max-content; }
+    h1 { font-family: 'Source Serif 4', Georgia, serif; font-weight: 600; font-size: 32px; margin: 0; }
+    h2 { font: 560 16px/1.3 'Inter Variable', sans-serif; margin: 28px 0 12px; }
+    p { max-width: 760px; color: #5c534b; }
+    .row { display: flex; flex-wrap: wrap; gap: 18px 22px; align-items: flex-start; max-width: 1680px; }
+    figure { margin: 0; }
+    .pair { display: flex; gap: 8px; align-items: flex-start; }
+    figcaption { font-size: 12px; margin-bottom: 4px; }
+    .zoom { position: relative; display: inline-block; line-height: 0; }
+    .zoom img { image-rendering: pixelated; display: block; }
+    .zoom.big::after { content: ''; position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(80,60,40,.28) 1px, transparent 1px), linear-gradient(to bottom, rgba(80,60,40,.28) 1px, transparent 1px); background-size: 8px 8px; pointer-events: none; }
+  </style><article><h1>Чёткость</h1><p>Слева — кроп знака в пикселях устройства. Справа — тот же кроп ×8, ближайший сосед, сетка по 8 px на один пиксель устройства. Стержни на целом пикселе CSS, поэтому и на 2×, и на 3× край целый.</p>${blocks.join('')}</article>`;
+  const file = `${OUT}/crisp-sheet.html`;
+  writeFileSync(file, html);
+  const browser = await chromium.launch();
+  try {
+    const page = await browser.newPage({ viewport: { width: 1400, height: 900 }, deviceScaleFactor: 1 });
+    await page.goto(pathToFileURL(file).href);
+    await page.evaluate(() => document.fonts.ready);
+    await page.locator('article').screenshot({ path: `${OUT}/crisp-proof.png` });
+  } finally {
+    await browser.close();
+  }
+}
+
+/** Device-pixel size of a PNG. The crop sheet must use this, not the CSS box. */
+function pngSize(file: string): { w: number; h: number } {
+  const buf = readFileSync(file);
+  return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) };
+}
+
+function cellHtml(cell: { file: string; label: string; dw: number; dh: number }): string {
+  const src = cell.file.replace(/\\/g, '/').replace(`${OUT}/`, '');
+  return `<figure><figcaption>${cell.label}</figcaption><div class="pair"><img src="${src}" width="${cell.dw}" height="${cell.dh}" alt=""><span class="zoom big"><img src="${src}" width="${cell.dw * 8}" height="${cell.dh * 8}" alt=""></span></div></figure>`;
+}
+
+async function cropIcons(
+  page: Page,
+  dir: string,
+  prefix: string,
+): Promise<{ file: string; label: string; dw: number; dh: number }[]> {
+  const icons = page.locator('.ll-ico');
+  const n = await icons.count();
+  const out: { file: string; label: string; dw: number; dh: number }[] = [];
+  const seen = new Set<string>();
+  for (let i = 0; i < n; i++) {
+    const el = icons.nth(i);
+    const box = await el.boundingBox();
+    if (!box || box.width < 8 || box.height < 8) continue;
+    if (box.y + box.height < 0 || box.y > 860) continue;
+    const label = await el.evaluate((node) => {
+      const host = node.closest('[aria-label]');
+      return (host?.getAttribute('aria-label') || node.getAttribute('aria-label') || 'знак').replace(/\s+/g, ' ');
+    });
+    const key = `${prefix}:${label}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const file = `${dir}/${prefix}-${seen.size}.png`;
+    await el.scrollIntoViewIfNeeded();
+    await el.screenshot({ path: file });
+    const size = pngSize(file);
+    out.push({ file, label, dw: size.w, dh: size.h });
+  }
+  return out;
+}
+
+const PLAY_VARIANTS = [
+  { id: 'a' as const, label: 'А' },
+  { id: 'b' as const, label: 'Б' },
+  { id: 'c' as const, label: 'В' },
+];
+
+/** Real play button, WebKit at 3× and Chromium at 1×, both themes. A is the default in the code. */
+async function shootPlayOptions(): Promise<void> {
+  const shots: { variant: string; label: string; state: string; theme: string; scale: string; file: string; dw: number; dh: number }[] = [];
+  const passes: { engine: 'webkit' | 'chromium'; dpr: number; theme: 'light' | 'dark'; scale: string }[] = [
+    { engine: 'webkit', dpr: 3, theme: 'light', scale: '3×' },
+    { engine: 'webkit', dpr: 3, theme: 'dark', scale: '3×' },
+    { engine: 'chromium', dpr: 1, theme: 'light', scale: '1×' },
+    { engine: 'chromium', dpr: 1, theme: 'dark', scale: '1×' },
+  ];
+  let web: Browser | null = null;
+  let chrome: Browser | null = null;
+  try {
+    web = await webkit.launch();
+    chrome = await chromium.launch();
+    for (const pass of passes) {
+      const browser = pass.engine === 'webkit' ? web : chrome;
+      const opened = await openSong(browser, pass.theme, pass.dpr);
+      try {
+        for (const variant of PLAY_VARIANTS) {
+          for (const state of ['play', 'pause'] as const) {
+            const file = `${OUT}/play-crops/${pass.engine}-${pass.theme}-${variant.id}-${state}.png`;
+            mkdirSync(`${OUT}/play-crops`, { recursive: true });
+            await opened.page.evaluate((inner) => {
+              const svg = document.querySelector('.transport .btn-xl svg');
+              if (!svg) throw new Error('no play button');
+              svg.innerHTML = inner;
+            }, transportInner(variant.id, state));
+            const button = opened.page.locator('.transport .btn-xl');
+            await button.screenshot({ path: file });
+            const size = pngSize(file);
+            shots.push({
+              variant: variant.id,
+              label: variant.label,
+              state: state === 'play' ? 'пуск' : 'пауза',
+              theme: pass.theme === 'light' ? 'светлая' : 'тёмная',
+              scale: pass.scale,
+              file,
+              dw: size.w,
+              dh: size.h,
+            });
+          }
+        }
+      } finally {
+        await opened.close();
+      }
+    }
+  } finally {
+    await web?.close();
+    await chrome?.close();
+  }
+  const head = PLAY_VARIANTS.map((variant) => `<th colspan="2">${variant.label}</th>`).join('');
+  const sub = PLAY_VARIANTS.map(() => `<th>пуск</th><th>пауза</th>`).join('');
+  const row = (scale: string, theme: string) => {
+    const cells = PLAY_VARIANTS.flatMap((variant) =>
+      (['пуск', 'пауза'] as const).map((state) => {
+        const shot = shots.find((item) => item.label === variant.label && item.state === state && item.scale === scale && item.theme === theme);
+        if (!shot) return '<td></td>';
+        const src = shot.file.replace(/\\/g, '/').replace(`${OUT}/`, '');
+        return `<td><img src="${src}" width="${shot.dw}" height="${shot.dh}" alt=""></td>`;
+      }),
+    ).join('');
+    return `<tr><th>${scale}<br>${theme}</th>${cells}</tr>`;
+  };
+  const html = `<!doctype html><meta charset="utf-8"><style>
+    ${FONTS}
+    body { margin: 0; background: #fff; }
+    article { padding: 28px 32px 40px; width: max-content; font-family: 'Inter Variable', sans-serif; color: #1a140f; }
+    h1 { font-family: 'Source Serif 4', Georgia, serif; font-weight: 600; font-size: 32px; margin: 0; }
+    p { max-width: 720px; color: #5c534b; }
+    table { border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 8px 10px; text-align: center; vertical-align: middle; font-weight: 500; }
+    th { font-size: 14px; }
+    img { display: block; }
+  </style><article><h1>Пуск</h1><p>Три варианта на настоящей кнопке страницы песни. 3× — WebKit, профиль iPhone. 1× — Chromium. Светлая и тёмная. На сайте пока стоит А. Центр массы треугольника — на центре круга.</p><table><thead><tr><th></th>${head}</tr><tr><th></th>${sub}</tr></thead><tbody>${row('3×', 'светлая')}${row('3×', 'тёмная')}${row('1×', 'светлая')}${row('1×', 'тёмная')}</tbody></table></article>`;
+  const file = `${OUT}/play-sheet.html`;
+  writeFileSync(file, html);
+  const browser = await chromium.launch();
+  try {
+    const page = await browser.newPage({ viewport: { width: 1200, height: 900 }, deviceScaleFactor: 1 });
+    await page.goto(pathToFileURL(file).href);
+    await page.evaluate(() => document.fonts.ready);
+    await page.locator('article').screenshot({ path: `${OUT}/play-options.png` });
+  } finally {
+    await browser.close();
   }
 }
 
