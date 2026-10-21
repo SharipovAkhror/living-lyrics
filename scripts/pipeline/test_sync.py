@@ -2236,6 +2236,139 @@ def test_pass5_placement() -> None:
           [row['id'] for row in old] == ['la-1'], str(old))
 
 
+def test_lang_ctc() -> None:
+    import attack_chance as A
+    import lang_ctc
+    import lang_ctc_choice as L
+
+    lang_ctc.assert_independent()
+    ids = {spec['id'] for spec in lang_ctc.MODELS}
+    ids.update(spec['fallback'] for spec in lang_ctc.MODELS if spec.get('fallback'))
+    banned = set(engines.WHISPERX_HF.values())
+    banned.update({
+        'facebook/mms-1b-all',
+        'nijatzeynalov/wav2vec2-large-mms-1b-azerbaijani-common_voice15.0',
+        'tahmaz/wav2vec2-large-mms-1b-azerbaijani',
+        'mpoyraz/wav2vec2-xls-r-300m-cv7-turkish',
+    })
+    check('language CTC checkpoints are not the second aligner or MMS', not ids & banned, str(ids & banned))
+    check('azerbaijani and latin have no language CTC model',
+          {spec['lang'] for spec in lang_ctc.MODELS}.isdisjoint({'az', 'la'})
+          and {row['lang'] for row in lang_ctc.ABSENT} >= {'az', 'la'})
+    check('the five language models are Apache-2.0 and commercial',
+          all(spec['license'] == 'Apache-2.0' and not spec['noncommercial'] for spec in lang_ctc.MODELS))
+    check('a shifted hit rate of 1 is not admitted', not L.admits(1.0, 40))
+    check('a short language is not given its own role', not L.admits(0.0, 10))
+    check('a long language under 15 % is admitted', L.admits(0.14, 30))
+    check('pass 5 published three lines beyond the frozen 155',
+          set(A.PASS5_EXTRA) == {'english-8', 'coda-fa-3', 'shushtari-s2'})
+    check('language members do not borrow the phoneme feature',
+          A._member_features('lang') == {'lang'}
+          and A._member_features('pair') == {'pair'}
+          and A._member_features('overrule') == {'overrule'}
+          and A._member_features('lang-overrule') == {'lang', 'overrule'}
+          and A._member_features('phoneme') == {'phone'})
+
+    rule = A.witness_rules()[0]
+    peaks = np.array([1.0, 2.0])
+    perfect = [
+        {'t': 1.0, 'line': 'L', 'group': 'solo', 'second': None, 'third': None,
+         'phoneme': None, 'phoneme_role': 'off', 'lang_clock': 1.0, 'lang_role': 'or', 'pair': False},
+        {'t': 2.0, 'line': 'L', 'group': 'solo', 'second': None, 'third': None,
+         'phoneme': None, 'phoneme_role': 'off', 'lang_clock': 2.0, 'lang_role': 'or', 'pair': False},
+    ]
+    check('a language clock proves the unshifted word the others miss',
+          bool(A.hit_mask(perfect, peaks, 0.0, rule)[0]))
+    check('a language clock that stays put misses a 0.40 s shift',
+          not bool(A.hit_mask(perfect, peaks, 0.40, rule)[0]))
+    bare = [dict(row, lang_role='off', lang_clock=None) for row in perfect]
+    check('without the language role the same word is not proved',
+          not bool(A.hit_mask(bare, peaks, 0.0, rule)[0]))
+
+    proved = Q.prove_words(
+        [{'roman': 'aa', 'ctc_s': 1.0, 'ctc_e': 1.4, 'second_s': None, 'third_s': None,
+          'lang_s': 1.04, 'lang_role': 'or'}],
+        [0.0], 0.10, witnesses='one', agree_tol=0.10)
+    check('language OR is its own proof path', proved[0]['path'] == 'witness-lang', str(proved[0]['path']))
+    paired = Q.prove_words(
+        [{'roman': 'aa', 'ctc_s': 1.0, 'ctc_e': 1.4, 'second_s': None, 'third_s': None,
+          'phoneme_s': 1.04, 'lang_s': 1.06, 'pair': True}],
+        [0.0], 0.10, witnesses='one', agree_tol=0.10)
+    check('two weak clocks within 0.10 s of the placer prove the word',
+          paired[0]['path'] == 'witness-pair', str(paired[0]['path']))
+    far = Q.prove_words(
+        [{'roman': 'aa', 'ctc_s': 1.0, 'ctc_e': 1.4, 'second_s': None, 'third_s': None,
+          'phoneme_s': 1.40, 'lang_s': 1.42, 'pair': True}],
+        [0.0], 0.10, witnesses='one', agree_tol=0.10)
+    check('two clocks that agree far from the placer do not prove the word',
+          far[0]['path'] == 'fail', str(far[0]['path']))
+
+    refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    attack = np.array([1.50])
+    single = {
+        'ctc_s': 1.0, 'second_s': 1.50, 'third_s': None,
+        'second_kind': 'whisperx', 'phoneme_s': 1.02, 'lang_s': 1.06,
+        'overrule': True,
+    }
+    check('one witness against two agreeing supporters is overruled',
+          Q.word_refuted(single, attack, refute) is None)
+    lone = dict(single, lang_s=None)
+    check('one supporter does not overrule',
+          Q.word_refuted(lone, attack, refute) == 'witness-attack')
+    apart = dict(single, phoneme_s=0.91, lang_s=1.09)
+    check('two supporters more than 0.10 s apart do not overrule',
+          Q.word_refuted(apart, attack, refute) == 'witness-attack')
+    both_far = {
+        'ctc_s': 1.0, 'second_s': 1.40, 'third_s': 1.45,
+        'second_kind': 'whisperx', 'third_kind': 'stable-ts',
+        'phoneme_s': 1.02, 'lang_s': 1.04, 'overrule': True,
+    }
+    check('two clocks that agree elsewhere are not overruled',
+          Q.word_refuted(both_far, np.array([1.45]), refute) == 'witnesses-agree-elsewhere')
+    quiet = dict(single, overrule=False)
+    check('the overrule flag is required',
+          Q.word_refuted(quiet, attack, refute) == 'witness-attack')
+
+    song = {
+        'slug': 's',
+        'lines': [{
+            'id': 'l', 'lang': 'ar', 'placed': True, 'group': 'solo',
+            'words': [
+                {'t': 1.0, 'langs': {'xlsr-53-ar-elgeish': 1.02}, 'phones': {'xlsr-53-espeak': 1.03},
+                 'roman': 'aa'},
+                {'t': 1.5, 'langs': {'xlsr-53-ar-elgeish': 1.52}, 'phones': {'xlsr-53-espeak': 1.53},
+                 'roman': 'bb'},
+            ],
+        }],
+        'all_lines': [],
+    }
+    song['all_lines'] = song['lines']
+    admitted = [{'song': 's', 'lang': 'ar', 'model': 'xlsr-53-ar-elgeish'}]
+    check('language OR stamps the measured clock', L.apply_lang([song], admitted) == 2)
+    check('the stamp does not replace the language code', song['lines'][0]['words'][0].get('lang') is None)
+    L.clear([song])
+    check('clearing the language stamp leaves no role and no clock',
+          'lang_role' not in song['lines'][0]['words'][0]
+          and 'lang_clock' not in song['lines'][0]['words'][0]
+          and 'phoneme' not in song['lines'][0]['words'][0])
+    pair_rows = [{'song': 's', 'lang': 'ar', 'model': 'xlsr-53-ar-elgeish', 'phone': 'xlsr-53-espeak'}]
+    check('the pair stamp does not turn on the language role',
+          L.apply_pair([song], pair_rows) == 2 and song['lines'][0]['words'][0].get('pair') is True
+          and song['lines'][0]['words'][0].get('lang_role') is None)
+    L.clear([song])
+    check('clearing the pair stamp removes the phoneme it added',
+          'pair' not in song['lines'][0]['words'][0] and 'phoneme' not in song['lines'][0]['words'][0])
+    stamped = Q.stamp_lang_ctc(
+        [{'roman': 'aa', 'ctc_s': 1.0, 'phoneme_s': 1.40, 'phoneme_role': 'or',
+          'phoneme_models': {'xlsr-53-espeak': 1.03},
+          'lang_models': {'xlsr-53-ar-elgeish': 1.02}}],
+        lang_model='xlsr-53-ar-elgeish', phone_model='xlsr-53-espeak',
+        use_lang=False, use_pair=True, use_overrule=False)
+    check('a pair line keeps the phoneme clock the pair was calibrated on',
+          stamped[0].get('phoneme_s') == 1.03 and stamped[0].get('pair') is True
+          and stamped[0].get('lang_role') is None, str(stamped[0]))
+
+
 def main() -> int:
     test_viterbi()
     test_star_absorbs_a_hold()
@@ -2262,6 +2395,7 @@ def main() -> int:
     test_whisper_witness()
     test_whisper_choice()
     test_phoneme()
+    test_lang_ctc()
     test_pass5_placement()
     test_calibration()
     test_bench_summary()

@@ -41,6 +41,10 @@
 # lines in the admitted pairs. The prove job admits the witness and the placer
 # from those clocks. It does not run the model and does not install espeak-ng.
 # Weights are not committed.
+# The language CTC witness is measured in the prove job, after the vocal stem
+# is on disk and before the attack measurement. align_from_run does not re-run
+# align, so the clocks are not in the align artifact. A failed measure is a
+# missing witness: qa still runs. Budget LANG_CTC_BUDGET_S, default 75 minutes.
 # A failed measurement does not fall through to the 0.10 s attack test.
 # The align artifact also carries the encrypted four-stem cache. Prove unpacks
 # that before it falls back to the Actions cache. If the vocal stem is still
@@ -835,6 +839,9 @@ jobs:
             echo "worst=2" >> "$GITHUB_OUTPUT"
             exit 1
           fi
+          echo "::group::language ctc"
+          python3 scripts/pipeline/lang_ctc.py --measure $(tr '\n' ' ' < /tmp/calibrate.txt) || echo "языковой CTC не измерен, проверка продолжается"
+          echo "::endgroup::"
           echo "::group::aligner review"
           python3 scripts/pipeline/aligner_review.py --choose $(tr '\n' ' ' < /tmp/calibrate.txt)
           rc=$?
