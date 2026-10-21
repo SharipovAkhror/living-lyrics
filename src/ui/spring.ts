@@ -21,8 +21,18 @@ export interface SpringState {
 export const SPRING: SpringSpec = { stiffness: 900, damping: 46, mass: 1 };
 export const SPRING_MS = 320;
 
-/** Cover flight, library to the header. Mass 1, a little overshoot, about half a second. */
-export const FLIGHT_SPRING: SpringSpec = { stiffness: 280, damping: 28, mass: 1 };
+/**
+ * Cover flight, library to the header. One object along the whole path.
+ * Mass 1, a little overshoot, about half a second so a 100 ms contact sheet
+ * still catches the artwork between the card and the header.
+ */
+export const FLIGHT_SPRING: SpringSpec = { stiffness: 200, damping: 24, mass: 1 };
+
+/**
+ * Sheet open. Slower than {@link SPRING} so the few pixels of overshoot
+ * stay on screen. The tested sheet spring is still {@link SPRING}.
+ */
+export const SHEET_OPEN: SpringSpec = { stiffness: 280, damping: 24, mass: 1 };
 
 /**
  * Phone used to carry a stiffer critically damped spring. The analytic step
@@ -34,8 +44,8 @@ export const PHONE_SPRING: SpringSpec = SPRING;
 /** Play button press: toward 0.92, settled in about 80 ms, no bounce. */
 export const PRESS_SPRING: SpringSpec = { stiffness: 2500, damping: 100, mass: 1 };
 
-/** Play button release, on the way to 1.05, before it is retargeted to 1. */
-export const RELEASE_SPRING: SpringSpec = { stiffness: 480, damping: 24, mass: 1 };
+/** Play button release, on the way to 1.04, before it is retargeted to 1. */
+export const RELEASE_SPRING: SpringSpec = { stiffness: 450, damping: 18, mass: 1 };
 
 /** Sheet close. Critically damped, so it does not bounce back onto the page. */
 export const SHEET_CLOSE: SpringSpec = { stiffness: 1600, damping: 80, mass: 1 };

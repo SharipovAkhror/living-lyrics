@@ -22,14 +22,17 @@ function langsOf(song: Song) {
   return song.languages.map((code) => LANG_NAMES[code] ?? code).join(' · ');
 }
 
-/** Words leave in place. The cover flies after that short beat. */
+/** The flyer is born on the click. The route changes on the next frame, so one cover is already in the air. */
 function openSong(event: MouseEvent<HTMLAnchorElement>, slug: string) {
   if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   event.preventDefault();
-  armMorph(event.currentTarget);
   const to = `/song/${slug}`;
-  if (motionBlocked()) navigate(to);
-  else window.setTimeout(() => navigate(to), 160);
+  if (motionBlocked()) {
+    navigate(to);
+    return;
+  }
+  armMorph(event.currentTarget);
+  requestAnimationFrame(() => navigate(to));
 }
 
 export function LibraryPage() {
@@ -189,6 +192,9 @@ function Hero({ song, continued, dark }: { song: Song; continued: boolean; dark:
       style={tone(song, dark)}
     >
       <GlassLayers />
+      <span className="lib-hero-bleed" aria-hidden="true">
+        <img src={coverUrl(song.slug, 512, coverExt(song))} alt="" />
+      </span>
       <Cover song={song} className="lib-hero-cover" sizes="(min-width: 800px) 380px, 92vw" />
       <span className="lib-hero-copy">
         <span className="lib-hero-title">

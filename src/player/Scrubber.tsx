@@ -7,7 +7,13 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Cue, Timeline } from '@/data/timeline';
 import { lineText } from '@/data/timeline';
 import { formatTime } from '@/data/library';
-import { stepSpring } from '@/ui/spring';
+import { stepSpring, type SpringState } from '@/ui/spring';
+
+/** Entry peaks near 1.04 in about 160 ms. Exit is the fast critical spring. */
+const BUBBLE = { stiffness: 790, damping: 40, mass: 1 };
+const BUBBLE_OUT = { stiffness: 1600, damping: 80, mass: 1 };
+const WIDTH_SPRING = { stiffness: 420, damping: 32, mass: 1 };
+const LABEL_SPRING = { stiffness: 900, damping: 46, mass: 1 };
 
 interface Segment {
   id: string;
@@ -82,6 +88,7 @@ export function Scrubber({
   const cur = useRef<HTMLSpanElement>(null);
   const rem = useRef<HTMLSpanElement>(null);
   const preview = useRef<HTMLDivElement>(null);
+  const bubbleBody = useRef<HTMLDivElement>(null);
   const partEl = useRef<HTMLSpanElement>(null);
   const lineEl = useRef<HTMLSpanElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -99,9 +106,14 @@ export function Scrubber({
     let lastPreview = '';
     let coast: { t: number; v: number } | null = null;
     let last = performance.now();
+    let bubble: SpringState = { x: 0, v: 0 };
+    let widthSpring: SpringState = { x: 0, v: 0 };
+    let widthTarget = 0;
+    let haveWidth = false;
+    let labelSpring: SpringState = { x: 1, v: 0 };
     const width = () => track.current?.getBoundingClientRect().width ?? 1;
 
-    const paint = (t: number) => {
+    const paint = (t: number, dt: number) => {
       const span = duration > 0 ? duration : 1;
       const p = Math.min(1, Math.max(0, t / span));
       const w = width();
@@ -120,21 +132,58 @@ export function Scrubber({
       }
       track.current?.setAttribute('aria-valuenow', String(Math.round(t)));
       track.current?.setAttribute('aria-valuetext', `${formatTime(t)} из ${formatTime(duration)}`);
-      if (dragT.current != null || coast) {
+      const open = dragT.current != null || coast != null;
+      bubble = stepSpring(bubble, open ? 1 : 0, dt, open ? BUBBLE : BUBBLE_OUT);
+      if (open) {
         const view = previewOf(cueAt(timeline.cues, t));
         const key = view.part + '|' + view.line;
         if (key !== lastPreview) {
+          const first = lastPreview === '';
           lastPreview = key;
+          // A hidden box measures as 0. Show it before reading the new label's width.
+          if (preview.current) preview.current.hidden = false;
           if (partEl.current) partEl.current.textContent = view.part;
           if (lineEl.current) lineEl.current.textContent = view.line;
+          if (!first) labelSpring = { x: 0, v: 0 };
+          const body = bubbleBody.current;
+          if (body) {
+            const measured = body.offsetWidth;
+            if (!haveWidth || measured < 2) {
+              haveWidth = measured > 1;
+              widthSpring = { x: measured, v: 0 };
+              widthTarget = measured;
+            } else widthTarget = measured;
+          }
         }
-        if (preview.current) {
-          preview.current.hidden = false;
-          preview.current.style.transform = `translate3d(${(p * w).toFixed(2)}px, 0, 0)`;
+      }
+      labelSpring = stepSpring(labelSpring, 1, dt, LABEL_SPRING);
+      if (haveWidth) widthSpring = stepSpring(widthSpring, widthTarget, dt, WIDTH_SPRING);
+      const x = bubble.x;
+      const closing = !open;
+      const clamped = Math.max(0, Math.min(1, x));
+      const over = Math.max(0, x - 1);
+      const opacity = closing ? clamped : Math.min(1, clamped + over);
+      const scale = closing ? 0.92 + 0.08 * clamped : 0.85 + 0.15 * clamped + over;
+      const node = preview.current;
+      if (!node) return;
+      if (open || opacity > 0.02) {
+        node.hidden = false;
+        node.style.opacity = opacity.toFixed(3);
+        node.style.transformOrigin = 'center bottom';
+        const drawn = haveWidth ? Math.max(1, widthSpring.x) : node.scrollWidth;
+        node.style.width = `${drawn.toFixed(1)}px`;
+        node.style.transform = `translate3d(${(p * w).toFixed(2)}px, 0, 0) scale(${scale.toFixed(3)})`;
+        const body = bubbleBody.current;
+        if (body) {
+          const ly = (1 - Math.max(0, Math.min(1, labelSpring.x))) * 4;
+          body.style.opacity = Math.max(0, Math.min(1, labelSpring.x)).toFixed(3);
+          body.style.transform = `translate3d(0, ${ly.toFixed(2)}px, 0)`;
         }
-      } else if (preview.current && !preview.current.hidden) {
-        preview.current.hidden = true;
+      } else if (!node.hidden) {
+        node.hidden = true;
+        node.style.opacity = '0';
         lastPreview = '';
+        haveWidth = false;
       }
     };
 
@@ -162,9 +211,9 @@ export function Scrubber({
         const gap = magnet - dragT.current;
         if (Math.abs(gap) < window) {
           const pull = 1 - Math.abs(gap) / window;
-          paint(dragT.current + gap * pull * 0.7);
+          paint(dragT.current + gap * pull * 0.7, dt);
         } else {
-          paint(dragT.current);
+          paint(dragT.current, dt);
         }
         return;
       }
@@ -179,7 +228,7 @@ export function Scrubber({
           coast.v *= Math.exp(-4.2 * dt);
           coast.t = Math.min(duration, Math.max(0, coast.t + coast.v * dt));
         }
-        paint(coast.t);
+        paint(coast.t, dt);
         if (Math.abs(coast.v) < 0.35) {
           const landed = slow && Math.abs(magnet - coast.t) < window ? magnet : coast.t;
           coast = null;
@@ -187,7 +236,7 @@ export function Scrubber({
         }
         return;
       }
-      paint(clock());
+      paint(clock(), dt);
     };
     raf = requestAnimationFrame(loop);
 
@@ -300,8 +349,10 @@ export function Scrubber({
           <div ref={head} className="scrub-head" />
         </div>
         <div ref={preview} className="scrub-preview" hidden>
-          <span ref={partEl} className="scrub-preview-part" />
-          <span ref={lineEl} className="scrub-preview-line" />
+          <div ref={bubbleBody} className="scrub-preview-body">
+            <span ref={partEl} className="scrub-preview-part" />
+            <span ref={lineEl} className="scrub-preview-line" />
+          </div>
         </div>
       </div>
       <div className="scrub-meta">

@@ -707,7 +707,7 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   width: 40px;
   height: 40px;
   flex: none;
-  border-radius: 12px;
+  border-radius: 50%;
   object-fit: cover;
   box-shadow: 0 8px 16px -10px rgba(26, 20, 15, 0.45);
 }
@@ -947,7 +947,7 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 .player-alert {
   position: absolute;
   z-index: 7;
-  top: calc(var(--chrome-top) + 6px);
+  top: calc(var(--chrome-top) - 2px);
   /* Centred in the lyric column. A viewport centre drifts toward the margin note. */
   left: var(--col-left, 0px);
   right: var(--col-right, 0px);
@@ -1075,7 +1075,9 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   padding: 4px 8px 5px;
   border: 0;
   border-radius: 14px;
-  background: none;
+  /* The box is always there. Active is a tint, not a box that appears. */
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 12%, transparent);
   /* --ink-2 is 72 % and stays muted on the glass over every song wash. */
   color: var(--ink-2);
   font: 600 0.8125rem / 1.15 var(--font-ui);
@@ -1271,6 +1273,10 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 .scrub:hover .scrub-rail {
   transform: scaleY(2);
 }
+.scrub.is-dragging .scrub-rail,
+.scrub.is-dragging .scrub-head {
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 55%, transparent);
+}
 .scrub-fill {
   position: absolute;
   inset: 0;
@@ -1316,18 +1322,24 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   z-index: 3;
   left: 0;
   bottom: calc(100% + 8px);
+  width: max-content;
+  max-width: min(240px, 70vw);
+  margin-left: -72px;
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--bg-elevated) 94%, transparent);
+  box-shadow: 0 10px 28px -16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  transform-origin: center bottom;
+}
+.scrub-preview-body {
   display: flex;
   flex-direction: column;
   gap: 2px;
   width: max-content;
   max-width: min(240px, 70vw);
-  margin-left: -72px;
   padding: 8px 12px;
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--bg-elevated) 94%, transparent);
-  box-shadow: 0 10px 28px -16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  pointer-events: none;
-  transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 @media (hover: none), (pointer: coarse) {
   .scrub-preview {
@@ -1585,7 +1597,6 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   .now-art {
     width: 48px;
     height: 48px;
-    border-radius: 14px;
   }
   .player-alert {
     left: var(--col-left, 0px);
@@ -1908,11 +1919,16 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   flex: none;
 }
 .sheet-grabber {
-  width: 40px;
+  width: 36px;
   height: 5px;
   border-radius: var(--r-pill);
-  background: var(--label-3);
+  background: var(--ink);
+  opacity: 0.62;
   margin: 0 auto var(--sp-2);
+}
+html.is-sheet-drag .sheet-grabber {
+  width: 48px;
+  opacity: 0.95;
 }
 .sheet-titlebar {
   display: grid;
@@ -2860,6 +2876,7 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   border-radius: var(--r-pill);
   color: var(--ink-2);
   background: var(--glass-fallback);
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
   box-shadow: var(--glass-rim), 0 8px 18px -14px rgba(26, 20, 15, 0.28);
   text-decoration: none;
 }
@@ -2905,7 +2922,7 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   font-size: var(--t-body);
 }
 .search-input::placeholder {
-  color: var(--label-2);
+  color: color-mix(in srgb, var(--ink) 68%, transparent);
 }
 .search-input::-webkit-search-cancel-button {
   filter: grayscale(1);
@@ -2928,7 +2945,7 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 }
 .search {
   width: min(520px, 100%);
-  border: 0;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
   border-radius: var(--r-pill);
   padding: 0 14px;
   background: var(--glass-fallback);
@@ -3005,6 +3022,9 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 .lib-hero-artist {
   color: var(--ink);
   font-weight: 600;
+}
+.lib-hero-bleed {
+  display: none;
 }
 .lib-hero-go {
   display: inline-flex;
@@ -3108,14 +3128,9 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   }
   .lib-shelf {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
     gap: 16px;
     margin-top: 20px;
-  }
-}
-@media (min-width: 1280px) {
-  .lib-shelf {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 @media (min-width: 700px) and (max-height: 640px) {
@@ -3381,56 +3396,8 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   text-align: right;
 }
 
-/* The cover and the title travel. A full-page crossfade keeps two filtered trees
-   alive for the whole spring and drops frames, so the root snapshot does not animate. */
-::view-transition-group(root),
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  opacity: 1;
-  background: var(--bg);
-}
-::view-transition-group(song-poster) {
-  animation-duration: var(--dur-3);
-  animation-timing-function: var(--ease-spring);
-}
-::view-transition-old(song-poster),
-::view-transition-new(song-poster) {
-  height: 100%;
-  object-fit: cover;
-  overflow: hidden;
-  border-radius: var(--r-md);
-}
-/* ===================== Round 6: compositions and motion ===================== */
-
-::view-transition-group(song-title) {
-  animation-duration: var(--dur-3);
-  animation-timing-function: var(--ease-spring);
-}
-
-::view-transition-old(song-title),
-::view-transition-new(song-title) {
-  height: auto;
-  width: auto;
-  overflow: hidden;
-}
-
-@keyframes route-in {
-  from {
-    opacity: 0;
-  }
-}
-
-html[data-glass='rim'] .song,
-html[data-glass='solid'] .song {
-  animation: route-in 320ms var(--ease-out) both;
-}
-
-@supports not (view-transition-name: none) {
-  html[data-glass='lens'] .song {
-    animation: route-in 320ms var(--ease-out) both;
-  }
-}
+/* The cover flies as its own image. A view-transition snapshot stays off
+   (sharedTransition is false): it was a long frame and a black root on WebKit. */
 
 @keyframes now-live {
   0%,
@@ -3442,9 +3409,9 @@ html[data-glass='solid'] .song {
   }
 }
 
-/* The breathe lives on the glyph. An animation on the button itself would override the press scale. */
+/* The breathe lives on the glyph wrapper. The paths morph on their own transform. */
 html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
-  animation: glyph-in 220ms var(--ease-spring) both, now-live 1.4s var(--ease-spring) 220ms infinite;
+  animation: now-live 1.4s var(--ease-spring) infinite;
 }
 
 /* Phone portrait: header and floor are islands. The field stays in the margins. */
@@ -3628,52 +3595,32 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
   .library {
     max-width: 1200px;
   }
-}
-
-/* Cinema. The poster keeps the left. The other songs are a gallery column, not a stretched list. */
-@media (min-width: 1920px) {
-  .library {
-    display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(300px, 420px);
-    grid-template-areas:
-      'head head'
-      'hero shelf';
-    column-gap: 32px;
-    align-items: start;
-    max-width: 1520px;
+  /* Same cover, quiet, so the right of the wide hero is not an empty field. */
+  .lib-hero-bleed {
+    display: block;
+    position: absolute;
+    z-index: 0;
+    top: 12%;
+    right: 5%;
+    width: 38%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 50%;
+    opacity: 0.5;
+    pointer-events: none;
   }
-  .lib-head {
-    grid-area: head;
-  }
-  .lib-hero {
-    grid-area: hero;
-    gap: 36px;
-    padding: 20px;
-    margin-top: 12px;
-  }
-  .lib-hero-cover {
-    width: min(48%, 520px);
-  }
-  .lib-hero-title {
-    font-size: clamp(2.5rem, 3vw, 3.5rem);
-  }
-  .lib-shelf {
-    grid-area: shelf;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-top: 12px;
-  }
-  .lib-shelf > li {
-    flex: none;
+  .lib-hero-bleed img {
     width: 100%;
-    max-width: 420px;
+    height: 100%;
+    object-fit: cover;
   }
-}
-
-@media (min-width: 2400px) {
-  .library {
-    max-width: 1760px;
+  .lib-hero-cover,
+  .lib-hero-copy {
+    position: relative;
+    z-index: 1;
+  }
+  .lib-hero-copy {
+    max-width: 28rem;
   }
 }
 
@@ -3683,7 +3630,7 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 40;
+  z-index: 80;
   pointer-events: none;
   object-fit: cover;
   transform-origin: 0 0;
@@ -3704,66 +3651,25 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
   opacity: 0;
   transition: opacity 160ms cubic-bezier(0.32, 0.72, 0, 1);
 }
+.library.is-leaving .is-chosen .lib-hero-bleed {
+  visibility: hidden;
+}
 
-@keyframes song-rise {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 24px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-.song.is-arriving .topbar-title,
-.song.is-arriving .player,
-.song.is-arriving .scene {
-  animation: song-rise 280ms cubic-bezier(0.32, 0.72, 0, 1) both;
-}
-.song.is-arriving .player {
-  animation-delay: 40ms;
-}
-.song.is-arriving .scene {
-  animation-delay: 80ms;
-}
 .song.is-flying .now-art {
   opacity: 0;
 }
-/* The phone route fade would hide the sky for the whole flight. The cover is the only shared piece. */
-html[data-glass='rim'] .song.is-arriving,
-html[data-glass='solid'] .song.is-arriving,
-html[data-glass='lens'] .song.is-arriving,
-html[data-glass='rim'] .song.is-here,
-html[data-glass='solid'] .song.is-here,
-html[data-glass='lens'] .song.is-here {
-  animation: none;
-  opacity: 1;
-}
 
-/* Desktop only. The phone sheet must not scale the page: that layer was the memory leak. */
-html[data-glass='lens'][data-sheet='1'] .song {
-  transform-origin: 50% 40%;
-  transform: scale(calc(1 - 0.04 * var(--sheet-p, 0)));
-  border-radius: calc(20px * var(--sheet-p, 0));
+/* Every device, transform only. A filter on this layer was the phone leak. */
+html[data-sheet='1'] .song {
+  transform-origin: 50% 42%;
+  transform: scale(calc(1 - 0.035 * var(--sheet-p, 0)));
+  border-radius: calc(22px * var(--sheet-p, 0));
   overflow: hidden;
 }
 
 .play-glyph {
   display: grid;
   place-items: center;
-}
-html:not([data-motion='off']) .play-glyph {
-  animation: glyph-in 220ms var(--ease-spring) both;
-}
-@keyframes glyph-in {
-  from {
-    transform: scale(0.7) rotate(-90deg);
-    opacity: 0;
-  }
-  to {
-    transform: none;
-    opacity: 1;
-  }
 }
 
 /* SE: one icon row, one header line, the note off the rail. The 393 frame is untouched. */
@@ -3776,7 +3682,6 @@ html:not([data-motion='off']) .play-glyph {
   .now-art {
     width: 32px;
     height: 32px;
-    border-radius: 8px;
   }
   .topbar-title {
     display: flex;
@@ -3823,7 +3728,6 @@ html:not([data-motion='off']) .play-glyph {
     min-height: 44px;
     padding: 0;
     gap: 0;
-    background: none;
   }
   .util-label {
     position: absolute;
@@ -3902,10 +3806,19 @@ html:not([data-motion='off']) .play-glyph {
   }
   .topbar-title {
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .topbar-sub {
+    display: flex;
     align-items: baseline;
     gap: 8px;
     min-width: 0;
-    overflow: hidden;
+    max-width: 100%;
   }
   .topbar-song,
   .topbar-version,
@@ -3916,10 +3829,14 @@ html:not([data-motion='off']) .play-glyph {
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  .topbar-song {
+    flex: 0 1 auto;
+  }
   .topbar-version,
   .topbar-who {
-    flex: 1 1 auto;
-    font-size: 0.75rem;
+    flex: 0 1 auto;
+    min-width: 0;
+    font-size: 0.8125rem;
   }
   .player,
   .song.has-comment .player {
@@ -4078,30 +3995,59 @@ html:not([data-motion='off']) .play-glyph {
     height: auto;
     aspect-ratio: 1;
   }
-  .lib-shelf {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 18px;
-    width: 100%;
-    margin-top: 0;
+  .lib-hero-title {
+    font-size: clamp(2.5rem, 3vw, 3.5rem);
   }
-  .lib-shelf > li {
-    width: auto;
-    max-width: none;
+  .lib-shelf {
+    margin-top: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .play-glyph,
   .library.is-leaving .lib-hero,
-  .library.is-leaving .lib-row,
-  .song.is-arriving .topbar-title,
-  .song.is-arriving .player,
-  .song.is-arriving .scene {
+  .library.is-leaving .lib-row {
     animation: none;
     transition: none;
   }
   .song.is-flying .now-art {
     opacity: 1;
   }
+}
+
+.note-card {
+  position: absolute;
+  z-index: 5;
+  left: max(10px, var(--col-left, 10px));
+  right: max(10px, var(--col-right, 10px));
+  bottom: calc(var(--floor-h, 168px) + 8px);
+  display: flex;
+  flex-direction: column;
+  max-height: min(22dvh, 200px);
+  margin: 0;
+  padding: 6px 12px 8px;
+  overflow: hidden;
+  border: 1px solid var(--dock-line);
+  border-radius: 22px;
+  background: var(--dock-solid);
+  box-shadow: 0 -12px 32px -24px rgba(0, 0, 0, 0.45);
+}
+.note-grab {
+  width: 36px;
+  height: 5px;
+  margin: 2px auto 0;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  opacity: 0.45;
+}
+.note-card-head { display: flex; align-items: center; min-height: 44px; }
+.note-card .comment-body {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  opacity: 1;
+  transform: none;
 }

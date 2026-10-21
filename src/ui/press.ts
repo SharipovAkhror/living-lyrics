@@ -1,7 +1,7 @@
 /**
  * Press and release for the play control.
- * Down springs to 0.92. Up springs toward 1.05, then retargets to 1
- * without dropping the velocity. Only `transform` is written.
+ * Down springs to 0.92. Up springs toward 1.04 (stiffness 450, damping 18),
+ * then retargets to 1 without dropping the velocity. Only `transform` is written.
  */
 import { PRESS_SPRING, RELEASE_SPRING, SPRING, springSettled, stepSpring, type SpringState } from './spring';
 
@@ -30,7 +30,7 @@ export function bindPress(el: HTMLElement): () => void {
     last = now;
     const spec = mode === 'down' ? PRESS_SPRING : mode === 'over' ? RELEASE_SPRING : SPRING;
     state = stepSpring(state, target, dt, spec);
-    if (mode === 'over' && state.x >= 1.045 && state.v >= 0) {
+    if (mode === 'over' && state.x >= 1.035 && state.v >= 0) {
       mode = 'idle';
       target = 1;
     }
@@ -66,7 +66,7 @@ export function bindPress(el: HTMLElement): () => void {
     if (mode !== 'down') return;
     if (el.hasPointerCapture(event.pointerId)) el.releasePointerCapture(event.pointerId);
     mode = 'over';
-    target = 1.05;
+    target = 1.04;
     start();
   };
 

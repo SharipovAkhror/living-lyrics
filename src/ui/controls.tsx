@@ -2,8 +2,7 @@ import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEv
 import { createPortal } from 'react-dom';
 import { Icon } from './icons';
 import { GlassLayers } from './glass/Glass';
-import { SHEET_CLOSE, SPRING, springSettled, stepSpring, type SpringState } from './spring';
-import { isPhone } from './phone';
+import { SHEET_CLOSE, SHEET_OPEN, springSettled, stepSpring, type SpringState } from './spring';
 
 function motionOff() {
   if (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
@@ -71,9 +70,8 @@ export function Sheet({
     const p = Math.max(0, Math.min(1, 1 - Math.max(0, travel) / height.current));
     if (backdrop.current) backdrop.current.style.opacity = p.toFixed(3);
     const root = document.documentElement;
-    // On a phone the page under the sheet does not scale, so this variable would only
-    // restyle the whole stage on the frame the sheet opens.
-    if (!isPhone()) root.style.setProperty('--sheet-p', p.toFixed(3));
+    // One progress for every device. The song reads it as a transform only.
+    root.style.setProperty('--sheet-p', p.toFixed(3));
     // Stay covered for the whole open, including the first frame where the sheet is still off-screen.
     // Clearing here used to wake the sky under the blur while the sheet was travelling.
     if (openRef.current || p > 0.02) root.dataset.sheet = '1';
@@ -95,7 +93,7 @@ export function Sheet({
       if (drag.current?.active) return;
       const dt = Math.min(0.032, (now - last) / 1000);
       last = now;
-      const spec = target.current > 1 ? SHEET_CLOSE : SPRING;
+      const spec = target.current > 1 ? SHEET_CLOSE : SHEET_OPEN;
       state.current = stepSpring(state.current, target.current, dt, spec);
       paint(state.current.x);
       if (springSettled(state.current, target.current)) {

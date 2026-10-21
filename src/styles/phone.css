@@ -68,8 +68,6 @@
     content-visibility: auto;
     contain-intrinsic-size: auto 88px;
   }
-  /* The strip above the sheet stays put. Scaling the whole song promoted a layer on open. */
-  html[data-sheet='1'] .song,
   html[data-sheet='1'] .library,
   html[data-sheet='1'] .ig,
   html[data-sheet='1'] .method,
@@ -135,7 +133,6 @@ html[data-phone='1'] .sheet-body .group {
   contain-intrinsic-size: auto 88px;
 }
 
-html[data-phone='1'][data-sheet='1'] .song,
 html[data-phone='1'][data-sheet='1'] .library,
 html[data-phone='1'][data-sheet='1'] .ig,
 html[data-phone='1'][data-sheet='1'] .method,

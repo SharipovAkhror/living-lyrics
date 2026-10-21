@@ -10,8 +10,9 @@ import { useSongAccent } from '@/app/theme';
 import { enableSongFonts } from '@/app/fontCatalog';
 import { nextSlug, prefetchLyrics, prefetchRecording, recordingUrl } from '@/app/prefetch';
 import { linkHandler } from '@/app/router';
-import { motionBlocked, runMorph, takeMorph } from '@/app/morph';
+import { followHeader, hasFlight, motionBlocked, playRise } from '@/app/morph';
 import { bindPress } from '@/ui/press';
+import { PlayPause } from '@/ui/playglyph';
 import { GlassLayers } from '@/ui/glass/Glass';
 import { AudioEngine } from '@/player/engine';
 import { preloadMode, readNetHint } from '@/player/preload';
@@ -47,7 +48,7 @@ const SHORT_LAND =
   '(min-width: 700px) and (max-height: 640px), (max-width: 699px) and (max-height: 520px) and (orientation: landscape)';
 
 function useShortLandscape() {
-  const [on, setOn] = useState(false);
+  const [on, setOn] = useState(() => (typeof window !== 'undefined' ? window.matchMedia(SHORT_LAND).matches : false));
   useEffect(() => {
     const mq = window.matchMedia(SHORT_LAND);
     const apply = () => setOn(mq.matches);
@@ -56,6 +57,67 @@ function useShortLandscape() {
     return () => mq.removeEventListener('change', apply);
   }, []);
   return on;
+}
+
+/** Portrait note. Not a dialog: the settings test takes the first one, and the grabber class is theirs. */
+function NoteCard({
+  text,
+  textKey,
+  showHarakat,
+  onClose,
+}: {
+  text: string;
+  textKey: number;
+  showHarakat: boolean;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const drag = useRef<{ y: number; id: number } | null>(null);
+  const move = (clientY: number) => {
+    const card = ref.current;
+    const d = drag.current;
+    if (!card || !d) return;
+    const dy = Math.max(0, clientY - d.y);
+    card.style.transform = dy > 0 ? `translate3d(0, ${dy.toFixed(1)}px, 0)` : '';
+  };
+  return (
+    <aside
+      ref={ref}
+      className="note-card"
+      role="region"
+      aria-label="Пояснение"
+      onPointerDown={(e) => {
+        const t = e.target as HTMLElement;
+        if (t.closest('button, a, .comment-body')) return;
+        drag.current = { y: e.clientY, id: e.pointerId };
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+      }}
+      onPointerMove={(e) => {
+        if (!drag.current || e.pointerId !== drag.current.id) return;
+        move(e.clientY);
+      }}
+      onPointerUp={(e) => {
+        const d = drag.current;
+        if (!d || e.pointerId !== d.id) return;
+        drag.current = null;
+        if (e.clientY - d.y > 48) onClose();
+        else if (ref.current) ref.current.style.transform = '';
+      }}
+      onPointerCancel={() => {
+        drag.current = null;
+        if (ref.current) ref.current.style.transform = '';
+      }}
+    >
+      <div className="note-grab" aria-hidden="true" />
+      <div className="note-card-head">
+        <span className="comment-kicker">Пояснение</span>
+        <button type="button" className="btn btn-circle btn-plain" style={{ marginInlineStart: 'auto' }} aria-label="Закрыть пояснение" onClick={onClose}>
+          <Icon name="xmark" size={20} />
+        </button>
+      </div>
+      <RichText key={textKey} text={text} showHarakat={showHarakat} className="comment-body" />
+    </aside>
+  );
 }
 
 /** The stage width follows one geometry, including the margin note when it is open. */
@@ -329,7 +391,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     else setSettings({ showComment: !settings.showComment });
   }, [shortLand, noteText, settings.commentOpen, settings.showComment]);
   const columns = useStageFrame(settings.showComment && !!noteText);
-  const floorNote = noteText && settings.showComment && !columns.frame.marginNote ? noteText : null;
+  // Landscape keeps the drawer inside the player. Portrait and the tablet get a card above the floor.
+  const floorNote = noteText && settings.showComment && !columns.frame.marginNote && shortLand ? noteText : null;
+  const portraitNote = noteText && settings.showComment && !columns.frame.marginNote && !shortLand ? noteText : null;
   useEffect(() => {
     if (playing) setResumeAt(null);
   }, [playing]);
@@ -470,7 +534,14 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       root.style.setProperty('--chrome-top', `${top.offsetTop + top.offsetHeight + 10}px`);
       const rootBox = root.getBoundingClientRect();
       const floorBox = floor.getBoundingClientRect();
+      // The card is positioned from the floor only, so measuring the floor cannot chase the card.
+      root.style.setProperty('--floor-h', `${Math.max(0, rootBox.bottom - floorBox.top)}px`);
       let coverTop = floorBox.top;
+      const card = root.querySelector('.note-card');
+      if (card instanceof HTMLElement && getComputedStyle(card).display !== 'none') {
+        const box = card.getBoundingClientRect();
+        if (box.height > 8) coverTop = Math.min(coverTop, box.top);
+      }
       const note = floor.querySelector('.comment');
       if (note) {
         const box = note.getBoundingClientRect();
@@ -484,40 +555,37 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     const ro = new ResizeObserver(apply);
     ro.observe(top);
     ro.observe(floor);
+    const card = root.querySelector('.note-card');
+    if (card instanceof HTMLElement) ro.observe(card);
     window.addEventListener('resize', apply);
     apply();
     return () => {
       ro.disconnect();
       window.removeEventListener('resize', apply);
     };
-  }, [song, lyrics, state?.error, state?.source, columns.frame]);
+  }, [song, lyrics, state?.error, state?.source, columns.frame, shortLand, settings.showComment, portraitNote?.text]);
 
   useLayoutEffect(() => {
-    const from = takeMorph();
     const root = songRef.current;
     const img = artRef.current;
-    // Stays for the life of this visit. Dropping it would restart the route fade at opacity 0.
-    if (root) root.classList.add('is-here');
-    if (!from || !root || !img || motionBlocked()) return;
-    // The song itself stays opaque. Only the header art hides while its twin flies.
+    // No route fade: the song is opaque from the first frame. Only the header art waits for the flyer.
+    if (!root || !img || !hasFlight() || motionBlocked()) return;
+    // The song itself stays opaque. Only the header art hides until the flyer overlaps it.
     root.classList.add('is-arriving', 'is-flying');
-    const alive = { current: true };
     const dest = () => {
       const art = img.getBoundingClientRect();
       if (art.width < 1 || art.height < 1) return null;
-      return { left: art.left, top: art.top, width: art.width, height: art.height, radius: 12 };
+      const raw = getComputedStyle(img).borderTopLeftRadius;
+      let radius = parseFloat(raw) || 0;
+      if (raw.trim().endsWith('%')) radius = (radius / 100) * Math.min(art.width, art.height);
+      return { left: art.left, top: art.top, width: art.width, height: art.height, radius };
     };
-    const showArt = () => {
-      if (alive.current) root.classList.remove('is-flying');
-    };
-    void runMorph(from, dest, showArt, alive).then(() => {
-      if (!alive.current) return;
-      root.classList.remove('is-arriving', 'is-flying');
-    });
-    // A lost frame must not leave the header art hidden.
-    const guard = window.setTimeout(showArt, 700);
+    const stopFollow = followHeader(dest, () => root.classList.remove('is-flying'));
+    const stopRise = playRise(root, () => root.classList.remove('is-arriving'));
+    const guard = window.setTimeout(() => root.classList.remove('is-flying', 'is-arriving'), 1600);
     return () => {
-      alive.current = false;
+      stopFollow();
+      stopRise();
       window.clearTimeout(guard);
       root.classList.remove('is-arriving', 'is-flying');
     };
@@ -622,16 +690,27 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         />
         <div className="topbar-title">
           <div className="topbar-song">{song.title}</div>
-          <div className="topbar-version">{song.version.label}</div>
-          <div className="topbar-who">
-            {song.artist}
-            {partExtra ? <span className="topbar-part"> · {partExtra}</span> : null}
+          <div className="topbar-sub">
+            <div className="topbar-version">{song.version.label}</div>
+            <div className="topbar-who">
+              {song.artist}
+              {partExtra ? <span className="topbar-part"> · {partExtra}</span> : null}
+            </div>
           </div>
         </div>
         <button className="btn btn-circle btn-plain" onClick={() => openSheet('info')} aria-label="О песне">
           <Icon name="info.circle" size={22} />
         </button>
       </header>
+
+      {portraitNote && (
+        <NoteCard
+          text={portraitNote.text}
+          textKey={portraitNote.from.idx}
+          showHarakat={settings.showHarakat}
+          onClose={() => setSettings({ showComment: false })}
+        />
+      )}
 
       {state?.error && (
         <div className="player-alert" role="alert">
@@ -738,8 +817,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               {buffering && !playing ? (
                 <span className="btn-buffer" aria-hidden="true" />
               ) : (
-                <span className="play-glyph" key={playing ? 'pause' : 'play'}>
-                  <Icon name={playing ? 'pause' : 'play'} size={28} />
+                <span className="play-glyph">
+                  <PlayPause playing={playing} size={28} />
                 </span>
               )}
             </button>
