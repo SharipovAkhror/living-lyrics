@@ -1,13 +1,11 @@
 /**
- * Renders the glass icon set on one page so the grid can be checked by eye.
+ * Renders the Qalam family on one page so the grid can be checked by eye.
  * Usage: npx tsx scripts/art/icon-proof.ts
  * Writes work/t28-icons/proof.html (gitignored).
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { setC } from '../../src/ui/icons/c';
-import { ICON_NAMES, type IconSet, type Mark } from '../../src/ui/icons/types';
-
-const sets = [setC];
+import { glyphAt, OPTICAL, type Optical } from './icons/qalam';
+import { ICON_NAMES, type Mark } from '../../src/ui/icons/types';
 
 function marks(list: Mark[], sw: number): string {
   return list
@@ -23,32 +21,31 @@ function marks(list: Mark[], sw: number): string {
     .join('');
 }
 
-function svg(set: IconSet, name: (typeof ICON_NAMES)[number], state: 'off' | 'on', px: number): string {
-  const glyph = set.glyphs[name];
+function svg(name: (typeof ICON_NAMES)[number], state: 'off' | 'on', px: number): string {
+  const optical: Optical = px <= 18 ? 16 : px <= 22 ? 20 : px <= 28 ? 24 : 32;
+  const glyph = glyphAt(name, optical);
   const body = state === 'on' && glyph.on ? glyph.on : glyph.off;
-  return `<svg width="${px}" height="${px}" viewBox="0 0 ${set.vb} ${set.vb}" fill="none" shape-rendering="geometricPrecision">${marks(body, set.sw)}</svg>`;
+  return `<svg width="${px}" height="${px}" viewBox="0 0 24 24" fill="none" shape-rendering="geometricPrecision">${marks(body, 1.78)}</svg>`;
 }
 
 const tabs = ['character.bubble', 'book.closed', 'list.bullet', 'slider.horizontal.3'] as const;
 
-function sheet(set: IconSet): string {
+function sheet(): string {
   const cells = ICON_NAMES.map((name) => {
-    const sizes = [16, 20, 22, 24, 28].map((px) => svg(set, name, 'off', px)).join('');
-    const pair = set.glyphs[name].on
-      ? `<div class="pair"><span>off</span>${svg(set, name, 'off', 48)}<span>on</span>${svg(set, name, 'on', 48)}</div>`
-      : '';
-    return `<figure><div class="sizes">${sizes}</div><div class="big">${svg(set, name, 'off', 72)}</div>${pair}<figcaption>${name}</figcaption></figure>`;
+    const sizes = [16, 20, 24, 32].map((px) => svg(name, 'off', px)).join('');
+    const pair = `<div class="pair"><span>off</span>${svg(name, 'off', 48)}<span>on</span>${svg(name, 'on', 48)}</div>`;
+    return `<figure><div class="sizes">${sizes}</div><div class="big">${svg(name, 'off', 72)}</div>${pair}<figcaption>${name}</figcaption></figure>`;
   }).join('');
   const bar = tabs
     .map(
       (name, i) =>
-        `<button class="${i < 2 ? 'on' : ''}">${svg(set, name, i < 2 ? 'on' : 'off', 24)}<span>${['Перевод', 'Пояснение', 'Весь текст', 'Настройки'][i]}</span></button>`,
+        `<button class="${i < 2 ? 'on' : ''}">${svg(name, i < 2 ? 'on' : 'off', 24)}<span>${['Перевод', 'Пояснение', 'Весь текст', 'Настройки'][i]}</span></button>`,
     )
     .join('');
   const transport = ['backward', 'play', 'pause', 'forward']
-    .map((name) => svg(set, name as (typeof ICON_NAMES)[number], 'off', name === 'play' || name === 'pause' ? 28 : 24))
+    .map((name) => svg(name as (typeof ICON_NAMES)[number], 'off', name === 'play' || name === 'pause' ? 28 : 24))
     .join('');
-  return `<section><h2>${set.id}</h2><div class="transport"><i class="disc">${transport}</i></div><div class="bar">${bar}</div><div class="grid">${cells}</div></section>`;
+  return `<section><h2>qalam ${OPTICAL.join(' ')}</h2><div class="transport"><i class="disc">${transport}</i></div><div class="bar">${bar}</div><div class="grid">${cells}</div></section>`;
 }
 
 const html = `<!doctype html><meta charset="utf-8"><title>icon proof</title>
@@ -71,8 +68,8 @@ const html = `<!doctype html><meta charset="utf-8"><title>icon proof</title>
   .dark .bar button { color: color-mix(in srgb, #f6f0e6 72%, transparent); }
   .dark .bar button.on { color: #e7b59a; }
 </style>
-${sets.map(sheet).join('')}
-<div class="dark">${sets.map(sheet).join('')}</div>
+${sheet()}
+<div class="dark">${sheet()}</div>
 `;
 
 mkdirSync('work/t28-icons', { recursive: true });

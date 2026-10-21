@@ -1,10 +1,11 @@
 /**
- * Site icons. One set, «Стекло» (`./c`).
+ * Site icons. One family, Qalam (`scripts/art/icons/qalam.ts`).
  * Callers keep `import { Icon } from '@/ui/icons'`.
+ * The pixel size picks an optical master: 16, 20, 24 or 32.
  */
 import type { CSSProperties } from 'react';
-import { setC } from './c';
-import type { IconName, Mark } from './types';
+import { glyphAt, opticalFor } from '../../../scripts/art/icons/qalam';
+import { ICON_NAMES, type IconName, type Mark } from './types';
 
 export type { IconName } from './types';
 
@@ -60,11 +61,11 @@ export function Icon({
   /** Accessible label. Omit when the parent control already has one. */
   label?: string;
 }) {
-  const glyph = setC.glyphs[name as IconName];
-  if (!glyph) return null;
+  if (!(ICON_NAMES as readonly string[]).includes(name)) return null;
   const px = Math.round(size);
+  const glyph = glyphAt(name as IconName, opticalFor(px));
   const pair = Boolean(glyph.on);
-  const vb = setC.vb;
+  const vb = 24;
   return (
     <svg
       width={px}
@@ -80,11 +81,11 @@ export function Icon({
       focusable="false"
     >
       <g className="ll-off">
-        <Marks marks={glyph.off} sw={setC.sw} />
+        <Marks marks={glyph.off} sw={1.78} />
       </g>
       {glyph.on && (
         <g className="ll-on">
-          <Marks marks={glyph.on} sw={setC.sw} />
+          <Marks marks={glyph.on} sw={1.78} />
         </g>
       )}
     </svg>

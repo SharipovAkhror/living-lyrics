@@ -1,4 +1,4 @@
-/** Names the site already uses. The glass set draws the full list. */
+/** Names the site already uses. The Qalam family draws the full list. */
 export const ICON_NAMES = [
   'chevron.left',
   'chevron.right',
@@ -44,9 +44,10 @@ export type Glyph = {
 };
 
 export type IconSet = {
-  id: 'c';
-  /** Square viewBox. The glass set is drawn on a 24 grid. */
+  id: 'qalam';
+  /** Square viewBox. Qalam is drawn on a 24 grid. */
   vb: number;
   sw: number;
+  /** The 24 master. Callers that know the pixel size use the optical master. */
   glyphs: Record<IconName, Glyph>;
 };
