@@ -52,6 +52,9 @@ if (fillQuery('?t=10')) fail('чужой параметр не включает 
 if (!fillQuery('?fill=1')) fail('?fill=1 не включил заливку');
 if (!fillQuery('?t=12&fill=1')) fail('fill среди других параметров');
 if (fillQuery('?fill=0')) fail('fill=0 не должен включать');
+if (fillQuery('?fill=1', false)) fail('на боевом сайте ?fill=1 не должен включать заливку');
+if (!/__FILL_QUERY__:.*VERCEL_ENV !== 'production'/.test(readFileSync(join(root, 'vite.config.ts'), 'utf8')))
+  fail('vite.config.ts должен выключать ?fill=1 в боевой сборке');
 
 if (wordSyncOn('aligned', '') !== true) fail('aligned без адреса должен заливать');
 if (wordSyncOn('draft', '') !== false) fail('draft без адреса не должен заливать');

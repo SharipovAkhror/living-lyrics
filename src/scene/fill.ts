@@ -38,8 +38,15 @@ export function fillMaskDirection(rtl: boolean): 'to left' | 'to right' {
   return rtl ? 'to left' : 'to right';
 }
 
+/** Set by vite.config.ts: false only in the Vercel production build. Undefined outside Vite (tests). */
+declare const __FILL_QUERY__: boolean | undefined;
+
+/** Production never shows unproven fill, so the test switch works only in dev and previews. */
+export const FILL_QUERY_ALLOWED = typeof __FILL_QUERY__ === 'undefined' || __FILL_QUERY__;
+
 /** `?fill=1` draws word fill on a draft song. It does not change stored timing. */
-export function fillQuery(search: string): boolean {
+export function fillQuery(search: string, allowed: boolean = FILL_QUERY_ALLOWED): boolean {
+  if (!allowed) return false;
   const q = search.startsWith('?') ? search.slice(1) : search;
   return new URLSearchParams(q).get('fill') === '1';
 }
