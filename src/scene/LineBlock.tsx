@@ -100,7 +100,7 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
     const upper = Math.max(floor, design);
     const lower = floor;
     el.style.width = `${width}px`;
-    el.style.maxWidth = '100%';
+    el.style.maxWidth = `${width}px`;
     el.style.minWidth = '0';
     let lo = lower;
     let hi = upper;

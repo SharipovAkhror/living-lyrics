@@ -60,6 +60,7 @@
   --col-left: 0px;
   --col-right: 0px;
   --lyric-w: calc(100% - 48px);
+  --stage-w: calc(100vw - var(--col-left) - var(--col-right));
   --note-w: 0px;
   --note-inset: 16px;
   --player-bottom: 0px;
@@ -152,9 +153,12 @@
 .scene-stage {
   position: absolute;
   left: var(--col-left);
-  right: var(--col-right);
   top: var(--chrome-top);
   bottom: var(--player-h);
+  /* An explicit width. A long line must not stretch this box over the margin note. */
+  width: var(--stage-w);
+  max-width: var(--stage-w);
+  min-width: 0;
   touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
@@ -690,7 +694,7 @@
   border-radius: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   background: transparent;
   box-shadow: none;
   -webkit-backdrop-filter: none;
@@ -1670,6 +1674,7 @@
   background: none;
   color: var(--accent);
   font: 600 var(--t-body) / 1.2 var(--font-ui);
+  text-transform: none;
   white-space: nowrap;
   cursor: pointer;
 }

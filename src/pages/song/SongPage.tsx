@@ -384,6 +384,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     const f = columns.frame;
     root.style.setProperty('--col-left', `${f.colLeft}px`);
     root.style.setProperty('--col-right', `${f.colRight}px`);
+    root.style.setProperty('--stage-w', `${f.stageW}px`);
     root.style.setProperty('--note-w', `${f.noteW}px`);
     root.style.setProperty('--lyric-w', `${f.lyricW}px`);
     root.style.setProperty('--note-inset', `${f.panelInset}px`);
