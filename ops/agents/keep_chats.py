@@ -24,11 +24,18 @@ MIN_GAP_S = 300
 
 
 def retired(running: list[dict], chats: set[str]) -> list[dict]:
-    """Registered chats in the background whose process is gone."""
-    return [
-        s for s in running
-        if s.get('kind') == 'background' and s.get('name') in chats and not s.get('pid') and s.get('state') != 'stopped'
-    ]
+    """Registered chats in the background whose newest session has lost its process.
+
+    The daemon retires an idle session two ways: `idle-prompt` keeps it listed without a pid, and
+    `settled` (state `done`) drops it from the plain listing, so `sessions(include_done=True)` is
+    read. A chat is respawned only when no session of that name still runs."""
+    newest: dict[str, dict] = {}
+    for s in running:
+        if s.get('kind') == 'background' and s.get('name') in chats:
+            if s.get('name') not in newest or s.get('startedAt', 0) > newest[s['name']].get('startedAt', 0):
+                newest[s['name']] = s
+    alive = {s.get('name') for s in running if s.get('pid')}
+    return [s for name, s in newest.items() if name not in alive and not s.get('pid') and s.get('state') != 'stopped']
 
 
 def main() -> None:
@@ -41,7 +48,7 @@ def main() -> None:
         return
     claude = claude_bin()
     done = []
-    for s in retired(sessions(), {c['chat'] for c in cards(repo)}):
+    for s in retired(sessions(include_done=True), {c['chat'] for c in cards(repo)}):
         sid = s.get('id') or s['sessionId'][:8]
         if dry:
             print(f'would respawn {s["name"]} · {sid}')

@@ -58,7 +58,7 @@ Raw-адреса GitHub кэширует до пяти минут: на друг
 
 ## Один источник мода на компьютере владельца
 
-Витрина `living-lyrics` подключена как локальная папка (`claude plugin marketplace add C:/Users/User/Documents/GitHub/living-lyrics`). Относительный плагин `./ops/dashboard-mod` грузится на месте из этой папки: правки видны после `/reload-plugins`. Номер версии (`ops/dashboard-mod/.claude-plugin/plugin.json`, сейчас 0.9.1) нужен установкам с GitHub: без повышения они не обновятся. Главная папка репозитория должна стоять на `main`: плагин читает её файлы как есть.
+Витрина `living-lyrics` подключена как локальная папка (`claude plugin marketplace add C:/Users/User/Documents/GitHub/living-lyrics`). Относительный плагин `./ops/dashboard-mod` грузится на месте из этой папки: правки видны после `/reload-plugins`. Номер версии (`ops/dashboard-mod/.claude-plugin/plugin.json`, сейчас 0.9.2) нужен установкам с GitHub: без повышения они не обновятся. Главная папка репозитория должна стоять на `main`: плагин читает её файлы как есть.
 
 Переключение со старой копии (папка разработки `C:\Users\User\.claude\dev-mods\<id сессии>\ll-dashboard` живёт в одной сессии) делается один раз, в момент, который выбирает владелец:
 

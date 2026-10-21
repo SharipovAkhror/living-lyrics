@@ -38,8 +38,10 @@ def cards(repo: Path = REPO) -> list[dict]:
     return out
 
 
-def sessions() -> list[dict]:
-    out = subprocess.run([claude_bin(), 'agents', '--json'], capture_output=True, encoding='utf-8', errors='replace')
+def sessions(include_done: bool = False) -> list[dict]:
+    """`claude agents --json`; with include_done also the sessions the daemon settled (state `done`)."""
+    argv = [claude_bin(), 'agents', '--json'] + (['--all'] if include_done else [])
+    out = subprocess.run(argv, capture_output=True, encoding='utf-8', errors='replace')
     if out.returncode != 0:
         raise RuntimeError(f'claude agents: {out.stderr.strip()}')
     return json.loads(out.stdout or '[]')
