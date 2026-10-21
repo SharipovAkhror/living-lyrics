@@ -1281,8 +1281,42 @@ def test_whisper_choice() -> None:
     check('a word measured only by the placement model keeps that clock',
           kept_word['clock_stable'] == 5.5, str(kept_word))
     C.apply_models(applied, {'ar': 'small', 'en': 'small'})
+    check('a missing chosen model keeps the placement model clock',
+          applied['lines'][1]['words'][0]['clock_stable'] == 4.0
+          and applied['lines'][1]['words'][0]['stable_models'] == {'medium': 4.0},
+          str(applied['lines'][1]['words'][0]))
+    absent = {
+        'summary': {'placement_model': 'large-v3'},
+        'lines': [{
+            'id': 'open', 'lang': 'ar', 'status': 'good', 'placed_by': 'second', 'group': 'solo',
+            'words': [raw_word(312.074, 'qad', {'large-v3': 311.49}, second=312.074, stable=311.49, mms=312.64)],
+        }],
+    }
+    C.apply_models(absent, {'ar': 'large-v3-turbo'})
+    kept_open = absent['lines'][0]['words'][0]
+    import qa_sync as QS
+    wiped = {'ctc_s': 312.074, 'second_s': 312.64, 'third_s': None}
+    kept_clocks = {'ctc_s': 312.074, 'second_s': kept_open['second_s'], 'third_s': kept_open['third_s']}
+    check('an open line keeps the placement clock when the chosen model was not measured',
+          kept_open['clock_stable'] == 311.49 and kept_open['third_s'] == 311.49
+          and kept_open['second_s'] == 312.64, str(kept_open))
+    check('the kept clock is not a one-witness refutation',
+          QS.word_refuted(wiped, np.array([312.64]), {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10})
+          == 'witness-attack'
+          and QS.word_refuted(kept_clocks, np.array([312.64]), {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10})
+          is None,
+          str(kept_clocks))
+    neither = {
+        'summary': {'placement_model': 'medium'},
+        'lines': [{
+            'id': 'none', 'lang': 'en', 'status': 'good', 'placed_by': 'mms', 'group': 'solo',
+            'words': [raw_word(1.0, 'ba', {'large-v3': 4.0}, second=1.5, stable=9.0)],
+        }],
+    }
+    C.apply_models(neither, {'en': 'small'})
     check('a model with no saved time leaves no stable clock',
-          applied['lines'][1]['words'][0]['clock_stable'] is None, str(applied['lines'][1]['words'][0]['clock_stable']))
+          neither['lines'][0]['words'][0]['clock_stable'] is None,
+          str(neither['lines'][0]['words'][0]['clock_stable']))
 
     hits = np.zeros((3, len(A.LINE_SHARES), 8), dtype=np.int32)
     cand = np.array([10, 0, 0], dtype=np.int32)

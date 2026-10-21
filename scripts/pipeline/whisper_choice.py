@@ -110,9 +110,12 @@ def line_chance_of(probe_hits, n: int) -> float | None:
 def apply_models(report: dict, by_lang: dict[str, str], peaks: np.ndarray | None = None) -> None:
     """Rewrite clock_stable from the chosen model and recompute the witness slots.
 
-    Word s/e, the text and placed_by stay. A model that was not measured on a
-    word leaves no stable clock, unless that word only has the placement model
-    and that is the one being applied.
+    Word s/e, the text and placed_by stay. A chosen model that was not measured
+    on a word does not borrow another model's time under its own name. The
+    placement model's clock stays in the slot: the ladder does not measure the
+    other models on a line that was still open, and wiping that one clock leaves
+    a single witness that can refute a line the second clock had kept.
+    `stable_models` still says which model the number came from.
     """
     summary = report.setdefault('summary', {})
     placement = summary.get('placement_model') or summary.get('stable_model')
@@ -128,6 +131,8 @@ def apply_models(report: dict, by_lang: dict[str, str], peaks: np.ndarray | None
             stored = word.get('stable_models') or {}
             if model in stored and stored[model] is not None:
                 stable = round(float(stored[model]), 3)
+            elif placement and stored.get(placement) is not None:
+                stable = round(float(stored[placement]), 3)
             elif not stored and model == placement and word.get('clock_stable') is not None:
                 stable = word.get('clock_stable')
             else:
