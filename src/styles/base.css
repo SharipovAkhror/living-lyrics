@@ -216,13 +216,6 @@ a {
   opacity: 0.72;
 }
 
-/* Kept for any older call site. The song uses .btn-ring. */
-.btn-prominent {
-  border: 1.5px solid var(--accent);
-  color: var(--accent);
-  background: transparent;
-}
-
 /* Capsule text button */
 .btn-capsule {
   height: var(--btn-md);
