@@ -11,3 +11,12 @@
 [aria-pressed='true'] .ll-icon.ll-pair .ll-fill {
   display: inline;
 }
+
+/* Song tasks stay outlines. A filled plate read as its own app icon. */
+.player .util[aria-pressed='true'] .ll-icon.ll-pair .ll-line {
+  display: inline;
+}
+
+.player .util[aria-pressed='true'] .ll-icon.ll-pair .ll-fill {
+  display: none;
+}

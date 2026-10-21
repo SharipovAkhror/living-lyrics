@@ -242,18 +242,26 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
           if (linesChanged) lineSlotsRef.current = nextLines;
           if (instChanged) instSlotsRef.current = nextInst;
           if (linesChanged || instChanged) {
-            // Drop the line layer before React writes the new lyric. A text
-            // change inside a transformed line kept a WebKit backing store.
-            // Taking the host out of the document and writing there did not
-            // lower the slope (still about 5 MB/min, T27).
+            // One view at a time. The outgoing host is hidden before React
+            // writes the next lyric, so a scrub cannot stack the old line
+            // over the header. A forced reflow here used to park that line
+            // at the origin for a frame. The slot host stays in the document:
+            // pulling it out did not lower the WebKit slope (T27).
             const stageEl = stageRef.current;
-            if (linesChanged && stageEl) {
-              for (const el of stageEl.querySelectorAll<HTMLElement>('.fb--line')) {
+            const scrubbing = !!host?.classList.contains('is-scrubbing');
+            if (stageEl && (linesChanged || scrubbing)) {
+              const hide = (el: HTMLElement) => {
+                el.style.opacity = '0';
+                el.style.visibility = 'hidden';
                 el.style.transform = 'none';
                 el.style.filter = 'none';
-                el.style.opacity = '1';
+              };
+              if (linesChanged) {
+                for (const el of stageEl.querySelectorAll<HTMLElement>('.fb--line')) hide(el);
               }
-              void stageEl.offsetWidth;
+              if (scrubbing) {
+                for (const el of stageEl.querySelectorAll<HTMLElement>('.fb--inst, .ist')) hide(el);
+              }
             }
             flushSync(() => {
               if (linesChanged) setLineSlots(nextLines);

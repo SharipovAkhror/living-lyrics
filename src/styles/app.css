@@ -1140,8 +1140,11 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   min-height: 44px;
   padding: 0;
   border: 0;
-  border-radius: var(--r-pill);
-  background: none;
+  border-radius: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  box-shadow: none;
   color: var(--ink-2);
   opacity: 1;
   font: 600 0.8125rem / 1 var(--font-ui);
@@ -3698,6 +3701,13 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
   transition: none !important;
 }
 
+/* Floor enters from below. Inline transform on the player fought this rule. */
+.song.is-arriving .player {
+  opacity: var(--floor-in, 0) !important;
+  transform: translate3d(0, calc((1 - var(--floor-in, 0)) * 84px), 0) !important;
+  transition: none !important;
+}
+
 /* Black page and an inset dim, so the 8% scale reads. The sheet is portaled above. */
 html[data-sheet='1'],
 html[data-sheet='1'] body {
@@ -3925,56 +3935,66 @@ html[data-sheet='1'] .song {
     background: rgba(0, 0, 0, 0.45);
     z-index: -1;
   }
-  /* Scrubber across the top. Transport in the middle. Tasks on the right. */
+  /* One row. Time and the track fill the left. Transport sits in the middle.
+     Tasks sit on the right. An empty first column left a blank third. */
   .player,
   .song.has-comment .player {
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto max-content;
+    grid-template-areas: 'scrub transport tasks';
+    align-items: center;
+    column-gap: 8px;
+    row-gap: 0;
     height: auto;
+    min-height: 52px;
     max-height: none;
-    gap: 0;
-    padding: 2px 12px 4px;
+    padding: 4px 10px;
+  }
+  .player .comment {
+    position: absolute;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
   }
   .player .scrub,
-  .player .player-row,
   .player .transport,
-  .player .utility {
+  .player .utility,
+  .player .scrub-top,
+  .player .scrub-meta,
+  .player .mark-bar {
     display: flex;
   }
+  .player .player-row {
+    display: contents;
+  }
   .player .scrub {
-    order: 0;
-    width: 100%;
-    height: 28px;
-    min-height: 28px;
+    grid-area: scrub;
+    width: auto;
+    min-width: 0;
+    height: 36px;
+    min-height: 36px;
   }
   .player .scrub-track {
-    height: 28px;
+    height: 36px;
     order: 3;
     flex: 1 1 auto;
   }
-  .player-row,
-  .player .player-row {
-    order: 1;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    width: 100%;
-    gap: 8px;
-  }
   .player .transport {
-    grid-column: 2;
+    grid-area: transport;
     justify-content: center;
   }
   .player .utility {
-    grid-column: 3;
+    grid-area: tasks;
     justify-self: end;
     justify-content: flex-end;
     width: auto;
     margin: 0;
     padding: 0;
     border: 0;
-    gap: 2px;
+    gap: 0;
   }
   .player-alert {
     min-height: 28px;
@@ -4049,13 +4069,13 @@ html[data-sheet='1'] .song {
 /* Phone portrait floor. One solid track, readable times, named actions, no tiles. */
 @media (max-width: 699px) and (min-height: 521px) {
   .player .btn-xl {
-    width: 56px;
-    height: 56px;
-    min-width: 56px;
-    min-height: 56px;
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    min-height: 46px;
   }
   .transport .btn-plain {
-    color: var(--ink);
+    color: color-mix(in srgb, var(--ink) 46%, transparent);
   }
   .player .scrub {
     display: grid;
@@ -4270,5 +4290,65 @@ html[data-sheet='1'] .song {
 @media (max-height: 640px) {
   .note-card {
     max-height: min(28dvh, 168px);
+  }
+}
+
+/* Round 14. Phone play disc: smaller, a material, an ink glyph.
+   Desktop from 768 / 1100 keeps 56 and 64. */
+@media (max-width: 699px) and (min-height: 521px),
+  (min-width: 700px) and (max-height: 640px),
+  (max-width: 699px) and (max-height: 520px) and (orientation: landscape) {
+  .player .btn-ring {
+    color: var(--ink);
+    background:
+      linear-gradient(180deg, color-mix(in srgb, white 26%, transparent), transparent 46%),
+      color-mix(in srgb, var(--accent) 62%, var(--dock-solid));
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, white 48%, transparent),
+      inset 0 -8px 14px color-mix(in srgb, black 16%, transparent),
+      0 8px 16px -12px color-mix(in srgb, var(--accent) 65%, black);
+  }
+}
+
+/* Pressed song tasks: tinted outline, not a filled plate. */
+.player .util[aria-pressed='true'] {
+  color: var(--accent);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  box-shadow: inset 0 0 0 0.5px color-mix(in srgb, var(--accent) 36%, transparent);
+  border-radius: 12px;
+}
+
+/* From 1280 the floor and the top bar stay inside a dock on the stage column.
+   Transport is centred. Tasks group on the right. The scrubber is the dock, not the window. */
+@media (min-width: 1280px) and (min-height: 641px) {
+  .topbar,
+  .player {
+    left: calc(var(--col-left, 0px) + max(0px, (var(--stage-w, 920px) - min(920px, var(--stage-w, 920px))) / 2));
+    right: auto;
+    width: min(920px, var(--stage-w, 920px));
+    max-width: min(920px, var(--stage-w, 920px));
+  }
+  .player .player-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    width: 100%;
+  }
+  .player .transport {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+  }
+  .player .utility {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    display: flex;
+    width: auto;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+    gap: 2px;
   }
 }

@@ -11,7 +11,7 @@ import { enableSongFonts } from '@/app/fontCatalog';
 import { nextSlug, prefetchLyrics, prefetchRecording, recordingUrl } from '@/app/prefetch';
 import { linkHandler } from '@/app/router';
 import { followHeader, hasFlight, motionBlocked, playRise } from '@/app/morph';
-import { stepSpring, type SpringState } from '@/ui/spring';
+import { SPRING, stepSpring, type SpringState } from '@/ui/spring';
 import { bindPress } from '@/ui/press';
 import { PlayPause } from '@/ui/playglyph';
 import { GlassLayers } from '@/ui/glass/Glass';
@@ -70,7 +70,6 @@ function CloseDisc({ label, onClick }: { label: string; onClick: () => void }) {
 }
 
 /** Portrait note. Not a dialog: the settings test takes the first one, and the grabber class is theirs. */
-const NOTE_LEAVE = { stiffness: 220, damping: 24, mass: 1 };
 
 function NoteCard({
   text,
@@ -78,20 +77,19 @@ function NoteCard({
   showHarakat,
   onClose,
   fading,
-  onFaded,
+  suppressed,
 }: {
   text: string;
   textKey: number;
   showHarakat: boolean;
   onClose: () => void;
-  /** The sheet is rising. Fade in place instead of dropping the card. */
+  /** The sheet is opening. Hidden before paint, still mounted so the floor height holds. */
   fading?: boolean;
-  onFaded?: () => void;
+  /** Whole scrub. One fade, not a new one each time the sung line changes. */
+  suppressed?: boolean;
 }) {
   const ref = useRef<HTMLElement>(null);
   const drag = useRef<{ y: number; id: number } | null>(null);
-  const fadedRef = useRef(onFaded);
-  fadedRef.current = onFaded;
   useLayoutEffect(() => {
     const body = ref.current?.querySelector('.comment-body');
     if (!(body instanceof HTMLElement)) return;
@@ -100,26 +98,51 @@ function NoteCard({
   useLayoutEffect(() => {
     const card = ref.current;
     if (!card || !fading) return;
-    if (motionBlocked()) {
-      fadedRef.current?.();
+    // Same commit as the sheet. A spring here overlapped the rising panel for two frames.
+    card.style.transition = 'none';
+    card.style.opacity = '0';
+    card.style.visibility = 'hidden';
+    card.style.pointerEvents = 'none';
+    card.style.transform = 'none';
+  }, [fading]);
+  useLayoutEffect(() => {
+    const card = ref.current;
+    if (!card || fading) return;
+    const raw = parseFloat(card.style.opacity);
+    const from = Number.isFinite(raw) ? raw : 1;
+    const target = suppressed ? 0 : 1;
+    if (!suppressed && from > 0.98) {
+      card.style.opacity = '';
+      card.style.visibility = '';
+      card.style.pointerEvents = '';
+      card.style.transform = '';
+      card.style.transition = '';
       return;
     }
-    let spring: SpringState = { x: 0, v: 0 };
+    if (motionBlocked()) {
+      card.style.transition = 'none';
+      card.style.opacity = target ? '' : '0';
+      card.style.visibility = target ? '' : 'hidden';
+      card.style.pointerEvents = target ? '' : 'none';
+      return;
+    }
+    let spring: SpringState = { x: from, v: 0 };
     let last = 0;
     let raf = 0;
     let alive = true;
     card.style.transition = 'none';
-    card.style.pointerEvents = 'none';
+    card.style.pointerEvents = target ? '' : 'none';
     const tick = (now: number) => {
       if (!alive) return;
       const dt = Math.min(0.032, last ? (now - last) / 1000 : 0.016);
       last = now;
-      spring = stepSpring(spring, 1, dt, NOTE_LEAVE);
+      spring = stepSpring(spring, target, dt, SPRING);
       const t = Math.max(0, Math.min(1, spring.x));
-      card.style.opacity = (1 - t).toFixed(3);
-      card.style.transform = `translate3d(0, ${(10 * t).toFixed(2)}px, 0)`;
-      if (t > 0.98 && Math.abs(spring.v) < 0.05) {
-        fadedRef.current?.();
+      card.style.opacity = t.toFixed(3);
+      card.style.visibility = t < 0.04 ? 'hidden' : 'visible';
+      if (Math.abs(spring.x - target) < 0.012 && Math.abs(spring.v) < 0.05) {
+        card.style.opacity = target ? '' : '0';
+        card.style.visibility = target ? '' : 'hidden';
         return;
       }
       raf = requestAnimationFrame(tick);
@@ -128,12 +151,8 @@ function NoteCard({
     return () => {
       alive = false;
       if (raf) cancelAnimationFrame(raf);
-      card.style.opacity = '';
-      card.style.transform = '';
-      card.style.transition = '';
-      card.style.pointerEvents = '';
     };
-  }, [fading]);
+  }, [suppressed, fading]);
   const move = (clientY: number) => {
     const card = ref.current;
     const d = drag.current;
@@ -430,8 +449,13 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     if (deepLink != null && !clockArmed) return deepLink;
     return engine?.currentTime() ?? 0;
   }, [engine, deepLink, clockArmed]);
+  const [scrubbing, setScrubbing] = useState(false);
   const onScrubPreview = useCallback((t: number | null) => {
     scrubAt.current = t;
+    const on = t != null;
+    songRef.current?.classList.toggle('is-scrubbing', on);
+    // Edge only. A preview frame must not render the page again.
+    setScrubbing((prev) => (prev === on ? prev : on));
   }, []);
 
   const [owner, setOwner] = useState(-1);
@@ -462,6 +486,11 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const floorNote = noteText && settings.showComment && !columns.frame.marginNote && shortLand ? noteText : null;
   const portraitNote =
     noteText && settings.showComment && !columns.frame.marginNote && !shortLand && !sheet ? noteText : null;
+  // Held for the whole drag. The live note drops out on an instrumental cue and
+  // would otherwise unmount the card on one frame and mount it on the next.
+  const heldNote = useRef<typeof portraitNote>(null);
+  if (!scrubbing) heldNote.current = portraitNote;
+  const cardNote = scrubbing ? heldNote.current : portraitNote;
   useEffect(() => {
     if (playing) setResumeAt(null);
   }, [playing]);
@@ -647,6 +676,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     if (!root || !img || !hasFlight() || motionBlocked()) return;
     // The song itself stays opaque. Only the header art hides until the flyer overlaps it.
     root.classList.add('is-arriving', 'is-flying');
+    // Inline, so the reduced-motion rule that restores the thumbnail cannot win early.
+    img.style.opacity = '0';
     const dest = () => {
       const art = img.getBoundingClientRect();
       if (art.width < 1 || art.height < 1) return null;
@@ -655,13 +686,16 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       if (raw.trim().endsWith('%')) radius = (radius / 100) * Math.min(art.width, art.height);
       return { left: art.left, top: art.top, width: art.width, height: art.height, radius };
     };
-    const stopFollow = followHeader(dest, () => root.classList.remove('is-flying'));
+    const reveal = () => {
+      img.style.opacity = '';
+      root.classList.remove('is-flying');
+    };
+    const stopFollow = followHeader(dest, reveal);
     const stopRise = playRise(root, () => root.classList.remove('is-arriving'));
-    const guard = window.setTimeout(() => root.classList.remove('is-flying', 'is-arriving'), 1600);
     return () => {
       stopFollow();
       stopRise();
-      window.clearTimeout(guard);
+      img.style.opacity = '';
       root.classList.remove('is-arriving', 'is-flying');
     };
   }, [song?.slug]);
@@ -685,7 +719,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   }, [columns.frame]);
 
   if (!song || !engine) return <NotFound />;
-  const shownNote = portraitNote ?? (sheet ? fadingNote : null);
+  const shownNote = cardNote ?? (sheet ? fadingNote : null);
 
   const poets = song.poets?.map((p) => p.name).join(' · ');
   const buffering = !!state?.buffering;
@@ -785,8 +819,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           textKey={shownNote.from.idx}
           showHarakat={settings.showHarakat}
           onClose={() => setSettings({ showComment: false })}
-          fading={!portraitNote}
-          onFaded={() => setFadingNote(null)}
+          fading={!!sheet && !portraitNote}
+          suppressed={scrubbing}
         />
       )}
 

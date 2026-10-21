@@ -1,18 +1,17 @@
 /**
  * Press and release for the play control.
  * Down springs to 0.80 and stays there long enough for a 100 ms contact sheet.
- * A short tap snaps to that scale, holds, then springs through about 1.12
- * before the return to 1. Only `transform` is written. Velocity is kept
- * when the target changes, except the snap that makes a fast click visible.
+ * A short tap snaps to that scale, holds, then returns with RELEASE_SPRING.
+ * From 0.80 that spring peaks near 1.027 and settles on 1. One spring
+ * carries the peak. Only `transform`
+ * is written. Velocity is kept when the target changes, except the snap that
+ * makes a fast click visible.
  */
-import { getMotionScale, PRESS_SPRING, SPRING, springSettled, stepSpring, type SpringState } from './spring';
+import { getMotionScale, PRESS_SPRING, RELEASE_SPRING, springSettled, stepSpring, type SpringState } from './spring';
 
 const PRESSED = 0.8;
-const PEAK = 1.12;
 /** Wall time at the pressed scale. Slow recordings stretch it with the springs. */
 const HOLD_MS = 150;
-/** Softer than the press, so the overshoot stays on screen for a few frames. */
-const OVER_SPRING = { stiffness: 180, damping: 16, mass: 1 };
 
 export function bindPress(el: HTMLElement): () => void {
   let state: SpringState = { x: 1, v: 0 };
@@ -44,22 +43,17 @@ export function bindPress(el: HTMLElement): () => void {
       state = stepSpring(state, PRESSED, dt, PRESS_SPRING);
       if (now >= holdUntil) {
         mode = 'over';
-        target = PEAK;
+        target = 1;
       }
       paint();
       raf = requestAnimationFrame(tick);
       return;
     }
-    const spec = mode === 'down' ? PRESS_SPRING : mode === 'over' ? OVER_SPRING : SPRING;
+    const spec = mode === 'down' ? PRESS_SPRING : mode === 'over' ? RELEASE_SPRING : PRESS_SPRING;
     state = stepSpring(state, target, dt, spec);
-    // Turn around at the crest. Retargeting on the way up would hide the peak.
-    if (mode === 'over' && state.x >= 1.08 && state.v <= 0) {
-      mode = 'idle';
-      target = 1;
-    }
     paint();
     const eps = mode === 'down' ? 0.004 : 0.002;
-    if (mode !== 'over' && springSettled(state, target, eps, 0.05)) {
+    if (springSettled(state, target, eps, 0.05)) {
       state = { x: target, v: 0 };
       paint();
       return;

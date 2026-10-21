@@ -5,7 +5,7 @@
  * only: a scaled, clipped layer the size of the stage paints black in WebKit.
  * The loop lives here, not in an effect, so a strict remount cannot eat it.
  */
-import { FLIGHT_SPRING, stepSpring, type SpringState } from '@/ui/spring';
+import { FLIGHT_SPRING, getMotionScale, stepSpring, type SpringState } from '@/ui/spring';
 
 export interface MorphBox {
   left: number;
@@ -27,14 +27,19 @@ interface RiseGroup {
 }
 
 const RISES: RiseGroup[] = [
-  // The destination title stays out until the cover has left the centre.
-  // Two titles in the same place was the double exposure on the contact sheet.
-  { sel: '.topbar-title', gate: 0.85, dist: 12 },
-  { sel: '.fb', gate: 0.85, dist: 14 },
-  { sel: '.ist-chip', gate: 0.85, dist: 10 },
-  // The floor waits until the cover is past the middle, then rises with it.
-  { sel: '.player', gate: 0.45, dist: 84 },
+  // Last third of the flight. The stage used to stay empty until 0.85,
+  // which was a dark frame on a 100 ms sheet.
+  { sel: '.topbar-title', gate: 0.67, dist: 12 },
+  { sel: '.fb', gate: 0.67, dist: 14 },
+  { sel: '.ist-chip', gate: 0.67, dist: 10 },
+  // The floor is not gated on flight progress. It waits ~80 ms of wall time
+  // from the click, then rises. A progress gate opened between two samples
+  // and the floor looked like it popped in.
+  { sel: '.player', gate: 0, dist: 84 },
 ];
+
+/** Wall time after the flyer is born before the floor may move. Not stretched. */
+const FLOOR_DELAY = 0.08;
 
 interface ExitNode {
   el: HTMLElement;
@@ -185,14 +190,17 @@ function stopLoop() {
 
 function finish() {
   stopLoop();
+  // The thumbnail is revealed in the same turn the flyer leaves.
+  // Calling arrive while the node is still on screen showed both.
+  const el = node;
+  node = null;
+  fromBox = null;
+  destGet = null;
+  el?.remove();
   if (!arrived) {
     arrived = true;
     arrive?.();
   }
-  node?.remove();
-  node = null;
-  fromBox = null;
-  destGet = null;
   arrive = null;
 }
 
@@ -213,10 +221,6 @@ function frame(now: number) {
   state = stepSpring(state, 1, dt, FLIGHT_SPRING);
   const t = Math.max(0, Math.min(1, state.x));
   place(node, fromBox, to, t);
-  if (!arrived && state.x >= 0.98) {
-    arrived = true;
-    arrive?.();
-  }
   if (Math.abs(state.x - 1) < 0.004 && Math.abs(state.v) < 0.02) {
     finish();
     return;
@@ -243,8 +247,17 @@ export function armMorph(card: HTMLElement): void {
   state = { x: 0, v: 0 };
   if (!cover) return;
   const src = cover instanceof HTMLImageElement ? cover.currentSrc || cover.src : '';
+  // The pressed card scales to 0.985. Measuring through that scale squashes
+  // the title and the listen pill into the flyer. Reset first, then measure.
+  card.style.transition = 'none';
+  card.style.transform = 'none';
   const box = boxOf(cover);
   const library = card.closest('.library');
+  const copy = card.querySelector<HTMLElement>('.lib-hero-copy, .lib-row-copy');
+  if (copy) {
+    copy.style.transition = 'none';
+    copy.style.opacity = '0';
+  }
   // The live page unmounts on the next frame. Copies keep the exit on screen.
   if (library instanceof HTMLElement && !motionBlocked()) armExit(library, card);
   if (motionBlocked() || !src || box.width < 2) return;
@@ -312,6 +325,11 @@ export function playRise(root: HTMLElement, done: () => void): () => void {
       root.style.setProperty('--title-in', t.toFixed(3));
       return;
     }
+    // The floor's own rule reads this. An inline transform fought the sheet.
+    if (sel === '.player') {
+      root.style.setProperty('--floor-in', t.toFixed(3));
+      return;
+    }
     const nodes = root.querySelectorAll<HTMLElement>(sel);
     nodes.forEach((el) => {
       touched.add(el);
@@ -323,6 +341,7 @@ export function playRise(root: HTMLElement, done: () => void): () => void {
   };
   const clear = () => {
     root.style.removeProperty('--title-in');
+    root.style.removeProperty('--floor-in');
     touched.forEach((el) => {
       el.style.opacity = '';
       el.style.transform = '';
@@ -337,8 +356,14 @@ export function playRise(root: HTMLElement, done: () => void): () => void {
     lastT = now;
     const elapsed = (now - start) / 1000;
     const progress = flightProgress();
+    const sinceClick = started ? (now - started) / 1000 : elapsed;
     let quiet = true;
     RISES.forEach((group, i) => {
+      if (group.sel === '.player' && sinceClick < FLOOR_DELAY) {
+        paint(group.sel, group.dist, 0);
+        quiet = false;
+        return;
+      }
       if (progress < group.gate) {
         paint(group.sel, group.dist, 0);
         quiet = false;
@@ -349,12 +374,12 @@ export function playRise(root: HTMLElement, done: () => void): () => void {
       paint(group.sel, group.dist, t);
       if (Math.abs(springs[i].x - 1) > 0.01 || Math.abs(springs[i].v) > 0.05) quiet = false;
     });
-    if (quiet && elapsed > 0.2 && progress >= 0.98) {
+    if (quiet && elapsed > 0.2 * getMotionScale() && progress >= 0.995) {
       clear();
       done();
       return;
     }
-    if (elapsed > 2.2) {
+    if (elapsed > 2.2 * getMotionScale()) {
       clear();
       done();
       return;

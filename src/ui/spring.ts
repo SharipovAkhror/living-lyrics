@@ -44,8 +44,11 @@ export const PHONE_SPRING: SpringSpec = SPRING;
 /** Play button press. Fast approach, no bounce. The caller picks the scale. */
 export const PRESS_SPRING: SpringSpec = { stiffness: 2500, damping: 100, mass: 1 };
 
-/** Play button release, on the way to 1.04, before it is retargeted to 1. */
-export const RELEASE_SPRING: SpringSpec = { stiffness: 450, damping: 18, mass: 1 };
+/**
+ * Play button release, from the held 0.80 back to 1.
+ * Zeta about 0.54, so the peak is near 1.027. Not retargeted on the way up.
+ */
+export const RELEASE_SPRING: SpringSpec = { stiffness: 380, damping: 21, mass: 1 };
 
 /** Sheet close. Critically damped, so it does not bounce back onto the page. */
 export const SHEET_CLOSE: SpringSpec = { stiffness: 1600, damping: 80, mass: 1 };

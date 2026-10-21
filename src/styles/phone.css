@@ -60,13 +60,11 @@
   .tl-row,
   .sheet-title {
     animation: none;
+    opacity: 1;
+    transform: none;
   }
   .sheet-body {
     contain: paint;
-  }
-  .sheet-body .group {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 88px;
   }
   html[data-sheet='1'] .library,
   html[data-sheet='1'] .ig,
@@ -122,15 +120,12 @@ html[data-phone='1'] .set-page.is-enter .group,
 html[data-phone='1'] .tl-row,
 html[data-phone='1'] .sheet-title {
   animation: none;
+  opacity: 1;
+  transform: none;
 }
 
 html[data-phone='1'] .sheet-body {
   contain: paint;
-}
-
-html[data-phone='1'] .sheet-body .group {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 88px;
 }
 
 html[data-phone='1'][data-sheet='1'] .library,

@@ -5,8 +5,18 @@
 // Chromium slows CSS through CDP (playback rate 0.25). Both engines slow springs with ?slowmo=4.
 // WebKit also sets ?anims=4, because it has no CDP playback rate. Contact sheets are a second, unscaled pass.
 import { chromium, webkit } from 'playwright';
-import { mkdirSync, readdirSync, unlinkSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync } from 'node:fs';
 import sharp from 'sharp';
+
+const IPHONE_UA =
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1';
+
+function audioKeyPresent() {
+  if (!existsSync('.env.local')) return false;
+  return /^AUDIO_KEY=\S+/m.test(readFileSync('.env.local', 'utf8'));
+}
+
+const hideAlert = !audioKeyPresent();
 
 const args = Object.fromEntries(
   process.argv.slice(2).reduce((pairs, token, i, all) => {
@@ -22,11 +32,11 @@ const sheetDir = args.sheets && args.sheets !== 'true' ? args.sheets : '';
 const videoDir = args.videos && args.videos !== 'true' ? args.videos : '';
 
 const devices = [
-  { name: 'se', viewport: { width: 320, height: 568 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
-  { name: 'se375', viewport: { width: 375, height: 667 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
-  { name: 'iphone', viewport: { width: 393, height: 852 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true },
-  { name: 'land-se', viewport: { width: 667, height: 375 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
-  { name: 'land-15', viewport: { width: 852, height: 393 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true },
+  { name: 'se', viewport: { width: 320, height: 568 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, userAgent: IPHONE_UA },
+  { name: 'se375', viewport: { width: 375, height: 667 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, userAgent: IPHONE_UA },
+  { name: 'iphone', viewport: { width: 393, height: 852 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, userAgent: IPHONE_UA },
+  { name: 'land-se', viewport: { width: 667, height: 375 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, userAgent: IPHONE_UA },
+  { name: 'land-15', viewport: { width: 852, height: 393 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, userAgent: IPHONE_UA },
   { name: 'ipad', viewport: { width: 820, height: 1180 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
   { name: 'desk', viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 },
   { name: 'wide', viewport: { width: 2560, height: 1440 }, deviceScaleFactor: 1 },
@@ -52,9 +62,20 @@ function dropHashVideos(dir) {
   }
 }
 
+async function quietAlert(context) {
+  if (!hideAlert) return;
+  await context.addInitScript(() => {
+    const css = document.createElement('style');
+    css.setAttribute('data-studio-rec', '1');
+    css.textContent = '.player-alert{display:none !important;visibility:hidden !important}';
+    document.documentElement.append(css);
+  });
+}
+
 async function shoot(browser, device) {
   for (const scheme of ['light', 'dark']) {
     const context = await browser.newContext({ ...device, colorScheme: scheme });
+    await quietAlert(context);
     const page = await context.newPage();
     page.on('pageerror', (err) => console.error('pageerror', device.name, err.message));
     for (const target of pages) {
@@ -87,6 +108,7 @@ async function record(browserName, browser, device, name, run) {
     colorScheme: 'dark',
     recordVideo: { dir: videoDir, size: { width: device.viewport.width, height: device.viewport.height } },
   });
+  await quietAlert(context);
   const page = await context.newPage();
   page.on('pageerror', (err) => console.error('pageerror', name, err.message));
   if (browserName === 'chromium') {
@@ -240,6 +262,7 @@ async function videosOf(browserName, browser, device) {
 async function contactsOf(browserName, browser, device) {
   for (const step of clips('plain')) {
     const context = await browser.newContext({ ...device, colorScheme: 'dark' });
+    await quietAlert(context);
     const page = await context.newPage();
     page.on('pageerror', (err) => console.error('pageerror', step.name, err.message));
     // Real time. No slowmo, no CDP. The sheet is one frame per 100 ms around the action.
@@ -263,17 +286,19 @@ if (sheetDir) {
 
 if (videoDir) {
   mkdirSync(videoDir, { recursive: true });
-  const desk = { name: 'desk', viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 };
+  // Both engines, phone 393×852, density 2. A desktop Chromium pass was the round-13 mismatch.
   const phone = {
     name: 'iphone',
     viewport: { width: 393, height: 852 },
     deviceScaleFactor: 2,
     isMobile: true,
     hasTouch: true,
+    userAgent: IPHONE_UA,
   };
+  if (hideAlert) console.log('AUDIO_KEY missing: recorder hides .player-alert');
   const chrome = await chromium.launch();
-  await videosOf('chromium', chrome, desk);
-  await contactsOf('chromium', chrome, desk);
+  await videosOf('chromium', chrome, phone);
+  await contactsOf('chromium', chrome, phone);
   await chrome.close();
   const kit = await webkit.launch();
   await videosOf('webkit', kit, phone);
