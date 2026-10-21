@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { formatTime, getSong, loadLyrics, loadPeaks } from '@/data/library';
 import { coverExt, coverUrl } from '@/data/covers';
 import { rememberSong } from '@/app/continue';
@@ -19,15 +19,34 @@ import { LEAD } from '@/scene/flow';
 import { Icon } from '@/ui/icons';
 import { RichText } from '@/components/RichText';
 import { Status } from '@/components/Status';
-import { showHarakatText, stripHarakat } from '@/data/harakat';
+import { showHarakatText } from '@/data/harakat';
+import { stageFrame, type StageFrame } from '@/scene/columns';
 import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
 import { preloadInstruments } from '@/instruments/catalog';
+import { Sheet } from '@/ui/controls';
 import { SettingsSheet } from './SettingsSheet';
 import { TextSheet } from './TextSheet';
 import { InfoSheet } from './InfoSheet';
 import { headerLine } from './parts';
 
-type SheetName = 'settings' | 'text' | 'info' | null;
+type SheetName = 'settings' | 'text' | 'info' | 'note' | null;
+
+/** The stage width follows one geometry, including the margin note when it is open. */
+function useStageFrame(noteOpen: boolean) {
+  const read = (): { frame: StageFrame; columnFits: boolean } => {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    return { frame: stageFrame(vw, vh, noteOpen), columnFits: stageFrame(vw, vh, true).marginNote };
+  };
+  const [box, setBox] = useState(read);
+  useLayoutEffect(() => {
+    const apply = () => setBox(read());
+    apply();
+    window.addEventListener('resize', apply);
+    return () => window.removeEventListener('resize', apply);
+  }, [noteOpen]);
+  return box;
+}
 
 /** Press-and-hold repeats an action (seek) while a tap does something else (go to a line), as on iOS. */
 function useHold(onTap: () => void, onHold: () => void) {
@@ -66,6 +85,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const song = getSong(slug);
   useSongAccent(song);
   const settings = useSettings();
+  const songRef = useRef<HTMLDivElement>(null);
   const topbarRef = useRef<HTMLElement>(null);
   const floorRef = useRef<HTMLElement>(null);
   const [lyrics, setLyrics] = useState<Lyrics | null>(null);
@@ -204,6 +224,15 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const [owner, setOwner] = useState(-1);
   const [sheet, setSheet] = useState<SheetName>(null);
   const playing = !!state?.playing;
+  const noteText = timeline && owner >= 0 ? commentFor(timeline, owner) : null;
+  const columns = useStageFrame(settings.showComment && !!noteText);
+
+  // A phone sheet must not stay up once the window is wide enough for the column.
+  useEffect(() => {
+    if (!columns.columnFits || sheet !== 'note') return;
+    setSheet(null);
+    if (!settings.showComment) setSettings({ showComment: true });
+  }, [columns.columnFits, sheet, settings.showComment]);
 
   const seekToCue = useCallback(
     (c: Cue) => {
@@ -294,7 +323,10 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   // M (same physical key as ь) drops a mismatch mark. Repeat is ignored so a held key is one mark.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (sheet || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const noteKey = e.key === 'k' || e.key === 'л';
+      // K still closes the note sheet. Every other key waits until the sheet is gone.
+      if (sheet && !(sheet === 'note' && noteKey)) return;
       const tag = (e.target as HTMLElement).tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') {
         if (e.code === 'Space') return; // let the focused control handle it
@@ -303,7 +335,10 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       else if (e.key === 'ArrowRight') (e.shiftKey ? engine?.skip(10) : nav(1));
       else if (e.key === 'ArrowLeft') (e.shiftKey ? engine?.skip(-10) : nav(-1));
       else if (e.key === 't' || e.key === 'е') setSettings({ showTranslation: !settings.showTranslation });
-      else if (e.key === 'k' || e.key === 'л') setSettings({ showComment: !settings.showComment });
+      else if (e.key === 'k' || e.key === 'л') {
+        if (columns.columnFits) setSettings({ showComment: !settings.showComment });
+        else setSheet((open) => (open === 'note' ? null : 'note'));
+      }
       else if (e.code === 'KeyM') {
         if (!e.repeat) placeMark();
       } else return;
@@ -311,7 +346,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [sheet, togglePlay, nav, engine, settings.showTranslation, settings.showComment, placeMark]);
+  }, [sheet, togglePlay, nav, engine, settings.showTranslation, settings.showComment, placeMark, columns.columnFits]);
 
   const back = useHold(
     () => nav(-1),
@@ -341,7 +376,18 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       ro.disconnect();
       window.removeEventListener('resize', apply);
     };
-  }, [song, lyrics, state?.error, state?.source, settings.showComment, settings.commentOpen]);
+  }, [song, lyrics, state?.error, state?.source, columns.frame]);
+
+  useLayoutEffect(() => {
+    const root = songRef.current;
+    if (!root) return;
+    const f = columns.frame;
+    root.style.setProperty('--col-left', `${f.colLeft}px`);
+    root.style.setProperty('--col-right', `${f.colRight}px`);
+    root.style.setProperty('--note-w', `${f.noteW}px`);
+    root.style.setProperty('--lyric-w', `${f.lyricW}px`);
+    root.style.setProperty('--note-inset', `${f.panelInset}px`);
+  }, [columns.frame]);
 
   if (!song || !engine) return <NotFound />;
 
@@ -351,7 +397,6 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const ownerCue = timeline && owner >= 0 ? timeline.cues[owner] : null;
   const partLabel = headerLine(song, ownerCue);
   const partExtra = partLabel && partLabel !== song.artist && partLabel !== song.version.label ? partLabel : '';
-  const comment = timeline && settings.showComment && owner >= 0 ? commentFor(timeline, owner) : null;
   const allLines = lyrics?.sections.flatMap((s) => (s.kind === 'vocal' ? s.lines : [])) ?? [];
   const arabScript = /[\u0600-\u06FF]/;
   const has = {
@@ -366,7 +411,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
 
   return (
     <div
-      className={`song${comment ? ' has-comment' : ''}${settings.commentOpen ? ' comment-open' : ''}`}
+      ref={songRef}
+      className={`song${columns.frame.marginNote ? ' has-margin' : ''}`}
       style={{ background: dark ? '#07060c' : (song.palette.field[2] ?? song.palette.field[0]) }}
     >
       <Field colors={song.palette.field} dark={dark} clock={timeline ? clock : undefined} t={0} still={!timeline} />
@@ -436,31 +482,17 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
 
       <footer className={`player floor${state?.error ? ' has-error' : ''}`} ref={floorRef}>
         {state?.error && (
-          <div className="floor-status" role="alert">
-            <Icon name="music.note" size={18} />
-            <p>{state.error}</p>
-            <button type="button" className="btn btn-capsule btn-tinted" onClick={() => engine.retry()}>
-              Повторить
+          <p className="floor-status" role="alert">
+            <span className="floor-status-text">{state.error}</span>
+            <button type="button" className="floor-retry" onClick={() => engine.retry()}>
+              повторить
             </button>
-          </div>
+          </p>
         )}
         {state?.source === 'silent' && !playing && !song.audio.high && !song.audio.saver && (
           <button type="button" className="floor-status floor-status--btn" onClick={() => setSheet('settings')}>
-            <Icon name="music.note" size={18} />
             <span>Аудио не подключено — подключить</span>
           </button>
-        )}
-        {comment && (
-          <aside className={`comment${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
-            <button className="comment-head" onClick={() => setSettings({ commentOpen: !settings.commentOpen })} aria-expanded={settings.commentOpen}>
-              <span className="comment-kicker">Пояснение</span>
-              <span className="comment-preview">{settings.commentOpen ? '' : (settings.showHarakat ? comment.text : stripHarakat(comment.text)).replace(/\*+/g, '')}</span>
-              <Icon name="chevron.down" size={20} className="comment-chevron" />
-            </button>
-            <div className="comment-fold">
-              <RichText key={comment.from.idx} text={comment.text} showHarakat={settings.showHarakat} className="comment-body" />
-            </div>
-          </aside>
         )}
         {toast && (
           <div className="mark-toast" role="status">
@@ -504,24 +536,21 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               <Icon name="forward" size={24} />
             </button>
           </div>
-          <button
-            type="button"
-            className="mark-btn"
-            onClick={placeMark}
-            disabled={!timeline}
-            aria-label="Не совпадает"
-            title="Не совпадает (M)"
-            aria-keyshortcuts="M"
-          >
-            <Icon name="flag" size={18} />
-            <span className="mark-label">Не совпадает</span>
-          </button>
           <div className="utility" role="group" aria-label="Действия с песней">
             <button className="util" aria-label="Перевод" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
               <Icon name="character.bubble" size={20} />
               <span className="util-label">Перевод</span>
             </button>
-            <button className="util" aria-label="Пояснение" aria-pressed={settings.showComment} onClick={() => setSettings({ showComment: !settings.showComment })}>
+            <button
+              className={`util${noteText && !columns.frame.marginNote && sheet !== 'note' ? ' has-note' : ''}`}
+              aria-label={noteText ? 'Пояснение к этой строке' : 'Пояснение'}
+              aria-pressed={columns.columnFits ? settings.showComment : sheet === 'note'}
+              aria-keyshortcuts="K"
+              onClick={() => {
+                if (columns.columnFits) setSettings({ showComment: !settings.showComment });
+                else setSheet(sheet === 'note' ? null : 'note');
+              }}
+            >
               <Icon name="book.closed" size={20} />
               <span className="util-label">Пояснение</span>
             </button>
@@ -537,6 +566,18 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </div>
       </footer>
 
+      {columns.frame.marginNote && noteText && (
+        <aside className="comment is-margin" aria-label="Пояснение">
+          <div className="comment-head">
+            <span className="comment-kicker">Пояснение</span>
+            <button type="button" className="comment-close" aria-label="Закрыть пояснение" onClick={() => setSettings({ showComment: false })}>
+              <Icon name="xmark" size={20} />
+            </button>
+          </div>
+          <RichText key={noteText.from.idx} text={noteText.text} showHarakat={settings.showHarakat} className="comment-body" />
+        </aside>
+      )}
+
       <SettingsSheet open={sheet === 'settings'} onClose={() => setSheet(null)} song={song} engine={engine} state={state} settings={settings} has={has} />
       <InfoSheet
         open={sheet === 'info'}
@@ -546,11 +587,19 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         showHarakat={settings.showHarakat}
         fontPersian={settings.fontPersian}
         pendingNote={!lyrics ? (loadError ?? 'Подробности строк ещё открываются') : null}
+        onMark={placeMark}
         onSeek={(t) => {
           engine.seek(t);
           setSheet(null);
         }}
       />
+      <Sheet open={sheet === 'note'} onClose={() => setSheet(null)} title="Пояснение" size="medium">
+        {noteText ? (
+          <RichText key={noteText.from.idx} text={noteText.text} showHarakat={settings.showHarakat} className="comment-body note-sheet-body" />
+        ) : (
+          <p className="note-empty">К этой строке пояснения нет.</p>
+        )}
+      </Sheet>
       <TextSheet
         open={sheet === 'text'}
         onClose={() => setSheet(null)}

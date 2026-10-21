@@ -2,6 +2,7 @@ import { memo, useLayoutEffect, useRef } from 'react';
 import type { LineCue } from '@/data/timeline';
 import type { LineEntrance, MotionPref, Settings } from '@/app/settings';
 import { formatTime } from '@/data/library';
+import { LYRIC_PAD } from './columns';
 import { blockState, clamp01, entranceOpacity, scriptShift, type Measure } from './flow';
 import { showHarakatText } from '@/data/harakat';
 import { fontClass } from './fonts';
@@ -79,7 +80,9 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
     const car = vw >= 700 && vh <= 640;
     // Desktop is its own scale, not the phone size stretched by the window height.
     const desk = vw >= 1100 && vh > 640;
-    const width = Math.min(stage.w - (car ? 28 : 40), car ? 1100 : desk ? 820 : 640);
+    // The stage is already the column left of the margin note. The line fills that
+    // content box and wraps; it must not grow to the width of an unwrapped sentence.
+    const width = Math.max(120, stage.w - LYRIC_PAD * 2);
     const arab = line.script === 'Arab' || line.script === 'Aran';
     const maxH = car
       ? Math.max(64, stage.h * (hasSubs ? 0.62 : 0.74))
@@ -97,6 +100,8 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
     const upper = Math.max(floor, design);
     const lower = floor;
     el.style.width = `${width}px`;
+    el.style.maxWidth = '100%';
+    el.style.minWidth = '0';
     let lo = lower;
     let hi = upper;
     for (let k = 0; k < 8; k++) {

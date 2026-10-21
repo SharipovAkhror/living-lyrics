@@ -53,12 +53,15 @@
   /* Time row, rail, transport ring and the labelled tasks. The safe area is counted once, inside the player. */
   --safe-t: env(safe-area-inset-top);
   --safe-b: env(safe-area-inset-bottom);
-  /* Phone floor: status, note, scrub, transport, labelled actions. Measured after paint. */
-  --player-h: calc(232px + var(--safe-b));
+  /* Phone floor: one status line, scrub, transport, icon row. Measured after paint. */
+  --player-h: calc(156px + var(--safe-b));
   /* Title, wrapping version, performer. Measured after paint. */
   --chrome-top: calc(var(--safe-t) + 104px);
   --col-left: 0px;
   --col-right: 0px;
+  --lyric-w: calc(100% - 48px);
+  --note-w: 0px;
+  --note-inset: 16px;
   --player-bottom: 0px;
   position: fixed;
   top: 0;
@@ -173,7 +176,10 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 0 28px;
+  padding: 0 24px;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   transform-origin: 50% 0;
   cursor: pointer;
   overflow: visible;
@@ -188,6 +194,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow: visible;
 }
 .scene[data-align='edge'] .fb--line .fb-main,
@@ -233,6 +242,9 @@
   align-items: baseline;
   column-gap: 0;
   row-gap: 0.12em;
+  width: 100%;
+  max-width: min(100%, 44ch);
+  min-width: 0;
   color: var(--ink-unsung);
   font-size: 40px;
   overflow: visible;
@@ -336,9 +348,10 @@
   font-weight: 400;
   font-synthesis: none;
 }
+/* Light keeps the serif crisp. Dark restores a soft shadow so the line sits on the wash. */
 .fb-orig,
 .fb-tr {
-  text-shadow: 0 1px 10px color-mix(in srgb, var(--bg) 72%, transparent);
+  text-shadow: none;
 }
 .fb-tr {
   margin: 0;
@@ -366,10 +379,11 @@
   position: absolute;
   top: 0;
   left: 50%;
-  width: min(78vw, 520px);
-  margin-left: calc(min(78vw, 520px) / -2);
-  border-radius: 50%;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 28%, transparent), transparent 72%);
+  width: min(100%, var(--lyric-w, 520px));
+  margin-left: calc(min(100%, var(--lyric-w, 520px)) / -2);
+  border-radius: 36px;
+  /* Light: no coloured glow behind the serif. A seek still moves this plate; it just stays clear. */
+  background: transparent;
   will-change: transform, opacity;
   pointer-events: none;
   z-index: 0;
@@ -384,6 +398,23 @@
   right: -10%;
   margin-left: 0;
   width: min(68vw, 420px);
+}
+/* Dark only. Light keeps the serif on the wash, with no halo behind it. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .fb-orig,
+  :root:not([data-theme='light']) .fb-tr {
+    text-shadow: 0 1px 10px color-mix(in srgb, var(--bg) 72%, transparent);
+  }
+  :root:not([data-theme='light']) .flow-plate {
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 28%, transparent), transparent 72%);
+  }
+}
+:root[data-theme='dark'] .fb-orig,
+:root[data-theme='dark'] .fb-tr {
+  text-shadow: 0 1px 10px color-mix(in srgb, var(--bg) 72%, transparent);
+}
+:root[data-theme='dark'] .flow-plate {
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 28%, transparent), transparent 72%);
 }
 
 /* Title card: block −1 of the flow. */
@@ -655,10 +686,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 4px 10px calc(8px + var(--safe-b, env(safe-area-inset-bottom)));
+  padding: 6px 14px calc(8px + var(--safe-b, env(safe-area-inset-bottom)));
   border-radius: 0;
   display: flex;
   flex-direction: column;
+  gap: 4px;
   background: transparent;
   box-shadow: none;
   -webkit-backdrop-filter: none;
@@ -682,19 +714,45 @@
 }
 .floor-status {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 44px;
-  margin: 0 0 2px;
-  padding: 2px 2px 6px;
+  align-items: baseline;
+  gap: 8px;
+  min-height: 0;
+  margin: 0;
+  padding: 1px 2px 0;
   border: 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
   background: none;
-  color: var(--ink);
-  font: 500 var(--t-footnote) / 1.35 var(--font-ui);
+  color: color-mix(in srgb, var(--system-red) 82%, var(--ink));
+  font: 500 13px / 1.3 var(--font-ui);
   text-align: start;
   width: 100%;
   cursor: default;
+}
+.floor-status-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.floor-retry {
+  flex: none;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.floor-retry:active {
+  opacity: 0.6;
+}
+.player.has-error .scrub-rail,
+.player.has-error .scrub-now,
+.player.has-error .scrub-remain {
+  opacity: 0.3;
 }
 .floor-status--btn {
   cursor: pointer;
@@ -714,18 +772,17 @@
     inset 0 1px 0 color-mix(in srgb, white 42%, transparent);
 }
 .player-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  column-gap: 4px;
-  row-gap: 2px;
-  min-height: 56px;
+  gap: 0;
+  min-height: 0;
 }
 .player .btn-xl {
-  width: 56px;
-  height: 56px;
-  min-width: 56px;
-  min-height: 56px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
 }
 .player .btn-ring {
   box-shadow:
@@ -841,14 +898,13 @@
   margin: var(--sp-2) 0 var(--sp-3);
 }
 .transport {
-  grid-column: 2;
-  grid-row: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 2px;
   margin: 0;
   padding: 0;
+  min-height: 48px;
 }
 .transport .btn-plain {
   color: var(--ink-2);
@@ -858,16 +914,16 @@
   min-height: 44px;
 }
 .utility {
-  grid-column: 1 / -1;
-  grid-row: 2;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 4px;
-  padding: 2px;
-  border-radius: var(--r-md);
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  gap: 0;
+  width: 100%;
+  padding: 0;
+  border-radius: 0;
+  background: none;
 }
 .util {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -875,8 +931,8 @@
   gap: 1px;
   min-width: 0;
   width: 100%;
-  min-height: var(--hit);
-  padding: 4px 2px;
+  min-height: 44px;
+  padding: 2px 2px 0;
   border: 0;
   border-radius: var(--r-sm);
   background: none;
@@ -894,6 +950,19 @@
   max-width: 100%;
   text-align: center;
   white-space: nowrap;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.util.has-note::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: calc(50% + 8px);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
 }
 .util:active {
   transform: scale(0.96);
@@ -1009,7 +1078,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
+  width: 100%;
+  min-height: 32px;
 }
 .scrub-top,
 .scrub-meta {
@@ -1038,7 +1108,7 @@
   font-variant-numeric: tabular-nums;
 }
 .scrub-track {
-  height: 44px;
+  height: 32px;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -1194,10 +1264,8 @@
 /* From here the page is a column, not a phone floor stretched across the window. */
 @media (min-width: 800px) {
   .song {
-    --col-left: max(28px, calc((100% - 760px) / 2));
-    --col-right: max(28px, calc((100% - 760px) / 2));
     --chrome-top: calc(var(--safe-t) + 118px);
-    --player-h: calc(132px + var(--safe-b));
+    --player-h: calc(176px + var(--safe-b));
   }
   .topbar::before,
   .player::before {
@@ -1222,61 +1290,47 @@
   }
   .player {
     bottom: 18px;
-    padding: 8px 16px 10px;
+    padding: 10px 18px 12px;
     border-radius: var(--r-lg);
   }
-  .player-row {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: 8px;
+  .player .btn-xl {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+  }
+  .scrub {
+    min-height: 40px;
+  }
+  .scrub-track {
+    height: 40px;
   }
   .transport {
-    flex: none;
+    min-height: 56px;
   }
-  .mark-btn {
-    flex: none;
-    flex-direction: row;
-    gap: 6px;
-    padding: 0 12px;
-  }
-  .mark-label {
-    white-space: nowrap;
-    font-size: 14px;
+  .player-row {
+    align-items: stretch;
+    width: 100%;
   }
   .utility {
-    display: flex;
-    flex: 1;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 2px;
-    margin-left: 8px;
-    padding: 0 0 0 12px;
-    border-radius: 0;
-    background: none;
-    border-left: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+    margin-top: 2px;
+    padding-top: 4px;
+    border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
   }
   .util {
     flex-direction: row;
-    width: auto;
-    min-width: 44px;
     gap: 6px;
-    padding: 0 10px;
+    min-height: 40px;
     font-size: var(--t-footnote);
   }
   .util-label {
     font-size: var(--t-footnote);
-    white-space: nowrap;
+    font-weight: 600;
   }
   .now-art {
     width: 48px;
     height: 48px;
     border-radius: 14px;
-  }
-  .player .utility {
-    margin-left: 8px;
-    padding-left: 12px;
-    border-left: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
   }
   .player-alert,
   .hint {
@@ -1286,17 +1340,64 @@
   }
 }
 
-/* A spread: lyric column, and the note as a margin beside the active line. */
+/* The margin note is a glass sheet. Its width and the stage beside it come from stageFrame. */
+.comment.is-margin {
+  position: fixed;
+  z-index: 5;
+  top: var(--note-inset, 16px);
+  right: var(--note-inset, 16px);
+  bottom: var(--note-inset, 16px);
+  left: auto;
+  width: var(--note-w);
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 16px 18px 20px;
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--bg-elevated) 78%, transparent);
+  box-shadow: var(--glass-shadow), var(--glass-rim);
+  color: var(--ink);
+  -webkit-backdrop-filter: blur(28px) saturate(var(--glass-saturate));
+  backdrop-filter: blur(28px) saturate(var(--glass-saturate));
+}
+.comment.is-margin .comment-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 0 8px;
+  pointer-events: auto;
+  cursor: default;
+}
+.comment-close {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.comment-close:active {
+  transform: scale(0.96);
+}
+.comment.is-margin .comment-body {
+  max-height: none;
+  flex: 1;
+  overflow: auto;
+  opacity: 1;
+  transform: none;
+  padding-bottom: 8px;
+  line-height: 1.55;
+  font-size: var(--lyric-note);
+}
+
 @media (min-width: 1100px) and (min-height: 641px) {
-  .song {
-    --col-left: max(40px, calc((100% - 820px) / 2));
-    --col-right: max(40px, calc((100% - 820px) / 2));
-  }
-  .song.has-comment {
-    --note-w: min(340px, 30vw);
-    --col-right: var(--note-w);
-    --col-left: max(36px, calc((100% - var(--note-w) - 720px) / 2));
-  }
   .now-art {
     width: 52px;
     height: 52px;
@@ -1306,97 +1407,6 @@
     height: 64px;
     min-width: 64px;
     min-height: 64px;
-  }
-  .flow-plate {
-    width: min(100%, 680px);
-    margin-left: calc(min(100%, 680px) / -2);
-  }
-  /* The player's own blur would trap this fixed column inside the capsule. Glass stays on ::before. */
-  .song.has-comment .player {
-    background: transparent;
-    box-shadow: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-  .song.has-comment .player::before {
-    display: block;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    border-radius: inherit;
-    background: var(--glass-bg);
-    box-shadow: var(--glass-shadow), var(--glass-rim), var(--glass-rim-low);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-  .song.has-comment .comment {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: auto;
-    z-index: 4;
-    width: var(--note-w);
-    max-height: none;
-    height: auto;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    padding: calc(env(safe-area-inset-top) + 28px) 28px 36px;
-    border: 0;
-    border-left: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
-    border-radius: 0;
-    background: color-mix(in srgb, var(--bg-elevated) 94%, transparent);
-    box-shadow: -24px 0 48px -32px rgba(0, 0, 0, 0.45);
-    -webkit-backdrop-filter: blur(28px) saturate(var(--glass-saturate));
-    backdrop-filter: blur(28px) saturate(var(--glass-saturate));
-  }
-  .comment-head {
-    pointer-events: none;
-    cursor: default;
-    min-height: 28px;
-    padding: 0 0 8px;
-  }
-  .comment-preview,
-  .comment-chevron {
-    display: none;
-  }
-  .comment-fold {
-    grid-template-rows: 1fr;
-    flex: 0 1 auto;
-    min-height: 0;
-    overflow: hidden;
-    transition: none;
-  }
-  .comment-body {
-    max-height: none;
-    flex: 1;
-    height: auto;
-    overflow: auto;
-    opacity: 1;
-    transform: none;
-    line-height: 1.55;
-    font-size: var(--lyric-note);
-  }
-}
-
-/* A laptop with the note column open cannot fit the labelled actions on the transport row. */
-@media (min-width: 800px) and (max-width: 1240px) {
-  .player-row {
-    flex-wrap: wrap;
-    row-gap: 2px;
-  }
-  .utility,
-  .player .utility {
-    flex: 1 1 100%;
-    margin-left: 0;
-    padding: 4px 0 0;
-    border-left: 0;
-    border-top: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
-    justify-content: flex-start;
   }
 }
 
@@ -1651,6 +1661,34 @@
   justify-self: end;
   color: var(--label-2);
   background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+.sheet-done {
+  justify-self: end;
+  min-height: 44px;
+  padding: 0 0 0 8px;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: 600 var(--t-body) / 1.2 var(--font-ui);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.sheet-done:active {
+  opacity: 0.55;
+}
+.sheet--medium {
+  max-height: min(52dvh, 520px);
+}
+.note-sheet-body {
+  max-height: none;
+  overflow: auto;
+  opacity: 1;
+  transform: none;
+}
+.note-empty {
+  margin: 8px 0 16px;
+  color: var(--ink-2);
+  font-size: var(--t-subhead);
 }
 /* The page under a sheet steps back. --sheet-p is painted each frame by the spring, so there is no CSS transition on top. */
 html[data-sheet='1'] .song,
@@ -2044,6 +2082,13 @@ html.is-sheet-drag .empty {
 .row-detail {
   color: var(--label-2);
 }
+/* Settings subtitles stay one line. «О песне» is outside .set-page and may wrap. */
+.set-page .row-detail {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .row-icon {
   width: 26px;
   display: flex;
@@ -2377,6 +2422,31 @@ html.is-sheet-drag .empty {
 }
 .tl-row:active {
   background: var(--fill-3);
+}
+.tl-gap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  margin: 2px 0;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  color: color-mix(in srgb, var(--ink) 46%, transparent);
+  font: 500 13px / 1.35 var(--font-ui);
+  text-align: center;
+  cursor: pointer;
+}
+.tl-gap-time {
+  color: color-mix(in srgb, var(--ink) 40%, transparent);
+}
+.tl-gap.is-current {
+  color: var(--ink);
+}
+.tl-gap:active {
+  opacity: 0.6;
 }
 .tl {
   padding-top: 8px;

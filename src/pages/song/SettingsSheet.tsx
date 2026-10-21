@@ -119,9 +119,7 @@ export function SettingsSheet({
   const back = page === 'home' ? undefined : () => go(page === 'eq' ? 'sound' : 'home');
   const shown: Page[] = leaving && leaving !== page ? [leaving, page] : [page];
   const sourceLabel = state?.source === 'library' ? 'Запись из библиотеки' : state?.source === 'local' ? (state.localName ?? 'Свой файл') : 'Аудио не подключено';
-  const persianName = PERSIAN_FONTS.find((f) => f.id === settings.fontPersian)?.note ?? '';
-  const originalName = ORIGINAL_FONTS.find((f) => f.id === settings.fontOriginal)?.note ?? '';
-  const translationName = TRANSLATION_FONTS.find((f) => f.id === settings.fontTranslation)?.note ?? '';
+  const fontLine = fontSummary(settings, has.persian);
 
   return (
     <Sheet open={open} onClose={close} title={PAGE_TITLE[page]} size="large" onBack={back} backLabel={page === 'eq' ? 'Звук' : 'Настройки'}>
@@ -134,7 +132,7 @@ export function SettingsSheet({
             <Row title="Текст" detail={`${ALIGN_NAME[settings.textAlign]} · ${ENTER_NAME[settings.lineEntrance]}`} onClick={() => go('text')} chevron />
             <Row
               title="Шрифты"
-              detail={[has.persian ? persianName : null, originalName, translationName].filter(Boolean).join(' · ')}
+              detail={fontLine}
               onClick={() => go('fonts')}
               chevron
             />
@@ -242,12 +240,9 @@ export function SettingsSheet({
       )}
 
       {p === 'comment' && (
-        <Group footer="Длинное пояснение раскрывается сноской под стихом. На широком экране оно стоит справа.">
-          <Row title="Показывать пояснения" detail="То, что не вошло в перевод">
+        <Group footer="На широком экране пояснение стоит колонкой справа. На узком открывается кнопкой у плеера, в один тап.">
+          <Row title="Показывать пояснения" detail="Колонка справа на широком экране">
             <Switch label="Пояснения" checked={settings.showComment} onChange={(v) => setSettings({ showComment: v })} />
-          </Row>
-          <Row title="Держать открытым" detail="Сноска сразу развёрнута">
-            <Switch label="Держать пояснение открытым" checked={settings.commentOpen} onChange={(v) => setSettings({ commentOpen: v })} />
           </Row>
         </Group>
       )}
@@ -460,6 +455,19 @@ export function SettingsSheet({
       </div>
     </Sheet>
   );
+}
+
+/** One short line. The default pair is not named twice. */
+function fontSummary(settings: Settings, hasPersian: boolean): string {
+  const sameSerif = settings.fontOriginal === 'source-serif' && settings.fontTranslation === 'source-serif';
+  const classicPersian = !hasPersian || settings.fontPersian === 'amiri';
+  if (sameSerif && classicPersian) return hasPersian ? 'насх · антиква' : 'антиква · стих и перевод';
+  const names = [
+    hasPersian ? PERSIAN_FONTS.find((f) => f.id === settings.fontPersian)?.name : null,
+    ORIGINAL_FONTS.find((f) => f.id === settings.fontOriginal)?.name,
+    TRANSLATION_FONTS.find((f) => f.id === settings.fontTranslation)?.name,
+  ].filter((name): name is string => !!name);
+  return [...new Set(names)].join(' · ');
 }
 
 function Choice({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {

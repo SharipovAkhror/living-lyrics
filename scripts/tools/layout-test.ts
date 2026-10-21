@@ -6,6 +6,7 @@
 import { LIFE_DIM, LIFE_REST, plateLife, type AudioFeatures } from '../../src/instruments/animation.ts';
 import { CHIP, LAYOUT_MODES, layoutInstruments, type Layout, type LayoutMode, type Rect, type Slot } from '../../src/instruments/layout.ts';
 import { castAt } from '../../src/scene/cast.ts';
+import { stageFrame } from '../../src/scene/columns.ts';
 
 let failures = 0;
 const fail = (where: string, msg: string) => {
@@ -296,5 +297,38 @@ for (const [name, w, h] of screens) {
   console.log(row.join(''));
 }
 
-console.log(`\n${cases} раскладок проверено, ошибок: ${failures}.`);
+// The lyric column. Every desktop width from 800 to 1920, with and without the margin note.
+// The line box stays inside the stage, and the stage stays clear of the note panel.
+let columns = 0;
+const columnHeights = [641, 700, 800, 900, 1080];
+for (let vw = 800; vw <= 1920; vw++) {
+  for (const vh of columnHeights) {
+    for (const noteOpen of [false, true]) {
+      columns++;
+      const f = stageFrame(vw, vh, noteOpen);
+      const where = `${vw}×${vh}${noteOpen ? ' note' : ''}`;
+      if (f.colLeft < 0 || f.colRight < 0 || f.stageW <= 0) fail(where, `negative column ${f.colLeft}+${f.stageW}+${f.colRight}`);
+      if (f.colLeft + f.stageW + f.colRight !== vw) fail(where, `columns ${f.colLeft}+${f.stageW}+${f.colRight} ≠ ${vw}`);
+      if (f.lyricW > f.stageW - f.padX * 2 + 0.01) fail(where, `lyric ${f.lyricW} wider than the stage content`);
+      if (f.lyricW < Math.min(280, f.stageW - f.padX * 2)) fail(where, `lyric ${f.lyricW} too narrow`);
+      const lyricRight = f.colLeft + (f.stageW + f.lyricW) / 2;
+      if (f.marginNote) {
+        if (f.noteW < 260) fail(where, `note ${f.noteW} too narrow`);
+        const panelLeft = vw - f.panelInset - f.noteW;
+        const stageRight = f.colLeft + f.stageW;
+        if (stageRight > panelLeft - f.gap + 0.01) fail(where, `stage ${stageRight} enters the note at ${panelLeft}`);
+        if (lyricRight > panelLeft - 8) fail(where, `lyric ends at ${lyricRight}, note starts at ${panelLeft}`);
+      } else if (f.noteW !== 0) fail(where, `note width ${f.noteW} while the column is closed`);
+      if (lyricRight > f.colLeft + f.stageW + 0.01) fail(where, `lyric ends at ${lyricRight} past the stage`);
+    }
+  }
+}
+for (const [vw, vh] of [[390, 852], [320, 700], [800, 480], [1280, 480]] as const) {
+  const f = stageFrame(vw, vh, true);
+  if (f.marginNote) fail(`${vw}×${vh}`, 'a short or narrow window opened the margin note');
+  if (f.lyricW > f.stageW - f.padX * 2 + 0.01) fail(`${vw}×${vh}`, `lyric ${f.lyricW} overflows`);
+  if (f.colLeft + f.stageW + f.colRight !== vw) fail(`${vw}×${vh}`, 'columns do not add up');
+}
+
+console.log(`\n${cases} раскладок проверено, колонок ${columns}, ошибок: ${failures}.`);
 process.exit(failures ? 1 : 0);
