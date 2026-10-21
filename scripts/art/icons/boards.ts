@@ -1,18 +1,20 @@
 /**
  * Studio boards for the Qalam family.
  * Usage: npx tsx scripts/art/icons/boards.ts
- * Writes HTML and PNG into work/t28-icons/own2/ (gitignored).
+ * Writes HTML and PNG into work/t28-icons/own3/ (gitignored).
  * Also opens the song page at 393×852, light and dark, then stops the dev server.
- * The 1× proof is shot at deviceScaleFactor 1, so 100% zoom is the real pixel size.
+ * Pass --fast to skip the song page. The 1× proof is shot at deviceScaleFactor 1.
  */
 import { spawn, type ChildProcess } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { chromium, type Page } from 'playwright';
 import { ICON_NAMES, type IconName, type Mark } from '../../../src/ui/icons/types';
+import { QATT_ACROSS, QATT_EDGE, circle, nibFor, nibLozenge, nuqta, pt, qalamStroke } from './pen';
 import { glyphAt, opticalFor, type Optical } from './qalam';
 
-const OUT = 'work/t28-icons/own2';
+const OUT = 'work/t28-icons/own3';
+const FAST = process.argv.includes('--fast');
 const LABELS: Record<IconName, string> = {
   'chevron.left': 'Назад',
   'chevron.right': 'Вперёд',
@@ -39,18 +41,33 @@ const LABELS: Record<IconName, string> = {
 
 type Snap = { vb: number; sw: number; glyphs: Record<string, { off: Mark[]; on?: Mark[] }> };
 
-function marks(list: Mark[], fallback: number): string {
-  return list
+let maskSeq = 0;
+
+function pathTag(mark: Mark, fallback: number, cap: 'butt' | 'round'): string {
+  const fill = mark.draw === 'fill' ? 'currentColor' : 'none';
+  const stroke = mark.draw === 'stroke' ? 'currentColor' : 'none';
+  const width = mark.draw === 'stroke' ? (mark.sw ?? fallback) : 0;
+  const opacity = mark.opacity ?? 1;
+  const rule = mark.rule ?? 'evenodd';
+  const transform = mark.transform ? ` transform="${mark.transform}"` : '';
+  const join = cap === 'butt' ? 'miter' : 'round';
+  return `<path d="${mark.d}" fill="${fill}" stroke="${stroke}" stroke-width="${width}" stroke-linecap="${cap}" stroke-linejoin="${join}" fill-opacity="${mark.draw === 'fill' ? opacity : 1}" stroke-opacity="${mark.draw === 'stroke' ? opacity : 1}" fill-rule="${rule}"${transform}/>`;
+}
+
+/** Same mask as `src/ui/icons/index.tsx`. Glass keeps round caps; Qalam cuts are butt. */
+function marks(list: Mark[], fallback: number, cap: 'butt' | 'round' = 'butt'): string {
+  const holes = list.filter((mark) => mark.knock && mark.d);
+  const body = list.filter((mark) => !mark.knock && mark.d).map((mark) => pathTag(mark, fallback, cap)).join('');
+  if (holes.length === 0) return body;
+  const id = `cut${maskSeq++}`;
+  const punched = holes
     .map((mark) => {
-      const fill = mark.draw === 'fill' ? 'currentColor' : 'none';
-      const stroke = mark.draw === 'stroke' ? 'currentColor' : 'none';
-      const width = mark.draw === 'stroke' ? (mark.sw ?? fallback) : 0;
-      const opacity = mark.opacity ?? 1;
-      const rule = mark.rule ?? 'evenodd';
       const transform = mark.transform ? ` transform="${mark.transform}"` : '';
-      return `<path d="${mark.d}" fill="${fill}" stroke="${stroke}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round" fill-opacity="${mark.draw === 'fill' ? opacity : 1}" stroke-opacity="${mark.draw === 'stroke' ? opacity : 1}" fill-rule="${rule}"${transform}/>`;
+      const rule = mark.rule ?? 'nonzero';
+      return `<path d="${mark.d}" fill="#000" fill-rule="${rule}"${transform}/>`;
     })
     .join('');
+  return `<mask id="${id}" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#fff"/>${punched}</mask><g mask="url(#${id})">${body}</g>`;
 }
 
 function qalam(name: IconName, state: 'off' | 'on', px: number, optical?: Optical): string {
@@ -63,7 +80,7 @@ function qalam(name: IconName, state: 'off' | 'on', px: number, optical?: Optica
 function glass(snap: Snap, name: IconName, px: number): string {
   const glyph = snap.glyphs[name];
   if (!glyph) return '';
-  return `<svg width="${px}" height="${px}" viewBox="0 0 ${snap.vb} ${snap.vb}" fill="none" shape-rendering="geometricPrecision">${marks(glyph.off, snap.sw)}</svg>`;
+  return `<svg width="${px}" height="${px}" viewBox="0 0 ${snap.vb} ${snap.vb}" fill="none" shape-rendering="geometricPrecision">${marks(glyph.off, snap.sw, 'round')}</svg>`;
 }
 
 const FONTS = `
@@ -149,6 +166,16 @@ figcaption small { display: block; color: var(--ink-3); font-size: 11px; margin-
 .transport1 { display: flex; align-items: center; gap: 28px; margin-top: 18px; }
 .disc1 { width: 64px; height: 64px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; }
 .flag1 { display: inline-flex; }
+.dna { display: grid; grid-template-columns: 300px minmax(420px, 1fr) 280px; gap: 22px; align-items: stretch; }
+.panel { background: var(--tile); border-radius: 22px; padding: 18px 18px 16px; }
+.panel h3 { margin: 0 0 8px; font: 560 15px/1.2 'Inter Variable', sans-serif; }
+.panel p, .note { margin: 12px 0 0; font-size: 14px; line-height: 1.45; color: var(--ink-2); max-width: 68em; }
+.srow { display: flex; gap: 6px; align-items: flex-end; margin-top: 6px; }
+.slabel { width: 86px; flex: none; font-size: 12px; line-height: 1.3; color: var(--ink-2); padding-bottom: 18px; }
+.scell { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 112px; font-size: 11px; color: var(--ink-3); text-align: center; }
+.stamps { display: flex; gap: 6px; }
+.stamps .scell { width: 76px; }
+.nibfig { display: block; }
 `;
 
 function page(id: string, dark: boolean, body: string): string {
@@ -165,7 +192,7 @@ function specimen(dark: boolean): string {
   return page(
     dark ? 'specimen-dark' : 'specimen-light',
     dark,
-    `<h1>Калам</h1><p class="lede">Своё семейство. Слева покой, справа нажатие. Мастер 32, показан в 56 px.</p><div class="grid">${cells}</div><h2>На стекле, поле песни</h2><div class="glassbar">${bar}</div>`,
+    `<h1>Калам</h1><p class="lede">Своё перо. Слева покой, справа нажатие. Мастер 32 в 56 px: срез виден, контраст открыт.</p><div class="grid">${cells}</div><h2>На стекле, поле песни</h2><div class="glassbar">${bar}</div>`,
   );
 }
 
@@ -226,6 +253,104 @@ function player(dark: boolean): string {
       <div class="transport">${qalam('backward', 'off', 72)}<div class="disc">${qalam('play', 'off', 84)}</div>${qalam('forward', 'off', 72)}</div>
       <div class="tabs">${tab('character.bubble', 'Перевод', true)}${tab('book.closed', 'Пояснение', false)}${tab('list.bullet', 'Весь текст', false)}${tab('slider.horizontal.3', 'Настройки', false)}</div>
     </div>`,
+  );
+}
+
+/** The nib itself, at the 32-master ratio, with the 35° edge drawn past it. */
+function nibPicture(): string {
+  const sample = nibFor(32, 1.65);
+  const k = 148 / sample.broad;
+  const e = QATT_EDGE;
+  const a = QATT_ACROSS;
+  const cx = 118;
+  const cy = 146;
+  const corner = (su: number, sv: number) => {
+    const u = su * sample.broad * k * 0.5;
+    const v = sv * sample.hair * k * 0.5;
+    return `${(cx + e.x * u + a.x * v).toFixed(2)},${(cy + e.y * u + a.y * v).toFixed(2)}`;
+  };
+  const pts = [corner(1, 1), corner(-1, 1), corner(-1, -1), corner(1, -1)].join(' ');
+  const reach = 112;
+  const arcR = 92;
+  const ex = cx + e.x * reach;
+  const ey = cy + e.y * reach;
+  const bx = cx + e.x * arcR;
+  const by = cy + e.y * arcR;
+  const mid = (17.5 * Math.PI) / 180;
+  const lx = cx + Math.cos(mid) * (arcR + 14);
+  const ly = cy + Math.sin(mid) * (arcR + 14);
+  return `<svg class="nibfig" width="280" height="268" viewBox="0 0 280 268" fill="none" shape-rendering="geometricPrecision"><line x1="${cx}" y1="${cy}" x2="${cx + reach}" y2="${cy}" stroke="currentColor" stroke-opacity="0.35" stroke-width="1.25"/><line x1="${cx}" y1="${cy}" x2="${ex.toFixed(2)}" y2="${ey.toFixed(2)}" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.25"/><path d="M${cx + arcR} ${cy}A${arcR} ${arcR} 0 0 1 ${bx.toFixed(2)} ${by.toFixed(2)}" stroke="currentColor" stroke-width="1.4" fill="none"/><polygon points="${pts}" fill="currentColor"/><text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" fill="currentColor" font-family="Source Serif 4, Georgia, serif" font-size="18">35°</text></svg>`;
+}
+
+function directionRow(optical: 20 | 32, title: string): string {
+  const sw = optical === 20 ? 2.3 : 1.65;
+  const nib = nibFor(optical, sw);
+  const dirs = [
+    { deg: 35, label: 'вдоль среза' },
+    { deg: 125, label: 'поперёк' },
+    { deg: 0, label: 'горизонталь' },
+    { deg: 90, label: 'вертикаль' },
+  ];
+  const cells = dirs
+    .map((dir) => {
+      const rad = (dir.deg * Math.PI) / 180;
+      const len = 14.4;
+      const dx = Math.cos(rad) * (len / 2);
+      const dy = Math.sin(rad) * (len / 2);
+      const d = qalamStroke([pt(12 - dx, 12 - dy), pt(12 + dx, 12 + dy)], nib);
+      return `<div class="scell"><svg width="112" height="112" viewBox="0 0 24 24" fill="none" shape-rendering="geometricPrecision"><path d="${d}" fill="currentColor" fill-rule="nonzero"/></svg><span>${dir.label}</span></div>`;
+    })
+    .join('');
+  return `<div class="srow"><div class="slabel">${title}</div>${cells}</div>`;
+}
+
+function stamp(d: string, label: string): string {
+  return `<div class="scell"><svg width="72" height="72" viewBox="0 0 24 24" fill="none" shape-rendering="geometricPrecision"><path d="${d}" fill="currentColor" fill-rule="nonzero"/></svg><span>${label}</span></div>`;
+}
+
+/** DNA board. Strokes come from the same pen functions as the glyphs. */
+function signature(): string {
+  const shown = [
+    'chevron.right',
+    'xmark',
+    'play',
+    'pause',
+    'character.bubble',
+    'book.closed',
+    'list.bullet',
+    'slider.horizontal.3',
+    'square.grid.2x2',
+    'music.note',
+    'info.circle',
+    'magnifyingglass',
+  ] as const;
+  const glyphs = shown
+    .map(
+      (name) =>
+        `<figure class="mini"><div>${qalam(name, 'off', 20)}${qalam(name, 'off', 48)}</div><figcaption>${LABELS[name]}</figcaption></figure>`,
+    )
+    .join('');
+  const pressed = (['chevron.right', 'character.bubble', 'square.grid.2x2', 'pause', 'play'] as const)
+    .map(
+      (name) =>
+        `<figure class="mini"><div>${qalam(name, 'off', 48)}${qalam(name, 'on', 48)}</div><figcaption>${LABELS[name]}</figcaption></figure>`,
+    )
+    .join('');
+  return page(
+    'signature',
+    false,
+    `<h1>Подпись</h1><p class="lede">Одно перо на каждый знак. Срез 35° — тот же угол, что штрих гравюр. На 16 и 20 контраст тихий, на 32 перо читается. Точка — нукта.</p>
+    <div class="dna">
+      <div class="panel"><h3>Угол</h3>${nibPicture()}<p>Длинная грань — срез. Ею кончается каждый открытый штрих. Отдельной фаски нет: конец и есть перо.</p></div>
+      <div class="panel"><h3>Контраст</h3>${directionRow(20, 'мастер 20')}${directionRow(32, 'мастер 32')}<p>Ход вдоль среза тонкий, ход поперёк шире. Горизонталь и вертикаль лежат между ними: 35° близко к 45°. На мастере 20 отношение около 1,18, тонкий ход не тоньше 1,6 px. На мастере 32 отношение около 1,86.</p></div>
+      <div class="panel"><h3>Нукта</h3><div class="stamps">${stamp(nuqta(12, 12, 5.4), 'нукта')}${stamp(nibLozenge(12, 12, 6.2, 3.4), 'угол пера')}${stamp(circle(12, 12, 5.4), 'круг')}</div><p>Нукта — печать на 45°. Поворот на угол пера сливал бы её со срезом, поэтому точкой он не служит. Круг в семействе не ставится.</p></div>
+    </div>
+    <h2>Те же знаки в 20 и в 48</h2>
+    <p class="note">Слева настоящие 20 px, справа 48 px с мастера 32. Силуэт один. На крупном размере контраст и лишние нукты читаются, на мелком остаётся имя знака.</p>
+    <div class="minis">${glyphs}</div>
+    <h2>Нажатие, мастер 32 в 48 px</h2>
+    <p class="note">Слева покой, справа нажатие. Черта шире тем же пером. Пластина заливается, край остаётся, письмо вырезается. Сплошное тело чуть крупнее. У пуска верхняя грань уже почти совпадает со срезом, поэтому перо видно на основании, а не второй фаской на вершине.</p>
+    <div class="minis">${pressed}</div>`,
   );
 }
 
@@ -303,7 +428,7 @@ async function main(): Promise<void> {
   if (missing.length) throw new Error(`glass snapshot missing ${missing.join(', ')}`);
 
   mkdirSync(OUT, { recursive: true });
-  const html = `<!doctype html><meta charset="utf-8"><title>Калам</title><style>${BASE}</style>${specimen(false)}${specimen(true)}${player(false)}${player(true)}${sizes()}${compare(snap)}${proof(false)}${proof(true)}`;
+  const html = `<!doctype html><meta charset="utf-8"><title>Калам</title><style>${BASE}</style>${signature()}${specimen(false)}${specimen(true)}${player(false)}${player(true)}${sizes()}${compare(snap)}${proof(false)}${proof(true)}`;
   const file = `${OUT}/boards.html`;
   writeFileSync(file, html);
 
@@ -312,6 +437,7 @@ async function main(): Promise<void> {
     const page = await browser.newPage({ viewport: { width: 1400, height: 900 }, deviceScaleFactor: 2 });
     await page.goto(pathToFileURL(file).href);
     await page.evaluate(() => document.fonts.ready);
+    await shoot(page, 'signature', 'signature.png');
     await shoot(page, 'specimen-light', 'specimen-light.png');
     await shoot(page, 'specimen-dark', 'specimen-dark.png');
     await shoot(page, 'player-light', 'player-3x-light.png');
@@ -328,7 +454,7 @@ async function main(): Promise<void> {
     await shoot(one, 'proof-dark', 'proof-1x-dark.png');
     await one.close();
 
-    await shootPhone(browser);
+    if (!FAST) await shootPhone(browser);
   } finally {
     await browser.close();
   }

@@ -7,18 +7,25 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { glyphAt, OPTICAL, type Optical } from './icons/qalam';
 import { ICON_NAMES, type Mark } from '../../src/ui/icons/types';
 
+let maskSeq = 0;
+
 function marks(list: Mark[], sw: number): string {
-  return list
-    .map((mark) => {
-      const fill = mark.draw === 'fill' ? 'currentColor' : 'none';
-      const stroke = mark.draw === 'stroke' ? 'currentColor' : 'none';
-      const width = mark.draw === 'stroke' ? (mark.sw ?? sw) : 0;
-      const opacity = mark.opacity ?? 1;
-      const rule = mark.rule ?? 'evenodd';
-      const transform = mark.transform ? ` transform="${mark.transform}"` : '';
-      return `<path d="${mark.d}" fill="${fill}" stroke="${stroke}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round" fill-opacity="${mark.draw === 'fill' ? opacity : 1}" stroke-opacity="${mark.draw === 'stroke' ? opacity : 1}" fill-rule="${rule}"${transform}/>`;
-    })
-    .join('');
+  const tag = (mark: Mark, fill: string) => {
+    const transform = mark.transform ? ` transform="${mark.transform}"` : '';
+    const rule = mark.rule ?? (fill === '#000' ? 'nonzero' : 'evenodd');
+    if (fill === '#000') return `<path d="${mark.d}" fill="#000" fill-rule="${rule}"${transform}/>`;
+    const painted = mark.draw === 'fill' ? 'currentColor' : 'none';
+    const stroke = mark.draw === 'stroke' ? 'currentColor' : 'none';
+    const width = mark.draw === 'stroke' ? (mark.sw ?? sw) : 0;
+    const opacity = mark.opacity ?? 1;
+    return `<path d="${mark.d}" fill="${painted}" stroke="${stroke}" stroke-width="${width}" stroke-linecap="butt" stroke-linejoin="miter" fill-opacity="${mark.draw === 'fill' ? opacity : 1}" stroke-opacity="${mark.draw === 'stroke' ? opacity : 1}" fill-rule="${mark.rule ?? 'evenodd'}"${transform}/>`;
+  };
+  const holes = list.filter((mark) => mark.knock && mark.d);
+  const body = list.filter((mark) => !mark.knock && mark.d).map((mark) => tag(mark, 'currentColor')).join('');
+  if (holes.length === 0) return body;
+  const id = `cut${maskSeq++}`;
+  const punched = holes.map((mark) => tag(mark, '#000')).join('');
+  return `<mask id="${id}" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#fff"/>${punched}</mask><g mask="url(#${id})">${body}</g>`;
 }
 
 function svg(name: (typeof ICON_NAMES)[number], state: 'off' | 'on', px: number): string {
