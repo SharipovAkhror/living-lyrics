@@ -95,5 +95,10 @@
   "note": "порог взят хотя бы на одной песне. Время строк не менялось: нужен новый случайный проход.",
   "probe_s": 22.6,
   "estimate_s": 1255.2,
-  "bar_passed": true
+  "bar_passed": true,
+  "chance": {
+    "finished": true,
+    "why": "TypeError: 'int' object is not subscriptable",
+    "songs": []
+  }
 }
