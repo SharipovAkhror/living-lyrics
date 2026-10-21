@@ -6,8 +6,8 @@ Safe, deleted with --apply (each one fully merged into origin/main and clean):
 - a local branch no worktree has checked out.
 Reported, never deleted: unmerged branches older than STALE_DAYS, worktrees with uncommitted work,
 archived chats still running, two running chats under one name, tasks in progress with nobody on
-them, paths in the docs that point to nothing, and sync counts that drift from the table in
-docs/tasks/T1-sync.md (section «Счёт синхронизации»).
+them, paths in the docs that point to nothing, a done card still marked running, and sync
+counts that drift from the table in docs/tasks/T1-sync.md (section «Счёт синхронизации»).
 
     python ops/agents/hygiene.py [<repo>] [--apply] [--repo-only] [--json]
 
@@ -166,6 +166,8 @@ def check_board(repo: Path, issues: list) -> None:
     for t in board.get('tasks', []):
         if t.get('section') == 'now' and not (t.get('agent') or t.get('who')):
             issues.append(f'на доске задача без исполнителя: {t.get("title")}')
+        if t.get('section') == 'done' and t.get('status') == 'running':
+            issues.append(f'сделанная карточка всё ещё «идёт»: {t.get("id")}')
 
 
 SYNC_GROUPS = {
