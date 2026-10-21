@@ -1,0 +1,117 @@
+{
+ "source": "Gemini 3.8 Flash (agy), targeted listening on short clips of the official video audio, captions excluded; 2026-10-21. Same model as recheck-gemini.json: one witness, not two.",
+ "places": [
+  {
+   "place": 1,
+   "clip_s": [
+    0,
+    30
+   ],
+   "question": "Is the opening sung by one voice or by a choir?",
+   "answer": "By a choir",
+   "segments": [
+    {
+     "start_s": 0.8,
+     "end_s": 5.5,
+     "heard": "Daz ouge, da inne ich got sihe",
+     "matches_id": "eckhart-1-1"
+    },
+    {
+     "start_s": 6.1,
+     "end_s": 17.2,
+     "heard": "daz ist daz selbe ouge, da inne mich got sihet",
+     "matches_id": "eckhart-1-2"
+    },
+    {
+     "start_s": 17.6,
+     "end_s": 25.5,
+     "heard": "min ouge und gotes ouge daz ist ein ouge",
+     "matches_id": "eckhart-1-3"
+    },
+    {
+     "start_s": 28.0,
+     "end_s": 30.0,
+     "heard": "Daz ouge",
+     "matches_id": "eckhart-2-1"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 2,
+   "clip_s": [
+    19,
+    28
+   ],
+   "question": "Is «daz ist ein» sung as two words or as one fused word «daz istein»?",
+   "answer": "Sung as separate words («daz ist ein»), with «ist» and «ein» clearly articulated as two separate words, not as one fused word («istein» / «daz istein»).",
+   "segments": [
+    {
+     "start_s": 19.0,
+     "end_s": 25.6,
+     "heard": "gotes ouge daz ist ein ouge",
+     "matches_id": "eckhart-1-3"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 3,
+   "clip_s": [
+    224,
+    248
+   ],
+   "question": "Inside this line, is «إلا أنا» sung as an extra phrase near the end? When?",
+   "answer": "No, «إلا أنا» is not sung as an extra phrase. It is sung exactly once from 236.5 s to 244.8 s (clip 00:12.5–00:20.8) as the regular final phrase of «وَمَنْ أَنَا يَا أَنَا إِلَّا أَنَا». There is no additional or repeated «إلا أنا» near the end; singing ends at ~244.8 s followed only by instrumental decay.",
+   "segments": [
+    {
+     "start_s": 224.0,
+     "end_s": 226.5,
+     "heard": "إِلَّا أَنَا",
+     "matches_id": "shushtari-3-tail"
+    },
+    {
+     "start_s": 226.8,
+     "end_s": 244.8,
+     "heard": "وَمَنْ أَنَا يَا أَنَا إِلَّا أَنَا",
+     "matches_id": "shushtari-4-3"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 4,
+   "clip_s": [
+    790,
+    829
+   ],
+   "question": "Are there sung words here? If so, which lines and when?",
+   "answer": "Yes, after applause and bows until ~811 s, the choir sings three lines in Arabic from 811.2 s to 827.8 s.",
+   "segments": [
+    {
+     "start_s": 811.2,
+     "end_s": 816.8,
+     "heard": "خَرَجْتُ فِي حِين بَعْدَ الْفَنَا",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 817.2,
+     "end_s": 822.0,
+     "heard": "وَمِنْ هُنَا بَقِيتُ بِلَا أَنَا",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 822.2,
+     "end_s": 827.8,
+     "heard": "وَمَنْ أَنَا يَا أَنَا إِلَّا أَنَا",
+     "matches_id": "NONE"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  }
+ ]
+}
