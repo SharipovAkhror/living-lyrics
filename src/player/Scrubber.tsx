@@ -97,6 +97,14 @@ export function Scrubber({
   const seekRef = useRef(onSeek);
   seekRef.current = onSeek;
   const segments = segmentsOf(timeline, duration, colors);
+  const span = Math.max(duration, 0.001);
+  let lastMark = 0;
+  const partMarks = segments.filter((seg) => {
+    const at = seg.start / span;
+    if (at < 0.012 || at - lastMark < 0.04) return false;
+    lastMark = at;
+    return true;
+  });
   const boundsKey = segments.map((seg) => `${seg.id}:${seg.start}:${seg.end}`).join('|');
   const boundsRef = useRef<number[]>([]);
   boundsRef.current = segments.map((seg) => seg.start).concat(duration);
@@ -341,17 +349,13 @@ export function Scrubber({
       >
         <div ref={rail} className="scrub-rail">
           <div ref={played} className="scrub-played" />
-          {segments.map((seg) => {
-            const at = seg.start / Math.max(duration, 0.001);
-            if (at < 0.004) return null;
-            return (
-              <span
-                key={seg.id}
-                className={`scrub-seg${seg.kind === 'inst' ? ' is-inst' : ''}`}
-                style={{ left: `${at * 100}%` }}
-              />
-            );
-          })}
+          {partMarks.map((seg) => (
+            <span
+              key={seg.id}
+              className={`scrub-seg${seg.kind === 'inst' ? ' is-inst' : ''}`}
+              style={{ left: `${(seg.start / span) * 100}%` }}
+            />
+          ))}
           <div ref={rest} className="scrub-rest" />
         </div>
         <div ref={head} className="scrub-head" />
