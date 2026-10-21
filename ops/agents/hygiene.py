@@ -290,6 +290,21 @@ def check_brief_marks(repo: Path, issues: list) -> None:
                 )
 
 
+CONFLICT_COPY = re.compile(r' \(\d+\)(\.\w+)?$')
+
+
+def check_sync_copies(repo: Path, issues: list) -> None:
+    """Copies named «name (1)» inside .git: a sync tool (Google Drive syncs Documents on the Station)
+    duplicated a ref or a stamp while git wrote it. A copied ref breaks fetch ("bad object"). Reported only:
+    the owner stops the sync; the copies are removed by hand after checking."""
+    git_dir = Path(git(repo, 'rev-parse', '--absolute-git-dir').stdout.strip() or repo / '.git')
+    found = [p for p in git_dir.rglob('*') if CONFLICT_COPY.search(p.name) and 'objects' not in p.parts]
+    for path in found[:5]:
+        issues.append(f'копия от синхронизации в .git: {path.relative_to(git_dir)} — Google Drive синхронизирует папку с репозиторием')
+    if len(found) > 5:
+        issues.append(f'… ещё копий в .git: {len(found) - 5}')
+
+
 def check_docs(repo: Path, issues: list) -> None:
     # The standing docs only: task briefs and research name files that are still to be made.
     files = [repo / 'AGENTS.md', repo / 'docs' / 'STATUS.md', *repo.glob('docs/process/*.md'), *repo.glob('docs/methodology/*.md'),
@@ -322,6 +337,7 @@ def main() -> None:
         check_local(repo, apply, fixed, issues)
         check_chats(repo, issues)
     check_board(repo, issues)
+    check_sync_copies(repo, issues)
     check_sync(repo, issues)
     check_brief_marks(repo, issues)
     check_docs(repo, issues)

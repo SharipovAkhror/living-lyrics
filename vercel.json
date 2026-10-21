@@ -5,7 +5,10 @@
   "outputDirectory": "dist",
   "git": {
     "deploymentEnabled": {
-      "live": false
+      "live": false,
+      "grok/**": false,
+      "ll-tech/**": false,
+      "ll-business": false
     }
   },
   "rewrites": [
