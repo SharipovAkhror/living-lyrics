@@ -75,13 +75,21 @@ function advance(x0: number, v0: number, dt: number, spring: SpringSpec): Spring
   return { x, v: e * (b - w0 * (a + b * dt)) };
 }
 
+/** Recording only. `?slowmo=4` makes one second of motion take four seconds. */
+let motionScale = 1;
+
+export function setMotionScale(scale: number) {
+  motionScale = Number.isFinite(scale) && scale > 0 ? scale : 1;
+}
+
 /**
  * Advance toward `target`. `dt` is seconds and is capped so a stalled frame
  * cannot leap. Velocity on `state` is the velocity after the step's start,
  * so a finger flick and a retarget both continue the motion in flight.
+ * A motion scale above 1 stretches that step across more frames (recordings).
  */
 export function stepSpring(state: SpringState, target: number, dt: number, spring: SpringSpec = SPRING): SpringState {
-  const total = Math.min(Math.max(dt, 0), 0.05);
+  const total = Math.min(Math.max(dt, 0), 0.05) / motionScale;
   if (total === 0) return state;
   const next = advance(state.x - target, state.v, total, spring);
   return { x: next.x + target, v: next.v };
