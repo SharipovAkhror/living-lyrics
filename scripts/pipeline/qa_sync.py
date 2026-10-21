@@ -259,6 +259,7 @@ def load_word_rule() -> dict:
     rule['blocked_primaries'] = blocked
     rule['line_fill'] = [str(line_id) for line_id in (chosen.get('line_fill') or []) if line_id]
     rule['line_nucleus'] = [str(line_id) for line_id in (chosen.get('line_nucleus') or []) if line_id]
+    rule['line_nearest'] = [str(line_id) for line_id in (chosen.get('line_nearest') or []) if line_id]
     stable_of = {}
     for line_id, model in (chosen.get('line_stable') or {}).items():
         if isinstance(model, str) and model:
@@ -558,12 +559,33 @@ def stamp_phoneme(words: list[dict] | None, role: str, model: str | None,
     return out
 
 
-def word_refuted(word: dict, peaks: np.ndarray | None, refute: dict | None) -> str | None:
+def _closer_sibling(ctc: float, clock: float, siblings: list[float] | None) -> bool:
+    """True when another lettered start on this line is strictly closer to the clock.
+
+    A lone witness that lands on the next word is not evidence against this one.
+    The cutoffs do not move. Two clocks that agree are not excused here.
+    """
+    if not siblings:
+        return False
+    own = abs(float(clock) - float(ctc))
+    for other in siblings:
+        if abs(float(other) - float(ctc)) <= 1e-6:
+            continue
+        if abs(float(other) - float(clock)) + 1e-12 < own:
+            return True
+    return False
+
+
+def word_refuted(word: dict, peaks: np.ndarray | None, refute: dict | None,
+                 siblings: list[float] | None = None) -> str | None:
     """Why this word contradicts MMS, or None when there is simply no proof.
 
     Both clocks, when both exist, refute the word if they agree with each other and
     both sit far from MMS. One clock refutes it only when that clock is far from MMS
     and a strong attack sits on the clock but not on MMS. No clock is not a refutation.
+    `siblings` are the other lettered starts of the same line. They are read only for
+    the single clock: if one of them is closer to that clock, the clock does not
+    refute this word. Two agreeing clocks still do.
     """
     if not refute or word.get('ctc_s') is None:
         return None
@@ -581,6 +603,8 @@ def word_refuted(word: dict, peaks: np.ndarray | None, refute: dict | None) -> s
             return 'witnesses-agree-elsewhere'
         return None
     if len(clocks) == 1 and abs(clocks[0] - ctc) > only_far + 1e-12:
+        if _closer_sibling(ctc, clocks[0], siblings):
+            return None
         if _peak_near(clocks[0], peaks, attack_tol) and not _peak_near(ctc, peaks, attack_tol):
             return 'witness-attack'
     return None
@@ -930,7 +954,7 @@ def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presn
                agree_tol: float = SECOND_WORD_TOL, peaks: np.ndarray | None = None,
                refute: dict | None = None, line_share: float | None = None,
                line_min_words: int = 2, cue_tol: float | None = None,
-               nucleus: bool = False) -> dict:
+               nucleus: bool = False, nearest: bool = False) -> dict:
     """Whether one line may lose timing-draft.
 
     Without `line_share`, the first failing word sets the reason: each lettered
@@ -1012,8 +1036,14 @@ def proof_line(group: str | bool, ctc_status: str | None, text_same: bool, presn
         return {'pass': True, 'reason': 'pass', 'detail': '', 'second': second, 'paths': paths, 'word_proof': proved}
     lettered = [word for word in (align_words or []) if word.get('roman')]
     flags: list[str | None] = []
-    for word, item in zip(lettered, proved):
-        why = word_refuted(word, peaks, refute)
+    for index, (word, item) in enumerate(zip(lettered, proved)):
+        siblings = None
+        if nearest:
+            siblings = [
+                float(other['ctc_s']) for other_i, other in enumerate(lettered)
+                if other_i != index and other.get('ctc_s') is not None
+            ]
+        why = word_refuted(word, peaks, refute, siblings)
         item['refuted'] = why
         flags.append(why)
     first_why = next((why for why in flags if why), None)
@@ -1052,6 +1082,7 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
     fill_on = bool(rule.get('attack_fill'))
     line_fill = set(rule.get('line_fill') or [])
     line_nucleus = set(rule.get('line_nucleus') or [])
+    line_nearest = set(rule.get('line_nearest') or [])
     line_placed_clock = set(rule.get('line_placed_clock') or [])
     report_summary = (align_report or {}).get('summary') or {}
     placement_model = report_summary.get('placement_model') or report_summary.get('stable_model')
@@ -1176,7 +1207,7 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
                               tol=tol, require_second=bool(rule.get('require_second')) and not mode,
                               witnesses=mode, agree_tol=agree_tol, peaks=line_peaks, refute=refute,
                               line_share=line_share, line_min_words=line_min, cue_tol=cue_tol,
-                              nucleus=use_nucleus)
+                              nucleus=use_nucleus, nearest=line['id'] in line_nearest)
         found_line = (rec or {}).get('status') in ('good', 'weak')
         cue_delta = None
         if found_line and cue_start is not None and ctc_line is not None:

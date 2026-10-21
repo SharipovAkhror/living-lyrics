@@ -48,7 +48,11 @@ pass may hand a refuted line to a later placer, and may place a still-open
 Latin line from the phoneme aligner. A choir-wide vowel clock stays off unless
 its own measurement fits. Filling a missing spectral attack, a syllable nucleus
 on a long sung vowel, and a wider gate for a translation cue are separate
-configurations of the same kind.
+configurations of the same kind. The wider gate is also measured together with
+the fill, the nucleus and the phoneme stamp: a line outside 0.30 s otherwise
+never sees those attacks. A lone witness that sits closer to another lettered
+word of the same line does not refute this word. Two clocks that agree still
+do. The cutoffs stay 0.20 s and 0.30 s. A hearing is not a clock.
 
 Every configuration that stays inside both caps is joined with the baseline.
 A line is proved when any joined configuration proves it. The join is one
@@ -1069,7 +1073,8 @@ def _mode_of_line(modes: dict, line: dict) -> str:
 def _probe_parts(words: list[dict], peaks: np.ndarray, group: str | None, mode: str,
                  refute: dict, prev: float | None,
                  fill_peaks: np.ndarray | None = None,
-                 nucleus: bool = False) -> tuple[list[dict], list[str | None]]:
+                 nucleus: bool = False,
+                 nearest: bool = False) -> tuple[list[dict], list[str | None]]:
     """Proved-word rows and refutation flags. The share K is applied by the caller.
 
     `fill_peaks` may supply the attack when the spectral peak is outside the
@@ -1105,7 +1110,15 @@ def _probe_parts(words: list[dict], peaks: np.ndarray, group: str | None, mode: 
         cursor = t
     proved = Q.prove_words(
         align_words, presnap, tol, witnesses=mode, agree_tol=SECOND_TOL, nucleus=nucleus)
-    flags = [Q.word_refuted(word, peaks, refute) for word in align_words]
+    flags = []
+    for index, word in enumerate(align_words):
+        siblings = None
+        if nearest:
+            siblings = [
+                float(other['ctc_s']) for other_i, other in enumerate(align_words)
+                if other_i != index and other.get('ctc_s') is not None
+            ]
+        flags.append(Q.word_refuted(word, peaks, refute, siblings))
     return proved, flags
 
 
@@ -1120,7 +1133,8 @@ def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: 
                      choir_peaks: np.ndarray | None = None,
                      fill_peaks: np.ndarray | None = None,
                      nucleus: bool = False,
-                     translation_half: float | None = None) -> list[dict]:
+                     translation_half: float | None = None,
+                     nearest: bool = False) -> list[dict]:
     """One row per candidate line: proved words and refutation flags under this probe.
 
     The same shift and the same previous-line start as `line_pass_count`. K is not
@@ -1166,7 +1180,7 @@ def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: 
         use_peaks = choir_peaks if line.get('group') == 'choir' and choir_peaks is not None else peaks
         proved, flags = _probe_parts(
             moved, use_peaks, line.get('group'), _mode_of_line(modes, line), refute, incoming[i],
-            fill_peaks=fill_peaks, nucleus=nucleus)
+            fill_peaks=fill_peaks, nucleus=nucleus, nearest=nearest)
         out.append({
             'id': line.get('id'),
             'lang': line.get('lang') or '?',
@@ -1619,10 +1633,19 @@ def admit_union(members: list[dict], baseline_name: str = 'baseline') -> dict:
                 return False
         return True
 
+    def priced_apart(item: dict) -> bool:
+        # wide-fill and the other combined gates are not folded into the full
+        # join. An earlier member already recorded a ±half probe without that
+        # attack, and the first map would bill the new line at that cheaper rate.
+        return str(item.get('name') or '').startswith('wide-')
+
     def line_blocked(chance) -> bool:
         return chance is None or float(chance) > LINE_LIMIT + 1e-12
 
-    admitted = [item for item in usable if item is not base and item.get('within_limit')]
+    admitted = [
+        item for item in usable
+        if item is not base and item.get('within_limit') and not priced_apart(item)
+    ]
     full_lines = _copy_line_map(base_lines)
     full_words = _copy_word_map(base_words)
     full_extra = [dict(base.get('extra') or {})]
@@ -1674,8 +1697,20 @@ def admit_union(members: list[dict], baseline_name: str = 'baseline') -> dict:
         trial_words = _copy_word_map(current_words)
         _add_proved_lines(trial_lines, trial_words, item, ids, baseline_ids)
         trial_extra = list(current_extra)
-        if item.get('extra'):
-            trial_extra.append(dict(item.get('extra') or {}))
+        owned = item.get('extra') or {}
+        if owned:
+            # A combined wide gate pays its own ±half for the lines it is adding.
+            # Lines already in the join keep the earlier map: repricing them
+            # would drop a line the previous measurement kept.
+            if priced_apart(item):
+                first = {}
+                for lid in ids:
+                    key = str(lid)
+                    if key in owned:
+                        first[key] = owned[key]
+                if first:
+                    trial_extra = [first] + trial_extra
+            trial_extra.append(dict(owned))
         chance, word_chance, proved, count = evaluate(trial_lines, trial_words, trial_extra)
         if fits(chance, word_chance, proved) and all(lid in proved for lid in ids):
             commit(trial_lines, trial_words, trial_extra, chance, word_chance, count, name, ids)
@@ -2559,7 +2594,7 @@ def _capture_word_masks(per_song: list[dict], modes: dict, *, fill: bool = False
 
 def _capture_state(per_song: list[dict], modes: dict, refute: dict, *, fill: bool = False,
                    nucleus: bool = False, translation_half: float | None = None,
-                   blocked: set | None = None) -> tuple[dict, dict, dict]:
+                   nearest: bool = False, blocked: set | None = None) -> tuple[dict, dict, dict]:
     """Eight probe columns, plus the ±half columns of a translation cue."""
     cut = _refute_cut(float(refute.get('both_far', 0.20)), float(refute.get('only_far', 0.30)))
     blocked = blocked or set()
@@ -2576,14 +2611,15 @@ def _capture_state(per_song: list[dict], modes: dict, refute: dict, *, fill: boo
             parts = line_probe_parts(
                 rows, peaks, modes, cut, shift=shift, shuffle=shuffle,
                 choir_peaks=choir, fill_peaks=fill_peaks,
-                nucleus=nucleus, translation_half=translation_half)
+                nucleus=nucleus, translation_half=translation_half, nearest=nearest)
             col_parts.append({item['id']: item for item in parts})
         wide_cols = []
         if translation_half is not None:
             for sign in (float(translation_half), -float(translation_half)):
                 parts = line_probe_parts(
                     rows, peaks, modes, cut, shift=sign, choir_peaks=choir,
-                    fill_peaks=fill_peaks, nucleus=nucleus, translation_half=translation_half)
+                    fill_peaks=fill_peaks, nucleus=nucleus, translation_half=translation_half,
+                    nearest=nearest)
                 wide_cols.append({item['id']: item for item in parts})
         by_id = {line.get('id'): line for line in rows}
         for lid in (col_parts[0] if col_parts else {}):
@@ -2622,11 +2658,12 @@ def _capture_state(per_song: list[dict], modes: dict, refute: dict, *, fill: boo
 
 def _member_from_state(name: str, per_song: list[dict], modes: dict, refute: dict, k,
                        *, baseline: bool = False, fill: bool = False, nucleus: bool = False,
-                       translation_half: float | None = None, blocked: set | None = None,
+                       translation_half: float | None = None, nearest: bool = False,
+                       blocked: set | None = None,
                        partial: bool = False, min_words: int = 0) -> dict:
     lines, words, extra = _capture_state(
         per_song, modes, refute, fill=fill, nucleus=nucleus,
-        translation_half=translation_half, blocked=blocked)
+        translation_half=translation_half, nearest=nearest, blocked=blocked)
     ki = _share_index(k)
     chance, proved, _count = (None, [], 0) if ki is None else _family_line_chance(lines, ki)
     if translation_half is not None and ki is not None and extra:
@@ -2665,7 +2702,7 @@ def _quiet_flags(per_song: list[dict]) -> None:
 
 
 def _phoneme_member(name: str, per_song: list[dict], decision: dict, modes: dict, refute: dict, k,
-                    *, fill: bool = False) -> dict | None:
+                    *, fill: bool = False, translation_half: float | None = None) -> dict | None:
     """The word-witness stamp, without the choir-wide vowel clock or envelope."""
     if not decision or not decision.get('admitted'):
         return None
@@ -2681,7 +2718,8 @@ def _phoneme_member(name: str, per_song: list[dict], decision: dict, modes: dict
             song['use_attack_fill'] = True
     try:
         return _member_from_state(
-            name, per_song, modes, refute, k, fill=fill, partial=True, blocked=set())
+            name, per_song, modes, refute, k, fill=fill, partial=True,
+            translation_half=translation_half, blocked=set())
     finally:
         Phone.clear(per_song)
         _quiet_flags(per_song)
@@ -2922,6 +2960,22 @@ def _union_overlay(per_song: list[dict], origin: list, origin_modes: dict, refut
             f"проход строки {members[-1]['chance']}, внутри {members[-1]['within_limit']}",
             flush=True,
         )
+        # A translation line outside 0.30 s is invisible to fill and to the
+        # nucleus. Measuring them on the wider gate is the same ±half price.
+        for name, fill, nucleus, nearest in (
+            ('wide-fill', True, False, False),
+            ('wide-nucleus', False, True, False),
+            ('wide-nearest', False, False, True),
+        ):
+            print(f'объединение: {name}', flush=True)
+            members.append(_member_from_state(
+                name, per_song, origin_modes, refute, k, fill=fill, nucleus=nucleus,
+                nearest=nearest, translation_half=P.TRANSLATION_HALF, partial=True))
+            print(
+                f"объединение: {name} {members[-1]['proved_n']}, "
+                f"проход строки {members[-1]['chance']}, внутри {members[-1]['within_limit']}",
+                flush=True,
+            )
         origin_decision = decision
         if placement_kept:
             print('объединение: фонемный поиск на базовых строках', flush=True)
@@ -2942,6 +2996,19 @@ def _union_overlay(per_song: list[dict], origin: list, origin_modes: dict, refut
                 print(
                     f"объединение: фонема и заливка {both['proved_n']}, "
                     f"проход строки {both['chance']}, внутри {both['within_limit']}",
+                    flush=True,
+                )
+            for name, fill in (('wide-phoneme', False), ('wide-phoneme-fill', True)):
+                print(f'объединение: {name}', flush=True)
+                wide_phone = _phoneme_member(
+                    name, per_song, origin_decision, origin_modes, refute, k,
+                    fill=fill, translation_half=P.TRANSLATION_HALF)
+                if wide_phone is None:
+                    continue
+                members.append(wide_phone)
+                print(
+                    f"объединение: {name} {wide_phone['proved_n']}, "
+                    f"проход строки {wide_phone['chance']}, внутри {wide_phone['within_limit']}",
                     flush=True,
                 )
         import phoneme_choice as Phone
@@ -3052,6 +3119,14 @@ def _union_overlay(per_song: list[dict], origin: list, origin_modes: dict, refut
                 f"внутри {latin['within_limit']}",
                 flush=True,
             )
+        print('объединение: ближнее слово единственного свидетеля', flush=True)
+        members.append(_member_from_state(
+            'nearest', per_song, origin_modes, refute, k, nearest=True, partial=True))
+        print(
+            f"объединение: ближнее слово {members[-1]['proved_n']}, "
+            f"проход строки {members[-1]['chance']}, внутри {members[-1]['within_limit']}",
+            flush=True,
+        )
         result = admit_union(members)
         print(
             f"объединение: доказано {len(result.get('proved') or [])}, "
@@ -3073,6 +3148,36 @@ def _union_overlay(per_song: list[dict], origin: list, origin_modes: dict, refut
         _quiet_flags(per_song)
 
 
+def _member_features(name: str) -> set[str]:
+    """Which published flags a joined member turns on for the line it proved.
+
+    A line keeps the combination that proved it. The plain wide gate does not
+    imply the envelope, and the envelope does not imply the wide gate.
+    """
+    text = str(name)
+    features: set[str] = set()
+    if (text in ('fill', 'phoneme-fill', 'placed-fill', 'wide-fill', 'wide-phoneme-fill')
+            or text.startswith('phone-fill:')):
+        features.add('fill')
+    if text == 'placed-fill':
+        features.add('placed')
+    if text in ('nucleus', 'wide-nucleus'):
+        features.add('nucleus')
+    if text == 'wide' or text.startswith('wide-'):
+        features.add('wide')
+    if text in ('nearest', 'wide-nearest'):
+        features.add('nearest')
+    if text in ('phoneme', 'phoneme-fill', 'handoff-phoneme', 'wide-phoneme', 'wide-phoneme-fill'):
+        features.add('phone')
+    return features
+
+
+def _ids_with(line_member: dict, proved: set, feature: str) -> list[str]:
+    return sorted(
+        str(lid) for lid, name in line_member.items()
+        if lid in proved and feature in _member_features(name))
+
+
 def _union_line_flags(line_member: dict, proved: set) -> tuple[list[str], list[str]]:
     """Which kept lines take the envelope fill, and which take the empty-slot clock.
 
@@ -3080,17 +3185,7 @@ def _union_line_flags(line_member: dict, proved: set) -> tuple[list[str], list[s
     and the envelope supplies the attack the spectral peaks missed. Either one
     alone left that line unproved.
     """
-    fill: list[str] = []
-    placed: list[str] = []
-    for lid, name in line_member.items():
-        if lid not in proved:
-            continue
-        text = str(name)
-        if text in ('fill', 'phoneme-fill', 'placed-fill') or text.startswith('phone-fill:'):
-            fill.append(str(lid))
-        if text == 'placed-fill':
-            placed.append(str(lid))
-    return sorted(fill), sorted(placed)
+    return _ids_with(line_member, proved, 'fill'), _ids_with(line_member, proved, 'placed')
 
 
 def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: bool) -> None:
@@ -3101,8 +3196,11 @@ def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: 
     baseline_ids = set(result.get('baseline_ids') or [])
     proved = set(result.get('proved') or [])
     line_fill, line_placed_clock = _union_line_flags(line_member, proved)
-    line_nucleus = sorted(lid for lid, name in line_member.items() if name == 'nucleus' and lid in proved)
-    phone_names = {'phoneme', 'phoneme-fill', 'handoff-phoneme'}
+    line_nucleus = _ids_with(line_member, proved, 'nucleus')
+    line_nearest = _ids_with(line_member, proved, 'nearest')
+    phone_names = {
+        'phoneme', 'phoneme-fill', 'handoff-phoneme', 'wide-phoneme', 'wide-phoneme-fill',
+    }
     phone_ids = {lid for lid, name in line_member.items() if name in phone_names and lid in proved}
     line_stable: dict[str, str] = {}
     line_phone_model: dict[str, str] = {}
@@ -3180,14 +3278,14 @@ def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: 
     chosen['line_roles'] = {lid: role for lid, role in roles.items() if role in ('or', 'only', 'off') and role != 'off'}
     chosen['line_fill'] = line_fill
     chosen['line_nucleus'] = line_nucleus
+    chosen['line_nearest'] = line_nearest
     chosen['line_stable'] = line_stable
     chosen['line_placed_clock'] = line_placed_clock
     chosen['line_phone_model'] = line_phone_model
     chosen['attack_fill'] = False
     chosen['choir_attack'] = 'spectral'
     chosen['choir_clock'] = 'phone'
-    wide_ids = sorted(
-        lid for lid, name in line_member.items() if name == 'wide' and lid in proved)
+    wide_ids = _ids_with(line_member, proved, 'wide')
     full_wide = bool(result.get('full_or') and 'wide' in (result.get('members') or []))
     wide_on = full_wide or bool(wide_ids)
     # Null means every translation line. A list means only those lines paid for
@@ -3214,6 +3312,7 @@ def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: 
         'word_lost': list(result.get('word_lost') or []),
         'line_fill': line_fill,
         'line_nucleus': line_nucleus,
+        'line_nearest': line_nearest,
         'line_wide': chosen['line_wide'],
         'translation_half': chosen['translation_half'],
         'line_stable': line_stable,

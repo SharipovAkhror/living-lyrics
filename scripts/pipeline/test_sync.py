@@ -757,6 +757,49 @@ def test_line_rule() -> None:
     check('no clock is not a refutation', Q.word_refuted({'ctc_s': 1.0}, peaks, refute) is None)
     check('both clocks refute even when MMS has an attack',
           Q.word_refuted(both, np.array([1.0, 1.40]), refute) == 'witnesses-agree-elsewhere')
+    check('a lone clock still refutes when no sibling is passed',
+          Q.word_refuted(lone, np.array([1.40]), refute, siblings=[1.0]) == 'witness-attack')
+    check('a lone clock closer to another lettered start does not refute this word',
+          Q.word_refuted(lone, np.array([1.40]), refute, siblings=[1.40, 1.80, 2.20]) is None)
+    check('two clocks that agree still refute when a sibling is closer',
+          Q.word_refuted(both, np.array([1.40]), refute, siblings=[1.40]) == 'witnesses-agree-elsewhere')
+
+    near_words = [
+        {'roman': 'ba', 'ctc_s': 1.00, 'ctc_e': 1.30, 'second_s': 1.40},
+        {'roman': 'ka', 'ctc_s': 1.40, 'ctc_e': 1.70, 'second_s': 1.42},
+        {'roman': 'da', 'ctc_s': 1.80, 'ctc_e': 2.10, 'second_s': 1.82},
+        {'roman': 'ga', 'ctc_s': 2.20, 'ctc_e': 2.50, 'second_s': 2.22},
+    ]
+    near_cue = dict(cue_start=1.0, ctc_line_start=1.0)
+    near_shift = [0.40, 0.02, 0.02, 0.02]
+    near_peaks = np.array([1.40])
+    missed = Q.proof_line(True, 'good', True, near_shift, near_words, True,
+                          witnesses='one', line_share=0.25, refute=refute,
+                          peaks=near_peaks, nearest=False, **near_cue)
+    check('without nearest the misplaced witness fails the line',
+          (not missed['pass']) and missed['reason'] == 'word-refuted', str(missed))
+    held_near = Q.proof_line(True, 'good', True, near_shift, near_words, True,
+                             witnesses='one', line_share=0.25, refute=refute,
+                             peaks=near_peaks, nearest=True, **near_cue)
+    check('nearest keeps the line when the other words are proved',
+          held_near['pass'] and held_near['reason'] == 'pass', str(held_near))
+    agreed_words = [dict(near_words[0], third_s=1.45), *near_words[1:]]
+    still_refuted = Q.proof_line(True, 'good', True, near_shift, agreed_words, True,
+                                 witnesses='one', line_share=0.25, refute=refute,
+                                 peaks=near_peaks, nearest=True, **near_cue)
+    check('two agreeing clocks still fail the line when nearest is on',
+          (not still_refuted['pass']) and still_refuted['reason'] == 'word-refuted', str(still_refuted))
+    shifted = [
+        {'t': 0.80, 'roman': 'ba', 'second': 1.40},
+        {'t': 1.20, 'roman': 'ka', 'second': 1.22},
+        {'t': 1.60, 'roman': 'da', 'second': 1.62},
+        {'t': 2.00, 'roman': 'ga', 'second': 2.02},
+    ]
+    _bare, bare_flags = A._probe_parts(shifted, np.array([1.20, 1.40, 1.60, 2.00]), 'solo', 'one', refute, None)
+    _near, near_flags = A._probe_parts(
+        shifted, np.array([1.20, 1.40, 1.60, 2.00]), 'solo', 'one', refute, None, nearest=True)
+    check('a shifted lone clock uses the moved starts when nearest is on',
+          bare_flags[0] == 'witness-attack' and near_flags[0] is None, str((bare_flags, near_flags)))
 
     cue = dict(cue_start=1.0, ctc_line_start=1.0)
     words = [
@@ -2027,6 +2070,50 @@ def test_monotone_union() -> None:
     check('a placed-fill line takes both the envelope and the empty-slot clock',
           fill_ids == ['gap', 'old', 'phone'] and placed_ids == ['gap'],
           str((fill_ids, placed_ids)))
+    check('a combined wide gate publishes both flags and not the empty slot',
+          A._member_features('wide-fill') == {'fill', 'wide'}
+          and A._member_features('wide') == {'wide'}
+          and A._member_features('nearest') == {'nearest'}
+          and A._member_features('wide-nearest') == {'wide', 'nearest'}
+          and A._member_features('wide-nucleus') == {'nucleus', 'wide'}
+          and A._member_features('wide-phoneme') == {'wide', 'phone'}
+          and A._member_features('wide-phoneme-fill') == {'fill', 'wide', 'phone'}
+          and A._member_features('placed-fill') == {'fill', 'placed'})
+    wide_fill, wide_placed = A._union_line_flags(
+        {'a': 'wide-fill', 'b': 'nearest', 'c': 'placed-fill'}, {'a', 'b', 'c'})
+    check('the envelope list keeps wide-fill and the empty slot stays placed-fill',
+          wide_fill == ['a', 'c'] and wide_placed == ['c']
+          and A._ids_with({'a': 'wide-fill', 'b': 'nearest', 'c': 'wide'}, {'a', 'b', 'c'}, 'wide') == ['a', 'c']
+          and A._ids_with({'a': 'wide-fill', 'b': 'nearest'}, {'a', 'b'}, 'nearest') == ['b'],
+          str((wide_fill, wide_placed)))
+
+    def half(left: bool, right: bool) -> np.ndarray:
+        grid_half = np.zeros((len(A.LINE_SHARES), 2), dtype=bool)
+        grid_half[0, 0] = left
+        grid_half[0, 1] = right
+        return grid_half
+
+    wide = pack('wide', ['W'], within=True, partial=True)
+    wide['extra'] = {'W': half(False, False), 'N': half(False, False), 'H': half(False, False)}
+    filled = pack('wide-fill', ['N'], within=False, partial=True)
+    filled['within_limit'] = False
+    filled['extra'] = {'N': half(True, True)}
+    hand = pack('handoff', ['H'], within=False, partial=True)
+    hand['within_limit'] = False
+    hand['extra'] = {'H': half(True, True)}
+    priced = A.admit_union([base, wide, filled, hand])
+    check('a combined gate pays its own half, and an older gate keeps the earlier map',
+          'A' in priced['proved'] and 'W' in priced['proved'] and 'H' in priced['proved']
+          and 'N' not in priced['proved'] and priced['line_member'].get('H') == 'handoff',
+          str((priced['proved'], priced['lost'], priced['chance'], priced['line_member'])))
+    cheap = pack('wide-fill', ['N'], within=False, partial=True)
+    cheap['within_limit'] = False
+    cheap['extra'] = {'N': half(False, False)}
+    kept_wide = A.admit_union([base, wide, cheap])
+    check('a combined gate keeps the line when its own half does not still pass',
+          'N' in kept_wide['proved'] and kept_wide['line_member'].get('N') == 'wide-fill'
+          and 'A' in kept_wide['proved'] and 'W' in kept_wide['proved'],
+          str((kept_wide['proved'], kept_wide['line_member'], kept_wide['chance'])))
 
 
 def main() -> int:
