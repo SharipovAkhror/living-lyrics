@@ -534,14 +534,18 @@ def _trim_overlap(lyrics: dict) -> None:
             prev = w
 
 
-def lock_written_cues(lyrics: dict, cues: dict[str, dict], placed_ids: set[str], only: set[str] | None = None) -> int:
+def lock_written_cues(lyrics: dict, cues: dict[str, dict], placed_ids: set[str], only: set[str] | None = None,
+                      wide_ids: set[str] | None = None) -> int:
     """After rounding, a cued line's first word stays within 0.30 s of the cue.
 
     A line that was not placed (`placed_ids`) starts on the cue, on the file's
     two-decimal grid. A placed line moves only when it sits further than 0.30 s,
-    and only by the excess. Returns how many lines moved.
+    and only by the excess. A wide leftover (`wide_ids`) may sit out to the
+    measured translation half; the proof pulls it back when the join did not
+    pay for that line. Returns how many lines moved.
     """
     only = only or set()
+    wide_ids = wide_ids or set()
     moved = 0
     for _, line in T.vocal_lines(lyrics):
         if only and line['id'] not in only:
@@ -552,13 +556,17 @@ def lock_written_cues(lyrics: dict, cues: dict[str, dict], placed_ids: set[str],
             continue
         cue_s = float(cue['start'])
         placed = line['id'] in placed_ids
+        if line['id'] in wide_ids:
+            limit = P.cue_accept_limit(line.get('lang'), cue.get('lang'))
+        else:
+            limit = P.CUE_TOL
         changed = False
         for _ in range(8):
             first = float(words[0]['s'])
             gap = first - cue_s
-            if placed and round(abs(gap), 3) <= Q.CUE_TOL:
+            if placed and round(abs(gap), 3) <= limit:
                 break
-            goal = T.r2(cue_s) if not placed else T.r2(cue_s + (1.0 if gap > 0 else -1.0) * (Q.CUE_TOL - 0.01))
+            goal = T.r2(cue_s) if not placed else T.r2(cue_s + (1.0 if gap > 0 else -1.0) * (limit - 0.01))
             if not placed and abs(first - goal) <= 0.001:
                 break
             delta = goal - first
@@ -572,21 +580,35 @@ def lock_written_cues(lyrics: dict, cues: dict[str, dict], placed_ids: set[str],
     return moved
 
 
-def keep_cue_time(status: str, has_cue: bool, drift: float | None = None) -> bool:
+def keep_cue_time(status: str, has_cue: bool, drift: float | None = None,
+                  limit: float | None = None) -> bool:
     """Cue times stay unless the aligner is confident and agrees with the cue.
 
     A person placed the subtitle cue, and that start is the line's anchor. `drift` is
     |aligner line start − cue start| in seconds, before any snap. A confident aligner
-    further than CUE_TOL still publishes the cue (the line is not proved). None means
-    the aligner did not place the line. A line with no cue is not locked.
+    further than the gate still publishes the cue (the line is not proved). The gate
+    is 0.30 s. A wide leftover passes the measured half as `limit`. None means the
+    aligner did not place the line. A line with no cue is not locked.
     """
+    tol = Q.CUE_TOL if limit is None else float(limit)
     if not has_cue:
         return False
     if status != 'good':
         return True
-    if drift is None or round(float(drift), 3) > Q.CUE_TOL:
+    if drift is None or round(float(drift), 3) > tol:
         return True
     return False
+
+
+def _cue_limit(unit: Unit, cues: dict[str, dict]) -> float:
+    """Adoption gate. A translation cue does not widen it.
+
+    The measured half is a leftover, not the first accept. Adopting a start at
+    0.4 s dropped placements the 0.30 s chain had already proved. `unit` and
+    `cues` stay so every adoption call reads this one gate.
+    """
+    del unit, cues
+    return P.CUE_TOL
 
 
 def line_drift(starts: list[float | None], roman: list[str], cue_start: float | None) -> float | None:
@@ -634,6 +656,17 @@ def cue_pass(lp: np.ndarray, units: list[Unit], cues: dict[str, dict], duration:
         nxt_t = (float(nxt['start']), float(nxt['end'])) if nxt else None
         win = cue_window(float(cue['start']), float(cue['end']), prev_t, nxt_t,
                          float(u.sec['start']), float(u.sec['end']), duration)
+        if P.cue_is_translation(u.line.get('lang'), cue.get('lang')):
+            # The ordinary window stays. A translation cue also searches ± the
+            # measured half, fenced by the neighbour cues and the section.
+            prev_end = None if prev is None else float(prev['end'])
+            next_start = None if nxt is None else float(nxt['start'])
+            lo, hi = P.translation_span(float(cue['start']), prev_end, next_start, P.TRANSLATION_HALF)
+            lo = max(0.0, lo, float(u.sec['start']) - CUE_SECTION_PAD)
+            hi = min(float(duration), hi, float(u.sec['end']) + CUE_SECTION_PAD)
+            if hi < lo:
+                lo = hi = float(cue['start'])
+            win = (min(win[0], lo), max(win[1], hi))
         t0 = max(0, int(win[0] * FPS))
         t1 = min(len(lp), int(win[1] * FPS))
         placed = align_stars(lp[t0:t1], [u]) if t1 > t0 else None
@@ -853,6 +886,62 @@ def _next_cue_start(units: list[Unit], cues: dict[str, dict], i: int) -> float |
     return None
 
 
+def _prev_cue_end(units: list[Unit], cues: dict[str, dict], i: int) -> float | None:
+    for prev in units[i - 1::-1]:
+        cue = cues.get(prev.id)
+        if cue is not None and cue.get('end') is not None:
+            return float(cue['end'])
+    return None
+
+
+def _note_wide(c: dict, unit: Unit, seconds, cue: dict | None,
+               prev_end: float | None, next_start: float | None, by: str) -> None:
+    """Remember the translation start closest to the cue that is still outside 0.30 s."""
+    if c.get('placed_by') or not seconds or cue is None:
+        return
+    if not P.cue_is_translation(unit.line.get('lang'), cue.get('lang')):
+        return
+    starts, ends = P.lettered_pairs(seconds, unit.roman)
+    if not starts or starts[0] is None or any(s is None or e is None for s, e in zip(starts, ends)):
+        return
+    section = _section(unit)
+    if not P.spans_inside(seconds, section):
+        return
+    judged = P.judge(starts, ends, float(cue['start']), next_start, section, limit=P.TRANSLATION_HALF)
+    if not P.translation_leftover(
+            float(starts[0]), float(cue['start']), prev_end, next_start,
+            structure_ok=bool(judged.get('structure_ok')), translated=True):
+        return
+    delta = abs(float(starts[0]) - float(cue['start']))
+    previous = c.get('wide_delta')
+    if previous is not None and delta >= float(previous) - 1e-9:
+        return
+    c['wide_seconds'] = _copy_spans(seconds)
+    c['wide_delta'] = round(delta, 3)
+    c['wide_by'] = by
+
+
+def _adopt_wide_leftovers(conf: list[dict]) -> int:
+    """Place a remembered wide start only when the 0.30 s chain left the line open."""
+    placed = 0
+    for c in conf:
+        wide = c.get('wide_seconds')
+        if c.get('placed_by') is not None or not wide:
+            c.pop('wide_seconds', None)
+            c.pop('wide_delta', None)
+            c.pop('wide_by', None)
+            continue
+        c['placed_by'] = c.get('wide_by') or 'mms'
+        c['chosen_seconds'] = wide
+        c['status'] = 'good'
+        c['structure_ok'] = True
+        if not c.get('structure') or c.get('structure') == 'missing':
+            c['structure'] = 'ok'
+        c['wide_only'] = True
+        placed += 1
+    return placed
+
+
 def _chain_line(unit: Unit, cues: dict[str, dict]) -> bool:
     """Solo and choir lines with a cue. A duet is outside the song gate."""
     if cues.get(unit.id) is None:
@@ -903,13 +992,14 @@ def _section(unit: Unit) -> tuple[float, float]:
 
 
 def _placement_attempt(by: str, seconds, roman, cue_start, next_cue, window,
-                       section: tuple[float, float] | None = None) -> dict:
+                       section: tuple[float, float] | None = None,
+                       limit: float | None = None) -> dict:
     if not seconds:
         window_out = None if window is None else [round(float(window[0]), 2), round(float(window[1]), 2)]
         return {'by': by, 'placed': False, 'structure_ok': False, 'structure': 'missing',
                 'delta': None, 'near': False, 'window': window_out}
     starts, ends = P.lettered_pairs(seconds, roman)
-    judged = P.judge(starts, ends, cue_start, next_cue, section)
+    judged = P.judge(starts, ends, cue_start, next_cue, section, limit=limit)
     # Lettered starts are in the structural check. Punctuation still has a time,
     # and the validator warns on every word, so the full list is checked too.
     if judged.get('placed') and not P.spans_inside(seconds, section):
@@ -952,13 +1042,15 @@ def rescue_mms_windows(lp: np.ndarray, units: list[Unit], conf: list[dict], pass
             if P.same_window(win, original):
                 continue
             seconds = star_seconds(lp, u, win[0], win[1])
-            attempt = _placement_attempt('mms-window', seconds, u.roman, cue_s, nxt, win, _section(u))
+            attempt = _placement_attempt(
+                'mms-window', seconds, u.roman, cue_s, nxt, win, _section(u), _cue_limit(u, cues))
             if attempt['placed'] and seconds is not None:
                 _adopt(c, 'mms-window', seconds, attempt)
                 placed += 1
                 print(f"окно {u.id}: {win[0]:.2f}–{win[1]:.2f} с, |Δ| {attempt['delta']}", flush=True)
                 break
             c['attempts'].append(attempt)
+            _note_wide(c, u, seconds, cue, _prev_cue_end(units, cues, i), nxt, 'mms-window')
     return placed
 
 
@@ -976,48 +1068,111 @@ def _mix_path(slug: str):
         return find_source(slug)
 
 
-def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, dict], duration: float) -> dict:
-    """htdemucs_ft on the lines still open, one model load, inside the time budget.
+def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, dict], duration: float,
+              lyrics: dict | None = None) -> dict:
+    """A measured vocal clip on lines still open, and a clock on lines placed but not proved.
 
-    The song stem and its emission cache stay as they are. A failure leaves the lines unplaced.
+    The song stem stays htdemucs. The clip model is htdemucs_ft at overlap 0.1
+    unless onset clarity on already proved words picks another Demucs setting.
+    A proved line is not separated again and its time is not copied. A failure
+    leaves every line where it was. `lyrics` is optional so a caller that only
+    checks a missing mix still works.
     """
     info = {'ran': False, 'clips': 0, 'skipped': 0, 'elapsed_s': 0.0, 'budget_s': P.FT_BUDGET_S,
             'skipped_ids': [], 'error': None}
     open_rows = []
+    draft_rows = []
     for i, u in enumerate(units):
-        if conf[i].get('placed_by') is not None or not _chain_line(u, cues):
+        if not _chain_line(u, cues):
             continue
         cue = cues[u.id]
         nxt = _next_cue_start(units, cues, i)
         t0, t1 = P.span_to_next(float(cue['start']), float(cue['end']), nxt, duration, 0.30, 0.0)
-        open_rows.append((t0, t1, u.id))
-    if not open_rows:
-        return info
-    merged = P.merge_spans(open_rows)
-    kept, skipped = P.fit_budget(merged, P.FT_BUDGET_S)
-    info['skipped_ids'] = skipped
-    info['skipped'] = len(skipped)
-    if not kept:
-        info['error'] = 'budget'
-        print(f'htdemucs_ft: бюджет {P.FT_BUDGET_S:.0f} с не вместил ни одного отрезка, пропущено строк {len(skipped)}', flush=True)
+        if conf[i].get('placed_by') is None:
+            open_rows.append((t0, t1, u.id))
+        elif 'timing-draft' in (u.line.get('flags') or []):
+            draft_rows.append((t0, t1, u.id))
+    if not open_rows and not draft_rows:
         return info
     try:
         # Resolve the mix before loading a model. A missing file must stay inside this handler.
         mix_path = _mix_path(slug)
         import torch
         import torchaudio
+        import stem_onset
 
         mix = load_audio(mix_path, P.FT_RATE)
-        vocals, separated = P.separate_ft_clips(mix, [(a, b) for a, b, _ids in kept])
+        spec = None
+        try:
+            times = stem_onset.sample_times(lyrics)
+            if len(times) >= stem_onset.MIN_WORDS:
+                onset = stem_onset.measure(mix, times, duration, rate=P.FT_RATE)
+                info['onset'] = onset
+                spec = onset.get('spec')
+            else:
+                info['onset'] = {
+                    'chosen': stem_onset.current_spec().get('name'),
+                    'reason': 'доказанных слов меньше 8' if lyrics else 'нет текста для замера',
+                    'spec': stem_onset.current_spec(),
+                    'words': len(times),
+                    'rows': [],
+                }
+                spec = info['onset']['spec']
+        except Exception as e:
+            info['onset_error'] = f'{e.__class__.__name__}: {e}'
+            print(f'замер стема пропущен ({info["onset_error"]})', flush=True)
+            spec = None
+        rtf = stem_onset.rtf_of(spec)
+        open_kept, open_skipped = P.fit_budget(P.merge_spans(open_rows), P.FT_BUDGET_S, rtf=rtf)
+        used = sum(max(0.0, b - a) * rtf for a, b, _ids in open_kept)
+        draft_kept, draft_skipped = P.fit_budget(
+            P.merge_spans(draft_rows), max(0.0, P.FT_BUDGET_S - used), rtf=rtf)
+        skipped = list(open_skipped) + list(draft_skipped)
+        kept_ids = set()
+        for _a, _b, ids in open_kept + draft_kept:
+            kept_ids.update(ids)
+        selected = [row for row in open_rows + draft_rows if row[2] in kept_ids]
+        merged = P.merge_spans(selected)
+        info['skipped_ids'] = skipped
+        info['skipped'] = len(skipped)
+        info['rtf'] = rtf
+        if spec:
+            info['model'] = spec.get('name') or spec.get('model')
+            info['shifts'] = spec.get('shifts')
+            info['overlap'] = spec.get('overlap')
+            info['ensemble'] = bool(spec.get('ensemble'))
+        if not merged:
+            info['error'] = 'budget'
+            print(
+                f'стем отрезка: бюджет {P.FT_BUDGET_S:.0f} с не вместил ни одного отрезка, '
+                f'пропущено строк {len(skipped)}',
+                flush=True)
+            return info
+        vocals, separated = stem_onset.separate_spans(
+            mix, [(a, b) for a, b, _ids in merged], rate=P.FT_RATE,
+            budget_s=P.FT_BUDGET_S, spec=spec)
+        onset_saved = info.get('onset')
+        onset_error = info.get('onset_error')
         info.update(separated)
-        info['skipped_ids'] = list(dict.fromkeys(list(skipped) + list(info.get('skipped_ids') or [])))
+        if onset_saved is not None:
+            info['onset'] = onset_saved
+        if onset_error:
+            info['onset_error'] = onset_error
+        info['skipped_ids'] = list(dict.fromkeys(skipped + list(info.get('skipped_ids') or [])))
+        if separated.get('error'):
+            info['ran'] = False
+            print(f'стем отрезка не отделён ({separated.get("error")})', flush=True)
+            return info
         info['ran'] = True
         del mix
         model = _mms_model()
         id_to_i = {u.id: i for i, u in enumerate(units)}
-        for (t0, t1, ids), vocal in zip(kept, vocals):
+        open_ids = {row[2] for row in open_rows}
+        for (t0, t1, ids), vocal in zip(merged, vocals):
             if vocal is None:
                 for lid in ids:
+                    if lid not in open_ids:
+                        continue
                     c = conf[id_to_i[lid]]
                     if c.get('placed_by') is not None:
                         continue
@@ -1029,8 +1184,6 @@ def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, di
             for lid in ids:
                 i = id_to_i[lid]
                 u, c = units[i], conf[i]
-                if c.get('placed_by') is not None:
-                    continue
                 cue = cues[u.id]
                 nxt = _next_cue_start(units, cues, i)
                 win = P.span_to_next(float(cue['start']), float(cue['end']), nxt, duration, 0.30, 0.0)
@@ -1039,12 +1192,19 @@ def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, di
                 seconds = star_seconds(clip, u, rel0, rel1)
                 if seconds:
                     seconds = [None if span is None else [span[0] + t0, span[1] + t0] for span in seconds]
-                attempt = _placement_attempt('mms-ft', seconds, u.roman, float(cue['start']), nxt, (t0, t1), _section(u))
+                if seconds:
+                    c['stem_starts'] = seconds
+                if lid not in open_ids or c.get('placed_by') is not None:
+                    continue
+                attempt = _placement_attempt(
+                    'mms-ft', seconds, u.roman, float(cue['start']), nxt, (t0, t1), _section(u),
+                    _cue_limit(u, cues))
                 if attempt['placed'] and seconds is not None:
                     _adopt(c, 'mms-ft', seconds, attempt)
                     print(f"ft {u.id}: |Δ| {attempt['delta']}", flush=True)
                 else:
                     c['attempts'].append(attempt)
+                    _note_wide(c, u, seconds, cue, _prev_cue_end(units, cues, i), nxt, 'mms-ft')
         del model
     except (Exception, SystemExit) as e:
         info['ran'] = False
@@ -1212,28 +1372,36 @@ def adopt_engines(units: list[Unit], conf: list[dict], cues: dict[str, dict],
         s3 = third_starts.get(u.id)
         if s3 is not None and len(s3) == len(u.line['words']):
             seconds = seconds_from_engine(s3, u.roman, nxt)
-            attempt = _placement_attempt('stable-ts', seconds, u.roman, cue_s, nxt, window, _section(u))
+            attempt = _placement_attempt(
+                'stable-ts', seconds, u.roman, cue_s, nxt, window, _section(u), _cue_limit(u, cues))
         else:
             seconds = None
-            attempt = _placement_attempt('stable-ts', None, u.roman, cue_s, nxt, window, _section(u))
+            attempt = _placement_attempt(
+                'stable-ts', None, u.roman, cue_s, nxt, window, _section(u), _cue_limit(u, cues))
         _mark_engine(c, 'stable', attempt)
         if c.get('placed_by') is None and attempt['placed'] and seconds is not None:
             # _mark_engine already stored the attempt. Do not store it twice.
             c['attempts'].pop()
             _adopt(c, 'stable-ts', seconds, attempt)
             n_stable += 1
+        elif seconds is not None:
+            _note_wide(c, u, seconds, cue, _prev_cue_end(units, cues, i), nxt, 'stable-ts')
         s2 = second_starts.get(u.id)
         if s2 is not None and len(s2) == len(u.line['words']):
             seconds = seconds_from_engine(s2, u.roman, nxt)
-            attempt = _placement_attempt('second', seconds, u.roman, cue_s, nxt, window, _section(u))
+            attempt = _placement_attempt(
+                'second', seconds, u.roman, cue_s, nxt, window, _section(u), _cue_limit(u, cues))
         else:
             seconds = None
-            attempt = _placement_attempt('second', None, u.roman, cue_s, nxt, window, _section(u))
+            attempt = _placement_attempt(
+                'second', None, u.roman, cue_s, nxt, window, _section(u), _cue_limit(u, cues))
         _mark_engine(c, 'second', attempt)
         if c.get('placed_by') is None and attempt['placed'] and seconds is not None:
             c['attempts'].pop()
             _adopt(c, 'second', seconds, attempt)
             n_second += 1
+        elif seconds is not None:
+            _note_wide(c, u, seconds, cue, _prev_cue_end(units, cues, i), nxt, 'second')
     return n_stable, n_second
 
 
@@ -1259,7 +1427,13 @@ def assemble_times(units: list[Unit], conf: list[dict], cues: dict[str, dict], d
         ctc_ends.append(raw_e)
         cue = cues.get(u.id)
         drift = line_drift(raw, u.roman, None if cue is None else float(cue['start']))
-        keep = keep_cue_time(c['status'], cue is not None, drift)
+        if cue is None:
+            limit = None
+        elif c.get('wide_only'):
+            limit = P.cue_accept_limit(u.line.get('lang'), cue.get('lang'))
+        else:
+            limit = P.CUE_TOL
+        keep = keep_cue_time(c['status'], cue is not None, drift, limit=limit)
         use_aligner = (not keep) and c['status'] != 'draft'
         publish.append(use_aligner)
         if use_aligner:
@@ -1350,6 +1524,14 @@ def _placement_summary(report_lines: list[dict], conf: list[dict], units: list[U
         'choir': {'all': pack(choir), 'verses': pack(verses), 'finale': pack(finale)},
         'ft': ft_info or {'ran': False},
     }
+
+
+def _stem_clock(conf_row: dict, index: int) -> float | None:
+    """File-time start from the clip stem, when that pass produced one."""
+    spans = conf_row.get('stem_starts') or []
+    if index >= len(spans) or spans[index] is None:
+        return None
+    return round(float(spans[index][0]), 3)
 
 
 def _clock_round(value: float | None, kind: str | None) -> float | None:
@@ -1459,7 +1641,8 @@ def main() -> None:
         cue = cues.get(u.id)
         raw_drift = [None if w is None else w['f0'] / FPS for w in placed_words]
         delta = line_drift(raw_drift, u.roman, None if cue is None else float(cue['start']))
-        near = delta is not None and round(delta, 3) <= Q.PROOF_CUE_TOL
+        accept = _cue_limit(u, cues)
+        near = delta is not None and round(delta, 3) <= accept
         score_ok = (not missing) and metric_value is not None and float(metric_value) >= threshold
         status = placement_status(missing or r is None, score_ok, structure_ok, near, cue is not None)
         placed_now = status == 'good'
@@ -1478,13 +1661,15 @@ def main() -> None:
             'stable_would': False, 'stable_near': False, 'stable_structure': False,
             'second_would': False, 'second_near': False, 'second_structure': False,
         })
+        if not placed_now and cue is not None:
+            _note_wide(conf[-1], u, mms_seconds, cue, _prev_cue_end(units, cues, i), next_cue, 'mms')
 
     # Lines the first MMS pass already placed keep that pass. The chain runs only
     # where it did not. Their witness window stays the pre-snap phrase, so a line
     # that was already placed is not re-measured on a wider span.
     orig_good = {u.id for u, c in zip(units, conf) if c['status'] == 'good'}
     n_window = rescue_mms_windows(lp, units, conf, passes, cues, duration)
-    ft_info = rescue_ft(slug, units, conf, cues, duration)
+    ft_info = rescue_ft(slug, units, conf, cues, duration, lyrics)
 
     # Phrase for the original good lines, before any snap and before a later aligner
     # is allowed to place what MMS missed. Newly placed lines are not a fence yet:
@@ -1527,12 +1712,13 @@ def main() -> None:
     second_starts, second_name = engines.align_jobs(args.second, x, jobs)
     third_starts, witness_info = run_whisper_witness(x, jobs, units, conf, cues)
     n_stable, n_second = adopt_engines(units, conf, cues, second_starts, third_starts, second_window)
+    n_wide = _adopt_wide_leftovers(conf)
     by_counts: dict[str, int] = {}
     for c in conf:
         if c.get('placed_by'):
             by_counts[c['placed_by']] = by_counts.get(c['placed_by'], 0) + 1
     print(f"цепочка: окно {n_window}, ft {by_counts.get('mms-ft', 0)}, stable-ts {n_stable}, "
-          f"второй {n_second}; поставлено {sum(by_counts.values())}", flush=True)
+          f"второй {n_second}, широкое {n_wide}; поставлено {sum(by_counts.values())}", flush=True)
 
     # Rebuild after the chain. Snap runs once, on the placer's times.
     times, ctc_starts, ctc_ends, publish = assemble_times(units, conf, cues, duration)
@@ -1548,13 +1734,17 @@ def main() -> None:
         while e + F.HOP <= limit and active(e):
             e += F.HOP
         w[1] = max(w[1], min(e, limit))
-    for ws, u, pub in zip(times, units, publish):
+    for ws, u, pub, c in zip(times, units, publish, conf):
         if not pub:
             continue
         cue = cues.get(u.id)
         if cue is None:
             continue
-        clamp_block(ws, float(cue['start']), Q.CUE_TOL)
+        if c.get('wide_only'):
+            limit = P.cue_accept_limit(u.line.get('lang'), cue.get('lang'))
+        else:
+            limit = P.CUE_TOL
+        clamp_block(ws, float(cue['start']), limit)
 
     # Borrowed checkpoints on every cued line of tr, az and la. The cue window, not the
     # phrase the first aligner already placed, so a language is not graded only on the
@@ -1641,6 +1831,7 @@ def main() -> None:
                               'clock_mms': None if mms_t is None else round(mms_t, 3),
                               'clock_second': None if e2 is None else round(float(e2), 3),
                               'clock_stable': None if e3 is None else round(float(e3), 3),
+                              'clock_stem': _stem_clock(c, wi),
                               'stable_models': stable_models,
                               'borrow': borrow_times,
                               'onset_dt': None if odt[wi] is None else round(odt[wi], 2), 'proven': proven})
@@ -1677,9 +1868,11 @@ def main() -> None:
             'anchor_start': round(p['window'][0], 2), 'agree': round(agree, 2),
             'cue_start': None if cue is None else round(float(cue['start']), 3),
             'cue_end': None if cue is None else round(float(cue['end']), 3),
+            'cue_lang': None if cue is None else cue.get('lang'),
             'ctc_start': None if ctc_line is None else round(ctc_line, 3),
             'time_source': c['placed_by'] if pub and c.get('placed_by') else ('cue' if cue is not None else 'draft'),
             'placed_by': c.get('placed_by'),
+            'wide_only': bool(c.get('wide_only')),
             'mms_start': None if mms_line is None else round(mms_line, 3),
             'mms_delta': c.get('mms_delta'),
             'mms_missing': bool(c.get('mms_missing')),
@@ -1706,7 +1899,8 @@ def main() -> None:
             u.line.pop('placedBy', None)
     fixes = T.enforce_order(lyrics)
     placed_ids = {u.id for u, pub in zip(units, publish) if pub}
-    locked = lock_written_cues(lyrics, cues, placed_ids, only)
+    wide_ids = {u.id for u, c in zip(units, conf) if c.get('wide_only')}
+    locked = lock_written_cues(lyrics, cues, placed_ids, only, wide_ids)
     edge_fixes = T.fit_section_edges(lyrics)
     pulled = T.pull_outside_starts(lyrics)
     by_written = {line['id']: line for _, line in T.vocal_lines(lyrics)}
@@ -1771,8 +1965,11 @@ def main() -> None:
                        'cue_tol': Q.CUE_TOL, 'cue_lead': CUE_LEAD, 'cue_tail': CUE_TAIL, 'cue_overlap': CUE_OVERLAP},
         'summary': summary, 'sections': section_notes, 'lines': report_lines,
     }
-    # Phoneme clocks are a witness, not a placer. A failure here must not drop
-    # the Whisper clocks or the align report.
+    # Phoneme clocks are a witness. The same pass may propose starts for
+    # still-unplaced Latin lines under summary.phoneme.latin_place. Those
+    # starts are not written into the lyrics here: the prove job keeps a
+    # placement only when proved lines rise and the gates still hold.
+    # A failure must not drop the Whisper clocks or the align report.
     try:
         import phoneme
         phoneme.measure(x, report)

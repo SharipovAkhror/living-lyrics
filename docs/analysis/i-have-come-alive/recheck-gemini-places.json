@@ -1,0 +1,485 @@
+{
+ "source": "Gemini 3.8 Flash (agy), targeted listening on short clips of the official video audio, captions excluded; 2026-10-21. Same model as recheck-gemini.json: one witness, not two.",
+ "places": [
+  {
+   "place": 1,
+   "clip_s": [
+    357,
+    375
+   ],
+   "question": "Which Arabic lines are sung here, and in what order? Are the shown lines arabic-said-1 and arabic-said-2 what is sung?",
+   "answer": "Only one Arabic line is sung: 'مُنَعَّمٌ وَخَالِدٌ' (arabic-32). The shown lines arabic-said-1 and arabic-said-2 are NOT sung; they are incorrect Arabic misattributions for the Persian verses of Rumi sung here: 'گفتا که شیخی و سری' and 'پیش‌رو و پیش‌گهی'.",
+   "segments": [
+    {
+     "start_s": 357.0,
+     "end_s": 360.4,
+     "heard": "مُنَعَّمٌ وَخَالِدٌ",
+     "matches_id": "arabic-32"
+    },
+    {
+     "start_s": 360.8,
+     "end_s": 365.4,
+     "heard": "گفتا که شیخی و سری",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 366.7,
+     "end_s": 371.5,
+     "heard": "پیش‌رو و پیش‌گهی",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 372.6,
+     "end_s": 373.8,
+     "heard": "شَیْخْ نِیَمْ",
+     "matches_id": "rumi-8-1"
+    },
+    {
+     "start_s": 373.8,
+     "end_s": 375.0,
+     "heard": "پِیشْ نِیَمْ",
+     "matches_id": "rumi-8-2"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 2,
+   "clip_s": [
+    370,
+    397
+   ],
+   "question": "Is the Persian beit «گفت که شیخی و سری پیشرو و راهبری» sung before the reply «شیخ نیم پیش نیم امر تو را بنده شدم»? When does each half start? How many times is «امر تو را بنده شدم» sung?",
+   "answer": "No, the Persian line «گفت که شیخی و سری پیشرو و راهبری» is not sung at all. Only the reply is sung: its first half («شیخ نیم پیش نیم») starts at ~372.6 s («شیخ نیم» at 372.6 s, «پیش نیم» at 374.5 s), and its second half («امر تو را بنده شدم») starts at ~376.6 s. The phrase «امر تو را بنده شدم» is sung exactly twice (376.6–381.4 s and 381.4–385.9 s), followed by an instrumental interlude with no further vocals in the clip.",
+   "segments": [
+    {
+     "start_s": 370.0,
+     "end_s": 371.5,
+     "heard": "وَ زَعِيمٌ",
+     "matches_id": "arabic-said-2"
+    },
+    {
+     "start_s": 372.6,
+     "end_s": 374.5,
+     "heard": "شَیْخْ نِیَمْ",
+     "matches_id": "rumi-8-1"
+    },
+    {
+     "start_s": 374.5,
+     "end_s": 376.6,
+     "heard": "پِیشْ نِیَمْ",
+     "matches_id": "rumi-8-2"
+    },
+    {
+     "start_s": 376.6,
+     "end_s": 381.4,
+     "heard": "اَمْرِ تُو رَا بَنْدِه شُدَمْ",
+     "matches_id": "rumi-8-3"
+    },
+    {
+     "start_s": 381.4,
+     "end_s": 385.9,
+     "heard": "اَمْرِ تُو رَا بَنْدِه شُدَمْ",
+     "matches_id": "rumi-8-3b"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 3,
+   "clip_s": [
+    388,
+    398
+   ],
+   "question": "Is «امر تو را بنده شدم» sung again here, or is it instrumental?",
+   "answer": "It is instrumental; the phrase is not sung here.",
+   "segments": [],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 4,
+   "clip_s": [
+    297,
+    312
+   ],
+   "question": "How many times is «في رحلة الفنون» sung, and when?",
+   "answer": "Sung twice: first by the soloist at 300.4–302.4 s, and repeated immediately by the ensemble at 302.4–304.5 s.",
+   "segments": [
+    {
+     "start_s": 300.4,
+     "end_s": 302.4,
+     "heard": "فِي رِحْلَةِ الْفُنُونِ",
+     "matches_id": "arabic-8"
+    },
+    {
+     "start_s": 302.4,
+     "end_s": 304.5,
+     "heard": "فِي رِحْلَةِ الْفُنُونِ",
+     "matches_id": "NONE"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 5,
+   "clip_s": [
+    315,
+    335
+   ],
+   "question": "How many times is «مبتعد تعبان» sung, and when?",
+   "answer": "Sung twice consecutively by the vocalist: first from 318.4 to 320.3 s, and repeated immediately from 320.4 to 322.4 s.",
+   "segments": [
+    {
+     "start_s": 318.4,
+     "end_s": 320.3,
+     "heard": "مُبْتَعِدٌ تَعْبَانُ",
+     "matches_id": "arabic-17"
+    },
+    {
+     "start_s": 320.4,
+     "end_s": 322.4,
+     "heard": "مُبْتَعِدٌ تَعْبَانُ",
+     "matches_id": "NONE"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 6,
+   "clip_s": [
+    309,
+    317
+   ],
+   "question": "Is the shown line arabic-14 sung here? What exactly is sung?",
+   "answer": "Yes, line arabic-14 (قَدْ قِيلَ لِي خَبِيثٌ) is sung here.",
+   "segments": [
+    {
+     "start_s": 309.0,
+     "end_s": 310.1,
+     "heard": "كُنْتُهُ بَعْدُ",
+     "matches_id": "arabic-12"
+    },
+    {
+     "start_s": 310.1,
+     "end_s": 312.2,
+     "heard": "بِالطَّرَبِ شَبْعَانُ",
+     "matches_id": "arabic-13"
+    },
+    {
+     "start_s": 312.2,
+     "end_s": 314.3,
+     "heard": "قَدْ قِيلَ لِي خَبِيثٌ",
+     "matches_id": "arabic-14"
+    },
+    {
+     "start_s": 314.3,
+     "end_s": 316.3,
+     "heard": "وَوَاهِمٌ حَيْرَانُ",
+     "matches_id": "arabic-15"
+    },
+    {
+     "start_s": 316.3,
+     "end_s": 317.0,
+     "heard": "بَلْ",
+     "matches_id": "arabic-16"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 7,
+   "clip_s": [
+    334,
+    359
+   ],
+   "question": "How many times is «بل خادم مطيع» sung, and when?",
+   "answer": "The phrase «بل خادم مطيع» is sung 3 times consecutively by Sami Yusuf between 336.9 s and 342.8 s.",
+   "segments": [
+    {
+     "start_s": 336.9,
+     "end_s": 338.8,
+     "heard": "بَلْ خَادِمٌ مُطِيعٌ",
+     "matches_id": "arabic-26"
+    },
+    {
+     "start_s": 338.8,
+     "end_s": 340.8,
+     "heard": "بَلْ خَادِمٌ مُطِيعٌ",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 340.8,
+     "end_s": 342.8,
+     "heard": "بَلْ خَادِمٌ مُطِيعٌ",
+     "matches_id": "NONE"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 8,
+   "clip_s": [
+    421,
+    438
+   ],
+   "question": "Is the line sung here Persian or Turkish? Write exactly what is sung.",
+   "answer": "The line sung here is Turkish: 'Aşk devleti gelince ben'. It is not Persian and does not match the website's shown line dowlat-2.",
+   "segments": [
+    {
+     "start_s": 421.0,
+     "end_s": 424.3,
+     "heard": "فَكَمْ أَحْيَا وَكَمْ أَمُوتُ",
+     "matches_id": "mawwal-2"
+    },
+    {
+     "start_s": 424.3,
+     "end_s": 435.4,
+     "heard": "Aşk devleti gelince ben",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 435.6,
+     "end_s": 437.7,
+     "heard": "شُکْرْ کُنَدْ کَاغَذِ تُو",
+     "matches_id": "rumi-15-1"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 9,
+   "clip_s": [
+    455,
+    465
+   ],
+   "question": "In the line with «روشن» and «بخشنده», is the conjunction «و» sung between them?",
+   "answer": "Yes, the conjunction «و» is sung between «روشن» and «بخشنده» («روشن و بخشنده شدم»).",
+   "segments": [
+    {
+     "start_s": 455.0,
+     "end_s": 455.5,
+     "heard": "چرخ فلک",
+     "matches_id": "rumi-17-1"
+    },
+    {
+     "start_s": 455.5,
+     "end_s": 458.0,
+     "heard": "از ملک و ملک و ملک",
+     "matches_id": "rumi-17-1b"
+    },
+    {
+     "start_s": 458.0,
+     "end_s": 460.0,
+     "heard": "کز کرم و بخشش او",
+     "matches_id": "rumi-17-2"
+    },
+    {
+     "start_s": 460.0,
+     "end_s": 461.6,
+     "heard": "روشن و بخشنده شدم",
+     "matches_id": "rumi-17-2b"
+    },
+    {
+     "start_s": 461.6,
+     "end_s": 464.1,
+     "heard": "شکر کند عارف حق",
+     "matches_id": "rumi-18-1"
+    },
+    {
+     "start_s": 464.1,
+     "end_s": 465.0,
+     "heard": "کز همه بردیم سبق",
+     "matches_id": "rumi-18-1b"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 10,
+   "clip_s": [
+    449,
+    461
+   ],
+   "question": "How many times is «نور پذیرنده» sung, and when?",
+   "answer": "«نور پذیرنده» is sung 2 times (both times as the full line «نور پذیرنده شدم»): first by the choir at 449.9–451.6 s (matches rumi-16-2b), and immediately repeated solo by Sami Yusuf at 451.7–453.8 s (repeat not in shown lines, matches NONE). From 453.9 s onwards, the song proceeds to «شکر کند چرخ فلک» (rumi-17-1).",
+   "segments": [
+    {
+     "start_s": 449.9,
+     "end_s": 451.6,
+     "heard": "نُورْ پَذِیرَنْدِه شُدَمْ",
+     "matches_id": "rumi-16-2b"
+    },
+    {
+     "start_s": 451.7,
+     "end_s": 453.8,
+     "heard": "نُورْ پَذِیرَنْدِه شُدَمْ",
+     "matches_id": "NONE"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 11,
+   "clip_s": [
+    512,
+    527
+   ],
+   "question": "Is this the Arabic coda (shown lines coda-ar-3, coda-ar-4) or «فرخ و فرخنده»? Write exactly what is sung.",
+   "answer": "This is the Arabic coda (including lines coda-ar-3 and coda-ar-4), not «فرخ و فرخنده».",
+   "segments": [
+    {
+     "start_s": 512.0,
+     "end_s": 516.0,
+     "heard": "فِي ضَحْكَتِي نَبْعٌ وَرِيٌّ",
+     "matches_id": "coda-ar-2"
+    },
+    {
+     "start_s": 516.0,
+     "end_s": 519.8,
+     "heard": "مَمْلَكَةَ الْعِشْقِ أَرَى",
+     "matches_id": "coda-ar-3"
+    },
+    {
+     "start_s": 519.8,
+     "end_s": 523.5,
+     "heard": "مُنَعَّمٌ وَخَالِدٌ",
+     "matches_id": "coda-ar-4"
+    },
+    {
+     "start_s": 523.5,
+     "end_s": 527.0,
+     "heard": "دِلْ دِلْ جَان",
+     "matches_id": "NONE"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 12,
+   "clip_s": [
+    522,
+    580
+   ],
+   "question": "Write the sung lines in order with times: which are Arabic, Turkish, Persian? Where is Persian «دولت» sung?",
+   "answer": "The stretch begins with Arabic (522.0–523.3 s, end of «مُنَعَّمٌ وَخَالِدٌ»), followed by Turkish (523.4–546.7 s: «Bir ölüydüm canla doldum», «Ağlar idim gülüş oldum», and two cycles of «Aşk devleti gelince ben / Sonsuzluk devleti buldum»), and ends with Persian (546.8–566.0 s: two cycles of «دولت عشق آمد و من / دولت پاینده شدم»). Persian «دولت» is sung only from 546.8 s to 566.0 s (coda-fa-5 through coda-fa-8); the preceding lines (523.4–546.7 s) shown as coda-fa-a through coda-fa-4 on the website are actually sung in Turkish.",
+   "segments": [
+    {
+     "start_s": 522.0,
+     "end_s": 523.3,
+     "heard": "مُنَعَّمٌ وَخَالِدٌ",
+     "matches_id": "coda-ar-4"
+    },
+    {
+     "start_s": 523.4,
+     "end_s": 527.4,
+     "heard": "Bir ölüydüm canla doldum",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 527.4,
+     "end_s": 531.4,
+     "heard": "Ağlar idim gülüş oldum",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 531.4,
+     "end_s": 535.2,
+     "heard": "Aşk devleti gelince ben",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 535.2,
+     "end_s": 539.1,
+     "heard": "Sonsuzluk devleti buldum",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 539.1,
+     "end_s": 542.9,
+     "heard": "Aşk devleti gelince ben",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 542.9,
+     "end_s": 546.7,
+     "heard": "Sonsuzluk devleti buldum",
+     "matches_id": "NONE"
+    },
+    {
+     "start_s": 546.8,
+     "end_s": 550.8,
+     "heard": "دولت عشق آمد و من",
+     "matches_id": "coda-fa-5"
+    },
+    {
+     "start_s": 550.8,
+     "end_s": 554.6,
+     "heard": "دولت پاینده شدم",
+     "matches_id": "coda-fa-6"
+    },
+    {
+     "start_s": 554.6,
+     "end_s": 558.5,
+     "heard": "دولت عشق آمد و من",
+     "matches_id": "coda-fa-7"
+    },
+    {
+     "start_s": 558.5,
+     "end_s": 566.0,
+     "heard": "دولت پاینده شدم",
+     "matches_id": "coda-fa-8"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 13,
+   "clip_s": [
+    8,
+    26
+   ],
+   "question": "Are there any words sung here, or is it wordless vocalising? If words, which?",
+   "answer": "Wordless vocalising only; no words are sung.",
+   "segments": [],
+   "certain": true,
+   "why_uncertain": ""
+  },
+  {
+   "place": 14,
+   "clip_s": [
+    465,
+    480
+   ],
+   "question": "How many times is «اختر رخشنده شدم» sung, and when exactly?",
+   "answer": "«اختر رخشنده شدم» is sung twice: first from 468.1 s to 471.0 s, and repeated from 471.0 s to 473.9 s.",
+   "segments": [
+    {
+     "start_s": 468.1,
+     "end_s": 471.0,
+     "heard": "اَخْتَرِ رَخْشَنْدِه شُدَمْ",
+     "matches_id": "rumi-18-2"
+    },
+    {
+     "start_s": 471.0,
+     "end_s": 473.9,
+     "heard": "اَخْتَرِ رَخْشَنْدِه شُدَمْ",
+     "matches_id": "rumi-18-2b"
+    }
+   ],
+   "certain": true,
+   "why_uncertain": ""
+  }
+ ]
+}

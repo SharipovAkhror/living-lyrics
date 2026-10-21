@@ -110,9 +110,12 @@ def line_chance_of(probe_hits, n: int) -> float | None:
 def apply_models(report: dict, by_lang: dict[str, str], peaks: np.ndarray | None = None) -> None:
     """Rewrite clock_stable from the chosen model and recompute the witness slots.
 
-    Word s/e, the text and placed_by stay. A model that was not measured on a
-    word leaves no stable clock, unless that word only has the placement model
-    and that is the one being applied.
+    Word s/e, the text and placed_by stay. A chosen model that was not measured
+    on a word leaves no stable clock, unless that word only has the placement
+    model and that is the one being applied. Writing the placement clock into
+    every other candidate would make the search inherit it, and the line pass
+    would no longer belong to that candidate. The join measures the empty slot
+    afterwards. `stable_models` still says which model a stored number came from.
     """
     summary = report.setdefault('summary', {})
     placement = summary.get('placement_model') or summary.get('stable_model')

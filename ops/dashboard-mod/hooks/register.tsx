@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register, RenderInput } from 'claude-code'
 
-import type { AgentName, Board, ChatRow, FeedItem, Group, Limit, Live, PipelineRun, QuotaGroup, Song, Task, Usage } from '../types'
+import type { AgentName, Board, ChatRow, FeedItem, Group, Hygiene, Limit, Live, PipelineRun, QuotaGroup, Song, Task, Usage } from '../types'
 import { ICON_CLAUDE, ICON_GEMINI, ICON_GROK } from './icons'
 
 /**
@@ -79,12 +79,13 @@ export function remoteLive(published: Live | null | undefined, now: number): Liv
     gemini: (published.gemini ?? []).map(r => ({ ...r, minutes: r.minutes + age })),
     chats: published.chats ?? [],
     pipeline: (published.pipeline ?? []).map(r => ({ ...r, minutes: r.minutes + age })),
+    hygiene: published.hygiene ?? null,
   }
 }
 
 /** The states that matter for publishing; minutes, steps and token counts change on every poll. */
 export function stateKey(l: Live) {
-  return JSON.stringify([l.grok.map(r => [r.name, r.state, r.model ?? '']), l.gemini.map(r => r.slug), (l.chats ?? []).map(c => [c.name, c.state]), (l.pipeline ?? []).map(r => r.title)])
+  return JSON.stringify([l.grok.map(r => [r.name, r.state, r.model ?? '']), l.gemini.map(r => r.slug), (l.chats ?? []).map(c => [c.name, c.state]), (l.pipeline ?? []).map(r => r.title), l.hygiene?.at ?? ''])
 }
 
 export function tokens(n?: number) {
@@ -96,8 +97,11 @@ export function tokens(n?: number) {
 /** Executor name from its worktree: `t1-sync` → `Sync`. Worktrees are named t<N>-<codename>. */
 export function codename(worktree?: string) {
   const word = (worktree ?? '').replace(/^t\d+[a-z]?-/, '').split('-')[0] ?? ''
+  if (word.toLowerCase() === 'iphone') return 'iPhone'
   return word ? word[0]!.toUpperCase() + word.slice(1) : ''
 }
+
+const STALE_REVIEW_MIN = 6 * 60
 
 /** Claude first, then each Grok executor with its live state, then Gemini. */
 export function agentRows(b: Board | null, l: Live): Row[] {
@@ -106,7 +110,15 @@ export function agentRows(b: Board | null, l: Live): Row[] {
     { agent: 'claude', name: 'Claude · Lead', task: b.claude ?? 'оркестрирует', state: '', tone: 'working', detail: '', model: b.models?.claude ?? '' },
   ]
   const now = b.tasks.filter(t => t.section === 'now')
-  for (const t of now.filter(t => t.agent === 'grok')) {
+  // A finished Grok session older than STALE_REVIEW_MIN was reviewed long ago: drop its row.
+  const stale = (r?: Live['grok'][number]) => r?.state === 'finished' && r.minutes > STALE_REVIEW_MIN
+  const grokTasks = now.filter(t => t.agent === 'grok' && !stale(t.worktree ? l.grok.find(r => r.name === t.worktree) : undefined))
+  // Live folders with a running or stalled Grok that no board task names still get a row.
+  const named = new Set(b.tasks.map(t => t.worktree).filter(Boolean))
+  for (const r of l.grok.filter(r => (r.state === 'working' || r.state === 'stalled') && !named.has(r.name))) {
+    grokTasks.push({ id: r.name, section: 'now', agent: 'grok', worktree: r.name, title: r.name } satisfies Task)
+  }
+  for (const t of grokTasks) {
     const run = t.worktree ? l.grok.find(r => r.name === t.worktree) : undefined
     const name = `Grok · ${codename(t.worktree) || 'Task'}`
     const model = run?.model || b.models?.grok || ''
@@ -174,13 +186,6 @@ function meterText(fraction: number, width = 10) {
 
 const CHAT_STATE: Record<string, string> = { working: 'работает', waiting: 'ждёт ответа', idle: 'свободен', retired: 'спит', none: 'не запущен' }
 
-/** A bar of ten cells for a chat line; the cell where `goal` (0…1) falls is marked when not yet filled. */
-export function barText(fraction: number, goal?: number, width = 10) {
-  const n = Math.round(Math.max(0, Math.min(1, fraction)) * width)
-  const g = goal === undefined ? -1 : Math.min(width - 1, Math.max(0, Math.round(goal * width) - 1))
-  return Array.from({ length: width }, (_, i) => (i < n ? '▰' : i === g ? '▹' : '▱')).join('')
-}
-
 /**
  * The dashboard as chat lines (markdown). Where nothing a mod draws is shown (claude.ai/code and the
  * phone over Remote Control, cloud sessions), /dashboard answers with this text, so it carries the
@@ -189,9 +194,8 @@ export function barText(fraction: number, goal?: number, width = 10) {
 export function summaryText(b: Board | null, l: Live, lim: Limit[], u: Usage | null) {
   if (!b) return 'Dashboard: данных пока нет.'
   const head = [`**Living Lyrics** · ${hhmm(b.updated)}`, b.roadmap ? `${b.roadmap.title.toLowerCase()} ${b.roadmap.percent} %` : ''].filter(Boolean)
-  // Test (owner, 2026-10-21): do remote windows draw markdown images? If not, this line shows as text.
-  const icons = ['claude-color', 'grok', 'gemini-color'].map(n => `![${n}](${RAW}/ops/dashboard-mod/icons/${n}.svg)`).join(' ')
-  const out = [`${icons} ${head.join(' · ')}`]
+  // Plain text only: remote windows draw markdown images as click-to-load boxes and bar glyphs as tofu.
+  const out = [head.join(' · ')]
   const you = b.tasks.filter(t => t.section === 'you')
   out.push('', you.length ? `⚑ **Нужно от вас:** ${you.map(t => t.title).join('; ')}` : 'От вас ничего не нужно.')
 
@@ -207,16 +211,22 @@ export function summaryText(b: Board | null, l: Live, lim: Limit[], u: Usage | n
     for (const r of runs) out.push(`- ⚙ **GitHub · ${r.name}** — ${r.title} · ${ago(r.minutes)}`)
   }
   if (b.songs.length) {
-    const goal = b.syncGoal === undefined ? undefined : b.syncGoal / 100
     out.push('', `**Подсветка по словам**${b.syncGoal === undefined ? '' : ` · цель ${b.syncGoal} %`}`)
     for (const { label, group } of songRows(b.songs)) {
-      out.push(`- \`${barText(group.proven / Math.max(1, group.total), goal)}\` ${label} ${group.proven}/${group.total}`)
+      const pct = Math.round((group.proven / Math.max(1, group.total)) * 100)
+      const done = b.syncGoal !== undefined && pct >= b.syncGoal ? ' ✓' : ''
+      out.push(`- ${label} — **${pct} %** (${group.proven}/${group.total})${done}`)
     }
   }
   const cl = claudeWindows(lim).map(w => `${w.label} ${Math.round(w.used)} %`).join(', ')
   const gem = geminiWindows(u?.gemini?.quota?.gemini).map(w => `${w.label} ${Math.round(w.used)} %`).join(', ')
   const parts = [cl ? `✻ Claude ${cl}` : '', gem ? `✦ Gemini ${gem}` : '', u?.grok ? `◼ Grok сегодня ${tokens(u.grok.today)} ток.` : ''].filter(Boolean)
   if (parts.length) out.push('', `**Израсходовано:** ${parts.join(' · ')}`)
+  const h = l.hygiene
+  if (h && (h.fixed.length || h.issues.length)) {
+    out.push('', `**Порядок** · ${hhmm(h.at)}${h.fixed.length ? ` · убрано ${h.fixed.length}` : ''}`, ...h.issues.slice(0, 3).map(i => `- ${i}`))
+    if (h.issues.length > 3) out.push(`- … ещё ${h.issues.length - 3}`)
+  }
   return out.join('\n')
 }
 
@@ -331,6 +341,7 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
     const next: Limit[] = u.rateLimits.map(r => ({ kind: r.kind, percentUsed: r.percentUsed, resetsAt: r.resetsAt }))
     if (JSON.stringify(next) !== JSON.stringify(await read($, limits))) await update($, limits, () => next)
     await pushLimit($, next)
+    await saveCardState($)
   } catch {
     // Off a subscription the windows are empty.
   }
@@ -384,15 +395,15 @@ async function publishLive($: EngineInterface, l: Live, heartbeat = false) {
 }
 
 /** The orchestrator machine's chats and Actions runs; ops/agents/station_tick.py also pulls the main checkout. */
-let station: Pick<Live, 'chats' | 'pipeline'> = {}
+let station: Pick<Live, 'chats' | 'pipeline' | 'hygiene'> = {}
 
 async function stationTick($: EngineInterface) {
   if (!place.orchestrator || !place.repo) return
   try {
     const res = await $.process.run(['python', `${place.repo}/ops/agents/station_tick.py`, place.repo], { cwd: place.repo, timeoutMs: 60_000 })
     if (res.exitCode !== 0) return
-    const tick = JSON.parse(res.stdout) as { chats: ChatRow[]; pipeline: PipelineRun[] }
-    station = { chats: tick.chats, pipeline: tick.pipeline }
+    const tick = JSON.parse(res.stdout) as { chats: ChatRow[]; pipeline: PipelineRun[]; hygiene?: Hygiene | null }
+    station = { chats: tick.chats, pipeline: tick.pipeline, hygiene: tick.hygiene ?? null }
   } catch {
     // A tool missing on PATH: the rest of the dashboard still draws.
   }
@@ -664,6 +675,69 @@ export function dashboardContext(summary: string) {
   )
 }
 
+/** The dashboard state the image card draws (card/render.mjs reads it on stdin). */
+export function cardDoc(b: Board | null, l: Live, lim: Limit[], u: Usage | null) {
+  if (!b) return null
+  return {
+    at: new Date().toISOString(),
+    roadmap: b.roadmap ? { title: b.roadmap.title, percent: b.roadmap.percent } : null,
+    goal: b.syncGoal ?? null,
+    you: b.tasks.filter(t => t.section === 'you').map(t => ({ title: t.title, how: t.how ?? t.what ?? '' })),
+    chats: l.chats ?? [],
+    agents: agentRows(b, l).map(r => ({ agent: r.agent, name: r.name, task: r.task, state: r.state, tone: r.tone, detail: r.detail })),
+    runs: l.pipeline ?? [],
+    songs: songRows(b.songs).map(({ label, group }) => ({ label, proven: group.proven, placed: group.placed ?? group.proven, total: group.total })),
+    hygiene: l.hygiene ? { fixed: l.hygiene.fixed.length, issues: l.hygiene.issues.slice(0, 3), more: Math.max(0, l.hygiene.issues.length - 3) } : null,
+    limits: {
+      claude: claudeWindows(lim).map(w => ({ label: w.label, used: Math.round(w.used), reset: w.reset })),
+      gemini: geminiWindows(u?.gemini?.quota?.gemini).map(w => ({ label: w.label, used: Math.round(w.used), reset: w.reset })),
+      grok: u?.grok ? { today: tokens(u.grok.today), week: u.grok.week ? tokens(u.grok.week) : '', plan: u.grok.plan ?? '' } : null,
+      plans: { claude: b.models?.claude ?? '', gemini: u?.gemini?.plan ?? '' },
+    },
+  }
+}
+
+let cardKey = ''
+
+/** The Station keeps the latest card state on disk, so the card can be redrawn and checked outside a chat. */
+async function saveCardState($: EngineInterface) {
+  if (!place.orchestrator) return
+  const doc = cardDoc(await read($, board), await read($, live), await read($, limits), await read($, usage))
+  const dir = await $.env.get('LOCALAPPDATA')
+  if (!doc || !dir) return
+  const { at: _at, ...rest } = doc
+  const key = JSON.stringify(rest)
+  if (key === cardKey) return
+  cardKey = key
+  try {
+    await $.fs.write(`${dir}/ll-dashboard/state.json`, JSON.stringify(doc))
+  } catch {
+    cardKey = ''
+  }
+}
+
+/** Draws the card; resolves the PNG's path, or null where the repo's Playwright is not at hand. */
+async function renderCard($: EngineInterface, doc: object) {
+  try {
+    const r = await $.process.run(['node', `${$.plugin.root}/card/render.mjs`, '-'], { stdin: JSON.stringify(doc), timeoutMs: 40_000 })
+    const path = r.stdout.trim()
+    return r.exitCode === 0 && path.endsWith('.png') ? path : null
+  } catch {
+    return null
+  }
+}
+
+/** The reply for an image card: send it inline, then one line; the text summary stays as the fallback. */
+export function cardContext(path: string, summary: string, waiting: number) {
+  return (
+    'The owner asked for the Dashboard, drawn as an image. Call SendUserFile once: files ["' + path.replace(/\\/g, '/') + '"], ' +
+    'display "render", status "normal", no caption. Then reply with one short line in Russian and nothing else: ' +
+    (waiting ? 'what waits on the owner (from the summary below).' : '«От вас ничего не нужно.»') +
+    ' No other tools. If SendUserFile is not available, reply with exactly this summary as compact Markdown instead:\n\n' +
+    summary
+  )
+}
+
 const ASKS = new Set(['dashboard', '/dashboard', 'дашборд', '/дашборд', 'штаб'])
 
 export function isDashboardAsk(text: string) {
@@ -696,12 +770,14 @@ export const register: Register = on => {
     return result
   })
 
+  // /dashboard hands off to the model: the word goes in as the owner's prompt, the prompt.submit hook
+  // below draws the image card and Claude sends it, so one action shows the card on the phone too.
   on('command.run', { command: 'dashboard' }, async $ => {
     await refresh($, seen)
-    const opened = await $.ui.open({ id: PANE, title: TITLE })
-    const surfaces = await $.session.surfaces()
-    const where = `Экраны сессии: ${surfaces.length ? surfaces.join(', ') : 'нет'}; панель ${opened.isPlaced ? 'открыта' : `не открыта (${opened.reason})`}.`
-    return { text: `${summaryText(await read($, board), await read($, live), await read($, limits), await read($, usage))}\n\n${where}` }
+    void $.ui.open({ id: PANE, title: TITLE }).catch(() => undefined)
+    // A submit from inside command.run would wait on the turn this hook holds: send it just after.
+    $.clock.after(50, () => void $.prompt.submit({ text: 'дашборд', asUser: true }).catch(() => undefined))
+    return {}
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
@@ -750,7 +826,12 @@ export const register: Register = on => {
   on('prompt.submit', async ($, e, next) => {
     const extra: string[] = []
     if (isDashboardAsk(e.text)) {
-      extra.push(dashboardContext(summaryText(await read($, board), await read($, live), await read($, limits), await read($, usage))))
+      const [b, l, lim, u] = [await read($, board), await read($, live), await read($, limits), await read($, usage)]
+      const summary = summaryText(b, l, lim, u)
+      const doc = cardDoc(b, l, lim, u)
+      const png = doc ? await renderCard($, doc) : null
+      const waiting = b?.tasks.filter(t => t.section === 'you').length ?? 0
+      extra.push(png ? cardContext(png, summary, waiting) : dashboardContext(summary))
     }
     try {
       const note = rotationNote((await $.session.usage()).context.percent, await $.session.cwd())

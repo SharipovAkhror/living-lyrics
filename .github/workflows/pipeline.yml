@@ -15,8 +15,19 @@
 # (who is closer to a strong attack, the second aligner's shift, borrowed models) and then
 # measures the per-song witness rule, word refutations and the line share
 # (docs/analysis/bench/attack-chance.json). A cued line the first MMS pass missed is placed
-# by the first later step that still passes structure and 0.30 s: another MMS window, an
-# htdemucs_ft clip of that line, stable-ts, then the second aligner. Line chance is measured
+# by the first later step that still passes structure and 0.30 s: another MMS window, a
+# Demucs clip of that line, stable-ts, then the second aligner. The clip spec is chosen by
+# onset clarity at already proved words (docs/analysis/bench/stem-onset.md). The baseline
+# stays htdemucs_ft, one shift, overlap 0.1, when the measure loses or fails. Weights are
+# not committed. The song stem stays htdemucs, and proof attacks stay on it. A placed but
+# unproved line keeps a stem clock; a refuted line may move to it as mms-stem, the same
+# MMS family. A still-open line in an admitted pair may be placed later by phoneme CTC.
+# That line is proved by Whisper or the attack, not by the phoneme model. A witness kind
+# is dropped as a refuter for one song and language only when the placers and the T29
+# hearing agree against it and the shifted-label gates still rise
+# (docs/analysis/bench/refuter.md). The published join must keep
+# docs/analysis/bench/baseline-155.json unless holding a lost line would push the line
+# pass over 5 %. Line chance is measured
 # per placer. A placer still over 5 % at K = 1 is excluded from proof; the run continues
 # when the others fit. qa reads that rule and does not prove an excluded placer.
 # A word start must sit inside the line's section (0.05 s), or that chain step
@@ -26,8 +37,14 @@
 # per song and language by proved lines, after aligner-review and before the
 # attack measurement.
 # The phoneme witness is measured in the align job (espeak-ng and wav2vec2,
-# 30 minutes, PHONEME_BUDGET_S). The prove job admits it from those clocks.
-# It does not run the model and does not install espeak-ng. Weights are not committed.
+# 30 minutes, PHONEME_BUDGET_S). The same pass stores CTC starts for still-open
+# lines in the admitted pairs. The prove job admits the witness and the placer
+# from those clocks. It does not run the model and does not install espeak-ng.
+# Weights are not committed.
+# The language CTC witness is measured in the prove job, after the vocal stem
+# is on disk and before the attack measurement. align_from_run does not re-run
+# align, so the clocks are not in the align artifact. A failed measure is a
+# missing witness: qa still runs. Budget LANG_CTC_BUDGET_S, default 75 minutes.
 # A failed measurement does not fall through to the 0.10 s attack test.
 # The align artifact also carries the encrypted four-stem cache. Prove unpacks
 # that before it falls back to the Actions cache. If the vocal stem is still
@@ -822,6 +839,9 @@ jobs:
             echo "worst=2" >> "$GITHUB_OUTPUT"
             exit 1
           fi
+          echo "::group::language ctc"
+          python3 scripts/pipeline/lang_ctc.py --measure $(tr '\n' ' ' < /tmp/calibrate.txt) || echo "языковой CTC не измерен, проверка продолжается"
+          echo "::endgroup::"
           echo "::group::aligner review"
           python3 scripts/pipeline/aligner_review.py --choose $(tr '\n' ' ' < /tmp/calibrate.txt)
           rc=$?

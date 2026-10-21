@@ -333,7 +333,14 @@
     "cue": 48,
     "lang": "ar",
     "start": 300.248,
-    "end": 304.45
+    "end": 302.34
+  },
+  {
+    "line": "arabic-8b",
+    "cue": 48,
+    "lang": "ar",
+    "start": 302.34,
+    "end": 304.4
   },
   {
     "line": "arabic-10",
@@ -388,8 +395,15 @@
     "line": "arabic-17",
     "cue": 56,
     "lang": "ar",
-    "start": 318.37,
-    "end": 322.57
+    "start": 318.41,
+    "end": 320.4
+  },
+  {
+    "line": "arabic-17b",
+    "cue": 56,
+    "lang": "ar",
+    "start": 320.55,
+    "end": 322.4
   },
   {
     "line": "arabic-19",
@@ -445,7 +459,14 @@
     "cue": 64,
     "lang": "ar",
     "start": 336.742,
-    "end": 344.908
+    "end": 338.68
+  },
+  {
+    "line": "arabic-26b",
+    "cue": 64,
+    "lang": "ar",
+    "start": 338.68,
+    "end": 343.41
   },
   {
     "line": "arabic-29",

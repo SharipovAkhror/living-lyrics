@@ -4,5 +4,5 @@
 
 Последние:
 - LL · Site (Main): [2026-10-20-ll-site.md](2026-10-20-ll-site.md)
-- LL · Tech: [2026-10-20-ll-tech.md](2026-10-20-ll-tech.md)
+- LL · Tech: [2026-10-21-ll-tech.md](2026-10-21-ll-tech.md)
 - LL · Business: —
