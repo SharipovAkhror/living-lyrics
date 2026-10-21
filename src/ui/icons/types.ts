@@ -34,6 +34,11 @@ export type Mark = {
   sw?: number;
   rule?: 'evenodd' | 'nonzero';
   transform?: string;
+  /**
+   * Knock this fill out of the other marks in the same state.
+   * Overlapping knocks stay open, so a broad-nib letter can cross itself.
+   */
+  knock?: boolean;
 };
 
 export type Glyph = {

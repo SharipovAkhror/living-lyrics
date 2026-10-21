@@ -3,7 +3,7 @@
  * Callers keep `import { Icon } from '@/ui/icons'`.
  * The pixel size picks an optical master: 16, 20, 24 or 32.
  */
-import type { CSSProperties } from 'react';
+import { useId, type CSSProperties } from 'react';
 import { glyphAt, opticalFor } from '../../../scripts/art/icons/qalam';
 import { ICON_NAMES, type IconName, type Mark } from './types';
 
@@ -27,22 +27,44 @@ function ensurePairStyle(): void {
 
 ensurePairStyle();
 
-function Marks({ marks, sw }: { marks: Mark[]; sw: number }) {
-  return marks.map((mark, index) => (
+function Path({ mark, sw }: { mark: Mark; sw: number }) {
+  return (
     <path
-      key={index}
       d={mark.d}
       fill={mark.draw === 'fill' ? 'currentColor' : 'none'}
       stroke={mark.draw === 'stroke' ? 'currentColor' : 'none'}
       strokeWidth={mark.draw === 'stroke' ? (mark.sw ?? sw) : undefined}
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      strokeLinecap="butt"
+      strokeLinejoin="miter"
       fillOpacity={mark.draw === 'fill' ? mark.opacity : undefined}
       strokeOpacity={mark.draw === 'stroke' ? mark.opacity : undefined}
       fillRule={mark.rule ?? 'evenodd'}
       transform={mark.transform}
     />
-  ));
+  );
+}
+
+function Marks({ marks, sw, maskId }: { marks: Mark[]; sw: number; maskId: string }) {
+  const holes = marks.filter((mark) => mark.knock && mark.d);
+  const body = marks.filter((mark) => !mark.knock && mark.d);
+  const cut = holes.length > 0;
+  return (
+    <>
+      {cut && (
+        <mask id={maskId} maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+          <rect width="24" height="24" fill="white" />
+          {holes.map((mark, index) => (
+            <path key={index} d={mark.d} fill="black" fillRule={mark.rule ?? 'nonzero'} transform={mark.transform} />
+          ))}
+        </mask>
+      )}
+      <g mask={cut ? `url(#${maskId})` : undefined}>
+        {body.map((mark, index) => (
+          <Path key={index} mark={mark} sw={sw} />
+        ))}
+      </g>
+    </>
+  );
 }
 
 export function Icon({
@@ -61,6 +83,7 @@ export function Icon({
   /** Accessible label. Omit when the parent control already has one. */
   label?: string;
 }) {
+  const reactId = useId().replace(/:/g, '');
   if (!(ICON_NAMES as readonly string[]).includes(name)) return null;
   const px = Math.round(size);
   const glyph = glyphAt(name as IconName, opticalFor(px));
@@ -81,11 +104,11 @@ export function Icon({
       focusable="false"
     >
       <g className="ll-off">
-        <Marks marks={glyph.off} sw={1.78} />
+        <Marks marks={glyph.off} sw={1.78} maskId={`${reactId}-off`} />
       </g>
       {glyph.on && (
         <g className="ll-on">
-          <Marks marks={glyph.on} sw={1.78} />
+          <Marks marks={glyph.on} sw={1.78} maskId={`${reactId}-on`} />
         </g>
       )}
     </svg>

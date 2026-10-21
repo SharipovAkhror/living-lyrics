@@ -1,7 +1,7 @@
 /**
  * Geometry for the Qalam icon family.
- * Paths are built here so every glyph shares one stroke, one hatch angle
- * and one corner rule. Coordinates are on the 24 grid.
+ * Paths are built here so every glyph shares one nib.
+ * Coordinates are on the 24 grid. The nib angle is the engraving hatch.
  */
 
 export type Pt = { x: number; y: number };
@@ -281,4 +281,249 @@ export function joinLines(segs: [Pt, Pt][]): string {
 
 export function joinCapsules(segs: [Pt, Pt][], thickness: number): string {
   return segs.map(([a, b]) => capsule(a.x, a.y, b.x, b.y, thickness)).join('');
+}
+
+/**
+ * The qalam cut. 35° is the engraving hatch in scripts/art/lib.mjs
+ * (`shade({ angle: 35 })`), measured in screen space from +x toward +y.
+ * Every terminal is this edge, or the nib's short side when the stroke
+ * runs along the edge. One angle for the whole family.
+ */
+export const QATT = 35;
+
+const QATT_RAD = (QATT * Math.PI) / 180;
+
+/** Unit vector along the nib edge (the thick cut). */
+export const QATT_EDGE = { x: Math.cos(QATT_RAD), y: Math.sin(QATT_RAD) };
+
+/** Unit vector across the nib (the thin side). */
+export const QATT_ACROSS = { x: -Math.sin(QATT_RAD), y: Math.cos(QATT_RAD) };
+
+/**
+ * Broad-nib. `broad` is the full length of the edge, `hair` the full
+ * thickness. Stroke width is the nib's projection on the normal, so a
+ * stroke across the edge is thick and a stroke along it is thin.
+ */
+export type Nib = { broad: number; hair: number };
+
+/**
+ * Contrast by optical master. 16 and 20 stay near a monoline so the thin
+ * arm cannot fall through the pixel floor. 32 is where the pen shows.
+ * Keyed by the master pixel size.
+ */
+const NIB_CONTRAST: Record<number, number> = {
+  16: 1.06,
+  20: 1.18,
+  24: 1.46,
+  32: 1.86,
+};
+
+/**
+ * Nib for a keyline of weight `sw` (grid units on the 24 board).
+ * The horizontal stroke lands on `sw`. The thin stroke stays at least
+ * `floorPx` on screen. Interior writing passes a lower floor so a counter
+ * can stay open inside a plate.
+ */
+export function nibFor(optical: number, sw: number, floorPx = 1.6): Nib {
+  const contrast = NIB_CONTRAST[optical] ?? 1.18;
+  const minGrid = (floorPx * 24) / optical;
+  const sin = Math.sin(QATT_RAD);
+  const cos = Math.cos(QATT_RAD);
+  let hair = sw / (contrast * sin + cos);
+  let broad = hair * contrast;
+  if (hair < minGrid) {
+    hair = minGrid;
+    broad = Math.max(hair, hair * contrast);
+  }
+  return { broad, hair };
+}
+
+/** 0 = silhouette only, 1 = the bookmark, 2 = full contrast, the second stroke and the extra nuqtas. */
+export function penDetail(optical: number): 0 | 1 | 2 {
+  if (optical >= 32) return 2;
+  if (optical >= 24) return 1;
+  return 0;
+}
+
+/** The family's dot. A square turned 45° — the naskh nuqta, not a circle. */
+export function nuqta(cx: number, cy: number, r: number): string {
+  return diamond(cx, cy, r);
+}
+
+/** Lozenge aligned with the nib. `along` and `across` are centre-to-vertex. */
+export function nibLozenge(cx: number, cy: number, along: number, across: number): string {
+  const e = QATT_EDGE;
+  const a = QATT_ACROSS;
+  return polyPath([
+    { x: cx + e.x * along, y: cy + e.y * along },
+    { x: cx + a.x * across, y: cy + a.y * across },
+    { x: cx - e.x * along, y: cy - e.y * along },
+    { x: cx - a.x * across, y: cy - a.y * across },
+  ]);
+}
+
+/** Oval with the same axes as `nibLozenge`. The note head uses it at every master. */
+export function nibOval(cx: number, cy: number, along: number, across: number, steps = 28): string {
+  const e = QATT_EDGE;
+  const a = QATT_ACROSS;
+  const pts: Pt[] = [];
+  for (let i = 0; i < steps; i++) {
+    const t = (i / steps) * Math.PI * 2;
+    const c = Math.cos(t);
+    const s = Math.sin(t);
+    pts.push({ x: cx + e.x * along * c + a.x * across * s, y: cy + e.y * along * c + a.y * across * s });
+  }
+  return polyPath(pts);
+}
+
+/** Solid bar. Both ends are the nib edge, so the bar is a parallelogram. */
+export function nibSlab(x: number, y: number, w: number, h: number): string {
+  const dy = w * Math.tan(QATT_RAD);
+  return polyPath([
+    { x, y },
+    { x: x + w, y: y + dy },
+    { x: x + w, y: y + h + dy },
+    { x, y: y + h },
+  ]);
+}
+
+/** Sample of a circular arc. Angle 0 is +x, positive sweeps toward +y. */
+export function arcPoints(cx: number, cy: number, r: number, a0: number, a1: number, steps: number): Pt[] {
+  const pts: Pt[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = a0 + ((a1 - a0) * i) / steps;
+    pts.push({ x: cx + r * Math.cos(t), y: cy + r * Math.sin(t) });
+  }
+  return pts;
+}
+
+/** Sample of a quadratic bezier. */
+export function quadPoints(p0: Pt, p1: Pt, p2: Pt, steps: number): Pt[] {
+  const pts: Pt[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const u = 1 - t;
+    pts.push({
+      x: u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
+      y: u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y,
+    });
+  }
+  return pts;
+}
+
+function add(p: Pt, q: Pt): Pt {
+  return { x: p.x + q.x, y: p.y + q.y };
+}
+
+function polyPath(pts: Pt[]): string {
+  const clean = dedupe(pts);
+  if (clean.length < 3) return '';
+  let d = `M${n(clean[0]!.x)} ${n(clean[0]!.y)}`;
+  for (let i = 1; i < clean.length; i++) d += `L${n(clean[i]!.x)} ${n(clean[i]!.y)}`;
+  return d + 'Z';
+}
+
+function dedupe(pts: Pt[]): Pt[] {
+  const out: Pt[] = [];
+  for (const p of pts) {
+    const prev = out[out.length - 1];
+    if (!prev || Math.hypot(p.x - prev.x, p.y - prev.y) > 0.02) out.push(p);
+  }
+  if (out.length > 1 && Math.hypot(out[0]!.x - out[out.length - 1]!.x, out[0]!.y - out[out.length - 1]!.y) <= 0.02) {
+    out.pop();
+  }
+  return out;
+}
+
+/** Nib rectangle centred on the origin, CCW in mathematical order. */
+function nibShape(nib: Nib): Pt[] {
+  const hx = QATT_EDGE.x * (nib.broad / 2);
+  const hy = QATT_EDGE.y * (nib.broad / 2);
+  const tx = QATT_ACROSS.x * (nib.hair / 2);
+  const ty = QATT_ACROSS.y * (nib.hair / 2);
+  return [
+    { x: hx + tx, y: hy + ty },
+    { x: -hx + tx, y: -hy + ty },
+    { x: -hx - tx, y: -hy - ty },
+    { x: hx - tx, y: hy - ty },
+  ];
+}
+
+function convexHull(pts: Pt[]): Pt[] {
+  const src = [...pts].sort((a, b) => a.x - b.x || a.y - b.y);
+  const cross = (o: Pt, a: Pt, b: Pt) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+  const lower: Pt[] = [];
+  for (const p of src) {
+    while (lower.length >= 2 && cross(lower[lower.length - 2]!, lower[lower.length - 1]!, p) <= 1e-9) lower.pop();
+    lower.push(p);
+  }
+  const upper: Pt[] = [];
+  for (let i = src.length - 1; i >= 0; i--) {
+    const p = src[i]!;
+    while (upper.length >= 2 && cross(upper[upper.length - 2]!, upper[upper.length - 1]!, p) <= 1e-9) upper.pop();
+    upper.push(p);
+  }
+  lower.pop();
+  upper.pop();
+  return lower.concat(upper);
+}
+
+/** One straight run of the nib. The hull is the stroke; ends are the nib itself. */
+function segmentHull(a: Pt, b: Pt, nib: Nib): Pt[] {
+  const shape = nibShape(nib);
+  return convexHull([...shape.map((p) => add(a, p)), ...shape.map((p) => add(b, p))]);
+}
+
+/**
+ * Open stroke as one filled path per segment.
+ * Segments share the nib at each joint, so a nonzero fill is the union
+ * and the elbow flares instead of rounding over.
+ */
+export function qalamStroke(points: Pt[], nib: Nib): string {
+  const usable = points.filter((p, i) => i === 0 || Math.hypot(p.x - points[i - 1]!.x, p.y - points[i - 1]!.y) > 0.04);
+  let d = '';
+  for (let i = 0; i < usable.length - 1; i++) d += polyPath(segmentHull(usable[i]!, usable[i + 1]!, nib));
+  return d;
+}
+
+/**
+ * Closed centreline as a nib ring.
+ * Each segment is its own hull. A nonzero fill leaves the middle open,
+ * because a hull only covers the nib swept along that segment.
+ */
+export function qalamLoop(points: Pt[], nib: Nib): string {
+  if (points.length < 3) return '';
+  const first = points[0]!;
+  const last = points[points.length - 1]!;
+  const open = Math.hypot(first.x - last.x, first.y - last.y) < 0.04 ? points.slice(0, -1) : points;
+  if (open.length < 3) return '';
+  return qalamStroke([...open, open[0]!], nib);
+}
+
+/** Closed polygon path. Fill with nonzero. */
+export function closedPath(pts: Pt[]): string {
+  return polyPath(pts);
+}
+
+/**
+ * Rectangle with the nib taken off the top-right and the bottom-left.
+ * Those are the two corners a 35° edge can cut. The other corners stay soft.
+ */
+export function nibPlate(x: number, y: number, w: number, h: number, cut: number, radius: number): Pt[] {
+  const dx = QATT_EDGE.x * cut;
+  const dy = QATT_EDGE.y * cut;
+  const right = x + w;
+  const bottom = y + h;
+  return roundPolyPoints(
+    [
+      { x, y },
+      { x: right - dx, y },
+      { x: right, y: y + dy },
+      { x: right, y: bottom },
+      { x: x + dx, y: bottom },
+      { x, y: bottom - dy },
+    ],
+    [radius, 0.16, 0.16, radius, 0.16, 0.16],
+    3,
+  );
 }
