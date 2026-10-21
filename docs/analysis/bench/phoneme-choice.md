@@ -27,7 +27,7 @@
 
 По перебору строк 126. Покрытие 127 при K 0,25, проход 0,014.
 Неудержанных строк нет.
-Роль строки отличается от роли пары: coda-fa-1 — or, eckhart-1-3 — or, eckhart-2-1 — or, eckhart-3-1 — or, eckhart-3-2 — or, eckhart-4-1 — or, eckhart-4-2 — or, eckhart-f-01 — or, eckhart-f-04 — or, eckhart-f-10 — or, eckhart-f-11 — or, eckhart-f-12 — or, eckhart-f-13 — or, fuzuli-f1-2 — or, fuzuli-f5-1 — or, fuzuli-f5-4 — or, fuzuli-f5-6 — or, fuzuli-f6-6 — or, fuzuli-f8-1 — or, fuzuli-f8-2 — or, hildegard-h1-4 — or, hildegard-h6-1 — or, hildegard-h6-3 — or, qasida-b3a — or, shushtari-2-tail-1 — or.
+Роль строки отличается от роли пары: coda-fa-1 — or, eckhart-1-3 — or, eckhart-2-1 — or, eckhart-3-1 — or, eckhart-3-2 — or, eckhart-4-1 — or, eckhart-4-2 — or, eckhart-f-01 — or, eckhart-f-04 — or, eckhart-f-10 — or, eckhart-f-11 — or, eckhart-f-12 — or, eckhart-f-13 — or, fuzuli-f1-2 — or, fuzuli-f5-4 — or, fuzuli-f5-6 — or, fuzuli-f6-6 — or, fuzuli-f7-1 — or, fuzuli-f7-2 — or, fuzuli-f8-1 — or, fuzuli-f8-2 — or, hildegard-h1-4 — or, hildegard-h6-1 — or, hildegard-h6-3 — or, qasida-b3a — or, shushtari-2-tail-1 — or.
 
 Встречный счёт. Роль допущена проходом слова и не выбрана. «Доказано» — строки всей раскладки, если эту пару переключить на эту роль. «У пары» — сколько строк этой пары при этом доказано. Это само по себе роль не включает.
 
