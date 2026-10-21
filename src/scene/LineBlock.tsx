@@ -3,6 +3,7 @@ import type { LineCue } from '@/data/timeline';
 import type { LineEntrance, MotionPref, Settings } from '@/app/settings';
 import { formatTime } from '@/data/library';
 import { LYRIC_PAD } from './columns';
+import { fillEdgePercent, fillMaskDirection, wordFillFraction } from './fill';
 import { blockState, clamp01, entranceOpacity, scriptShift, type Measure } from './flow';
 import { showHarakatText } from '@/data/harakat';
 import { fontClass } from './fonts';
@@ -24,11 +25,6 @@ interface Props {
   register: (idx: number, fn: BlockUpdater | null, m?: Measure) => void;
   onPick: (idx: number) => void;
 }
-
-/** Longest a word may take to fill; a held note keeps the word lit instead of crawling for seconds. */
-const FILL_MAX = 1.6;
-/** Extra room around each word for the text-clipped fill (Nastaliq and Naskh glyphs overflow their box). */
-const PAD_X = 0.21;
 
 /** Light markup in translations: **key word** (the counterpart of the accented original word), *nuance*. */
 export function TrText({ text }: { text: string }) {
@@ -142,10 +138,10 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
     r.classList.toggle('is-current', Math.abs(d) < 0.5);
     if (subs.current) subs.current.style.opacity = s.sub.toFixed(3);
 
-    // Every word is visible from the start (dim). With measured timing, each word fills in reading
-    // direction as it is sung; otherwise the whole line lights up while it is current.
-    // One text layer per word, coloured through background-clip:text — no overlay, so letters that
-    // join (Arabic, Persian) are drawn once and never double at the joins.
+    // Every word is visible from the start (dim). With measured timing, each word fills in the
+    // writing direction as it is sung; otherwise the whole line lights up while it is current.
+    // One text layer. The moving edge is a mask on the word box, so joined letters are painted
+    // once. A translucent colour on the glyphs would darken the joins.
     const o = orig.current;
     if (o) {
       // The block's own opacity is the shadow on a neighbouring line. Dimming each word again
@@ -158,23 +154,26 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
       if (!el) continue;
       const w = line.words[i];
       if (wordSync && d > -1) {
-        const span = Math.min(FILL_MAX, Math.max(0.08, w.e - w.s));
-        const f = clamp01((t - w.s) / span);
+        const f = wordFillFraction(t, w.s, w.e);
         if (f <= 0 || f >= 1) {
-          if (el.dataset.f !== String(f)) {
-            el.dataset.f = String(f);
+          const mark = f >= 1 ? '1' : '0';
+          if (el.dataset.f !== mark) {
+            el.dataset.f = mark;
             el.classList.remove('is-filling');
             el.classList.toggle('is-sung', f >= 1);
-            el.style.backgroundImage = '';
+            el.style.removeProperty('--fill-cut');
+            el.style.removeProperty('--fill-dir');
+            el.style.removeProperty('background-image');
           }
         } else {
           el.dataset.f = 'x';
           el.classList.add('is-filling');
+          el.classList.remove('is-sung');
+          el.style.removeProperty('background-image');
           const W = widths.current[i] || el.offsetWidth || 1;
-          const pad = PAD_X * fontPx.current;
-          const at = ((pad + f * (W - 2 * pad)) / W) * 100;
-          const soft = Math.max(2, ((0.12 * (W - 2 * pad)) / W) * 100);
-          el.style.backgroundImage = `linear-gradient(${cue.rtl ? 'to left' : 'to right'}, var(--w-lit) ${(at - soft).toFixed(1)}%, var(--w-dim) ${(at + soft).toFixed(1)}%)`;
+          // The edge is a step, and its place is fixed by t, so a seek lands on the same cut.
+          el.style.setProperty('--fill-dir', fillMaskDirection(cue.rtl));
+          el.style.setProperty('--fill-cut', `${fillEdgePercent(f, W, fontPx.current).toFixed(2)}%`);
         }
         if (motion === 'full') {
           // The word being sung rises a hair, then settles.
@@ -184,7 +183,9 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
       } else if (el.dataset.f) {
         delete el.dataset.f;
         el.classList.remove('is-filling', 'is-sung');
-        el.style.backgroundImage = '';
+        el.style.removeProperty('--fill-cut');
+        el.style.removeProperty('--fill-dir');
+        el.style.removeProperty('background-image');
         el.style.transform = '';
       }
     }

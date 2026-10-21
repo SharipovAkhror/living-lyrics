@@ -113,7 +113,7 @@ def test_solo() -> None:
     n_solo = sum(T.is_solo(sec, line) for sec, line in pairs)
     n_choir = sum(T.is_choir(sec, line) for sec, line in pairs)
     n = len(pairs)
-    check('IHCA solo count', n_solo == 122 and n_choir == 0 and n == 122, f'{n_solo} solo, {n_choir} choir of {n}')
+    check('IHCA solo count', n_solo == 125 and n_choir == 0 and n == 125, f'{n_solo} solo, {n_choir} choir of {n}')
 
 
 def _bursts() -> tuple[np.ndarray, Q.Signals]:
@@ -535,8 +535,28 @@ def test_placement_and_cue_lock() -> None:
 
 
 def test_cued_lines_stay_near_the_cue() -> None:
-    """The site takes a line's start from its first word. That start stays within 0.30 s of the cue."""
+    """The site takes a line's start from its first word.
+
+    A same-language cue stays within 0.30 s. A translation cue may sit further
+    only when the measured rule publishes a numeric half, and only out to that
+    half. A missing key or a null half keeps 0.30 s.
+    """
+    import placement as P
+
     root = Path(__file__).resolve().parents[2]
+    chosen = {}
+    rule_path = root / 'docs' / 'analysis' / 'bench' / 'attack-chance.json'
+    if rule_path.exists():
+        try:
+            chosen = json.loads(rule_path.read_text(encoding='utf-8')).get('chosen') or {}
+        except (OSError, json.JSONDecodeError):
+            chosen = {}
+    half = None
+    if 'translation_half' in chosen and chosen.get('translation_half') is not None:
+        half = float(chosen['translation_half'])
+    wide = None
+    if 'line_wide' in chosen and chosen.get('line_wide') is not None:
+        wide = {str(item) for item in chosen.get('line_wide') or []}
     for slug in ('i-have-come-alive', 'karitas', 'one'):
         lyrics = json.loads((root / 'content' / 'songs' / slug / 'lyrics.json').read_text(encoding='utf-8'))
         cues = {row['line']: row for row in json.loads((root / 'docs' / 'analysis' / slug / 'cues.json').read_text(encoding='utf-8'))}
@@ -547,7 +567,11 @@ def test_cued_lines_stay_near_the_cue() -> None:
                 continue
             seen += 1
             gap = abs(float(line['words'][0]['s']) - float(cue['start']))
-            check(f'{slug} {line["id"]} within 0.30 s of its cue', round(gap, 3) <= 0.30, f'{gap:.3f} s')
+            translated = P.cue_is_translation(line.get('lang'), cue.get('lang'))
+            limit = 0.30
+            if translated and half is not None and (wide is None or line['id'] in wide):
+                limit = half
+            check(f'{slug} {line["id"]} within {limit:.2f} s of its cue', round(gap, 3) <= limit, f'{gap:.3f} s')
         check(f'{slug} has cued lines', seen > 0, str(seen))
 
 
@@ -733,6 +757,49 @@ def test_line_rule() -> None:
     check('no clock is not a refutation', Q.word_refuted({'ctc_s': 1.0}, peaks, refute) is None)
     check('both clocks refute even when MMS has an attack',
           Q.word_refuted(both, np.array([1.0, 1.40]), refute) == 'witnesses-agree-elsewhere')
+    check('a lone clock still refutes when no sibling is passed',
+          Q.word_refuted(lone, np.array([1.40]), refute, siblings=[1.0]) == 'witness-attack')
+    check('a lone clock closer to another lettered start does not refute this word',
+          Q.word_refuted(lone, np.array([1.40]), refute, siblings=[1.40, 1.80, 2.20]) is None)
+    check('two clocks that agree still refute when a sibling is closer',
+          Q.word_refuted(both, np.array([1.40]), refute, siblings=[1.40]) == 'witnesses-agree-elsewhere')
+
+    near_words = [
+        {'roman': 'ba', 'ctc_s': 1.00, 'ctc_e': 1.30, 'second_s': 1.40},
+        {'roman': 'ka', 'ctc_s': 1.40, 'ctc_e': 1.70, 'second_s': 1.42},
+        {'roman': 'da', 'ctc_s': 1.80, 'ctc_e': 2.10, 'second_s': 1.82},
+        {'roman': 'ga', 'ctc_s': 2.20, 'ctc_e': 2.50, 'second_s': 2.22},
+    ]
+    near_cue = dict(cue_start=1.0, ctc_line_start=1.0)
+    near_shift = [0.40, 0.02, 0.02, 0.02]
+    near_peaks = np.array([1.40])
+    missed = Q.proof_line(True, 'good', True, near_shift, near_words, True,
+                          witnesses='one', line_share=0.25, refute=refute,
+                          peaks=near_peaks, nearest=False, **near_cue)
+    check('without nearest the misplaced witness fails the line',
+          (not missed['pass']) and missed['reason'] == 'word-refuted', str(missed))
+    held_near = Q.proof_line(True, 'good', True, near_shift, near_words, True,
+                             witnesses='one', line_share=0.25, refute=refute,
+                             peaks=near_peaks, nearest=True, **near_cue)
+    check('nearest keeps the line when the other words are proved',
+          held_near['pass'] and held_near['reason'] == 'pass', str(held_near))
+    agreed_words = [dict(near_words[0], third_s=1.45), *near_words[1:]]
+    still_refuted = Q.proof_line(True, 'good', True, near_shift, agreed_words, True,
+                                 witnesses='one', line_share=0.25, refute=refute,
+                                 peaks=near_peaks, nearest=True, **near_cue)
+    check('two agreeing clocks still fail the line when nearest is on',
+          (not still_refuted['pass']) and still_refuted['reason'] == 'word-refuted', str(still_refuted))
+    shifted = [
+        {'t': 0.80, 'roman': 'ba', 'second': 1.40},
+        {'t': 1.20, 'roman': 'ka', 'second': 1.22},
+        {'t': 1.60, 'roman': 'da', 'second': 1.62},
+        {'t': 2.00, 'roman': 'ga', 'second': 2.02},
+    ]
+    _bare, bare_flags = A._probe_parts(shifted, np.array([1.20, 1.40, 1.60, 2.00]), 'solo', 'one', refute, None)
+    _near, near_flags = A._probe_parts(
+        shifted, np.array([1.20, 1.40, 1.60, 2.00]), 'solo', 'one', refute, None, nearest=True)
+    check('a shifted lone clock uses the moved starts when nearest is on',
+          bare_flags[0] == 'witness-attack' and near_flags[0] is None, str((bare_flags, near_flags)))
 
     cue = dict(cue_start=1.0, ctc_line_start=1.0)
     words = [
@@ -859,6 +926,83 @@ def test_placement_chain() -> None:
           P.witness_slots('second', 1.0, 2.0, 3.0) == (1.0, 'mms', 3.0, 'stable-ts'))
     check('an MMS window leaves the other two as witnesses',
           P.witness_slots('mms-ft', 1.0, 2.0, 3.0) == (2.0, 'whisperx', 3.0, 'stable-ts'))
+    check('a phoneme placer is its own family', P.primary_family('phoneme') == 'phoneme')
+    check('a phoneme placer leaves MMS and stable-ts as witnesses',
+          P.witness_slots('phoneme', 1.0, 2.0, 3.0) == (1.0, 'mms', 3.0, 'stable-ts'))
+    check('a phoneme placer uses the second clock when stable-ts is missing',
+          P.witness_slots('phoneme', 1.0, 2.0, None) == (1.0, 'mms', 2.0, 'whisperx'))
+    refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    handed = {
+        'id': 'h', 'placed_by': 'mms', 'cue_start': 1.0,
+        'words': [
+            {'t': 1.00, 'second': 1.25, 'third': 1.27, 'roman': 'aa', 'wi': 0,
+             'clock_mms': 1.00, 'clock_second': 1.25, 'clock_stable': 1.27},
+            {'t': 1.40, 'second': 1.70, 'third': 1.72, 'roman': 'bb', 'wi': 1,
+             'clock_mms': 1.40, 'clock_second': 1.70, 'clock_stable': 1.72},
+        ],
+    }
+    moved = P.handoff_proposal(handed, 3.0, np.zeros(0), refute)
+    check('a refuted MMS line moves to stable-ts',
+          moved is not None and moved['by'] == 'stable-ts'
+          and abs(moved['starts'][0] - 1.27) < 1e-9 and abs(moved['starts'][1] - 1.72) < 1e-9,
+          str(moved))
+    stemmed = {
+        'id': 'stemmed', 'placed_by': 'mms', 'lang': 'fa', 'cue_start': 1.0, 'cue_lang': 'fa',
+        'words': [
+            {'t': 1.00, 'second': 1.25, 'third': 1.27, 'roman': 'aa', 'wi': 0,
+             'clock_mms': 1.00, 'clock_second': 1.25, 'clock_stable': 1.27, 'clock_stem': 1.22},
+            {'t': 1.40, 'second': 1.70, 'third': 1.72, 'roman': 'bb', 'wi': 1,
+             'clock_mms': 1.40, 'clock_second': 1.70, 'clock_stable': 1.72, 'clock_stem': 1.68},
+        ],
+    }
+    via_stem = P.handoff_proposal(stemmed, 3.0, np.zeros(0), refute)
+    check('a refuted MMS line moves to the clip stem before stable-ts',
+          via_stem is not None and via_stem['by'] == 'mms-stem'
+          and abs(via_stem['starts'][0] - 1.22) < 1e-9 and P.primary_family('mms-stem') == 'mms',
+          str(via_stem))
+    stuck = {
+        'id': 'stuck', 'placed_by': 'mms', 'cue_start': 1.0,
+        'words': [
+            {'t': 1.00, 'second': 1.25, 'third': 1.27, 'roman': 'aa', 'wi': 0,
+             'clock_mms': 1.00, 'clock_second': 2.50, 'clock_stable': 2.40},
+            {'t': 1.40, 'second': 1.70, 'third': 1.72, 'roman': 'bb', 'wi': 1,
+             'clock_mms': 1.40, 'clock_second': 2.90, 'clock_stable': 2.80},
+        ],
+    }
+    stayed = P.handoff_proposal(stuck, 3.0, np.zeros(0), refute)
+    check('a line stays where it is when every later placer misses',
+          stayed is None and stuck['words'][0]['t'] == 1.00, str(stayed))
+    quiet = {
+        'id': 'quiet', 'placed_by': 'mms', 'cue_start': 1.0,
+        'words': [
+            {'t': 1.00, 'second': 1.02, 'third': 1.04, 'roman': 'aa',
+             'clock_mms': 1.00, 'clock_second': 1.20, 'clock_stable': 1.10},
+            {'t': 1.40, 'second': 1.42, 'third': 1.44, 'roman': 'bb',
+             'clock_mms': 1.40, 'clock_second': 1.60, 'clock_stable': 1.50},
+        ],
+    }
+    check('a line that is not refuted is not handed on',
+          P.handoff_proposal(quiet, 3.0, np.zeros(0), refute) is None)
+    check('0.31 s does not let the phoneme aligner place a line',
+          P.consider_phoneme_place([1.31, 1.80], 1.0, 3.0) is None)
+    placed_phone = P.consider_phoneme_place([1.20, 1.70], 1.0, 3.0)
+    check('a phoneme start inside 0.30 s can place an open line',
+          placed_phone is not None and placed_phone['by'] == 'phoneme', str(placed_phone))
+    cleared = {
+        'placed': True, 'placed_by': 'mms',
+        'words': [
+            {'t': 1.0, 'wi': 0, 'roman': 'a', 'phones': {'xlsr-53-espeak': 9.0}, 'vowels': {'xlsr-53-espeak': 9.1}},
+            {'t': 1.4, 'wi': 1, 'roman': 'b', 'phones': {'xlsr-53-espeak': 9.2}, 'vowels': {}},
+        ],
+    }
+    wrote = A._write_placer(cleared, {
+        'by': 'phoneme', 'starts': [1.1, 1.5], 'ends': [1.5, 1.9],
+        'witnesses': [(1.0, 'mms', 1.2, 'stable-ts'), (1.4, 'mms', 1.55, 'stable-ts')],
+    })
+    check('a phoneme placer is not left as its own witness',
+          wrote and cleared['placed_by'] == 'phoneme' and cleared['words'][0]['phones'] == {}
+          and cleared['words'][0]['t'] == 1.1 and 'phoneme' not in cleared['words'][0],
+          str(cleared['words'][0]))
     band = P.dispute_row('eckhart-f-02', 'de', 'choir', 1.0, 1.5, 1.52, 1.48, np.array([1.50]))
     check('three clocks within 0.10 s on an attack are a dispute',
           band is not None and band['agree'] and band['attack'] and abs(band['delta'] - 0.5) < 1e-9, str(band))
@@ -1138,6 +1282,7 @@ def _shift_row(ctc: float, second, third) -> dict:
 
 def test_whisper_choice() -> None:
     import attack_chance as A
+    import placement as P
     import whisper_choice as C
     import whisper_witness as W
 
@@ -1196,6 +1341,58 @@ def test_whisper_choice() -> None:
     C.apply_models(applied, {'ar': 'small', 'en': 'small'})
     check('a model with no saved time leaves no stable clock',
           applied['lines'][1]['words'][0]['clock_stable'] is None, str(applied['lines'][1]['words'][0]['clock_stable']))
+    absent = {
+        'summary': {'placement_model': 'large-v3'},
+        'lines': [{
+            'id': 'open', 'lang': 'ar', 'status': 'good', 'placed_by': 'second', 'group': 'solo',
+            'words': [raw_word(312.074, 'qad', {'large-v3': 311.49}, second=312.074, stable=311.49, mms=312.64)],
+        }],
+    }
+    C.apply_models(absent, {'ar': 'large-v3-turbo'})
+    kept_open = absent['lines'][0]['words'][0]
+    import qa_sync as QS
+    wiped = {'ctc_s': 312.074, 'second_s': 312.64, 'third_s': None}
+    check('the search does not inherit the placement clock',
+          kept_open['clock_stable'] is None and kept_open['third_s'] is None
+          and kept_open['stable_models'] == {'large-v3': 311.49}, str(kept_open))
+    filled_clock = P.placed_clock_for_gap(
+        'second', kept_open['stable_models'], 'large-v3-turbo', 'large-v3', kept_open['third_s'])
+    filled = {'ctc_s': 312.074, 'second_s': 312.64, 'third_s': filled_clock}
+    refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    check('the empty slot can take the placement clock without a one-witness refutation',
+          filled_clock == 311.49
+          and QS.word_refuted(wiped, np.array([312.64]), refute) == 'witness-attack'
+          and QS.word_refuted(filled, np.array([312.64]), refute) is None,
+          str(filled))
+    check('an existing third witness is not replaced by the placement clock',
+          P.placed_clock_for_gap('second', {'large-v3': 311.49}, 'large-v3-turbo', 'large-v3', 312.0) is None)
+    check('a measured chosen model is not replaced by the placement clock',
+          P.placed_clock_for_gap(
+              'second', {'large-v3-turbo': 311.2, 'large-v3': 311.49}, 'large-v3-turbo', 'large-v3', None) is None)
+    check('a stable-ts line does not borrow the placement clock into the whisper slot',
+          P.placed_clock_for_gap('stable-ts', {'large-v3': 311.49}, 'large-v3-turbo', 'large-v3', None) is None)
+    gap_song = {
+        'slug': 's', 'placement_model': 'large-v3', 'proof_models': {'ar': 'large-v3-turbo'},
+        'all_lines': [{
+            'id': 'open', 'lang': 'ar', 'placed_by': 'second',
+            'words': [{
+                'third': None, 'third_kind': 'stable-ts', 'clock_stable': None,
+                'second': 312.64, 'second_kind': 'mms', 'stable_models': {'large-v3': 311.49},
+            }],
+        }],
+    }
+    saved, n_filled = A._fill_placed_clocks([gap_song])
+    gap_word = gap_song['all_lines'][0]['words'][0]
+    check('the join fills only the empty stable slot',
+          n_filled == 1 and gap_word['third'] == 311.49 and gap_word['second'] == 312.64, str(gap_word))
+    A._unfill_placed_clocks(saved)
+    check('the placement-clock fill restores the empty slot',
+          gap_word['third'] is None and gap_word['clock_stable'] is None, str(gap_word))
+    report_word = dict(absent['lines'][0]['words'][0])
+    check('qa stamps the same empty slot',
+          P.stamp_placed_clock([report_word], 'second', 'large-v3-turbo', 'large-v3') == 1
+          and report_word['third_s'] == 311.49 and report_word['clock_stable'] == 311.49,
+          str(report_word))
 
     hits = np.zeros((3, len(A.LINE_SHARES), 8), dtype=np.int32)
     cand = np.array([10, 0, 0], dtype=np.int32)
@@ -1274,6 +1471,21 @@ def test_phoneme() -> None:
     check('a placed solo line is eligible', phoneme._eligible({'status': 'good', 'group': 'solo'}))
     check('a weak line is not eligible', not phoneme._eligible({'status': 'weak', 'group': 'solo'}))
     check('a line outside solo and choir is not eligible', not phoneme._eligible({'status': 'good', 'group': 'other'}))
+    check('an open Latin solo line can be placed', phoneme._latin_open({'lang': 'la', 'status': 'weak', 'group': 'solo'}))
+    check('an open Latin choir line can be placed', phoneme._latin_open({'lang': 'la', 'status': 'draft', 'group': 'choir'}))
+    check('a placed Latin line is not placed again', not phoneme._latin_open({'lang': 'la', 'status': 'good', 'group': 'solo'}))
+    check('a weak line in another language is not the Latin placer',
+          not phoneme._latin_open({'lang': 'de', 'status': 'weak', 'group': 'solo'}))
+    check('German of ONE may be placed by the phoneme model', phoneme.placer_pair('one', 'de'))
+    check('Persian of I Have Come Alive may be placed by the phoneme model',
+          phoneme.placer_pair('i-have-come-alive', 'fa'))
+    check('medieval German is not a phoneme placer', not phoneme.placer_pair('one', 'gmh'))
+    check('an open Persian line of this song is a placer candidate',
+          phoneme._open_line({'lang': 'fa', 'status': 'weak', 'group': 'solo'}, 'i-have-come-alive'))
+    check('a placed Persian line is not placed again',
+          not phoneme._open_line({'lang': 'fa', 'status': 'good', 'group': 'solo'}, 'i-have-come-alive'))
+    check('Persian of Karitas is not in the placer pairs',
+          not phoneme._open_line({'lang': 'fa', 'status': 'weak', 'group': 'solo'}, 'karitas'))
     t0, t1 = phoneme._window({'second_window': [1.0, 1.1]}, 10.0)
     check('a short window is at least 0.4 s', t1 - t0 >= 0.4 - 1e-9, str((t0, t1)))
 
@@ -1499,7 +1711,8 @@ def test_phoneme() -> None:
         assignment, picked, within = slow_select(pair_roles, line_rows, 'base')
         same = all(got['assignment'].get(key, 'off') == assignment.get(key, 'off') for key in pair_roles)
         within_ok = bool(got['within_limit']) == bool(within and picked.get('within_limit'))
-        proved_ok = int(got['proved']) == int(picked.get('proved') or 0)
+        count = int(got.get('count_proved', got['proved']))
+        proved_ok = int(got['proved']) == int(picked.get('proved') or 0) and count == int(picked.get('proved') or 0)
         chance_ok = got.get('chance') == picked.get('chance')
         k_ok = got.get('k') == picked.get('k')
         check(label, same and within_ok and proved_ok and chance_ok and k_ok,
@@ -1571,6 +1784,597 @@ def test_phoneme() -> None:
         })
     agree(random_roles, random_rows, 'the summed search matches the product on a mixed sample')
 
+    def cover_grid(real: bool, shift: bool = False) -> np.ndarray:
+        grid = np.zeros((len(A.LINE_SHARES), 8), dtype=bool)
+        grid[:, 0] = real
+        if shift:
+            grid[:, 1] = True
+            grid[:, 2] = True
+        return grid
+
+    def cover_line(line_id: str, only_real: bool, or_real: bool, only_shift: bool = False, or_shift: bool = False) -> dict:
+        return {
+            'id': line_id, 'song': 's', 'lang': 'la', 'group': 'solo', 'family': 'mms', 'long': True,
+            'pass': {'base': {
+                'off': cover_grid(False),
+                'only': cover_grid(only_real, only_shift),
+                'or': cover_grid(or_real, or_shift),
+            }},
+        }
+
+    quiet = [cover_line(f'q{i}', True, True) for i in range(18)]
+    kept_cover = Phone.select(
+        {('s', 'la'): ['off', 'or', 'only']},
+        quiet + [cover_line('keep-a', True, False), cover_line('keep-b', False, True)],
+        'base')
+    check('a within-limit role keeps the line the count-max missed',
+          kept_cover['assignment'][('s', 'la')] == 'or'
+          and kept_cover['proved'] == 19 and kept_cover['count_proved'] == 19
+          and kept_cover['cover_proved'] == 20
+          and kept_cover['line_roles'].get('keep-a') == 'only'
+          and 'keep-b' not in kept_cover['line_roles']
+          and kept_cover['lost'] == [],
+          str((kept_cover['assignment'], kept_cover['proved'], kept_cover['cover_proved'],
+               kept_cover['line_roles'], kept_cover['lost'])))
+    blocked_cover = Phone.select(
+        {('s', 'la'): ['off', 'or', 'only']},
+        quiet + [
+            cover_line('shift-a', True, False, only_shift=True),
+            cover_line('shift-b', False, True, or_shift=True),
+        ],
+        'base')
+    check('a mix over 5 % does not keep the extra line and does not drop the winner',
+          blocked_cover['assignment'][('s', 'la')] == 'or'
+          and blocked_cover['proved'] == 19 and blocked_cover['count_proved'] == 19
+          and blocked_cover['line_roles'] == {}
+          and blocked_cover['lost'] == ['shift-a']
+          and blocked_cover['lost_chance'] is not None and float(blocked_cover['lost_chance']) > 0.05,
+          str((blocked_cover['proved'], blocked_cover['line_roles'], blocked_cover['lost'], blocked_cover['lost_chance'])))
+    facts = Phone.counterfactuals(
+        kept_cover['assignment'], {('s', 'la'): ['off', 'or', 'only']},
+        quiet + [cover_line('keep-a', True, False), cover_line('keep-b', False, True)],
+        'base', kept_cover.get('k'))
+    only_row = next(row for row in facts if row['role'] == 'only')
+    check('a dropped role reports its line count and its line chance',
+          only_row['within_limit'] and only_row['proved'] == 19 and only_row['pair_proved'] == 19
+          and 'keep-a' in only_row['gained'] and 'keep-b' in only_row['lost_ids']
+          and only_row['chance'] is not None and float(only_row['chance']) <= 0.05,
+          str(only_row))
+
+    word_line = {'phones': {'m': 1.0}, 'vowels': {'m': 9.0}}
+    other_line = {'phones': {'m': 2.0}, 'vowels': {'m': 9.0}}
+    role_song = {'slug': 's', 'use_choir_envelope': False, 'all_lines': [
+        {'id': 'solo-a', 'lang': 'la', 'group': 'solo', 'words': [word_line]},
+        {'id': 'solo-b', 'lang': 'la', 'group': 'solo', 'words': [other_line]},
+    ]}
+    Phone.apply([role_song], {
+        'long': [['s', 'la']],
+        'pairs': [{'song': 's', 'lang': 'la', 'role': 'or', 'model': 'm'}],
+        'line_roles': {'solo-b': 'only'},
+        'choir_clock': 'phone', 'choir_attack': 'spectral',
+    })
+    check('a line role replaces the pair role',
+          word_line.get('phoneme_role') == 'or' and other_line.get('phoneme_role') == 'only'
+          and other_line.get('phoneme') == 2.0,
+          str((word_line.get('phoneme_role'), other_line.get('phoneme_role'), other_line.get('phoneme'))))
+    Phone.clear([role_song])
+
+    empty = Phone.choose([], {}, {'both_far': 0.20, 'only_far': 0.30})
+    variant_names = [row.get('variant') for row in (empty.get('chorus') or {}).get('variants') or []]
+    check('every choir feature is listed even when none is adopted',
+          variant_names == ['envelope', 'vowel', 'both'] and empty['chorus'].get('adopted') is False,
+          str(variant_names))
+
+    lyrics = {'sections': [{'id': 's', 'kind': 'vocal', 'start': 0, 'end': 10, 'lines': [{
+        'id': 'h',
+        'words': [{'w': 'aa', 's': 0.10, 'e': 0.40}, {'w': 'bb', 's': 0.50, 'e': 0.90}],
+    }]}]}
+    report = {'lines': [{
+        'id': 'h', 'status': 'weak', 'placed_by': 'mms', 'structure_ok': False,
+        'words': [
+            {'w': 'aa', 'roman': 'aa', 's': 0.10, 'e': 0.40, 'ctc_s': 9.0, 'ctc_e': 9.4,
+             'phoneme_models': {'xlsr-53-espeak': 1.0}},
+            {'w': 'bb', 'roman': 'bb', 's': 0.50, 'e': 0.90, 'ctc_s': 9.4, 'ctc_e': 9.8,
+             'phoneme_models': {'xlsr-53-espeak': 1.4}},
+        ],
+    }]}
+    rule = {'retime': {'song': [{
+        'id': 'h', 'by': 'phoneme',
+        'words': [
+            {'wi': 0, 'ctc_s': 1.00, 'ctc_e': 1.40, 'second_s': 1.0, 'third_s': 1.25,
+             'second_kind': 'mms', 'third_kind': 'whisperx'},
+            {'wi': 1, 'ctc_s': 1.45, 'ctc_e': 1.90, 'second_s': 1.4, 'third_s': 1.70,
+             'second_kind': 'mms', 'third_kind': 'whisperx'},
+        ],
+    }]}}
+    saved_peaks = Q.onset_peak_times
+    Q.onset_peak_times = lambda *args, **kwargs: np.array([1.05, 1.50])
+    try:
+        rewritten = Q.apply_saved_retime('song', lyrics, report, rule, None)
+    finally:
+        Q.onset_peak_times = saved_peaks
+    published = lyrics['sections'][0]['lines'][0]['words']
+    stored = report['lines'][0]
+    check('a kept placement rewrites the pre-snap start and snaps the published one',
+          rewritten == 1 and stored['status'] == 'good' and stored['placed_by'] == 'phoneme'
+          and stored['words'][0]['ctc_s'] == 1.0 and published[0]['s'] == 1.05
+          and stored['words'][0]['phoneme_models'] == {} and published[1]['s'] == 1.50,
+          str((stored['status'], stored['words'][0], published)))
+
+
+def test_translation_window() -> None:
+    """Same-language cues stay at 0.30 s. A translation cue can use the measured half."""
+    import placement as P
+
+    check('a same-language cue, including the region, stays at 0.30 s',
+          P.cue_accept_limit('en', 'en-GB') == P.CUE_TOL)
+    check('a missing language is not a translation',
+          P.cue_accept_limit('fa', None) == P.CUE_TOL and P.cue_accept_limit(None, 'en-GB') == P.CUE_TOL)
+    check('a Persian line on an English cue uses the measured half',
+          P.cue_accept_limit('fa', 'en-GB') == P.TRANSLATION_HALF)
+    near = P.judge([0.30, 0.80], [0.80, 1.20], 0.0, None)
+    check('exactly 0.30 s is placed', near.get('placed') is True, str(near))
+    over = P.judge([0.31, 0.81], [0.81, 1.21], 0.0, None)
+    check('0.31 s is not placed at the default gate', over.get('placed') is False and over.get('near') is False, str(over))
+    wide = P.judge([1.50, 2.00], [2.00, 2.40], 0.0, None, limit=2.01)
+    check('1.50 s is placed when the translation half is the limit', wide.get('placed') is True, str(wide))
+    fenced = P.translation_span(10.0, 9.5, 10.4, 2.01)
+    check('the neighbour fence is tighter than the half',
+          abs(fenced[0] - 9.5) < 1e-9 and abs(fenced[1] - 10.4) < 1e-9, str(fenced))
+    check('a start inside that fence is accepted',
+          P.in_translation_window(10.2, 10.0, 9.5, 10.4, 2.01))
+    check('a start past the next cue is not accepted',
+          not P.in_translation_window(10.5, 10.0, 9.5, 10.4, 2.01))
+    early = P.translation_leftover(
+        375.90, 376.34, 376.34, 381.0, structure_ok=True, translated=True)
+    check('a start before the previous cue end is not a wide leftover', not early)
+    inside = P.translation_leftover(
+        10.80, 10.0, 9.5, 12.0, structure_ok=True, translated=True)
+    check('a fenced translation start outside 0.30 s is a wide leftover', inside)
+    tight = P.translation_leftover(
+        10.20, 10.0, 9.5, 12.0, structure_ok=True, translated=True)
+    check('a start inside 0.30 s is not a wide leftover', not tight)
+    same = P.translation_leftover(
+        10.80, 10.0, 9.5, 12.0, structure_ok=True, translated=False)
+    check('a same-language start is not a wide leftover', not same)
+    unit = type('U', (), {'id': 'x', 'line': {'lang': 'fa'}})()
+    check('the adoption gate stays 0.30 s for a translation cue',
+          align._cue_limit(unit, {'x': {'lang': 'en-GB', 'start': 1.0}}) == P.CUE_TOL)
+
+    words = [{
+        'roman': 'aa', 'ctc_s': 1.0, 'ctc_e': 1.2,
+        'second_s': 1.02, 'third_s': 1.03, 'vowel_s': 1.0,
+    }]
+    held = Q.prove_words(words, [0.40], 0.10, witnesses='two', nucleus=True)
+    plain = Q.prove_words(words, [0.40], 0.10, witnesses='two', nucleus=False)
+    check('a long vowel uses the nucleus when the spectral attack is outside tolerance',
+          held and held[0]['path'] == 'nucleus' and held[0]['reason'] == 'pass', str(held))
+    check('without the nucleus the same word is not proved',
+          plain and plain[0]['path'] == 'fail', str(plain))
+    consonant = [{
+        'roman': 'ba', 'ctc_s': 1.0, 'ctc_e': 2.0,
+        'second_s': 1.02, 'third_s': 1.03, 'vowel_s': 1.0,
+        'own_t': 1.0, 'own_e': 1.2,
+    }]
+    not_held = Q.prove_words(consonant, [0.40], 0.10, witnesses='two', nucleus=True)
+    check('a shifted span does not turn a short consonant into a nucleus',
+          not_held and not_held[0]['path'] == 'fail', str(not_held))
+
+    lyrics = {'sections': [{'kind': 'vocal', 'id': 's', 'lines': [
+        {'id': 'far', 'lang': 'fa', 'words': [{'w': 'a', 's': 10.50, 'e': 11.00}, {'w': 'b', 's': 11.00, 'e': 11.40}]},
+        {'id': 'en', 'lang': 'en', 'words': [{'w': 'c', 's': 12.10, 'e': 12.50}]},
+    ]}]}
+    report = {'lines': [
+        {'id': 'far', 'status': 'good', 'placed_by': 'mms', 'ctc_start': 10.50},
+        {'id': 'en', 'status': 'good', 'placed_by': 'mms', 'ctc_start': 12.10},
+    ]}
+    cues = {
+        'far': {'lang': 'en-GB', 'start': 10.0, 'end': 11.8},
+        'en': {'lang': 'en', 'start': 12.0, 'end': 13.0},
+    }
+    rejected = {'translation_measured': True, 'translation_half': None, 'line_wide': []}
+    n = Q.reject_wide_translation(lyrics, report, rejected, cues)
+    far = lyrics['sections'][0]['lines'][0]['words']
+    check('a rejected translation window returns the line to the cue',
+          n == 1 and abs(far[0]['s'] - 10.0) < 1e-9
+          and report['lines'][0]['status'] == 'weak' and report['lines'][0]['placed_by'] is None
+          and abs(lyrics['sections'][0]['lines'][1]['words'][0]['s'] - 12.10) < 1e-9,
+          str((n, far, report['lines'][0])))
+    kept_lyrics = {'sections': [{'kind': 'vocal', 'id': 's', 'lines': [
+        {'id': 'far', 'lang': 'fa', 'words': [{'w': 'a', 's': 10.50, 'e': 11.00}, {'w': 'b', 's': 11.00, 'e': 11.40}]},
+    ]}]}
+    kept_report = {'lines': [{'id': 'far', 'status': 'good', 'placed_by': 'mms', 'ctc_start': 10.50}]}
+    admitted = {'translation_measured': True, 'translation_half': 2.01, 'line_wide': ['far']}
+    n_keep = Q.reject_wide_translation(kept_lyrics, kept_report, admitted, cues)
+    check('a line the join paid for keeps its wider start',
+          n_keep == 0 and kept_lyrics['sections'][0]['lines'][0]['words'][0]['s'] == 10.50
+          and kept_report['lines'][0]['status'] == 'good',
+          str((n_keep, kept_report['lines'][0])))
+    outside = {'sections': [{'kind': 'vocal', 'id': 's', 'lines': [
+        {'id': 'far', 'lang': 'fa', 'words': [{'w': 'a', 's': 13.00, 'e': 13.40}]},
+    ]}]}
+    outside_report = {'lines': [{'id': 'far', 'status': 'good', 'placed_by': 'mms', 'ctc_start': 13.00}]}
+    n_out = Q.reject_wide_translation(
+        outside, outside_report,
+        {'translation_measured': True, 'translation_half': 2.01, 'line_wide': None}, cues)
+    check('a start outside the measured half is still returned to the cue',
+          n_out == 1 and abs(outside['sections'][0]['lines'][0]['words'][0]['s'] - 10.0) < 1e-9,
+          str(outside['sections'][0]['lines'][0]['words']))
+    # Published start drifted past 0.30 s. The raw aligner start did not.
+    tight_lyrics = {'sections': [{'kind': 'vocal', 'id': 's', 'lines': [
+        {'id': 'shushtari-1-1', 'lang': 'ar', 'words': [{'w': 'a', 's': 58.67, 'e': 59.20}]},
+    ]}]}
+    tight_report = {'lines': [{
+        'id': 'shushtari-1-1', 'status': 'good', 'placed_by': 'mms', 'ctc_start': 58.58,
+    }]}
+    tight_cues = {'shushtari-1-1': {'lang': 'en-GB', 'start': 58.298, 'end': 60.0}}
+    n_tight = Q.reject_wide_translation(
+        tight_lyrics, tight_report,
+        {'translation_measured': True, 'translation_half': 2.01, 'line_wide': []}, tight_cues)
+    published = tight_lyrics['sections'][0]['lines'][0]['words'][0]['s']
+    gap = abs(published - 58.298)
+    check('a raw start inside 0.30 s stays placed when the published start drifted',
+          n_tight == 1 and tight_report['lines'][0]['status'] == 'good'
+          and tight_report['lines'][0]['placed_by'] == 'mms'
+          and tight_report['lines'][0]['ctc_start'] == 58.58
+          and round(gap, 3) <= 0.30,
+          str((n_tight, tight_report['lines'][0], published, gap)))
+
+
+def test_monotone_union() -> None:
+    """A join keeps every baseline line unless holding it pushes the line pass over 5 %."""
+    import attack_chance as A
+
+    def grid(cols: tuple[int, ...] = ()) -> np.ndarray:
+        bits = np.zeros((len(A.LINE_SHARES), 8), dtype=bool)
+        bits[:, 0] = True
+        for col in cols:
+            bits[:, col] = True
+        return bits
+
+    def pack(name: str, ids: list[str], *, baseline: bool = False, within: bool = True,
+             partial: bool = False, cols: dict | None = None) -> dict:
+        cols = cols or {}
+        return {
+            'name': name,
+            'baseline': baseline,
+            'within_limit': within or baseline,
+            'partial': partial,
+            'k': 0.25,
+            'lines': {
+                lid: {'family': 'mms', 'bits': grid(tuple(cols.get(lid, ()))), 'song': 's'}
+                for lid in ids
+            },
+            'words': {},
+            'extra': {},
+        }
+
+    quiet = [f'q{i:02d}' for i in range(18)]
+    base = pack('baseline', quiet + ['A'], baseline=True)
+    other = pack('other', quiet + ['B'])
+    joined = A.admit_union([base, other])
+    check('the full join keeps the baseline line and the extra line',
+          joined.get('full_or') is True and joined.get('within_limit') is True
+          and 'A' in joined['proved'] and 'B' in joined['proved']
+          and abs(float(joined['chance']) - 0.0) < 1e-12
+          and A.pass_keeps_baseline(joined, joined['baseline_ids']),
+          str((joined['proved'], joined['chance'], joined['full_or'])))
+    dropped = {'proved': quiet + ['B'], 'lost': [], 'lost_detail': {}, 'lost_chance': None}
+    check('dropping a baseline line without a cap reason fails',
+          not A.pass_keeps_baseline(dropped, quiet + ['A']))
+    capped = {
+        'proved': quiet, 'lost': ['A'], 'lost_detail': {'A': 0.10}, 'lost_chance': 0.10,
+    }
+    check('a drop whose line pass is above 5 % is the allowed cap reason',
+          A.pass_keeps_baseline(capped, quiet + ['A']))
+
+    partial = pack(
+        'partial', ['shift-a', 'shift-b'], within=False, partial=True,
+        cols={'shift-a': (1, 2), 'shift-b': (1, 2)})
+    partial['within_limit'] = False
+    added = A.admit_union([base, partial])
+    check('one extra line at exactly 5 % stays and the next one is lost',
+          'A' in added['proved'] and 'shift-a' in added['proved'] and 'shift-b' not in added['proved']
+          and added.get('lost') == ['shift-b']
+          and added.get('lost_chance') is not None and float(added['lost_chance']) > 0.05
+          and A.pass_keeps_baseline(added, added['baseline_ids']),
+          str((added['proved'], added['lost'], added['lost_chance'], added['chance'])))
+    clock = pack(
+        'stable:one:de:large-v3-turbo', ['kept'], within=False, partial=True, cols={})
+    clock['within_limit'] = False
+    held = A.admit_union([base, clock])
+    check('an alternate clock keeps its line and the baseline line',
+          'A' in held['proved'] and 'kept' in held['proved']
+          and held['line_member'].get('kept') == 'stable:one:de:large-v3-turbo'
+          and A.pass_keeps_baseline(held, held['baseline_ids']),
+          str((held['proved'], held['line_member'])))
+    fill_ids, placed_ids = A._union_line_flags(
+        {'old': 'fill', 'gap': 'placed-fill', 'phone': 'phone-fill:karitas:la:lv-60-espeak', 'skip': 'placed-fill'},
+        {'old', 'gap', 'phone'})
+    check('a placed-fill line takes both the envelope and the empty-slot clock',
+          fill_ids == ['gap', 'old', 'phone'] and placed_ids == ['gap'],
+          str((fill_ids, placed_ids)))
+    check('a combined wide gate publishes both flags and not the empty slot',
+          A._member_features('wide-fill') == {'fill', 'wide'}
+          and A._member_features('wide') == {'wide'}
+          and A._member_features('nearest') == {'nearest'}
+          and A._member_features('wide-nearest') == {'wide', 'nearest'}
+          and A._member_features('wide-nucleus') == {'nucleus', 'wide'}
+          and A._member_features('wide-phoneme') == {'wide', 'phone'}
+          and A._member_features('wide-phoneme-fill') == {'fill', 'wide', 'phone'}
+          and A._member_features('placed-fill') == {'fill', 'placed'})
+    wide_fill, wide_placed = A._union_line_flags(
+        {'a': 'wide-fill', 'b': 'nearest', 'c': 'placed-fill'}, {'a', 'b', 'c'})
+    check('the envelope list keeps wide-fill and the empty slot stays placed-fill',
+          wide_fill == ['a', 'c'] and wide_placed == ['c']
+          and A._ids_with({'a': 'wide-fill', 'b': 'nearest', 'c': 'wide'}, {'a', 'b', 'c'}, 'wide') == ['a', 'c']
+          and A._ids_with({'a': 'wide-fill', 'b': 'nearest'}, {'a', 'b'}, 'nearest') == ['b'],
+          str((wide_fill, wide_placed)))
+
+    def half(left: bool, right: bool) -> np.ndarray:
+        grid_half = np.zeros((len(A.LINE_SHARES), 2), dtype=bool)
+        grid_half[0, 0] = left
+        grid_half[0, 1] = right
+        return grid_half
+
+    wide = pack('wide', ['W'], within=True, partial=True)
+    wide['extra'] = {'W': half(False, False), 'N': half(False, False), 'H': half(False, False)}
+    filled = pack('wide-fill', ['N'], within=False, partial=True)
+    filled['within_limit'] = False
+    filled['extra'] = {'N': half(True, True)}
+    hand = pack('handoff', ['H'], within=False, partial=True)
+    hand['within_limit'] = False
+    hand['extra'] = {'H': half(True, True)}
+    priced = A.admit_union([base, wide, filled, hand])
+    check('a combined gate pays its own half, and an older gate keeps the earlier map',
+          'A' in priced['proved'] and 'W' in priced['proved'] and 'H' in priced['proved']
+          and 'N' not in priced['proved'] and priced['line_member'].get('H') == 'handoff',
+          str((priced['proved'], priced['lost'], priced['chance'], priced['line_member'])))
+    cheap = pack('wide-fill', ['N'], within=False, partial=True)
+    cheap['within_limit'] = False
+    cheap['extra'] = {'N': half(False, False)}
+    kept_wide = A.admit_union([base, wide, cheap])
+    check('a combined gate keeps the line when its own half does not still pass',
+          'N' in kept_wide['proved'] and kept_wide['line_member'].get('N') == 'wide-fill'
+          and 'A' in kept_wide['proved'] and 'W' in kept_wide['proved'],
+          str((kept_wide['proved'], kept_wide['line_member'], kept_wide['chance'])))
+
+
+def test_pass5_placement() -> None:
+    """Stem choice, a dropped refuter, and one language of the phoneme placer."""
+    import attack_chance as A
+    import refuter_choice as RC
+    import stem_onset
+
+    def stem_row(name, role, med_at, ratio):
+        med_off = med_at / ratio if ratio else 1.0
+        return {
+            'name': name, 'role': role, 'model': name, 'shifts': 1, 'overlap': 0.1,
+            'ensemble': role == 'ensemble', 'license': 'MIT', 'note': '',
+            'summary': {'n': 8, 'med_at': med_at, 'med_off': med_off, 'ratio': ratio},
+        }
+
+    base = stem_row('htdemucs_ft', 'baseline', 0.40, 1.2)
+    weak = stem_row('htdemucs_ft-overlap', 'raised', 0.41, 1.3)
+    louder_off = stem_row('htdemucs_ft-shifts2', 'raised', 0.50, 1.0)
+    ingredient = stem_row('htdemucs', 'ingredient', 0.90, 2.0)
+    kept = stem_onset.choose([base, weak, louder_off, ingredient])
+    check('a stem that is not clearly stronger stays on the current clip',
+          kept['name'] == 'htdemucs_ft' and kept['reason'] == 'база', str(kept))
+    ensemble = stem_row('ensemble-htdemucs-ft', 'ensemble', 0.50, 1.3)
+    won = stem_onset.choose([base, ensemble, ingredient])
+    check('a stronger stem whose shift ratio holds replaces the clip',
+          won['name'] == 'ensemble-htdemucs-ft' and won.get('ensemble') is True, str(won))
+    empty = stem_onset.choose([{'name': 'htdemucs_ft', 'role': 'baseline', 'summary': None}])
+    check('a baseline with no score does not switch the clip',
+          empty['reason'] == 'база без оценки' and empty.get('overlap') == 0.1, str(empty))
+    check('the ingredient stem cannot win on its own',
+          stem_onset.choose([base, ingredient])['name'] == 'htdemucs_ft')
+
+    one = [{'agree': True, 'song': 'one', 'lang': 'de', 'against': ['whisperx']}]
+    check('one agreeing line does not drop a refuter', RC.candidates(one) == [])
+    two = one + [{'agree': True, 'song': 'one', 'lang': 'de', 'against': ['whisperx']}]
+    found = RC.candidates(two)
+    check('two lines of one witness kind can drop it',
+          len(found) == 1 and found[0]['lines'] == 2 and found[0]['key'] == 'one|de', str(found))
+
+    refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    both = {
+        'ctc_s': 1.0, 'second_s': 1.40, 'third_s': 1.45,
+        'second_kind': 'whisperx', 'third_kind': 'stable-ts', 'song': 'one', 'lang': 'de',
+    }
+    check('both clocks still refute when the map is empty',
+          Q.word_refuted(both, np.array([1.45]), refute) == 'witnesses-agree-elsewhere')
+    dropped = dict(refute, off={'one|de': ['whisperx']})
+    check('ignoring one witness leaves the single-clock case',
+          Q.word_refuted(both, np.array([1.45]), dropped) == 'witness-attack')
+    both_off = dict(refute, off={'one|de': ['whisperx', 'stable-ts']})
+    check('ignoring both witnesses is not a refutation',
+          Q.word_refuted(both, np.array([1.45]), both_off) is None)
+    other = dict(refute, off={'karitas|de': ['whisperx']})
+    check('a drop for another song does not excuse this word',
+          Q.word_refuted(both, np.array([1.45]), other) == 'witnesses-agree-elsewhere')
+
+    def rec(line_id, lang, cue):
+        return {
+            'id': line_id, 'lang': lang, 'status': 'weak', 'group': 'solo',
+            'cue_start': cue, 'cue_lang': lang, 'section': 's',
+            'words': [
+                {'w': 'a', 'roman': 'aa', 'second_s': cue + 0.05, 'third_s': cue + 0.08,
+                 'clock_mms': cue + 0.02, 'clock_second': cue + 0.05, 'clock_stable': cue + 0.08},
+                {'w': 'b', 'roman': 'bb', 'second_s': cue + 0.55, 'third_s': cue + 0.58,
+                 'clock_mms': cue + 0.52, 'clock_second': cue + 0.55, 'clock_stable': cue + 0.58},
+            ],
+        }
+
+    song = {
+        'slug': 's',
+        'all_lines': [],
+        'lines': [],
+        'open_place': {
+            'la-1': {'model': 'xlsr-53-espeak', 'lang': 'la', 'starts': [1.05, 1.55]},
+            'fa-1': {'model': 'xlsr-53-espeak', 'lang': 'fa', 'starts': [2.05, 2.55]},
+        },
+        'report_by_id': {'la-1': rec('la-1', 'la', 1.0), 'fa-1': rec('fa-1', 'fa', 2.0)},
+        'next_by_id': {},
+        'order_by_id': {'la-1': 0, 'fa-1': 1},
+    }
+    only_la = A._apply_latin([song], {'s': {'s': (0.0, 10.0)}}, only_lang='la')
+    placed_ids = [line['id'] for line in song['all_lines'] if line.get('placed_by') == 'phoneme']
+    check('one language of the phoneme placer does not place the other',
+          [row['id'] for row in only_la] == ['la-1'] and placed_ids == ['la-1'],
+          str((only_la, placed_ids)))
+    song['all_lines'] = []
+    legacy = {
+        'slug': 's', 'all_lines': [], 'lines': [],
+        'latin_place': {'la-1': {'model': 'xlsr-53-espeak', 'starts': [1.05, 1.55]}},
+        'report_by_id': {'la-1': rec('la-1', 'la', 1.0)},
+        'next_by_id': {}, 'order_by_id': {'la-1': 0},
+    }
+    old = A._apply_latin([legacy], {'s': {'s': (0.0, 10.0)}})
+    check('a report that only stored Latin still places that Latin line',
+          [row['id'] for row in old] == ['la-1'], str(old))
+
+
+def test_lang_ctc() -> None:
+    import attack_chance as A
+    import lang_ctc
+    import lang_ctc_choice as L
+
+    lang_ctc.assert_independent()
+    ids = {spec['id'] for spec in lang_ctc.MODELS}
+    ids.update(spec['fallback'] for spec in lang_ctc.MODELS if spec.get('fallback'))
+    banned = set(engines.WHISPERX_HF.values())
+    banned.update({
+        'facebook/mms-1b-all',
+        'nijatzeynalov/wav2vec2-large-mms-1b-azerbaijani-common_voice15.0',
+        'tahmaz/wav2vec2-large-mms-1b-azerbaijani',
+        'mpoyraz/wav2vec2-xls-r-300m-cv7-turkish',
+    })
+    check('language CTC checkpoints are not the second aligner or MMS', not ids & banned, str(ids & banned))
+    check('azerbaijani and latin have no language CTC model',
+          {spec['lang'] for spec in lang_ctc.MODELS}.isdisjoint({'az', 'la'})
+          and {row['lang'] for row in lang_ctc.ABSENT} >= {'az', 'la'})
+    check('the five language models are Apache-2.0 and commercial',
+          all(spec['license'] == 'Apache-2.0' and not spec['noncommercial'] for spec in lang_ctc.MODELS))
+    arabic = next(spec for spec in lang_ctc.MODELS if spec['lang'] == 'ar')
+    check('arabic CTC reads Arabic script, not Buckwalter',
+          arabic['id'] == 'kmfoda/wav2vec2-large-xlsr-arabic' and 'elgeish' not in arabic['id'])
+    check('a finished loop of empty clocks is not a measurement',
+          lang_ctc.only_empty_clocks([({'roman': 'ا'}, None), ({'roman': 'ب'}, None)])
+          and not lang_ctc.only_empty_clocks([({'roman': 'ا'}, 1.0), ({'roman': 'ب'}, None)])
+          and not lang_ctc.only_empty_clocks([({'roman': ''}, None)]))
+    check('a shifted hit rate of 1 is not admitted', not L.admits(1.0, 40))
+    check('a short language is not given its own role', not L.admits(0.0, 10))
+    check('a long language under 15 % is admitted', L.admits(0.14, 30))
+    check('pass 5 published three lines beyond the frozen 155',
+          set(A.PASS5_EXTRA) == {'english-8', 'coda-fa-3', 'shushtari-s2'})
+    check('language members do not borrow the phoneme feature',
+          A._member_features('lang') == {'lang'}
+          and A._member_features('pair') == {'pair'}
+          and A._member_features('overrule') == {'overrule'}
+          and A._member_features('lang-overrule') == {'lang', 'overrule'}
+          and A._member_features('phoneme') == {'phone'})
+
+    rule = A.witness_rules()[0]
+    peaks = np.array([1.0, 2.0])
+    perfect = [
+        {'t': 1.0, 'line': 'L', 'group': 'solo', 'second': None, 'third': None,
+         'phoneme': None, 'phoneme_role': 'off', 'lang_clock': 1.0, 'lang_role': 'or', 'pair': False},
+        {'t': 2.0, 'line': 'L', 'group': 'solo', 'second': None, 'third': None,
+         'phoneme': None, 'phoneme_role': 'off', 'lang_clock': 2.0, 'lang_role': 'or', 'pair': False},
+    ]
+    check('a language clock proves the unshifted word the others miss',
+          bool(A.hit_mask(perfect, peaks, 0.0, rule)[0]))
+    check('a language clock that stays put misses a 0.40 s shift',
+          not bool(A.hit_mask(perfect, peaks, 0.40, rule)[0]))
+    bare = [dict(row, lang_role='off', lang_clock=None) for row in perfect]
+    check('without the language role the same word is not proved',
+          not bool(A.hit_mask(bare, peaks, 0.0, rule)[0]))
+
+    proved = Q.prove_words(
+        [{'roman': 'aa', 'ctc_s': 1.0, 'ctc_e': 1.4, 'second_s': None, 'third_s': None,
+          'lang_s': 1.04, 'lang_role': 'or'}],
+        [0.0], 0.10, witnesses='one', agree_tol=0.10)
+    check('language OR is its own proof path', proved[0]['path'] == 'witness-lang', str(proved[0]['path']))
+    paired = Q.prove_words(
+        [{'roman': 'aa', 'ctc_s': 1.0, 'ctc_e': 1.4, 'second_s': None, 'third_s': None,
+          'phoneme_s': 1.04, 'lang_s': 1.06, 'pair': True}],
+        [0.0], 0.10, witnesses='one', agree_tol=0.10)
+    check('two weak clocks within 0.10 s of the placer prove the word',
+          paired[0]['path'] == 'witness-pair', str(paired[0]['path']))
+    far = Q.prove_words(
+        [{'roman': 'aa', 'ctc_s': 1.0, 'ctc_e': 1.4, 'second_s': None, 'third_s': None,
+          'phoneme_s': 1.40, 'lang_s': 1.42, 'pair': True}],
+        [0.0], 0.10, witnesses='one', agree_tol=0.10)
+    check('two clocks that agree far from the placer do not prove the word',
+          far[0]['path'] == 'fail', str(far[0]['path']))
+
+    refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    attack = np.array([1.50])
+    single = {
+        'ctc_s': 1.0, 'second_s': 1.50, 'third_s': None,
+        'second_kind': 'whisperx', 'phoneme_s': 1.02, 'lang_s': 1.06,
+        'overrule': True,
+    }
+    check('one witness against two agreeing supporters is overruled',
+          Q.word_refuted(single, attack, refute) is None)
+    lone = dict(single, lang_s=None)
+    check('one supporter does not overrule',
+          Q.word_refuted(lone, attack, refute) == 'witness-attack')
+    apart = dict(single, phoneme_s=0.91, lang_s=1.09)
+    check('two supporters more than 0.10 s apart do not overrule',
+          Q.word_refuted(apart, attack, refute) == 'witness-attack')
+    both_far = {
+        'ctc_s': 1.0, 'second_s': 1.40, 'third_s': 1.45,
+        'second_kind': 'whisperx', 'third_kind': 'stable-ts',
+        'phoneme_s': 1.02, 'lang_s': 1.04, 'overrule': True,
+    }
+    check('two clocks that agree elsewhere are not overruled',
+          Q.word_refuted(both_far, np.array([1.45]), refute) == 'witnesses-agree-elsewhere')
+    quiet = dict(single, overrule=False)
+    check('the overrule flag is required',
+          Q.word_refuted(quiet, attack, refute) == 'witness-attack')
+
+    song = {
+        'slug': 's',
+        'lines': [{
+            'id': 'l', 'lang': 'ar', 'placed': True, 'group': 'solo',
+            'words': [
+                {'t': 1.0, 'langs': {'xlsr-53-ar-elgeish': 1.02}, 'phones': {'xlsr-53-espeak': 1.03},
+                 'roman': 'aa'},
+                {'t': 1.5, 'langs': {'xlsr-53-ar-elgeish': 1.52}, 'phones': {'xlsr-53-espeak': 1.53},
+                 'roman': 'bb'},
+            ],
+        }],
+        'all_lines': [],
+    }
+    song['all_lines'] = song['lines']
+    admitted = [{'song': 's', 'lang': 'ar', 'model': 'xlsr-53-ar-elgeish'}]
+    check('language OR stamps the measured clock', L.apply_lang([song], admitted) == 2)
+    check('the stamp does not replace the language code', song['lines'][0]['words'][0].get('lang') is None)
+    L.clear([song])
+    check('clearing the language stamp leaves no role and no clock',
+          'lang_role' not in song['lines'][0]['words'][0]
+          and 'lang_clock' not in song['lines'][0]['words'][0]
+          and 'phoneme' not in song['lines'][0]['words'][0])
+    pair_rows = [{'song': 's', 'lang': 'ar', 'model': 'xlsr-53-ar-elgeish', 'phone': 'xlsr-53-espeak'}]
+    check('the pair stamp does not turn on the language role',
+          L.apply_pair([song], pair_rows) == 2 and song['lines'][0]['words'][0].get('pair') is True
+          and song['lines'][0]['words'][0].get('lang_role') is None)
+    L.clear([song])
+    check('clearing the pair stamp removes the phoneme it added',
+          'pair' not in song['lines'][0]['words'][0] and 'phoneme' not in song['lines'][0]['words'][0])
+    stamped = Q.stamp_lang_ctc(
+        [{'roman': 'aa', 'ctc_s': 1.0, 'phoneme_s': 1.40, 'phoneme_role': 'or',
+          'phoneme_models': {'xlsr-53-espeak': 1.03},
+          'lang_models': {'xlsr-53-ar-elgeish': 1.02}}],
+        lang_model='xlsr-53-ar-elgeish', phone_model='xlsr-53-espeak',
+        use_lang=False, use_pair=True, use_overrule=False)
+    check('a pair line keeps the phoneme clock the pair was calibrated on',
+          stamped[0].get('phoneme_s') == 1.03 and stamped[0].get('pair') is True
+          and stamped[0].get('lang_role') is None, str(stamped[0]))
+
 
 def main() -> int:
     test_viterbi()
@@ -1588,6 +2392,8 @@ def main() -> int:
     test_cue_times_stay()
     test_placement_and_cue_lock()
     test_cued_lines_stay_near_the_cue()
+    test_translation_window()
+    test_monotone_union()
     test_section_edges()
     test_bias_and_witnesses()
     test_attack_chance()
@@ -1596,6 +2402,8 @@ def main() -> int:
     test_whisper_witness()
     test_whisper_choice()
     test_phoneme()
+    test_lang_ctc()
+    test_pass5_placement()
     test_calibration()
     test_bench_summary()
     test_harakat()

@@ -290,12 +290,12 @@
   align-self: center;
 }
 .w {
-  /* One text layer per word, always in an opaque colour. Dimming is done with the word's own
-     opacity (--litf 0…1 from the Scene), not with a translucent colour: a translucent colour paints
-     overlapping parts of joined Arabic and Persian letters twice and they look doubled at the
-     joins, while element opacity composites the word as one layer. While a word is sung, a
-     gradient clipped to the glyphs travels across it. Padding is only vertical, so marks are not
-     cut and the word gap stays a real distance. */
+  /* One text layer per word, always in an opaque colour. Dimming is the word's own opacity
+     (--litf 0…1 from the Scene), not a translucent colour: a translucent colour paints overlapping
+     parts of joined Arabic and Persian letters twice and they look doubled at the joins, while
+     element opacity composites the word as one layer. While a word is sung, `.is-filling` masks
+     that same layer. Padding is only vertical, so marks are not cut and the word gap stays a
+     real distance. */
   --w-lit: var(--ink);
   position: relative;
   display: inline-block;
@@ -312,13 +312,27 @@
 .w.is-sung {
   opacity: 1;
 }
+/* Sung ink is opaque. The unsung part is the same element faded by a mask, after the
+   glyphs are one layer. A translucent colour in the gradient would darken joins. The
+   cut is a step; LineBlock moves it from the time, and a seek repeats the frame.
+   RTL fills from the right (`--fill-dir`). */
 .w.is-filling {
-  --w-dim: color-mix(in srgb, var(--w-lit) 42%, transparent);
   opacity: 1;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
+  color: var(--w-lit);
+  -webkit-text-fill-color: currentColor;
+  background-image: none;
+  --fill-dir: to right;
+  -webkit-mask-image: linear-gradient(var(--fill-dir), #000 var(--fill-cut, 0%), rgb(0 0 0 / var(--dim-op)) var(--fill-cut, 0%));
+  mask-image: linear-gradient(var(--fill-dir), #000 var(--fill-cut, 0%), rgb(0 0 0 / var(--dim-op)) var(--fill-cut, 0%));
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-mode: alpha;
+  mask-mode: alpha;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+.fb-orig[dir='rtl'] .w.is-filling {
+  --fill-dir: to left;
 }
 .fb-subs {
   margin-top: 4px;

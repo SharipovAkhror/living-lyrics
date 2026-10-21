@@ -4,6 +4,7 @@ import type { Timeline } from '@/data/timeline';
 import type { AudioFeatures } from '@/instruments/animation';
 import { effectiveMotion, type Settings } from '@/app/settings';
 import { showHarakatText } from '@/data/harakat';
+import { fillQuery, lineWordSync, wordSyncOn } from './fill';
 import { LineBlock, type BlockUpdater } from './LineBlock';
 import { InstBlock } from './InstBlock';
 import { WAIT_ROOM, blockHeight, blockState, compressStack, flowPosition, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
@@ -39,8 +40,11 @@ export function Scene({ song, timeline, settings, features, clock, onOwnerChange
   const motion = effectiveMotion(settings);
   const entrance = settings.lineEntrance;
   // Word-by-word fill only for measured and checked timing: a fill that runs ahead of or behind the
-  // voice is worse than none (docs/methodology/05-alignment.md).
-  const wordSync = song.timing.status !== 'draft';
+  // voice is worse than none (docs/methodology/05-alignment.md). `?fill=1` forces it for a test
+  // and does not write the song.
+  const search = typeof window === 'undefined' ? '' : window.location.search;
+  const forcedFill = fillQuery(search);
+  const wordSync = wordSyncOn(song.timing.status, search);
   const plan = useMemo(() => planFlow(timeline, motion === 'off'), [timeline, motion]);
 
   const register = useCallback((idx: number, fn: BlockUpdater | null, m?: Measure) => {
@@ -203,7 +207,7 @@ export function Scene({ song, timeline, settings, features, clock, onOwnerChange
             <LineBlock
               key={`${idx}-${settings.fontPersian}-${settings.fontOriginal}-${settings.fontTranslation}`}
               cue={c}
-              wordSync={wordSync && !c.line.flags?.includes('timing-draft')}
+              wordSync={lineWordSync(wordSync, !!c.line.flags?.includes('timing-draft'), forcedFill)}
               settings={textSettings}
               entrance={entrance}
               motion={motion}
