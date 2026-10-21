@@ -2,10 +2,14 @@
 
 ## Значки
 
-На сайте Phosphor Fill: пути в `src/ui/icons.tsx`. В репозиторий скопированы только пути нужных значков, без новой зависимости.
+Phosphor Icons, версия 2.1.1. На сайте два начертания: Regular в покое и Fill у включённой вкладки, у пуска и у паузы. Пути — в `src/ui/icons.tsx`. В репозиторий скопированы только пути нужных значков, без новой зависимости. Отдельных оптических размеров в наборе нет.
+
+Свежая опубликованная версия пакета `@phosphor-icons/core` — 2.1.1. Тег релиза на GitHub `v2.0.8` (2024-02-01) старше: в `package.json` ветки `main` стоит 2.1.1, и пути взяты оттуда.
 
 MIT. Copyright (c) 2023 Phosphor Icons.
 Репозиторий: <https://github.com/phosphor-icons/core>, коммит `2b75f3ad12b420c9504ef05df8d2564a28f8500e`.
+Текст лицензии в этом коммите: <https://github.com/phosphor-icons/core/blob/2b75f3ad12b420c9504ef05df8d2564a28f8500e/LICENSE>.
+Пакет: <https://www.npmjs.com/package/@phosphor-icons/core/v/2.1.1>.
 
 Текст разрешения (MIT), как в файле набора:
 

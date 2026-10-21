@@ -545,19 +545,19 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </div>
         <div className="utility">
           <button className="util" aria-label="Перевод" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
-            <Icon name="character.bubble" size={24} />
+            <Icon name="character.bubble" size={24} active={settings.showTranslation} />
             <span className="util-label" aria-hidden="true">Перевод</span>
           </button>
           <button className="util" aria-label="Пояснение" aria-pressed={settings.showComment} onClick={() => setSettings({ showComment: !settings.showComment })}>
-            <Icon name="book.closed" size={24} />
+            <Icon name="book.closed" size={24} active={settings.showComment} />
             <span className="util-label" aria-hidden="true">Пояснение</span>
           </button>
           <button className="util" aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={() => openSheet('text')}>
-            <Icon name="list.bullet" size={24} />
+            <Icon name="list.bullet" size={24} active={sheet === 'text'} />
             <span className="util-label" aria-hidden="true">Весь текст</span>
           </button>
           <button className="util" aria-label="Настройки" aria-pressed={sheet === 'settings'} onClick={() => openSheet('settings')}>
-            <Icon name="slider.horizontal.3" size={24} />
+            <Icon name="slider.horizontal.3" size={24} active={sheet === 'settings'} />
             <span className="util-label" aria-hidden="true">Настройки</span>
           </button>
         </div>
