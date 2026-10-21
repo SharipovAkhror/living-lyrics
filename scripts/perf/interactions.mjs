@@ -107,6 +107,61 @@ function flightVerdict(samples) {
   };
 }
 
+async function chromeClear(page) {
+  await page.waitForTimeout(500);
+  return page.evaluate(() => {
+    const hit = (a, b) => a.left < b.right - 1 && a.right > b.left + 1 && a.top < b.bottom - 1 && a.bottom > b.top + 1;
+    const obstacles = [...document.querySelectorAll('.player-alert, .player .comment')]
+      .map((el) => {
+        const r = el.getBoundingClientRect();
+        const cs = getComputedStyle(el);
+        const shown = cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity) > 0.05 && r.width > 8 && r.height > 8;
+        return shown ? { name: el.className, r } : null;
+      })
+      .filter(Boolean);
+    const hits = [];
+    for (const node of document.querySelectorAll('.fb-orig, .fb-tr, .fb-inst-kicker, .fb-voice, .fb-meta')) {
+      const r = node.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2) continue;
+      const block = node.closest('.fb');
+      if (block && Number(getComputedStyle(block).opacity) < 0.15) continue;
+      if (getComputedStyle(node).visibility === 'hidden') continue;
+      for (const o of obstacles) {
+        if (hit(r, o.r)) {
+          hits.push({
+            text: node.className,
+            top: Math.round(r.top),
+            bottom: Math.round(r.bottom),
+            obstacle: o.name,
+          });
+        }
+      }
+    }
+    return { hits, obstacles: obstacles.map((o) => o.name) };
+  });
+}
+
+function nearToken(rgb, target) {
+  return Math.hypot(rgb[0] - target[0], rgb[1] - target[1], rgb[2] - target[2]);
+}
+
+async function paintOf(buffer) {
+  const { data, info } = await sharp(buffer).resize(32, 18, { fit: 'fill' }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  let black = 0;
+  const sum = [0, 0, 0];
+  const n = info.width * info.height;
+  for (let i = 0; i < data.length; i += 3) {
+    if (data[i] < 3 && data[i + 1] < 3 && data[i + 2] < 3) black += 1;
+    sum[0] += data[i];
+    sum[1] += data[i + 1];
+    sum[2] += data[i + 2];
+  }
+  return {
+    rgb: sum.map((v) => Math.round(v / n)),
+    blackPct: black / n,
+  };
+}
+
 async function openSong(page) {
   await page.goto(base + '/song/karitas?t=42', { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
@@ -425,6 +480,8 @@ async function runDesign(browser) {
     title.fits && title.version === 'none' && title.whoPx >= 13 && title.text.length > 2,
     JSON.stringify(title),
   );
+  const seClear = await chromeClear(sePage);
+  note('se-chrome-clear', seClear.hits.length === 0, JSON.stringify(seClear));
   const lightInk = await sePage.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--dim-op').trim());
   note('light-dim', Number(lightInk) >= 0.7, lightInk);
   await se.close();
@@ -461,7 +518,9 @@ async function runDesign(browser) {
   });
   const landPage = await land.newPage();
   await openSong(landPage);
-  await landPage.locator('.player .comment .comment-head').click();
+  const landClear = await chromeClear(landPage);
+  note('landscape-chrome-clear', landClear.hits.length === 0, JSON.stringify(landClear));
+  await landPage.locator('button[aria-label="Пояснение к этой строке"]').click();
   await landPage.waitForTimeout(400);
   const drawer = await landPage.evaluate(() => {
     const fold = document.querySelector('.player .comment.is-open .comment-fold');
@@ -512,12 +571,47 @@ for (const [browserName, browser, deviceName, device] of [
   await context.close();
 }
 
+async function runFirstPaint(browser, browserName) {
+  const out = [];
+  const note = (name, ok, detail) => {
+    out.push({ name, ok, detail });
+    console.log(`${ok ? 'PASS' : 'FAIL'} ${name} ${detail}`);
+  };
+  for (const scheme of ['light', 'dark']) {
+    const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1, colorScheme: scheme });
+    const page = await context.newPage();
+    await page.goto(base + '/', { waitUntil: 'commit' });
+    const shot = await page.screenshot({ type: 'png', animations: 'disabled' });
+    const paint = await paintOf(shot);
+    const target = scheme === 'dark' ? [7, 6, 12] : [239, 230, 218];
+    const dist = nearToken(paint.rgb, target);
+    note(
+      `${browserName} first-paint-${scheme}`,
+      paint.blackPct < 0.2 && dist < 48,
+      `rgb=${paint.rgb.join(',')} black=${paint.blackPct.toFixed(3)} dist=${Math.round(dist)}`,
+    );
+    await context.close();
+  }
+  return out;
+}
+
 try {
   if (!only) results.push(...(await runDesign(chrome)));
 } catch (err) {
   const detail = String(err && err.stack ? err.stack : err);
   results.push({ name: 'design crash', ok: false, detail });
   console.log(`FAIL design crash ${detail.split('\n')[0]}`);
+}
+
+try {
+  if (!only) {
+    results.push(...(await runFirstPaint(chrome, 'chromium')));
+    results.push(...(await runFirstPaint(kit, 'webkit')));
+  }
+} catch (err) {
+  const detail = String(err && err.stack ? err.stack : err);
+  results.push({ name: 'first-paint crash', ok: false, detail });
+  console.log(`FAIL first-paint crash ${detail.split('\n')[0]}`);
 }
 
 await chrome.close();

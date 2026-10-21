@@ -188,9 +188,10 @@
   /* The phone floor sits on top of the verse. A translucent mix still ghosts 36 px type. */
   --dock-solid: color-mix(in srgb, #fffaf6 97%, var(--song-field, #c9b8a4));
   --dock-line: rgba(26, 20, 15, 0.08);
-  --alert-fg: #c24141;
-  --alert-bg: rgba(239, 68, 68, 0.12);
-  --alert-line: rgba(239, 68, 68, 0.22);
+  /* Deep carmine on the light field. The old coral failed the blush glass. */
+  --alert-fg: #9f2323;
+  --alert-bg: rgba(159, 35, 35, 0.12);
+  --alert-line: rgba(159, 35, 35, 0.15);
   --material-thick: rgba(255, 252, 248, 0.9);
   --material-regular: rgba(255, 255, 255, 0.72);
   --material-thin: rgba(255, 255, 255, 0.55);

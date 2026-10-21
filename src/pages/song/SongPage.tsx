@@ -42,6 +42,22 @@ function useHeld(open: boolean) {
 
 type SheetName = 'settings' | 'text' | 'info' | null;
 
+/** The landscape query that used to turn the floor note into a second «Пояснение» pill. */
+const SHORT_LAND =
+  '(min-width: 700px) and (max-height: 640px), (max-width: 699px) and (max-height: 520px) and (orientation: landscape)';
+
+function useShortLandscape() {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(SHORT_LAND);
+    const apply = () => setOn(mq.matches);
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
+  return on;
+}
+
 /** The stage width follows one geometry, including the margin note when it is open. */
 function useStageFrame(noteOpen: boolean) {
   const read = (): { frame: StageFrame; columnFits: boolean } => {
@@ -306,6 +322,12 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const textHeld = useHeld(sheet === 'text');
   const playing = !!state?.playing;
   const noteText = timeline && owner >= 0 ? commentFor(timeline, owner) : null;
+  const shortLand = useShortLandscape();
+  const toggleComment = useCallback(() => {
+    // Landscape keeps a single icon. It opens the drawer; it does not add a second pill.
+    if (shortLand && noteText) setSettings({ showComment: true, commentOpen: !settings.commentOpen });
+    else setSettings({ showComment: !settings.showComment });
+  }, [shortLand, noteText, settings.commentOpen, settings.showComment]);
   const columns = useStageFrame(settings.showComment && !!noteText);
   const floorNote = noteText && settings.showComment && !columns.frame.marginNote ? noteText : null;
   useEffect(() => {
@@ -416,7 +438,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       else if (e.key === 'ArrowRight') (e.shiftKey ? engine?.skip(10) : nav(1));
       else if (e.key === 'ArrowLeft') (e.shiftKey ? engine?.skip(-10) : nav(-1));
       else if (e.key === 't' || e.key === 'е') setSettings({ showTranslation: !settings.showTranslation });
-      else if (e.key === 'k' || e.key === 'л') setSettings({ showComment: !settings.showComment });
+      else if (e.key === 'k' || e.key === 'л') toggleComment();
       else if (e.code === 'KeyM') {
         if (!e.repeat) placeMark();
       } else return;
@@ -424,7 +446,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [sheet, togglePlay, nav, engine, settings.showTranslation, settings.showComment, placeMark]);
+  }, [sheet, togglePlay, nav, engine, settings.showTranslation, toggleComment, placeMark]);
 
   const back = useHold(
     () => nav(-1),
@@ -733,9 +755,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             <button
               className={`util${noteText && !settings.showComment ? ' has-note' : ''}`}
               aria-label={noteText ? 'Пояснение к этой строке' : 'Пояснение'}
-              aria-pressed={settings.showComment}
+              aria-pressed={shortLand ? settings.commentOpen : settings.showComment}
               aria-keyshortcuts="K"
-              onClick={() => setSettings({ showComment: !settings.showComment })}
+              onClick={toggleComment}
             >
               <Icon name="book.closed" size={20} />
               <span className="util-label">Пояснение</span>

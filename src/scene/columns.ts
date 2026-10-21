@@ -77,12 +77,13 @@ export function stageFrame(vw: number, vh: number, noteOpen: boolean): StageFram
   const wide = vw >= 1100 && vh > 640;
   const noteW = noteOpen && wide ? noteWidth(vw) : 0;
   if (noteW > 0) {
-    const available = vw - PANEL_INSET - noteW - NOTE_GAP;
-    let column = Math.min(MEASURE + LYRIC_PAD * 2, available - 28);
-    let colLeft = Math.max(28, Math.round((available - column) / 2));
-    if (colLeft + column > available) column = available - colLeft;
-    const colRight = vw - colLeft - column;
-    return frame(colLeft, colRight, noteW, column, true);
+    // The column is the whole canvas left of the note. A capped 868 px bar
+    // left an empty band between the player and the drawer.
+    const inset = 28;
+    const gap = 24;
+    const colRight = PANEL_INSET + noteW + gap;
+    const column = Math.max(0, vw - inset - colRight);
+    return frame(inset, colRight, noteW, column, true);
   }
 
   const column = Math.min(wide ? MEASURE + LYRIC_PAD * 2 : 760, vw - 56);

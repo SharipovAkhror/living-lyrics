@@ -65,6 +65,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
   const words = useRef<(HTMLSpanElement | null)[]>([]);
   const widths = useRef<number[]>([]);
   const fontPx = useRef(40);
+  const fitSig = useRef('');
   const wordPool = useRef(PHONE_WORD_POOL);
   const filterRef = useRef('');
   // Last strings actually written. WebKit grows its working set on a repeated write even when the pixels match.
@@ -84,6 +85,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
   useLayoutEffect(() => {
     painted.current = { transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '' };
     filterRef.current = '';
+    fitSig.current = '';
     if (orig.current) {
       orig.current.style.opacity = '';
       orig.current.style.removeProperty('--litf');
@@ -122,6 +124,9 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
     const vh = window.innerHeight || 852;
     const vw = window.innerWidth || stage.w;
     const car = vw >= 700 && vh <= 640;
+    // SE and the car window are short enough that an unfitted phone line
+    // runs through the note and the section kicker runs through the status pill.
+    const short = stage.h > 0 && stage.h < 260;
     // Desktop is its own scale, not the phone size stretched by the window height.
     const desk = vw >= 1100 && vh > 640;
     // The stage is already the column left of the margin note. The line fills that
@@ -153,7 +158,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
     el.style.width = `${width}px`;
     el.style.maxWidth = `${width}px`;
     el.style.minWidth = '0';
-    if (isPhone()) {
+    if (isPhone() && !car && !short) {
       // The stylesheet already holds the design size, including the text-scale
       // variables below. Walking font-size (eight tries per line, every seek)
       // kept a WebKit backing store for each write. A line that does not fit
@@ -179,35 +184,42 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       });
       return;
     }
-    let lo = lower;
-    let hi = upper;
-    for (let k = 0; k < 8; k++) {
-      const mid = (lo + hi) / 2;
-      el.style.fontSize = `${mid}px`;
-      if (el.scrollHeight <= maxH && el.scrollWidth <= width + 1) lo = mid;
-      else hi = mid;
-    }
-    // lo is a size that already fits. Round it, then step back if the integer overflows.
-    let fitted = Math.min(upper, Math.max(lower, Math.round(lo)));
-    el.style.fontSize = `${fitted}px`;
-    if (el.scrollHeight > maxH + 1 || el.scrollWidth > width + 1) {
-      fitted = Math.min(upper, Math.max(lower, Math.floor(lo)));
+    // Geometry is stable across seeks. Repeating the search on every commit
+    // wrote a new font size into WebKit's backing store for the same pixels.
+    const sig = `${Math.round(width)}|${Math.round(stage.h)}|${scale.toFixed(3)}|${car ? 1 : 0}|${short ? 1 : 0}|${hasSubs ? 1 : 0}`;
+    let fitted = fontPx.current;
+    if (fitSig.current !== sig) {
+      let lo = lower;
+      let hi = upper;
+      for (let k = 0; k < 8; k++) {
+        const mid = (lo + hi) / 2;
+        el.style.fontSize = `${mid}px`;
+        if (el.scrollHeight <= maxH && el.scrollWidth <= width + 1) lo = mid;
+        else hi = mid;
+      }
+      // lo is a size that already fits. Round it, then step back if the integer overflows.
+      fitted = Math.min(upper, Math.max(lower, Math.round(lo)));
       el.style.fontSize = `${fitted}px`;
-    }
-    fontPx.current = fitted;
-    // A short phone stage also has to hold the translation. The original's cap above
-    // does not shrink that second line, so the whole block steps down until it fits.
-    if (!car && !desk && stage.h > 0 && subs.current) {
-      const budget = stage.h * 0.9;
-      const tr = subs.current;
-      for (let i = 0; i < 4 && r.offsetHeight > budget; i++) {
-        const factor = budget / r.offsetHeight;
-        fitted = Math.max(lower, fitted * factor);
+      if (el.scrollHeight > maxH + 1 || el.scrollWidth > width + 1) {
+        fitted = Math.min(upper, Math.max(lower, Math.floor(lo)));
         el.style.fontSize = `${fitted}px`;
-        const trNow = parseFloat(getComputedStyle(tr).fontSize) || 16;
-        tr.style.fontSize = `${Math.max(13, trNow * factor)}px`;
       }
       fontPx.current = fitted;
+      // The original's cap does not shrink the translation. On a short stage the
+      // whole block has to leave room for the section kicker above it.
+      if (!desk && stage.h > 0 && subs.current) {
+        const budget = car ? stage.h * 0.58 : short ? stage.h * 0.62 : stage.h * 0.9;
+        const tr = subs.current;
+        for (let i = 0; i < 4 && r.offsetHeight > budget; i++) {
+          const factor = budget / r.offsetHeight;
+          fitted = Math.max(lower, fitted * factor);
+          el.style.fontSize = `${fitted}px`;
+          const trNow = parseFloat(getComputedStyle(tr).fontSize) || 16;
+          tr.style.fontSize = `${Math.max(13, trNow * factor)}px`;
+        }
+        fontPx.current = fitted;
+      }
+      fitSig.current = sig;
     }
     widths.current = words.current.map((w) => w?.offsetWidth ?? 0);
     // The translation's share includes its top margin: total height minus the original's block.

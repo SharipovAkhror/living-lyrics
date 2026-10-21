@@ -12,7 +12,7 @@ import { stageCovered, watchCover } from './cover';
 import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
 import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, sameSlots, type PhoneSlot } from './slots';
-import { GAP, WAIT_ROOM, blockHeight, blockState, compressStack, flowPosition, keepInStage, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
+import { GAP, WAIT_ROOM, blockHeight, blockState, clearBand, compressStack, flowPosition, keepInStage, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
 
 /**
  * The stored 393×852 frame was laid out with the tighter column (gap 26, then
@@ -244,10 +244,17 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       };
       const A = stackAt(a);
       const B = stackAt(a + 1);
+      const blended = new Map<number, number>();
+      const bandH = new Map<number, number>();
+      for (const k of list) {
+        blended.set(k, lerp(A.get(k) ?? 0, B.get(k) ?? 0, f));
+        bandH.set(k, blockHeight(measures.get(k), k - pos));
+      }
+      const placed = clearBand(blended, pos, bandH, liveH, live?.top ?? 0, window.innerHeight);
       for (const k of list) {
         const b = blocks.current.get(k);
         if (!b) continue;
-        b.fn(t, k - pos, lerp(A.get(k) ?? 0, B.get(k) ?? 0, f), waits.get(k) ?? 0);
+        b.fn(t, k - pos, placed.get(k) ?? 0, waits.get(k) ?? 0);
       }
       // The title card is always in the DOM; once it leaves the window nothing updates it, so hide it
       // explicitly (otherwise a seek from the start leaves it frozen over the lyrics).
@@ -262,7 +269,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
           const c = timeline.cues[k];
           if (!b || !c || c.kind !== 'line') return null;
           const s = blockState(k - pos);
-          const top = lerp(A.get(k) ?? 0, B.get(k) ?? 0, f);
+          const top = placed.get(k) ?? 0;
           return { top, h: (b.m.main + b.m.sub * s.subRoom) * s.scale };
         };
         const b0 = box(a);

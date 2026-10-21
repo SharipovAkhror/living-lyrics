@@ -135,6 +135,68 @@ export function keepInStage(tops: Map<number, number>, anchor: number, height: n
   return out;
 }
 
+/**
+ * On a short stage the verse gap parks the previous compact block (a section
+ * kicker) above the stage, where the status pill sits. Seat that neighbour
+ * back inside when the anchor can move down, and park any block that still
+ * crosses the pill or the floor note off the viewport. Tall stages are unchanged.
+ */
+export function clearBand(
+  tops: Map<number, number>,
+  pos: number,
+  heights: Map<number, number>,
+  stageH: number,
+  stageTop: number,
+  viewH: number,
+): Map<number, number> {
+  if (!(stageH > 0) || stageH >= 280 || tops.size === 0) return tops;
+  const out = new Map(tops);
+  let held = 0;
+  let best = Infinity;
+  for (const k of out.keys()) {
+    const d = Math.abs(k - pos);
+    if (d < best) {
+      best = d;
+      held = k;
+    }
+  }
+  const heldH = heights.get(held) ?? 0;
+  let heldTop = out.get(held) ?? 0;
+  const floor = stageH - 12;
+  let above: number | null = null;
+  for (const k of out.keys()) {
+    if (k < held && (above == null || k > above)) above = k;
+  }
+  if (above != null) {
+    const aboveH = heights.get(above) ?? 0;
+    const aboveTop = out.get(above) ?? 0;
+    // Only a compact neighbour (the section kicker). A full line stays on the stack.
+    if (aboveTop < 0 && aboveH > 0 && aboveH <= 72) {
+      const gap = 8;
+      const wantHeld = 8 + aboveH + gap;
+      const delta = wantHeld - heldTop;
+      if (delta <= 0) out.set(above, heldTop - gap - aboveH);
+      else if (heldTop + delta + heldH <= floor) {
+        for (const [k, y] of out) {
+          if (k === above) out.set(k, 8);
+          else if (y >= heldTop - 0.5) out.set(k, y + delta);
+        }
+        heldTop += delta;
+      } else out.set(above, -stageTop - aboveH - 8);
+    }
+  }
+  const belowAt = viewH - stageTop + 8;
+  for (const [k, y] of [...out]) {
+    if (k === held) continue;
+    const h = heights.get(k) ?? 0;
+    const top = out.get(k) ?? y;
+    // The floor note starts about 40 px under the stage. A block past that band covers it.
+    if (top > heldTop && top + h > stageH + 32) out.set(k, belowAt);
+    else if (top < -6) out.set(k, -stageTop - h - 8);
+  }
+  return out;
+}
+
 /** Extra space above a block for the "next line in N s" hint. */
 export const WAIT_ROOM = 24;
 
