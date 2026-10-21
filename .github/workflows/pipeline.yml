@@ -290,16 +290,19 @@ jobs:
           if python3 -c "import json,sys; jobs=json.load(open('/tmp/jobs.json')); sys.exit(0 if any('roformer' in j.get('stages',[]) for j in jobs) else 1)"; then
             python -m pip install pyyaml ml_collections beartype rotary_embedding_torch einops packaging
           fi
-          # Omnilingual CTC 300M needs Python <=3.12 (omnilingual-asr 0.2.0).
-          # The venv does not replace the 3.13 interpreter the other stages use.
-          # A failed install is recorded by the stage.
+          # omnilingual-asr 0.2.0 declares Requires-Python <=3.12, which pip
+          # reads as <=3.12.0, so a 3.12.15 venv refuses the wheel (run
+          # 39598504820). 3.11 is inside >=3.10,<=3.12. The venv does not
+          # replace the 3.13 interpreter the other stages use. A failed
+          # install is recorded by the stage.
           if python3 -c "import json,sys; jobs=json.load(open('/tmp/jobs.json')); sys.exit(0 if any('omni' in j.get('stages',[]) for j in jobs) else 1)"; then
             sudo apt-get install -y -q libsndfile1
             python -m pip install uv
             # /tmp is writable by the runner user. /opt is not.
             # uv's venv has no pip unless --seed. A failed install must not
             # fail this step: the stage records it and still returns.
-            if python -m uv python install 3.12 && python -m uv venv /tmp/omni-venv --python 3.12 --seed; then
+            if python -m uv python install 3.11 && python -m uv venv /tmp/omni-venv --python 3.11 --seed; then
+              /tmp/omni-venv/bin/python -c "import sys; print('omni python', sys.version)" || true
               if /tmp/omni-venv/bin/python -m pip install -r scripts/pipeline/requirements.txt \
                 && /tmp/omni-venv/bin/python -m pip install 'omnilingual-asr==0.2.0' \
                 && /tmp/omni-venv/bin/python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu \
@@ -309,7 +312,7 @@ jobs:
                 echo 'omnilingual-asr: venv не прошёл проверку'
               fi
             else
-              echo 'omnilingual-asr: Python 3.12 не встал'
+              echo 'omnilingual-asr: Python 3.11 не встал'
             fi
           fi
           python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu

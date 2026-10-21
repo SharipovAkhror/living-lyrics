@@ -90,6 +90,7 @@ def _report_path() -> Path:
 
 
 def _already() -> bool:
+    """A finished measurement is not repeated. An install failure is not one."""
     if os.environ.get('OMNI_FORCE') == '1':
         return False
     path = _report_path()
@@ -99,7 +100,12 @@ def _already() -> bool:
         old = json.loads(path.read_text(encoding='utf-8'))
     except (OSError, ValueError):
         return False
-    return bool(old.get('finished'))
+    if not old.get('finished'):
+        return False
+    note = str(old.get('note') or '')
+    if 'веса не качались' in note or 'модель не загрузилась' in note:
+        return False
+    return True
 
 
 def _write(payload: dict) -> None:
