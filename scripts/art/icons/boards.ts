@@ -1,8 +1,9 @@
 /**
  * Studio boards for the Qalam family.
  * Usage: npx tsx scripts/art/icons/boards.ts
- * Writes HTML and PNG into work/t28-icons/own/ (gitignored).
+ * Writes HTML and PNG into work/t28-icons/own2/ (gitignored).
  * Also opens the song page at 393×852, light and dark, then stops the dev server.
+ * The 1× proof is shot at deviceScaleFactor 1, so 100% zoom is the real pixel size.
  */
 import { spawn, type ChildProcess } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -11,7 +12,7 @@ import { chromium, type Page } from 'playwright';
 import { ICON_NAMES, type IconName, type Mark } from '../../../src/ui/icons/types';
 import { glyphAt, opticalFor, type Optical } from './qalam';
 
-const OUT = 'work/t28-icons/own';
+const OUT = 'work/t28-icons/own2';
 const LABELS: Record<IconName, string> = {
   'chevron.left': 'Назад',
   'chevron.right': 'Вперёд',
@@ -137,6 +138,17 @@ figcaption small { display: block; color: var(--ink-3); font-size: 11px; margin-
 .tabs { display: flex; justify-content: space-between; padding: 8px 12px 0; }
 .tab { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 180px; color: color-mix(in srgb, var(--ink) 72%, transparent); font: 500 33px/1.15 'Inter Variable', sans-serif; }
 .tab.on { color: var(--accent); }
+.minis { display: flex; flex-wrap: wrap; gap: 14px 18px; max-width: 920px; }
+.mini { margin: 0; }
+.mini div { display: flex; gap: 6px; align-items: flex-end; }
+.mini i { width: 8px; }
+.mini figcaption { font-size: 11px; color: var(--ink-2); }
+.bar1 { display: flex; gap: 8px; margin-top: 22px; }
+.tab1 { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 72px; color: color-mix(in srgb, var(--ink) 72%, transparent); font: 500 13px/1.2 'Inter Variable', sans-serif; }
+.tab1.on { color: var(--accent); }
+.transport1 { display: flex; align-items: center; gap: 28px; margin-top: 18px; }
+.disc1 { width: 64px; height: 64px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: flex; align-items: center; justify-content: center; }
+.flag1 { display: inline-flex; }
 `;
 
 function page(id: string, dark: boolean, body: string): string {
@@ -181,6 +193,24 @@ function compare(snap: Snap): string {
     'compare',
     false,
     `<h1>Стекло → Калам</h1><p class="lede">Слева прежний набор, покой. Дальше Калам: покой и нажатие. 64 px, мастер 32.</p><div class="compare"><div></div><div class="h">Стекло</div><div></div><div class="h">Покой</div><div class="h">Нажатие</div>${rows}</div>`,
+  );
+}
+
+/** Tab bar and transport at the real pixel sizes, for the 1× naming test. */
+function proof(dark: boolean): string {
+  const tab = (name: IconName, label: string, on: boolean) =>
+    `<div class="tab1${on ? ' on' : ''}">${qalam(name, on ? 'on' : 'off', 24)}<span>${label}</span></div>`;
+  const names = ICON_NAMES.map(
+    (name) =>
+      `<figure class="mini"><div>${qalam(name, 'off', 20)}${qalam(name, 'on', 20)}<i></i>${qalam(name, 'off', 24)}${qalam(name, 'on', 24)}</div><figcaption>${LABELS[name]}</figcaption></figure>`,
+  ).join('');
+  return page(
+    dark ? 'proof-dark' : 'proof-light',
+    dark,
+    `<h1>1× ${dark ? 'тёмная' : 'светлая'}</h1><p class="lede">Иконки в настоящий размер. Слева 20 покой и нажатие, справа 24. Ниже — вкладки 24 и плеер как на странице.</p>
+    <div class="minis">${names}</div>
+    <div class="bar1">${tab('character.bubble', 'Перевод', true)}${tab('book.closed', 'Пояснение', false)}${tab('list.bullet', 'Весь текст', false)}${tab('slider.horizontal.3', 'Настройки', false)}</div>
+    <div class="transport1">${qalam('backward', 'off', 24)}<div class="disc1">${qalam('play', 'off', 28)}</div>${qalam('forward', 'off', 24)}<span class="flag1">${qalam('flag', 'off', 20)}</span></div>`,
   );
 }
 
@@ -235,25 +265,28 @@ async function shootPhone(browser: Awaited<ReturnType<typeof chromium.launch>>):
   const proc = await startVite();
   try {
     for (const theme of ['light', 'dark'] as const) {
-      const context = await browser.newContext({
-        viewport: { width: 393, height: 852 },
-        deviceScaleFactor: 2,
-        isMobile: true,
-        hasTouch: true,
-        colorScheme: theme,
-      });
-      await context.addInitScript((value) => {
-        localStorage.setItem(
-          'living-lyrics.settings.v2',
-          JSON.stringify({ theme: value, showTranslation: true, showComment: true, motion: 'off' }),
-        );
-      }, theme);
-      const page = await context.newPage();
-      await page.goto('http://127.0.0.1:5174/song/i-have-come-alive', { waitUntil: 'domcontentloaded', timeout: 30000 });
-      await page.waitForSelector('.player .ll-ico', { timeout: 20000 });
-      await page.waitForTimeout(600);
-      await page.screenshot({ path: `${OUT}/phone-${theme}.png` });
-      await context.close();
+      for (const scale of [2, 1] as const) {
+        const context = await browser.newContext({
+          viewport: { width: 393, height: 852 },
+          deviceScaleFactor: scale,
+          isMobile: true,
+          hasTouch: true,
+          colorScheme: theme,
+        });
+        await context.addInitScript((value) => {
+          localStorage.setItem(
+            'living-lyrics.settings.v2',
+            JSON.stringify({ theme: value, showTranslation: true, showComment: false, motion: 'off' }),
+          );
+        }, theme);
+        const page = await context.newPage();
+        await page.goto('http://127.0.0.1:5174/song/i-have-come-alive', { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await page.waitForSelector('.player .ll-ico', { timeout: 20000 });
+        await page.waitForTimeout(500);
+        const file = scale === 1 ? `page-1x-${theme}.png` : `phone-${theme}.png`;
+        await page.screenshot({ path: `${OUT}/${file}` });
+        await context.close();
+      }
     }
   } finally {
     stop(proc);
@@ -270,7 +303,7 @@ async function main(): Promise<void> {
   if (missing.length) throw new Error(`glass snapshot missing ${missing.join(', ')}`);
 
   mkdirSync(OUT, { recursive: true });
-  const html = `<!doctype html><meta charset="utf-8"><title>Калам</title><style>${BASE}</style>${specimen(false)}${specimen(true)}${player(false)}${player(true)}${sizes()}${compare(snap)}`;
+  const html = `<!doctype html><meta charset="utf-8"><title>Калам</title><style>${BASE}</style>${specimen(false)}${specimen(true)}${player(false)}${player(true)}${sizes()}${compare(snap)}${proof(false)}${proof(true)}`;
   const file = `${OUT}/boards.html`;
   writeFileSync(file, html);
 
@@ -287,6 +320,14 @@ async function main(): Promise<void> {
     await shoot(page, 'sizes-dark', 'sizes-dark.png');
     await shoot(page, 'compare', 'compare.png');
     await page.close();
+
+    const one = await browser.newPage({ viewport: { width: 980, height: 1400 }, deviceScaleFactor: 1 });
+    await one.goto(pathToFileURL(file).href);
+    await one.evaluate(() => document.fonts.ready);
+    await shoot(one, 'proof-light', 'proof-1x-light.png');
+    await shoot(one, 'proof-dark', 'proof-1x-dark.png');
+    await one.close();
+
     await shootPhone(browser);
   } finally {
     await browser.close();

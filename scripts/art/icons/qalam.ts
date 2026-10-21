@@ -1,16 +1,20 @@
 /**
- * Qalam — the Living Lyrics icon family.
+ * Qalam — the Living Lyrics icon family, round 6.
  *
- * Built from the instrument engravings (scripts/art/lib.mjs): one round
- * monoline, field hatch at 35°, the nay's shade along the reed
- * (90° in the reed's own frame). Light from the upper left.
- * The second tone is that hatch, not a flat translucent fill.
- * A pressed surface keeps the same outer path and inverts: ink lines
- * become paper grooves cut out of the plate.
+ * One monoline, round caps, round joins. The pen shows up as a cut you can
+ * still name at 20 px: a chamfer on both pause bars, a swallowtail on the
+ * flag, a diamond bullet, the speech bubble's nib tail.
+ * A facet on the play apex and a wedge on the search handle were drawn and
+ * removed: at 20 px they read as clipped corners, not as a pen.
+ * Copperplate hatching is not used. At 16–24 px it turns into gray mud and
+ * reads as a broken path (see docs/design/t28-icons.md).
+ *
+ * Idle and active are the same paths.
+ * Keylines get heavier. Plates fill in, and their writing stays as paper.
+ * Solids (play, pause, skip, the note head) grow; they do not grow a hole.
  *
  * Optical masters are 16, 20, 24 and 32 on a shared 24 grid. Stroke widths
- * below are in grid units, chosen so the rendered stroke stays at least
- * about 1.15 px (see docs/design/t28-icons.md).
+ * are in grid units. Rendered pixels = grid × (master / 24).
  */
 import { ICON_NAMES, type Glyph, type IconName, type IconSet, type Mark } from '../../../src/ui/icons/types';
 import {
@@ -18,17 +22,11 @@ import {
   circle,
   diamond,
   elbow,
-  hatch,
-  insetPoly,
-  joinCapsules,
-  joinLines,
   line,
+  n,
   pt,
   rrect,
-  rrectPoly,
   roundPoly,
-  roundPolyPoints,
-  tick,
   type Pt,
 } from './pen';
 
@@ -37,31 +35,20 @@ export type Optical = (typeof OPTICAL)[number];
 
 type Spec = {
   id: Optical;
-  /** Contour, grid units. */
+  /** Keyline weight, grid units. Targets about 1.7 / 1.9 / 2.0 / 2.2 px. */
   sw: number;
-  /** Hatch stroke and the matching groove. */
-  hw: number;
-  /** Hatch spacing, centre to centre. */
-  gap: number;
-  /** Serifs, the play groove, the codex stitches. */
-  detail: boolean;
+  /** Same path, pressed. About +40 %, still inside the 24 box. */
+  swOn: number;
+  /** Corner radius for plates. */
   rad: number;
 };
 
-/**
- * Rendered pixels = grid units × (master / 24).
- * Contour targets ≈ 1.65 / 1.72 / 1.78 / 1.90 px.
- * Hatch targets ≈ 1.20 px, with a clear gap of about 1.05 px.
- */
 const SPECS: Record<Optical, Spec> = {
-  16: { id: 16, sw: 2.48, hw: 1.8, gap: 3.38, detail: false, rad: 1.55 },
-  20: { id: 20, sw: 2.06, hw: 1.5, gap: 2.76, detail: false, rad: 1.45 },
-  24: { id: 24, sw: 1.78, hw: 1.2, gap: 2.3, detail: true, rad: 1.35 },
-  32: { id: 32, sw: 1.43, hw: 0.9, gap: 1.69, detail: true, rad: 1.2 },
+  16: { id: 16, sw: 2.55, swOn: 3.55, rad: 1.7 },
+  20: { id: 20, sw: 2.3, swOn: 3.2, rad: 1.6 },
+  24: { id: 24, sw: 2.0, swOn: 2.8, rad: 1.5 },
+  32: { id: 32, sw: 1.65, swOn: 2.35, rad: 1.35 },
 };
-
-/** Field hatch. `shade()` in the engraving library defaults to 35°. */
-const FIELD = 35;
 
 function stroke(d: string, sw: number): Mark {
   return { d, draw: 'stroke', sw };
@@ -71,414 +58,374 @@ function fill(d: string): Mark {
   return { d, draw: 'fill', rule: 'evenodd' };
 }
 
-/** Same outer edge in both states: the stroke is centred on the path. */
-function plate(shape: string, poly: Pt[], o: Spec, angle = FIELD): { off: Mark[]; on: Mark[] } {
-  const inner = insetPoly(poly, o.sw * 0.45 + o.hw * 0.35);
-  const lines = hatch(inner, angle, o.gap);
-  const ink = joinLines(lines);
-  const cuts = joinCapsules(lines, o.hw * 0.92);
-  const off: Mark[] = [];
-  if (ink) off.push(stroke(ink, o.hw));
-  off.push(stroke(shape, o.sw));
-  const on: Mark[] = [fill(cuts ? shape + cuts : shape), stroke(shape, o.sw)];
-  return { off, on };
+function keyline(d: string, o: Spec, idle = o.sw, active = o.swOn): Glyph {
+  return { off: [stroke(d, idle)], on: [stroke(d, active)] };
 }
 
-function rule(x1: number, y1: number, x2: number, y2: number, w: number): { ink: Mark; cut: string } {
-  return { ink: stroke(line(pt(x1, y1), pt(x2, y2)), w), cut: capsule(x1, y1, x2, y2, w) };
+function scaleAbout(pts: Pt[], k: number): Pt[] {
+  let cx = 0;
+  let cy = 0;
+  for (const p of pts) {
+    cx += p.x;
+    cy += p.y;
+  }
+  cx /= pts.length;
+  cy /= pts.length;
+  return pts.map((p) => ({ x: cx + (p.x - cx) * k, y: cy + (p.y - cy) * k }));
+}
+
+function leftPerp(u: Pt): Pt {
+  return { x: u.y, y: -u.x };
+}
+
+function dir(a: Pt, b: Pt): Pt {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const len = Math.hypot(dx, dy) || 1;
+  return { x: dx / len, y: dy / len };
 }
 
 /**
- * Bare stroke. At 16 and 20 the active state is a heavier stroke:
- * a tick shorter than the stroke cannot escape the round cap.
- * From 24 up, medallion ticks sit past the cap.
+ * Outline of one open stroke with round caps and a round join.
+ * Used to knock a letter out of a filled plate. The loop does not
+ * cross itself, so an evenodd cut stays a clean groove.
  */
-function bare(d: string, o: Spec, ends: { at: Pt; dir: Pt }[]): Glyph {
-  const onW = o.id <= 20 ? o.sw * 1.62 : o.sw * 1.22;
-  const on: Mark[] = [stroke(d, onW)];
-  if (o.detail) {
-    const ticks = ends.map((end) => tick(end.at, end.dir, 2.35)).join('');
-    on.push(stroke(ticks, Math.max(o.hw, 1.15)));
+function ribbon(points: Pt[], width: number): string {
+  const r = width / 2;
+  const count = points.length;
+  const incoming = points.map((_, i) => (i === 0 ? dir(points[0]!, points[1]!) : dir(points[i - 1]!, points[i]!)));
+  const outgoing = points.map((_, i) =>
+    i === count - 1 ? incoming[i]! : dir(points[i]!, points[i + 1]!),
+  );
+  const side = (i: number, sign: number, which: 'in' | 'out'): Pt => {
+    const u = which === 'in' ? incoming[i]! : outgoing[i]!;
+    const p = leftPerp(u);
+    return { x: points[i]!.x + p.x * r * sign, y: points[i]!.y + p.y * r * sign };
+  };
+  // sign +1 is the left of the walking direction.
+  const L = (i: number, which: 'in' | 'out') => side(i, 1, which);
+  const R = (i: number, which: 'in' | 'out') => side(i, -1, which);
+
+  let d = `M${n(L(0, 'out').x)} ${n(L(0, 'out').y)}`;
+  for (let i = 0; i < count - 1; i++) {
+    d += `L${n(L(i + 1, 'in').x)} ${n(L(i + 1, 'in').y)}`;
+    if (i + 1 < count - 1) {
+      const joinTo = L(i + 1, 'out');
+      d += `A${n(r)} ${n(r)} 0 0 1 ${n(joinTo.x)} ${n(joinTo.y)}`;
+    }
   }
-  return { off: [stroke(d, o.sw * 1.06)], on };
+  d += `A${n(r)} ${n(r)} 0 0 1 ${n(R(count - 1, 'out').x)} ${n(R(count - 1, 'out').y)}`;
+  for (let i = count - 1; i > 0; i--) {
+    d += `L${n(R(i - 1, 'out').x)} ${n(R(i - 1, 'out').y)}`;
+    if (i - 1 > 0) {
+      const joinTo = R(i - 1, 'in');
+      d += `A${n(r)} ${n(r)} 0 0 1 ${n(joinTo.x)} ${n(joinTo.y)}`;
+    }
+  }
+  d += `A${n(r)} ${n(r)} 0 0 1 ${n(L(0, 'out').x)} ${n(L(0, 'out').y)}Z`;
+  return d;
 }
 
-function chevron(dir: 'left' | 'right' | 'down' | 'up', o: Spec): Glyph {
-  const elbowR = o.id === 16 ? 2.05 : 2.35;
+function chevron(direction: 'left' | 'right' | 'down' | 'up', o: Spec): Glyph {
+  const elbowR = 2.45;
   const map = {
-    left: { a: pt(15.7, 6.15), tip: pt(8.15, 12), b: pt(15.7, 17.85) },
-    right: { a: pt(8.3, 6.15), tip: pt(15.85, 12), b: pt(8.3, 17.85) },
-    down: { a: pt(6.15, 8.3), tip: pt(12, 15.85), b: pt(17.85, 8.3) },
-    up: { a: pt(6.15, 15.7), tip: pt(12, 8.15), b: pt(17.85, 15.7) },
-  }[dir];
-  return bare(elbow(map.a, map.tip, map.b, elbowR), o, [
-    { at: map.a, dir: { x: map.a.x - map.tip.x, y: map.a.y - map.tip.y } },
-    { at: map.b, dir: { x: map.b.x - map.tip.x, y: map.b.y - map.tip.y } },
-  ]);
+    left: { a: pt(15.35, 5.85), tip: pt(8.15, 12), b: pt(15.35, 18.15) },
+    right: { a: pt(8.65, 5.85), tip: pt(15.85, 12), b: pt(8.65, 18.15) },
+    down: { a: pt(5.85, 8.65), tip: pt(12, 15.85), b: pt(18.15, 8.65) },
+    up: { a: pt(5.85, 15.35), tip: pt(12, 8.15), b: pt(18.15, 15.35) },
+  }[direction];
+  return keyline(elbow(map.a, map.tip, map.b, elbowR), o);
 }
 
-/** One cross. A monoline join stays readable; end ticks would read as a star. */
+/** One cross. Pressing it only adds weight — end ticks read as a star. */
 function closeMark(o: Spec): Glyph {
-  const a = 7.35;
-  const b = 16.65;
-  const d = `M${a} ${a}L${b} ${b}M${b} ${a}L${a} ${b}`;
-  const onW = o.id <= 20 ? o.sw * 1.62 : o.sw * 1.32;
-  return { off: [stroke(d, o.sw * 1.08)], on: [stroke(d, onW)] };
+  const a = 6.9;
+  const b = 17.1;
+  return keyline(`M${a} ${a}L${b} ${b}M${b} ${a}L${a} ${b}`, o);
 }
 
+/**
+ * Play. A solid rounded triangle in both states. A nib facet on the apex
+ * was tried: at 20 px it disappeared, and at 56 px it read as a clipped
+ * corner. Pressed, the same triangle grows. It does not grow a hole.
+ */
 function play(o: Spec): Glyph {
-  // Centre of mass sits on the optical centre, not the bounding-box centre.
-  const back = 6.55;
-  const tip = 20.55;
-  const top = 4.05;
-  const bot = 19.95;
-  const pts = [pt(back, top), pt(tip, 12), pt(back, bot)];
-  const rad = [o.rad + 0.35, o.rad * 0.72, o.rad + 0.35];
-  const shape = roundPoly(pts, rad);
-  const poly = roundPolyPoints(pts, rad);
-  if (o.id === 16) {
-    return { off: [fill(shape)], on: [fill(shape)] };
-  }
-  const inner = insetPoly(poly, o.sw * 0.55);
-  const groove = hatch(inner, FIELD, 6.4)[0];
-  const cut = groove ? capsule(groove[0].x, groove[0].y, groove[1].x, groove[1].y, Math.max(o.hw * 1.55, 2.05)) : '';
-  const solid = fill(shape);
-  const cutMark = fill(shape + cut);
-  return { off: [cut ? cutMark : solid], on: [solid] };
+  // The centroid of a left-based triangle is a third of the way from the base,
+  // which lands on the optical centre of the 24 box.
+  const pts = [pt(7.85, 4.5), pt(19.4, 12), pt(7.85, 19.5)];
+  const rad = [1.55, 1.2, 1.55];
+  const grow = o.id <= 20 ? 1.16 : 1.13;
+  return { off: [fill(roundPoly(pts, rad))], on: [fill(roundPoly(scaleAbout(pts, grow), rad))] };
 }
 
+/** Pause. Solid bars. The top-left corner is a nib chamfer large enough to be a cut, not a snag. */
 function pause(o: Spec): Glyph {
-  const w = 4.55;
-  const h = 15.7;
-  const y = 4.15;
-  const left = 5.55;
-  const right = 13.9;
-  const shape = rrect(left, y, w, h, o.rad + 0.45) + rrect(right, y, w, h, o.rad + 0.45);
-  // 16 is solid: a groove there is under a pixel. From 20 up the groove is the idle state.
-  if (o.id === 16) return { off: [fill(shape)], on: [fill(shape)] };
-  const groove = (x: number) => capsule(x, y + 2.35, x, y + h - 2.35, Math.max(o.hw, o.detail ? 1.05 : 1.45));
-  const cut = groove(left + w / 2) + groove(right + w / 2);
-  return { off: [fill(shape + cut)], on: [fill(shape)] };
+  const cut = 2.15;
+  const w = 4.2;
+  const h = 14.7;
+  const top = 4.55;
+  const gap = 5.15;
+  const x0 = (24 - (w * 2 + gap)) / 2;
+  const bar = (x: number): Pt[] => [
+    pt(x, top + cut),
+    pt(x + cut, top),
+    pt(x + w, top),
+    pt(x + w, top + h),
+    pt(x, top + h),
+  ];
+  const rad = [0.35, 0.35, 1.15, 1.15, 1.15];
+  const left = bar(x0);
+  const right = bar(x0 + w + gap);
+  const grown = (pts: Pt[]) => roundPoly(scaleAbout(pts, o.id <= 20 ? 1.16 : 1.12), rad);
+  return { off: [fill(roundPoly(left, rad) + roundPoly(right, rad))], on: [fill(grown(left) + grown(right))] };
 }
 
-function skip(dir: 'back' | 'fwd', o: Spec): Glyph {
-  const barW = 2.35;
-  const bar = dir === 'back' ? rrect(3.45, 5.15, barW, 13.7, 1.15) : rrect(18.2, 5.15, barW, 13.7, 1.15);
+/** Previous / next line. Bar and triangle are both solid, so the density matches. */
+function skip(direction: 'back' | 'fwd', o: Spec): Glyph {
+  const barW = 2.65;
+  const barX = direction === 'back' ? 3.85 : 24 - 3.85 - barW;
+  const bar = (w: number, x: number) => rrect(x, 5.15, w, 13.7, Math.min(1.2, o.rad));
+  // Clean triangle. A facet on this tip read as a chip next to the solid bar.
   const tri =
-    dir === 'back'
-      ? [pt(8.15, 12), pt(17.15, 5.35), pt(17.15, 18.65)]
-      : [pt(15.85, 12), pt(6.85, 5.35), pt(6.85, 18.65)];
-  const rad = o.rad;
-  const shape = roundPoly(tri, rad);
-  const poly = roundPolyPoints(tri, rad);
-  const body = plate(shape, poly, o);
-  const barMark = fill(bar);
-  return { off: [...body.off, barMark], on: [...body.on, barMark] };
+    direction === 'back'
+      ? [pt(8.85, 12), pt(18.65, 5.15), pt(18.65, 18.85)]
+      : [pt(15.15, 12), pt(5.35, 5.15), pt(5.35, 18.85)];
+  const rad = [1.05, 1.2, 1.2];
+  const triOn = scaleAbout(tri, o.id <= 20 ? 1.14 : 1.1);
+  const barOnX = direction === 'back' ? barX - 0.22 : barX - barW * 0.08;
+  return {
+    off: [fill(roundPoly(tri, rad)), fill(bar(barW, barX))],
+    on: [fill(roundPoly(triOn, rad)), fill(bar(barW * 1.16, barOnX))],
+  };
 }
 
 /**
- * Translation: two scripts, side by side.
- * Left is a naskh beh — one pen stroke and a diamond below it.
- * Right is a Latin A. The acute appears from 24 up.
- * Three teeth of a seen collapsed into a crown at 20 px, so they are gone.
+ * Translation. A speech bubble with one Latin A.
+ * An ayn or beh beside the A was drawn and looked at 20 px: the Arabic
+ * letter collapsed into a squiggle and the A was the only thing left.
+ * The bubble is the container the eye already calls language; the A is
+ * big enough to have an open counter. The tail is a nib, offset, not a speck.
  */
-function scripts(o: Spec): Glyph {
-  // Long and thin: a pen stroke, not an oval. The nib is the right-hand swell.
-  const beh = `M1.85 10.55C3.4 9.35 7.1 9.15 10.15 9.55C11.15 9.7 11.4 10.85 10.45 11.25C8.15 11.55 4.3 11.5 2.15 11.35C1.35 11.3 1.25 10.85 1.85 10.55Z`;
-  const behPoly: Pt[] = [
-    pt(1.85, 10.55),
-    pt(5.2, 9.3),
-    pt(9.4, 9.45),
-    pt(11.2, 10.2),
-    pt(10.45, 11.25),
-    pt(6.2, 11.5),
-    pt(2.4, 11.35),
+function translation(o: Spec): Glyph {
+  const bubble: Pt[] = [
+    pt(3.5, 3.15),
+    pt(20.5, 3.15),
+    pt(20.5, 15.15),
+    pt(13.35, 15.15),
+    pt(7.7, 20.85),
+    pt(9.85, 15.15),
+    pt(3.5, 15.15),
   ];
-  const body = plate(beh, behPoly, o);
-  const dot = fill(diamond(6.35, 16.45, o.id === 16 ? 1.35 : 1.5));
-  const letter = `M17.9 6.05L14.15 18.2M17.9 6.05L21.65 18.2M15.35 13.5H20.45`;
-  const latinW = o.id === 16 ? 1.72 : o.id === 20 ? 1.58 : o.sw * 0.8;
-  const latin = stroke(letter, latinW);
-  const latinOn = stroke(letter, Math.min(latinW + 0.34, o.sw));
-  const off: Mark[] = [...body.off, dot, latin];
-  const on: Mark[] = [...body.on, dot, latinOn];
-  if (o.detail) {
-    const acute = stroke(line(pt(16.4, 3.85), pt(19.55, 2.2)), Math.max(o.sw * 0.68, 1.15));
-    off.push(acute);
-    on.push(acute);
-  }
-  return { off, on };
+  const rad = [2.45, 2.45, 2.05, 0.4, 0.34, 0.4, 2.05];
+  const shape = roundPoly(bubble, rad);
+  const lw = o.id === 16 ? 2.05 : o.id === 20 ? 1.9 : o.id === 24 ? 1.75 : 1.5;
+  const apex = pt(12, 5.45);
+  const left = pt(8.35, 13.35);
+  const right = pt(15.65, 13.35);
+  const yBar = 10.55;
+  const t = (yBar - apex.y) / (left.y - apex.y);
+  const barL = pt(apex.x + (left.x - apex.x) * t, yBar);
+  const barR = pt(apex.x + (right.x - apex.x) * t, yBar);
+  const letter = line(apex, left) + line(apex, right) + line(barL, barR);
+  const legs = ribbon([left, apex, right], lw);
+  const bar = capsule(barL.x, barL.y, barR.x, barR.y, lw);
+  return {
+    off: [stroke(shape, o.sw), stroke(letter, lw)],
+    on: [fill(shape + legs + bar), stroke(shape, o.sw)],
+  };
 }
 
-/**
- * A page and a gloss in the margin. The note is three ragged lines.
- * No rule joins them: at 20 px a bracket fused with the page and read as a plug.
- * Pressed, the page is a plate and its writing is left as paper.
- */
+/** Explanation. A closed book. The lines sit inside the cover; loose lines read as overflow. */
 function gloss(o: Spec): Glyph {
-  const shape = rrect(1.85, 2.5, 10.7, 19.0, o.rad);
-  const wLine = o.id <= 20 ? Math.min(o.hw, o.sw * 0.72) : o.hw;
-  const top = rule(3.5, 7.9, 10.65, 7.9, wLine);
-  const bot = rule(3.5, 12.15, 8.7, 12.15, wLine);
-  const nw = o.sw * 0.9;
-  const note = (x2: number, y: number, w: number) => stroke(line(pt(16.85, y), pt(x2, y)), w);
-  return {
-    off: [top.ink, bot.ink, stroke(shape, o.sw), note(21.9, 7.65, nw), note(21.15, 11.15, nw), note(19.9, 14.65, nw)],
-    on: [
-      fill(shape + top.cut + bot.cut),
-      stroke(shape, o.sw),
-      note(21.9, 7.65, o.sw),
-      note(21.15, 11.15, o.sw),
-      note(19.9, 14.65, o.sw),
-    ],
-  };
-}
-
-/** A manuscript page: a margin rule and a ragged stanza. Not a bullet list. */
-function manuscript(o: Spec): Glyph {
-  const x = 3.15;
-  const y = 2.7;
-  const w = 17.7;
-  const h = 18.55;
-  const shape = rrect(x, y, w, h, o.rad);
-  const lw = o.id === 16 ? o.sw * 0.78 : Math.max(o.hw, 1.15);
-  const lines = [
-    rule(7.55, 6.35, 18.55, 6.35, o.sw * 0.95),
-    rule(7.55, 10.05, 16.15, 10.05, lw),
-    rule(7.55, 13.7, 17.65, 13.7, lw),
-    rule(7.55, 17.3, 13.4, 17.3, lw),
+  const shape = rrect(5.15, 3.15, 13.7, 17.7, o.rad + 0.2);
+  const w = Math.min(o.sw * 0.9, 2.05);
+  // No spine. A vertical rule beside horizontal ones read as the letter E.
+  const rows = [
+    { x1: 8.05, x2: 16.35, y: 7.7 },
+    { x1: 8.05, x2: 14.55, y: 12 },
+    { x1: 8.05, x2: 15.7, y: 16.3 },
   ];
-  const margin = rule(6.15, 5.15, 6.15, 18.85, o.sw * 0.95);
-  const cuts = lines.map((item) => item.cut).join('') + margin.cut;
+  const rules = rows.map((row) => ({
+    ink: stroke(line(pt(row.x1, row.y), pt(row.x2, row.y)), w),
+    cut: capsule(row.x1, row.y, row.x2, row.y, w),
+  }));
   return {
-    off: [...lines.map((item) => item.ink), margin.ink, stroke(shape, o.sw)],
-    on: [fill(shape + cuts), stroke(shape, o.sw)],
+    off: [...rules.map((row) => row.ink), stroke(shape, o.sw)],
+    on: [fill(shape + rules.map((row) => row.cut).join('')), stroke(shape, o.sw)],
   };
 }
 
-/** Three engraved grooves. The knob is a ring, the rosette reduced to a dot. */
+/**
+ * All the words. Three lines and three diamond bullets — a list, not a page.
+ * A filled page was the same silhouette as the closed book, and heavier than
+ * the icons beside it.
+ */
+function manuscript(o: Spec): Glyph {
+  const rows = [
+    { y: 6.35, x2: 19.4 },
+    { y: 12, x2: 16.5 },
+    { y: 17.65, x2: 18.3 },
+  ];
+  const r = 1.7;
+  const dots = rows.map((row) => diamond(4.85, row.y, r)).join('');
+  const dotsOn = rows.map((row) => diamond(4.85, row.y, r * 1.16)).join('');
+  const rules = rows.map((row) => line(pt(8.15, row.y), pt(row.x2, row.y))).join('');
+  return { off: [fill(dots), stroke(rules, o.sw)], on: [fill(dotsOn), stroke(rules, o.swOn)] };
+}
+
+/** Three grooves and solid knobs. Hollow knobs closed up at 20 px. */
 function grooves(o: Spec): Glyph {
   const rows = [
-    { y: 6.15, cx: 15.35 },
-    { y: 12, cx: 8.85 },
-    { y: 17.85, cx: 13.15 },
+    { y: 6.2, cx: 15.4 },
+    { y: 12, cx: 8.7 },
+    { y: 17.8, cx: 13.5 },
   ];
-  const knobR = o.id === 16 ? 1.85 : 2.15;
-  const trackW = o.id === 16 ? o.sw * 0.72 : o.hw;
+  const knob = 2.55;
+  const knobOn = 3.15;
   const off: Mark[] = [];
   const on: Mark[] = [];
   for (const row of rows) {
-    const hole = knobR + o.sw * 0.55;
-    const left = line(pt(3.45, row.y), pt(row.cx - hole, row.y));
-    const right = line(pt(row.cx + hole, row.y), pt(20.55, row.y));
-    off.push(stroke(left + right, trackW));
-    on.push(stroke(left + right, o.sw));
-    const ring = circle(row.cx, row.y, knobR);
-    if (o.id < 24) {
-      off.push(fill(circle(row.cx, row.y, knobR * 0.72)));
-      on.push(fill(circle(row.cx, row.y, knobR * 0.95)));
-    } else {
-      off.push(stroke(ring, o.sw), fill(circle(row.cx, row.y, o.id === 32 ? 0.7 : 0.78)));
-      on.push(fill(circle(row.cx, row.y, knobR)));
-    }
+    const gap = (r: number) => r + o.sw * 0.42;
+    const track = (r: number) =>
+      line(pt(3.5, row.y), pt(row.cx - gap(r), row.y)) + line(pt(row.cx + gap(r), row.y), pt(20.5, row.y));
+    off.push(stroke(track(knob), o.sw * 0.95), fill(circle(row.cx, row.y, knob)));
+    on.push(stroke(track(knobOn), o.swOn), fill(circle(row.cx, row.y, knobOn)));
   }
   return { off, on };
 }
 
-/** Screen-space rotation. Negative degrees swing the top of a vertical reed to the left. */
-function spin(p: Pt, deg: number, c: Pt): Pt {
-  const a = (deg * Math.PI) / 180;
-  const dx = p.x - c.x;
-  const dy = p.y - c.y;
-  const co = Math.cos(a);
-  const si = Math.sin(a);
-  return { x: c.x + dx * co - dy * si, y: c.y + dx * si + dy * co };
+function ellipse(cx: number, cy: number, rx: number, ry: number): string {
+  return `M${n(cx - rx)} ${n(cy)}a${n(rx)} ${n(ry)} 0 1 1 ${n(rx * 2)} 0a${n(rx)} ${n(ry)} 0 1 1 ${n(-rx * 2)} 0`;
 }
 
 /**
- * The nay, leaned the way it is held. The mouth is a notch in the lip,
- * not a slot cut into the body (a slot read as a plug). Breath does not touch the reed.
+ * The recording. A quaver: solid head, stem, one flag as thick as the stem.
+ * A nay at this size read as a smudge. The head stays solid — a hollow head
+ * at 20 px is a dirty ring.
  */
-function nay(o: Spec): Glyph {
-  const c = pt(13.6, 12.2);
-  const tube = o.id === 16 ? 4.7 : 5.05;
-  const flare = tube + 3.35;
-  const top = 3.4;
-  const neck = 7.7;
-  const bot = 20.15;
-  const lean = -32;
-  // Open lip: a wide flat mouth. A notch in the lip read as a pen slit.
-  const raw = [
-    pt(c.x - flare / 2, top),
-    pt(c.x + flare / 2, top),
-    pt(c.x + tube / 2, neck),
-    pt(c.x + tube / 2, bot - 0.7),
-    pt(c.x, bot + 0.15),
-    pt(c.x - tube / 2, bot - 0.7),
-    pt(c.x - tube / 2, neck),
-  ];
-  const pts = raw.map((p) => spin(p, lean, c));
-  const rad = [0.4, 0.4, 0.5, 0.45, 0.55, 0.45, 0.5];
-  const shape = roundPoly(pts, rad);
-  const poly = roundPolyPoints(pts, rad);
-  const holeR = o.id === 16 ? 0.78 : 1.02;
-  const holeYs = o.id === 16 ? [15.3] : [12.4, 16.25];
-  const dots = holeYs
-    .map((y) => {
-      const h = spin(pt(c.x - 0.12, y), lean, c);
-      return circle(h.x, h.y, holeR);
-    })
-    .join('');
-  const breathD = `M3.55 2.85Q1.55 4.05 3.05 5.45M3.15 6.2Q1.25 7.35 2.7 8.75`;
-  const breath = stroke(breathD, o.sw * 0.8);
-  const breathOn = stroke(breathD, Math.min(o.sw * 0.95, o.sw));
-  const mouth = spin(pt(c.x, top), lean, c);
-  const foot = spin(pt(c.x, bot), lean, c);
-  const axis = (Math.atan2(foot.y - mouth.y, foot.x - mouth.x) * 180) / Math.PI;
-  const inner = insetPoly(poly, o.sw * 0.48);
-  const lines = o.id === 16 ? [] : hatch(inner, axis, Math.max(tube * 0.85, o.gap));
-  let shade = lines[0];
-  for (const seg of lines) {
-    const score = (s: [Pt, Pt]) => (s[0].x + s[1].x + s[0].y + s[1].y) / 2;
-    if (shade && score(seg) > score(shade)) shade = seg;
-  }
-  const ink = shade ? joinLines([shade]) : '';
-  const cut = shade ? joinCapsules([shade], Math.min(o.hw, 1.2)) : '';
-  const off: Mark[] = [];
-  if (ink) off.push(stroke(ink, Math.min(o.hw, 1.15)));
-  off.push(stroke(shape, o.sw), fill(dots), breath);
-  const on: Mark[] = [fill(shape + dots + cut), stroke(shape, o.sw), breathOn];
-  return { off, on };
+function note(o: Spec): Glyph {
+  const cx = 8.55;
+  const cy = 16.55;
+  const rx = 4.25;
+  const ry = 3.15;
+  const spin = `rotate(-20 ${n(cx)} ${n(cy)})`;
+  const head = (k: number): Mark => ({ d: ellipse(cx, cy, rx * k, ry * k), draw: 'fill', transform: spin });
+  const stem = (w: number) => stroke(line(pt(12.15, 15.35), pt(12.15, 4.35)), w);
+  const flag = (w: number) => stroke(`M12.15 4.55C16.35 5.15 17.15 8.35 13.85 9.85`, w);
+  const w = o.sw * 0.95;
+  return { off: [head(1), stem(w), flag(w)], on: [head(1.14), stem(o.swOn), flag(o.swOn)] };
 }
 
-/** A proof pennant: short staff, swallowtail, hatch on the cloth. */
+/** A pennant with a deep swallowtail. No hatch: stripes read as a hazard mark. */
 function pennant(o: Spec): Glyph {
-  const cloth: Pt[] = [pt(6.15, 4.15), pt(17.7, 4.15), pt(12.15, 8.2), pt(17.7, 12.25), pt(6.15, 12.25)];
-  const shape = roundPoly(cloth, [0.65, 0.5, 0.4, 0.5, 0.65]);
-  const poly = roundPolyPoints(cloth, [0.65, 0.5, 0.4, 0.5, 0.65]);
-  const body = plate(shape, poly, o);
-  const staff = stroke(line(pt(6.35, 3.35), pt(6.35, 20.45)), o.sw * 1.05);
-  return { off: [staff, ...body.off], on: [staff, ...body.on] };
+  const cloth = [pt(7.35, 4.15), pt(18.15, 4.15), pt(12.35, 8.45), pt(18.15, 12.75), pt(7.35, 12.75)];
+  const rad = [0.7, 0.55, 0.4, 0.55, 0.7];
+  const shape = roundPoly(cloth, rad);
+  const staff = (w: number) => stroke(line(pt(6.15, 3.45), pt(6.15, 20.55)), w);
+  return {
+    off: [staff(o.sw), stroke(shape, o.sw)],
+    on: [staff(o.swOn), fill(shape), stroke(shape, o.sw)],
+  };
 }
 
-/** Medallion ring and a serif i. The dot is a naskh diamond. */
+/**
+ * About the song. Ring, stem, naskh diamond.
+ * This is the one icon the previous round already got right, so the
+ * drawing stays: no hatch, no extra spur except a short foot from 24 up,
+ * where the foot is wider than 2 px and reads as a serif.
+ */
 function about(o: Spec): Glyph {
-  const r = 8.35 - o.sw * 0.15;
+  const r = 8.5;
   const ring = circle(12, 12, r);
-  const stemW = o.sw * 0.95;
-  // The foot is a stroke only. An open curve inside the evenodd disc leaks.
-  const stemD = o.detail ? `M12 10.85V15.65M10.4 15.65Q12 16.65 13.6 15.65` : line(pt(12, 10.7), pt(12, 16.15));
-  const stem = stroke(stemD, stemW);
-  const stemCut = capsule(12, o.detail ? 10.85 : 10.7, 12, o.detail ? 15.65 : 16.15, stemW);
-  const dotR = o.id === 16 ? 1.12 : 1.28;
-  const dot = fill(diamond(12, 7.15, dotR));
-  const disc = circle(12, 12, r - o.sw * 0.48);
-  // Pressed: the medallion is inked and the i is left as paper.
+  const stemW = o.sw * 0.9;
+  const foot = o.id >= 24;
+  const y0 = 10.55;
+  const y1 = 15.85;
+  const stemD = foot ? line(pt(12, y0), pt(12, y1)) + line(pt(10.35, y1), pt(13.65, y1)) : line(pt(12, y0), pt(12, y1 + 0.25));
+  const dotR = o.id === 16 ? 1.3 : 1.45;
+  const dot = diamond(12, 7.2, dotR);
+  const disc = circle(12, 12, r - o.sw * 0.46);
+  const cut =
+    capsule(12, y0, 12, foot ? y1 : y1 + 0.25, stemW) +
+    (foot ? capsule(10.35, y1, 13.65, y1, stemW) : '') +
+    dot;
   return {
-    off: [stroke(ring, o.sw), stem, dot],
-    on: [fill(disc + stemCut + diamond(12, 7.15, dotR)), stroke(ring, o.sw)],
+    off: [stroke(ring, o.sw), stroke(stemD, stemW), fill(dot)],
+    on: [fill(disc + cut), stroke(ring, o.sw)],
   };
 }
 
-function circlePoly(cx: number, cy: number, r: number, n = 24): Pt[] {
-  const pts: Pt[] = [];
-  for (let i = 0; i < n; i++) {
-    const a = (i / n) * Math.PI * 2;
-    pts.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
-  }
-  return pts;
-}
-
+/** Volume. Cone and two arcs, one weight. The cone is empty — hatch there became sludge. */
 function horn(o: Spec): Glyph {
-  const body: Pt[] = [pt(3.7, 9.25), pt(7.15, 9.25), pt(11.15, 6.15), pt(11.15, 17.85), pt(7.15, 14.75), pt(3.7, 14.75)];
-  const shape = roundPoly(body, 0.85);
-  const poly = roundPolyPoints(body, 0.85);
-  const plateBody = plate(shape, poly, { ...o, gap: o.gap * 1.15 });
-  const near = stroke(`M14.15 8.85a4.05 4.05 0 0 1 0 6.3`, o.sw);
-  const farW = o.id === 16 ? o.sw * 0.85 : o.hw;
-  const far = stroke(`M16.85 6.55a7.15 7.15 0 0 1 0 10.9`, farW);
-  const farOn = stroke(`M16.85 6.55a7.15 7.15 0 0 1 0 10.9`, o.sw);
+  const body = [pt(3.55, 9.35), pt(6.85, 9.35), pt(11.7, 6.05), pt(11.7, 17.95), pt(6.85, 14.65), pt(3.55, 14.65)];
+  const shape = roundPoly(body, 0.95);
+  const near = `M14.35 8.75a4.15 4.15 0 0 1 0 6.5`;
+  const far = `M17.15 6.35a7.05 7.05 0 0 1 0 11.3`;
   return {
-    off: [...plateBody.off, near, far],
-    on: [...plateBody.on, near, farOn],
+    off: [stroke(shape, o.sw), stroke(near, o.sw), stroke(far, o.sw)],
+    on: [fill(shape), stroke(shape, o.sw), stroke(near, o.swOn), stroke(far, o.swOn)],
   };
 }
 
-/** Arrow into an engraved tray. The head is a nib, not a fat triangle. */
+/** Bring your own file. Arrow and tray are the same weight. The tray is not striped. */
 function bring(o: Spec): Glyph {
-  const tray = rrect(4.35, 13.15, 15.3, 6.15, o.rad);
-  const poly = rrectPoly(4.35, 13.15, 15.3, 6.15, o.rad);
-  const body = plate(tray, poly, o);
-  const stem = stroke(line(pt(12, 3.15), pt(12, 8.55)), o.sw);
-  const nib = stroke(elbow(pt(8.15, 7.15), pt(12, 10.85), pt(15.85, 7.15), 0.7), o.sw);
-  return { off: [...body.off, stem, nib], on: [...body.on, stem, nib] };
+  const stem = line(pt(12, 3.25), pt(12, 11.15));
+  const head = elbow(pt(8.05, 8.15), pt(12, 12.25), pt(15.95, 8.15), 0.85);
+  const tray = `M5.15 11.7V18.15Q5.15 20.15 7.15 20.15H16.85Q18.85 20.15 18.85 18.15V11.7`;
+  return keyline(stem + head + tray, o);
 }
 
+/**
+ * Search. The lens is empty. The handle is the same monoline as the ring.
+ * A mild wedge was tried: at 20 px it read as an uneven stroke, not a nib.
+ */
 function search(o: Spec): Glyph {
-  const c = pt(10.35, 10.35);
-  const r = 6.15;
+  const c = pt(10.2, 10.2);
+  const r = 6.2;
   const ring = circle(c.x, c.y, r);
-  const poly = circlePoly(c.x, c.y, r - o.sw * 0.72);
-  const lines = hatch(poly, FIELD, o.gap);
-  const ink = joinLines(lines);
-  const cuts = joinCapsules(lines, o.hw * 0.9);
-  const handle = stroke(line(pt(14.85, 14.85), pt(20.15, 20.15)), o.sw * 1.05);
-  const off: Mark[] = [];
-  if (ink) off.push(stroke(ink, o.hw));
-  off.push(stroke(ring, o.sw), handle);
-  const on: Mark[] = [];
-  if (cuts) on.push(fill(circle(c.x, c.y, r - o.sw * 0.42) + cuts));
-  on.push(stroke(ring, o.sw), handle);
-  return { off, on };
+  const join = r + o.sw * 0.15;
+  const handle = line(pt(c.x + join * 0.7071, c.y + join * 0.7071), pt(19.85, 19.85));
+  return keyline(ring + handle, o);
 }
 
-/** Four plates. Two are inked, on the diagonal the engravings shade. */
+/** Instruments. Four equal plates. Hatching two of them read as a broken code. */
 function plates(o: Spec): Glyph {
-  const s = 7.55;
-  const g = 1.7;
-  const x0 = (24 - s * 2 - g) / 2;
-  const cells = [
-    { x: x0, y: x0, inked: true },
-    { x: x0 + s + g, y: x0, inked: false },
-    { x: x0, y: x0 + s + g, inked: false },
-    { x: x0 + s + g, y: x0 + s + g, inked: true },
+  // The gap has to survive the stroke. At 20 px a 2.5 gap closes and the four squares fuse.
+  const margin = 2.5;
+  const gap = 4.4;
+  const cell = (24 - gap - margin * 2) / 2;
+  const x0 = margin;
+  const origins = [
+    [x0, x0],
+    [x0 + cell + gap, x0],
+    [x0, x0 + cell + gap],
+    [x0 + cell + gap, x0 + cell + gap],
   ];
   const off: Mark[] = [];
   const on: Mark[] = [];
-  for (const cell of cells) {
-    const shape = rrect(cell.x, cell.y, s, s, o.rad);
-    const poly = rrectPoly(cell.x, cell.y, s, s, o.rad);
-    const body = plate(shape, poly, o);
-    off.push(...(cell.inked ? body.off : [stroke(shape, o.sw)]));
-    on.push(...body.on);
+  for (const [x, y] of origins) {
+    const shape = rrect(x!, y!, cell, cell, o.rad);
+    off.push(stroke(shape, o.sw));
+    on.push(fill(shape), stroke(shape, o.sw));
   }
   return { off, on };
 }
 
-/** Open codex. The gutter is stitched. The right page carries the shade. */
+/**
+ * Methodology. An open book: two pages, a gutter, tops rising toward the spine.
+ * Page-filling hatch at 20 px became a gray wedge, so the pages stay clear.
+ */
 function codex(o: Spec): Glyph {
-  const left = `M12 5.85C8.55 4.55 5.35 4.75 3.45 6.25V18.15C5.45 16.85 8.65 16.7 12 17.85V5.85Z`;
-  const right = `M12 5.85C15.45 4.55 18.65 4.75 20.55 6.25V18.15C18.55 16.85 15.35 16.7 12 17.85V5.85Z`;
-  const rightPoly: Pt[] = [pt(12, 5.85), pt(16.2, 4.7), pt(20.55, 6.25), pt(20.55, 18.15), pt(16.4, 16.9), pt(12, 17.85)];
-  const shade = plate(right, rightPoly, o);
-  const textW = o.id === 16 ? o.sw * 0.8 : o.hw;
-  const t1 = stroke(line(pt(5.15, 9.35), pt(10.15, 8.85)), textW);
-  const t2 = stroke(line(pt(5.15, 12.7), pt(9.55, 12.35)), textW);
-  const t1on = stroke(line(pt(5.15, 9.35), pt(10.15, 8.85)), o.sw * 0.95);
-  const t2on = stroke(line(pt(5.15, 12.7), pt(9.55, 12.35)), o.sw * 0.95);
-  const gutter = stroke(line(pt(12, 5.7), pt(12, 18.05)), o.sw);
-  const stitches =
-    o.id === 16
-      ? ''
-      : [9.2, 12, 14.8].map((y) => line(pt(11.15, y), pt(12.85, y))).join('');
-  const stitchMark = stitches ? stroke(stitches, o.hw) : null;
-  const off = [...shade.off, stroke(left, o.sw), t1, t2, gutter];
-  const on = [...shade.on, stroke(left, o.sw), t1on, t2on, gutter];
-  if (stitchMark) {
-    off.push(stitchMark);
-    on.push(stitchMark);
-  }
-  return { off, on };
+  // Gutter wider than the stroke, or the two pages fuse into one plaque at 20 px.
+  const left = [pt(2.95, 8.35), pt(9.7, 4.35), pt(9.7, 16.55), pt(2.95, 20.15)];
+  const right = [pt(14.3, 4.35), pt(21.05, 8.35), pt(21.05, 20.15), pt(14.3, 16.55)];
+  const rad = [1.35, 0.55, 0.55, 1.35];
+  const a = roundPoly(left, rad);
+  const b = roundPoly(right, rad);
+  return {
+    off: [stroke(a, o.sw), stroke(b, o.sw)],
+    on: [fill(a), stroke(a, o.sw), fill(b), stroke(b, o.sw)],
+  };
 }
 
 function draw(name: IconName, o: Spec): Glyph {
@@ -502,7 +449,7 @@ function draw(name: IconName, o: Spec): Glyph {
     case 'forward':
       return skip('fwd', o);
     case 'character.bubble':
-      return scripts(o);
+      return translation(o);
     case 'book.closed':
       return gloss(o);
     case 'list.bullet':
@@ -510,7 +457,7 @@ function draw(name: IconName, o: Spec): Glyph {
     case 'slider.horizontal.3':
       return grooves(o);
     case 'music.note':
-      return nay(o);
+      return note(o);
     case 'flag':
       return pennant(o);
     case 'info.circle':
