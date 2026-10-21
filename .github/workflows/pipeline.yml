@@ -8,7 +8,10 @@
 # and docs/analysis/<slug>-instruments.json / .md (docs/methodology/09-instruments.md). They do not
 # edit lyrics.json; the agent copies confirmed entrances afterwards.
 #
-# Job file fields: "stages" (decrypt separate sections transcribe diagnose bench align qa features instruments).
+# Job file fields: "stages" (decrypt separate sections transcribe diagnose bench align qa features instruments roformer).
+# roformer measures Kimberley Jensen's Mel-Band RoFormer on proved-word clips only
+# (docs/analysis/bench/roformer-onset.md). It does not separate the song and does not
+# edit lyrics. One job file is enough: the script loops the three songs.
 # Before any align, the run collects a score row per cued line and writes docs/analysis/bench/calibration.json.
 # Jobs do not list that stage. A failed calibration does not fall through to the old 0.30 gate.
 # After every align and before qa, the run writes docs/analysis/bench/aligner-review.json
@@ -274,6 +277,11 @@ jobs:
           if python3 -c "import json,sys; jobs=json.load(open('/tmp/jobs.json')); sys.exit(0 if any('bench' in j.get('stages',[]) for j in jobs) else 1)"; then
             python -m pip install phonemizer 'audio-separator[cpu]'
             python -m pip install 'nemo_toolkit[asr]' || echo 'nemo: пакет на CPU не встал'
+          fi
+          # Mel-Band RoFormer inference imports. Not in requirements.txt: a song job
+          # must not pull them. CPU torch is installed again afterwards.
+          if python3 -c "import json,sys; jobs=json.load(open('/tmp/jobs.json')); sys.exit(0 if any('roformer' in j.get('stages',[]) for j in jobs) else 1)"; then
+            python -m pip install pyyaml ml_collections beartype rotary_embedding_torch einops packaging
           fi
           python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           python -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available()); raise SystemExit('+cu' in torch.__version__)"

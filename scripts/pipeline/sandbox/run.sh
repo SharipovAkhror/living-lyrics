@@ -22,6 +22,9 @@
 #   qa          sync check (qa_sync.py) → work/<slug>/qa-sync.md, copied to docs/analysis/<slug>-qa.md
 #   features    animation envelopes → public/audio/<slug>/features.json (features.py)
 #   instruments who plays when → docs/analysis/<slug>-instruments.json and .md (instruments.py)
+#   roformer    clip onset clarity for Kimberley Jensen's Mel-Band RoFormer.
+#               One call measures all three songs and writes docs/analysis/bench/roformer-onset.md.
+#               It does not separate the song and does not write lyrics.
 # Stages that need stems decrypt and separate first when a stem is missing.
 # features and instruments need all four htdemucs stems. They do not edit lyrics.json.
 #
@@ -42,7 +45,7 @@ if [ -z "$slug" ] || [ $# -eq 0 ]; then
   exit 2
 fi
 for s in "$@"; do
-  case "$s" in decrypt|separate|sections|transcribe|diagnose|bench|calibrate|align|qa|features|instruments) ;; *) echo "неизвестная стадия: $s"; exit 2 ;; esac
+  case "$s" in decrypt|separate|sections|transcribe|diagnose|bench|calibrate|align|qa|features|instruments|roformer) ;; *) echo "неизвестная стадия: $s"; exit 2 ;; esac
 done
 want=" $* "
 has() { [[ "$want" == *" $1 "* ]]; }
@@ -173,6 +176,11 @@ if has features && [ $status -lt 2 ]; then
 fi
 if has instruments && [ $status -lt 2 ]; then
   { decrypt && separate && step instruments python3 instruments.py "$slug"; } || fail instruments
+fi
+# Clip measure only. The script decrypts each song itself and refuses a full-song
+# separation. A second job in the same run sees the written report and returns.
+if has roformer && [ $status -lt 2 ]; then
+  { step roformer python3 roformer_onset.py --measure; } || fail roformer
 fi
 echo "=== итог $slug: код $status (0 — всё в такт, 1 — есть строки не в такт, 2 — стадия упала)" | tee -a "$log"
 exit $status
