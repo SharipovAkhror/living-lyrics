@@ -755,10 +755,7 @@
             "ru": "плачем был — смехом стал"
           },
           "translit": "Герье бодам, ханде шодам",
-          "placedBy": "mms-window",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms-window"
         },
         {
           "id": "rumi-1-3a",
@@ -861,10 +858,7 @@
             "ru": "Мёртвым был — живым стал"
           },
           "translit": "Морде бодам, зенде шодам",
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "rumi-1-2b",
@@ -897,10 +891,7 @@
             "ru": "плачем был — смехом стал"
           },
           "translit": "Герье бодам, ханде шодам",
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "rumi-1-3b",
@@ -1487,10 +1478,7 @@
           "tr": {
             "ru": "плакал — стал смехом"
           },
-          "placedBy": "mms-window",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms-window"
         },
         {
           "id": "turkish-15",
@@ -1995,7 +1983,10 @@
             "ru": "мне сказали: «ты дурен»"
           },
           "translit": "Кад кыля ли хабис",
-          "placedBy": "second"
+          "placedBy": "second",
+          "flags": [
+            "timing-draft"
+          ]
         },
         {
           "id": "arabic-15",
@@ -4015,10 +4006,7 @@
             "ru": "в моём смехе родник и влага"
           },
           "translit": "Фи дахкати наб‘ун ва рийй",
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "coda-ar-3",
@@ -4195,10 +4183,7 @@
           },
           "translit": "Доулат-е эшк амад-о ман",
           "comment": "**Доулат** (دولت) — и «держава», и «удача»: то же слово, что в первом бейте.",
-          "placedBy": "mms-window",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms-window"
         },
         {
           "id": "coda-fa-2",
@@ -4407,10 +4392,7 @@
             "ru": "Пришло счастье любви — и я"
           },
           "translit": "Доулат-е эшк амад-о ман",
-          "placedBy": "mms",
-          "flags": [
-            "timing-draft"
-          ]
+          "placedBy": "mms"
         },
         {
           "id": "coda-fa-8",

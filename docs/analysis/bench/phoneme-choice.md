@@ -4,55 +4,55 @@
 
 Адаптеры facebook/mms-1b-all делят акустический контур с постановщиком MMS и не измерялись. Две фонемные модели одному языку вместе не отдаются: у пары одна, та, у которой больше слов в пределах 0,10 с среди моделей с допустимым проходом. Объединение может отдать строке другую домерённую модель, если проход строки остаётся не выше 5 %. На одно слово две модели не ставятся.
 
-Перебор: exact. По перебору доказано строк 115, K 0,33, проход строки 0,033. Официально оставлен: да.
+Перебор: exact. По перебору доказано строк 126, K 0,25, проход строки 0,014. Официально оставлен: да.
 
 | песня | язык | слов | модель | согласий в 0,10 с | или | только | роль | проход роли |
 |---|---|---:|---|---:|---:|---:|---|---:|
-| i-have-come-alive | * | 438 | xlsr-53-espeak | 360 | 0,091 | 0,023 | нет | — |
-| i-have-come-alive | ar | 107 | xlsr-53-espeak | 87 | 0,056 | 0,033 | только | 0,033 |
+| i-have-come-alive | * | 438 | xlsr-53-espeak | 360 | 0,063 | 0,023 | нет | — |
+| i-have-come-alive | ar | 107 | xlsr-53-espeak | 87 | 0,056 | 0,033 | нет | — |
 | i-have-come-alive | en | 52 | xlsr-53-espeak | 50 | 0,125 | 0,038 | нет | — |
-| i-have-come-alive | fa | 224 | lv-60-espeak | 173 | 0,109 | 0,018 | нет | — |
+| i-have-come-alive | fa | 224 | lv-60-espeak | 173 | 0,054 | 0,018 | нет | — |
 | i-have-come-alive | tr | 55 | xlsr-53-espeak | 51 | 0,045 | 0,009 | только | 0,009 |
 | karitas | * | 291 | xlsr-53-espeak | 228 | 0,057 | 0,019 | нет | — |
-| karitas | ar | 38 | xlsr-53-espeak | 37 | 0,145 | 0,013 | только | 0,013 |
+| karitas | ar | 38 | xlsr-53-espeak | 37 | 0,132 | 0,013 | только | 0,013 |
 | karitas | az | 177 | xlsr-53-espeak | 145 | 0,048 | 0,017 | или | 0,048 |
-| karitas | la | 76 | xlsr-53-espeak | 46 | 0,033 | 0,026 | или | 0,033 |
-| one | * | 321 | xlsr-53-espeak | 212 | 0,069 | 0,059 | нет | — |
-| one | ar | 171 | xlsr-53-espeak | 109 | 0,161 | 0,053 | только | 0,053 |
-| one | de | 150 | xlsr-53-espeak | 103 | 0,073 | 0,067 | или | 0,073 |
+| karitas | la | 76 | xlsr-53-espeak | 46 | 0,039 | 0,026 | нет | — |
+| one | * | 321 | xlsr-53-espeak | 212 | 0,076 | 0,059 | нет | — |
+| one | ar | 171 | xlsr-53-espeak | 109 | 0,164 | 0,053 | только | 0,053 |
+| one | de | 150 | xlsr-53-espeak | 103 | 0,090 | 0,067 | только | 0,067 |
 
 Язык короче 30 поставленных слов своей роли не получает: он берёт роль песни (`*`). Если у песни роль «нет», короткий язык тоже без фонемного свидетеля.
 
 Покрытие. Число в переборе — раскладка с наибольшим числом строк. Покрытие добавляет строку, которую доказывает другая допустимая раскладка, только если смесь держит проход строки не выше 5 % и не теряет строки выбранной раскладки. Иначе строка остаётся в списке неудержанных.
 
-По перебору строк 115. Покрытие 120 при K 0,33, проход 0,033.
-Не удержаны (4): fuzuli-f5-2, fuzuli-f5-5, fuzuli-f6-2, fuzuli-f8-1. Проход, который остановил смесь: 0,012.
-Роль строки отличается от роли пары: eckhart-3-2 — or, eckhart-f-01 — or, eckhart-f-04 — or, eckhart-f-10 — or, eckhart-f-11 — or, eckhart-f-12 — or, eckhart-f-13 — or, english-14 — or, fuzuli-f1a — or, fuzuli-f3-2 — or, fuzuli-f4-1 — or, fuzuli-f4-2 — or, fuzuli-f6-3 — or, fuzuli-f6-4 — or, fuzuli-f6-5 — or, qasida-b1b — or, qasida-b3a — or, qasida-b4a — or, qasida-b5a — or, qasida-b5b — only.
+По перебору строк 126. Покрытие 127 при K 0,25, проход 0,014.
+Неудержанных строк нет.
+Роль строки отличается от роли пары: coda-fa-1 — or, eckhart-1-3 — or, eckhart-2-1 — or, eckhart-3-1 — or, eckhart-3-2 — or, eckhart-4-1 — or, eckhart-4-2 — or, eckhart-f-01 — or, eckhart-f-04 — or, eckhart-f-10 — or, eckhart-f-11 — or, eckhart-f-12 — or, eckhart-f-13 — or, fuzuli-f1-2 — or, fuzuli-f5-1 — or, fuzuli-f5-4 — or, fuzuli-f5-6 — or, fuzuli-f6-6 — or, fuzuli-f8-1 — or, fuzuli-f8-2 — or, hildegard-h1-4 — or, hildegard-h6-1 — or, hildegard-h6-3 — or, qasida-b3a — or, shushtari-2-tail-1 — or.
 
 Встречный счёт. Роль допущена проходом слова и не выбрана. «Доказано» — строки всей раскладки, если эту пару переключить на эту роль. «У пары» — сколько строк этой пары при этом доказано. Это само по себе роль не включает.
 
 | песня | язык | роль | в пределе | доказано | проход строки | у пары | прибавилось | потеряно |
 |---|---|---|---|---:|---:|---:|---|---|
-| i-have-come-alive | * | или | да | 115 | 0,033 | 0 | — | — |
-| i-have-come-alive | * | только | да | 115 | 0,033 | 0 | — | — |
-| i-have-come-alive | ar | нет | да | 88 | 0,010 | 18 | arabic-17, arabic-24, arabic-7, coda-ar-3 | arabic-30, mawwal-2 |
-| i-have-come-alive | ar | или | да | 88 | 0,010 | 18 | arabic-17, arabic-24, arabic-7, coda-ar-3 | arabic-30, mawwal-2 |
-| i-have-come-alive | en | или | да | 115 | 0,033 | 12 | — | — |
-| i-have-come-alive | en | только | да | 115 | 0,033 | 12 | — | — |
-| i-have-come-alive | fa | или | да | 115 | 0,033 | 29 | — | — |
-| i-have-come-alive | fa | только | да | 114 | 0,007 | 28 | — | rumi-16-2b |
-| i-have-come-alive | tr | нет | да | 115 | 0,036 | 8 | — | — |
-| i-have-come-alive | tr | или | да | 115 | 0,036 | 8 | — | — |
-| karitas | * | или | да | 115 | 0,033 | 0 | — | — |
-| karitas | * | только | да | 115 | 0,033 | 0 | — | — |
-| karitas | ar | нет | да | 115 | 0,036 | 6 | — | — |
-| karitas | ar | или | да | 115 | 0,036 | 6 | — | — |
-| karitas | az | нет | да | 111 | 0,033 | 9 | — | fuzuli-f1-2, fuzuli-f1-3, fuzuli-f4-1, fuzuli-f6-1 |
-| karitas | az | только | да | 115 | 0,033 | 13 | — | — |
-| karitas | la | нет | да | 114 | 0,033 | 0 | — | hildegard-h6-4 |
-| karitas | la | только | да | 115 | 0,033 | 1 | — | — |
-| one | * | или | да | 115 | 0,033 | 0 | — | — |
-| one | * | только | да | 115 | 0,033 | 0 | — | — |
-| one | ar | нет | да | 112 | 0,050 | 18 | qasida-b2b-2 | qasida-b3a, qasida-b4a, qasida-b5a, qasida-b5b |
-| one | de | нет | да | 110 | 0,036 | 0 | — | eckhart-1-2, eckhart-1-3, eckhart-3-2, eckhart-f-01, eckhart-f-04, eckhart-f-10, eckhart-f-11, eckhart-f-12, eckhart-f-13 |
-| one | de | только | да | 115 | 0,033 | 9 | — | — |
+| i-have-come-alive | * | или | да | 126 | 0,014 | 0 | — | — |
+| i-have-come-alive | * | только | да | 126 | 0,014 | 0 | — | — |
+| i-have-come-alive | ar | или | да | 126 | 0,014 | 20 | — | — |
+| i-have-come-alive | ar | только | да | 122 | 0,014 | 16 | — | arabic-17, arabic-24, arabic-7, coda-ar-3 |
+| i-have-come-alive | en | или | да | 126 | 0,014 | 12 | — | — |
+| i-have-come-alive | en | только | да | 126 | 0,014 | 12 | — | — |
+| i-have-come-alive | fa | или | да | 126 | 0,014 | 29 | — | — |
+| i-have-come-alive | fa | только | да | 125 | 0,012 | 28 | — | rumi-16-2b |
+| i-have-come-alive | tr | нет | да | 126 | 0,017 | 8 | — | — |
+| i-have-come-alive | tr | или | да | 126 | 0,017 | 8 | — | — |
+| karitas | * | или | да | 126 | 0,014 | 0 | — | — |
+| karitas | * | только | да | 126 | 0,014 | 0 | — | — |
+| karitas | ar | нет | да | 126 | 0,017 | 6 | — | — |
+| karitas | ar | или | да | 126 | 0,017 | 6 | — | — |
+| karitas | az | нет | да | 120 | 0,012 | 11 | — | fuzuli-f1-2, fuzuli-f5-2, fuzuli-f5-5, fuzuli-f6-1, fuzuli-f6-2, fuzuli-f8-1 |
+| karitas | az | только | да | 126 | 0,014 | 17 | — | — |
+| karitas | la | или | да | 126 | 0,014 | 1 | — | — |
+| karitas | la | только | да | 126 | 0,014 | 1 | — | — |
+| one | * | или | да | 126 | 0,014 | 0 | — | — |
+| one | * | только | да | 126 | 0,014 | 0 | — | — |
+| one | ar | нет | да | 126 | 0,033 | 21 | qasida-b2b-2 | qasida-b3a |
+| one | de | нет | да | 114 | 0,012 | 0 | — | eckhart-1-2, eckhart-1-3, eckhart-2-1, eckhart-3-1, eckhart-3-2, eckhart-4-1, eckhart-4-2, eckhart-f-01, eckhart-f-04, eckhart-f-10, eckhart-f-11, eckhart-f-13 |
+| one | de | или | да | 126 | 0,017 | 12 | — | — |
