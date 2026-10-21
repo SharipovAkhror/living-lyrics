@@ -1,6 +1,6 @@
 import { expect, mock, test } from 'claude-code/testing'
 
-import { newFailures, waitPushes, agentRows, bandLine, cardContext, cardDoc, chatSince, codename, PANEL_URL, panelDoc, trendNext, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
+import { syncDelta, syncNext, taskSince, newFailures, waitPushes, agentRows, bandLine, cardContext, cardDoc, chatSince, codename, PANEL_URL, panelDoc, trendNext, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -208,7 +208,7 @@ test('user settings: a missing or different key is written, the rest stays, a ke
 
 test('the image card state carries every block, and its reply sends the PNG with the text as fallback', async () => {
   const doc = cardDoc(BOARD, LIVE, [{ kind: 'five_hour', percentUsed: 23, resetsAt: '2026-10-21T04:00:00Z' }], { grok: { plan: 'SuperGrok Heavy', today: 38_000_000 } })
-  expect(doc?.limits.claude[0]).toEqual({ label: '5 ч', used: 23, reset: expect.stringContaining('сброс') })
+  expect(doc?.limits.claude[0]).toEqual({ label: '5 ч', used: 23, reset: expect.stringContaining('сброс'), resetAt: '2026-10-21T04:00:00Z' })
   expect(doc?.limits.grok?.today).toBe('38 М')
   expect(doc?.you.map(t => t.title)).toEqual(['Видео концертов'])
   expect(doc?.agents.map(a => a.agent)).toEqual(['claude', 'grok', 'gemini'])
@@ -254,9 +254,9 @@ test('a chat keeps its since-time while its state holds', async () => {
 test('the panel document adds trend, durations, tasks and roadmap steps to the card', async () => {
   const live: Live = { ...LIVE, chats: [{ name: 'LL · Main', state: 'working' }], grok: [{ ...LIVE.grok[0]!, age: 95 }] }
   const doc = panelDoc(BOARD, live, [], null, [{ t: 1, c5: 5 }], { 'LL · Main': { state: 'working', at: 0 } }, 30 * 60_000)
-  expect(doc?.chats).toEqual([{ name: 'LL · Main', state: 'working', minutes: 30 }])
+  expect(doc?.chats[0]).toMatchObject({ name: 'LL · Main', state: 'working', minutes: 30 })
   expect(doc?.agents.find(a => a.agent === 'grok')?.age).toBe(95)
-  expect(doc?.tasks.map(t => t.id)).toEqual(['t1', 'g'])
+  expect(doc?.work.map(t => [t.id, t.who, t.state, t.session])).toEqual([['t1', 'Grok · Sync', 'stalled', 95], ['g', 'Gemini', 'working', null]])
   expect(doc?.trend).toEqual([{ t: 1, c5: 5 }])
   expect(panelDoc(null, live, [], null, [], {}, 0)).toBe(null)
 })
@@ -286,4 +286,13 @@ test('a failed Actions run is reported once; the first look only remembers', asy
   const second = newFailures(first.seen, [run(1), run(2)])
   expect(second.report.map(r => r.id)).toEqual([2])
   expect(newFailures(second.seen, [run(2)]).report).toEqual([])
+})
+
+test('sync shows the change since yesterday; tasks keep the time they first showed', async () => {
+  const h = syncNext([], [{ label: 'Karitas', proven: 20 }], 0)
+  expect(syncNext(h, [{ label: 'Karitas', proven: 21 }], 10 * 60_000)).toBe(h)
+  const later = syncNext(h, [{ label: 'Karitas', proven: 24 }], 25 * 3_600_000)
+  expect(syncDelta(later, 'Karitas', 26, 25 * 3_600_000)).toBe(6)
+  expect(syncDelta(h, 'Karitas', 26, 3_600_000)).toBe(null)
+  expect(taskSince({ t1: 5 }, ['t1', 't2'], 99)).toEqual({ t1: 5, t2: 99 })
 })

@@ -58,7 +58,7 @@ export type GeminiRun = { slug: string; minutes: number }
 
 /** `at` is set on a published state (ops/live.json on the `live` branch): when it was produced. */
 /** A chat of the registry (.claude/agents/ll-*.md) and its state on the orchestrator machine. */
-export type ChatRow = { name: string; role?: string; reports_to?: string; state: string; /** When waiting: the tool call it waits on. */ waiting_for?: string }
+export type ChatRow = { name: string; role?: string; reports_to?: string; state: string; /** When waiting: the tool call it waits on. */ waiting_for?: string; /** Its last line to its user, and when (ISO). */ last?: string; last_at?: string }
 
 /** A GitHub Actions run in progress. */
 export type PipelineRun = { name: string; title: string; minutes: number }
