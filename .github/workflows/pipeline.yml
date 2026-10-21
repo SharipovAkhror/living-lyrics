@@ -8,13 +8,16 @@
 # and docs/analysis/<slug>-instruments.json / .md (docs/methodology/09-instruments.md). They do not
 # edit lyrics.json; the agent copies confirmed entrances afterwards.
 #
-# Job file fields: "stages" (decrypt separate sections transcribe diagnose bench align qa features instruments roformer).
+# Job file fields: "stages" (decrypt separate sections transcribe diagnose bench align qa features instruments roformer omni).
 # roformer measures Kimberley Jensen's Mel-Band RoFormer on proved-word clips only
 # (docs/analysis/bench/roformer-onset.md). It does not separate the song. If the
 # clarity bar is cleared, the same stage reruns the chance pass on unproved
 # windows of that song and edits lyrics only when the published count rises
 # and the 158-line baseline is kept. One job file is enough: the script loops
 # the three songs.
+# omni aligns Latin and Azerbaijani with omniASR_CTC_300M (docs/analysis/bench/omni-ctc.md).
+# It does not remeasure the five XLS-R languages and does not edit lyrics unless the
+# published line count rises and the 158-line baseline is kept.
 # Before any align, the run collects a score row per cued line and writes docs/analysis/bench/calibration.json.
 # Jobs do not list that stage. A failed calibration does not fall through to the old 0.30 gate.
 # After every align and before qa, the run writes docs/analysis/bench/aligner-review.json
@@ -286,6 +289,26 @@ jobs:
           # must not pull them. CPU torch is installed again afterwards.
           if python3 -c "import json,sys; jobs=json.load(open('/tmp/jobs.json')); sys.exit(0 if any('roformer' in j.get('stages',[]) for j in jobs) else 1)"; then
             python -m pip install pyyaml ml_collections beartype rotary_embedding_torch einops packaging
+          fi
+          # Omnilingual CTC 300M needs Python <=3.12 (omnilingual-asr 0.2.0).
+          # The venv does not replace the 3.13 interpreter the other stages use.
+          # A failed install is recorded by the stage.
+          if python3 -c "import json,sys; jobs=json.load(open('/tmp/jobs.json')); sys.exit(0 if any('omni' in j.get('stages',[]) for j in jobs) else 1)"; then
+            sudo apt-get install -y -q libsndfile1
+            python -m pip install uv
+            # /tmp is writable by the runner user. /opt is not.
+            if python -m uv python install 3.12 && python -m uv venv /tmp/omni-venv --python 3.12; then
+              /tmp/omni-venv/bin/python -m pip install -r scripts/pipeline/requirements.txt
+              /tmp/omni-venv/bin/python -m pip install 'omnilingual-asr==0.2.0'
+              /tmp/omni-venv/bin/python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+              if /tmp/omni-venv/bin/python -c "import torch, omnilingual_asr; raise SystemExit('+cu' in torch.__version__)"; then
+                echo "OMNI_PYTHON=/tmp/omni-venv/bin/python" >> "$GITHUB_ENV"
+              else
+                echo 'omnilingual-asr: venv не прошёл проверку'
+              fi
+            else
+              echo 'omnilingual-asr: Python 3.12 не встал'
+            fi
           fi
           python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           python -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available()); raise SystemExit('+cu' in torch.__version__)"
