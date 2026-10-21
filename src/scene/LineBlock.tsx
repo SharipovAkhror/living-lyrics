@@ -5,6 +5,7 @@ import { formatTime } from '@/data/library';
 import { blockState, clamp01, entranceOpacity, scriptShift, type Measure } from './flow';
 import { showHarakatText } from '@/data/harakat';
 import { fontClass } from './fonts';
+import { isPhone } from '@/ui/phone';
 
 /**
  * Per-frame update from the Scene: time, distance from the current position, top in px, and
@@ -14,6 +15,8 @@ export type BlockUpdater = (t: number, d: number, top: number, wait: number) => 
 
 interface Props {
   cue: LineCue;
+  /** Phone slot that has left the window. The host stays mounted and is not measured. */
+  parked?: boolean;
   /** Word-by-word fill only where the timing is measured and checked; otherwise the whole line lights up. */
   wordSync: boolean;
   settings: Pick<Settings, 'fontPersian' | 'showTranslation' | 'showTranslit' | 'showAlt' | 'showHarakat' | 'textScale'>;
@@ -26,6 +29,11 @@ interface Props {
 
 /** Longest a word may take to fill; a held note keeps the word lit instead of crawling for seconds. */
 const FILL_MAX = 1.6;
+/**
+ * Phone lines reuse one host. A fixed row of word nodes means the next lyric
+ * only changes text: WebKit was retaining a backing store for every removed span.
+ */
+const PHONE_WORD_POOL = 40;
 /** Extra room around each word for the text-clipped fill (Nastaliq and Naskh glyphs overflow their box). */
 const PAD_X = 0.21;
 
@@ -49,7 +57,7 @@ export function TrText({ text }: { text: string }) {
   );
 }
 
-function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, register, onPick }: Props) {
+function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, motion, stage, register, onPick }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const main = useRef<HTMLDivElement>(null);
   const orig = useRef<HTMLDivElement>(null);
@@ -58,17 +66,50 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
   const words = useRef<(HTMLSpanElement | null)[]>([]);
   const widths = useRef<number[]>([]);
   const fontPx = useRef(40);
+  const wordPool = useRef(PHONE_WORD_POOL);
+  const filterRef = useRef('');
+  // Last strings actually written. WebKit grows its working set on a repeated write even when the pixels match.
+  const painted = useRef({ transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '' });
 
   const { line } = cue;
   const fClass = fontClass(line, settings);
+  const phone = isPhone();
+  if (phone && line.words.length > wordPool.current) wordPool.current = line.words.length;
   const showTr = settings.showTranslation && !!line.tr.ru;
   const showTl = settings.showTranslit && !!line.translit;
   const showAlt = settings.showAlt && !!line.alt;
   const hasSubs = showTr || showTl || showAlt;
   const meta = [cue.voiceChanged ? cue.voice : null].filter(Boolean) as string[];
 
+  // A slot is reused for the next line. Drop the previous line's layers before the fit.
+  useLayoutEffect(() => {
+    painted.current = { transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '' };
+    filterRef.current = '';
+    for (const el of words.current) {
+      if (!el) continue;
+      delete el.dataset.f;
+      delete el.dataset.g;
+      el.classList.remove('is-filling', 'is-sung');
+      el.style.backgroundImage = '';
+      el.style.transform = '';
+    }
+    if (root.current) root.current.style.visibility = 'hidden';
+  }, [cue.idx]);
+
   // Fit the original: as large as possible within the width and about a third of the stage height.
   useLayoutEffect(() => {
+    if (parked) {
+      register(cue.idx, null);
+      const r = root.current;
+      if (r) {
+        r.style.visibility = 'hidden';
+        r.style.pointerEvents = 'none';
+        r.style.zIndex = '0';
+      }
+      painted.current = { transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '' };
+      return;
+    }
+    if (root.current) root.current.style.pointerEvents = '';
     const el = orig.current;
     const r = root.current;
     if (!el || !r || !stage.w) return;
@@ -90,6 +131,17 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
     const upper = Math.max(floor, design);
     const lower = floor;
     el.style.width = `${width}px`;
+    if (isPhone()) {
+      // The stylesheet already holds the design size, including the text-scale
+      // variables below. Walking font-size (eight tries per line, every seek)
+      // kept a WebKit backing store for each write. A line that does not fit
+      // wraps; it is not restyled.
+      widths.current = words.current.map((w) => w?.offsetWidth ?? 0);
+      const mainH = main.current!.offsetHeight;
+      const m: Measure = { main: mainH, sub: subs.current ? r.offsetHeight - mainH : 0 };
+      register(cue.idx, call, m);
+      return;
+    }
     let lo = lower;
     let hi = upper;
     for (let k = 0; k < 8; k++) {
@@ -121,13 +173,48 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
     const s = blockState(d);
     const still = motion === 'off';
     const x = entrance === 'script' ? scriptShift(d, cue.rtl, stage.w, still) : 0;
-    r.style.zIndex = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
-    r.style.transform = `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0) scale(${s.scale.toFixed(4)})`;
-    r.style.opacity = entranceOpacity(d, entrance, s.opacity).toFixed(3);
-    r.style.filter = entrance === 'flow' && !still && motion === 'full' && s.blur > 0.05 ? `blur(${s.blur.toFixed(2)}px)` : '';
-    r.style.visibility = s.opacity < 0.01 ? 'hidden' : 'visible';
-    r.classList.toggle('is-current', Math.abs(d) < 0.5);
-    if (subs.current) subs.current.style.opacity = s.sub.toFixed(3);
+    const z = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
+    if (painted.current.z !== z) {
+      painted.current.z = z;
+      r.style.zIndex = z;
+    }
+    const transform = isPhone()
+      ? `translate3d(${Math.round(x)}px, ${Math.round(top)}px, 0) scale(${s.scale.toFixed(2)})`
+      : `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0) scale(${s.scale.toFixed(4)})`;
+    if (painted.current.transform !== transform) {
+      painted.current.transform = transform;
+      r.style.transform = transform;
+    }
+    const opacity = entranceOpacity(d, entrance, s.opacity).toFixed(3);
+    if (painted.current.opacity !== opacity) {
+      painted.current.opacity = opacity;
+      r.style.opacity = opacity;
+    }
+    // A live CSS blur on the lines, under the glass bars, is a Safari layer leak.
+    // Phones keep the opacity and the move, and drop the blur.
+    const blurOn = !isPhone() && entrance === 'flow' && !still && motion === 'full' && s.blur > 0.05;
+    const nextFilter = blurOn ? `blur(${s.blur.toFixed(2)}px)` : '';
+    if (filterRef.current !== nextFilter) {
+      filterRef.current = nextFilter;
+      r.style.filter = nextFilter;
+    }
+    const vis = s.opacity < 0.01 ? 'hidden' : 'visible';
+    if (painted.current.vis !== vis) {
+      painted.current.vis = vis;
+      r.style.visibility = vis;
+    }
+    const cur = Math.abs(d) < 0.5 ? '1' : '0';
+    if (painted.current.cur !== cur) {
+      painted.current.cur = cur;
+      r.classList.toggle('is-current', cur === '1');
+    }
+    if (subs.current) {
+      const sub = s.sub.toFixed(3);
+      if (painted.current.sub !== sub) {
+        painted.current.sub = sub;
+        subs.current.style.opacity = sub;
+      }
+    }
 
     // Every word is visible from the start (dim). With measured timing, each word fills in reading
     // direction as it is sung; otherwise the whole line lights up while it is current.
@@ -136,18 +223,39 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
     const o = orig.current;
     if (o) {
       const lit = d <= 0 ? 1 : clamp01((0.5 - d) / 0.5);
-      o.style.setProperty('--litf', (wordSync ? (d < 0 ? 1 : 0) : lit).toFixed(3));
+      const rawLit = wordSync ? (d < 0 ? 1 : 0) : lit;
+      // Eight steps on a phone. A fresh opacity on every word, every frame, kept a text layer.
+      const litf = (isPhone() ? Math.round(rawLit * 8) / 8 : rawLit).toFixed(3);
+      if (painted.current.lit !== litf) {
+        painted.current.lit = litf;
+        o.style.setProperty('--litf', litf);
+      }
     }
     for (let i = 0; i < line.words.length; i++) {
       const el = words.current[i];
       if (!el) continue;
       const w = line.words[i];
       if (wordSync && d > -1) {
+        // A clipped gradient is a new text layer per step. On a phone the word lights
+        // as a whole: a seek was keeping one backing store per step and the tab grew.
+        if (isPhone()) {
+          const sung = t >= w.s;
+          const mark = sung ? '1' : '0';
+          if (el.dataset.f !== mark) {
+            el.dataset.f = mark;
+            el.classList.remove('is-filling');
+            el.classList.toggle('is-sung', sung);
+            if (el.style.backgroundImage) el.style.backgroundImage = '';
+          }
+          continue;
+        }
         const span = Math.min(FILL_MAX, Math.max(0.08, w.e - w.s));
-        const f = clamp01((t - w.s) / span);
+        const raw = clamp01((t - w.s) / span);
+        const f = raw;
         if (f <= 0 || f >= 1) {
           if (el.dataset.f !== String(f)) {
             el.dataset.f = String(f);
+            delete el.dataset.g;
             el.classList.remove('is-filling');
             el.classList.toggle('is-sung', f >= 1);
             el.style.backgroundImage = '';
@@ -159,15 +267,20 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
           const pad = PAD_X * fontPx.current;
           const at = ((pad + f * (W - 2 * pad)) / W) * 100;
           const soft = Math.max(2, ((0.12 * (W - 2 * pad)) / W) * 100);
-          el.style.backgroundImage = `linear-gradient(${cue.rtl ? 'to left' : 'to right'}, var(--w-lit) ${(at - soft).toFixed(1)}%, var(--w-dim) ${(at + soft).toFixed(1)}%)`;
+          const image = `linear-gradient(${cue.rtl ? 'to left' : 'to right'}, var(--w-lit) ${(at - soft).toFixed(1)}%, var(--w-dim) ${(at + soft).toFixed(1)}%)`;
+          if (el.dataset.g !== image) {
+            el.dataset.g = image;
+            el.style.backgroundImage = image;
+          }
         }
-        if (motion === 'full') {
+        if (motion === 'full' && !isPhone()) {
           // The word being sung rises a hair, then settles.
           const active = t >= w.s && t < w.e + 0.15 ? Math.sin(Math.PI * clamp01((t - w.s) / Math.max(0.25, w.e - w.s + 0.15))) : 0;
           el.style.transform = active > 0.001 ? `translate3d(0, ${(-active * 0.05).toFixed(3)}em, 0)` : '';
         }
       } else if (el.dataset.f) {
         delete el.dataset.f;
+        delete el.dataset.g;
         el.classList.remove('is-filling', 'is-sung');
         el.style.backgroundImage = '';
         el.style.transform = '';
@@ -176,7 +289,11 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
 
     // A long pause before this line (it is next): say how long, so the reader is not left guessing.
     if (wait.current) {
-      wait.current.style.opacity = waitV.toFixed(3);
+      const waitO = waitV.toFixed(3);
+      if (painted.current.wait !== waitO) {
+        painted.current.wait = waitO;
+        wait.current.style.opacity = waitO;
+      }
       if (waitV > 0) {
         const txt = `через ${formatTime(Math.max(0, cue.start - t))}`;
         if (wait.current.textContent !== txt) wait.current.textContent = txt;
@@ -191,53 +308,78 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
       ref={root}
       className="fb fb--line"
       lang={line.lang}
+      aria-hidden={parked || undefined}
       onClick={() => onPick(cue.idx)}
       style={{ visibility: 'hidden' }}
     >
       <div ref={main} className="fb-main">
         <span ref={wait} className="fb-wait t-footnote" dir="ltr" />
-        {(meta.length > 0 || cue.repeat > 0) && (
-          <div className="fb-meta t-footnote" dir="ltr">
+        {(meta.length > 0 || cue.repeat > 0 || phone) && (
+          <div className="fb-meta t-footnote" dir="ltr" hidden={phone && meta.length === 0 && cue.repeat === 0 ? true : undefined}>
             {meta.map((m) => (
               <span key={m} className="fb-voice">
                 {m}
               </span>
             ))}
-            {cue.repeat > 0 && <span className="fb-repeat">повтор</span>}
+            {(cue.repeat > 0 || phone) && (
+              <span className="fb-repeat" hidden={cue.repeat > 0 ? undefined : true}>
+                повтор
+              </span>
+            )}
           </div>
         )}
         <div ref={orig} className={`fb-orig ${fClass}`} dir={cue.rtl ? 'rtl' : 'ltr'}>
-          {line.words.map((w, i) => (
-            <span key={i} className="w-wrap">
-              <span
-                ref={(el) => {
-                  words.current[i] = el;
-                }}
-                className={`w${w.em ? ' w--em' : ''}`}
-              >
-                {showHarakatText(w.w, settings.showHarakat)}
-              </span>
-              {/* A sized box, not a trailing space inside the word: RTL drops that space and the words glue. */}
-              {w.br ? <span className="w-br" /> : i < line.words.length - 1 ? <span className="w-sp" aria-hidden="true" /> : null}
-            </span>
-          ))}
+          {phone
+            ? Array.from({ length: wordPool.current }, (_, i) => {
+                const w = line.words[i];
+                const spare = !w;
+                const gap = !!w && (w.br || i < line.words.length - 1);
+                return (
+                  <span key={i} className="w-wrap" hidden={spare || undefined}>
+                    <span
+                      ref={(el) => {
+                        words.current[i] = el;
+                      }}
+                      className={`w${w?.em ? ' w--em' : ''}`}
+                    >
+                      {w ? showHarakatText(w.w, settings.showHarakat) : '\u200b'}
+                    </span>
+                    {/* Same node for a break and a gap, so a new line does not mount a span. */}
+                    <span className={w?.br ? 'w-br' : 'w-sp'} hidden={gap ? undefined : true} aria-hidden="true" />
+                  </span>
+                );
+              })
+            : line.words.map((w, i) => (
+                <span key={i} className="w-wrap">
+                  <span
+                    ref={(el) => {
+                      words.current[i] = el;
+                    }}
+                    className={`w${w.em ? ' w--em' : ''}`}
+                  >
+                    {showHarakatText(w.w, settings.showHarakat)}
+                  </span>
+                  {/* A sized box, not a trailing space inside the word: RTL drops that space and the words glue. */}
+                  {w.br ? <span className="w-br" /> : i < line.words.length - 1 ? <span className="w-sp" aria-hidden="true" /> : null}
+                </span>
+              ))}
         </div>
       </div>
-      {hasSubs && (
-        <div ref={subs} className="fb-subs" dir="ltr">
-          {showAlt && (
-            <div className="fb-alt f-mushaf" dir="rtl" lang={line.lang}>
-              {showHarakatText(line.alt!.text, settings.showHarakat)}
+      {(hasSubs || phone) && (
+        <div ref={subs} className="fb-subs" dir="ltr" hidden={hasSubs ? undefined : true}>
+          {(showAlt || phone) && (
+            <div className="fb-alt f-mushaf" dir="rtl" lang={line.lang} hidden={showAlt ? undefined : true}>
+              {line.alt ? showHarakatText(line.alt.text, settings.showHarakat) : '\u200b'}
             </div>
           )}
-          {showTl && (
-            <div className="fb-translit" lang="ru">
-              {line.translit}
+          {(showTl || phone) && (
+            <div className="fb-translit" lang="ru" hidden={showTl ? undefined : true}>
+              {showTl ? line.translit : '\u200b'}
             </div>
           )}
-          {showTr && (
-            <p className="fb-tr" lang="ru">
-              <TrText text={line.tr.ru} />
+          {(showTr || phone) && (
+            <p className="fb-tr" lang="ru" hidden={showTr ? undefined : true}>
+              {showTr ? phone ? line.tr.ru.replace(/\*+/g, '') : <TrText text={line.tr.ru} /> : '\u200b'}
             </p>
           )}
         </div>

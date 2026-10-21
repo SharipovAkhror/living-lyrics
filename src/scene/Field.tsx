@@ -3,7 +3,9 @@
  * Position and brightness are a function of playback time, so a seek paints the same sky.
  * Nothing here is a game engine. A hidden or off-screen field does not keep a timer.
  */
-import { useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
+import { isPhone } from '@/ui/phone';
+import { stageCovered, watchCover } from './cover';
 
 function skyAt(t: number) {
   const a = t * 0.011;
@@ -36,7 +38,7 @@ function starField(): Star[] {
   return out;
 }
 
-export function Field({
+export const Field = memo(function Field({
   colors,
   dark,
   clock,
@@ -68,34 +70,53 @@ export function Field({
 
     const paint = (time: number) => {
       const p = skyAt(time);
-      wash.style.setProperty('--x1', `${p.x1.toFixed(2)}%`);
-      wash.style.setProperty('--y1', `${p.y1.toFixed(2)}%`);
-      wash.style.setProperty('--x2', `${p.x2.toFixed(2)}%`);
-      wash.style.setProperty('--y2', `${p.y2.toFixed(2)}%`);
-      wash.style.setProperty('--x3', `${p.x3.toFixed(2)}%`);
-      wash.style.setProperty('--y3', `${p.y3.toFixed(2)}%`);
+      // One decimal: the washes move slowly, and a rewrite of the same stop used to stick in WebKit.
+      const vars: Array<[string, string]> = [
+        ['--x1', `${p.x1.toFixed(1)}%`],
+        ['--y1', `${p.y1.toFixed(1)}%`],
+        ['--x2', `${p.x2.toFixed(1)}%`],
+        ['--y2', `${p.y2.toFixed(1)}%`],
+        ['--x3', `${p.x3.toFixed(1)}%`],
+        ['--y3', `${p.y3.toFixed(1)}%`],
+      ];
+      for (const [key, value] of vars) {
+        if (wash.style.getPropertyValue(key) !== value) wash.style.setProperty(key, value);
+      }
+      // A phone does not retint every star. WebKit kept a backing store for each opacity write,
+      // and the working set climbed for the whole song. The sky still moves. Desktop still twinkles.
+      if (isPhone()) {
+        const steady = dark ? '0.07' : '0.035';
+        for (let i = 0; i < stars.length; i++) {
+          const node = nodes[i];
+          if (node && node.style.opacity !== steady) node.style.opacity = steady;
+        }
+        return;
+      }
       for (let i = 0; i < stars.length; i++) {
         const node = nodes[i];
         if (!node) continue;
         const tw = 0.5 + 0.5 * Math.sin(time * 0.22 + stars[i].p);
         // Quiet enough that the glass panels stay the surface. Still a function of time.
-        node.style.opacity = (dark ? 0.04 + tw * 0.06 : 0.02 + tw * 0.03).toFixed(3);
+        const opacity = (dark ? 0.04 + tw * 0.06 : 0.02 + tw * 0.03).toFixed(3);
+        if (node.style.opacity !== opacity) node.style.opacity = opacity;
       }
     };
 
     const tick = () => {
       timer = 0;
-      if (document.hidden || !seen) return;
+      if (stageCovered() || !seen) return;
       const time = clock ? clock() : t;
       if (lastT < 0 || Math.abs(time - lastT) >= 0.01) {
         lastT = time;
         paint(time);
       }
-      if (!still && clock) timer = window.setTimeout(tick, 100);
+      // Phones repaint the washes a little less often. The blur layers are already gone;
+      // this only keeps the sky from dirtying the compositor ten times a second.
+      if (!still && clock) timer = window.setTimeout(tick, isPhone() ? 800 : 100);
     };
 
     const start = () => {
-      if (timer || document.hidden || !seen) return;
+      if (timer || stageCovered() || !seen) return;
       tick();
     };
     const stop = () => {
@@ -114,9 +135,14 @@ export function Field({
       else start();
     };
     document.addEventListener('visibilitychange', onVis);
+    const unwatch = watchCover(() => {
+      if (stageCovered()) stop();
+      else start();
+    });
     return () => {
       stop();
       io.disconnect();
+      unwatch();
       document.removeEventListener('visibilitychange', onVis);
     };
   }, [clock, t, still, dark, stars]);
@@ -142,4 +168,4 @@ export function Field({
       ))}
     </div>
   );
-}
+});

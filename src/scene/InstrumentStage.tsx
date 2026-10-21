@@ -17,6 +17,7 @@ import { hasModelSync, loadModelIndex } from '@/instruments/render/models';
 import { svgMotionVars } from '@/instruments/render/svgMotion';
 import type { CameraFrame, StageSession, StageSlotSpec, StageView } from '@/instruments/render/three';
 import { canTry3d } from '@/instruments/render/support';
+import { isPhone } from '@/ui/phone';
 
 import '@/instruments/render/stage3d.css';
 
@@ -101,6 +102,16 @@ export function assignPerformers(keys: string[], performers: string[] = []): (st
 }
 
 function poseSignature(frame: StagePose) {
+  // A phone holds the engraving. Following the stem every frame rewrote the SVG
+  // style and WebKit kept the old backing stores.
+  if (isPhone()) {
+    // Presence only. Life and the wave used to cross a threshold many times a second
+    // and each crossing restyled the SVG.
+    const on = (n: number) => (n > 0.04 ? '1' : '0');
+    const plates = (frame.plates ?? []).map((n) => on(n)).join('');
+    const echoes = (frame.echoes ?? []).map((e) => on(e.presence)).join('');
+    return `p#${(frame.drives ?? []).length}#${plates}#${echoes}`;
+  }
   const drive = (d: InstrumentDrive) =>
     [d.draw, d.hatch, d.energy, d.pulse, d.sustain, d.breath, d.beat, d.life ?? 1, d.halo ?? 0, d.hit ?? 0].map((n) => n.toFixed(3)).join(',');
   const echoes = (frame.echoes ?? []).map((e) => `${e.presence.toFixed(3)}:${drive(e.drive)}`).join('|');
@@ -112,20 +123,61 @@ function artFilter(drive: InstrumentDrive) {
   const halo = drive.halo ?? 0;
   const flash = drive.hit ?? 0;
   const brightness = `brightness(${life.toFixed(3)})`;
-  if (halo < 0.004 && flash < 0.004) return brightness;
+  // drop-shadow on a large SVG, rewritten every frame, is another Safari layer leak.
+  if (isPhone() || (halo < 0.004 && flash < 0.004)) return brightness;
   const glow = `drop-shadow(0 0 ${(halo * 18).toFixed(2)}px var(--accent))`;
   const flare = flash >= 0.004 ? ` drop-shadow(0 0 ${(flash * 12).toFixed(2)}px var(--accent))` : '';
   return `${brightness} ${glow}${flare}`;
 }
 
+const plateVars = new WeakMap<HTMLElement, Map<string, string>>();
+
 function applyPlate(el: HTMLElement, drive: InstrumentDrive, time: number, opacity: number) {
-  const vars = svgMotionVars(drive, time);
-  for (const key of Object.keys(vars)) el.style.setProperty(key, vars[key]);
-  el.style.opacity = opacity.toFixed(3);
-  el.dataset.pulse = drive.pulse.toFixed(2);
-  el.dataset.draw = drive.draw.toFixed(2);
-  const art = el.querySelector<HTMLElement>('.ist-art');
-  if (art) art.style.filter = artFilter(drive);
+  // The sine wave on the strings is desktop-only. On a phone it rewrote the SVG
+  // style every frame and the WebKit working set climbed for the whole song.
+  const vars = svgMotionVars(drive, isPhone() ? 0 : time);
+  let bag = plateVars.get(el);
+  if (!bag) {
+    bag = new Map();
+    plateVars.set(el, bag);
+  }
+  for (const key of Object.keys(vars)) {
+    const value = vars[key];
+    if (bag.get(key) === value) continue;
+    bag.set(key, value);
+    el.style.setProperty(key, value);
+  }
+  const opacityText = opacity.toFixed(3);
+  if (bag.get('opacity') !== opacityText) {
+    bag.set('opacity', opacityText);
+    el.style.opacity = opacityText;
+  }
+  const pulse = drive.pulse.toFixed(2);
+  const drawn = drive.draw.toFixed(2);
+  if (el.dataset.pulse !== pulse) el.dataset.pulse = pulse;
+  if (el.dataset.draw !== drawn) el.dataset.draw = drawn;
+  const arts = el.querySelectorAll<HTMLElement>(isPhone() ? '.ist-art-mount' : '.ist-art');
+  arts.forEach((art) => {
+    // A phone keeps every engraving it has shown and never filters it.
+    // brightness() and the hairline drop-shadow each rasterised the drawing,
+    // and WebKit kept the bitmap after the plate changed instrument.
+    // Colour is inherited into the shadow root, where the SVG strokes live.
+    if (isPhone()) {
+      const life = Math.round((drive.life ?? 1) * 20) / 20;
+      const next = String(life);
+      if (art.dataset.fx !== next) {
+        art.dataset.fx = next;
+        art.style.filter = 'none';
+        art.style.color = `color-mix(in srgb, var(--ist-ink) ${Math.round(life * 100)}%, var(--song-field, var(--bg)))`;
+      }
+      return;
+    }
+    const next = artFilter(drive);
+    if (art.dataset.fx !== next) {
+      art.dataset.fx = next;
+      art.style.filter = next;
+    }
+  });
 }
 
 export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStageProps>(function InstrumentStage(
@@ -371,8 +423,9 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
   };
   paintRef.current = paint;
 
+  // Do not clear the signature here. A presence step used to wipe it, and the phone
+  // hold (presence only) then rewrote every SVG variable on the new commit.
   useLayoutEffect(() => {
-    paintedRef.current = '';
     paintRef.current();
   });
 
@@ -431,7 +484,7 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
         if (!hero) return null;
         return (
           <EchoPlate
-            key={`echo-${echo.key}-${i}`}
+            key={isPhone() ? `e-${i}` : `echo-${echo.key}-${i}`}
             slot={hero}
             index={i}
             svg={svgs[echo.key] ?? ''}
@@ -451,7 +504,7 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
         const castP = presences?.[slot.index] ?? 1;
         return (
           <Plate
-            key={`${slot.index}-${key}`}
+            key={isPhone() ? `p-${slot.index}` : `${slot.index}-${key}`}
             slot={slot}
             presence={pi * castP}
             hidden={castP < 0.02}
@@ -560,6 +613,31 @@ function Plate({
   );
 }
 
+/**
+ * Phone engravings live in the plate's shadow root, which React does not reconcile.
+ * Moving a masked SVG to another parent allocated a bitmap WebKit did not return.
+ * A plate keeps every instrument it has shown and only toggles visibility.
+ * Rasterizing into a canvas was measured and reverted: the copy still climbed,
+ * and the drawing went soft.
+ */
+function keepArt(mount: HTMLElement, key: string, svg: string) {
+  const root = mount.shadowRoot ?? mount.attachShadow({ mode: 'open' });
+  let node = root.querySelector<HTMLElement>(`[data-instrument="${key.replace(/"/g, '')}"]`);
+  if (!node) {
+    node = document.createElement('div');
+    node.className = 'ist-art';
+    node.dataset.instrument = key;
+    node.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;filter:none';
+    node.innerHTML = scopeSvgIds(svg, `keep-${key}-${root.childElementCount}`);
+    root.appendChild(node);
+  }
+  for (const child of root.querySelectorAll<HTMLElement>('.ist-art')) {
+    const on = child.dataset.instrument === key;
+    const vis = on ? 'visible' : 'hidden';
+    if (child.style.visibility !== vis) child.style.visibility = vis;
+  }
+}
+
 /** The engraving itself: re-rendered only when the drawing changes, never on progress updates. */
 const Art = memo(function Art({
   svg,
@@ -577,6 +655,16 @@ const Art = memo(function Art({
   flat?: boolean;
 }) {
   const html = useMemo(() => scopeSvgIds(svg, suffix), [svg, suffix]);
+  const host = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    if (!isPhone()) return;
+    const mount = host.current;
+    if (!mount || !instrumentKey || !svg) return;
+    keepArt(mount, instrumentKey, svg);
+  }, [instrumentKey, svg]);
+  if (isPhone()) {
+    return <div ref={host} className="ist-art-mount" style={style} />;
+  }
   return (
     <div
       className="ist-art"

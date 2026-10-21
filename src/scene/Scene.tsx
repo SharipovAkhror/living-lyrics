@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { flushSync } from 'react-dom';
 import type { Song } from '@/data/schema';
 import type { Timeline } from '@/data/timeline';
 import type { AudioFeatures } from '@/instruments/animation';
@@ -6,6 +7,9 @@ import { effectiveMotion, type Settings } from '@/app/settings';
 import { showHarakatText } from '@/data/harakat';
 import { LineBlock, type BlockUpdater } from './LineBlock';
 import { InstBlock } from './InstBlock';
+import { stageCovered, watchCover } from './cover';
+import { isPhone } from '@/ui/phone';
+import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, sameSlots, type PhoneSlot } from './slots';
 import { WAIT_ROOM, blockHeight, blockState, compressStack, flowPosition, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
 
 interface Props {
@@ -28,12 +32,17 @@ const INTRO = -1;
  * The stage. One clock read per frame computes the flow position, lays the mounted blocks out
  * around it and hands each block its distance and top; blocks style themselves imperatively.
  */
-export function Scene({ song, timeline, settings, features, clock, onOwnerChange, onPick }: Props) {
+export const Scene = memo(function Scene({ song, timeline, settings, features, clock, onOwnerChange, onPick }: Props) {
   const stageRef = useRef<HTMLDivElement>(null);
   const plate = useRef<HTMLDivElement>(null);
   const intro = useRef<HTMLDivElement>(null);
   const [stage, setStage] = useState({ w: 0, h: 0 });
   const [mounted, setMounted] = useState<number[]>([INTRO, 0, 1, 2]);
+  // Phone hosts are created once and then only change which cue they show.
+  const [lineSlots, setLineSlots] = useState<(PhoneSlot | null)[]>(() => Array.from({ length: PHONE_LINE_SLOTS }, () => null));
+  const [instSlots, setInstSlots] = useState<(PhoneSlot | null)[]>(() => Array.from({ length: PHONE_INST_SLOTS }, () => null));
+  const lineSlotsRef = useRef(lineSlots);
+  const instSlotsRef = useRef(instSlots);
   const blocks = useRef(new Map<number, { fn: BlockUpdater; m: Measure }>());
   const ownerRef = useRef(-2);
   const motion = effectiveMotion(settings);
@@ -68,11 +77,18 @@ export function Scene({ song, timeline, settings, features, clock, onOwnerChange
   useLayoutEffect(() => {
     const el = intro.current;
     if (!el) return;
+    let lastIntro = '';
     const fn: BlockUpdater = (_t, d, top) => {
       const s = blockState(d);
-      el.style.transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
-      el.style.opacity = (d < 0 ? s.opacity * Math.max(0, 1 + d * 1.4) : s.opacity).toFixed(3);
-      el.style.visibility = s.opacity < 0.01 ? 'hidden' : 'visible';
+      const transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
+      const opacity = (d < 0 ? s.opacity * Math.max(0, 1 + d * 1.4) : s.opacity).toFixed(3);
+      const visibility = s.opacity < 0.01 ? 'hidden' : 'visible';
+      const key = `${transform}|${opacity}|${visibility}`;
+      if (key === lastIntro) return;
+      lastIntro = key;
+      el.style.transform = transform;
+      el.style.opacity = opacity;
+      el.style.visibility = visibility;
     };
     register(INTRO, fn, { main: el.offsetHeight, sub: 0, compact: el.offsetHeight, full: el.offsetHeight });
   }, [register, stage]);
@@ -80,15 +96,63 @@ export function Scene({ song, timeline, settings, features, clock, onOwnerChange
   useEffect(() => {
     let raf = 0;
     let lastKey = '';
+    let pool = '';
+    let lastPlate = '';
+    let lastT = Number.NaN;
+    let lastPaint = Number.NaN;
     const loop = () => {
+      raf = 0;
+      if (stageCovered()) return;
       raf = requestAnimationFrame(loop);
       const t = clock();
+      // A paused clock used to restyle the stage anyway. WebKit kept that working set.
+      if (t === lastT) return;
+      // A phone paints the flow at 12 Hz. Every frame rewrote line layers and the
+      // working set climbed. A jump of 80 ms or more (a seek) still paints at once.
+      if (isPhone() && Number.isFinite(lastPaint) && Math.abs(t - lastPaint) < 0.08) return;
+      lastT = t;
+      lastPaint = t;
       const pos = flowPosition(plan, t);
       const list = windowAround(timeline, pos, entrance);
       const key = list.join(',');
       if (key !== lastKey) {
         lastKey = key;
-        setMounted(list);
+        if (isPhone()) {
+          const lineWant: number[] = [];
+          const instWant: number[] = [];
+          for (const k of list) {
+            if (k === INTRO) continue;
+            const c = timeline.cues[k];
+            if (!c) continue;
+            if (c.kind === 'line') lineWant.push(k);
+            else instWant.push(k);
+          }
+          const nextLines = assignSlots(lineSlotsRef.current, lineWant);
+          const nextInst = assignSlots(instSlotsRef.current, instWant);
+          const linesChanged = !sameSlots(nextLines, lineSlotsRef.current);
+          const instChanged = !sameSlots(nextInst, instSlotsRef.current);
+          if (linesChanged) lineSlotsRef.current = nextLines;
+          if (instChanged) instSlotsRef.current = nextInst;
+          if (linesChanged || instChanged) {
+            // Drop the line layer before React writes the new lyric. A text
+            // change inside a transformed line kept a WebKit backing store.
+            const stageEl = stageRef.current;
+            if (linesChanged && stageEl) {
+              for (const el of stageEl.querySelectorAll<HTMLElement>('.fb--line')) {
+                el.style.transform = 'none';
+                el.style.filter = 'none';
+                el.style.opacity = '1';
+              }
+              void stageEl.offsetWidth;
+            }
+            flushSync(() => {
+              if (linesChanged) setLineSlots(nextLines);
+              if (instChanged) setInstSlots(nextInst);
+            });
+          }
+        } else {
+          setMounted(list);
+        }
       }
       if (!stage.h) return;
 
@@ -142,21 +206,49 @@ export function Scene({ song, timeline, settings, features, clock, onOwnerChange
         const h = b0 && b1 ? lerp(b0.h, b1.h, f) : (b0 ?? b1)?.h ?? 0;
         const glow = Math.min(stage.h * 0.5, 380);
         const shown = f < 0.5 ? timeline.cues[a] : timeline.cues[a + 1];
-        stageRef.current?.parentElement?.setAttribute('data-pool', shown?.kind === 'line' && shown.rtl ? 'rtl' : 'ltr');
-        p.style.opacity = (o * 0.95).toFixed(3);
-        p.style.visibility = o < 0.01 ? 'hidden' : 'visible';
-        p.style.transform = `translate3d(0, ${(top + h / 2 - glow / 2).toFixed(1)}px, 0)`;
-        p.style.height = `${glow.toFixed(1)}px`;
+        const nextPool = shown?.kind === 'line' && shown.rtl ? 'rtl' : 'ltr';
+        if (nextPool !== pool) {
+          pool = nextPool;
+          stageRef.current?.parentElement?.setAttribute('data-pool', nextPool);
+        }
+        const opacity = (o * 0.95).toFixed(3);
+        const visibility = o < 0.01 ? 'hidden' : 'visible';
+        const transform = `translate3d(0, ${(top + h / 2 - glow / 2).toFixed(1)}px, 0)`;
+        const height = `${glow.toFixed(1)}px`;
+        const plateKey = `${opacity}|${visibility}|${transform}|${height}`;
+        if (plateKey !== lastPlate) {
+          lastPlate = plateKey;
+          p.style.opacity = opacity;
+          p.style.visibility = visibility;
+          p.style.transform = transform;
+          p.style.height = height;
+        }
       }
 
       const owner = Math.max(-1, Math.min(timeline.cues.length - 1, Math.round(pos)));
       if (owner !== ownerRef.current) {
         ownerRef.current = owner;
-        onOwnerChange(owner);
+        if (isPhone()) {
+          const comment = document.querySelector('.comment');
+          if (comment instanceof HTMLElement) {
+            comment.style.transform = 'none';
+            comment.style.filter = 'none';
+            void comment.offsetWidth;
+          }
+          flushSync(() => onOwnerChange(owner));
+        } else {
+          onOwnerChange(owner);
+        }
       }
     };
+    const unwatch = watchCover(() => {
+      if (!stageCovered() && !raf) raf = requestAnimationFrame(loop);
+    });
     raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      unwatch();
+    };
   }, [timeline, plan, clock, onOwnerChange, stage, wordSync, entrance]);
 
   const poets = song.poets?.map((p) => p.name).join(' · ');
@@ -172,8 +264,19 @@ export function Scene({ song, timeline, settings, features, clock, onOwnerChange
     [settings.fontPersian, settings.fontOriginal, settings.fontTranslation, settings.showTranslation, settings.showTranslit, settings.showAlt, settings.showHarakat, settings.textScale],
   );
 
+  // Phone lines take their size from --lyric-* so a seek never writes font-size.
+  // The slider scales those variables once, on the scene, not per line.
+  const phoneLyric =
+    isPhone() && settings.textScale !== 1
+      ? ({
+          '--lyric-latin': `max(13px, calc(33 * 100dvh / 852 * ${settings.textScale}))`,
+          '--lyric-arab': `max(13px, calc(40 * 100dvh / 852 * ${settings.textScale}))`,
+          '--lyric-tr': `max(13px, calc(20 * 100dvh / 852 * ${settings.textScale}))`,
+        } as CSSProperties)
+      : undefined;
+
   return (
-    <div className="scene" data-align={settings.textAlign} data-enter={entrance}>
+    <div className="scene" data-align={settings.textAlign} data-enter={entrance} style={phoneLyric}>
       <div ref={stageRef} className="scene-stage">
         <div ref={plate} className="flow-plate" aria-hidden style={{ visibility: 'hidden' }} />
         <div ref={intro} className="fb fb--intro" style={{ visibility: 'hidden' }}>
@@ -189,27 +292,69 @@ export function Scene({ song, timeline, settings, features, clock, onOwnerChange
           </div>
           {poets && <div className="intro-poets t-footnote">{poets}</div>}
         </div>
-        {mounted.map((idx) => {
-          if (idx === INTRO) return null;
-          const c = timeline.cues[idx];
-          if (!c) return null;
-          return c.kind === 'line' ? (
-            <LineBlock
-              key={`${idx}-${settings.fontPersian}-${settings.fontOriginal}-${settings.fontTranslation}`}
-              cue={c}
-              wordSync={wordSync && !c.line.flags?.includes('timing-draft')}
-              settings={textSettings}
-              entrance={entrance}
-              motion={motion}
-              stage={stage}
-              register={register}
-              onPick={onPick}
-            />
-          ) : (
-            <InstBlock key={idx} cue={c} timeline={timeline} timed={wordSync} entrance={entrance} motion={motion} stage={stage} features={features} register={register} onPick={onPick} />
-          );
-        })}
+        {isPhone()
+          ? lineSlots.map((slot, i) => {
+              const cue = slot ? timeline.cues[slot.idx] : undefined;
+              if (!slot || !cue || cue.kind !== 'line') return <div key={`pl-${i}`} hidden />;
+              return (
+                <LineBlock
+                  key={`pl-${i}`}
+                  parked={!slot.live}
+                  cue={cue}
+                  wordSync={wordSync && !cue.line.flags?.includes('timing-draft')}
+                  settings={textSettings}
+                  entrance={entrance}
+                  motion={motion}
+                  stage={stage}
+                  register={register}
+                  onPick={onPick}
+                />
+              );
+            })
+          : null}
+        {isPhone()
+          ? instSlots.map((slot, i) => {
+              const cue = slot ? timeline.cues[slot.idx] : undefined;
+              if (!slot || !cue || cue.kind !== 'inst') return <div key={`pi-${i}`} hidden />;
+              return (
+                <InstBlock
+                  key={`pi-${i}`}
+                  parked={!slot.live}
+                  cue={cue}
+                  timeline={timeline}
+                  timed={wordSync}
+                  entrance={entrance}
+                  motion={motion}
+                  stage={stage}
+                  features={features}
+                  register={register}
+                  onPick={onPick}
+                />
+              );
+            })
+          : null}
+        {!isPhone() &&
+          mounted.map((idx) => {
+            if (idx === INTRO) return null;
+            const c = timeline.cues[idx];
+            if (!c) return null;
+            return c.kind === 'line' ? (
+              <LineBlock
+                key={`${idx}-${settings.fontPersian}-${settings.fontOriginal}-${settings.fontTranslation}`}
+                cue={c}
+                wordSync={wordSync && !c.line.flags?.includes('timing-draft')}
+                settings={textSettings}
+                entrance={entrance}
+                motion={motion}
+                stage={stage}
+                register={register}
+                onPick={onPick}
+              />
+            ) : (
+              <InstBlock key={idx} cue={c} timeline={timeline} timed={wordSync} entrance={entrance} motion={motion} stage={stage} features={features} register={register} onPick={onPick} />
+            );
+          })}
       </div>
     </div>
   );
-}
+});

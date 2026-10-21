@@ -1,0 +1,174 @@
+/*
+ * Phone budget for the live song. Desktop is not matched: a mouse, or a coarse
+ * pointer wider than a phone in landscape, keeps the soft-glass blur.
+ *
+ * On a phone the sky, the lines and the player all move under several backdrop-filter
+ * layers. Safari keeps a new snapshot for each of those layers and the tab is killed.
+ * The panels keep the rim, the shadow and the dense fallback fill (the same fill as
+ * Reduce Transparency). The sheet does not blur, so it can open and scroll on the CPU.
+ * The two blocks are the same paint: the media query covers the first frame, and
+ * html[data-phone] covers an iPhone user agent whose media features were not emulated.
+ */
+
+@media (hover: none) and (pointer: coarse) and (max-width: 1100px) {
+  .glass,
+  .glass--strong,
+  .btn-quiet,
+  .search,
+  .lib-tile .chip,
+  .method-top,
+  .ig-top,
+  .ig-card,
+  .pager-link {
+    background: color-mix(in srgb, var(--glass-fallback) 92%, var(--song-field, var(--bg)));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .sheet.glass {
+    background: var(--sheet-fallback);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  /* The shell is already the open size, so the title does not jump when the rows arrive. */
+  .sheet {
+    min-height: min(68dvh, calc(100dvh - env(safe-area-inset-top) - 36px));
+  }
+  .ist-plate,
+  .ist-chip {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  /* brightness() and the small-plate drop-shadow rasterise the engraving.
+     Waiting plates dim by ink colour instead, so the bitmap is not rebuilt. */
+  .ist-art,
+  .ist-t-s .ist-art svg {
+    filter: none;
+  }
+  .ist-art-mount {
+    position: absolute;
+  }
+  .ist-art-mount > .ist-art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .flow-plate,
+  .scene .ist-art,
+  .ist-plate {
+    will-change: auto;
+  }
+  /* A masked stage is one layer. Moving a line under it allocated a new
+     buffer on this WebKit and the previous buffer stayed. Lines already
+     fade by their own opacity, so the edge gradient is not required here. */
+  .scene-stage {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .set-page.is-enter,
+  .set-page.is-leave,
+  .set-page.is-enter .group,
+  .tl-row,
+  .sheet-title {
+    animation: none;
+  }
+  .sheet-body {
+    contain: paint;
+  }
+  .sheet-body .group {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 88px;
+  }
+  /* The strip above the sheet stays put. Scaling the whole song promoted a layer on open. */
+  html[data-sheet='1'] .song,
+  html[data-sheet='1'] .library,
+  html[data-sheet='1'] .ig,
+  html[data-sheet='1'] .method,
+  html[data-sheet='1'] .empty {
+    transform: none;
+    border-radius: 0;
+  }
+}
+
+html[data-phone='1'] .glass,
+html[data-phone='1'] .glass--strong,
+html[data-phone='1'] .btn-quiet,
+html[data-phone='1'] .search,
+html[data-phone='1'] .lib-tile .chip,
+html[data-phone='1'] .method-top,
+html[data-phone='1'] .ig-top,
+html[data-phone='1'] .ig-card,
+html[data-phone='1'] .pager-link {
+  background: color-mix(in srgb, var(--glass-fallback) 92%, var(--song-field, var(--bg)));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+html[data-phone='1'] .sheet.glass {
+  background: var(--sheet-fallback);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+html[data-phone='1'] .sheet {
+  min-height: min(68dvh, calc(100dvh - env(safe-area-inset-top) - 36px));
+}
+
+html[data-phone='1'] .ist-plate,
+html[data-phone='1'] .ist-chip {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+html[data-phone='1'] .ist-art,
+html[data-phone='1'] .ist-t-s .ist-art svg {
+  filter: none;
+}
+
+html[data-phone='1'] .ist-art-mount {
+  position: absolute;
+}
+
+html[data-phone='1'] .ist-art-mount > .ist-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+html[data-phone='1'] .flow-plate,
+html[data-phone='1'] .scene .ist-art,
+html[data-phone='1'] .ist-plate {
+  will-change: auto;
+}
+
+html[data-phone='1'] .scene-stage {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+html[data-phone='1'] .set-page.is-enter,
+html[data-phone='1'] .set-page.is-leave,
+html[data-phone='1'] .set-page.is-enter .group,
+html[data-phone='1'] .tl-row,
+html[data-phone='1'] .sheet-title {
+  animation: none;
+}
+
+html[data-phone='1'] .sheet-body {
+  contain: paint;
+}
+
+html[data-phone='1'] .sheet-body .group {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 88px;
+}
+
+html[data-phone='1'][data-sheet='1'] .song,
+html[data-phone='1'][data-sheet='1'] .library,
+html[data-phone='1'][data-sheet='1'] .ig,
+html[data-phone='1'][data-sheet='1'] .method,
+html[data-phone='1'][data-sheet='1'] .empty {
+  transform: none;
+  border-radius: 0;
+}

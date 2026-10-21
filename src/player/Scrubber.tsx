@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Timeline } from '@/data/timeline';
 import { formatTime } from '@/data/library';
+import { stageCovered, watchCover } from '@/scene/cover';
 
 export function Scrubber({
   timeline,
@@ -30,22 +31,39 @@ export function Scrubber({
   useEffect(() => {
     let raf = 0;
     let lastText = '';
+    let lastScale = '';
+    let lastT = Number.NaN;
     const loop = () => {
+      raf = 0;
+      if (stageCovered()) return;
       raf = requestAnimationFrame(loop);
       const t = dragT.current ?? clock();
+      if (t === lastT) return;
+      lastT = t;
       const p = duration > 0 ? Math.min(1, Math.max(0, t / duration)) : 0;
-      if (fill.current) fill.current.style.transform = `scaleX(${p})`;
+      // Three decimals is about one pixel on the rail. A fresh string every frame grew WebKit's set.
+      const scale = `scaleX(${p.toFixed(3)})`;
+      if (fill.current && scale !== lastScale) {
+        lastScale = scale;
+        fill.current.style.transform = scale;
+      }
       const text = formatTime(t) + '|' + formatTime(duration - t);
       if (text !== lastText) {
         lastText = text;
         if (cur.current) cur.current.textContent = formatTime(t);
         if (rem.current) rem.current.textContent = `−${formatTime(Math.max(0, duration - t))}`;
+        track.current?.setAttribute('aria-valuenow', String(Math.round(t)));
+        track.current?.setAttribute('aria-valuetext', `${formatTime(t)} из ${formatTime(duration)}`);
       }
-      track.current?.setAttribute('aria-valuenow', String(Math.round(t)));
-      track.current?.setAttribute('aria-valuetext', `${formatTime(t)} из ${formatTime(duration)}`);
     };
+    const unwatch = watchCover(() => {
+      if (!stageCovered() && !raf) raf = requestAnimationFrame(loop);
+    });
     raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      unwatch();
+    };
   }, [clock, duration]);
 
   const timeAt = (clientX: number) => {
