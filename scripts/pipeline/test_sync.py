@@ -1225,6 +1225,7 @@ def _shift_row(ctc: float, second, third) -> dict:
 
 def test_whisper_choice() -> None:
     import attack_chance as A
+    import placement as P
     import whisper_choice as C
     import whisper_witness as W
 
@@ -1281,10 +1282,8 @@ def test_whisper_choice() -> None:
     check('a word measured only by the placement model keeps that clock',
           kept_word['clock_stable'] == 5.5, str(kept_word))
     C.apply_models(applied, {'ar': 'small', 'en': 'small'})
-    check('a missing chosen model keeps the placement model clock',
-          applied['lines'][1]['words'][0]['clock_stable'] == 4.0
-          and applied['lines'][1]['words'][0]['stable_models'] == {'medium': 4.0},
-          str(applied['lines'][1]['words'][0]))
+    check('a model with no saved time leaves no stable clock',
+          applied['lines'][1]['words'][0]['clock_stable'] is None, str(applied['lines'][1]['words'][0]['clock_stable']))
     absent = {
         'summary': {'placement_model': 'large-v3'},
         'lines': [{
@@ -1296,27 +1295,47 @@ def test_whisper_choice() -> None:
     kept_open = absent['lines'][0]['words'][0]
     import qa_sync as QS
     wiped = {'ctc_s': 312.074, 'second_s': 312.64, 'third_s': None}
-    kept_clocks = {'ctc_s': 312.074, 'second_s': kept_open['second_s'], 'third_s': kept_open['third_s']}
-    check('an open line keeps the placement clock when the chosen model was not measured',
-          kept_open['clock_stable'] == 311.49 and kept_open['third_s'] == 311.49
-          and kept_open['second_s'] == 312.64, str(kept_open))
-    check('the kept clock is not a one-witness refutation',
-          QS.word_refuted(wiped, np.array([312.64]), {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10})
-          == 'witness-attack'
-          and QS.word_refuted(kept_clocks, np.array([312.64]), {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10})
-          is None,
-          str(kept_clocks))
-    neither = {
-        'summary': {'placement_model': 'medium'},
-        'lines': [{
-            'id': 'none', 'lang': 'en', 'status': 'good', 'placed_by': 'mms', 'group': 'solo',
-            'words': [raw_word(1.0, 'ba', {'large-v3': 4.0}, second=1.5, stable=9.0)],
+    check('the search does not inherit the placement clock',
+          kept_open['clock_stable'] is None and kept_open['third_s'] is None
+          and kept_open['stable_models'] == {'large-v3': 311.49}, str(kept_open))
+    filled_clock = P.placed_clock_for_gap(
+        'second', kept_open['stable_models'], 'large-v3-turbo', 'large-v3', kept_open['third_s'])
+    filled = {'ctc_s': 312.074, 'second_s': 312.64, 'third_s': filled_clock}
+    refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    check('the empty slot can take the placement clock without a one-witness refutation',
+          filled_clock == 311.49
+          and QS.word_refuted(wiped, np.array([312.64]), refute) == 'witness-attack'
+          and QS.word_refuted(filled, np.array([312.64]), refute) is None,
+          str(filled))
+    check('an existing third witness is not replaced by the placement clock',
+          P.placed_clock_for_gap('second', {'large-v3': 311.49}, 'large-v3-turbo', 'large-v3', 312.0) is None)
+    check('a measured chosen model is not replaced by the placement clock',
+          P.placed_clock_for_gap(
+              'second', {'large-v3-turbo': 311.2, 'large-v3': 311.49}, 'large-v3-turbo', 'large-v3', None) is None)
+    check('a stable-ts line does not borrow the placement clock into the whisper slot',
+          P.placed_clock_for_gap('stable-ts', {'large-v3': 311.49}, 'large-v3-turbo', 'large-v3', None) is None)
+    gap_song = {
+        'slug': 's', 'placement_model': 'large-v3', 'proof_models': {'ar': 'large-v3-turbo'},
+        'all_lines': [{
+            'id': 'open', 'lang': 'ar', 'placed_by': 'second',
+            'words': [{
+                'third': None, 'third_kind': 'stable-ts', 'clock_stable': None,
+                'second': 312.64, 'second_kind': 'mms', 'stable_models': {'large-v3': 311.49},
+            }],
         }],
     }
-    C.apply_models(neither, {'en': 'small'})
-    check('a model with no saved time leaves no stable clock',
-          neither['lines'][0]['words'][0]['clock_stable'] is None,
-          str(neither['lines'][0]['words'][0]['clock_stable']))
+    saved, n_filled = A._fill_placed_clocks([gap_song])
+    gap_word = gap_song['all_lines'][0]['words'][0]
+    check('the join fills only the empty stable slot',
+          n_filled == 1 and gap_word['third'] == 311.49 and gap_word['second'] == 312.64, str(gap_word))
+    A._unfill_placed_clocks(saved)
+    check('the placement-clock fill restores the empty slot',
+          gap_word['third'] is None and gap_word['clock_stable'] is None, str(gap_word))
+    report_word = dict(absent['lines'][0]['words'][0])
+    check('qa stamps the same empty slot',
+          P.stamp_placed_clock([report_word], 'second', 'large-v3-turbo', 'large-v3') == 1
+          and report_word['third_s'] == 311.49 and report_word['clock_stable'] == 311.49,
+          str(report_word))
 
     hits = np.zeros((3, len(A.LINE_SHARES), 8), dtype=np.int32)
     cand = np.array([10, 0, 0], dtype=np.int32)

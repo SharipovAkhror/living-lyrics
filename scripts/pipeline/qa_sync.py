@@ -264,6 +264,8 @@ def load_word_rule() -> dict:
         if isinstance(model, str) and model:
             stable_of[str(line_id)] = model
     rule['line_stable'] = stable_of
+    rule['line_placed_clock'] = [
+        str(line_id) for line_id in (chosen.get('line_placed_clock') or []) if line_id]
     phone_of = {}
     for line_id, model in (chosen.get('line_phone_model') or {}).items():
         if isinstance(model, str) and model:
@@ -1050,6 +1052,10 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
     fill_on = bool(rule.get('attack_fill'))
     line_fill = set(rule.get('line_fill') or [])
     line_nucleus = set(rule.get('line_nucleus') or [])
+    line_placed_clock = set(rule.get('line_placed_clock') or [])
+    report_summary = (align_report or {}).get('summary') or {}
+    placement_model = report_summary.get('placement_model') or report_summary.get('stable_model')
+    proof_models = report_summary.get('proof_models') or {}
     env_for_choir = rule.get('choir_attack') == 'envelope'
     env_peaks = envelope_peak_times(sig, min_height=height) if (env_for_choir or fill_on or line_fill) else None
     choir_vowel = rule.get('choir_clock') == 'vowel'
@@ -1104,6 +1110,12 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
                         item['clock_stable'] = float(clock)
                 swapped.append(item)
             align_words = swapped
+        if line['id'] in line_placed_clock and align_words:
+            stamped = [dict(item) for item in align_words]
+            P.stamp_placed_clock(
+                stamped, (rec or {}).get('placed_by'),
+                proof_models.get(line.get('lang')), placement_model)
+            align_words = stamped
         line_peaks = env_peaks if kind == 'choir' and env_for_choir and env_peaks is not None else peaks
         fallback = env_peaks if (fill_on or line['id'] in line_fill) else None
         cue = cues.get(line['id'])

@@ -233,6 +233,46 @@ def first_placed(attempts: list[dict]) -> dict | None:
     return ok[0]
 
 
+def placed_clock_for_gap(placed_by: str | None, stored: dict | None,
+                         chosen_model: str | None, placement_model: str | None,
+                         third: float | None) -> float | None:
+    """The placement-model clock for an empty stable witness, or None.
+
+    The model search does not inherit this clock. The join prices it on its own,
+    and only where the stable slot is already the third witness and is empty.
+    An existing third witness is left as it is. A measured chosen model is not
+    replaced by the placement model.
+    """
+    if third is not None or not placement_model:
+        return None
+    stored = stored or {}
+    if chosen_model and stored.get(chosen_model) is not None:
+        return None
+    clock = stored.get(placement_model)
+    if clock is None:
+        return None
+    _second, _second_kind, _slot, kind_when_empty = witness_slots(placed_by, None, None, None)
+    if kind_when_empty != 'stable-ts':
+        return None
+    return round(float(clock), 3)
+
+
+def stamp_placed_clock(words: list[dict] | None, placed_by: str | None,
+                       chosen_model: str | None, placement_model: str | None) -> int:
+    """Fill empty stable witness slots on report words. Returns how many changed."""
+    changed = 0
+    for word in words or []:
+        clock = placed_clock_for_gap(
+            placed_by, word.get('stable_models'), chosen_model, placement_model, word.get('third_s'))
+        if clock is None:
+            continue
+        word['third_s'] = clock
+        word['clock_stable'] = clock
+        word['third_kind'] = 'stable-ts'
+        changed += 1
+    return changed
+
+
 def witness_slots(placed_by: str | None, mms: float | None, second: float | None,
                   stable: float | None) -> tuple[float | None, str | None, float | None, str | None]:
     """Two witness clocks, and which aligner each one is. The placer is left out.

@@ -2754,6 +2754,43 @@ def _unswap_stable(saved: list) -> None:
         word['clock_stable'] = stable
 
 
+def _fill_placed_clocks(per_song: list[dict]) -> tuple[list, int]:
+    """Put the placement-model clock into an empty stable witness slot.
+
+    Words that already have the chosen model's clock, or any third witness, stay.
+    The model search does not do this: inheriting the clock there made every
+    candidate share one line pass and pushed the share above 0.25.
+    """
+    saved = []
+    changed = 0
+    for song in per_song:
+        placement = song.get('placement_model')
+        chosen = song.get('proof_models') or {}
+        if not placement:
+            continue
+        for line in song.get('all_lines') or []:
+            model = chosen.get(line.get('lang') or '?')
+            placed_by = line.get('placed_by')
+            for word in line.get('words') or []:
+                clock = P.placed_clock_for_gap(
+                    placed_by, word.get('stable_models'), model, placement, word.get('third'))
+                if clock is None:
+                    continue
+                saved.append((word, word.get('third'), word.get('clock_stable'), word.get('third_kind')))
+                word['third'] = clock
+                word['clock_stable'] = clock
+                word['third_kind'] = 'stable-ts'
+                changed += 1
+    return saved, changed
+
+
+def _unfill_placed_clocks(saved: list) -> None:
+    for word, third, stable, kind in saved:
+        word['third'] = third
+        word['clock_stable'] = stable
+        word['third_kind'] = kind
+
+
 def _phone_targets(per_song: list[dict], decision: dict | None) -> list[tuple[str, str, str, str]]:
     """A phoneme model the pair did not choose. Role stays `or` unless the pair's own role is `only`."""
     pairs = {
@@ -2910,6 +2947,22 @@ def _union_overlay(per_song: list[dict], origin: list, origin_modes: dict, refut
         import phoneme_choice as Phone
         _restore(per_song, origin)
         _quiet_flags(per_song)
+        print('объединение: часы модели постановки на пустом слоте', flush=True)
+        saved_gap, gap_n = _fill_placed_clocks(per_song)
+        if gap_n:
+            try:
+                gap_member = _member_from_state(
+                    'placed-clock', per_song, origin_modes, refute, k, partial=True)
+            finally:
+                _unfill_placed_clocks(saved_gap)
+                _quiet_flags(per_song)
+            members.append(gap_member)
+            print(
+                f"объединение: пустой слот {gap_member['proved_n']}, "
+                f"проход строки {gap_member['chance']}, слов {gap_member['word_chance']}, "
+                f"внутри {gap_member['within_limit']}",
+                flush=True,
+            )
         for slug, lang, model in _stable_targets(per_song):
             saved, changed = _swap_stable(per_song, slug, lang, model)
             if not changed:
@@ -3032,6 +3085,8 @@ def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: 
     phone_names = {'phoneme', 'phoneme-fill', 'handoff-phoneme'}
     phone_ids = {lid for lid, name in line_member.items() if name in phone_names and lid in proved}
     line_stable: dict[str, str] = {}
+    line_placed_clock = sorted(
+        lid for lid, name in line_member.items() if name == 'placed-clock' and lid in proved)
     line_phone_model: dict[str, str] = {}
     extra_roles: dict[str, str] = {}
     phone_lookup = None
@@ -3108,6 +3163,7 @@ def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: 
     chosen['line_fill'] = line_fill
     chosen['line_nucleus'] = line_nucleus
     chosen['line_stable'] = line_stable
+    chosen['line_placed_clock'] = line_placed_clock
     chosen['line_phone_model'] = line_phone_model
     chosen['attack_fill'] = False
     chosen['choir_attack'] = 'spectral'
@@ -3143,6 +3199,7 @@ def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: 
         'line_wide': chosen['line_wide'],
         'translation_half': chosen['translation_half'],
         'line_stable': line_stable,
+        'line_placed_clock': line_placed_clock,
         'line_phone_model': line_phone_model,
     }
     if origin_decision is not None and phone_ids:
@@ -3189,6 +3246,8 @@ def build_payload(slugs: list[str]) -> dict:
             'next_by_id': next_by,
             'order_by_id': order_by,
             'proof_models': (report.get('summary') or {}).get('proof_models') or {},
+            'placement_model': (report.get('summary') or {}).get('placement_model')
+            or (report.get('summary') or {}).get('stable_model'),
         })
     print(f'атака: пики {len(per_song)} песен', flush=True)
     # The pooled grid stays in the file as context. The decision is the per-slice
