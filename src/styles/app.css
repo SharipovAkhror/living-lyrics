@@ -181,9 +181,9 @@
 .scene-stage {
   position: absolute;
   left: var(--col-left);
-  top: var(--chrome-top);
+  top: calc(var(--chrome-top) + var(--banner-h, 0px));
   /* A clear band above the floor, so the last readable line does not sit on the dock. */
-  bottom: calc(var(--player-h) + 12px);
+  bottom: calc(var(--player-h) + 40px);
   /* An explicit width. A long line must not stretch this box over the margin note. */
   width: var(--stage-w);
   max-width: var(--stage-w);
@@ -403,6 +403,10 @@
   font-family: var(--font-tr);
   font-weight: 400;
   font-synthesis: none;
+}
+/* Light keeps the serif crisp. A neighbour is a little soft, not a second fade. Phones skip the filter (T27). */
+html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
+  filter: blur(0.5px);
 }
 /* Light keeps the serif crisp. Dark restores a soft shadow so the line sits on the wash. */
 .fb-orig,
@@ -863,6 +867,16 @@
   height: 44px;
   min-width: 44px;
   min-height: 44px;
+  /* The press spring writes transform every frame. The shorthand on .btn
+     keeps a transform timing in WebKit even after transition-property is narrowed. */
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out),
+    opacity var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-1) var(--ease-out);
+}
+.player .btn-xl:active:not(:disabled) {
+  transform: none;
 }
 .player .btn-ring {
   box-shadow:
@@ -934,15 +948,16 @@
   position: absolute;
   z-index: 7;
   top: calc(var(--chrome-top) + 6px);
-  left: 16px;
-  right: 16px;
+  left: 50%;
+  right: auto;
   display: flex;
   align-items: center;
   gap: 8px;
-  width: min(420px, calc(100% - 32px));
+  width: min(540px, calc(100% - 32px));
   height: fit-content;
   min-height: 44px;
-  margin-inline: auto;
+  margin-inline: 0;
+  transform: translateX(-50%);
   padding: 4px 8px 4px 14px;
   border-radius: var(--r-pill);
   background: var(--alert-bg);
@@ -1238,16 +1253,17 @@
 .scrub-rail {
   position: relative;
   width: 100%;
-  height: 6px;
+  height: 4px;
   border-radius: var(--r-pill);
   background: color-mix(in srgb, var(--ink) 12%, transparent);
   overflow: visible;
   transform: scaleY(1);
   transform-origin: center;
-  transition: transform var(--dur-2) var(--ease-spring);
+  transition: transform 150ms cubic-bezier(0.2, 0, 0, 1);
 }
-.scrub.is-dragging .scrub-rail {
-  transform: scaleY(2.5);
+.scrub.is-dragging .scrub-rail,
+.scrub:hover .scrub-rail {
+  transform: scaleY(2);
 }
 .scrub-fill {
   position: absolute;
@@ -1293,7 +1309,7 @@
   position: absolute;
   z-index: 3;
   left: 0;
-  bottom: calc(100% - 4px);
+  bottom: calc(100% + 8px);
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -1305,6 +1321,12 @@
   background: color-mix(in srgb, var(--bg-elevated) 94%, transparent);
   box-shadow: 0 10px 28px -16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
   pointer-events: none;
+  transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@media (hover: none), (pointer: coarse) {
+  .scrub-preview {
+    bottom: calc(100% + 28px);
+  }
 }
 .scrub-preview-part,
 .scrub-preview-line {
@@ -1559,7 +1581,12 @@
     height: 48px;
     border-radius: 14px;
   }
-  .player-alert,
+  .player-alert {
+    left: 50%;
+    right: auto;
+    width: min(540px, calc(100% - 48px));
+    transform: translateX(-50%);
+  }
   .hint {
     left: var(--col-left);
     right: var(--col-right);
@@ -1838,7 +1865,7 @@
 .sheet-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.28);
+  background: rgba(0, 0, 0, 0.45);
   opacity: 0;
 }
 .sheet {
@@ -3348,6 +3375,8 @@
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
+  opacity: 1;
+  background: var(--bg);
 }
 ::view-transition-group(song-poster) {
   animation-duration: var(--dur-3);
@@ -3401,8 +3430,9 @@ html[data-glass='solid'] .song {
   }
 }
 
-.btn-xl.is-live {
-  animation: now-live 1.4s var(--ease-spring) infinite;
+/* The breathe lives on the glyph. An animation on the button itself would override the press scale. */
+html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
+  animation: glyph-in 220ms var(--ease-spring) both, now-live 1.4s var(--ease-spring) 220ms infinite;
 }
 
 /* Phone portrait: header and floor are islands. The field stays in the margins. */
@@ -3635,79 +3665,67 @@ html[data-glass='solid'] .song {
   }
 }
 
-/* ===================== Round 7: one object, a frame per width ===================== */
+/* ===================== Round 8: the cover flies, the page does not hide ===================== */
 
-.morph-shell,
 .morph-cover {
   position: fixed;
   left: 0;
   top: 0;
   z-index: 40;
   pointer-events: none;
-  overflow: hidden;
-  transform-origin: 0 0;
-}
-.morph-cover {
-  z-index: 41;
   object-fit: cover;
+  transform-origin: 0 0;
 }
 
 .library.is-leaving .lib-hero:not(.is-chosen),
 .library.is-leaving .lib-row:not(.is-chosen) {
-  opacity: 0.35;
-  transition: opacity 80ms linear;
+  opacity: 0;
+  transition: opacity 160ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 .library.is-leaving .is-chosen {
-  transform: scale(0.98);
-  transition: transform 80ms var(--ease-out);
+  transform: scale(0.97);
+  transition: transform 160ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 .library.is-leaving .is-chosen .lib-hero-copy,
 .library.is-leaving .is-chosen .lib-row-copy,
 .library.is-leaving .is-chosen .chip {
   opacity: 0;
-  transition: opacity 70ms linear;
+  transition: opacity 160ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-html[data-glass='rim'] .song.is-morphing,
-html[data-glass='solid'] .song.is-morphing,
-html[data-glass='lens'] .song.is-morphing {
+@keyframes song-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.song.is-arriving .topbar-title,
+.song.is-arriving .player,
+.song.is-arriving .scene {
+  animation: song-rise 280ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+.song.is-arriving .player {
+  animation-delay: 40ms;
+}
+.song.is-arriving .scene {
+  animation-delay: 80ms;
+}
+.song.is-flying .now-art {
+  opacity: 0;
+}
+/* The phone route fade would hide the sky for the whole flight. The cover is the only shared piece. */
+html[data-glass='rim'] .song.is-arriving,
+html[data-glass='solid'] .song.is-arriving,
+html[data-glass='lens'] .song.is-arriving,
+html[data-glass='rim'] .song.is-here,
+html[data-glass='solid'] .song.is-here,
+html[data-glass='lens'] .song.is-here {
   animation: none;
-}
-.song.is-morphing .topbar,
-.song.is-morphing .player,
-.song.is-morphing .scene {
-  opacity: 0;
-  pointer-events: none;
-}
-.song.is-morphing .topbar {
-  transform: translate3d(0, -16px, 0);
-}
-.song.is-morphing .player {
-  transform: translate3d(0, 24px, 0);
-}
-.song.is-morphing .scene {
-  transform: translate3d(0, 12px, 0);
-}
-.song.is-morphing .now-art {
-  opacity: 0;
-}
-.song.is-morphing.is-morph-in .topbar,
-.song.is-morphing.is-morph-in .player,
-.song.is-morphing.is-morph-in .scene {
   opacity: 1;
-  pointer-events: auto;
-}
-.song.is-morphing.is-morph-in .topbar {
-  transform: none;
-  transition: transform 220ms var(--ease-spring), opacity 200ms linear;
-}
-.song.is-morphing.is-morph-in .player {
-  transform: none;
-  transition: transform 220ms var(--ease-spring) 40ms, opacity 200ms linear 40ms;
-}
-.song.is-morphing.is-morph-in .scene {
-  transform: none;
-  transition: transform 240ms var(--ease-spring) 70ms, opacity 220ms linear 70ms;
 }
 
 /* Desktop only. The phone sheet must not scale the page: that layer was the memory leak. */
@@ -3727,7 +3745,7 @@ html:not([data-motion='off']) .play-glyph {
 }
 @keyframes glyph-in {
   from {
-    transform: scale(0.7) rotate(-15deg);
+    transform: scale(0.7) rotate(-90deg);
     opacity: 0;
   }
   to {
@@ -3750,28 +3768,35 @@ html:not([data-motion='off']) .play-glyph {
   }
   .topbar-title {
     display: flex;
-    align-items: baseline;
-    gap: 6px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
     min-width: 0;
     overflow: hidden;
   }
-  .topbar-song,
   .topbar-version,
-  .topbar-who {
+  .topbar-part {
+    display: none;
+  }
+  .topbar-song,
+  .song.is-big-type .topbar-song {
     display: block;
     -webkit-line-clamp: unset;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: clip;
+    flex: none;
+    font-size: clamp(0.875rem, 4.6vw, 1.0625rem);
   }
-  .topbar-song {
-    flex: 0 1 auto;
-    font-size: 0.9375rem;
-  }
-  .topbar-version,
-  .topbar-who {
-    flex: 1 1 auto;
-    font-size: 0.75rem;
+  .topbar-who,
+  .song.is-big-type .topbar-who {
+    display: block;
+    -webkit-line-clamp: unset;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    font-size: 0.8125rem;
   }
   .utility {
     grid-template-columns: repeat(4, minmax(44px, 1fr));
@@ -3819,6 +3844,40 @@ html:not([data-motion='off']) .play-glyph {
   }
 }
 
+/* Under 400 px the concert string is dropped and the title keeps the row. 13 px is the floor. */
+@media (max-width: 399px) {
+  .topbar-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    min-width: 0;
+  }
+  .topbar-version,
+  .topbar-part {
+    display: none;
+  }
+  .topbar-song,
+  .song.is-big-type .topbar-song {
+    display: block;
+    -webkit-line-clamp: unset;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    font-size: clamp(0.8125rem, 4.6vw, 1.0625rem);
+  }
+  .topbar-who,
+  .song.is-big-type .topbar-who {
+    display: block;
+    -webkit-line-clamp: unset;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    font-size: 0.8125rem;
+  }
+}
+
 /* Landscape phones: the stage keeps the glass. Chrome is a slim rail. */
 @media (min-width: 700px) and (max-height: 640px),
   (max-width: 699px) and (max-height: 520px) and (orientation: landscape) {
@@ -3855,7 +3914,6 @@ html:not([data-motion='off']) .play-glyph {
     padding-top: 4px;
     padding-bottom: 4px;
   }
-  .player .comment,
   .player .mark-toast,
   .player .resume-offer {
     position: absolute;
@@ -3871,13 +3929,48 @@ html:not([data-motion='off']) .play-glyph {
     margin: 0;
     border-bottom: 0;
   }
-  .player .comment .comment-head {
-    min-height: 32px;
+  .player .comment {
+    position: static;
+    order: 8;
+    flex: 0 0 auto;
     width: auto;
-    padding: 0 8px;
+    max-width: none;
+    min-height: 44px;
+    margin: 0;
+    padding: 0 12px;
+    border: 0;
+    border-radius: var(--r-pill);
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
   }
-  .player:has(.comment) .resume-offer {
-    bottom: calc(100% + 42px);
+  .player .comment .comment-preview {
+    display: none;
+  }
+  .player .comment .comment-head {
+    min-height: 44px;
+    width: auto;
+    padding: 0;
+    gap: 6px;
+  }
+  .player .comment.is-open .comment-fold {
+    position: fixed;
+    top: calc(var(--chrome-top) + var(--banner-h, 0px));
+    right: max(8px, env(safe-area-inset-right, 0px));
+    bottom: calc(var(--player-h) + 8px);
+    left: auto;
+    width: min(40vw, 420px);
+    z-index: 8;
+    padding: 16px 16px 12px;
+    border-radius: 22px;
+    background: var(--dock-solid);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+    overflow: auto;
+  }
+  .player .comment.is-open .comment-fold::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: -1;
   }
 }
 
@@ -3894,6 +3987,34 @@ html:not([data-motion='off']) .play-glyph {
   .player:not(:has(.comment)) .transport {
     min-height: 44px;
     height: 44px;
+  }
+}
+
+/* From a tablet up, the search stays in the header row. It wraps only under 768. */
+@media (min-width: 768px) {
+  .lib-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 24px;
+  }
+  .lib-titlebar {
+    display: contents;
+  }
+  .lib-title {
+    grid-column: 1;
+    justify-self: start;
+  }
+  .search {
+    grid-column: 2;
+    grid-row: 1;
+    width: min(480px, 100%);
+    margin-inline: auto;
+    justify-self: center;
+  }
+  .lib-actions {
+    grid-column: 3;
+    justify-self: end;
   }
 }
 
@@ -3924,7 +4045,8 @@ html:not([data-motion='off']) .play-glyph {
   .search {
     grid-column: 2;
     grid-row: 1;
-    width: 100%;
+    width: min(480px, 100%);
+    margin-inline: auto;
   }
   .lib-actions {
     grid-column: 3;
@@ -3960,10 +4082,13 @@ html:not([data-motion='off']) .play-glyph {
   .play-glyph,
   .library.is-leaving .lib-hero,
   .library.is-leaving .lib-row,
-  .song.is-morphing .topbar,
-  .song.is-morphing .player,
-  .song.is-morphing .scene {
+  .song.is-arriving .topbar-title,
+  .song.is-arriving .player,
+  .song.is-arriving .scene {
     animation: none;
     transition: none;
+  }
+  .song.is-flying .now-art {
+    opacity: 1;
   }
 }

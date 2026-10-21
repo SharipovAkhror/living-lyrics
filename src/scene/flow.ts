@@ -118,6 +118,23 @@ export function layoutAt(anchor: number, indices: number[], m: Map<number, Measu
   return tops;
 }
 
+/**
+ * Pull a stack up so the anchor block ends inside the stage.
+ * A line centred in a box that runs under the dock was cut by the floor.
+ * The top of the anchor never goes above 8 px. Returns the same map when it already fits.
+ */
+export function keepInStage(tops: Map<number, number>, anchor: number, height: number, stageH: number, pad = 16): Map<number, number> {
+  const top = tops.get(anchor);
+  if (top == null || !(stageH > 0) || !(height > 0)) return tops;
+  const overflow = top + height - (stageH - pad);
+  if (overflow <= 0) return tops;
+  const shift = Math.min(overflow, Math.max(0, top - 8));
+  if (shift <= 0) return tops;
+  const out = new Map<number, number>();
+  for (const [k, y] of tops) out.set(k, y - shift);
+  return out;
+}
+
 /** Extra space above a block for the "next line in N s" hint. */
 export const WAIT_ROOM = 24;
 

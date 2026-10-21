@@ -39,7 +39,10 @@ export function navigate(to: string, opts: { replace?: boolean } = {}) {
       startViewTransition?: (cb: () => void) => { finished?: Promise<void> };
     }
   ).startViewTransition;
-  if (sharedTransition() && typeof start === 'function') {
+  // WebKit paints a black root snapshot when the filtered page is captured.
+  // The cover flies on its own image instead, on every browser.
+  const webkit = /AppleWebKit/.test(navigator.userAgent) && !/Chrome|Chromium|Edg\//.test(navigator.userAgent);
+  if (!webkit && sharedTransition() && typeof start === 'function') {
     const root = document.documentElement;
     // The snapshot of live filters is one long frame. Capture the flat fill, then restore.
     root.dataset.vt = 'flat';

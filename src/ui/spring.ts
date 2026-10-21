@@ -21,6 +21,9 @@ export interface SpringState {
 export const SPRING: SpringSpec = { stiffness: 900, damping: 46, mass: 1 };
 export const SPRING_MS = 320;
 
+/** Cover flight, library to the header. Mass 1, a little overshoot, about half a second. */
+export const FLIGHT_SPRING: SpringSpec = { stiffness: 280, damping: 28, mass: 1 };
+
 /**
  * Phone used to carry a stiffer critically damped spring. The analytic step
  * is stable, so the phone sheet now uses {@link SPRING} and still only writes

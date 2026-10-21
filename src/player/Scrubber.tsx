@@ -76,6 +76,7 @@ export function Scrubber({
   colors: string[];
 }) {
   const track = useRef<HTMLDivElement>(null);
+  const rail = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLDivElement>(null);
   const rest = useRef<HTMLDivElement>(null);
   const cur = useRef<HTMLSpanElement>(null);
@@ -104,7 +105,12 @@ export function Scrubber({
       const span = duration > 0 ? duration : 1;
       const p = Math.min(1, Math.max(0, t / span));
       const w = width();
-      if (head.current) head.current.style.transform = `translate3d(${(p * w).toFixed(2)}px, -50%, 0)`;
+      const grabbed = dragT.current != null;
+      const headScale = grabbed ? 1.3 : 1;
+      if (head.current) head.current.style.transform = `translate3d(${(p * w).toFixed(2)}px, -50%, 0) scale(${headScale})`;
+      // The bloom is the same frame as the thumb. Writing it again each frame would restart the 150 ms rise.
+      const railScale = grabbed ? 'scaleY(2)' : '';
+      if (rail.current && rail.current.style.transform !== railScale) rail.current.style.transform = railScale;
       if (rest.current) rest.current.style.transform = `scaleX(${(1 - p).toFixed(4)})`;
       const text = formatTime(t) + '|' + formatTime(duration - t);
       if (text !== lastText) {
@@ -278,7 +284,7 @@ export function Scrubber({
           e.stopPropagation();
         }}
       >
-        <div className="scrub-rail">
+        <div ref={rail} className="scrub-rail">
           {segments.map((seg) => (
             <span
               key={seg.id}

@@ -12,7 +12,7 @@ import { stageCovered, watchCover } from './cover';
 import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
 import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, sameSlots, type PhoneSlot } from './slots';
-import { GAP, WAIT_ROOM, blockHeight, blockState, compressStack, flowPosition, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
+import { GAP, WAIT_ROOM, blockHeight, blockState, compressStack, flowPosition, keepInStage, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
 
 /**
  * The stored 393×852 frame was laid out with the tighter column (gap 26, then
@@ -223,7 +223,8 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const a = Math.floor(pos);
       const f = pos - a;
       const deck = liveW >= 640 && liveH <= 420;
-      const centerY = liveH * (deck ? 0.42 : 0.36);
+      // Centre of the visible stage, not of a box that continues under the floor.
+      const centerY = liveH * (deck ? 0.46 : 0.42);
       const waits = new Map<number, number>();
       for (const k of list) waits.set(k, wordSync ? waitHint(timeline, k, t) : 0);
       const room = (k: number) => (waits.get(k) ?? 0) * WAIT_ROOM;
@@ -235,8 +236,14 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         return h;
       };
       const gap = columnGap();
-      const A = compressStack(layoutAt(a, list, measures, centerY, 8, room, gap), clampAnchor(a), compress, heightsAt(a));
-      const B = compressStack(layoutAt(a + 1, list, measures, centerY, 8, room, gap), clampAnchor(a + 1), compress, heightsAt(a + 1));
+      const pad = Math.max(28, liveH * 0.1);
+      const stackAt = (anchor: number) => {
+        const held = clampAnchor(anchor);
+        const stacked = compressStack(layoutAt(anchor, list, measures, centerY, 8, room, gap), held, compress, heightsAt(anchor));
+        return keepInStage(stacked, held, heightsAt(anchor).get(held) ?? 0, liveH, pad);
+      };
+      const A = stackAt(a);
+      const B = stackAt(a + 1);
       for (const k of list) {
         const b = blocks.current.get(k);
         if (!b) continue;

@@ -446,7 +446,18 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       const big = px >= 24;
       if (root.classList.contains('is-big-type') !== big) root.classList.toggle('is-big-type', big);
       root.style.setProperty('--chrome-top', `${top.offsetTop + top.offsetHeight + 10}px`);
-      root.style.setProperty('--player-h', `${Math.max(0, root.clientHeight - floor.offsetTop)}px`);
+      const rootBox = root.getBoundingClientRect();
+      const floorBox = floor.getBoundingClientRect();
+      let coverTop = floorBox.top;
+      const note = floor.querySelector('.comment');
+      if (note) {
+        const box = note.getBoundingClientRect();
+        if (box.height > 8) coverTop = Math.min(coverTop, box.top);
+      }
+      root.style.setProperty('--player-h', `${Math.max(0, rootBox.bottom - coverTop)}px`);
+      const banner = root.querySelector('.player-alert');
+      const bannerH = banner instanceof HTMLElement ? Math.ceil(banner.getBoundingClientRect().height) + 14 : 0;
+      root.style.setProperty('--banner-h', `${bannerH}px`);
     };
     const ro = new ResizeObserver(apply);
     ro.observe(top);
@@ -463,31 +474,30 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     const from = takeMorph();
     const root = songRef.current;
     const img = artRef.current;
+    // Stays for the life of this visit. Dropping it would restart the route fade at opacity 0.
+    if (root) root.classList.add('is-here');
     if (!from || !root || !img || motionBlocked()) return;
-    root.classList.add('is-morphing');
+    // The song itself stays opaque. Only the header art hides while its twin flies.
+    root.classList.add('is-arriving', 'is-flying');
     const alive = { current: true };
     const dest = () => {
-      const top = topbarRef.current?.getBoundingClientRect();
-      const stage = root.querySelector('.scene-stage')?.getBoundingClientRect();
-      if (!top || !stage || stage.height < 1) return null;
       const art = img.getBoundingClientRect();
-      const cover = art.width >= 1 ? art : { left: top.left + 44, top: top.top + 6, width: 32, height: 32 };
-      const left = Math.min(top.left, stage.left);
-      const right = Math.max(top.right, stage.right);
-      return {
-        card: { left, top: top.top, width: Math.max(1, right - left), height: Math.max(1, stage.bottom - top.top), radius: 28 },
-        cover: { left: cover.left, top: cover.top, width: cover.width, height: cover.height, radius: 12 },
-      };
+      if (art.width < 1 || art.height < 1) return null;
+      return { left: art.left, top: art.top, width: art.width, height: art.height, radius: 12 };
     };
-    void runMorph(from, dest, () => {
-      if (alive.current) root.classList.add('is-morph-in');
-    }, alive).then(() => {
+    const showArt = () => {
+      if (alive.current) root.classList.remove('is-flying');
+    };
+    void runMorph(from, dest, showArt, alive).then(() => {
       if (!alive.current) return;
-      root.classList.remove('is-morphing', 'is-morph-in');
+      root.classList.remove('is-arriving', 'is-flying');
     });
+    // A lost frame must not leave the header art hidden.
+    const guard = window.setTimeout(showArt, 700);
     return () => {
       alive.current = false;
-      root.classList.remove('is-morphing', 'is-morph-in');
+      window.clearTimeout(guard);
+      root.classList.remove('is-arriving', 'is-flying');
     };
   }, [song?.slug]);
 
@@ -664,9 +674,6 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
                   aria-keyshortcuts="M"
                 >
                   <Icon name="flag" size={20} />
-                  <span className="mark-kbd" aria-hidden="true">
-                    M
-                  </span>
                 </button>
               </div>
             }

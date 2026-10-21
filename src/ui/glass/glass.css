@@ -97,6 +97,22 @@ html[data-glass='lens'] .lg-host--card .lg-edge {
   background: radial-gradient(90% 42% at 50% 0%, rgba(255, 255, 255, 0.55), transparent 68%);
 }
 
+/* Dark cards: a hairline rim, not a white gloss along the top. */
+:root[data-theme='dark'] .lg-host--card .lg-edge {
+  background: none;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .lg-host--card .lg-edge {
+    background: none;
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  }
+}
+
 /* Thick: the verse must not read through the floor or a sheet. */
 .lg-host--floor .lg-lens,
 .lg-host--sheet .lg-lens {

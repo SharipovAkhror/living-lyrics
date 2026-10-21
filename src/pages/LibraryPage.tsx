@@ -22,14 +22,14 @@ function langsOf(song: Song) {
   return song.languages.map((code) => LANG_NAMES[code] ?? code).join(' · ');
 }
 
-/** Words leave in place. The plate and the cover travel after a short beat. */
+/** Words leave in place. The cover flies after that short beat. */
 function openSong(event: MouseEvent<HTMLAnchorElement>, slug: string) {
   if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   event.preventDefault();
   armMorph(event.currentTarget);
   const to = `/song/${slug}`;
   if (motionBlocked()) navigate(to);
-  else window.setTimeout(() => navigate(to), 70);
+  else window.setTimeout(() => navigate(to), 160);
 }
 
 export function LibraryPage() {

@@ -65,9 +65,10 @@ export function Sheet({
   const paint = (y: number) => {
     const el = panel.current;
     if (!el) return;
-    const travel = Math.max(0, y);
+    // Negative y is the upward rubber-band. The scrim follows only the downward travel.
+    const travel = y;
     el.style.transform = `translate3d(0, ${travel.toFixed(2)}px, 0)`;
-    const p = Math.max(0, Math.min(1, 1 - travel / height.current));
+    const p = Math.max(0, Math.min(1, 1 - Math.max(0, travel) / height.current));
     if (backdrop.current) backdrop.current.style.opacity = p.toFixed(3);
     const root = document.documentElement;
     // On a phone the page under the sheet does not scale, so this variable would only
@@ -78,7 +79,7 @@ export function Sheet({
     if (openRef.current || p > 0.02) root.dataset.sheet = '1';
     else delete root.dataset.sheet;
     // Refraction waits until the spring has arrived. Toggling it mid-flight resamples every frame.
-    const settled = openRef.current && travel < 0.8;
+    const settled = openRef.current && travel >= 0 && travel < 0.8;
     if (el.classList.contains('is-settled') !== settled) el.classList.toggle('is-settled', settled);
   };
 
@@ -227,7 +228,10 @@ export function Sheet({
     d.v = (e.clientY - d.lastY) / dt;
     d.lastY = e.clientY;
     d.lastT = now;
-    const y = Math.max(0, e.clientY - d.y0);
+    const raw = e.clientY - d.y0;
+    const h = height.current;
+    // Down follows the finger, then resists past the sheet height. Up only stretches a little.
+    const y = raw < 0 ? raw * 0.28 : raw < h ? raw : h + (raw - h) * 0.32;
     state.current = { x: y, v: d.v * 1000 };
     paint(y);
   };

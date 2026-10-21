@@ -144,10 +144,10 @@
   /* Stage text (lyrics) */
   --ink: #1a140f;
   --ink-sung: var(--ink);
-  /* Unsung words stay readable ahead of time (the reader must be able to read the whole line). */
-  --ink-unsung: rgba(26, 20, 15, 0.42);
-  /* Opacity of words not yet sung (and of lines ahead). */
-  --dim-op: 0.42;
+  /* Unsung words stay readable ahead of time. Light ink is a dark brown, not a washed grey. */
+  --ink-unsung: rgba(38, 22, 28, 0.78);
+  /* Opacity of words not yet sung (and of lines ahead). Light keeps them readable; blur does the rest. */
+  --dim-op: 0.72;
   /* The light behind the current line is a wash, not a plate. */
   --plate-tint: transparent;
   --ink-ghost: rgba(26, 20, 15, 0.1);
@@ -218,6 +218,7 @@
     --on-accent: #0b0b0d;
     --ink: #f6f0e6;
     --ink-unsung: rgba(246, 240, 230, 0.42);
+    --dim-op: 0.42;
     --plate-tint: transparent;
     --ink-ghost: rgba(246, 240, 230, 0.1);
     --glass-bg: rgba(255, 255, 255, 0.1);
@@ -279,6 +280,7 @@
   --on-accent: #0b0b0d;
   --ink: #f6f0e6;
   --ink-unsung: rgba(246, 240, 230, 0.42);
+  --dim-op: 0.42;
   --plate-tint: transparent;
   --ink-ghost: rgba(246, 240, 230, 0.1);
   --glass-bg: rgba(255, 255, 255, 0.1);
