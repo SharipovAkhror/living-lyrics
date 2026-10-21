@@ -61,7 +61,19 @@ export function SettingsSheet({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (open) void loadFontLabels();
+    if (!open) return;
+    // Names of the faces are not needed for the first frame of the sheet.
+    const host = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    let idle = 0;
+    if (typeof host.requestIdleCallback === 'function') idle = host.requestIdleCallback(() => void loadFontLabels(), { timeout: 800 });
+    else idle = window.setTimeout(() => void loadFontLabels(), 450);
+    return () => {
+      if (typeof host.cancelIdleCallback === 'function') host.cancelIdleCallback(idle);
+      else window.clearTimeout(idle);
+    };
   }, [open]);
 
   // Samples need the faces themselves, not only the latin names. Loaded when this page opens.

@@ -338,6 +338,32 @@ async function testEngine() {
   }
 }
 
+/** A seek before metadata must survive the load's restore, which captured time 0. */
+async function testPendingSeek() {
+  installDom();
+  const { AudioEngine } = await import('./engine');
+  const engine = new AudioEngine({
+    slug: 'karitas',
+    title: 'Karitas',
+    artist: 'Sami Yusuf',
+    album: 'Karitas',
+    duration: 977,
+    urls: { high: '/audio/karitas/high.m4a' },
+  });
+  await engine.init({ quality: 'high', rate: 1, volume: 1, normalize: false });
+  const el = FakeAudio.all[FakeAudio.all.length - 1];
+  engine.seek(40);
+  // The element dropped the write, the way a browser does before it has metadata.
+  el.currentTime = 0;
+  el.readyState = 0;
+  el.emit('loadedmetadata');
+  assert.ok(Math.abs(el.currentTime - 40) < 0.25, `element restored ${el.currentTime}`);
+  const shown = engine.currentTime();
+  assert.ok(Math.abs(shown - 40) < 0.25, `scene restored ${shown}`);
+  engine.destroy();
+}
+
 testPolicy();
 await testEngine();
+await testPendingSeek();
 console.log('player background: ok');

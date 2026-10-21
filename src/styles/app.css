@@ -103,20 +103,46 @@
 .field.is-dark {
   background: #07060c;
 }
+/* Three fixed washes. Field.tsx moves them with translate only. The old box was
+   inset -12% (124% of the field) and the centre was written into the gradient.
+   Each layer is 250% of the field and centred, so a radius here is the old
+   radius times 1.24 / 2.5. The gradient string never changes. */
 .field-sky {
   position: absolute;
-  inset: -12%;
-  background:
-    radial-gradient(92% 70% at var(--x1, 50%) var(--y1, 40%), color-mix(in srgb, var(--f1, var(--accent)) 78%, var(--bg)), transparent 70%),
-    radial-gradient(84% 64% at var(--x2, 70%) var(--y2, 62%), color-mix(in srgb, var(--f2, var(--accent)) 70%, var(--bg)), transparent 68%),
-    radial-gradient(78% 60% at var(--x3, 28%) var(--y3, 76%), color-mix(in srgb, var(--f4, var(--f3, var(--accent))) 64%, var(--bg)), transparent 72%);
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.field-wash {
+  position: absolute;
+  left: -75%;
+  top: -75%;
+  width: 250%;
+  height: 250%;
+  pointer-events: none;
+  will-change: transform;
+}
+.field-wash-1 {
+  z-index: 3;
+  background: radial-gradient(45.632% 34.72% at 50% 50%, color-mix(in srgb, var(--f1, var(--accent)) 78%, var(--bg)), transparent 70%);
+}
+.field-wash-2 {
+  z-index: 2;
+  background: radial-gradient(41.664% 31.744% at 50% 50%, color-mix(in srgb, var(--f2, var(--accent)) 70%, var(--bg)), transparent 68%);
+}
+.field-wash-3 {
+  z-index: 1;
+  background: radial-gradient(38.688% 29.76% at 50% 50%, color-mix(in srgb, var(--f4, var(--f3, var(--accent))) 64%, var(--bg)), transparent 72%);
 }
 /* Dark washes stay deep enough that light text on 10 % white glass clears WCAG AA. */
-.field.is-dark .field-sky {
-  background:
-    radial-gradient(96% 74% at var(--x1, 50%) var(--y1, 40%), color-mix(in srgb, var(--f1, var(--accent)) 40%, #07060c), transparent 70%),
-    radial-gradient(88% 68% at var(--x2, 70%) var(--y2, 62%), color-mix(in srgb, var(--f2, var(--accent)) 40%, #07060c), transparent 68%),
-    radial-gradient(80% 62% at var(--x3, 28%) var(--y3, 76%), color-mix(in srgb, var(--f4, var(--f3, var(--accent))) 40%, #07060c), transparent 72%);
+.field.is-dark .field-wash-1 {
+  background: radial-gradient(47.616% 36.704% at 50% 50%, color-mix(in srgb, var(--f1, var(--accent)) 40%, #07060c), transparent 70%);
+}
+.field.is-dark .field-wash-2 {
+  background: radial-gradient(43.648% 33.728% at 50% 50%, color-mix(in srgb, var(--f2, var(--accent)) 40%, #07060c), transparent 68%);
+}
+.field.is-dark .field-wash-3 {
+  background: radial-gradient(39.68% 30.752% at 50% 50%, color-mix(in srgb, var(--f4, var(--f3, var(--accent))) 40%, #07060c), transparent 72%);
 }
 .field-veil {
   position: absolute;
@@ -235,6 +261,14 @@
   color: var(--ink-unsung);
   font-size: 40px;
   overflow: visible;
+}
+/* A draft line fades as one layer. Per-word opacity followed --litf and rasterised
+   each glyph again on this WebKit (T27). The fill mask still fades a sung word. */
+.fb-orig.is-line-fade {
+  opacity: var(--dim-op);
+}
+.fb-orig.is-line-fade .w {
+  opacity: 1;
 }
 .scene[data-align='edge'] .fb-orig {
   justify-content: flex-start;
@@ -662,6 +696,10 @@
 .player-alert p {
   margin: 0;
   font: 500 13px/1.35 var(--font-ui);
+}
+.resume-offer {
+  width: 100%;
+  margin: 2px 0 6px;
 }
 .btn-ring.is-buffering {
   position: relative;

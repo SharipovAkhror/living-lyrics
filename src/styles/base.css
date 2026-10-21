@@ -4,6 +4,14 @@
   box-sizing: border-box;
 }
 
+/* The hidden attribute must beat an author `display`. This Chromium's user-agent
+   rule does not, so `.w-wrap { display: contents }` kept the spare phone word
+   slots in the flex line. The current block then grew, its top clamped under
+   the error card, and a blank band opened above the translation (T27). */
+[hidden]:not([hidden='until-found']) {
+  display: none !important;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;

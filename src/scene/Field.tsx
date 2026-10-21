@@ -3,7 +3,10 @@
  * Position and brightness are a function of playback time, so a seek paints the same sky.
  * Nothing here is a game engine. A hidden or off-screen field does not keep a timer.
  */
-import { useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
+import { bisect } from '@/app/bisect';
+import { isPhone } from '@/ui/phone';
+import { stageCovered, watchCover } from './cover';
 
 function skyAt(t: number) {
   const a = t * 0.011;
@@ -15,6 +18,16 @@ function skyAt(t: number) {
     x3: 26 + Math.sin(a * 0.36 + 2.2) * 12,
     y3: 76 + Math.cos(a * 0.66 + 1) * 10,
   };
+}
+
+/**
+ * Percent translate of a 250% layer whose centre sits on the field centre.
+ * `percent` is the old gradient centre, measured on the inset -12% sky box
+ * (124% of the field). 50 on that box is the field centre, so the translate is 0.
+ */
+export function washTranslate(percent: number): number {
+  const field = -0.12 + 1.24 * (percent / 100);
+  return ((field - 0.5) / 2.5) * 100;
 }
 
 interface Star {
@@ -36,7 +49,7 @@ function starField(): Star[] {
   return out;
 }
 
-export function Field({
+export const Field = memo(function Field({
   colors,
   dark,
   clock,
@@ -52,40 +65,58 @@ export function Field({
   still?: boolean;
 }) {
   const root = useRef<HTMLDivElement>(null);
-  const sky = useRef<HTMLDivElement>(null);
+  const washes = useRef<(HTMLDivElement | null)[]>([]);
   const starEls = useRef<(HTMLElement | null)[]>([]);
   const stars = useMemo(starField, []);
   const [c1, c2, c3, c4] = colors;
 
   useEffect(() => {
     const host = root.current;
-    const wash = sky.current;
-    if (!host || !wash) return;
+    if (!host) return;
     let timer = 0;
     let lastT = -1;
+    let lastStar = Number.NaN;
     let seen = false;
     const nodes = starEls.current;
 
     const paint = (time: number) => {
-      const p = skyAt(time);
-      wash.style.setProperty('--x1', `${p.x1.toFixed(2)}%`);
-      wash.style.setProperty('--y1', `${p.y1.toFixed(2)}%`);
-      wash.style.setProperty('--x2', `${p.x2.toFixed(2)}%`);
-      wash.style.setProperty('--y2', `${p.y2.toFixed(2)}%`);
-      wash.style.setProperty('--x3', `${p.x3.toFixed(2)}%`);
-      wash.style.setProperty('--y3', `${p.y3.toFixed(2)}%`);
-      for (let i = 0; i < stars.length; i++) {
-        const node = nodes[i];
-        if (!node) continue;
-        const tw = 0.5 + 0.5 * Math.sin(time * 0.22 + stars[i].p);
-        // Quiet enough that the glass panels stay the surface. Still a function of time.
-        node.style.opacity = (dark ? 0.04 + tw * 0.06 : 0.02 + tw * 0.03).toFixed(3);
+      const phone = isPhone();
+      // The three washes are fixed gradient images. Playback only translates
+      // them, which stays on the compositor. Rewriting the gradient string
+      // kept a new WebKit raster each time (T27). The translate is a function
+      // of playback time, so a seek paints the same sky.
+      if (!bisect('wash')) {
+        const p = skyAt(time);
+        const centres = [
+          [p.x1, p.y1],
+          [p.x2, p.y2],
+          [p.x3, p.y3],
+        ];
+        for (let i = 0; i < centres.length; i++) {
+          const node = washes.current[i];
+          if (!node) continue;
+          const transform = `translate3d(${washTranslate(centres[i][0]).toFixed(2)}%, ${washTranslate(centres[i][1]).toFixed(2)}%, 0)`;
+          if (node.style.transform !== transform) node.style.transform = transform;
+        }
+      }
+      // Stars are a few opacity steps. Phones sample them on a 0.4 s bucket of
+      // the song clock so a seek repeats the frame and the writes stay few.
+      const starTime = phone ? Math.floor(time / 0.4) * 0.4 : time;
+      if (!bisect('stars') && starTime !== lastStar) {
+        lastStar = starTime;
+        for (let i = 0; i < stars.length; i++) {
+          const node = nodes[i];
+          if (!node) continue;
+          const tw = 0.5 + 0.5 * Math.sin(starTime * 0.22 + stars[i].p);
+          const opacity = (dark ? 0.04 + tw * 0.06 : 0.02 + tw * 0.03).toFixed(phone ? 2 : 3);
+          if (node.style.opacity !== opacity) node.style.opacity = opacity;
+        }
       }
     };
 
     const tick = () => {
       timer = 0;
-      if (document.hidden || !seen) return;
+      if (stageCovered() || !seen) return;
       const time = clock ? clock() : t;
       if (lastT < 0 || Math.abs(time - lastT) >= 0.01) {
         lastT = time;
@@ -95,7 +126,7 @@ export function Field({
     };
 
     const start = () => {
-      if (timer || document.hidden || !seen) return;
+      if (timer || stageCovered() || !seen) return;
       tick();
     };
     const stop = () => {
@@ -114,12 +145,19 @@ export function Field({
       else start();
     };
     document.addEventListener('visibilitychange', onVis);
+    const unwatch = watchCover(() => {
+      if (stageCovered()) stop();
+      else start();
+    });
     return () => {
       stop();
       io.disconnect();
+      unwatch();
       document.removeEventListener('visibilitychange', onVis);
     };
   }, [clock, t, still, dark, stars]);
+
+  if (bisect('field')) return null;
 
   return (
     <div
@@ -128,7 +166,26 @@ export function Field({
       style={{ ['--f1' as string]: c1, ['--f2' as string]: c2, ['--f3' as string]: c3, ['--f4' as string]: c4 ?? c3 }}
       aria-hidden
     >
-      <div ref={sky} className="field-sky" />
+      <div className="field-sky">
+        <div
+          ref={(el) => {
+            washes.current[0] = el;
+          }}
+          className="field-wash field-wash-1"
+        />
+        <div
+          ref={(el) => {
+            washes.current[1] = el;
+          }}
+          className="field-wash field-wash-2"
+        />
+        <div
+          ref={(el) => {
+            washes.current[2] = el;
+          }}
+          className="field-wash field-wash-3"
+        />
+      </div>
       <div className="field-veil" />
       {stars.map((star, i) => (
         <i
@@ -142,4 +199,4 @@ export function Field({
       ))}
     </div>
   );
-}
+});
