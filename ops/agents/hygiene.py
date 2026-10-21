@@ -6,7 +6,8 @@ Safe, deleted with --apply (each one fully merged into origin/main and clean):
 - a local branch no worktree has checked out.
 Reported, never deleted: unmerged branches older than STALE_DAYS, worktrees with uncommitted work,
 archived chats still running, two running chats under one name, tasks in progress with nobody on
-them, and paths in the docs that point to nothing.
+them, paths in the docs that point to nothing, and sync counts that drift from the table in
+docs/tasks/T1-sync.md (section «Счёт синхронизации»).
 
     python ops/agents/hygiene.py [<repo>] [--apply] [--repo-only] [--json]
 
@@ -167,6 +168,98 @@ def check_board(repo: Path, issues: list) -> None:
             issues.append(f'на доске задача без исполнителя: {t.get("title")}')
 
 
+SYNC_GROUPS = {
+    'i have come alive, соло': ('ihca', 'Соло'),
+    'karitas, соло': ('karitas', 'Соло'),
+    'one, соло': ('one', 'Соло'),
+    'one, хор': ('one', 'Хор'),
+}
+# Denominators that have been used for a sync group. A fraction with one of these
+# outside the canonical table is a second count of the same sync.
+SYNC_TOTALS = {120, 122, 125, 60, 61, 37, 26, 63}
+SYNC_FRACTION = re.compile(r'(\d+)\s*/\s*(\d+)|(\d+)\s+из\s+(\d+)')
+
+
+def parse_sync_table(repo: Path) -> tuple[list[dict], str | None]:
+    path = repo / 'docs' / 'tasks' / 'T1-sync.md'
+    try:
+        lines = path.read_text(encoding='utf-8').splitlines()
+    except OSError:
+        return [], 'нет docs/tasks/T1-sync.md'
+    start = next((i for i, line in enumerate(lines) if line.strip() == '## Счёт синхронизации'), None)
+    if start is None:
+        return [], 'в docs/tasks/T1-sync.md нет раздела «Счёт синхронизации»'
+    rows = []
+    for line in lines[start + 1:]:
+        if line.startswith('## '):
+            break
+        if not line.startswith('|'):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip('|').split('|')]
+        if not cells or cells[0] in ('Группа', '') or all(set(cell) <= set('-: ') for cell in cells):
+            continue
+        nums = [int(cell) for cell in cells[1:] if re.fullmatch(r'\d+', cell)]
+        if len(nums) < 3:
+            continue
+        rows.append({'name': cells[0].lower(), 'proven': nums[0], 'placed': nums[1], 'total': nums[2]})
+    if len(rows) != 4:
+        return rows, f'в таблице синхронизации {len(rows)} строк, ожидается 4'
+    return rows, None
+
+
+def check_sync(repo: Path, issues: list) -> None:
+    rows, error = parse_sync_table(repo)
+    if error:
+        issues.append(error)
+        return
+    allowed = {(row['proven'], row['total']) for row in rows} | {(row['placed'], row['total']) for row in rows}
+    try:
+        board = json.loads((repo / 'ops' / 'board.json').read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        issues.append('ops/board.json не читается, счёт синхронизации не сверить')
+        return
+    found = {}
+    for song in board.get('songs') or []:
+        for group in song.get('groups') or []:
+            found[(song.get('id'), group.get('name'))] = (
+                group.get('proven'), group.get('placed'), group.get('total'),
+            )
+    for row in rows:
+        key = SYNC_GROUPS.get(row['name'])
+        if key is None:
+            issues.append(f'неизвестная группа в таблице синхронизации: {row["name"]}')
+            continue
+        got = found.get(key)
+        expect = (row['proven'], row['placed'], row['total'])
+        if got != expect:
+            issues.append(
+                f'доска songs {key[0]}/{key[1]} = {got}, таблица T1 = {expect}'
+            )
+    for key in found:
+        if key not in SYNC_GROUPS.values():
+            issues.append(f'на доске группа вне таблицы синхронизации: {key[0]}/{key[1]}')
+    prose = []
+    for label, path in (('docs/STATUS.md', repo / 'docs' / 'STATUS.md'), ('docs/BACKLOG.md', repo / 'docs' / 'BACKLOG.md')):
+        try:
+            prose.append((label, path.read_text(encoding='utf-8')))
+        except OSError:
+            issues.append(f'не читается {label}')
+    for task in board.get('tasks') or []:
+        if task.get('id') != 't1':
+            continue
+        for field in ('title', 'what', 'now', 'next'):
+            prose.append((f'board.t1.{field}', str(task.get(field) or '')))
+    for song in board.get('songs') or []:
+        if song.get('note'):
+            prose.append((f'board.songs.{song.get("id")}.note', str(song['note'])))
+    for label, text in prose:
+        for match in SYNC_FRACTION.finditer(text):
+            proven = int(match.group(1) or match.group(3))
+            total = int(match.group(2) or match.group(4))
+            if total in SYNC_TOTALS and (proven, total) not in allowed:
+                issues.append(f'другой счёт синхронизации в {label}: {proven}/{total}')
+
+
 def check_docs(repo: Path, issues: list) -> None:
     # The standing docs only: task briefs and research name files that are still to be made.
     files = [repo / 'AGENTS.md', repo / 'docs' / 'STATUS.md', *repo.glob('docs/process/*.md'), *repo.glob('docs/methodology/*.md'),
@@ -199,6 +292,7 @@ def main() -> None:
         check_local(repo, apply, fixed, issues)
         check_chats(repo, issues)
     check_board(repo, issues)
+    check_sync(repo, issues)
     check_docs(repo, issues)
     at = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     if '--json' in flags:
