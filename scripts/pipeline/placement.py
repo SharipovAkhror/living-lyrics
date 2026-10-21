@@ -19,6 +19,13 @@ import numpy as np
 import calibrate_score as Cal
 
 CUE_TOL = 0.30
+# 90th percentile of |Gemini hearing − cue| on the 13 I Have Come Alive
+# translation lines whose own recheck block hears that line's text (2.006 s,
+# docs/analysis/i-have-come-alive/recheck.json). Karitas and ONE p90s of the
+# same match are 0.56 s and 0.63 s. The half is the widest of those p90s,
+# rounded up to the cent so the measured p90 sits inside. It is not the 7 s
+# outlier on rumi-18-2: that hearing is stored on a later line, not on its block.
+TRANSLATION_HALF = 2.01
 # Margins around the span [this cue, next cue]. Lead is before this cue, tail is
 # after the next cue's start. The ordinary cue window is not in this list.
 WINDOW_MARGINS = (
@@ -43,11 +50,11 @@ AGREE = 0.10
 
 
 def primary_family(name: str | None) -> str:
-    """`mms`, `stable-ts` or `second`. Every MMS window is the MMS clock."""
+    """`mms`, `stable-ts`, `phoneme` or `second`. Every MMS window is the MMS clock."""
     if not name or str(name).startswith('mms'):
         return 'mms'
-    if name == 'stable-ts':
-        return 'stable-ts'
+    if name in ('stable-ts', 'phoneme'):
+        return name
     return 'second'
 
 
@@ -114,15 +121,88 @@ def spans_inside(spans: list | None, section: tuple[float, float] | None, slack:
     return True
 
 
+def lang_primary(code: str | None) -> str:
+    """ISO 639 primary subtag. `en` and `en-GB` are the same language."""
+    if not code:
+        return ''
+    return str(code).strip().lower().replace('_', '-').split('-')[0]
+
+
+def cue_is_translation(line_lang: str | None, cue_lang: str | None) -> bool:
+    """True when the subtitle cue is not in the line's language.
+
+    A missing language is not called a translation: the 0.30 s gate stays.
+    """
+    line = lang_primary(line_lang)
+    cue = lang_primary(cue_lang)
+    if not line or not cue:
+        return False
+    return line != cue
+
+
+def cue_accept_limit(line_lang: str | None, cue_lang: str | None, half: float | None = None) -> float:
+    """Same-language cues stay at 0.30 s. A translation cue may use `half`."""
+    span = TRANSLATION_HALF if half is None else half
+    if span is None or not cue_is_translation(line_lang, cue_lang):
+        return CUE_TOL
+    return float(span)
+
+
+def translation_span(cue: float, prev_end: float | None, next_start: float | None,
+                     half: float) -> tuple[float, float]:
+    """Acceptance window for one translation cue.
+
+    ±`half` around the cue, tightened by the previous line's end and the next
+    line's start when those neighbours exist. The intersection is the bound:
+    a neighbour gap of many seconds does not become the search.
+    """
+    half = max(0.0, float(half))
+    lo = float(cue) - half
+    hi = float(cue) + half
+    if prev_end is not None:
+        lo = max(lo, float(prev_end))
+    if next_start is not None:
+        hi = min(hi, float(next_start))
+    if hi < lo:
+        lo = hi = float(cue)
+    return lo, hi
+
+
+def in_translation_window(start: float, cue: float, prev_end: float | None,
+                          next_start: float | None, half: float) -> bool:
+    lo, hi = translation_span(cue, prev_end, next_start, half)
+    return lo - 1e-9 <= float(start) <= hi + 1e-9
+
+
+def translation_leftover(start: float | None, cue: float | None, prev_end: float | None,
+                         next_start: float | None, *, structure_ok: bool, translated: bool) -> bool:
+    """A translation start the 0.30 s gate refused, still inside the neighbour fence.
+
+    The chain does not adopt it while a later step can still land inside 0.30 s.
+    A start before the previous cue end is not a leftover: the wider proof uses
+    the same fence, so keeping it would publish a time the join cannot price.
+    """
+    if not structure_ok or not translated or start is None or cue is None:
+        return False
+    if round(abs(float(start) - float(cue)), 3) <= CUE_TOL:
+        return False
+    return in_translation_window(float(start), float(cue), prev_end, next_start, TRANSLATION_HALF)
+
+
 def judge(starts: list[float | None], ends: list[float | None], cue_start: float | None,
-          next_cue: float | None, section: tuple[float, float] | None = None) -> dict:
-    """Structure and |first start − cue|. `placed` needs both, and a cue."""
+          next_cue: float | None, section: tuple[float, float] | None = None,
+          limit: float | None = None) -> dict:
+    """Structure and |first start − cue|. `placed` needs both, and a cue.
+
+    `limit` defaults to 0.30 s. A translation cue passes its own measured half.
+    """
     if not starts or any(s is None or e is None for s, e in zip(starts, ends)):
         why = 'missing' if not starts or any(s is None for s in starts) else 'eaten'
         return {'structure_ok': False, 'structure': why, 'delta': None, 'near': False, 'placed': False}
     ok, why = Cal.structural(starts, ends, next_cue, section)
+    tol = CUE_TOL if limit is None else float(limit)
     delta = None if cue_start is None or starts[0] is None else abs(float(starts[0]) - float(cue_start))
-    near = delta is not None and round(delta, 3) <= CUE_TOL
+    near = delta is not None and round(delta, 3) <= tol
     return {
         'structure_ok': ok, 'structure': why, 'delta': None if delta is None else round(delta, 3),
         'near': near, 'placed': bool(ok and near and cue_start is not None),
@@ -153,6 +233,46 @@ def first_placed(attempts: list[dict]) -> dict | None:
     return ok[0]
 
 
+def placed_clock_for_gap(placed_by: str | None, stored: dict | None,
+                         chosen_model: str | None, placement_model: str | None,
+                         third: float | None) -> float | None:
+    """The placement-model clock for an empty stable witness, or None.
+
+    The model search does not inherit this clock. The join prices it on its own,
+    and only where the stable slot is already the third witness and is empty.
+    An existing third witness is left as it is. A measured chosen model is not
+    replaced by the placement model.
+    """
+    if third is not None or not placement_model:
+        return None
+    stored = stored or {}
+    if chosen_model and stored.get(chosen_model) is not None:
+        return None
+    clock = stored.get(placement_model)
+    if clock is None:
+        return None
+    _second, _second_kind, _slot, kind_when_empty = witness_slots(placed_by, None, None, None)
+    if kind_when_empty != 'stable-ts':
+        return None
+    return round(float(clock), 3)
+
+
+def stamp_placed_clock(words: list[dict] | None, placed_by: str | None,
+                       chosen_model: str | None, placement_model: str | None) -> int:
+    """Fill empty stable witness slots on report words. Returns how many changed."""
+    changed = 0
+    for word in words or []:
+        clock = placed_clock_for_gap(
+            placed_by, word.get('stable_models'), chosen_model, placement_model, word.get('third_s'))
+        if clock is None:
+            continue
+        word['third_s'] = clock
+        word['clock_stable'] = clock
+        word['third_kind'] = 'stable-ts'
+        changed += 1
+    return changed
+
+
 def witness_slots(placed_by: str | None, mms: float | None, second: float | None,
                   stable: float | None) -> tuple[float | None, str | None, float | None, str | None]:
     """Two witness clocks, and which aligner each one is. The placer is left out.
@@ -165,7 +285,96 @@ def witness_slots(placed_by: str | None, mms: float | None, second: float | None
         return mms, 'mms', second, 'whisperx'
     if family == 'second':
         return mms, 'mms', stable, 'stable-ts'
+    if family == 'phoneme':
+        # The phoneme placer is not a witness of itself. MMS and stable-ts, or the second clock.
+        if stable is not None:
+            return mms, 'mms', stable, 'stable-ts'
+        return mms, 'mms', second, 'whisperx'
     return second, 'whisperx', stable, 'stable-ts'
+
+
+# A refuted line may move to a later placer. Phoneme is last and only when its clock exists.
+HANDOFF_AFTER = {
+    'mms': ('stable-ts', 'second', 'phoneme'),
+    'stable-ts': ('second', 'phoneme'),
+    'second': ('phoneme',),
+    'phoneme': (),
+}
+
+
+def _placer_clock(word: dict, name: str) -> float | None:
+    key = {
+        'stable-ts': 'clock_stable',
+        'second': 'clock_second',
+        'phoneme': 'clock_phoneme',
+    }.get(name, 'clock_mms')
+    value = word.get(key)
+    return None if value is None else float(value)
+
+
+def handoff_proposal(line: dict, next_cue: float | None, peaks, refute: dict | None,
+                     section: tuple[float, float] | None = None,
+                     allow_phoneme: bool = True) -> dict | None:
+    """Give a refuted line to the next placer that places it and does not refute.
+
+    The current placer stays when no later one both lands inside 0.30 s and
+    leaves every lettered word unrefuted. The line is not unplaced.
+    """
+    import qa_sync as Q
+
+    words = list(line.get('words') or [])
+    if len(words) < 2 or not refute:
+        return None
+    if not any(Q.word_refuted(
+            {'ctc_s': word.get('t'), 'second_s': word.get('second'), 'third_s': word.get('third')},
+            peaks, refute) for word in words):
+        return None
+    family = primary_family(line.get('placed_by'))
+    cue = line.get('cue_start')
+    limit = cue_accept_limit(line.get('lang'), line.get('cue_lang'))
+    for name in HANDOFF_AFTER.get(family, ()):
+        if name == 'phoneme' and not allow_phoneme:
+            continue
+        starts = [_placer_clock(word, name) for word in words]
+        if any(start is None for start in starts):
+            continue
+        ends = ends_from_starts(starts, next_cue)
+        if not judge(starts, ends, cue, next_cue, section, limit=limit).get('placed'):
+            continue
+        witnesses = []
+        refuted = False
+        for word, start in zip(words, starts):
+            slot = witness_slots(
+                name, _placer_clock(word, 'mms'), _placer_clock(word, 'second'),
+                _placer_clock(word, 'stable-ts'))
+            witnesses.append(slot)
+            if Q.word_refuted({'ctc_s': start, 'second_s': slot[0], 'third_s': slot[2]}, peaks, refute):
+                refuted = True
+                break
+        if refuted:
+            continue
+        return {
+            'by': name,
+            'starts': [float(start) for start in starts],
+            'ends': [float(end) for end in ends],
+            'witnesses': witnesses,
+        }
+    return None
+
+
+def consider_phoneme_place(starts: list, cue, next_cue, section: tuple[float, float] | None = None,
+                           limit: float | None = None) -> dict | None:
+    """A phoneme start places a still-open line inside the cue gate.
+
+    Same-language cues stay at 0.30 s. A translation cue may pass `limit`.
+    """
+    if cue is None or not starts or any(start is None for start in starts):
+        return None
+    floats = [float(start) for start in starts]
+    ends = ends_from_starts(floats, next_cue)
+    if not judge(floats, ends, float(cue), next_cue, section, limit=limit).get('placed'):
+        return None
+    return {'by': 'phoneme', 'starts': floats, 'ends': [float(end) for end in ends]}
 
 
 def in_dispute_band(delta: float | None) -> bool:
