@@ -66,6 +66,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const song = getSong(slug);
   useSongAccent(song);
   const settings = useSettings();
+  const topbarRef = useRef<HTMLElement>(null);
+  const floorRef = useRef<HTMLElement>(null);
   const [lyrics, setLyrics] = useState<Lyrics | null>(null);
   const [peaks, setPeaks] = useState<Peaks | null>(null);
   const [features, setFeatures] = useState<AudioFeatures | null>(null);
@@ -320,6 +322,27 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     () => engine?.skip(5),
   );
 
+  // The stage starts under the header and stops at the floor. Both wrap, so their height is measured.
+  useEffect(() => {
+    const top = topbarRef.current;
+    const floor = floorRef.current;
+    const root = top?.closest('.song');
+    if (!(root instanceof HTMLElement) || !top || !floor) return;
+    const apply = () => {
+      root.style.setProperty('--chrome-top', `${top.offsetTop + top.offsetHeight}px`);
+      root.style.setProperty('--player-h', `${Math.max(0, root.clientHeight - floor.offsetTop)}px`);
+    };
+    const ro = new ResizeObserver(apply);
+    ro.observe(top);
+    ro.observe(floor);
+    window.addEventListener('resize', apply);
+    apply();
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', apply);
+    };
+  }, [song, lyrics, state?.error, state?.source, settings.showComment, settings.commentOpen]);
+
   if (!song || !engine) return <NotFound />;
 
   const poets = song.poets?.map((p) => p.name).join(' · ');
@@ -327,7 +350,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const playLabel = buffering ? (playing ? 'Буферизация' : 'Загрузка записи') : playing ? 'Пауза' : 'Воспроизвести';
   const ownerCue = timeline && owner >= 0 ? timeline.cues[owner] : null;
   const partLabel = headerLine(song, ownerCue);
-  const metaLabel = partLabel && partLabel !== song.version.label ? `${song.version.label} · ${partLabel}` : song.version.label;
+  const partExtra = partLabel && partLabel !== song.artist && partLabel !== song.version.label ? partLabel : '';
   const comment = timeline && settings.showComment && owner >= 0 ? commentFor(timeline, owner) : null;
   const allLines = lyrics?.sections.flatMap((s) => (s.kind === 'vocal' ? s.lines : [])) ?? [];
   const arabScript = /[\u0600-\u06FF]/;
@@ -386,7 +409,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </div>
       )}
 
-      <header className="topbar glass">
+      <header className="topbar" ref={topbarRef}>
         <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
           <Icon name="chevron.left" size={22} />
         </a>
@@ -400,8 +423,10 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         />
         <div className="topbar-title">
           <div className="topbar-song">{song.title}</div>
-          <div className="topbar-meta" title={metaLabel}>
-            {metaLabel}
+          <div className="topbar-version">{song.version.label}</div>
+          <div className="topbar-who">
+            {song.artist}
+            {partExtra ? <span className="topbar-part"> · {partExtra}</span> : null}
           </div>
         </div>
         <button className="btn btn-circle btn-plain" onClick={() => setSheet('info')} aria-label="О песне">
@@ -409,74 +434,44 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </button>
       </header>
 
-      {comment && (
-        <aside className={`comment glass${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
-          <button className="comment-head" onClick={() => setSettings({ commentOpen: !settings.commentOpen })} aria-expanded={settings.commentOpen}>
-            <span className="comment-kicker">Пояснение</span>
-            <span className="comment-preview">{settings.commentOpen ? '' : (settings.showHarakat ? comment.text : stripHarakat(comment.text)).replace(/\*+/g, '')}</span>
-            <Icon name="chevron.down" size={20} className="comment-chevron" />
-          </button>
-          <div className="comment-fold">
-            <RichText key={comment.from.idx} text={comment.text} showHarakat={settings.showHarakat} className="comment-body" />
-          </div>
-        </aside>
-      )}
-
-      {state?.error && (
-        <Status
-          className="player-alert glass"
-          icon="music.note"
-          live="alert"
-          action={
+      <footer className={`player floor${state?.error ? ' has-error' : ''}`} ref={floorRef}>
+        {state?.error && (
+          <div className="floor-status" role="alert">
+            <Icon name="music.note" size={18} />
+            <p>{state.error}</p>
             <button type="button" className="btn btn-capsule btn-tinted" onClick={() => engine.retry()}>
               Повторить
             </button>
-          }
-        >
-          {state.error}
-        </Status>
-      )}
-      {state?.source === 'silent' && !playing && !song.audio.high && !song.audio.saver && (
-        <button className="hint" onClick={() => setSheet('settings')}>
-          <Icon name="music.note" size={16} />
-          Аудио не подключено — подключить
-        </button>
-      )}
-
-      <footer className="player glass">
+          </div>
+        )}
+        {state?.source === 'silent' && !playing && !song.audio.high && !song.audio.saver && (
+          <button type="button" className="floor-status floor-status--btn" onClick={() => setSheet('settings')}>
+            <Icon name="music.note" size={18} />
+            <span>Аудио не подключено — подключить</span>
+          </button>
+        )}
+        {comment && (
+          <aside className={`comment${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
+            <button className="comment-head" onClick={() => setSettings({ commentOpen: !settings.commentOpen })} aria-expanded={settings.commentOpen}>
+              <span className="comment-kicker">Пояснение</span>
+              <span className="comment-preview">{settings.commentOpen ? '' : (settings.showHarakat ? comment.text : stripHarakat(comment.text)).replace(/\*+/g, '')}</span>
+              <Icon name="chevron.down" size={20} className="comment-chevron" />
+            </button>
+            <div className="comment-fold">
+              <RichText key={comment.from.idx} text={comment.text} showHarakat={settings.showHarakat} className="comment-body" />
+            </div>
+          </aside>
+        )}
+        {toast && (
+          <div className="mark-toast" role="status">
+            <span>Отмечено {formatTime(toast.t)}</span>
+            <button type="button" className="mark-toast-undo" onClick={undoToast}>
+              Отменить
+            </button>
+          </div>
+        )}
         {timeline ? (
-          <Scrubber
-            timeline={timeline}
-            duration={duration}
-            clock={clock}
-            onSeek={(t) => engine.seek(t)}
-            accessory={
-              <div className="mark-bar">
-                {toast && (
-                  <div className="mark-toast" role="status">
-                    <span>Отмечено {formatTime(toast.t)}</span>
-                    <button type="button" className="mark-toast-undo" onClick={undoToast}>
-                      Отменить
-                    </button>
-                  </div>
-                )}
-                <button
-                  type="button"
-                  className="mark-btn"
-                  onClick={placeMark}
-                  disabled={!timeline}
-                  aria-label="Не совпадает"
-                  title="Не совпадает"
-                  aria-keyshortcuts="M"
-                >
-                  <Icon name="flag" size={20} />
-                </button>
-                <kbd className="mark-kbd" aria-hidden="true">
-                  M
-                </kbd>
-              </div>
-            }
-          />
+          <Scrubber timeline={timeline} duration={duration} clock={clock} onSeek={(t) => engine.seek(t)} />
         ) : (
           <div className="scrub scrub--hold" aria-hidden="true">
             <div className="scrub-top" />
@@ -494,7 +489,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               <Icon name="backward" size={24} />
             </button>
             <button
-              className={`btn btn-circle btn-xl btn-ring${buffering ? ' is-buffering' : ''}`}
+              className={`btn btn-circle btn-xl btn-ring${buffering ? ' is-buffering' : ''}${state?.error ? ' is-error' : ''}`}
               onClick={togglePlay}
               aria-label={playLabel}
               aria-busy={buffering}
@@ -509,22 +504,34 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               <Icon name="forward" size={24} />
             </button>
           </div>
-          <div className="utility">
+          <button
+            type="button"
+            className="mark-btn"
+            onClick={placeMark}
+            disabled={!timeline}
+            aria-label="Не совпадает"
+            title="Не совпадает (M)"
+            aria-keyshortcuts="M"
+          >
+            <Icon name="flag" size={18} />
+            <span className="mark-label">Не совпадает</span>
+          </button>
+          <div className="utility" role="group" aria-label="Действия с песней">
             <button className="util" aria-label="Перевод" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
-              <Icon name="character.bubble" size={24} />
-              <span className="util-label" aria-hidden="true">Перевод</span>
+              <Icon name="character.bubble" size={20} />
+              <span className="util-label">Перевод</span>
             </button>
             <button className="util" aria-label="Пояснение" aria-pressed={settings.showComment} onClick={() => setSettings({ showComment: !settings.showComment })}>
-              <Icon name="book.closed" size={24} />
-              <span className="util-label" aria-hidden="true">Пояснение</span>
+              <Icon name="book.closed" size={20} />
+              <span className="util-label">Пояснение</span>
             </button>
             <button className="util" aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={() => setSheet('text')}>
-              <Icon name="list.bullet" size={24} />
-              <span className="util-label" aria-hidden="true">Весь текст</span>
+              <Icon name="list.bullet" size={20} />
+              <span className="util-label">Весь текст</span>
             </button>
             <button className="util" aria-label="Настройки" aria-pressed={sheet === 'settings'} onClick={() => setSheet('settings')}>
-              <Icon name="slider.horizontal.3" size={24} />
-              <span className="util-label" aria-hidden="true">Настройки</span>
+              <Icon name="slider.horizontal.3" size={20} />
+              <span className="util-label">Настройки</span>
             </button>
           </div>
         </div>

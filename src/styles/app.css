@@ -53,13 +53,12 @@
   /* Time row, rail, transport ring and the labelled tasks. The safe area is counted once, inside the player. */
   --safe-t: env(safe-area-inset-top);
   --safe-b: env(safe-area-inset-bottom);
-  /* Phone floor: one scrub row and one control row. The safe area sits inside the floor. */
-  --player-h: calc(120px + var(--safe-b));
-  /* Melted top rail: back, cover, title. A status card adds --alert-space so it does not cover the verse. */
-  --chrome-top: calc(var(--safe-t) + 64px);
+  /* Phone floor: status, note, scrub, transport, labelled actions. Measured after paint. */
+  --player-h: calc(232px + var(--safe-b));
+  /* Title, wrapping version, performer. Measured after paint. */
+  --chrome-top: calc(var(--safe-t) + 104px);
   --col-left: 0px;
   --col-right: 0px;
-  --alert-space: 0px;
   --player-bottom: 0px;
   position: fixed;
   top: 0;
@@ -71,9 +70,7 @@
   background: var(--bg);
   overscroll-behavior: none;
 }
-.song:has(.player-alert, .hint) {
-  --alert-space: 72px;
-}
+
 
 .scene,
 .field {
@@ -153,28 +150,18 @@
   position: absolute;
   left: var(--col-left);
   right: var(--col-right);
-  top: calc(var(--chrome-top) + var(--alert-space, 0px));
+  top: var(--chrome-top);
   bottom: var(--player-h);
   touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
 }
-.song.has-comment .scene-stage {
-  bottom: calc(var(--player-h) + 52px);
-}
-/* The 286px reserve is taller than the player. On a low window that empty band
-   was the whole stage, and the plates had nowhere to stand. */
-@media (max-height: 640px) {
-  .song.has-comment .scene-stage {
-    bottom: calc(var(--player-bottom) + var(--player-h) + 28px);
-  }
-}
 
 /* ----- Lyrics flow ----- */
 /* Lines fade out under the bars instead of being cut, as in Apple Music. */
 .scene-stage {
-  -webkit-mask-image: linear-gradient(transparent 0, #000 3%, #000 94%, transparent 100%);
-  mask-image: linear-gradient(transparent 0, #000 3%, #000 94%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 90%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 90%, transparent 100%);
 }
 .fb {
   position: absolute;
@@ -315,12 +302,12 @@
   background-clip: text;
 }
 .fb-subs {
-  margin-top: clamp(10px, 2vh, 18px);
+  margin-top: 4px;
   max-width: min(100%, 34em);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 2px;
   padding-bottom: 2px;
 }
 .scene[data-align='edge'] .fb-tr,
@@ -349,12 +336,16 @@
   font-weight: 400;
   font-synthesis: none;
 }
+.fb-orig,
+.fb-tr {
+  text-shadow: 0 1px 10px color-mix(in srgb, var(--bg) 72%, transparent);
+}
 .fb-tr {
   margin: 0;
   font-size: var(--lyric-tr);
-  line-height: 1.4;
+  line-height: 1.35;
   letter-spacing: -0.2px;
-  color: color-mix(in srgb, var(--ink) 82%, transparent);
+  color: color-mix(in srgb, var(--ink) 90%, transparent);
   text-wrap: balance;
 }
 .fb-translit {
@@ -587,20 +578,35 @@
 /* ----- Chrome: top bar, commentary, player ----- */
 .topbar {
   position: absolute;
-  z-index: 5;
+  z-index: 6;
   top: 0;
   left: 0;
   right: 0;
-  padding: calc(var(--safe-t, env(safe-area-inset-top)) + 4px) 8px 8px;
+  padding: calc(var(--safe-t, env(safe-area-inset-top)) + 6px) 8px 8px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  border-radius: 0 0 var(--r-lg) var(--r-lg);
-  /* A rail that melts into the field, not a pill floating in it. */
-  box-shadow: var(--glass-rim), var(--glass-rim-low);
-  transition:
-    opacity var(--dur-3) var(--ease-out),
-    transform var(--dur-3) var(--ease-spring);
+  gap: 8px;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+/* The glass hangs into the stage and dissolves. The title itself stays solid. */
+.topbar::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: -28px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--glass-bg) 0%, var(--glass-bg) 55%, transparent 100%);
+  -webkit-backdrop-filter: blur(24px) saturate(var(--glass-saturate));
+  backdrop-filter: blur(24px) saturate(var(--glass-saturate));
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
 }
 .now-art {
   width: 40px;
@@ -616,45 +622,103 @@
   text-align: start;
 }
 .topbar-song {
-  font-size: var(--t-headline);
+  font-family: var(--font-serif);
+  font-size: 17px;
   font-weight: 600;
-  line-height: 22px;
+  line-height: 1.2;
   letter-spacing: -0.02em;
   color: var(--ink);
 }
-.topbar-meta {
-  font-size: var(--t-footnote);
-  line-height: 18px;
+.topbar-version,
+.topbar-who {
+  font-size: 13px;
+  line-height: 1.3;
   color: var(--ink-2);
 }
+.topbar-who {
+  color: var(--ink);
+}
+.topbar-part {
+  color: var(--ink-2);
+  font-weight: 400;
+}
 .topbar-song,
-.topbar-meta {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+.topbar-version,
+.topbar-who {
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .player {
   position: absolute;
-  z-index: 5;
+  z-index: 6;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 4px 8px calc(8px + var(--safe-b, env(safe-area-inset-bottom)));
-  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 4px 10px calc(8px + var(--safe-b, env(safe-area-inset-bottom)));
+  border-radius: 0;
   display: flex;
   flex-direction: column;
-  /* The floor of the room. The song colour lives in the play disc, not in a second chrome. */
-  box-shadow:
-    var(--glass-rim),
-    var(--glass-rim-low),
-    0 -16px 36px -24px rgba(26, 20, 15, 0.35);
-  transition: opacity var(--dur-3) var(--ease-out);
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
-.player-row {
+/* One floor. The blur climbs into the stage and fades, so the note and the player are not two pills. */
+.player::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  top: -32px;
+  bottom: 0;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--glass-bg) 0%, var(--glass-bg) 64%, transparent 100%);
+  -webkit-backdrop-filter: blur(24px) saturate(var(--glass-saturate));
+  backdrop-filter: blur(24px) saturate(var(--glass-saturate));
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 70%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, #000 70%, transparent 100%);
+}
+.floor-status {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 10px;
+  min-height: 44px;
+  margin: 0 0 2px;
+  padding: 2px 2px 6px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  background: none;
+  color: var(--ink);
+  font: 500 var(--t-footnote) / 1.35 var(--font-ui);
+  text-align: start;
+  width: 100%;
+  cursor: default;
+}
+.floor-status--btn {
+  cursor: pointer;
+}
+.floor-status p,
+.floor-status span {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.floor-status .btn {
+  flex: none;
+}
+.btn-ring.is-error {
+  box-shadow:
+    0 0 0 2px var(--system-orange),
+    inset 0 1px 0 color-mix(in srgb, white 42%, transparent);
+}
+.player-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 4px;
+  row-gap: 2px;
   min-height: 56px;
 }
 .player .btn-xl {
@@ -777,11 +841,12 @@
   margin: var(--sp-2) 0 var(--sp-3);
 }
 .transport {
+  grid-column: 2;
+  grid-row: 1;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 2px;
-  flex: none;
   margin: 0;
   padding: 0;
 }
@@ -793,34 +858,42 @@
   min-height: 44px;
 }
 .utility {
-  display: flex;
-  flex: 1;
-  justify-content: flex-end;
-  gap: 0;
-  padding: 0;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  padding: 2px;
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
 }
 .util {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--sp-1);
-  min-width: 64px;
+  gap: 1px;
+  min-width: 0;
+  width: 100%;
   min-height: var(--hit);
-  padding: var(--sp-1) 6px;
+  padding: 4px 2px;
   border: 0;
-  border-radius: var(--r-pill);
+  border-radius: var(--r-sm);
   background: none;
   /* --ink-2 is 72 % and stays muted on the glass over every song wash. */
   color: var(--ink-2);
-  font: 500 var(--t-footnote) / 1.2 var(--font-ui);
-  white-space: nowrap;
+  font: 600 11px / 1.15 var(--font-ui);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition:
     transform var(--dur-3) var(--ease-spring),
     color var(--dur-1),
     background-color var(--dur-1);
+}
+.util-label {
+  max-width: 100%;
+  text-align: center;
+  white-space: nowrap;
 }
 .util:active {
   transform: scale(0.96);
@@ -829,84 +902,14 @@
 .util[aria-pressed='true'] {
   color: var(--accent);
   font-weight: 600;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
-/* A very narrow phone cannot hold seven targets of 44 in one row. The tasks drop to their own row. */
+/* The four actions already have their own row. A narrower phone only softens the type. */
 @media (max-width: 370px) {
-  .song {
-    --player-h: calc(168px + var(--safe-b));
-  }
-  .player-row {
-    flex-wrap: wrap;
-  }
-  .player .utility {
-    flex: 1 0 100%;
-    justify-content: space-around;
-  }
-}
-/* On a tall phone the note is the lip of the floor, not a third pill over the verse.
-   The stage ends at the floor, so opening the note does not jump the lines. */
-@media (max-width: 799px) and (min-height: 641px) {
-  .song.has-comment {
-    /* 46 lip + 44 scrub + 56 transport + 8 bottom padding. */
-    --player-h: calc(154px + var(--safe-b));
-  }
-  .song.has-comment .scene-stage {
-    bottom: var(--player-h);
-  }
-  .song.has-comment .player {
-    padding-top: 46px;
-  }
-  .song.has-comment .comment:not(.is-open) {
-    z-index: 6;
-    left: 0;
-    right: 0;
-    bottom: calc(var(--player-h) - 46px);
-    height: 46px;
-    margin: 0;
-    padding: 0 18px;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
-  }
-  .song.has-comment .comment:not(.is-open) .comment-head {
-    min-height: 44px;
-    padding: 0;
-  }
-  .song.has-comment .comment.is-open {
-    z-index: 6;
-    left: 0;
-    right: 0;
-    bottom: calc(var(--player-h) - 46px);
-    border-radius: var(--r-lg) var(--r-lg) 0 0;
-  }
-}
-@media (max-width: 370px) and (min-height: 641px) {
-  .song.has-comment {
-    /* The four tasks wrap onto a second row. */
-    --player-h: calc(198px + var(--safe-b));
-  }
-}
-/* On the phone the four tasks stay as quiet icons. The name is the accessible name. Words return on a wide window. */
-@media (max-width: 799px) {
-  .util {
-    position: relative;
-    width: 44px;
-    min-width: 44px;
-    padding: 0;
-  }
-  .util-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+  .util,
+  .util-label,
+  .mark-label {
+    font-size: 10px;
   }
 }
 
@@ -918,21 +921,32 @@
   min-height: 44px;
 }
 .mark-btn {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  gap: 1px;
+  width: auto;
+  max-width: 100%;
   min-width: 44px;
   min-height: 44px;
-  padding: 0;
+  padding: 2px 2px;
   border: 0;
-  border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  border-radius: var(--r-sm);
+  background: transparent;
   color: var(--ink-2);
+  font: 600 12px / 1.15 var(--font-ui);
+  text-align: start;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+}
+.mark-label {
+  min-width: 0;
+  text-wrap: balance;
 }
 .mark-btn {
   transition: transform var(--dur-3) var(--ease-spring), background-color var(--dur-1);
@@ -1060,14 +1074,14 @@
   margin: 0;
 }
 .comment {
-  position: absolute;
-  z-index: 4;
-  left: 16px;
-  right: 16px;
-  bottom: calc(var(--player-h) + 8px);
+  position: static;
+  z-index: 1;
   margin: 0;
-  padding: 4px 16px 6px;
-  border-radius: var(--r-md);
+  padding: 0 2px 2px;
+  border-radius: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  background: none;
+  box-shadow: none;
   color: var(--ink);
 }
 .comment-head {
@@ -1180,10 +1194,14 @@
 /* From here the page is a column, not a phone floor stretched across the window. */
 @media (min-width: 800px) {
   .song {
-    --col-left: max(28px, calc((100% - 720px) / 2));
-    --col-right: max(28px, calc((100% - 720px) / 2));
-    --chrome-top: calc(var(--safe-t) + 92px);
-    --player-h: calc(148px + var(--safe-b));
+    --col-left: max(28px, calc((100% - 760px) / 2));
+    --col-right: max(28px, calc((100% - 760px) / 2));
+    --chrome-top: calc(var(--safe-t) + 118px);
+    --player-h: calc(132px + var(--safe-b));
+  }
+  .topbar::before,
+  .player::before {
+    display: none;
   }
   .topbar,
   .player {
@@ -1192,16 +1210,63 @@
     width: auto;
     margin: 0;
     transform: none;
+    background: var(--glass-bg);
+    box-shadow: var(--glass-shadow), var(--glass-rim), var(--glass-rim-low);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   }
   .topbar {
     top: 16px;
-    padding: 8px 10px;
+    padding: 10px 12px;
     border-radius: var(--r-lg);
   }
   .player {
     bottom: 18px;
-    padding: 8px 14px 10px;
+    padding: 8px 16px 10px;
     border-radius: var(--r-lg);
+  }
+  .player-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .transport {
+    flex: none;
+  }
+  .mark-btn {
+    flex: none;
+    flex-direction: row;
+    gap: 6px;
+    padding: 0 12px;
+  }
+  .mark-label {
+    white-space: nowrap;
+    font-size: 14px;
+  }
+  .utility {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 2px;
+    margin-left: 8px;
+    padding: 0 0 0 12px;
+    border-radius: 0;
+    background: none;
+    border-left: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  }
+  .util {
+    flex-direction: row;
+    width: auto;
+    min-width: 44px;
+    gap: 6px;
+    padding: 0 10px;
+    font-size: var(--t-footnote);
+  }
+  .util-label {
+    font-size: var(--t-footnote);
+    white-space: nowrap;
   }
   .now-art {
     width: 48px;
@@ -1228,14 +1293,9 @@
     --col-right: max(40px, calc((100% - 820px) / 2));
   }
   .song.has-comment {
-    --col-left: max(48px, calc((100% - 1120px) / 2));
-    --col-right: calc(100% - var(--col-left) - 760px);
-  }
-  .song.has-comment .scene-stage {
-    bottom: calc(var(--player-h) + 16px);
-  }
-  .song.has-comment .topbar {
-    right: max(28px, calc((100% - 1120px) / 2));
+    --note-w: min(340px, 30vw);
+    --col-right: var(--note-w);
+    --col-left: max(36px, calc((100% - var(--note-w) - 720px) / 2));
   }
   .now-art {
     width: 52px;
@@ -1251,20 +1311,48 @@
     width: min(100%, 680px);
     margin-left: calc(min(100%, 680px) / -2);
   }
-  .fb-subs {
-    margin-top: 14px;
+  /* The player's own blur would trap this fixed column inside the capsule. Glass stays on ::before. */
+  .song.has-comment .player {
+    background: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
-  .comment {
+  .song.has-comment .player::before {
+    display: block;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: inherit;
+    background: var(--glass-bg);
+    box-shadow: var(--glass-shadow), var(--glass-rim), var(--glass-rim-low);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .song.has-comment .comment {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
     left: auto;
-    right: max(28px, calc((100% - 1120px) / 2));
-    bottom: auto;
-    top: clamp(calc(var(--chrome-top) + 4px), var(--note-y, 22vh), calc(100dvh - var(--player-h) - 200px));
-    width: min(320px, calc(var(--col-right) - 36px));
+    z-index: 4;
+    width: var(--note-w);
+    max-height: none;
     height: auto;
-    max-height: min(42dvh, 380px);
+    margin: 0;
     display: flex;
     flex-direction: column;
-    padding: 16px 18px 18px;
+    padding: calc(env(safe-area-inset-top) + 28px) 28px 36px;
+    border: 0;
+    border-left: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+    border-radius: 0;
+    background: color-mix(in srgb, var(--bg-elevated) 94%, transparent);
+    box-shadow: -24px 0 48px -32px rgba(0, 0, 0, 0.45);
+    -webkit-backdrop-filter: blur(28px) saturate(var(--glass-saturate));
+    backdrop-filter: blur(28px) saturate(var(--glass-saturate));
   }
   .comment-head {
     pointer-events: none;
@@ -1284,7 +1372,8 @@
     transition: none;
   }
   .comment-body {
-    max-height: min(36dvh, 320px);
+    max-height: none;
+    flex: 1;
     height: auto;
     overflow: auto;
     opacity: 1;
@@ -1292,12 +1381,22 @@
     line-height: 1.55;
     font-size: var(--lyric-note);
   }
-  .song.has-comment .player-alert,
-  .song.has-comment .hint {
-    left: var(--col-left);
-    right: var(--col-right);
-    width: auto;
-    margin-inline: 0;
+}
+
+/* A laptop with the note column open cannot fit the labelled actions on the transport row. */
+@media (min-width: 800px) and (max-width: 1240px) {
+  .player-row {
+    flex-wrap: wrap;
+    row-gap: 2px;
+  }
+  .utility,
+  .player .utility {
+    flex: 1 1 100%;
+    margin-left: 0;
+    padding: 4px 0 0;
+    border-left: 0;
+    border-top: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+    justify-content: flex-start;
   }
 }
 
@@ -1322,34 +1421,34 @@
     padding: 4px 6px;
     border-radius: var(--r-lg);
   }
-  .scene-stage {
-    bottom: calc(var(--player-h) + 8px);
-  }
-  .song.has-comment .scene-stage {
-    right: 0;
-    bottom: calc(var(--player-h) + 48px);
-  }
-  .song.has-comment.comment-open .scene-stage {
-    bottom: calc(var(--player-h) + 120px);
-  }
-
   .player,
   .song.has-comment .player {
     left: 12px;
     right: 12px;
     bottom: calc(10px + var(--safe-b));
     width: auto;
-    height: 84px;
-    max-height: 110px;
+    height: auto;
+    max-height: none;
     box-sizing: border-box;
     transform: none;
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 6px;
-    padding: 6px 10px;
-    flex-wrap: nowrap;
+    padding: 4px 10px;
+    flex-wrap: wrap;
     border-radius: var(--r-lg);
+  }
+  .player .comment,
+  .player .floor-status,
+  .player .mark-toast {
+    position: static;
+    flex: 1 0 100%;
+    order: -1;
+    width: auto;
+    max-width: none;
+    min-height: 36px;
+    border-radius: 0;
   }
   .player-row,
   .player .scrub,
@@ -1360,14 +1459,13 @@
     display: contents;
   }
   .player .scrub-now { order: 1; }
-  .player .mark-bar { order: 2; flex: none; min-height: 0; }
   .player .scrub-track { order: 3; flex: 1 1 auto; height: 36px; }
   .player .scrub-remain { order: 4; }
   .player .transport .btn:nth-child(1) { order: 5; }
   .player .transport .btn:nth-child(2) { order: 6; }
   .player .transport .btn:nth-child(3) { order: 7; }
-  .player .util { order: 8; }
-  .mark-kbd { display: none; }
+  .player .mark-btn { order: 8; width: 44px; min-width: 44px; padding: 0; justify-content: center; }
+  .player .util { order: 9; }
   .player .btn-xl {
     width: 48px;
     height: 48px;
@@ -1384,35 +1482,14 @@
     padding: 0;
     flex: none;
   }
-  .util-label {
+  .util-label,
+  .mark-label {
     position: absolute;
     width: 1px;
     height: 1px;
     overflow: hidden;
     clip: rect(0 0 0 0);
     white-space: nowrap;
-  }
-  .comment {
-    left: 12px;
-    right: auto;
-    top: auto;
-    bottom: calc(var(--player-h) + 4px);
-    width: max-content;
-    max-width: calc(100% - 24px);
-    display: flex;
-    align-items: center;
-    padding: 0 12px 0 14px;
-    border-radius: var(--r-pill);
-    min-height: 36px;
-  }
-  .comment.is-open {
-    right: 12px;
-    width: auto;
-    max-height: 108px;
-    border-radius: var(--r-md);
-    align-items: stretch;
-    flex-direction: column;
-    padding: 0 14px 6px;
   }
   .comment-head {
     pointer-events: auto;
@@ -1470,8 +1547,8 @@
     transition: none;
   }
 }
-@media (prefers-reduced-transparency: reduce) {
-  .comment {
+@media (prefers-reduced-transparency: reduce) and (min-width: 1100px) and (min-height: 641px) {
+  .song.has-comment .comment {
     background: var(--bg-elevated);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -1503,6 +1580,7 @@
   border-radius: var(--r-lg);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   outline: none;
   transform: translate3d(0, 110%, 0);
   will-change: transform;
@@ -1835,9 +1913,9 @@ html.is-sheet-drag .empty {
   font-size: 1.15em;
 }
 .group-body {
-  border-radius: var(--r-md);
-  overflow: hidden;
-  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  border-radius: 0;
+  overflow: visible;
+  background: none;
   box-shadow: none;
 }
 .group-footer {
@@ -2045,7 +2123,7 @@ html.is-sheet-drag .empty {
   display: grid;
   grid-template-columns: repeat(var(--n), 1fr);
   width: 100%;
-  min-height: 36px;
+  min-height: 44px;
   height: auto;
   padding: 2px;
   border-radius: var(--r-pill);
@@ -2077,9 +2155,10 @@ html.is-sheet-drag .empty {
   position: relative;
   z-index: 1;
   border: 0;
-  padding: 0 4px;
+  min-height: 44px;
+  padding: 4px;
   background: none;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   letter-spacing: -0.15px;
   white-space: nowrap;
@@ -2306,17 +2385,20 @@ html.is-sheet-drag .empty {
   position: relative;
   z-index: 2;
   border-bottom: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+  background: var(--sheet-fallback);
 }
 .tl-row:not(.is-current) .tl-orig,
-.tl-row:not(.is-current) .tl-tr {
-  color: color-mix(in srgb, var(--ink) 62%, transparent);
+.tl-row:not(.is-current) .tl-tr,
+.tl-row:not(.is-current) .tl-inst {
+  color: color-mix(in srgb, var(--ink) 48%, transparent);
 }
 .tl-row.is-current {
-  background: radial-gradient(90% 160% at 12% 50%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 72%);
+  background: none;
   box-shadow: none;
 }
 .tl-row.is-current .tl-orig {
   color: var(--ink);
+  font-size: 1.08em;
 }
 .tl-repeat {
   align-self: flex-start;
@@ -2326,9 +2408,12 @@ html.is-sheet-drag .empty {
   color: var(--label-2);
 }
 .tl-time {
-  min-width: 48px;
-  padding-top: var(--sp-1);
-  color: var(--label-3);
+  align-self: first baseline;
+  min-width: 40px;
+  padding-top: 0.35em;
+  font-size: 12px;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--ink) 36%, transparent);
 }
 .tl-text {
   display: flex;
@@ -2533,26 +2618,26 @@ html.is-sheet-drag .empty {
   min-width: 0;
   padding: 2px 6px 8px;
 }
-.lib-hero-kicker {
-  font-size: var(--t-footnote);
-  font-weight: 600;
-  color: var(--ink-2);
-}
-.lib-hero-occasion {
+.lib-hero-title {
   font-family: var(--font-serif);
   font-weight: 600;
-  font-size: clamp(22px, 4vw, 34px);
-  line-height: 1.15;
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1.08;
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
 .lib-hero-version,
 .lib-hero-artist,
-.lib-hero-with,
 .lib-hero-langs {
   font-size: var(--t-subhead);
   line-height: 1.35;
   color: var(--ink-2);
+  white-space: normal;
+  text-wrap: pretty;
+}
+.lib-hero-langs {
+  color: var(--ink-3);
+  font-size: var(--t-footnote);
 }
 .lib-hero-artist {
   color: var(--ink);
@@ -2614,23 +2699,20 @@ html.is-sheet-drag .empty {
   min-width: 0;
 }
 .lib-row-lead {
-  font-size: var(--t-headline);
+  font-family: var(--font-serif);
+  font-size: var(--t-title3);
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.2;
   letter-spacing: -0.02em;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
+  text-wrap: balance;
 }
 .lib-row-version,
 .lib-row-artist {
   font-size: var(--t-footnote);
-  line-height: 1.3;
+  line-height: 1.35;
   color: var(--ink-2);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  text-wrap: pretty;
 }
 @media (hover: hover) and (pointer: fine) {
   .lib-hero-cover,
@@ -2680,8 +2762,8 @@ html.is-sheet-drag .empty {
     height: 120px;
     aspect-ratio: auto;
   }
-  .lib-hero-occasion {
-    font-size: 22px;
+  .lib-hero-title {
+    font-size: 26px;
   }
   .lib-shelf {
     margin-top: 12px;

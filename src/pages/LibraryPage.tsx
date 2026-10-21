@@ -60,10 +60,7 @@ export function LibraryPage() {
       <Field colors={wash} dark={dark} clock={clock} />
       <header className="lib-head">
         <div className="lib-titlebar">
-          <div className="lib-brand">
-            <h1 className="lib-title">Песни</h1>
-            <span className="lib-count">{songs.length}</span>
-          </div>
+          <h1 className="lib-title">Песни</h1>
           <nav className="lib-actions" aria-label="Разделы">
             <a className="lib-nav" href="/instruments" onClick={linkHandler('/instruments')} aria-label="Инструменты: галерея гравюр">
               <Icon name="square.grid.2x2" size={20} />
@@ -172,7 +169,6 @@ function Cover({ song, className, poster, sizes }: { song: Song; className: stri
 function Hero({ song, continued, dark }: { song: Song; continued: boolean; dark: boolean }) {
   const { ref, warm } = useWarm(song.slug);
   const st = statusOf(song);
-  const named = song.cover?.kind !== 'official';
   return (
     <a
       ref={ref}
@@ -190,13 +186,11 @@ function Hero({ song, continued, dark }: { song: Song; continued: boolean; dark:
     >
       <Cover song={song} className="lib-hero-cover" poster={continued} sizes="(min-width: 800px) 380px, 92vw" />
       <span className="lib-hero-copy">
-        <span className="lib-hero-kicker">{continued ? 'Продолжить' : 'Открыть'}</span>
-        <span className="lib-hero-occasion">{named ? song.title : song.version.label}</span>
-        {named && <span className="lib-hero-version">{song.version.label}</span>}
+        <span className="lib-hero-title">{song.title}</span>
+        <span className="lib-hero-version">{song.version.label}</span>
         <span className="lib-hero-artist">{song.artist}</span>
-        {song.featuring && song.featuring.length > 0 && <span className="lib-hero-with">{song.featuring.join(' · ')}</span>}
         <span className="lib-hero-langs">{langsOf(song)}</span>
-        <span className="lib-hero-go">Слушать</span>
+        <span className="lib-hero-go">{continued ? 'Продолжить' : 'Слушать'}</span>
       </span>
       {st && <span className={`chip chip--${st.tone} t-caption1`}>{st.text}</span>}
     </a>
@@ -206,7 +200,6 @@ function Hero({ song, continued, dark }: { song: Song; continued: boolean; dark:
 function ShelfRow({ song, continued, dark }: { song: Song; continued: boolean; dark: boolean }) {
   const { ref, warm } = useWarm(song.slug);
   const st = statusOf(song);
-  const named = song.cover?.kind !== 'official';
   return (
     <a
       ref={ref}
@@ -224,8 +217,8 @@ function ShelfRow({ song, continued, dark }: { song: Song; continued: boolean; d
     >
       <Cover song={song} className="lib-row-cover" poster={continued} sizes="96px" />
       <span className="lib-row-copy">
-        <span className="lib-row-lead">{named ? song.title : song.version.label}</span>
-        {named && <span className="lib-row-version">{song.version.label}</span>}
+        <span className="lib-row-lead">{song.title}</span>
+        <span className="lib-row-version">{song.version.label}</span>
         <span className="lib-row-artist">{song.artist}</span>
       </span>
       {st && <span className={`chip chip--${st.tone} t-caption1`}>{st.text}</span>}

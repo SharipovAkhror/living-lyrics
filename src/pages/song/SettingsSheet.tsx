@@ -23,8 +23,8 @@ const PAGE_TITLE: Record<Page, string> = {
   eq: 'Эквалайзер',
 };
 
-const THEME_NAME: Record<ThemePref, string> = { auto: 'Как в системе', light: 'Светлая', dark: 'Тёмная' };
-const MOTION_NAME: Record<MotionPref, string> = { full: 'Полная', calm: 'Спокойная', off: 'Без анимации' };
+const THEME_NAME: Record<ThemePref, string> = { auto: 'Автоматически', light: 'Светлая', dark: 'Тёмная' };
+const MOTION_NAME: Record<MotionPref, string> = { full: 'Максимальная анимация', calm: 'Спокойная', off: 'Без анимации' };
 const STYLE_NAME: Record<InstrumentStyle, string> = {
   drawing: 'Рисунок',
   realistic: 'Реалистичный',
@@ -119,9 +119,9 @@ export function SettingsSheet({
   const back = page === 'home' ? undefined : () => go(page === 'eq' ? 'sound' : 'home');
   const shown: Page[] = leaving && leaving !== page ? [leaving, page] : [page];
   const sourceLabel = state?.source === 'library' ? 'Запись из библиотеки' : state?.source === 'local' ? (state.localName ?? 'Свой файл') : 'Аудио не подключено';
-  const persianName = PERSIAN_FONTS.find((f) => f.id === settings.fontPersian)?.name ?? '';
-  const originalName = ORIGINAL_FONTS.find((f) => f.id === settings.fontOriginal)?.name ?? '';
-  const translationName = TRANSLATION_FONTS.find((f) => f.id === settings.fontTranslation)?.name ?? '';
+  const persianName = PERSIAN_FONTS.find((f) => f.id === settings.fontPersian)?.note ?? '';
+  const originalName = ORIGINAL_FONTS.find((f) => f.id === settings.fontOriginal)?.note ?? '';
+  const translationName = TRANSLATION_FONTS.find((f) => f.id === settings.fontTranslation)?.note ?? '';
 
   return (
     <Sheet open={open} onClose={close} title={PAGE_TITLE[page]} size="large" onBack={back} backLabel={page === 'eq' ? 'Звук' : 'Настройки'}>
@@ -430,23 +430,25 @@ export function SettingsSheet({
           <Choice label="Тема">
             <Segmented
               label="Тема"
+              className="seg--lines"
               value={settings.theme}
               options={[
-                { value: 'auto', label: 'Как в системе' },
+                { value: 'auto', label: 'Автоматически' },
                 { value: 'light', label: 'Светлая' },
                 { value: 'dark', label: 'Тёмная' },
               ]}
               onChange={(v) => setSettings({ theme: v })}
             />
           </Choice>
-          <Choice label="Движение" hint="Полная, спокойная или без переездов строк.">
+          <Choice label="Движение" hint="Максимальная анимация, спокойная или без переездов строк.">
             <Segmented
               label="Движение"
+              className="seg--lines"
               value={settings.motion}
               options={[
-                { value: 'full', label: 'Полная' },
+                { value: 'full', label: 'Максимальная' },
                 { value: 'calm', label: 'Спокойная' },
-                { value: 'off', label: 'Без' },
+                { value: 'off', label: 'Без анимации' },
               ]}
               onChange={(v) => setSettings({ motion: v })}
             />
@@ -502,7 +504,6 @@ function FontPick<Id extends string>({
           <span className="font-opt-sample" dir={sampleDir} style={{ fontFamily: face.stack, fontStyle: italic ? 'italic' : undefined }}>
             {sample}
           </span>
-          <span className="font-opt-name">{face.name}</span>
           <span className="font-opt-note">{face.note}</span>
         </button>
       ))}

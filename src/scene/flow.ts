@@ -66,15 +66,16 @@ export const SMALL = 0.78;
 export function blockState(d: number) {
   const a = Math.abs(d);
   const scale = a >= 1 ? SMALL : 1 - (1 - SMALL) * a;
-  // Neighbours stay readable. A floor near zero turned the lines beside the active one into smudges.
+  // Neighbours stay readable and secondary. The floor stays at half so a pastel field cannot wash them out.
   let opacity: number;
-  if (d >= 0) opacity = d <= 1 ? 1 : d <= 3 ? 1 - 0.18 * (d - 1) : Math.max(0.48, 0.64 - 0.06 * (d - 3));
-  else opacity = a <= 1 ? 1 - 0.28 * a : Math.max(0.48, 0.72 - 0.1 * (a - 1));
-  const blur = d < -0.3 ? Math.min(2, (a - 0.3) * 2) : d > 1.3 ? Math.min(1.2, (d - 1.3) * 1.2) : 0;
-  /** Translation: full for the current line, readable for the next one, gone for the rest. */
-  const sub = d >= 0 ? (d <= 1 ? 1 - 0.4 * d : Math.max(0, 0.6 * (2 - d))) : clamp01(1 + d * 1.6);
+  if (d >= 0) opacity = d <= 1 ? 1 : d <= 3 ? 1 - 0.16 * (d - 1) : Math.max(0.5, 0.68 - 0.05 * (d - 3));
+  else opacity = a <= 1 ? 1 - 0.22 * a : Math.max(0.5, 0.78 - 0.08 * (a - 1));
+  const blur = a < 1.15 ? 0 : d < 0 ? Math.min(1.6, (a - 1.15) * 1.4) : Math.min(1, (a - 1.15) * 0.8);
+  // The translation belongs to its line. The current cluster and the nearest neighbours keep it;
+  // lines further down the stage show the original only, so the column does not become a wall of glosses.
+  const sub = a <= 0.2 ? 1 : a <= 1.25 ? lerp(1, 0.72, (a - 0.2) / 1.05) : 0;
   /** Share of the translation's height the layout reserves (it fades inside that room). */
-  const subRoom = d >= 0 ? clamp01(2 - d) : clamp01(1 + d);
+  const subRoom = a <= 1.3 ? 1 : 0;
   /** Instrument blocks: 1 = full stage, 0 = the compact "next" chip. */
   const presence = clamp01(1 - a);
   return { scale, opacity, blur, sub, subRoom, presence };
@@ -90,7 +91,8 @@ export interface Measure {
   full?: number;
 }
 
-export const GAP = 26;
+/** Space between clusters. The translation sits inside its line, so this gap is the verse break. */
+export const GAP = 44;
 
 export function blockHeight(m: Measure | undefined, d: number) {
   const s = blockState(d);

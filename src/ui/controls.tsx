@@ -253,9 +253,8 @@ export function Sheet({
             <h2 id={titleId} key={title} className="sheet-title t-headline">
               {title}
             </h2>
-            <button type="button" className="btn btn-circle sheet-close" onClick={onClose} aria-label="Закрыть">
-              <Icon name="xmark" size={16} />
-            </button>
+            {/* Swipe, the grabber, a tap outside, or Escape closes the sheet. A second close glyph fought the handle. */}
+            <span className="sheet-side" />
           </div>
         </div>
         <div ref={body} className="sheet-body">
