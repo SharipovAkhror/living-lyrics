@@ -1,0 +1,31 @@
+{
+  "budget_s": 4200,
+  "card": "omniASR_CTC_300M",
+  "align_run": "39548436423",
+  "languages": [
+    {
+      "lang": "la",
+      "code": "lat_Latn",
+      "lines": 24,
+      "status": "модель не загрузилась"
+    },
+    {
+      "lang": "az",
+      "code": "aze_Latn",
+      "lines": 25,
+      "status": "модель не загрузилась"
+    }
+  ],
+  "license": {
+    "ok": true,
+    "card": "omniASR_CTC_300M",
+    "url": "https://raw.githubusercontent.com/facebookresearch/omnilingual-asr/main/README.md",
+    "sentence": "Omnilingual ASR code and models are released under the [Apache 2.0](./LICENSE).",
+    "why": ""
+  },
+  "chance": {},
+  "moved_times": false,
+  "note": "список языков не прочитан (ModuleNotFoundError: No module named 'omnilingual_asr'), веса не качались",
+  "blank": null,
+  "finished": true
+}
