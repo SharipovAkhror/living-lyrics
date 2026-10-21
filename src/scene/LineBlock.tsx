@@ -144,10 +144,20 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
         register(cue.idx, call, { main: 72, sub: hasSubs ? 36 : 0 });
         return;
       }
+      const readBox = (): Measure => {
+        const mainH = main.current!.offsetHeight;
+        return { main: mainH, sub: subs.current ? r.offsetHeight - mainH : 0 };
+      };
       widths.current = words.current.map((w) => w?.offsetWidth ?? 0);
-      const mainH = main.current!.offsetHeight;
-      const m: Measure = { main: mainH, sub: subs.current ? r.offsetHeight - mainH : 0 };
+      const m = readBox();
       register(cue.idx, call, m);
+      // text-wrap: balance and late fonts can drop a line after this read. One more
+      // frame picks that up; the scene places again only if the box actually changed.
+      requestAnimationFrame(() => {
+        if (!orig.current || !root.current || !main.current) return;
+        widths.current = words.current.map((w) => w?.offsetWidth ?? 0);
+        register(cue.idx, call, readBox());
+      });
       return;
     }
     let lo = lower;

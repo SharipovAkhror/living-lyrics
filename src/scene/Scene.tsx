@@ -46,6 +46,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
   const lineSlotsRef = useRef(lineSlots);
   const instSlotsRef = useRef(instSlots);
   const blocks = useRef(new Map<number, { fn: BlockUpdater; m: Measure }>());
+  // Bumps when a block reports a new box. A paused clock does not restyle, but a
+  // line can still change height after the first read (web fonts, text-wrap balance).
+  const measureGen = useRef(0);
+  const placedGen = useRef(0);
   const ownerRef = useRef(-2);
   const motion = effectiveMotion(settings);
   const entrance = settings.lineEntrance;
@@ -58,8 +62,12 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
   const plan = useMemo(() => planFlow(timeline, motion === 'off'), [timeline, motion]);
 
   const register = useCallback((idx: number, fn: BlockUpdater | null, m?: Measure) => {
-    if (fn && m) blocks.current.set(idx, { fn, m });
-    else blocks.current.delete(idx);
+    if (fn && m) {
+      const prev = blocks.current.get(idx);
+      const same = prev && prev.m.main === m.main && prev.m.sub === m.sub && prev.m.compact === m.compact && prev.m.full === m.full && prev.fn === fn;
+      blocks.current.set(idx, { fn, m });
+      if (!same) measureGen.current += 1;
+    } else if (blocks.current.delete(idx)) measureGen.current += 1;
   }, []);
 
   useLayoutEffect(() => {
@@ -119,7 +127,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       }
       const t = clock();
       // A paused clock used to restyle the stage anyway. WebKit kept that working set.
-      if (t === lastT) return;
+      // A new box still has to be placed: the first read can precede font load and
+      // text-wrap balance, and the lyric would stay a line too high.
+      const measuresMoved = measureGen.current !== placedGen.current;
+      if (t === lastT && !measuresMoved) return;
       lastT = t;
       const pos = flowPosition(plan, t);
       const list = windowAround(timeline, pos, entrance);
@@ -241,6 +252,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         }
       }
 
+      placedGen.current = measureGen.current;
       const owner = Math.max(-1, Math.min(timeline.cues.length - 1, Math.round(pos)));
       if (owner !== ownerRef.current) {
         ownerRef.current = owner;
