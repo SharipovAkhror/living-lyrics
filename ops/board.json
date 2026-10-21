@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-21T12:50:00Z",
+  "updated": "2026-10-21T12:56:09Z",
   "headline": "Утро: новый дизайн сайта и иконки ждут вашего выбора; список на прослушивание сократился до 9.",
   "tasks": [
     {
@@ -22,6 +22,13 @@
       "status": "waiting",
       "title": "Послушать 9 мест",
       "what": "Было 26: 13 закрыты вторым свидетелем (Gemini), 4 исправлены. Список — в чате LL · Main и в docs/analysis/<песня>-recheck.md, раздел «Слушать»."
+    },
+    {
+      "id": "you-sidebar",
+      "section": "you",
+      "status": "waiting",
+      "title": "Скриншот боковой панели чатов",
+      "what": "Четыре рабочих чата: LL · Main, LL · Site, LL · Tech, LL · Business. Архивы убраны в сторону. Задание — docs/tasks/T25-chat-rotation.md; T25 не закрывать, пока скриншота нет."
     },
     {
       "id": "t29",
@@ -105,7 +112,7 @@
     },
     {
       "id": "later-cloud",
-      "section": "later",
+      "section": "you",
       "status": "waiting",
       "chip": "ждёт карту",
       "title": "Облачная станция (Oracle Cloud Always Free)",
