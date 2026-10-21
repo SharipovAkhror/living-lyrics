@@ -1,0 +1,145 @@
+/*
+ * Phone budget for the live song. Desktop is not matched: a mouse, or a coarse
+ * pointer wider than a phone in landscape, keeps every glass layer.
+ *
+ * While a song plays, the desktop stacks about four backdrop-filter layers
+ * (top bar, player, comment, instrument plates). A full ban was not measured:
+ * the working set still climbed with zero blur layers. Phones keep blur on the
+ * top bar and the player. Dropping the player blur as well left the slope at
+ * 10.7 MB/min against 11.6 with it on, so the player stays glass. The comment,
+ * the error banner, the sheet and the instrument plates use a dense fill. The
+ * sheet stays on that fill so it can open and scroll on the CPU. The edge mask
+ * stays off: a steady vocal band grew about 10 MB/min with the mask and held
+ * flat for three minutes without it.
+ *
+ * The two blocks are the same paint: the media query covers the first frame,
+ * and html[data-phone] covers an iPhone user agent whose media features were
+ * not emulated.
+ */
+
+@media (hover: none) and (pointer: coarse) and (max-width: 1100px) {
+  .comment.glass,
+  .player-alert.glass {
+    background: color-mix(in srgb, var(--glass-fallback) 92%, var(--song-field, var(--bg)));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .sheet.glass {
+    background: var(--sheet-fallback);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  /* The shell is already the open size, so the title does not jump when the rows arrive. */
+  .sheet {
+    min-height: min(68dvh, calc(100dvh - env(safe-area-inset-top) - 36px));
+  }
+  .ist-plate,
+  .ist-chip {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .ist-art-mount {
+    position: absolute;
+  }
+  .ist-art-mount > .ist-art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  /* A masked stage is one layer. Moving a line under it allocated a new
+     buffer on this WebKit and the previous buffer stayed. Lines already
+     fade by their own opacity, so the edge gradient is not required here. */
+  .scene-stage {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .set-page.is-enter,
+  .set-page.is-leave,
+  .set-page.is-enter .group,
+  .tl-row,
+  .sheet-title {
+    animation: none;
+  }
+  .sheet-body {
+    contain: paint;
+  }
+  .sheet-body .group {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 88px;
+  }
+  /* The strip above the sheet stays put. Scaling the whole song promoted a layer on open. */
+  html[data-sheet='1'] .song,
+  html[data-sheet='1'] .library,
+  html[data-sheet='1'] .ig,
+  html[data-sheet='1'] .method,
+  html[data-sheet='1'] .empty {
+    transform: none;
+    border-radius: 0;
+  }
+}
+
+html[data-phone='1'] .comment.glass,
+html[data-phone='1'] .player-alert.glass {
+  background: color-mix(in srgb, var(--glass-fallback) 92%, var(--song-field, var(--bg)));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+html[data-phone='1'] .sheet.glass {
+  background: var(--sheet-fallback);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+html[data-phone='1'] .sheet {
+  min-height: min(68dvh, calc(100dvh - env(safe-area-inset-top) - 36px));
+}
+
+html[data-phone='1'] .ist-plate,
+html[data-phone='1'] .ist-chip {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+html[data-phone='1'] .ist-art-mount {
+  position: absolute;
+}
+
+html[data-phone='1'] .ist-art-mount > .ist-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+html[data-phone='1'] .scene-stage {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+html[data-phone='1'] .set-page.is-enter,
+html[data-phone='1'] .set-page.is-leave,
+html[data-phone='1'] .set-page.is-enter .group,
+html[data-phone='1'] .tl-row,
+html[data-phone='1'] .sheet-title {
+  animation: none;
+}
+
+html[data-phone='1'] .sheet-body {
+  contain: paint;
+}
+
+html[data-phone='1'] .sheet-body .group {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 88px;
+}
+
+html[data-phone='1'][data-sheet='1'] .song,
+html[data-phone='1'][data-sheet='1'] .library,
+html[data-phone='1'][data-sheet='1'] .ig,
+html[data-phone='1'][data-sheet='1'] .method,
+html[data-phone='1'][data-sheet='1'] .empty {
+  transform: none;
+  border-radius: 0;
+}

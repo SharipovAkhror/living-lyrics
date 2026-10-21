@@ -14,8 +14,10 @@ import { sharedTransition, takeFlight } from '@/app/flight';
 import { GlassLayers } from '@/ui/glass/Glass';
 import { AudioEngine } from '@/player/engine';
 import { preloadMode, readNetHint } from '@/player/preload';
+import { RESUME_AUTO_MS, readResume, writeResume } from '@/player/resume';
 import { Scrubber } from '@/player/Scrubber';
 import { Scene } from '@/scene/Scene';
+import { coverStage } from '@/scene/cover';
 import { Field } from '@/scene/Field';
 import { LEAD } from '@/scene/flow';
 import { Icon } from '@/ui/icons';
@@ -95,6 +97,10 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const [features, setFeatures] = useState<AudioFeatures | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [textAttempt, setTextAttempt] = useState(0);
+  // Armed only after the restored seek, so a save cannot write 0 over a position we just read.
+  const [clockArmed, setClockArmed] = useState(false);
+  // Set when a reload restored a playing point and the browser refused play().
+  const [resumeAt, setResumeAt] = useState<number | null>(null);
 
   const engine = useMemo(
     () =>
@@ -161,9 +167,25 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     void engine.init({ quality: s.quality, rate: s.rate, volume: s.volume, normalize: s.normalize }).then(() => {
       if (!alive) return;
       if (s.eqEnabled) engine.setEffects(true, s.eqBands, s.eqPreamp);
-      // Deep link to a moment: /song/<slug>?t=95
-      const t = parseFloat(new URLSearchParams(location.search).get('t') ?? '');
-      if (Number.isFinite(t)) engine.seek(t);
+      // Deep link to a moment: /song/<slug>?t=95. It wins over the saved position.
+      const deep = parseFloat(new URLSearchParams(location.search).get('t') ?? '');
+      if (Number.isFinite(deep)) {
+        engine.seek(deep);
+      } else {
+        const saved = readResume(song.slug);
+        const fresh = saved != null && Date.now() - saved.savedAt <= RESUME_AUTO_MS;
+        if (saved && fresh && saved.t >= 1) {
+          engine.seek(saved.t);
+          // A reload may block play() until the next tap. Stay paused on that second
+          // and offer the button. Do not leave a failed play() looking like silence.
+          if (saved.playing) {
+            void engine.play().then(() => {
+              if (alive && !engine.playing) setResumeAt(saved.t);
+            });
+          }
+        }
+      }
+      if (alive) setClockArmed(true);
     });
     return () => {
       alive = false;
@@ -174,6 +196,30 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     // Settings are read once at start; later changes go through the settings sheet.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [song, engine]);
+
+  // Registered after init: React runs this cleanup first, while the element still exists.
+  useEffect(() => {
+    if (!song || !engine || !clockArmed) return;
+    const save = () => {
+      const dur = engine.state.duration || song.duration;
+      let t = engine.currentTime();
+      if (engine.state.error && t < 1) return;
+      if (dur > 1 && t > dur - 1.5) t = 0;
+      writeResume(song.slug, { t, playing: engine.playing, savedAt: Date.now() });
+    };
+    const onHide = () => {
+      if (document.visibilityState === 'hidden') save();
+    };
+    const id = window.setInterval(save, 2000);
+    window.addEventListener('pagehide', save);
+    document.addEventListener('visibilitychange', onHide);
+    return () => {
+      window.clearInterval(id);
+      window.removeEventListener('pagehide', save);
+      document.removeEventListener('visibilitychange', onHide);
+      save();
+    };
+  }, [song, engine, clockArmed]);
 
   // Peaks, engravings and the feature file are not on the first frame. They wait until the text is up and the browser is idle.
   useEffect(() => {
@@ -229,6 +275,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const noteText = timeline && owner >= 0 ? commentFor(timeline, owner) : null;
   const columns = useStageFrame(settings.showComment && !!noteText);
   const floorNote = noteText && settings.showComment && !columns.frame.marginNote ? noteText : null;
+  useEffect(() => {
+    if (playing) setResumeAt(null);
+  }, [playing]);
 
   const seekToCue = useCallback(
     (c: Cue) => {
@@ -296,6 +345,10 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   }, [timeline, engine, settings.pauseAfterLine, playing]);
 
   const togglePlay = useCallback(() => engine?.toggle(), [engine]);
+  const openSheet = useCallback((name: SheetName) => {
+    coverStage();
+    setSheet(name);
+  }, []);
 
   // A mismatch mark records the clock and the line on stage. It does not pause, seek, or open a sheet.
   const [toast, setToast] = useState<{ id: string; t: number } | null>(null);
@@ -496,7 +549,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             {partExtra ? <span className="topbar-part"> · {partExtra}</span> : null}
           </div>
         </div>
-        <button className="btn btn-circle btn-plain" onClick={() => setSheet('info')} aria-label="О песне">
+        <button className="btn btn-circle btn-plain" onClick={() => openSheet('info')} aria-label="О песне">
           <Icon name="info.circle" size={22} />
         </button>
       </header>
@@ -580,6 +633,18 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             </div>
           </div>
         )}
+        {resumeAt != null && !playing && (
+          <button
+            type="button"
+            className="resume-offer"
+            onClick={() => {
+              setResumeAt(null);
+              void engine.play();
+            }}
+          >
+            Продолжить с {formatTime(resumeAt)}
+          </button>
+        )}
         <div className="player-row">
           <div className="transport">
             <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)">
@@ -616,11 +681,11 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               <Icon name="book.closed" size={20} />
               <span className="util-label">Пояснение</span>
             </button>
-            <button className="util" aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={() => setSheet('text')}>
+            <button className="util" aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={() => openSheet('text')}>
               <Icon name="list.bullet" size={20} />
               <span className="util-label">Весь текст</span>
             </button>
-            <button className="util" aria-label="Настройки" aria-pressed={sheet === 'settings'} onClick={() => setSheet('settings')}>
+            <button className="util" aria-label="Настройки" aria-pressed={sheet === 'settings'} onClick={() => openSheet('settings')}>
               <Icon name="slider.horizontal.3" size={20} />
               <span className="util-label">Настройки</span>
             </button>
