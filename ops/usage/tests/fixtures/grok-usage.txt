@@ -1,0 +1,11 @@
+Weekly limit (SuperGrok Heavy)
+
+████████████████░░░░░░░░░░░░░░  54%
+Resets: October 23, 21:08
+
+Session usage: no model calls yet in this session.
+
+Context usage
+5.0k / 256k tokens (1.97%)
+grok-4.7
+Auto-compact at 80%
