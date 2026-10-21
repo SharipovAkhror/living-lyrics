@@ -6,7 +6,8 @@
 2. Runs hygiene.py --apply once an hour (safe deletions; the rest is reported).
 3. Prints the chats of the registry with their state (registry.py), the GitHub Actions runs in
    progress and the last hygiene result, as JSON:
-   {"chats": [...], "pipeline": [{"name", "title", "minutes"}], "hygiene": {"at", "fixed", "issues"}}.
+   {"chats": [...], "pipeline": [{"name", "title", "minutes"}], "failed": [{"id", "name", "branch", "title", "url", "at"}],
+   "hygiene": {"at", "fixed", "issues"}}.
 
     python ops/agents/station_tick.py [<repo>]
 """
@@ -58,6 +59,26 @@ def pipeline(repo: Path) -> list[dict]:
     return runs
 
 
+def failed(repo: Path) -> list[dict]:
+    """Workflow runs that failed in the last 24 h: the mod hands each new one to LL · Main once.
+
+    GitHub mails a failure to the account that pushed, and every chat and executor pushes as the
+    owner; the owner turns those mails off and the orchestrator gets them here instead."""
+    out = subprocess.run(
+        ['gh', 'run', 'list', '--status', 'failure', '--limit', '10', '--json', 'databaseId,workflowName,headBranch,displayTitle,createdAt,url'],
+        cwd=repo, capture_output=True, encoding='utf-8', errors='replace',
+    )
+    if out.returncode != 0:
+        return []
+    now = datetime.datetime.now(datetime.timezone.utc)
+    rows = []
+    for r in json.loads(out.stdout or '[]'):
+        at = datetime.datetime.fromisoformat(r['createdAt'].replace('Z', '+00:00'))
+        if now - at < datetime.timedelta(hours=24):
+            rows.append({'id': r['databaseId'], 'name': r['workflowName'], 'branch': r['headBranch'], 'title': r['displayTitle'], 'url': r['url'], 'at': r['createdAt']})
+    return rows
+
+
 def hygiene(repo: Path) -> dict | None:
     """hygiene.py --apply once an hour; the last result is kept in .git and returned every tick."""
     cache = Path(git(repo, 'rev-parse', '--absolute-git-dir').stdout.strip()) / 'll-hygiene.json'
@@ -86,7 +107,7 @@ def main() -> None:
         chats = live_chats(repo)
     except Exception:  # no claude CLI on PATH
         chats = []
-    print(json.dumps({'sync': state, 'chats': chats, 'pipeline': pipeline(repo), 'hygiene': hygiene(repo)}, ensure_ascii=False))
+    print(json.dumps({'sync': state, 'chats': chats, 'pipeline': pipeline(repo), 'failed': failed(repo), 'hygiene': hygiene(repo)}, ensure_ascii=False))
 
 
 if __name__ == '__main__':

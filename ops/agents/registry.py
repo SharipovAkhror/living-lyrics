@@ -38,11 +38,66 @@ def cards(repo: Path = REPO) -> list[dict]:
     return out
 
 
-def sessions() -> list[dict]:
-    out = subprocess.run([claude_bin(), 'agents', '--json'], capture_output=True, encoding='utf-8', errors='replace')
+def sessions(include_done: bool = False) -> list[dict]:
+    """`claude agents --json`; with include_done also the sessions the daemon settled (state `done`)."""
+    argv = [claude_bin(), 'agents', '--json'] + (['--all'] if include_done else [])
+    out = subprocess.run(argv, capture_output=True, encoding='utf-8', errors='replace')
     if out.returncode != 0:
         raise RuntimeError(f'claude agents: {out.stderr.strip()}')
     return json.loads(out.stdout or '[]')
+
+
+def transcript_tail(session_id: str, size: int = 400_000) -> list[str]:
+    hits = list((Path.home() / '.claude' / 'projects').glob(f'*/{session_id}.jsonl')) if session_id else []
+    if not hits:
+        return []
+    with open(hits[0], 'rb') as fh:
+        fh.seek(0, 2)
+        fh.seek(max(0, fh.tell() - size))
+        return fh.read().decode('utf-8', 'replace').splitlines()
+
+
+def last_said(session_id: str) -> dict:
+    """The chat's last line of text to its user, and when: what it is doing, in its own words."""
+    for line in reversed(transcript_tail(session_id, 200_000)):
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        msg = row.get('message') or {}
+        if msg.get('role') != 'assistant' or not isinstance(msg.get('content'), list):
+            continue
+        text = ' '.join(b.get('text', '') for b in msg['content'] if b.get('type') == 'text').strip()
+        if text:
+            text = ' '.join(text.replace('*', '').replace('`', '').split())
+            return {'text': text[:400], 'at': row.get('timestamp', '')}
+    return {}
+
+
+def pending_tool(session_id: str) -> str:
+    """What a waiting session waits on: its last tool call that has no result yet, in a few words."""
+    lines = transcript_tail(session_id)
+    if not lines:
+        return ''
+    calls, done = {}, set()
+    for line in lines:
+        try:
+            msg = json.loads(line).get('message') or {}
+        except ValueError:
+            continue
+        for block in msg.get('content') or [] if isinstance(msg.get('content'), list) else []:
+            if block.get('type') == 'tool_use':
+                calls[block.get('id')] = block
+            elif block.get('type') == 'tool_result':
+                done.add(block.get('tool_use_id'))
+    open_calls = [b for i, b in calls.items() if i not in done]
+    if not open_calls:
+        return ''
+    b = open_calls[-1]
+    inp = b.get('input') or {}
+    hint = inp.get('description') or inp.get('action') or (inp.get('questions') or [{}])[0].get('question', '') if isinstance(inp, dict) else ''
+    text = f"{b.get('name', '')}: {hint}".strip(': ') if hint else b.get('name', '')
+    return text if len(text) <= 90 else text[:89] + '…'
 
 
 def live_chats(repo: Path = REPO, running: list[dict] | None = None) -> list[dict]:
@@ -53,7 +108,15 @@ def live_chats(repo: Path = REPO, running: list[dict] | None = None) -> list[dic
         mine = sorted((s for s in running if s.get('name') == card['chat']), key=lambda s: s.get('startedAt', 0))
         s = mine[-1] if mine else {}
         state = 'none' if not s else 'retired' if not s.get('pid') else {'busy': 'working', 'waiting': 'waiting'}.get(s.get('status', ''), 'idle')
-        rows.append({'name': card['chat'], 'role': card['name'], 'reports_to': card.get('reports_to', ''), 'state': state})
+        row = {'name': card['chat'], 'role': card['name'], 'reports_to': card.get('reports_to', ''), 'state': state}
+        if state == 'waiting':
+            row['waiting_for'] = pending_tool(s.get('sessionId', ''))
+        if s.get('sessionId'):
+            last = last_said(s['sessionId'])
+            if last:
+                row['last'] = last['text']
+                row['last_at'] = last['at']
+        rows.append(row)
     return rows
 
 
