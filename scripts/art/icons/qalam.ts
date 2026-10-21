@@ -1,5 +1,5 @@
 /**
- * Qalam — the Living Lyrics icon family, round 7.
+ * Qalam — the Living Lyrics icon family, round 8.
  *
  * Every stroke is the same reed pen (`pen.ts`): a 35° nib, thick across
  * the edge and thin along it, with the nib itself as the terminal.
@@ -121,15 +121,19 @@ function closeMark(o: Spec): Glyph {
  * Play. A solid triangle. Its top edge already lies within two degrees of
  * the nib, so a second cut on the apex reads as a clipped corner (round 6).
  * The nib shows on the base, where a 35° edge can actually land.
+ * The apex uses the plate corner instead: a sharp geometric point was the
+ * only corner in the family that was neither a nib cut nor a soft plate.
+ * The body sits 0.42 to the right so the mass is on the centre of the field.
  * The cut is short at 16 and 20 and longer at 32, where it can be read.
  */
 function play(o: Spec): Glyph {
   const cut = o.id >= 32 ? 4.6 : o.id >= 24 ? 3.3 : 2.3;
   const dx = QATT_EDGE.x * cut;
   const dy = QATT_EDGE.y * cut;
+  const shift = 0.42;
   const shape = (grow: number) => {
-    const pts = [pt(7.85, 4.5), pt(19.25, 12), pt(7.85 + dx, 19.55), pt(7.85, 19.55 - dy)];
-    return roundPoly(scaleAbout(pts, grow), [1.15, 1.05, 0.14, 0.14]);
+    const pts = [pt(7.85 + shift, 4.5), pt(19.25 + shift, 12), pt(7.85 + shift + dx, 19.55), pt(7.85 + shift, 19.55 - dy)];
+    return roundPoly(scaleAbout(pts, grow), [1.15, o.rad, 0.14, 0.14]);
   };
   const grow = o.id <= 20 ? 1.08 : 1.06;
   return { off: [ink(shape(1))], on: [ink(shape(grow))] };
@@ -193,34 +197,50 @@ function translation(o: Spec): Glyph {
 }
 
 /**
- * Explanation. A codex with the fore-edge flap (lisan).
- * The lines are inside the cover. A spine beside them read as the letter E.
+ * A manuscript page with the nib taken off the top-right corner only.
+ * Translation cuts two corners; this one cut is the dog-ear of a note.
+ */
+function folio(x: number, y: number, w: number, h: number, cut: number, radius: number): Pt[] {
+  const dx = QATT_EDGE.x * cut;
+  const dy = QATT_EDGE.y * cut;
+  const right = x + w;
+  const bottom = y + h;
+  return roundPolyPoints(
+    [
+      { x, y },
+      { x: right - dx, y },
+      { x: right, y: y + dy },
+      { x: right, y: bottom },
+      { x, y: bottom },
+    ],
+    [radius, 0.14, 0.14, radius, radius],
+    3,
+  );
+}
+
+/**
+ * Explanation. A folio, not a speech tag. The fore-edge flap read as a beak.
+ * Two rules at 16, 20 and 24: three rules closed up at the tab size.
+ * A third rule appears at 32, where the counter can hold it.
+ * There is no spine: a spine beside the rules read as the letter E.
  */
 function gloss(o: Spec): Glyph {
-  const detail = penDetail(o.id);
-  const tipCut = detail === 2 ? 1.55 : 0.35;
-  const hx = (QATT_EDGE.x * tipCut) / 2;
-  const hy = (QATT_EDGE.y * tipCut) / 2;
-  const tip = pt(20.35, 12);
-  const cover: Pt[] = [
-    pt(4.7, 3.7),
-    pt(15.15, 3.7),
-    pt(15.15, 8.55),
-    pt(tip.x - hx, tip.y - hy),
-    pt(tip.x + hx, tip.y + hy),
-    pt(15.15, 15.45),
-    pt(15.15, 20.3),
-    pt(4.7, 20.3),
-  ];
-  const center = roundPolyPoints(cover, [o.rad, 0.4, 0.3, 0.12, 0.12, 0.3, 0.4, o.rad], 2);
+  const cut = o.id >= 32 ? 3.35 : o.id >= 24 ? 2.8 : 2.3;
+  const frame = folio(3.45, 3.1, 17.1, 17.65, cut, o.rad);
   const nib = writing(o);
-  const rows = [
-    [7.15, 13.7, 8.15],
-    [7.15, 12.15, 12],
-    [7.15, 13.15, 15.85],
-  ];
+  const rows =
+    penDetail(o.id) < 2
+      ? [
+          [6.75, 17.05, 10.45],
+          [6.75, 14.55, 15.05],
+        ]
+      : [
+          [6.75, 17.05, 8.9],
+          [6.75, 15.05, 12.4],
+          [6.75, 16.25, 15.9],
+        ];
   const lines = rows.map(([x1, x2, y]) => qalamStroke([pt(x1!, y!), pt(x2!, y!)], nib)).join('');
-  return plate(center, key(o), lines);
+  return plate(frame, key(o), lines);
 }
 
 /** All the words. Three rules, three nuqtas. The star of the previous round. */
@@ -239,25 +259,30 @@ function manuscript(o: Spec): Glyph {
 
 /**
  * Settings. Two tracks, not three: three rails and three knobs collided at 20 px.
- * The knobs are nuqtas. The icon name stays `slider.horizontal.3`.
+ * The rails are a lighter pen than the keyline, so the nuqta reads as a thumb
+ * and not as a bead the same weight as the bar. Each thumb sits in from the
+ * end, with track on both sides, and the two rows are not a mirror pair —
+ * a mirrored pair read as a heraldic rule. The icon name stays
+ * `slider.horizontal.3`.
  */
 function grooves(o: Spec): Glyph {
   const rows = [
-    { y: 8.15, cx: 15.55 },
-    { y: 15.85, cx: 8.55 },
+    { y: 7.4, cx: 16.55 },
+    { y: 16.6, cx: 7.45 },
   ];
+  const x1 = 2.05;
+  const x2 = 21.95;
+  const rail = (pressed: boolean) => nibFor(o.id, (pressed ? o.swOn : o.sw) * 0.58, 1.02);
   const draw = (nib: Nib, r: number) => {
     let d = '';
     for (const row of rows) {
-      const gap = r + 0.85;
-      d += qalamStroke([pt(3.35, row.y), pt(row.cx - gap, row.y)], nib);
-      d += qalamStroke([pt(row.cx + gap, row.y), pt(20.65, row.y)], nib);
+      d += qalamStroke([pt(x1, row.y), pt(x2, row.y)], nib);
       d += nuqta(row.cx, row.y, r);
     }
     return d;
   };
-  const r = o.id <= 16 ? 2.05 : 2.2;
-  return { off: [ink(draw(key(o), r))], on: [ink(draw(key(o, true), r * 1.12))] };
+  const r = o.id <= 16 ? 2.45 : o.id <= 20 ? 2.7 : 2.55;
+  return { off: [ink(draw(rail(false), r))], on: [ink(draw(rail(true), r * 1.05))] };
 }
 
 /**
@@ -309,8 +334,11 @@ function about(o: Spec): Glyph {
 }
 
 /**
- * Volume. The cone is a plate. The arcs are a lighter pen than the keyline:
- * a full keyline on this radius turned into two bites at 20 px.
+ * Volume. The cone is a plate. The waves are arcs, a lighter pen than
+ * the keyline: a full keyline on this radius turned into two bites at 20 px.
+ * Ending each arc along the nib makes the terminal the short side, and at
+ * 20 px those strokes read as slashes rather than sound. The arc stays a
+ * wave. Its ends are still the nib.
  */
 function horn(o: Spec): Glyph {
   const body = roundPolyPoints(
@@ -318,10 +346,10 @@ function horn(o: Spec): Glyph {
     0.8,
     2,
   );
-  const arcNib = (pressed: boolean) => nibFor(o.id, (pressed ? o.swOn : o.sw) * 0.7, 1.12);
+  const arcNib = (pressed: boolean) => nibFor(o.id, (pressed ? o.swOn : o.sw) * 0.66, 1.08);
   const arcs = (nib: Nib) =>
-    qalamStroke(arcPoints(11.05, 12, 3.05, -0.92, 0.92, 12), nib) +
-    qalamStroke(arcPoints(11.05, 12, 5.85, -1.08, 1.08, 14), nib);
+    qalamStroke(arcPoints(11.05, 12, 3.15, -0.78, 0.72, 14), nib) +
+    qalamStroke(arcPoints(11.05, 12, 5.55, -0.92, 0.86, 16), nib);
   const nib = key(o);
   return {
     off: marks(ink(qalamLoop(body, nib)), ink(arcs(arcNib(false)))),
@@ -354,39 +382,45 @@ function search(o: Spec): Glyph {
 }
 
 /**
- * Instruments. A soundhole: a pen-drawn ring and four nuqta petals.
- * Not a 2×2 app grid. At 32, four small diagonal nuqtas join the rosette.
+ * Instruments. A circular soundhole in both states. The outer frame does
+ * not become a diamond when the disc fills.
+ * Four nuqta petals sit in a cross, with open counters between them.
+ * A continuous plus read as the add control, so the petals stay separate.
+ * They are small enough that the active holes cannot join into one diamond.
+ * At 32, four smaller diagonal nuqtas join the rosette. The name stays
+ * `square.grid.2x2`.
  */
 function rosette(o: Spec): Glyph {
-  const radius = 8.15;
+  const radius = 8.05;
   const ringPts = arcPoints(12, 12, radius, 0, Math.PI * 2, o.id >= 32 ? 40 : 28).slice(0, -1);
-  const detail = penDetail(o.id);
-  const reach = detail === 2 ? 4.55 : 4.15;
-  const petal = detail === 2 ? 2.15 : 1.9;
+  const reach = o.id <= 16 ? 3.85 : o.id <= 20 ? 4.15 : o.id <= 24 ? 4.35 : 4.5;
+  const petal = o.id <= 16 ? 1.28 : o.id <= 20 ? 1.38 : o.id <= 24 ? 1.48 : 1.55;
   const cardinal = [
     [12, 12 - reach],
     [12 + reach, 12],
     [12, 12 + reach],
     [12 - reach, 12],
   ];
-  const petals = (r: number) => cardinal.map(([x, y]) => nuqta(x!, y!, r)).join('');
+  const petals = cardinal.map(([x, y]) => nuqta(x!, y!, petal)).join('');
   const extra =
-    detail === 2
+    penDetail(o.id) === 2
       ? [
-          [12 + 3.15, 12 - 3.15],
-          [12 + 3.15, 12 + 3.15],
-          [12 - 3.15, 12 + 3.15],
-          [12 - 3.15, 12 - 3.15],
+          [12 + 3.05, 12 - 3.05],
+          [12 + 3.05, 12 + 3.05],
+          [12 - 3.05, 12 + 3.05],
+          [12 - 3.05, 12 - 3.05],
         ]
-          .map(([x, y]) => nuqta(x!, y!, 1.05))
+          .map(([x, y]) => nuqta(x!, y!, 0.72))
           .join('')
       : '';
-  const nib = key(o);
-  const cut = petals(petal) + extra;
-  return plate(ringPts, nib, cut, petals(petal * 1.08) + extra);
+  return plate(ringPts, key(o), petals + extra);
 }
 
-/** Methodology. An open book. From 24, a nuqta bookmark on the right page. */
+/**
+ * Methodology. An open book. From 24, a nuqta bookmark on the right page.
+ * Pressing fills the leaves. The bookmark is not punched out: a hole that
+ * exists only in the active state read as a keyhole.
+ */
 function codex(o: Spec): Glyph {
   const left = roundPolyPoints([pt(2.85, 8.15), pt(8.85, 4.25), pt(8.85, 16.7), pt(2.85, 20.25)], [1.2, 0.45, 0.45, 1.2], 2);
   const right = roundPolyPoints([pt(15.15, 4.25), pt(21.15, 8.15), pt(21.15, 20.25), pt(15.15, 16.7)], [0.45, 1.2, 1.2, 0.45], 2);
@@ -394,7 +428,7 @@ function codex(o: Spec): Glyph {
   const mark = penDetail(o.id) > 0 ? nuqta(18.15, 11.35, penDetail(o.id) === 2 ? 1.15 : 1.0) : '';
   return {
     off: marks(ink(qalamLoop(left, nib)), ink(qalamLoop(right, nib)), ink(mark)),
-    on: marks(ink(closedPath(left)), ink(qalamLoop(left, nib)), ink(closedPath(right)), ink(qalamLoop(right, nib)), mark ? hole(mark) : ink('')),
+    on: marks(ink(closedPath(left)), ink(qalamLoop(left, nib)), ink(closedPath(right)), ink(qalamLoop(right, nib))),
   };
 }
 
