@@ -221,11 +221,21 @@ def load_word_rule() -> dict:
     rule['scopes'] = scopes
     refute_in = chosen.get('refute') if isinstance(chosen.get('refute'), dict) else None
     if refute_in:
+        off = {}
+        raw_off = refute_in.get('off')
+        if isinstance(raw_off, dict):
+            for key, kinds in raw_off.items():
+                if not isinstance(kinds, list):
+                    continue
+                kept = [str(kind) for kind in kinds if isinstance(kind, str) and kind]
+                if kept:
+                    off[str(key)] = kept
         rule['refute'] = {
             'both_agree': float(refute_in.get('both_agree', 0.10)),
             'both_far': float(refute_in.get('both_far', 0.20)),
             'only_far': float(refute_in.get('only_far', 0.30)),
             'attack_tol': float(refute_in.get('attack_tol', 0.10)),
+            'off': off,
         }
     else:
         rule['refute'] = None
@@ -576,6 +586,26 @@ def _closer_sibling(ctc: float, clock: float, siblings: list[float] | None) -> b
     return False
 
 
+def _refuter_ignored(word: dict, refute: dict) -> set[str]:
+    """Witness kinds that do not refute this song and language.
+
+    A word with no song or language is not in the map, so older probes still
+    refute. A missing kind is whisperx or stable-ts, the two clocks the report
+    already stores.
+    """
+    off = refute.get('off')
+    if not isinstance(off, dict) or not off:
+        return set()
+    song = word.get('song')
+    lang = word.get('lang')
+    if song is None or lang is None:
+        return set()
+    kinds = off.get(f'{song}|{lang}') or []
+    if not isinstance(kinds, list):
+        return set()
+    return {str(kind) for kind in kinds if kind}
+
+
 def word_refuted(word: dict, peaks: np.ndarray | None, refute: dict | None,
                  siblings: list[float] | None = None) -> str | None:
     """Why this word contradicts MMS, or None when there is simply no proof.
@@ -583,6 +613,8 @@ def word_refuted(word: dict, peaks: np.ndarray | None, refute: dict | None,
     Both clocks, when both exist, refute the word if they agree with each other and
     both sit far from MMS. One clock refutes it only when that clock is far from MMS
     and a strong attack sits on the clock but not on MMS. No clock is not a refutation.
+    A kind listed in `refute['off']` for this song and language is left out. One
+    ignored clock leaves the single-clock case. Both ignored is no refutation.
     `siblings` are the other lettered starts of the same line. They are read only for
     the single clock: if one of them is closer to that clock, the clock does not
     refute this word. Two agreeing clocks still do.
@@ -594,10 +626,17 @@ def word_refuted(word: dict, peaks: np.ndarray | None, refute: dict | None,
     both_far = float(refute.get('both_far', 0.20))
     only_far = float(refute.get('only_far', 0.30))
     attack_tol = float(refute.get('attack_tol', 0.10))
+    ignored = _refuter_ignored(word, refute)
     clocks = []
-    for key in ('second_s', 'third_s'):
-        if word.get(key) is not None:
-            clocks.append(float(word[key]))
+    for key, kind_key, default in (
+            ('second_s', 'second_kind', 'whisperx'),
+            ('third_s', 'third_kind', 'stable-ts')):
+        if word.get(key) is None:
+            continue
+        kind = str(word.get(kind_key) or default)
+        if kind in ignored:
+            continue
+        clocks.append(float(word[key]))
     if len(clocks) >= 2:
         if abs(clocks[0] - clocks[1]) <= both_agree + 1e-12 and all(abs(c - ctc) > both_far + 1e-12 for c in clocks[:2]):
             return 'witnesses-agree-elsewhere'
@@ -1192,6 +1231,18 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
             mode = 'two'
         elif mode is None:
             mode = global_mode
+        if align_words:
+            tagged = []
+            for aw in align_words:
+                item = dict(aw)
+                item['song'] = song
+                item['lang'] = line.get('lang')
+                if item.get('second_s') is not None and not item.get('second_kind'):
+                    item['second_kind'] = 'whisperx'
+                if item.get('third_s') is not None and not item.get('third_kind'):
+                    item['third_kind'] = 'stable-ts'
+                tagged.append(item)
+            align_words = tagged
         placed_by = (rec or {}).get('placed_by')
         blocked = set(rule.get('blocked_primaries') or [])
         if placed_by and P.primary_family(placed_by) in blocked and (rec or {}).get('status') == 'good':

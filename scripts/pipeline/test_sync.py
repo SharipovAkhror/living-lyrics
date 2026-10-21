@@ -946,6 +946,20 @@ def test_placement_chain() -> None:
           moved is not None and moved['by'] == 'stable-ts'
           and abs(moved['starts'][0] - 1.27) < 1e-9 and abs(moved['starts'][1] - 1.72) < 1e-9,
           str(moved))
+    stemmed = {
+        'id': 'stemmed', 'placed_by': 'mms', 'lang': 'fa', 'cue_start': 1.0, 'cue_lang': 'fa',
+        'words': [
+            {'t': 1.00, 'second': 1.25, 'third': 1.27, 'roman': 'aa', 'wi': 0,
+             'clock_mms': 1.00, 'clock_second': 1.25, 'clock_stable': 1.27, 'clock_stem': 1.22},
+            {'t': 1.40, 'second': 1.70, 'third': 1.72, 'roman': 'bb', 'wi': 1,
+             'clock_mms': 1.40, 'clock_second': 1.70, 'clock_stable': 1.72, 'clock_stem': 1.68},
+        ],
+    }
+    via_stem = P.handoff_proposal(stemmed, 3.0, np.zeros(0), refute)
+    check('a refuted MMS line moves to the clip stem before stable-ts',
+          via_stem is not None and via_stem['by'] == 'mms-stem'
+          and abs(via_stem['starts'][0] - 1.22) < 1e-9 and P.primary_family('mms-stem') == 'mms',
+          str(via_stem))
     stuck = {
         'id': 'stuck', 'placed_by': 'mms', 'cue_start': 1.0,
         'words': [
@@ -1462,6 +1476,16 @@ def test_phoneme() -> None:
     check('a placed Latin line is not placed again', not phoneme._latin_open({'lang': 'la', 'status': 'good', 'group': 'solo'}))
     check('a weak line in another language is not the Latin placer',
           not phoneme._latin_open({'lang': 'de', 'status': 'weak', 'group': 'solo'}))
+    check('German of ONE may be placed by the phoneme model', phoneme.placer_pair('one', 'de'))
+    check('Persian of I Have Come Alive may be placed by the phoneme model',
+          phoneme.placer_pair('i-have-come-alive', 'fa'))
+    check('medieval German is not a phoneme placer', not phoneme.placer_pair('one', 'gmh'))
+    check('an open Persian line of this song is a placer candidate',
+          phoneme._open_line({'lang': 'fa', 'status': 'weak', 'group': 'solo'}, 'i-have-come-alive'))
+    check('a placed Persian line is not placed again',
+          not phoneme._open_line({'lang': 'fa', 'status': 'good', 'group': 'solo'}, 'i-have-come-alive'))
+    check('Persian of Karitas is not in the placer pairs',
+          not phoneme._open_line({'lang': 'fa', 'status': 'weak', 'group': 'solo'}, 'karitas'))
     t0, t1 = phoneme._window({'second_window': [1.0, 1.1]}, 10.0)
     check('a short window is at least 0.4 s', t1 - t0 >= 0.4 - 1e-9, str((t0, t1)))
 
@@ -2116,6 +2140,102 @@ def test_monotone_union() -> None:
           str((kept_wide['proved'], kept_wide['line_member'], kept_wide['chance'])))
 
 
+def test_pass5_placement() -> None:
+    """Stem choice, a dropped refuter, and one language of the phoneme placer."""
+    import attack_chance as A
+    import refuter_choice as RC
+    import stem_onset
+
+    def stem_row(name, role, med_at, ratio):
+        med_off = med_at / ratio if ratio else 1.0
+        return {
+            'name': name, 'role': role, 'model': name, 'shifts': 1, 'overlap': 0.1,
+            'ensemble': role == 'ensemble', 'license': 'MIT', 'note': '',
+            'summary': {'n': 8, 'med_at': med_at, 'med_off': med_off, 'ratio': ratio},
+        }
+
+    base = stem_row('htdemucs_ft', 'baseline', 0.40, 1.2)
+    weak = stem_row('htdemucs_ft-overlap', 'raised', 0.41, 1.3)
+    louder_off = stem_row('htdemucs_ft-shifts2', 'raised', 0.50, 1.0)
+    ingredient = stem_row('htdemucs', 'ingredient', 0.90, 2.0)
+    kept = stem_onset.choose([base, weak, louder_off, ingredient])
+    check('a stem that is not clearly stronger stays on the current clip',
+          kept['name'] == 'htdemucs_ft' and kept['reason'] == 'база', str(kept))
+    ensemble = stem_row('ensemble-htdemucs-ft', 'ensemble', 0.50, 1.3)
+    won = stem_onset.choose([base, ensemble, ingredient])
+    check('a stronger stem whose shift ratio holds replaces the clip',
+          won['name'] == 'ensemble-htdemucs-ft' and won.get('ensemble') is True, str(won))
+    empty = stem_onset.choose([{'name': 'htdemucs_ft', 'role': 'baseline', 'summary': None}])
+    check('a baseline with no score does not switch the clip',
+          empty['reason'] == 'база без оценки' and empty.get('overlap') == 0.1, str(empty))
+    check('the ingredient stem cannot win on its own',
+          stem_onset.choose([base, ingredient])['name'] == 'htdemucs_ft')
+
+    one = [{'agree': True, 'song': 'one', 'lang': 'de', 'against': ['whisperx']}]
+    check('one agreeing line does not drop a refuter', RC.candidates(one) == [])
+    two = one + [{'agree': True, 'song': 'one', 'lang': 'de', 'against': ['whisperx']}]
+    found = RC.candidates(two)
+    check('two lines of one witness kind can drop it',
+          len(found) == 1 and found[0]['lines'] == 2 and found[0]['key'] == 'one|de', str(found))
+
+    refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    both = {
+        'ctc_s': 1.0, 'second_s': 1.40, 'third_s': 1.45,
+        'second_kind': 'whisperx', 'third_kind': 'stable-ts', 'song': 'one', 'lang': 'de',
+    }
+    check('both clocks still refute when the map is empty',
+          Q.word_refuted(both, np.array([1.45]), refute) == 'witnesses-agree-elsewhere')
+    dropped = dict(refute, off={'one|de': ['whisperx']})
+    check('ignoring one witness leaves the single-clock case',
+          Q.word_refuted(both, np.array([1.45]), dropped) == 'witness-attack')
+    both_off = dict(refute, off={'one|de': ['whisperx', 'stable-ts']})
+    check('ignoring both witnesses is not a refutation',
+          Q.word_refuted(both, np.array([1.45]), both_off) is None)
+    other = dict(refute, off={'karitas|de': ['whisperx']})
+    check('a drop for another song does not excuse this word',
+          Q.word_refuted(both, np.array([1.45]), other) == 'witnesses-agree-elsewhere')
+
+    def rec(line_id, lang, cue):
+        return {
+            'id': line_id, 'lang': lang, 'status': 'weak', 'group': 'solo',
+            'cue_start': cue, 'cue_lang': lang, 'section': 's',
+            'words': [
+                {'w': 'a', 'roman': 'aa', 'second_s': cue + 0.05, 'third_s': cue + 0.08,
+                 'clock_mms': cue + 0.02, 'clock_second': cue + 0.05, 'clock_stable': cue + 0.08},
+                {'w': 'b', 'roman': 'bb', 'second_s': cue + 0.55, 'third_s': cue + 0.58,
+                 'clock_mms': cue + 0.52, 'clock_second': cue + 0.55, 'clock_stable': cue + 0.58},
+            ],
+        }
+
+    song = {
+        'slug': 's',
+        'all_lines': [],
+        'lines': [],
+        'open_place': {
+            'la-1': {'model': 'xlsr-53-espeak', 'lang': 'la', 'starts': [1.05, 1.55]},
+            'fa-1': {'model': 'xlsr-53-espeak', 'lang': 'fa', 'starts': [2.05, 2.55]},
+        },
+        'report_by_id': {'la-1': rec('la-1', 'la', 1.0), 'fa-1': rec('fa-1', 'fa', 2.0)},
+        'next_by_id': {},
+        'order_by_id': {'la-1': 0, 'fa-1': 1},
+    }
+    only_la = A._apply_latin([song], {'s': {'s': (0.0, 10.0)}}, only_lang='la')
+    placed_ids = [line['id'] for line in song['all_lines'] if line.get('placed_by') == 'phoneme']
+    check('one language of the phoneme placer does not place the other',
+          [row['id'] for row in only_la] == ['la-1'] and placed_ids == ['la-1'],
+          str((only_la, placed_ids)))
+    song['all_lines'] = []
+    legacy = {
+        'slug': 's', 'all_lines': [], 'lines': [],
+        'latin_place': {'la-1': {'model': 'xlsr-53-espeak', 'starts': [1.05, 1.55]}},
+        'report_by_id': {'la-1': rec('la-1', 'la', 1.0)},
+        'next_by_id': {}, 'order_by_id': {'la-1': 0},
+    }
+    old = A._apply_latin([legacy], {'s': {'s': (0.0, 10.0)}})
+    check('a report that only stored Latin still places that Latin line',
+          [row['id'] for row in old] == ['la-1'], str(old))
+
+
 def main() -> int:
     test_viterbi()
     test_star_absorbs_a_hold()
@@ -2142,6 +2262,7 @@ def main() -> int:
     test_whisper_witness()
     test_whisper_choice()
     test_phoneme()
+    test_pass5_placement()
     test_calibration()
     test_bench_summary()
     test_harakat()

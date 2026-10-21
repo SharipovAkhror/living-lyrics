@@ -1068,48 +1068,111 @@ def _mix_path(slug: str):
         return find_source(slug)
 
 
-def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, dict], duration: float) -> dict:
-    """htdemucs_ft on the lines still open, one model load, inside the time budget.
+def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, dict], duration: float,
+              lyrics: dict | None = None) -> dict:
+    """A measured vocal clip on lines still open, and a clock on lines placed but not proved.
 
-    The song stem and its emission cache stay as they are. A failure leaves the lines unplaced.
+    The song stem stays htdemucs. The clip model is htdemucs_ft at overlap 0.1
+    unless onset clarity on already proved words picks another Demucs setting.
+    A proved line is not separated again and its time is not copied. A failure
+    leaves every line where it was. `lyrics` is optional so a caller that only
+    checks a missing mix still works.
     """
     info = {'ran': False, 'clips': 0, 'skipped': 0, 'elapsed_s': 0.0, 'budget_s': P.FT_BUDGET_S,
             'skipped_ids': [], 'error': None}
     open_rows = []
+    draft_rows = []
     for i, u in enumerate(units):
-        if conf[i].get('placed_by') is not None or not _chain_line(u, cues):
+        if not _chain_line(u, cues):
             continue
         cue = cues[u.id]
         nxt = _next_cue_start(units, cues, i)
         t0, t1 = P.span_to_next(float(cue['start']), float(cue['end']), nxt, duration, 0.30, 0.0)
-        open_rows.append((t0, t1, u.id))
-    if not open_rows:
-        return info
-    merged = P.merge_spans(open_rows)
-    kept, skipped = P.fit_budget(merged, P.FT_BUDGET_S)
-    info['skipped_ids'] = skipped
-    info['skipped'] = len(skipped)
-    if not kept:
-        info['error'] = 'budget'
-        print(f'htdemucs_ft: бюджет {P.FT_BUDGET_S:.0f} с не вместил ни одного отрезка, пропущено строк {len(skipped)}', flush=True)
+        if conf[i].get('placed_by') is None:
+            open_rows.append((t0, t1, u.id))
+        elif 'timing-draft' in (u.line.get('flags') or []):
+            draft_rows.append((t0, t1, u.id))
+    if not open_rows and not draft_rows:
         return info
     try:
         # Resolve the mix before loading a model. A missing file must stay inside this handler.
         mix_path = _mix_path(slug)
         import torch
         import torchaudio
+        import stem_onset
 
         mix = load_audio(mix_path, P.FT_RATE)
-        vocals, separated = P.separate_ft_clips(mix, [(a, b) for a, b, _ids in kept])
+        spec = None
+        try:
+            times = stem_onset.sample_times(lyrics)
+            if len(times) >= stem_onset.MIN_WORDS:
+                onset = stem_onset.measure(mix, times, duration, rate=P.FT_RATE)
+                info['onset'] = onset
+                spec = onset.get('spec')
+            else:
+                info['onset'] = {
+                    'chosen': stem_onset.current_spec().get('name'),
+                    'reason': 'доказанных слов меньше 8' if lyrics else 'нет текста для замера',
+                    'spec': stem_onset.current_spec(),
+                    'words': len(times),
+                    'rows': [],
+                }
+                spec = info['onset']['spec']
+        except Exception as e:
+            info['onset_error'] = f'{e.__class__.__name__}: {e}'
+            print(f'замер стема пропущен ({info["onset_error"]})', flush=True)
+            spec = None
+        rtf = stem_onset.rtf_of(spec)
+        open_kept, open_skipped = P.fit_budget(P.merge_spans(open_rows), P.FT_BUDGET_S, rtf=rtf)
+        used = sum(max(0.0, b - a) * rtf for a, b, _ids in open_kept)
+        draft_kept, draft_skipped = P.fit_budget(
+            P.merge_spans(draft_rows), max(0.0, P.FT_BUDGET_S - used), rtf=rtf)
+        skipped = list(open_skipped) + list(draft_skipped)
+        kept_ids = set()
+        for _a, _b, ids in open_kept + draft_kept:
+            kept_ids.update(ids)
+        selected = [row for row in open_rows + draft_rows if row[2] in kept_ids]
+        merged = P.merge_spans(selected)
+        info['skipped_ids'] = skipped
+        info['skipped'] = len(skipped)
+        info['rtf'] = rtf
+        if spec:
+            info['model'] = spec.get('name') or spec.get('model')
+            info['shifts'] = spec.get('shifts')
+            info['overlap'] = spec.get('overlap')
+            info['ensemble'] = bool(spec.get('ensemble'))
+        if not merged:
+            info['error'] = 'budget'
+            print(
+                f'стем отрезка: бюджет {P.FT_BUDGET_S:.0f} с не вместил ни одного отрезка, '
+                f'пропущено строк {len(skipped)}',
+                flush=True)
+            return info
+        vocals, separated = stem_onset.separate_spans(
+            mix, [(a, b) for a, b, _ids in merged], rate=P.FT_RATE,
+            budget_s=P.FT_BUDGET_S, spec=spec)
+        onset_saved = info.get('onset')
+        onset_error = info.get('onset_error')
         info.update(separated)
-        info['skipped_ids'] = list(dict.fromkeys(list(skipped) + list(info.get('skipped_ids') or [])))
+        if onset_saved is not None:
+            info['onset'] = onset_saved
+        if onset_error:
+            info['onset_error'] = onset_error
+        info['skipped_ids'] = list(dict.fromkeys(skipped + list(info.get('skipped_ids') or [])))
+        if separated.get('error'):
+            info['ran'] = False
+            print(f'стем отрезка не отделён ({separated.get("error")})', flush=True)
+            return info
         info['ran'] = True
         del mix
         model = _mms_model()
         id_to_i = {u.id: i for i, u in enumerate(units)}
-        for (t0, t1, ids), vocal in zip(kept, vocals):
+        open_ids = {row[2] for row in open_rows}
+        for (t0, t1, ids), vocal in zip(merged, vocals):
             if vocal is None:
                 for lid in ids:
+                    if lid not in open_ids:
+                        continue
                     c = conf[id_to_i[lid]]
                     if c.get('placed_by') is not None:
                         continue
@@ -1121,8 +1184,6 @@ def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, di
             for lid in ids:
                 i = id_to_i[lid]
                 u, c = units[i], conf[i]
-                if c.get('placed_by') is not None:
-                    continue
                 cue = cues[u.id]
                 nxt = _next_cue_start(units, cues, i)
                 win = P.span_to_next(float(cue['start']), float(cue['end']), nxt, duration, 0.30, 0.0)
@@ -1131,6 +1192,10 @@ def rescue_ft(slug: str, units: list[Unit], conf: list[dict], cues: dict[str, di
                 seconds = star_seconds(clip, u, rel0, rel1)
                 if seconds:
                     seconds = [None if span is None else [span[0] + t0, span[1] + t0] for span in seconds]
+                if seconds:
+                    c['stem_starts'] = seconds
+                if lid not in open_ids or c.get('placed_by') is not None:
+                    continue
                 attempt = _placement_attempt(
                     'mms-ft', seconds, u.roman, float(cue['start']), nxt, (t0, t1), _section(u),
                     _cue_limit(u, cues))
@@ -1461,6 +1526,14 @@ def _placement_summary(report_lines: list[dict], conf: list[dict], units: list[U
     }
 
 
+def _stem_clock(conf_row: dict, index: int) -> float | None:
+    """File-time start from the clip stem, when that pass produced one."""
+    spans = conf_row.get('stem_starts') or []
+    if index >= len(spans) or spans[index] is None:
+        return None
+    return round(float(spans[index][0]), 3)
+
+
 def _clock_round(value: float | None, kind: str | None) -> float | None:
     """Whisper stays at two decimals, as the report always stored it. MMS and stable-ts keep three."""
     if value is None:
@@ -1596,7 +1669,7 @@ def main() -> None:
     # that was already placed is not re-measured on a wider span.
     orig_good = {u.id for u, c in zip(units, conf) if c['status'] == 'good'}
     n_window = rescue_mms_windows(lp, units, conf, passes, cues, duration)
-    ft_info = rescue_ft(slug, units, conf, cues, duration)
+    ft_info = rescue_ft(slug, units, conf, cues, duration, lyrics)
 
     # Phrase for the original good lines, before any snap and before a later aligner
     # is allowed to place what MMS missed. Newly placed lines are not a fence yet:
@@ -1758,6 +1831,7 @@ def main() -> None:
                               'clock_mms': None if mms_t is None else round(mms_t, 3),
                               'clock_second': None if e2 is None else round(float(e2), 3),
                               'clock_stable': None if e3 is None else round(float(e3), 3),
+                              'clock_stem': _stem_clock(c, wi),
                               'stable_models': stable_models,
                               'borrow': borrow_times,
                               'onset_dt': None if odt[wi] is None else round(odt[wi], 2), 'proven': proven})
