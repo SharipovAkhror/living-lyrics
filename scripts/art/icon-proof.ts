@@ -1,16 +1,13 @@
 /**
- * Renders every icon direction on one page so the grid can be checked by eye.
+ * Renders the glass icon set on one page so the grid can be checked by eye.
  * Usage: npx tsx scripts/art/icon-proof.ts
  * Writes work/t28-icons/proof.html (gitignored).
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { setA } from '../../src/ui/icons/a';
-import { setB } from '../../src/ui/icons/b';
 import { setC } from '../../src/ui/icons/c';
-import { setNow } from '../../src/ui/icons/now';
 import { ICON_NAMES, type IconSet, type Mark } from '../../src/ui/icons/types';
 
-const sets = [setA, setB, setC, setNow];
+const sets = [setC];
 
 function marks(list: Mark[], sw: number): string {
   return list

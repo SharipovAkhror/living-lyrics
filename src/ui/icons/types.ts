@@ -1,4 +1,4 @@
-/** Names the site already uses. Every direction draws the full list. */
+/** Names the site already uses. The glass set draws the full list. */
 export const ICON_NAMES = [
   'chevron.left',
   'chevron.right',
@@ -43,11 +43,9 @@ export type Glyph = {
   on?: Mark[];
 };
 
-export type IconDirection = 'now' | 'a' | 'b' | 'c';
-
 export type IconSet = {
-  id: IconDirection;
-  /** Square viewBox, either 24 or the Phosphor 256 grid. */
+  id: 'c';
+  /** Square viewBox. The glass set is drawn on a 24 grid. */
   vb: number;
   sw: number;
   glyphs: Record<IconName, Glyph>;

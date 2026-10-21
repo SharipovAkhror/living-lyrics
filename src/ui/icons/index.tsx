@@ -1,40 +1,12 @@
 /**
- * Icon directions for the T28 comparison.
- * The query `?icons=a|b|c` is read once, at module load. Anything else,
- * including a missing query, keeps the current Phosphor Fill set.
- * There is no visible control. A full reload picks up a new value;
- * client navigations keep the choice from the first page.
+ * Site icons. One set, «Стекло» (`./c`).
+ * Callers keep `import { Icon } from '@/ui/icons'`.
  */
 import type { CSSProperties } from 'react';
-import { setA } from './a';
-import { setB } from './b';
 import { setC } from './c';
-import { setNow } from './now';
-import type { IconDirection, IconName, IconSet, Mark } from './types';
+import type { IconName, Mark } from './types';
 
 export type { IconName } from './types';
-
-const SETS: Record<IconDirection, IconSet> = {
-  now: setNow,
-  a: setA,
-  b: setB,
-  c: setC,
-};
-
-function directionAtStartup(): IconDirection {
-  if (typeof window === 'undefined') return 'now';
-  try {
-    const raw = new URLSearchParams(window.location.search).get('icons');
-    const value = raw?.trim().toLowerCase();
-    if (value === 'a' || value === 'b' || value === 'c') return value;
-  } catch {
-    /* keep the current set */
-  }
-  return 'now';
-}
-
-/** Fixed for this page load. See the file comment. */
-export const iconDirection: IconDirection = directionAtStartup();
 
 const STYLE_ID = 'll-ico-style';
 const PAIR_CSS = [
@@ -53,8 +25,6 @@ function ensurePairStyle(): void {
 }
 
 ensurePairStyle();
-
-const activeSet = SETS[iconDirection];
 
 function Marks({ marks, sw }: { marks: Mark[]; sw: number }) {
   return marks.map((mark, index) => (
@@ -90,11 +60,11 @@ export function Icon({
   /** Accessible label. Omit when the parent control already has one. */
   label?: string;
 }) {
-  const glyph = activeSet.glyphs[name as IconName];
+  const glyph = setC.glyphs[name as IconName];
   if (!glyph) return null;
   const px = Math.round(size);
   const pair = Boolean(glyph.on);
-  const vb = activeSet.vb;
+  const vb = setC.vb;
   return (
     <svg
       width={px}
@@ -102,7 +72,6 @@ export function Icon({
       viewBox={`0 0 ${vb} ${vb}`}
       className={['ll-ico', pair ? 'll-pair' : '', className].filter(Boolean).join(' ')}
       style={style}
-      data-icon-set={iconDirection}
       fill="none"
       shapeRendering="geometricPrecision"
       role={label ? 'img' : undefined}
@@ -111,11 +80,11 @@ export function Icon({
       focusable="false"
     >
       <g className="ll-off">
-        <Marks marks={glyph.off} sw={activeSet.sw} />
+        <Marks marks={glyph.off} sw={setC.sw} />
       </g>
       {glyph.on && (
         <g className="ll-on">
-          <Marks marks={glyph.on} sw={activeSet.sw} />
+          <Marks marks={glyph.on} sw={setC.sw} />
         </g>
       )}
     </svg>
