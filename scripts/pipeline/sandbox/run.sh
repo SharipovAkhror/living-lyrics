@@ -24,7 +24,9 @@
 #   instruments who plays when → docs/analysis/<slug>-instruments.json and .md (instruments.py)
 #   roformer    clip onset clarity for Kimberley Jensen's Mel-Band RoFormer.
 #               One call measures all three songs and writes docs/analysis/bench/roformer-onset.md.
-#               It does not separate the song and does not write lyrics.
+#               It does not separate the song. --chance then substitutes vocals only
+#               on unproved windows of a song that cleared the bar, and writes lyrics
+#               only when the published line count rises and the 158-line baseline stays.
 # Stages that need stems decrypt and separate first when a stem is missing.
 # features and instruments need all four htdemucs stems. They do not edit lyrics.json.
 #
@@ -181,6 +183,10 @@ fi
 # separation. A second job in the same run sees the written report and returns.
 if has roformer && [ $status -lt 2 ]; then
   { step roformer python3 roformer_onset.py --measure; } || fail roformer
+fi
+# The measure is idempotent. The chance step no-ops unless a song cleared the bar.
+if has roformer && [ $status -lt 2 ]; then
+  { step roformer-chance python3 roformer_onset.py --chance; } || fail roformer-chance
 fi
 echo "=== итог $slug: код $status (0 — всё в такт, 1 — есть строки не в такт, 2 — стадия упала)" | tee -a "$log"
 exit $status

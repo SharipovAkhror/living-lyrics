@@ -10,8 +10,11 @@
 #
 # Job file fields: "stages" (decrypt separate sections transcribe diagnose bench align qa features instruments roformer).
 # roformer measures Kimberley Jensen's Mel-Band RoFormer on proved-word clips only
-# (docs/analysis/bench/roformer-onset.md). It does not separate the song and does not
-# edit lyrics. One job file is enough: the script loops the three songs.
+# (docs/analysis/bench/roformer-onset.md). It does not separate the song. If the
+# clarity bar is cleared, the same stage reruns the chance pass on unproved
+# windows of that song and edits lyrics only when the published count rises
+# and the 158-line baseline is kept. One job file is enough: the script loops
+# the three songs.
 # Before any align, the run collects a score row per cued line and writes docs/analysis/bench/calibration.json.
 # Jobs do not list that stage. A failed calibration does not fall through to the old 0.30 gate.
 # After every align and before qa, the run writes docs/analysis/bench/aligner-review.json
@@ -177,6 +180,7 @@ jobs:
     timeout-minutes: 150
     env:
       AUDIO_KEY: ${{ secrets.AUDIO_KEY }}
+      GH_TOKEN: ${{ github.token }}
       PIP_DISABLE_PIP_VERSION_CHECK: '1'
       PYTHONUNBUFFERED: '1'
       OMP_NUM_THREADS: '4'

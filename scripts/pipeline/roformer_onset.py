@@ -3,9 +3,12 @@
 The song is not separated. Twelve proved-word starts, the same sample as
 stem_onset.py, are cut from the mix and scored with the published gate:
 median attack at the word at least 5 % above htdemucs_ft, and the
-word/shift ratio not worse. A miss does not move a lyric time. A hit is
-recorded and still does not move the proof attack: that move needs a new
-chance pass, which this stage does not apply.
+word/shift ratio not worse. A miss does not move a lyric time. A hit still does not move the proof
+attack inside `--measure`. `--chance` then substitutes RoFormer vocals only
+on the placed unproved words of a song that cleared the bar, and only when
+that window is at least 0.80 s from a proved word. The full song is not
+separated. Lyric times change only when the published count rises and the
+158-line baseline is kept.
 
 Weights stay in the Hugging Face cache. The author's inference code is
 cloned under work/ and is not committed. The licence field is read from
@@ -14,8 +17,10 @@ pass before the checkpoint is downloaded.
 """
 from __future__ import annotations
 
+import bisect
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -34,6 +39,21 @@ API = f'https://huggingface.co/api/models/{CARD}'
 SR = 44100
 # Leave the install and the report inside the 150 minute job.
 DEFAULT_BUDGET_S = 100 * 60
+# The chance pass separates short windows, then leaves room for --choose.
+CHANCE_BUDGET_S = 40 * 60
+ALIGN_RUN = '39548436423'
+# A proved word this close would have its own ±0.40 s control inside the window.
+GAP_S = 0.80
+HALF_S = 0.25
+FADE_S = 0.03
+BASE_GROUPS = {
+    ('i-have-come-alive', 'solo'): 85,
+    ('karitas', 'solo'): 36,
+    ('one', 'solo'): 24,
+    ('one', 'choir'): 13,
+}
+BASE_PUBLISHED = 158
+BASE_INTERNAL = 159
 
 
 def budget_s() -> float:
@@ -43,6 +63,15 @@ def budget_s() -> float:
     except ValueError:
         value = DEFAULT_BUDGET_S
     return value if value > 0 else DEFAULT_BUDGET_S
+
+
+def chance_budget_s() -> float:
+    raw = os.environ.get('ROFORMER_CHANCE_BUDGET_S', '')
+    try:
+        value = float(raw) if str(raw).strip() else CHANCE_BUDGET_S
+    except ValueError:
+        value = CHANCE_BUDGET_S
+    return value if value > 0 else CHANCE_BUDGET_S
 
 
 def _get(url: str) -> dict:
@@ -373,6 +402,29 @@ def render_md(payload: dict) -> str:
                 f"| {row.get('slug')} | {name} | {summary.get('n')} | {summary.get('med_at')} | "
                 f"{summary.get('med_off')} | {summary.get('ratio')} |"
             )
+    chance = payload.get('chance') or {}
+    if chance:
+        lines += [
+            '',
+            'Случайный проход после порога. Полная песня не считалась. '
+            'В вокал htdemucs подставлены только окна поставленных недоказанных слов '
+            'песни, где порог взят, и только если окно не ближе 0,80 с к доказанному слову. '
+            'Время строк меняется только если опубликованных строк стало больше и база 158 удержана.',
+            '',
+            f"Время строк изменено: {payload.get('moved_times')}. {chance.get('why') or ''}",
+            '',
+            '| песня | окон | слов | близко к доказанному | статус |',
+            '|---|---:|---:|---:|---|',
+        ]
+        for row in chance.get('songs') or []:
+            lines.append(
+                f"| {row.get('slug')} | {row.get('spans') if row.get('spans') is not None else '—'} | "
+                f"{row.get('words') if row.get('words') is not None else '—'} | "
+                f"{row.get('skipped_close') if row.get('skipped_close') is not None else '—'} | "
+                f"{row.get('status') or '—'} |"
+            )
+        if not (chance.get('songs') or []):
+            lines.append('| — | — | — | — | проход не считался |')
     lines.append('')
     return '\n'.join(lines)
 
@@ -556,23 +608,535 @@ def measure() -> int:
     return 0
 
 
+def _report_file() -> Path:
+    return ROOT / 'docs' / 'analysis' / 'bench' / 'roformer-onset.json'
+
+
+def _load_report() -> dict | None:
+    path = _report_file()
+    if not path.is_file():
+        return None
+    try:
+        return json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return None
+
+
+def _published() -> dict[tuple[str, str], int]:
+    import timing as T
+
+    counts: dict[tuple[str, str], int] = {}
+    for slug in SONGS:
+        lyrics = _lyrics(slug)
+        for sec, line in T.vocal_lines(lyrics):
+            if 'timing-draft' in (line.get('flags') or []):
+                continue
+            kind = T.group(sec, line)
+            if kind not in ('solo', 'choir'):
+                continue
+            key = (slug, kind)
+            counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def _draft_ids(slug: str) -> set[str]:
+    import timing as T
+
+    ids: set[str] = set()
+    for sec, line in T.vocal_lines(_lyrics(slug)):
+        if T.group(sec, line) not in ('solo', 'choir'):
+            continue
+        if 'timing-draft' in (line.get('flags') or []):
+            ids.add(str(line.get('id')))
+    return ids
+
+
+def _nearest(times: list[float], t: float) -> float:
+    if not times:
+        return 1e9
+    i = bisect.bisect_left(times, t)
+    best = 1e9
+    if i < len(times):
+        best = min(best, abs(times[i] - t))
+    if i:
+        best = min(best, abs(times[i - 1] - t))
+    return best
+
+
+def _windows(report: dict, draft: set[str]) -> tuple[list[tuple[float, float]], dict]:
+    """Half-second windows around placed unproved words, away from proved words."""
+    proved: list[float] = []
+    for line in report.get('lines') or []:
+        if str(line.get('id')) in draft:
+            continue
+        if line.get('status') != 'good' or line.get('group') not in ('solo', 'choir'):
+            continue
+        for word in line.get('words') or []:
+            if word.get('roman') and word.get('ctc_s') is not None:
+                proved.append(float(word['ctc_s']))
+    proved.sort()
+    raw: list[tuple[float, float]] = []
+    skipped = 0
+    words = 0
+    lines = 0
+    for line in report.get('lines') or []:
+        if str(line.get('id')) not in draft:
+            continue
+        if line.get('status') != 'good' or line.get('group') not in ('solo', 'choir'):
+            continue
+        took = False
+        for word in line.get('words') or []:
+            if not word.get('roman') or word.get('ctc_s') is None:
+                continue
+            t = float(word['ctc_s'])
+            if _nearest(proved, t) < GAP_S:
+                skipped += 1
+                continue
+            raw.append((t - HALF_S, t + HALF_S))
+            words += 1
+            took = True
+        if took:
+            lines += 1
+    raw.sort()
+    merged: list[list[float]] = []
+    for a, b in raw:
+        # 0.80 s is under twice the proved-word gap, so the bridge cannot cover one.
+        if merged and a <= merged[-1][1] + 0.80:
+            merged[-1][1] = max(merged[-1][1], b)
+        else:
+            merged.append([a, b])
+    spans = [(float(a), float(b)) for a, b in merged]
+    return spans, {'lines': lines, 'words': words, 'skipped_close': skipped, 'spans': len(spans)}
+
+
+def _ensure_inputs(slug: str) -> None:
+    """Align report and the four htdemucs stems from the published align run.
+
+    A missing cache is not a reason to separate the song. The caller checks
+    that vocals.wav appeared.
+    """
+    import stem_cache
+
+    report = work_dir(slug) / 'align-report.json'
+    vocal = work_dir(slug) / 'stems' / 'vocals.wav'
+    if report.is_file() and vocal.is_file():
+        return
+    dest = work_dir('.roformer-artifact') / slug
+    if not dest.exists() or not any(dest.rglob('align-report.json')):
+        dest.mkdir(parents=True, exist_ok=True)
+        subprocess.run(
+            ['gh', 'run', 'download', ALIGN_RUN, '-n', f'align-{slug}', '-D', str(dest)],
+            check=True,
+        )
+    found = next(dest.rglob('align-report.json'), None)
+    if found is None:
+        raise RuntimeError(f'{slug}: в артефакте нет align-report.json')
+    report.parent.mkdir(parents=True, exist_ok=True)
+    if not report.is_file():
+        shutil.copyfile(found, report)
+    cache = ROOT / 'work' / 'stem-cache'
+    cache.mkdir(parents=True, exist_ok=True)
+    for enc in dest.rglob('*.flac.enc'):
+        target = cache / enc.name
+        if not target.is_file():
+            shutil.copyfile(enc, target)
+    stem_cache.unpack(slug, cache)
+    if not vocal.is_file():
+        raise RuntimeError(f'{slug}: вокал htdemucs из артефакта не восстановлен, песню не отделяю')
+
+
+def _read_wav(path: Path) -> tuple[np.ndarray, int]:
+    probe = subprocess.run(
+        ['ffprobe', '-v', 'error', '-select_streams', 'a:0',
+         '-show_entries', 'stream=sample_rate,channels', '-of', 'json', str(path)],
+        check=True, capture_output=True,
+    )
+    stream = json.loads(probe.stdout.decode('utf-8'))['streams'][0]
+    sr = int(stream['sample_rate'])
+    channels = int(stream['channels'])
+    raw = subprocess.run(
+        ['ffmpeg', '-v', 'error', '-i', str(path), '-ac', str(channels), '-ar', str(sr), '-f', 'f32le', '-'],
+        check=True, capture_output=True,
+    ).stdout
+    data = np.frombuffer(raw, dtype=np.float32).copy()
+    if channels > 1:
+        data = data.reshape(-1, channels).T
+    else:
+        data = data.reshape(1, -1)
+    return np.ascontiguousarray(data), sr
+
+
+def _write_wav(path: Path, audio: np.ndarray, sr: int) -> None:
+    channels = int(audio.shape[0])
+    pcm = np.ascontiguousarray(audio.T, dtype=np.float32).tobytes()
+    subprocess.run(
+        ['ffmpeg', '-v', 'error', '-y', '-f', 'f32le', '-ac', str(channels), '-ar', str(sr),
+         '-i', '-', '-c:a', 'pcm_f32le', str(path)],
+        input=pcm, check=True,
+    )
+
+
+def _fit(vocal: np.ndarray, n: int) -> np.ndarray:
+    vocal = np.asarray(vocal, dtype=np.float32).reshape(-1)
+    if len(vocal) == n:
+        return vocal
+    if len(vocal) < 2 or n < 1:
+        return np.zeros(n, dtype=np.float32)
+    src = np.linspace(0.0, 1.0, len(vocal), endpoint=False)
+    dst = np.linspace(0.0, 1.0, n, endpoint=False)
+    return np.interp(dst, src, vocal).astype(np.float32)
+
+
+def _splice(stem: np.ndarray, sr: int, spans: list[tuple[float, float]], vocals: list[np.ndarray]) -> int:
+    """Replace stem samples inside each span. Edges crossfade so a join is not an attack."""
+    written = 0
+    fade = max(1, int(FADE_S * sr))
+    for (t0, t1), vocal in zip(spans, vocals):
+        if vocal is None or float(np.max(np.abs(vocal))) < 1e-5:
+            continue
+        a = max(0, int(round(t0 * sr)))
+        b = min(stem.shape[1], int(round(t1 * sr)))
+        if b - a < fade * 2:
+            continue
+        piece = _fit(vocal, b - a)
+        width = min(fade, (b - a) // 4)
+        ramp = np.linspace(0.0, 1.0, width, dtype=np.float32)
+        for channel in range(stem.shape[0]):
+            head = stem[channel, a:a + width].copy()
+            tail = stem[channel, b - width:b].copy()
+            stem[channel, a:b] = piece
+            stem[channel, a:a + width] = head * (1.0 - ramp) + piece[:width] * ramp
+            stem[channel, b - width:b] = piece[-width:] * (1.0 - ramp) + tail * ramp
+        written += 1
+    return written
+
+
+def _snapshot(folder: Path) -> None:
+    if folder.exists():
+        shutil.rmtree(folder)
+    bench = ROOT / 'docs' / 'analysis' / 'bench'
+    shutil.copytree(bench, folder / 'bench')
+    songs = folder / 'songs'
+    songs.mkdir(parents=True)
+    for slug in SONGS:
+        src = ROOT / 'content' / 'songs' / slug
+        dst = songs / slug
+        dst.mkdir()
+        for name in ('lyrics.json', 'song.json'):
+            shutil.copyfile(src / name, dst / name)
+
+
+def _restore(folder: Path) -> None:
+    bench = ROOT / 'docs' / 'analysis' / 'bench'
+    if bench.exists():
+        shutil.rmtree(bench)
+    shutil.copytree(folder / 'bench', bench)
+    for slug in SONGS:
+        src = folder / 'songs' / slug
+        dst = ROOT / 'content' / 'songs' / slug
+        for name in ('lyrics.json', 'song.json'):
+            shutil.copyfile(src / name, dst / name)
+
+
+def _choose(snapshot: Path) -> dict:
+    import attack_chance
+
+    before = _published()
+    expected = {key: BASE_GROUPS[key] for key in BASE_GROUPS}
+    if before != expected or sum(before.values()) != BASE_PUBLISHED:
+        return {
+            'ran': False,
+            'why': f'опубликованный счёт до прохода {before} не равен базе {BASE_GROUPS}',
+            'kept_files': False,
+        }
+    _snapshot(snapshot)
+    try:
+        code = int(attack_chance.main(['--choose', *SONGS]))
+    except SystemExit as exc:
+        code = int(exc.code or 2)
+    path = ROOT / 'docs' / 'analysis' / 'bench' / 'attack-chance.json'
+    data = {}
+    if path.is_file():
+        try:
+            data = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            data = {}
+    chosen = data.get('chosen') or {}
+    union = chosen.get('union') or {}
+    info = {
+        'ran': True,
+        'exit': code,
+        'within_limit': chosen.get('within_limit'),
+        'line_chance': chosen.get('chance'),
+        'baseline_kept': chosen.get('baseline_kept'),
+        'internal_proved': union.get('proved'),
+        'kept_files': False,
+        'published_after': BASE_PUBLISHED,
+    }
+    rise = (
+        code == 0
+        and chosen.get('within_limit')
+        and chosen.get('baseline_kept')
+        and chosen.get('chance') is not None
+        and float(chosen['chance']) <= 0.05 + 1e-12
+        and isinstance(union.get('proved'), int)
+        and int(union['proved']) > BASE_INTERNAL
+    )
+    if rise:
+        for slug in SONGS:
+            subprocess.run([sys.executable, 'qa_sync.py', slug, '--apply'], check=False)
+        after = _published()
+        info['published_after'] = sum(after.values())
+        info['published_groups'] = {f'{a}|{b}': n for (a, b), n in sorted(after.items())}
+        dropped = any(after.get(key, 0) < BASE_GROUPS[key] for key in BASE_GROUPS)
+        if dropped or sum(after.values()) <= BASE_PUBLISHED:
+            _restore(snapshot)
+            info['why'] = 'qa не поднял опубликованный счёт или уронил группу, файлы возвращены'
+            info['published_after'] = BASE_PUBLISHED
+        else:
+            info['kept_files'] = True
+            info['why'] = 'опубликованный счёт вырос, база удержана'
+    else:
+        _restore(snapshot)
+        info['why'] = 'прибавки опубликованных строк нет, файлы возвращены'
+    return info
+
+
+def chance() -> int:
+    """Proof peaks on the winning song's unproved windows, then the existing chance pass."""
+    payload = _load_report()
+    if payload is None:
+        print('нет отчёта ясности, случайный проход не запускался', flush=True)
+        return 0
+    old = payload.get('chance') or {}
+    if old.get('finished') and os.environ.get('ROFORMER_FORCE') != '1':
+        print('случайный проход уже записан, повтор не считался', flush=True)
+        return 0
+    winners = [
+        str(row.get('slug')) for row in (payload.get('songs') or [])
+        if row.get('bar_passed') and row.get('slug') in SONGS
+    ]
+    info: dict = {'finished': True, 'songs': [], 'why': ''}
+    if not winners:
+        info['why'] = 'порог не взят ни на одной песне, случайный проход не запускался'
+        payload['chance'] = info
+        payload['moved_times'] = False
+        _write(payload)
+        return 0
+    before = _published()
+    if before != {key: BASE_GROUPS[key] for key in BASE_GROUPS} or sum(before.values()) != BASE_PUBLISHED:
+        info['why'] = f'опубликованный счёт до прохода {before} не равен базе, окна не считались'
+        payload['chance'] = info
+        payload['moved_times'] = False
+        _write(payload)
+        return 0
+    try:
+        fresh = read_license()
+    except Exception as exc:
+        info['why'] = f'поле лицензии не прочитано ({exc.__class__.__name__}: {exc}), веса не качались'
+        payload['chance'] = info
+        payload['moved_times'] = False
+        _write(payload)
+        return 0
+    if not fresh.get('ok'):
+        info['why'] = 'поле license не mit, веса не качались'
+        payload['chance'] = info
+        payload['license'] = fresh
+        payload['moved_times'] = False
+        _write(payload)
+        return 0
+    payload['license'] = fresh
+    started = time.monotonic()
+    try:
+        for slug in SONGS:
+            _ensure_inputs(slug)
+    except Exception as exc:
+        info['why'] = f'артефакт не подготовлен ({exc.__class__.__name__}: {exc}). Полная песня не считалась.'
+        payload['chance'] = info
+        payload['moved_times'] = False
+        _write(payload)
+        return 0
+
+    plans = []
+    for slug in winners:
+        report = json.loads((work_dir(slug) / 'align-report.json').read_text(encoding='utf-8'))
+        spans, counts = _windows(report, _draft_ids(slug))
+        plans.append({'slug': slug, 'spans': spans, **counts})
+    if not any(plan['spans'] for plan in plans):
+        info['songs'] = [
+            {'slug': plan['slug'], 'status': 'нет окон', 'spans': 0, 'words': plan['words'],
+             'skipped_close': plan['skipped_close']}
+            for plan in plans
+        ]
+        info['why'] = 'окон в стороне от доказанных слов нет, время строк не менялось'
+        payload['chance'] = info
+        payload['moved_times'] = False
+        _write(payload)
+        return 0
+
+    try:
+        import torch
+
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        torch.set_num_threads(4)
+        model, config, model_info = _load_model(_vendor(), device)
+        payload.setdefault('model', {}).update(model_info)
+        payload['model']['chance_device'] = device
+    except Exception as exc:
+        info['why'] = f'модель не загрузилась ({exc.__class__.__name__}: {exc})'
+        info['songs'] = [{'slug': plan['slug'], 'status': 'модель не загрузилась'} for plan in plans]
+        payload['chance'] = info
+        payload['moved_times'] = False
+        _write(payload)
+        return 0
+
+    mixes = {}
+    try:
+        for plan in plans:
+            if not plan['spans']:
+                continue
+            mixes[plan['slug']] = _mix(_decrypt(plan['slug']))
+    except Exception as exc:
+        info['why'] = f'запись не подготовлена ({exc.__class__.__name__}: {exc})'
+        payload['chance'] = info
+        payload['moved_times'] = False
+        _write(payload)
+        return 0
+
+    first = next(plan for plan in plans if plan['spans'])
+    t0, t1 = first['spans'][0]
+    mix = mixes[first['slug']]
+    a = max(0, int(t0 * SR))
+    b = min(mix.shape[1], int(t1 * SR))
+    probe_started = time.monotonic()
+    try:
+        probe = demix_vocals(config, model, mix[:, a:b], device)
+    except Exception as exc:
+        info['why'] = f'пробное окно не посчитано ({exc.__class__.__name__}: {exc})'
+        payload['chance'] = info
+        payload['moved_times'] = False
+        _write(payload)
+        return 0
+    probe_s = time.monotonic() - probe_started
+    n_spans = sum(len(plan['spans']) for plan in plans)
+    estimate = probe_s * max(n_spans - 1, 0) * 1.15
+    remaining = chance_budget_s() - (time.monotonic() - started)
+    info['probe_s'] = round(probe_s, 1)
+    info['estimate_s'] = round(estimate, 1)
+    if estimate > remaining:
+        info['why'] = (
+            f'оценка {estimate:.0f} с на {n_spans} окон не входит в остаток {remaining:.0f} с. '
+            f'Одно окно заняло {probe_s:.0f} с. Полная песня не считалась, время строк не менялось.'
+        )
+        info['songs'] = [
+            {'slug': plan['slug'], 'status': 'не влезло', 'spans': len(plan['spans']),
+             'words': plan['words'], 'skipped_close': plan['skipped_close']}
+            for plan in plans
+        ]
+        payload['chance'] = info
+        payload['moved_times'] = False
+        _write(payload)
+        return 0
+
+    song_rows = []
+    spliced = 0
+    for plan in plans:
+        slug = plan['slug']
+        if not plan['spans']:
+            song_rows.append({
+                'slug': slug, 'status': 'нет окон', 'spans': 0,
+                'words': plan['words'], 'skipped_close': plan['skipped_close'],
+            })
+            continue
+        mix = mixes[slug]
+        vocals = []
+        for index, (t0, t1) in enumerate(plan['spans']):
+            if slug == first['slug'] and index == 0:
+                vocals.append(probe)
+                continue
+            a = max(0, int(t0 * SR))
+            b = min(mix.shape[1], int(t1 * SR))
+            vocals.append(demix_vocals(config, model, mix[:, a:b], device))
+        vocal_path = work_dir(slug) / 'stems' / 'vocals.wav'
+        stem, sr = _read_wav(vocal_path)
+        n = _splice(stem, sr, plan['spans'], vocals)
+        _write_wav(vocal_path, stem, sr)
+        spliced += n
+        song_rows.append({
+            'slug': slug, 'status': 'окно подставлено', 'spans': len(plan['spans']),
+            'words': plan['words'], 'skipped_close': plan['skipped_close'], 'spliced': n,
+        })
+    info['songs'] = song_rows
+    if spliced < 1:
+        info['why'] = 'ни одно окно не подставилось, случайный проход не запускался'
+        payload['chance'] = info
+        payload['moved_times'] = False
+        _write(payload)
+        return 0
+
+    snapshot = work_dir('.roformer-snapshot')
+    try:
+        chosen = _choose(snapshot)
+    except Exception as exc:
+        if snapshot.exists():
+            try:
+                _restore(snapshot)
+            except Exception:
+                pass
+        info['why'] = f'случайный проход не собран ({exc.__class__.__name__}: {exc}). Файлы возвращены, если снимок был.'
+        payload['chance'] = info
+        payload['moved_times'] = False
+        _write(payload)
+        return 0
+    info.update({key: chosen[key] for key in chosen if key != 'songs'})
+    info['why'] = chosen.get('why') or ''
+    payload['chance'] = info
+    payload['moved_times'] = bool(chosen.get('kept_files'))
+    if payload['moved_times']:
+        payload['note'] = 'порог взят, и опубликованный счёт вырос. База удержана.'
+    else:
+        payload['note'] = 'порог взят. Случайный проход строк не прибавил, время строк возвращено.'
+    _write(payload)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
-    if '--measure' not in args:
+    if '--measure' not in args and '--chance' not in args:
         raise SystemExit(__doc__)
-    try:
-        return measure()
-    except Exception as exc:
-        payload = {
-            'budget_s': budget_s(), 'songs': [_row(slug, 'ошибка', error=str(exc)) for slug in SONGS],
-            'license': {}, 'note': f'{exc.__class__.__name__}: {exc}', 'moved_times': False,
-        }
+    code = 0
+    if '--measure' in args:
         try:
-            _write(payload)
-        except Exception:
-            print(payload['note'], flush=True)
-            return 2
-        return 0
+            code = measure()
+        except Exception as exc:
+            payload = {
+                'budget_s': budget_s(), 'songs': [_row(slug, 'ошибка', error=str(exc)) for slug in SONGS],
+                'license': {}, 'note': f'{exc.__class__.__name__}: {exc}', 'moved_times': False,
+            }
+            try:
+                _write(payload)
+            except Exception:
+                print(payload['note'], flush=True)
+                return 2
+            return 0
+    if '--chance' in args and code == 0:
+        try:
+            return chance()
+        except Exception as exc:
+            payload = _load_report() or {}
+            payload['moved_times'] = False
+            payload['chance'] = {
+                'finished': True,
+                'why': f'{exc.__class__.__name__}: {exc}',
+                'songs': (payload.get('chance') or {}).get('songs') or [],
+            }
+            try:
+                _write(payload)
+            except Exception:
+                print(payload['chance']['why'], flush=True)
+                return 2
+            return 0
+    return code
 
 
 if __name__ == '__main__':
