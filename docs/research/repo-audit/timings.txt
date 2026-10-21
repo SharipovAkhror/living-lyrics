@@ -1,0 +1,14 @@
+One run on this worktree, 2026-10-21, after npm install.
+AUDIO_KEY was unset. scripts/tools/audio-crypt.mjs lines 59-60 then exit 0,
+so npm run build did not decrypt the recordings. Decrypt time was not measured.
+
+validate     exit 0    811 ms    0 errors, 3 warnings (encrypted audio, no key)
+typecheck    exit 0   2447 ms
+vite build   exit 0    981 ms    entry gzip 175712, budget 200000
+npm run build exit 0  3882 ms    decrypt (no-op) + validate + typecheck + vite
+
+npx tsx src/player/background.test.ts   exit 0
+npx tsx src/player/preload.test.ts      exit 0
+npx tsx src/app/marks.test.ts           exit 0
+npm run test:layout                     exit 0    18168 layouts, 0 errors
+python scripts/pipeline/test_sync.py    exit 0    all checks passed
