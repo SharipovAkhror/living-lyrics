@@ -1,4 +1,4 @@
-# T29: re-check the sung text of all three songs, line by line
+# T29: re-check the sung text of all three songs, line by line — сделано (2026-10-20)
 
 Owner: LL · Site (Grok for scripts, Gemini for listening). Report to `LL · Main` in short English.
 
@@ -14,3 +14,7 @@ The canon letters were checked against editions on 2026-10-17. What breaks is mo
 4. Find out why the earlier checks missed this, and add a check (validator or QA script) so it can't come back.
 
 Done when: all three songs have the table, the fixes are in `main`, `npm run validate -- --strict` passes, and the owner's listening list is sent.
+
+## Где остановились (2026-10-20)
+
+Карточка `t29` — `done`. Влитие записано в `docs/STATUS.md` (коммит `8671cdd`). Список, который владельцу ещё слушать, — карточка `you-listen` (на доске: было 26 мест, осталось 9). Из-за этого списка T29 заново не открывать.

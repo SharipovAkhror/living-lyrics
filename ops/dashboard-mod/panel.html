@@ -64,7 +64,7 @@ h2 span { font-weight: 400; color: var(--ink-3); }
 .you li b { font-weight: 600; }
 
 /* Limits: one grid, a row per window */
-.lim { display: grid; grid-template-columns: minmax(84px, 1fr) 44px minmax(36px, 120px) 36px 64px 52px; gap: 5px 8px; align-items: center; }
+.lim { display: grid; grid-template-columns: minmax(84px, 1fr) 44px minmax(36px, 120px) 36px 72px 52px; gap: 5px 8px; align-items: center; }
 .lim .svc { font-weight: 600; display: flex; gap: 5px; align-items: center; white-space: nowrap; }
 .lim .plan { color: var(--ink-3); font-size: 11px; }
 .lim .w { color: var(--ink-2); }
@@ -201,7 +201,13 @@ function render(d) {
   if (you.length) out.push(`<section class="you"><h2>Нужно от вас · ${you.length}</h2><ul>${you.map(t => `<li><b>${esc(t.title)}</b>${t.how ? `<span class="sub">${esc(t.how)}</span>` : ''}</li>`).join('')}</ul></section>`);
 
   const g = L.grok;
-  const grok = g ? `<span class="svc"><i class="ic">${ICON.grok}</i>Grok</span><span class="w">сутки</span><span class="p" style="grid-column:3/5">${esc(group(g.today))} ток.</span><span class="r mute" style="font-size:11px;grid-column:5/7">${g.week ? `${esc(group(g.week))}` : '—'}</span>${g.plan ? `<span class="plan clip">${esc(g.plan)}</span><span class="note" style="grid-column:2/-1">окно лимита: нет данных</span>` : ''}` : `<span class="svc"><i class="ic">${ICON.grok}</i>Grok</span><span class="note">нет данных</span>`;
+  const gw = g && g.weekly;
+  const months = { January: '01', February: '02', March: '03', April: '04', May: '05', June: '06', July: '07', August: '08', September: '09', October: '10', November: '11', December: '12' };
+  const grokReset = r => (r || '').replace(/^(\w+) (\d+), (\d+:\d+)$/, (_, mo, d, hm) => `${d.padStart(2, '0')}.${months[mo] || mo} ${hm}`);
+  const grokHead = `<span class="svc"><i class="ic">${ICON.grok}</i>Grok</span>`;
+  const grokWin = gw ? `${grokHead}<span class="w">неделя</span><span class="bar"><i class="${level(gw.used)}" style="width:${Math.min(100, Math.max(0, gw.used))}%"></i></span><span class="p">${gw.used} %</span><span class="rs" title="${gw.tz ? '' : 'время с экрана Grok, пояс не подписан'}">${esc(grokReset(gw.reset))}</span>${spark(trend, 'kw')}` : '';
+  const grokTokens = g ? `${gw ? `<span class="plan clip">${esc(g.plan)}</span>` : grokHead}<span class="w">сутки</span><span class="p" style="grid-column:3/5">${esc(group(g.today))} ток.</span><span class="r mute" style="font-size:11px;grid-column:5/7">${g.week ? `${esc(group(g.week))} за 7 д` : ''}</span>` : '';
+  const grok = g ? grokWin + grokTokens + (gw ? '' : `<span class="plan clip">${esc(g.plan)}</span><span class="note" style="grid-column:2/-1">окно лимита: нет данных</span>`) : `${grokHead}<span class="note">нет данных</span>`;
   out.push(`<section><h2>Лимиты</h2><div class="lim"><span></span><span class="hd">окно</span><span class="hd r" style="grid-column:3/5">использовано</span><span class="hd r">сброс</span><span class="hd r">7 дней</span><span class="rule"></span>
     ${limitRows('claude', 'Claude', P.claude, L.claude, trend, ['c5', 'cw'], d.at)}<span class="rule"></span>
     ${limitRows('gemini', 'Gemini', P.gemini, L.gemini, trend, ['g5', 'gw'], d.at)}<span class="rule"></span>

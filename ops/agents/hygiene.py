@@ -6,7 +6,9 @@ Safe, deleted with --apply (each one fully merged into origin/main and clean):
 - a local branch no worktree has checked out.
 Reported, never deleted: unmerged branches older than STALE_DAYS, worktrees with uncommitted work,
 archived chats still running, two running chats under one name, tasks in progress with nobody on
-them, and paths in the docs that point to nothing.
+them, paths in the docs that point to nothing, a done card still marked running, sync
+counts that drift from the table in docs/tasks/T1-sync.md (section «Счёт синхронизации»),
+and a done or rejected card tN whose brief exists but does not say «сделано» or «отклонено» on line 1.
 
     python ops/agents/hygiene.py [<repo>] [--apply] [--repo-only] [--json]
 
@@ -165,6 +167,127 @@ def check_board(repo: Path, issues: list) -> None:
     for t in board.get('tasks', []):
         if t.get('section') == 'now' and not (t.get('agent') or t.get('who')):
             issues.append(f'на доске задача без исполнителя: {t.get("title")}')
+        if t.get('section') == 'done' and t.get('status') == 'running':
+            issues.append(f'сделанная карточка всё ещё «идёт»: {t.get("id")}')
+
+
+# A group of the table is named «<song title>, <group>» (e.g. «ONE, хор»); its board copy is the song
+# with that title and the group with that name, so a new song needs no change here.
+SYNC_FRACTION = re.compile(r'(\d+)\s*/\s*(\d+)|(\d+)\s+из\s+(\d+)')
+
+
+def parse_sync_table(repo: Path) -> tuple[list[dict], str | None]:
+    path = repo / 'docs' / 'tasks' / 'T1-sync.md'
+    try:
+        lines = path.read_text(encoding='utf-8').splitlines()
+    except OSError:
+        return [], 'нет docs/tasks/T1-sync.md'
+    start = next((i for i, line in enumerate(lines) if line.strip() == '## Счёт синхронизации'), None)
+    if start is None:
+        return [], 'в docs/tasks/T1-sync.md нет раздела «Счёт синхронизации»'
+    rows = []
+    for line in lines[start + 1:]:
+        if line.startswith('## '):
+            break
+        if not line.startswith('|'):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip('|').split('|')]
+        if not cells or cells[0] in ('Группа', '') or all(set(cell) <= set('-: ') for cell in cells):
+            continue
+        nums = [int(cell) for cell in cells[1:] if re.fullmatch(r'\d+', cell)]
+        if len(nums) < 3:
+            continue
+        rows.append({'name': cells[0].lower(), 'proven': nums[0], 'placed': nums[1], 'total': nums[2]})
+    if not rows:
+        return rows, 'в таблице синхронизации нет строк'
+    return rows, None
+
+
+def check_sync(repo: Path, issues: list) -> None:
+    rows, error = parse_sync_table(repo)
+    if error:
+        issues.append(error)
+        return
+    allowed = {(row['proven'], row['total']) for row in rows} | {(row['placed'], row['total']) for row in rows}
+    try:
+        board = json.loads((repo / 'ops' / 'board.json').read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        issues.append('ops/board.json не читается, счёт синхронизации не сверить')
+        return
+    found = {}
+    for song in board.get('songs') or []:
+        for group in song.get('groups') or []:
+            name = f'{song.get("title", "")}, {group.get("name", "")}'.lower()
+            found[name] = (group.get('proven'), group.get('placed'), group.get('total'))
+    table = {row['name'] for row in rows}
+    for row in rows:
+        got = found.get(row['name'])
+        expect = (row['proven'], row['placed'], row['total'])
+        if got is None:
+            issues.append(f'группы «{row["name"]}» из таблицы синхронизации нет на доске')
+        elif got != expect:
+            issues.append(f'доска «{row["name"]}» = {got}, таблица T1 = {expect}')
+    for name in found:
+        if name not in table:
+            issues.append(f'на доске группа вне таблицы синхронизации: {name}')
+    totals = {row['total'] for row in rows}
+    prose = []
+    for label, path in (('docs/STATUS.md', repo / 'docs' / 'STATUS.md'), ('docs/BACKLOG.md', repo / 'docs' / 'BACKLOG.md')):
+        try:
+            prose.append((label, path.read_text(encoding='utf-8')))
+        except OSError:
+            issues.append(f'не читается {label}')
+    for task in board.get('tasks') or []:
+        if task.get('id') != 't1':
+            continue
+        for field in ('title', 'what', 'now', 'next'):
+            prose.append((f'board.t1.{field}', str(task.get(field) or '')))
+    for song in board.get('songs') or []:
+        if song.get('note'):
+            prose.append((f'board.songs.{song.get("id")}.note', str(song['note'])))
+    for label, text in prose:
+        for match in SYNC_FRACTION.finditer(text):
+            proven = int(match.group(1) or match.group(3))
+            total = int(match.group(2) or match.group(4))
+            if total in totals and (proven, total) not in allowed:
+                issues.append(f'другой счёт синхронизации в {label}: {proven}/{total}')
+
+
+BRIEF_ID = re.compile(r'^t(\d+)$')
+
+
+def check_brief_marks(repo: Path, issues: list) -> None:
+    """A finished card tN with a brief must say so on the brief's first line.
+
+    Cards with no brief, and ids that are not t plus digits (t7d, d-mark), are skipped.
+    The mark belongs in the same commit that sets the card to done or rejected.
+    """
+    try:
+        board = json.loads((repo / 'ops' / 'board.json').read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return
+    tasks_dir = repo / 'docs' / 'tasks'
+    for task in board.get('tasks') or []:
+        match = BRIEF_ID.fullmatch(str(task.get('id') or ''))
+        if match is None or task.get('section') != 'done':
+            continue
+        status = task.get('status')
+        if status == 'done':
+            need = 'сделано'
+        elif status == 'rejected':
+            need = 'отклонено'
+        else:
+            continue
+        for brief in sorted(tasks_dir.glob(f'T{match.group(1)}-*.md')):
+            try:
+                first = brief.read_text(encoding='utf-8').splitlines()[0]
+            except (OSError, IndexError):
+                issues.append(f'бриф {brief.name} не читается')
+                continue
+            if need not in first:
+                issues.append(
+                    f'карточка {task.get("id")} — {status}, а первая строка {brief.name} без «{need}»'
+                )
 
 
 def check_docs(repo: Path, issues: list) -> None:
@@ -199,6 +322,8 @@ def main() -> None:
         check_local(repo, apply, fixed, issues)
         check_chats(repo, issues)
     check_board(repo, issues)
+    check_sync(repo, issues)
+    check_brief_marks(repo, issues)
     check_docs(repo, issues)
     at = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     if '--json' in flags:

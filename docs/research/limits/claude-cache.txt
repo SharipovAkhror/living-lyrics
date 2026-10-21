@@ -1,0 +1,61 @@
+Файл состояния Claude Code (не в репозитории): ключ cachedUsageUtilization.
+Обновлён самим клиентом, когда на Станции открыли /usage.
+fetchedAt: 2026-10-20T22:19:03.795Z (03:19 +05).
+До этого открытия метка времени была 2026-10-16T15:58:19Z, хотя сеансы
+Claude в эти дни работали. Кэш сам по себе не живой.
+
+Числа ниже совпали с экраном /usage в 03:19: 41 % и 6 %.
+Идентификаторы аккаунта в эту выписку не входят.
+
+five_hour
+  utilization: 41
+  resets_at: 2026-10-21T02:09:59.711309+00:00
+  limit_dollars: null
+  used_dollars: null
+  remaining_dollars: null
+
+seven_day
+  utilization: 6
+  resets_at: 2026-10-23T03:59:59.711327+00:00
+  limit_dollars: null
+  used_dollars: null
+  remaining_dollars: null
+
+seven_day_opus: null
+seven_day_sonnet: null
+seven_day_cowork: null
+seven_day_oauth_apps: null
+cinder_cove: null
+wattle_ember: null
+
+limits:
+  { kind: session,    group: session, percent: 41, severity: normal, is_active: true,
+    resets_at: 2026-10-21T02:09:59.711309+00:00 }
+  { kind: weekly_all, group: weekly,  percent: 6,  severity: normal, is_active: false,
+    resets_at: 2026-10-23T03:59:59.711327+00:00 }
+
+extra_usage
+  is_enabled: false
+  monthly_limit: 1658
+  used_credits: 1707
+  utilization: 100
+  currency: USD
+  decimal_places: 2
+
+spend
+  percent: 100
+  enabled: false
+  used:   { amount_minor: 1707, currency: USD, exponent: 2 }
+  limit:  { amount_minor: 1658, currency: USD, exponent: 2 }
+
+iguana_necktie
+  utilization: 100
+  limit_dollars: 100
+  used_dollars: 100.026084
+  remaining_dollars: 0
+  resets_at: 2026-11-05T07:59:00+00:00
+
+Поля extra_usage, spend и iguana_necktie на экране /usage долларами не показаны.
+Экран сказал только «Usage credits are off». Подписи iguana_necktie в клиенте нет
+(строка так и называется в JSON; в claude.exe этой строки нет).
+Единицу utilization у iguana_necktie по экрану не с чем сверить.

@@ -1,0 +1,124 @@
+{
+  "budget_s": 6000,
+  "card": "KimberleyJSN/melbandroformer",
+  "weight": "MelBandRoformer.ckpt",
+  "songs": [
+    {
+      "slug": "i-have-come-alive",
+      "status": "порог не взят",
+      "license": "MIT",
+      "clips": 12,
+      "elapsed_s": 273.8,
+      "baseline": {
+        "n": 12,
+        "med_at": 0.9334,
+        "med_off": 0.3435,
+        "ratio": 2.7177
+      },
+      "roformer": {
+        "n": 12,
+        "med_at": 0.9319,
+        "med_off": 0.2556,
+        "ratio": 3.6454
+      },
+      "chosen": "htdemucs_ft",
+      "reason": "база",
+      "error": null,
+      "bar_passed": false
+    },
+    {
+      "slug": "karitas",
+      "status": "порог взят",
+      "license": "MIT",
+      "clips": 12,
+      "elapsed_s": 276.6,
+      "baseline": {
+        "n": 12,
+        "med_at": 0.9444,
+        "med_off": 0.2783,
+        "ratio": 3.3936
+      },
+      "roformer": {
+        "n": 12,
+        "med_at": 1.1671,
+        "med_off": 0.2877,
+        "ratio": 4.0569
+      },
+      "chosen": "melband-roformer",
+      "reason": "атака у слова сильнее, контроль не сильнее",
+      "error": null,
+      "bar_passed": true
+    },
+    {
+      "slug": "one",
+      "status": "порог не взят",
+      "license": "MIT",
+      "clips": 12,
+      "elapsed_s": 278.6,
+      "baseline": {
+        "n": 12,
+        "med_at": 0.9588,
+        "med_off": 0.4306,
+        "ratio": 2.2264
+      },
+      "roformer": {
+        "n": 12,
+        "med_at": 0.7915,
+        "med_off": 0.2962,
+        "ratio": 2.6718
+      },
+      "chosen": "htdemucs_ft",
+      "reason": "база",
+      "error": null,
+      "bar_passed": false
+    }
+  ],
+  "moved_times": false,
+  "license": {
+    "repo": "KimberleyJSN/melbandroformer",
+    "file": "MelBandRoformer.ckpt",
+    "license": "mit",
+    "sha": "ac9b0614ab3cd7f77219e18ba494dfd93956c348",
+    "modified": "2026-04-22T12:30:27.000Z",
+    "ok": true
+  },
+  "model": {
+    "ckpt": "/home/runner/.cache/huggingface/hub/models--KimberleyJSN--melbandroformer/snapshots/ac9b0614ab3cd7f77219e18ba494dfd93956c348/MelBandRoformer.ckpt",
+    "load": "weights_only",
+    "flash_forced_off": true,
+    "target": "vocals",
+    "chunk_size": 352800,
+    "num_overlap": 2,
+    "code_sha": "25f44ffb55ee3c301281bba21b2d6d311cb69ae2",
+    "device": "cpu",
+    "chance_device": "cpu"
+  },
+  "note": "порог взят. Случайный проход строк не прибавил, время строк возвращено.",
+  "probe_s": 22.6,
+  "estimate_s": 1255.2,
+  "bar_passed": true,
+  "chance": {
+    "finished": true,
+    "songs": [
+      {
+        "slug": "karitas",
+        "status": "окно подставлено",
+        "spans": 28,
+        "words": 64,
+        "skipped_close": 0,
+        "spliced": 28
+      }
+    ],
+    "why": "прибавки опубликованных строк нет, файлы возвращены",
+    "probe_s": 69.2,
+    "estimate_s": 2147.1,
+    "ran": true,
+    "exit": 2,
+    "within_limit": true,
+    "line_chance": 0.0165,
+    "baseline_kept": false,
+    "internal_proved": 112,
+    "kept_files": false,
+    "published_after": 158
+  }
+}
