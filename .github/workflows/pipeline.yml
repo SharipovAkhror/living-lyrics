@@ -303,10 +303,14 @@ jobs:
             # fail this step: the stage records it and still returns.
             if python -m uv python install 3.11 && python -m uv venv /tmp/omni-venv --python 3.11 --seed; then
               /tmp/omni-venv/bin/python -c "import sys; print('omni python', sys.version)" || true
+              # fairseq2 0.6 pulls torch 2.8 from PyPI, which is the CUDA wheel,
+              # and leaves a CUDA torchaudio that needs libcudart (run
+              # 39599396668). Put the CPU pair back afterwards. A plain
+              # install does not replace a wheel that is already present.
               if /tmp/omni-venv/bin/python -m pip install -r scripts/pipeline/requirements.txt \
                 && /tmp/omni-venv/bin/python -m pip install 'omnilingual-asr==0.2.0' \
-                && /tmp/omni-venv/bin/python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu \
-                && /tmp/omni-venv/bin/python -c "import torch, omnilingual_asr; raise SystemExit('+cu' in torch.__version__)"; then
+                && /tmp/omni-venv/bin/python -m pip install --force-reinstall 'torch==2.8.0' 'torchaudio==2.8.0' --index-url https://download.pytorch.org/whl/cpu \
+                && /tmp/omni-venv/bin/python -c "import torch, torchaudio, omnilingual_asr; print('omni torch', torch.__version__); raise SystemExit('+cu' in torch.__version__)"; then
                 echo "OMNI_PYTHON=/tmp/omni-venv/bin/python" >> "$GITHUB_ENV"
               else
                 echo 'omnilingual-asr: venv не прошёл проверку'
