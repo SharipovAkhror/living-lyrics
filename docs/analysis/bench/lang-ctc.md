@@ -13,14 +13,14 @@
 
 | песня | язык | слов | модель | в 0,10 с | проход слова | решение |
 |---|---|---:|---|---:|---:|---|
-| i-have-come-alive | ar | 107 | — | 0 | — | часов нет |
+| i-have-come-alive | ar | 107 | xlsr-53-ar-kmfoda | 88 | 0,051 | допущено |
 | i-have-come-alive | en | 56 | xlsr-53-en-grosman | 49 | 0,125 | допущено |
 | i-have-come-alive | fa | 224 | xlsr-53-fa-m3hrdadfi | 172 | 0,069 | допущено |
 | i-have-come-alive | tr | 55 | xlsr-53-tr-cahya | 40 | 0,100 | допущено |
-| karitas | ar | 42 | — | 0 | — | часов нет |
+| karitas | ar | 42 | xlsr-53-ar-kmfoda | 35 | 0,190 | проход слова выше 15 % |
 | karitas | az | 184 | — | 0 | — | часов нет |
 | karitas | la | 76 | — | 0 | — | часов нет |
-| one | ar | 171 | — | 0 | — | часов нет |
+| one | ar | 171 | xlsr-53-ar-kmfoda | 89 | 0,158 | проход слова выше 15 % |
 | one | de | 150 | xlsr-53-de-grosman | 88 | 0,097 | допущено |
 
 ## Согласие двух слабых часов
@@ -29,9 +29,12 @@
 
 | песня | язык | слов | фонема | обоих часов | проход слова | решение |
 |---|---|---:|---|---:|---:|---|
+| i-have-come-alive | ar | 107 | xlsr-53-espeak | 104 | 0,047 | допущено |
 | i-have-come-alive | en | 56 | xlsr-53-espeak | 52 | 0,125 | допущено |
 | i-have-come-alive | fa | 224 | xlsr-53-espeak | 219 | 0,056 | допущено |
 | i-have-come-alive | tr | 55 | xlsr-53-espeak | 51 | 0,045 | допущено |
+| karitas | ar | 42 | xlsr-53-espeak | 38 | 0,131 | допущено |
+| one | ar | 171 | xlsr-53-espeak | 171 | 0,146 | допущено |
 | one | de | 150 | xlsr-53-espeak | 143 | 0,067 | допущено |
 
 ## Один против двух
