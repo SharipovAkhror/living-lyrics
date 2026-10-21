@@ -20,7 +20,9 @@
     "predev": "node scripts/tools/audio-crypt.mjs decrypt",
     "audio:encrypt": "node scripts/tools/audio-crypt.mjs encrypt",
     "perf:iphone": "node scripts/perf/long-run.mjs",
-    "perf:settings": "node scripts/perf/settings-trace.mjs"
+    "perf:settings": "node scripts/perf/settings-trace.mjs",
+    "test:interactions": "node scripts/perf/interactions.mjs",
+    "perf:frames": "node scripts/perf/frames.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "5.3.0",

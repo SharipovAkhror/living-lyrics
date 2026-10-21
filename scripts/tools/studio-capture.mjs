@@ -1,6 +1,7 @@
 // Sheets and motion recordings for the studio pass.
-// Sheets: node scripts/tools/studio-capture.mjs --base http://127.0.0.1:4176 --tag after --sheets work/studio/sheets6
-// Videos: node scripts/tools/studio-capture.mjs --base http://127.0.0.1:4176 --videos work/studio/video6
+// Sheets: node scripts/tools/studio-capture.mjs --base http://127.0.0.1:4176 --tag round8 --sheets work/studio/sheets8
+// Videos: node scripts/tools/studio-capture.mjs --base http://127.0.0.1:4176 --videos work/studio/video8
+// Frame numbers are a separate run (scripts/perf/frames.mjs). recordVideo drops frames on this machine.
 import { chromium, webkit } from 'playwright';
 import { mkdirSync } from 'node:fs';
 
@@ -13,7 +14,7 @@ const args = Object.fromEntries(
 );
 
 const base = args.base || 'http://127.0.0.1:4176';
-const tag = args.tag || 'after';
+const tag = args.tag || 'round8';
 const sheetDir = args.sheets && args.sheets !== 'true' ? args.sheets : '';
 const videoDir = args.videos && args.videos !== 'true' ? args.videos : '';
 
@@ -33,36 +34,6 @@ const pages = [
   { name: 'song', path: '/song/karitas?t=42' },
 ];
 
-function stats(deltas) {
-  const d = deltas.slice(1).filter((n) => n >= 0 && n < 500);
-  const s = [...d].sort((a, b) => a - b);
-  const pick = (q) => (s.length ? s[Math.min(s.length - 1, Math.ceil(q * s.length) - 1)] : null);
-  const long = d.filter((n) => n > 16.7);
-  const round = (n) => (n == null ? null : Math.round(n * 100) / 100);
-  return {
-    n: d.length,
-    p50: round(pick(0.5)),
-    p95: round(pick(0.95)),
-    max: round(s[s.length - 1] ?? null),
-    long: long.length,
-    longMax: round(long.length ? Math.max(...long) : 0),
-    over20: d.filter((n) => n > 20).length,
-    over33: d.filter((n) => n > 33.4).length,
-  };
-}
-
-function durStats(values) {
-  const s = values.filter((n) => n >= 0 && n < 500).sort((a, b) => a - b);
-  const pick = (q) => (s.length ? s[Math.min(s.length - 1, Math.ceil(q * s.length) - 1)] : null);
-  const round = (n) => (n == null ? null : Math.round(n * 100) / 100);
-  return {
-    n: s.length,
-    p50: round(pick(0.5)),
-    p95: round(pick(0.95)),
-    max: round(s[s.length - 1] ?? null),
-  };
-}
-
 async function shoot(browser, device) {
   for (const scheme of ['light', 'dark']) {
     const context = await browser.newContext({ ...device, colorScheme: scheme });
@@ -78,28 +49,6 @@ async function shoot(browser, device) {
     }
     await context.close();
   }
-}
-
-async function beginFrames(page) {
-  await page.evaluate(() => {
-    const deltas = [];
-    let last = performance.now();
-    const loop = (now) => {
-      deltas.push(now - last);
-      last = now;
-      window.__raf = requestAnimationFrame(loop);
-    };
-    window.__deltas = deltas;
-    window.__raf = requestAnimationFrame(loop);
-  });
-}
-
-async function endFrames(page) {
-  const deltas = await page.evaluate(() => {
-    cancelAnimationFrame(window.__raf);
-    return window.__deltas;
-  });
-  return stats(deltas);
 }
 
 async function record(browserName, browser, device, name, run) {
@@ -119,45 +68,16 @@ async function record(browserName, browser, device, name, run) {
   console.log(dest);
 }
 
-async function measure(page, name, action) {
-  const chromium = page.context().browser()?.browserType().name() === 'chromium';
-  const chunks = [];
-  let session = null;
-  let traceDone = null;
-  if (chromium) {
-    session = await page.context().newCDPSession(page);
-    session.on('Tracing.dataCollected', (event) => {
-      if (event.value) chunks.push(...event.value);
-    });
-    traceDone = new Promise((resolve) => session.on('Tracing.tracingComplete', resolve));
-    await session.send('Tracing.start', {
-      traceConfig: {
-        includedCategories: ['devtools.timeline', 'disabled-by-default-devtools.timeline.frame'],
-      },
-    });
-  }
-  await beginFrames(page);
-  await action();
-  await page.waitForTimeout(900);
-  const report = await endFrames(page);
-  if (session) {
-    await session.send('Tracing.end');
-    await traceDone;
-    await session.detach().catch(() => {});
-    const renders = chunks
-      .filter((event) => event.name === 'AnimationFrame::Render')
-      .map((event) => (typeof event.dur === 'number' ? event.dur / 1000 : null))
-      .filter((n) => n != null);
-    const scripts = chunks
-      .filter((event) => event.ph === 'X' && event.name === 'FireAnimationFrame' && typeof event.dur === 'number')
-      .map((event) => event.dur / 1000);
-    report.work = durStats(renders);
-    report.script = durStats(scripts);
-  }
-  const file = `${videoDir}/${name}.json`;
-  const { writeFileSync } = await import('node:fs');
-  writeFileSync(file, JSON.stringify({ name, ...report }, null, 2));
-  console.log(name, JSON.stringify(report));
+async function sheetInView(page) {
+  await page.waitForFunction(
+    () => {
+      const dialog = document.querySelector('[role="dialog"]');
+      if (!dialog) return false;
+      const box = dialog.getBoundingClientRect();
+      return box.height > 120 && box.top < window.innerHeight - 40 && box.bottom > 80;
+    },
+    { timeout: 5000 },
+  );
 }
 
 async function videosOf(browserName, browser, device) {
@@ -165,46 +85,43 @@ async function videosOf(browserName, browser, device) {
     await page.goto(base + '/', { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(400);
-    await measure(page, `${browserName}-library-song`, async () => {
-      await page.locator('.lib-hero').click();
-      await page.waitForURL('**/song/**');
-    });
+    await page.locator('.lib-hero').click();
+    await page.waitForURL('**/song/**');
+    await page.waitForTimeout(1100);
   });
 
   await record(browserName, browser, device, 'settings', async (page) => {
     await page.goto(base + '/song/karitas?t=42', { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(400);
-    await measure(page, `${browserName}-settings`, async () => {
-      await page.locator('button[aria-label="Настройки"]').click();
-    });
+    await page.locator('button[aria-label="Настройки"]').click();
+    await sheetInView(page);
+    await page.waitForTimeout(800);
   });
 
   await record(browserName, browser, device, 'scrub', async (page) => {
     await page.goto(base + '/song/karitas?t=42', { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(400);
-    await measure(page, `${browserName}-scrub`, async () => {
-      const track = page.locator('.scrub-track').first();
-      const box = await track.boundingBox();
-      if (!box) return;
-      await page.mouse.move(box.x + 8, box.y + box.height / 2);
-      await page.mouse.down();
-      await page.mouse.move(box.x + box.width * 0.72, box.y + box.height / 2, { steps: 12 });
-      await page.mouse.up();
-    });
+    const track = page.locator('.scrub-track').first();
+    const box = await track.boundingBox();
+    if (!box) return;
+    await page.mouse.move(box.x + 8, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width * 0.72, box.y + box.height / 2, { steps: 12 });
+    await page.mouse.up();
+    await page.waitForTimeout(500);
   });
 
   await record(browserName, browser, device, 'play', async (page) => {
     await page.goto(base + '/song/karitas?t=42', { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(400);
-    await measure(page, `${browserName}-play`, async () => {
-      const button = page.locator('button.btn-xl').first();
-      await button.click();
-      await page.waitForTimeout(350);
-      await button.click();
-    });
+    const button = page.locator('button.btn-xl').first();
+    await button.click();
+    await page.waitForTimeout(500);
+    await button.click();
+    await page.waitForTimeout(400);
   });
 }
 
