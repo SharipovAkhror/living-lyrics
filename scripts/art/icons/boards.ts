@@ -1,7 +1,7 @@
 /**
  * Studio boards for the Qalam family.
  * Usage: npx tsx scripts/art/icons/boards.ts
- * Writes HTML and PNG into work/t28-icons/own3/ (gitignored).
+ * Writes HTML and PNG into work/t28-icons/own4/ (gitignored).
  * Also opens the song page at 393×852, light and dark, then stops the dev server.
  * Pass --fast to skip the song page. The 1× proof is shot at deviceScaleFactor 1.
  */
@@ -13,7 +13,7 @@ import { ICON_NAMES, type IconName, type Mark } from '../../../src/ui/icons/type
 import { QATT_ACROSS, QATT_EDGE, circle, nibFor, nibLozenge, nuqta, pt, qalamStroke } from './pen';
 import { glyphAt, opticalFor, type Optical } from './qalam';
 
-const OUT = 'work/t28-icons/own3';
+const OUT = 'work/t28-icons/own4';
 const FAST = process.argv.includes('--fast');
 const LABELS: Record<IconName, string> = {
   'chevron.left': 'Назад',
@@ -349,7 +349,7 @@ function signature(): string {
     <p class="note">Слева настоящие 20 px, справа 48 px с мастера 32. Силуэт один. На крупном размере контраст и лишние нукты читаются, на мелком остаётся имя знака.</p>
     <div class="minis">${glyphs}</div>
     <h2>Нажатие, мастер 32 в 48 px</h2>
-    <p class="note">Слева покой, справа нажатие. Черта шире тем же пером. Пластина заливается, край остаётся, письмо вырезается. Сплошное тело чуть крупнее. У пуска верхняя грань уже почти совпадает со срезом, поэтому перо видно на основании, а не второй фаской на вершине.</p>
+    <p class="note">Слева покой, справа нажатие. Черта шире тем же пером. Пластина заливается, край остаётся, письмо вырезается. Сплошное тело чуть крупнее. У пуска верхняя грань уже почти совпадает со срезом, поэтому перо видно на основании, а не второй фаской на вершине. Остриё скруглено как угол пластины.</p>
     <div class="minis">${pressed}</div>`,
   );
 }
