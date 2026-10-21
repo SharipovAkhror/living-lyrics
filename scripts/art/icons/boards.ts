@@ -1,7 +1,7 @@
 /**
  * Studio boards for the Qalam family.
  * Usage: npx tsx scripts/art/icons/boards.ts
- * Writes HTML and PNG into work/t28-icons/own5/ (gitignored).
+ * Writes HTML and PNG into work/t28-icons/own6/ (gitignored).
  * Also opens the song page at 393×852, light and dark, then stops the dev server.
  * Pass --fast to skip the song page. The 1× proof is shot at deviceScaleFactor 1.
  */
@@ -13,7 +13,7 @@ import { ICON_NAMES, type IconName, type Mark } from '../../../src/ui/icons/type
 import { QATT_ACROSS, QATT_EDGE, circle, nibFor, nibLozenge, nuqta, pt, qalamStroke } from './pen';
 import { glyphAt, glyphTransport, opticalFor, type Optical } from './qalam';
 
-const OUT = 'work/t28-icons/own5';
+const OUT = 'work/t28-icons/own6';
 const FAST = process.argv.includes('--fast');
 const LABELS: Record<IconName, string> = {
   'chevron.left': 'Назад',
@@ -44,10 +44,11 @@ type Snap = { vb: number; sw: number; glyphs: Record<string, { off: Mark[]; on?:
 let maskSeq = 0;
 
 function pathTag(mark: Mark, fallback: number, cap: 'butt' | 'round'): string {
-  const fill = mark.draw === 'fill' ? 'currentColor' : 'none';
+  const wash = mark.tone === 'wash';
+  const fill = wash ? 'var(--qalam-wash)' : mark.draw === 'fill' ? 'currentColor' : 'none';
   const stroke = mark.draw === 'stroke' ? 'currentColor' : 'none';
   const width = mark.draw === 'stroke' ? (mark.sw ?? fallback) : 0;
-  const opacity = mark.opacity ?? 1;
+  const opacity = wash ? 1 : (mark.opacity ?? 1);
   const rule = mark.rule ?? 'evenodd';
   const transform = mark.transform ? ` transform="${mark.transform}"` : '';
   const join = cap === 'butt' ? 'miter' : 'round';
@@ -112,6 +113,7 @@ ${FONTS}
   --field: #3D38A5; --field-2: #70356F; --glass: rgba(255,255,255,.1);
   color-scheme: dark;
 }
+svg { --qalam-wash: color-mix(in srgb, currentColor 32%, var(--bg)); }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: #fff; }
 body { font-family: 'Inter Variable', sans-serif; font-weight: 450; color: var(--ink); -webkit-font-smoothing: antialiased; }
@@ -336,7 +338,7 @@ function signature(): string {
         `<figure class="mini"><div>${qalam(name, 'off', 20)}${qalam(name, 'off', 48)}</div><figcaption>${LABELS[name]}</figcaption></figure>`,
     )
     .join('');
-  const pressed = (['chevron.right', 'character.bubble', 'square.grid.2x2', 'pause', 'play'] as const)
+  const pressed = (['chevron.right', 'character.bubble', 'book.closed', 'book.pages', 'square.grid.2x2', 'pause', 'play'] as const)
     .map(
       (name) =>
         `<figure class="mini"><div>${qalam(name, 'off', 48)}${qalam(name, 'on', 48)}</div><figcaption>${LABELS[name]}</figcaption></figure>`,
@@ -355,7 +357,7 @@ function signature(): string {
     <p class="note">Слева настоящие 20 px, справа 48 px с мастера 32. Силуэт один. На крупном размере контраст и лишние нукты читаются, на мелком остаётся имя знака.</p>
     <div class="minis">${glyphs}</div>
     <h2>Нажатие, мастер 32 в 48 px</h2>
-    <p class="note">Слева покой, справа нажатие. Черта шире на один пиксель. Перевод и пояснение не заливаются: тяжелеет кольцо и письмо. Методология — один кодекс, не две плашки. Пуск — скруглённый треугольник без насечки, центр массы на середине кнопки.</p>
+    <p class="note">Слева покой, справа нажатие. Черта шире на один пиксель. У рамки (перевод, пояснение, методология) внутри второй тон: непрозрачная смесь чернил с бумагой, не чёрная плашка. Кольцо остаётся сверху. Пуск — скруглённый треугольник без насечки, центр массы на середине кнопки.</p>
     <div class="minis">${pressed}</div>`,
   );
 }
@@ -474,6 +476,11 @@ async function shootCrisp(): Promise<void> {
         const method = await cropIcons(lib.page, dir, 'lib');
         const methodCell = method.find((cell) => cell.label.includes('Методология'));
         const all = methodCell ? [...cells, methodCell] : cells;
+        for (const name of ['О песне', 'Перевод', 'Пояснение', 'Методология']) {
+          if (!all.some((cell) => cell.label.includes(name))) {
+            throw new Error(`на листе чёткости нет знака «${name}» (${pass.id})`);
+          }
+        }
         blocks.push(`<section><h2>${pass.title}</h2><div class="row">${all.map(cellHtml).join('')}</div></section>`);
       } finally {
         await song.close();
