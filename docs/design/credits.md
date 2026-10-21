@@ -2,18 +2,33 @@
 
 ## Значки
 
-На сайте Phosphor Fill: пути в `src/ui/icons.tsx`. В репозиторий скопированы только пути нужных значков, без новой зависимости.
+На сайте Material Symbols Rounded: пути в `src/ui/icons.tsx`. В репозиторий скопированы только нужные значки, без шрифта целиком и без новой зависимости. Пути не изменялись.
 
-MIT. Copyright (c) 2023 Phosphor Icons.
-Репозиторий: <https://github.com/phosphor-icons/core>, коммит `2b75f3ad12b420c9504ef05df8d2564a28f8500e`.
+Apache License, Version 2.0.
+Copyright 2026 Google LLC. All Rights Reserved.
+Версия шрифта: 2.978. Файл Google Fonts: Material Symbols Rounded, v381. Снимок путей: 2026-10-21.
+Лицензия: <https://www.apache.org/licenses/LICENSE-2.0>
+Набор: <https://fonts.google.com/icons?icon.set=Material+Symbols&icon.style=Rounded>
+Репозиторий: <https://github.com/google/material-design-icons>
+Исходные SVG: `https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsrounded/<имя>/{default|fill1}/{20|24}px.svg`
 
-Текст разрешения (MIT), как в файле набора:
+Снято с осей: FILL 0 (контур, покой) и FILL 1 (заливка, активное), wght 400, GRAD 0, opsz 20 и opsz 24. Вес 300 сверялся и не пошёл в набор: на 16–24 px он тоньше, чем рассчитан оптический размер 400.
 
-> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Уведомление, как просит приложение лицензии:
+
+> Copyright 2026 Google LLC. All Rights Reserved.
 >
-> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+> Licensed under the Apache License, Version 2.0 (the "License");
+> you may not use this file except in compliance with the License.
+> You may obtain a copy of the License at
 >
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+>     http://www.apache.org/licenses/LICENSE-2.0
+>
+> Unless required by applicable law or agreed to in writing, software
+> distributed under the License is distributed on an "AS IS" BASIS,
+> WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+> See the License for the specific language governing permissions and
+> limitations under the License.
 
 ## Обложки
 
