@@ -195,6 +195,45 @@ async function closeDialog(page) {
   await page.waitForFunction(() => !document.querySelector('.sheet-root'), { timeout: 5000 });
 }
 
+async function stageView(page) {
+  return page.evaluate(() => {
+    const stage = document.querySelector('.scene-stage');
+    if (!stage) return { ok: false, lines: 0, arts: 0, why: 'no stage' };
+    const box = stage.getBoundingClientRect();
+    const seen = (el) => {
+      let node = el;
+      while (node && node !== document.documentElement) {
+        const style = getComputedStyle(node);
+        if (style.display === 'none' || style.visibility === 'hidden') return false;
+        if (!(Number(style.opacity) > 0.04)) return false;
+        node = node.parentElement;
+      }
+      const rect = el.getBoundingClientRect();
+      const top = Math.max(rect.top, box.top);
+      const bottom = Math.min(rect.bottom, box.bottom);
+      const left = Math.max(rect.left, box.left);
+      const right = Math.min(rect.right, box.right);
+      return bottom - top > 8 && right - left > 8;
+    };
+    let lines = 0;
+    let arts = 0;
+    const textOf = '.scene-view .fb--line .fb-orig, .scene-depart .fb--line .fb-orig, .scene-view .fb--intro .intro-title, .scene-depart .fb--intro .intro-title';
+    for (const el of stage.querySelectorAll(textOf)) {
+      const text = (el.textContent || '').replace(/\u200b/g, '').trim();
+      if (text && seen(el)) lines += 1;
+    }
+    // Phone plates keep the drawing in a shadow root. A light-DOM query cannot see it.
+    const walk = (root) => {
+      for (const el of root.querySelectorAll('.ist-art, .ist-art-mount')) {
+        if (el.classList.contains('ist-art') && seen(el)) arts += 1;
+        if (el.shadowRoot) walk(el.shadowRoot);
+      }
+    };
+    walk(stage);
+    return { ok: lines > 0 || arts > 0, lines, arts };
+  });
+}
+
 async function runCore(page, label) {
   const out = [];
   const note = (name, ok, detail) => {
@@ -362,6 +401,9 @@ async function runCore(page, label) {
   const trackBox = await track.boundingBox();
   if (!trackBox) {
     note('scrub', false, 'track has no box');
+    note('scrub-mid', false, 'track has no box');
+    note('scrub-inst', false, 'track has no box');
+    note('scrub-lyric', false, 'track has no box');
   } else {
     await page.mouse.move(trackBox.x + 8, trackBox.y + trackBox.height / 2);
     await page.mouse.down();
@@ -383,9 +425,28 @@ async function runCore(page, label) {
         previewAbove: previewBox && trackBox ? previewBox.bottom <= trackBox.top - 4 : false,
       };
     });
-    await page.mouse.move(trackBox.x + trackBox.width * 0.72, trackBox.y + trackBox.height / 2, { steps: 10 });
+    const y = trackBox.y + trackBox.height / 2;
+    const x0 = trackBox.x + 8;
+    // 705s / 977s is the qanun break. A fast last step would coast past it.
+    const xInst = trackBox.x + trackBox.width * (705 / 977);
+    let mid = null;
+    const steps = 8;
+    for (let i = 1; i <= steps; i++) {
+      await page.mouse.move(x0 + ((xInst - x0) * i) / steps, y);
+      if (i === 4) {
+        await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+        mid = await stageView(page);
+      }
+      await page.waitForTimeout(40);
+    }
+    await page.waitForTimeout(80);
+    await page.mouse.move(xInst + 1, y);
+    await page.waitForTimeout(120);
+    await page.mouse.move(xInst, y);
+    await page.waitForTimeout(80);
     await page.mouse.up();
-    await page.waitForTimeout(250);
+    await page.waitForTimeout(450);
+    const inst = await stageView(page);
     const after = Number(await page.locator('.scrub-track[role="slider"]').getAttribute('aria-valuenow'));
     const rail = matrixOf(bloom.rail);
     const head = matrixOf(bloom.head);
@@ -401,6 +462,33 @@ async function runCore(page, label) {
         bloom.previewAbove,
       `before=${before} after=${after} rail=${bloom.rail} h=${bloom.railH} drag=${bloom.dragging} head=${bloom.head} bubble=${bloom.previewAbove}`,
     );
+    note('scrub-mid', !!mid && mid.ok, JSON.stringify(mid));
+    note(
+      'scrub-inst',
+      !!inst && inst.arts > 0 && after > 680 && after < 730,
+      JSON.stringify({ ...inst, after }),
+    );
+    // The margin note closes on an instrumental cue and the dock recentres.
+    const lyricBox = (await track.boundingBox()) || trackBox;
+    const yLyric = lyricBox.y + lyricBox.height / 2;
+    const xLyric0 = lyricBox.x + 16;
+    const xLyric = lyricBox.x + lyricBox.width * (42 / 977);
+    await page.mouse.move(xLyric0, yLyric);
+    await page.mouse.down();
+    for (let i = 1; i <= 6; i++) {
+      await page.mouse.move(xLyric0 + ((xLyric - xLyric0) * i) / 6, yLyric);
+      await page.waitForTimeout(40);
+    }
+    await page.waitForTimeout(80);
+    await page.mouse.move(xLyric + 1, yLyric);
+    await page.waitForTimeout(120);
+    await page.mouse.move(xLyric, yLyric);
+    await page.waitForTimeout(80);
+    await page.mouse.up();
+    await page.waitForTimeout(450);
+    const lyric = await stageView(page);
+    const lyricAt = Number(await page.locator('.scrub-track[role="slider"]').getAttribute('aria-valuenow'));
+    note('scrub-lyric', !!lyric && lyric.lines > 0 && lyricAt > 20 && lyricAt < 80, JSON.stringify({ ...lyric, lyricAt }));
   }
 
   const play = page.locator('button.btn-xl').first();

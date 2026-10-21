@@ -1,10 +1,11 @@
 /**
  * Shared pieces for the T27 iPhone memory runs.
  * Audio is a generated silent WAV of the song length: this machine has no AUDIO_KEY,
- * so the encrypted recording cannot be decrypted. The element still buffers and seeks.
+ * so the encrypted recording cannot be decrypted. Chromium plays that WAV.
+ * Playwright WebKit on this host reports codecs and then errors on every payload,
+ * so the recorder clocks that engine instead of letting the element fail.
  */
-import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, statSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { devices } from 'playwright';
 
 export const PHONE = devices['iPhone 14 Pro'] ?? devices['iPhone 13'];
@@ -36,40 +37,16 @@ export function wavSilence(seconds, rate = 8000) {
 }
 
 /**
- * Silent AAC in an m4a container, same length as the song.
- * The page asks for high.m4a. A WAV body on that URL is rejected (error 4) because the
- * demuxer follows the extension. Fall back to WAV only when ffmpeg is missing.
+ * Silent WAV of the song length, served at the `.m4a` URL.
+ * This Playwright Chromium has no AAC decoder (`canPlayType` of mp4a.40.2 is
+ * empty) and still plays a WAV body on that URL. ffmpeg AAC, including the
+ * Windows encoder, comes back as media error 4, so the banner stays up.
  */
-export function prepareAudio(seconds, outDir) {
-  mkdirSync(outDir, { recursive: true });
-  const file = `${outDir}/silence-${seconds}s.m4a`;
-  const probe = spawnSync('ffmpeg', ['-version'], { encoding: 'utf8' });
-  if (probe.status === 0) {
-    const stale = !existsSync(file) || statSync(file).size < 1000;
-    if (stale) {
-      const made = spawnSync(
-        'ffmpeg',
-        ['-y', '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=mono', '-t', String(seconds), '-c:a', 'aac', '-b:a', '24k', '-movflags', '+faststart', file],
-        { encoding: 'utf8' },
-      );
-      if (made.status !== 0) {
-        return {
-          body: wavSilence(seconds),
-          type: 'audio/wav',
-          label: `ffmpeg failed (${(made.stderr || '').slice(-180)}); generated silent WAV, 8 kHz 8-bit mono, ${seconds}s`,
-        };
-      }
-    }
-    return {
-      body: readFileSync(file),
-      type: 'audio/mp4',
-      label: `generated silent AAC in an m4a container, 44.1 kHz mono, 24 kbps, ${seconds}s, served at the song m4a URL with Range`,
-    };
-  }
+export function prepareAudio(seconds, _outDir) {
   return {
     body: wavSilence(seconds),
     type: 'audio/wav',
-    label: `ffmpeg not on PATH; generated silent WAV, 8 kHz 8-bit mono, ${seconds}s, served at the song m4a URL`,
+    label: `generated silent WAV, 8 kHz 8-bit mono, ${seconds}s, served at the song m4a URL with Range`,
   };
 }
 
@@ -154,48 +131,173 @@ export async function installStandInClock(context, seconds) {
   }, seconds);
 }
 
-export async function installAudioRoute(context, body, type = 'audio/wav') {
-  await context.route('**/*.{m4a,mp3,aac,wav,flac}', async (route) => {
-    const req = route.request();
-    if (req.method() === 'HEAD' || req.method() === 'OPTIONS') {
-      await route.fulfill({
-        status: 200,
-        headers: {
-          'Accept-Ranges': 'bytes',
-          'Content-Type': type,
-          'Content-Length': String(body.length),
-        },
-        body: Buffer.alloc(0),
-      });
-      return;
-    }
-    const range = req.headers()['range'];
-    if (range) {
-      const m = /bytes=(\d+)-(\d*)/.exec(range);
-      const start = m ? Math.min(body.length - 1, Number(m[1])) : 0;
-      const end = m && m[2] ? Math.min(body.length - 1, Number(m[2])) : body.length - 1;
-      const slice = body.subarray(start, end + 1);
-      await route.fulfill({
-        status: 206,
-        headers: {
-          'Content-Type': type,
-          'Accept-Ranges': 'bytes',
-          'Content-Range': `bytes ${start}-${end}/${body.length}`,
-          'Content-Length': String(slice.length),
-        },
-        body: slice,
-      });
-      return;
-    }
+/**
+ * Playwright WebKit on this host cannot decode any payload (media error 4),
+ * so a real file never reaches play. The element is not pointed at the URL:
+ * that load is what raises the banner. Time, play and pause behave as they
+ * would with a recording of `durations[slug]` seconds. Chromium plays the WAV
+ * and must not use this.
+ */
+export async function installWebKitClock(context, durations) {
+  await context.addInitScript((map) => {
+    let src = '';
+    let dur = 0;
+    let base = 0;
+    let t0 = performance.now();
+    let playing = false;
+    const secondsOf = (url) => {
+      const slug = /\/audio\/([^/]+)\//.exec(String(url))?.[1] || '';
+      const n = Number(map[slug]);
+      return Number.isFinite(n) ? n : 0;
+    };
+    const advance = () => {
+      if (!playing) return base;
+      const t = base + (performance.now() - t0) / 1000;
+      return dur > 0 ? Math.min(dur, t) : t;
+    };
+    const proto = HTMLMediaElement.prototype;
+    Object.defineProperty(proto, 'src', {
+      configurable: true,
+      get() {
+        return src;
+      },
+      set(v) {
+        src = String(v || '');
+        dur = secondsOf(src);
+        base = 0;
+        playing = false;
+        t0 = performance.now();
+        if (!(dur > 0)) return;
+        queueMicrotask(() => {
+          this.dispatchEvent(new Event('loadedmetadata'));
+          this.dispatchEvent(new Event('canplay'));
+          this.dispatchEvent(new Event('canplaythrough'));
+        });
+      },
+    });
+    Object.defineProperty(proto, 'currentSrc', {
+      configurable: true,
+      get() {
+        return src;
+      },
+    });
+    Object.defineProperty(proto, 'error', {
+      configurable: true,
+      get() {
+        return null;
+      },
+    });
+    Object.defineProperty(proto, 'readyState', {
+      configurable: true,
+      get() {
+        return src ? 4 : 0;
+      },
+    });
+    Object.defineProperty(proto, 'networkState', {
+      configurable: true,
+      get() {
+        return src ? 1 : 0;
+      },
+    });
+    Object.defineProperty(proto, 'paused', {
+      configurable: true,
+      get() {
+        return !playing;
+      },
+    });
+    Object.defineProperty(proto, 'duration', {
+      configurable: true,
+      get() {
+        return dur > 0 ? dur : Number.NaN;
+      },
+    });
+    Object.defineProperty(proto, 'currentTime', {
+      configurable: true,
+      get() {
+        return advance();
+      },
+      set(v) {
+        base = Math.max(0, Math.min(dur || 0, Number(v) || 0));
+        t0 = performance.now();
+      },
+    });
+    proto.load = function load() {};
+    proto.play = function play() {
+      if (!playing) {
+        t0 = performance.now();
+        playing = true;
+      }
+      this.dispatchEvent(new Event('play'));
+      this.dispatchEvent(new Event('playing'));
+      return Promise.resolve();
+    };
+    proto.pause = function pause() {
+      if (playing) {
+        base = advance();
+        playing = false;
+        t0 = performance.now();
+      }
+      this.dispatchEvent(new Event('pause'));
+    };
+  }, durations);
+}
+
+async function fulfillAudio(route, body, type) {
+  const req = route.request();
+  if (req.method() === 'HEAD' || req.method() === 'OPTIONS') {
     await route.fulfill({
       status: 200,
       headers: {
-        'Content-Type': type,
         'Accept-Ranges': 'bytes',
+        'Content-Type': type,
         'Content-Length': String(body.length),
       },
-      body,
+      body: Buffer.alloc(0),
     });
+    return;
+  }
+  const range = req.headers()['range'];
+  if (range) {
+    const m = /bytes=(\d+)-(\d*)/.exec(range);
+    const start = m ? Math.min(body.length - 1, Number(m[1])) : 0;
+    const end = m && m[2] ? Math.min(body.length - 1, Number(m[2])) : body.length - 1;
+    const slice = body.subarray(start, end + 1);
+    await route.fulfill({
+      status: 206,
+      headers: {
+        'Content-Type': type,
+        'Accept-Ranges': 'bytes',
+        'Content-Range': `bytes ${start}-${end}/${body.length}`,
+        'Content-Length': String(slice.length),
+      },
+      body: slice,
+    });
+    return;
+  }
+  await route.fulfill({
+    status: 200,
+    headers: {
+      'Content-Type': type,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': String(body.length),
+    },
+    body,
+  });
+}
+
+export async function installAudioRoute(context, body, type = 'audio/wav') {
+  await installResolvedAudio(context, () => ({ body, type }));
+}
+
+/** `resolve` returns `{ body, type }` for a URL, or null to leave the request alone. */
+export async function installResolvedAudio(context, resolve) {
+  await context.route('**/*.{m4a,mp3,aac,wav,flac}', async (route) => {
+    const audio = resolve(route.request().url());
+    if (!audio) {
+      await route.continue();
+      return;
+    }
+    await fulfillAudio(route, audio.body, audio.type);
   });
 }
 
