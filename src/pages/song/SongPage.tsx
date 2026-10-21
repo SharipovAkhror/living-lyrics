@@ -59,9 +59,13 @@ function useShortLandscape() {
   return on;
 }
 
-/** A frosted circle and a hairline cross. The filled close plate is a black box. */
+/** A quiet round control. The mark is the set's stroke, not a painted cross. */
 function CloseDisc({ label, onClick }: { label: string; onClick: () => void }) {
-  return <button type="button" className="close-disc" aria-label={label} onClick={onClick} />;
+  return (
+    <button type="button" className="close-disc" aria-label={label} onClick={onClick}>
+      <Icon name="xmark" size={16} />
+    </button>
+  );
 }
 
 /** Portrait note. Not a dialog: the settings test takes the first one, and the grabber class is theirs. */
@@ -850,9 +854,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               {buffering && !playing ? (
                 <span className="btn-buffer" aria-hidden="true" />
               ) : (
-                <span className="play-glyph">
-                  <PlayPause playing={playing} size={28} />
-                </span>
+                <PlayPause playing={playing} size={28} />
               )}
             </button>
             <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)">
@@ -861,7 +863,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           </div>
           <div className="utility" role="group" aria-label="Действия с песней">
             <button className="util" aria-label="Перевод" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
-              <Icon name="character.bubble" size={20} />
+              <Icon name="character.bubble" size={24} />
               <span className="util-label">Перевод</span>
             </button>
             <button
@@ -871,15 +873,15 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               aria-keyshortcuts="K"
               onClick={toggleComment}
             >
-              <Icon name="book.closed" size={20} />
+              <Icon name="book.closed" size={24} />
               <span className="util-label">Пояснение</span>
             </button>
             <button className="util" aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={() => openSheet('text')}>
-              <Icon name="list.bullet" size={20} />
+              <Icon name="list.bullet" size={24} />
               <span className="util-label">Весь текст</span>
             </button>
             <button className="util" aria-label="Настройки" aria-pressed={sheet === 'settings'} onClick={() => openSheet('settings')}>
-              <Icon name="slider.horizontal.3" size={20} />
+              <Icon name="slider.horizontal.3" size={24} />
               <span className="util-label">Настройки</span>
             </button>
           </div>

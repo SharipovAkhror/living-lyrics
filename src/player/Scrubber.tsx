@@ -84,6 +84,7 @@ export function Scrubber({
   const track = useRef<HTMLDivElement>(null);
   const rail = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLDivElement>(null);
+  const played = useRef<HTMLDivElement>(null);
   const rest = useRef<HTMLDivElement>(null);
   const cur = useRef<HTMLSpanElement>(null);
   const rem = useRef<HTMLSpanElement>(null);
@@ -124,6 +125,7 @@ export function Scrubber({
       // The bloom is the same frame as the thumb. Writing it again each frame would restart the 150 ms rise.
       const railScale = grabbed ? 'scaleY(2)' : '';
       if (rail.current && rail.current.style.transform !== railScale) rail.current.style.transform = railScale;
+      if (played.current) played.current.style.transform = `scaleX(${p.toFixed(4)})`;
       if (rest.current) rest.current.style.transform = `scaleX(${(1 - p).toFixed(4)})`;
       const text = formatTime(t) + '|' + formatTime(duration - t);
       if (text !== lastText) {
@@ -338,20 +340,21 @@ export function Scrubber({
         }}
       >
         <div ref={rail} className="scrub-rail">
-          {segments.map((seg) => (
-            <span
-              key={seg.id}
-              className={`scrub-seg${seg.kind === 'inst' ? ' is-inst' : ''}`}
-              style={{
-                left: `${(seg.start / Math.max(duration, 0.001)) * 100}%`,
-                width: `${((seg.end - seg.start) / Math.max(duration, 0.001)) * 100}%`,
-                background: seg.color,
-              }}
-            />
-          ))}
+          <div ref={played} className="scrub-played" />
+          {segments.map((seg) => {
+            const at = seg.start / Math.max(duration, 0.001);
+            if (at < 0.004) return null;
+            return (
+              <span
+                key={seg.id}
+                className={`scrub-seg${seg.kind === 'inst' ? ' is-inst' : ''}`}
+                style={{ left: `${at * 100}%` }}
+              />
+            );
+          })}
           <div ref={rest} className="scrub-rest" />
-          <div ref={head} className="scrub-head" />
         </div>
+        <div ref={head} className="scrub-head" />
         <div ref={preview} className="scrub-preview" hidden>
           <div ref={bubbleBody} className="scrub-preview-body">
             <span ref={partEl} className="scrub-preview-part" />

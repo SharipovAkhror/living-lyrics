@@ -1,22 +1,18 @@
 /**
- * Play and pause as two glyphs in one control.
- * The swap is a spring on opacity, scale and rotation, written inline.
+ * Play and pause from the icon set, crossed by a spring.
+ * The swap is opacity, scale and rotation, written inline.
  * A CSS animation is skipped by the contact-sheet capture, so the critic
- * would only see the cut.
+ * would only see the cut. The glyphs themselves stay the set's filled twins.
  */
 import { useLayoutEffect, useRef } from 'react';
 import { motionBlocked } from '@/app/morph';
+import { Icon } from './icons';
 import { stepSpring, type SpringState } from './spring';
-
-const PLAY =
-  'M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z';
-const PAUSE =
-  'M216,48V208a16,16,0,0,1-16,16H160a16,16,0,0,1-16-16V48a16,16,0,0,1,16-16h40A16,16,0,0,1,216,48ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Z';
 
 /** About 280 ms, wide enough that a 100 ms contact sheet catches the turn. */
 const MORPH = { stiffness: 320, damping: 22, mass: 1 };
 
-function paint(play: SVGPathElement, pause: SVGPathElement, t: number) {
+function paint(play: HTMLElement, pause: HTMLElement, t: number) {
   const a = Math.max(0, Math.min(1, t));
   play.style.opacity = (1 - a).toFixed(3);
   pause.style.opacity = a.toFixed(3);
@@ -25,8 +21,8 @@ function paint(play: SVGPathElement, pause: SVGPathElement, t: number) {
 }
 
 export function PlayPause({ playing, size = 28 }: { playing: boolean; size?: number }) {
-  const playRef = useRef<SVGPathElement>(null);
-  const pauseRef = useRef<SVGPathElement>(null);
+  const playRef = useRef<HTMLSpanElement>(null);
+  const pauseRef = useRef<HTMLSpanElement>(null);
   const state = useRef<SpringState>({ x: playing ? 1 : 0, v: 0 });
   const seen = useRef(false);
   const raf = useRef(0);
@@ -62,19 +58,15 @@ export function PlayPause({ playing, size = 28 }: { playing: boolean; size?: num
   }, [playing]);
 
   const px = Math.round(size);
-  const shape = { transformBox: 'fill-box', transformOrigin: 'center' } as const;
+  const gone = { opacity: 0, transform: 'scale(0.62) rotate(-72deg)' } as const;
   return (
-    <svg
-      width={px}
-      height={px}
-      viewBox="0 0 256 256"
-      fill="currentColor"
-      fillRule="evenodd"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path ref={playRef} d={PLAY} style={shape} />
-      <path ref={pauseRef} d={PAUSE} style={shape} />
-    </svg>
+    <span className="play-glyph" style={{ width: px, height: px }}>
+      <span ref={playRef} className="play-glyph-mark" style={playing ? gone : undefined}>
+        <Icon name="play" size={px} />
+      </span>
+      <span ref={pauseRef} className="play-glyph-mark" style={playing ? undefined : gone}>
+        <Icon name="pause" size={px} />
+      </span>
+    </span>
   );
 }

@@ -55,8 +55,8 @@
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-l: env(safe-area-inset-left, 0px);
   --safe-r: env(safe-area-inset-right, 0px);
-  /* Phone floor: one status line, scrub, transport, icon row. Measured after paint. */
-  --player-h: calc(156px + var(--safe-b));
+  /* Phone floor: times, a full-width track, transport, labelled actions. Measured after paint. */
+  --player-h: calc(208px + var(--safe-b));
   /* Title, wrapping version, performer. Measured after paint. */
   --chrome-top: calc(var(--safe-t) + 104px);
   --col-left: 0px;
@@ -1067,20 +1067,19 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
   width: auto;
   max-width: 100%;
   min-height: 44px;
-  padding: 4px 8px 5px;
+  padding: 2px 2px 0;
   border: 0;
-  border-radius: 14px;
-  /* The box is always there. Active is a tint, not a box that appears. */
-  background: color-mix(in srgb, var(--ink) 7%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 12%, transparent);
-  /* --ink-2 is 72 % and stays muted on the glass over every song wash. */
-  color: var(--ink-2);
-  font: 600 0.8125rem / 1.15 var(--font-ui);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  /* Full ink. 72 % on this glass measured under AA for 13 px type. */
+  color: var(--ink);
+  font: 500 0.8125rem / 1.15 var(--font-ui);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition:
@@ -1095,6 +1094,7 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: 0;
+  color: inherit;
 }
 .util.has-note::after {
   content: '';
@@ -1108,12 +1108,13 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 }
 .util:active {
   transform: scale(0.96);
-  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  background: none;
 }
 .util[aria-pressed='true'] {
   color: var(--accent);
   font-weight: 600;
-  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  background: none;
+  box-shadow: none;
 }
 /* The four actions already have their own row. A narrower phone only softens the type. */
 @media (max-width: 370px) {
@@ -1145,7 +1146,7 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   border-radius: var(--r-pill);
   background: none;
   color: var(--ink-2);
-  opacity: 0.6;
+  opacity: 1;
   font: 600 0.8125rem / 1 var(--font-ui);
   cursor: pointer;
   touch-action: manipulation;
@@ -1246,8 +1247,10 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 }
 .scrub-now,
 .scrub-remain {
-  color: var(--ink-2);
+  /* Full ink, 13 px, weight 600. On the floor glass this clears AA; 72 % did not. */
+  color: var(--ink);
   font-size: var(--t-footnote);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .scrub-track {
@@ -1261,13 +1264,27 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 .scrub-rail {
   position: relative;
   width: 100%;
-  height: 4px;
+  height: 6px;
   border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--ink) 12%, transparent);
-  overflow: visible;
+  /* Unplayed half of one solid track in the song colour. */
+  background: color-mix(in srgb, var(--accent) 46%, transparent);
+  overflow: hidden;
   transform: scaleY(1);
   transform-origin: center;
   transition: transform 150ms cubic-bezier(0.2, 0, 0, 1);
+}
+.scrub-played {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transform-origin: left center;
+  transform: scaleX(0);
+  pointer-events: none;
 }
 .scrub.is-dragging .scrub-rail,
 .scrub:hover .scrub-rail {
@@ -1286,19 +1303,24 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 }
 .scrub-seg {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  border-radius: var(--r-pill);
-  opacity: 0.9;
+  z-index: 2;
+  top: 1px;
+  bottom: 1px;
+  width: 1px;
+  margin-left: -0.5px;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--ink) 70%, transparent);
+  opacity: 0.55;
+  pointer-events: none;
 }
 .scrub-seg.is-inst {
-  opacity: 0.45;
+  opacity: 0.28;
 }
 .scrub-rest {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: color-mix(in srgb, var(--bg) 62%, transparent);
+  background: none;
   transform-origin: right center;
   pointer-events: none;
 }
@@ -1307,14 +1329,14 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   z-index: 2;
   left: 0;
   top: 50%;
-  width: 18px;
-  height: 18px;
-  margin-left: -9px;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
   border-radius: 50%;
   background: #fff;
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.28),
-    0 0 0 1px color-mix(in srgb, var(--ink) 18%, transparent);
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    0 0 0 1px color-mix(in srgb, var(--ink) 35%, transparent);
   pointer-events: none;
 }
 .scrub-preview {
@@ -1658,8 +1680,8 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 .close-disc {
   position: relative;
   flex: none;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   margin-inline-start: auto;
   padding: 0;
   display: grid;
@@ -1667,28 +1689,15 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   border: 0;
   border-radius: 50%;
   background: color-mix(in srgb, var(--ink) 10%, transparent);
-  color: color-mix(in srgb, var(--ink) 70%, transparent);
+  color: var(--ink);
   cursor: pointer;
-}
-.close-disc::before,
-.close-disc::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 11px;
-  height: 1.5px;
-  border-radius: 1px;
-  background: currentColor;
-}
-.close-disc::before {
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-.close-disc::after {
-  transform: translate(-50%, -50%) rotate(-45deg);
 }
 .close-disc:active {
   transform: scale(0.92);
+}
+.note-card .close-disc {
+  width: 44px;
+  height: 44px;
 }
 .comment.is-margin .comment-body {
   max-height: none;
@@ -3513,18 +3522,19 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
     width: 72px;
     height: 72px;
   }
-  /* Four nowrap labels do not fit a 320 px floor. Two rows, icon beside the name. */
+  /* 320 px keeps two columns. The names stay; the boxes do not. */
   .utility {
     grid-template-columns: 1fr 1fr;
-    gap: 6px;
+    gap: 4px 8px;
   }
   .util {
     flex-direction: row;
     justify-content: flex-start;
     width: 100%;
-    gap: 8px;
-    padding: 0 8px;
-    background: color-mix(in srgb, var(--ink) 8%, transparent);
+    gap: 6px;
+    padding: 0 4px;
+    background: none;
+    box-shadow: none;
   }
   /* A doubled system size must not turn the header into a stack of wrapped lines. */
   .topbar-song,
@@ -3707,8 +3717,13 @@ html[data-sheet='1'] .song {
   display: grid;
   place-items: center;
 }
+.play-glyph-mark {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+}
 
-/* SE: one icon row, one header line, the note off the rail. The 393 frame is untouched. */
+/* SE: one header line. The note stays off the rail. Labels live in the floor rules below. */
 @media (max-width: 389px) {
   .topbar.lg-host {
     top: max(2px, env(safe-area-inset-top, 0px));
@@ -3750,31 +3765,6 @@ html[data-sheet='1'] .song {
     overflow: hidden;
     text-overflow: clip;
     font-size: 0.8125rem;
-  }
-  .utility {
-    grid-template-columns: repeat(4, minmax(44px, 1fr));
-    gap: 0;
-  }
-  .util {
-    flex-direction: column;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0;
-    gap: 0;
-  }
-  .util-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-    border: 0;
   }
   .player .resume-offer,
   .player .mark-toast {
@@ -4002,34 +3992,8 @@ html[data-sheet='1'] .song {
   }
 }
 
-/* A phone portrait is too narrow for four Russian labels. Icons from here up to the tablet. */
+/* Narrow portrait: the alert stays a slim line. The actions keep their names. */
 @media (max-width: 429px) and (min-height: 521px) {
-  .utility {
-    grid-template-columns: repeat(4, minmax(44px, 1fr));
-    justify-items: center;
-    gap: 4px;
-  }
-  .util {
-    flex-direction: column;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0;
-    gap: 0;
-  }
-  .util-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-    border: 0;
-  }
   .player-alert {
     min-height: 32px;
     padding: 2px 10px 2px 12px;
@@ -4075,14 +4039,95 @@ html[data-sheet='1'] .song {
    SE is below 390 and landscape is shorter than 521, so those frames stay. */
 @media (min-width: 390px) and (max-width: 699px) and (min-height: 521px) {
   .player:not(:has(.comment)) {
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-top: 6px;
+    padding-bottom: 6px;
     gap: 0;
     border-top-width: 0;
   }
   .player:not(:has(.comment)) .transport {
+    min-height: 52px;
+  }
+}
+
+/* Phone portrait floor. One solid track, readable times, named actions, no tiles. */
+@media (max-width: 699px) and (min-height: 521px) {
+  .player .btn-xl {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+  }
+  .transport .btn-plain {
+    color: var(--ink);
+  }
+  .player .scrub {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'now . remain flag'
+      'track track track track';
+    column-gap: 8px;
+    row-gap: 0;
+    align-items: center;
+    min-height: 0;
+  }
+  .player .scrub-now { grid-area: now; }
+  .player .scrub-remain { grid-area: remain; justify-self: end; }
+  .player .mark-bar { grid-area: flag; min-height: 44px; }
+  .player .scrub-track {
+    grid-area: track;
+    height: 28px;
+  }
+  .player .utility {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    justify-items: center;
+    gap: 0;
+    width: 100%;
+  }
+  .player .util {
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    min-width: 0;
     min-height: 44px;
-    height: 44px;
+    padding: 2px 1px 0;
+    gap: 2px;
+    background: none;
+    box-shadow: none;
+    border-radius: 0;
+    color: var(--ink);
+  }
+  .player .util[aria-pressed='true'] {
+    color: var(--accent);
+    background: none;
+    box-shadow: none;
+  }
+  .player .util-label {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: nowrap;
+    border: 0;
+    font-size: 0.8125rem;
+  }
+}
+
+/* 320 px cannot hold four Russian names in one row. Two columns, still no boxes. */
+@media (max-width: 359px) and (min-height: 521px) {
+  .player .utility {
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 8px;
+  }
+  .player .util {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 0 2px;
   }
 }
 
@@ -4189,7 +4234,7 @@ html[data-sheet='1'] .song {
   z-index: 5;
   left: max(10px, var(--col-left, 10px));
   right: max(10px, var(--col-right, 10px));
-  bottom: var(--floor-h, 168px);
+  bottom: var(--floor-h, 210px);
   display: flex;
   flex-direction: column;
   max-height: min(24dvh, 196px);
@@ -4214,7 +4259,7 @@ html[data-sheet='1'] .song {
   background: var(--ink);
   opacity: 0.45;
 }
-.note-card-head { display: flex; align-items: center; min-height: 36px; }
+.note-card-head { display: flex; align-items: center; min-height: 44px; }
 .note-card .comment-body {
   flex: 1 1 auto;
   min-height: 0;
