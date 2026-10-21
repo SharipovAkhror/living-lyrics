@@ -946,6 +946,20 @@ def test_placement_chain() -> None:
           moved is not None and moved['by'] == 'stable-ts'
           and abs(moved['starts'][0] - 1.27) < 1e-9 and abs(moved['starts'][1] - 1.72) < 1e-9,
           str(moved))
+    stemmed = {
+        'id': 'stemmed', 'placed_by': 'mms', 'lang': 'fa', 'cue_start': 1.0, 'cue_lang': 'fa',
+        'words': [
+            {'t': 1.00, 'second': 1.25, 'third': 1.27, 'roman': 'aa', 'wi': 0,
+             'clock_mms': 1.00, 'clock_second': 1.25, 'clock_stable': 1.27, 'clock_stem': 1.22},
+            {'t': 1.40, 'second': 1.70, 'third': 1.72, 'roman': 'bb', 'wi': 1,
+             'clock_mms': 1.40, 'clock_second': 1.70, 'clock_stable': 1.72, 'clock_stem': 1.68},
+        ],
+    }
+    via_stem = P.handoff_proposal(stemmed, 3.0, np.zeros(0), refute)
+    check('a refuted MMS line moves to the clip stem before stable-ts',
+          via_stem is not None and via_stem['by'] == 'mms-stem'
+          and abs(via_stem['starts'][0] - 1.22) < 1e-9 and P.primary_family('mms-stem') == 'mms',
+          str(via_stem))
     stuck = {
         'id': 'stuck', 'placed_by': 'mms', 'cue_start': 1.0,
         'words': [
@@ -1462,6 +1476,16 @@ def test_phoneme() -> None:
     check('a placed Latin line is not placed again', not phoneme._latin_open({'lang': 'la', 'status': 'good', 'group': 'solo'}))
     check('a weak line in another language is not the Latin placer',
           not phoneme._latin_open({'lang': 'de', 'status': 'weak', 'group': 'solo'}))
+    check('German of ONE may be placed by the phoneme model', phoneme.placer_pair('one', 'de'))
+    check('Persian of I Have Come Alive may be placed by the phoneme model',
+          phoneme.placer_pair('i-have-come-alive', 'fa'))
+    check('medieval German is not a phoneme placer', not phoneme.placer_pair('one', 'gmh'))
+    check('an open Persian line of this song is a placer candidate',
+          phoneme._open_line({'lang': 'fa', 'status': 'weak', 'group': 'solo'}, 'i-have-come-alive'))
+    check('a placed Persian line is not placed again',
+          not phoneme._open_line({'lang': 'fa', 'status': 'good', 'group': 'solo'}, 'i-have-come-alive'))
+    check('Persian of Karitas is not in the placer pairs',
+          not phoneme._open_line({'lang': 'fa', 'status': 'weak', 'group': 'solo'}, 'karitas'))
     t0, t1 = phoneme._window({'second_window': [1.0, 1.1]}, 10.0)
     check('a short window is at least 0.4 s', t1 - t0 >= 0.4 - 1e-9, str((t0, t1)))
 
@@ -2116,6 +2140,242 @@ def test_monotone_union() -> None:
           str((kept_wide['proved'], kept_wide['line_member'], kept_wide['chance'])))
 
 
+def test_pass5_placement() -> None:
+    """Stem choice, a dropped refuter, and one language of the phoneme placer."""
+    import attack_chance as A
+    import refuter_choice as RC
+    import stem_onset
+
+    def stem_row(name, role, med_at, ratio):
+        med_off = med_at / ratio if ratio else 1.0
+        return {
+            'name': name, 'role': role, 'model': name, 'shifts': 1, 'overlap': 0.1,
+            'ensemble': role == 'ensemble', 'license': 'MIT', 'note': '',
+            'summary': {'n': 8, 'med_at': med_at, 'med_off': med_off, 'ratio': ratio},
+        }
+
+    base = stem_row('htdemucs_ft', 'baseline', 0.40, 1.2)
+    weak = stem_row('htdemucs_ft-overlap', 'raised', 0.41, 1.3)
+    louder_off = stem_row('htdemucs_ft-shifts2', 'raised', 0.50, 1.0)
+    ingredient = stem_row('htdemucs', 'ingredient', 0.90, 2.0)
+    kept = stem_onset.choose([base, weak, louder_off, ingredient])
+    check('a stem that is not clearly stronger stays on the current clip',
+          kept['name'] == 'htdemucs_ft' and kept['reason'] == 'база', str(kept))
+    ensemble = stem_row('ensemble-htdemucs-ft', 'ensemble', 0.50, 1.3)
+    won = stem_onset.choose([base, ensemble, ingredient])
+    check('a stronger stem whose shift ratio holds replaces the clip',
+          won['name'] == 'ensemble-htdemucs-ft' and won.get('ensemble') is True, str(won))
+    empty = stem_onset.choose([{'name': 'htdemucs_ft', 'role': 'baseline', 'summary': None}])
+    check('a baseline with no score does not switch the clip',
+          empty['reason'] == 'база без оценки' and empty.get('overlap') == 0.1, str(empty))
+    check('the ingredient stem cannot win on its own',
+          stem_onset.choose([base, ingredient])['name'] == 'htdemucs_ft')
+
+    one = [{'agree': True, 'song': 'one', 'lang': 'de', 'against': ['whisperx']}]
+    check('one agreeing line does not drop a refuter', RC.candidates(one) == [])
+    two = one + [{'agree': True, 'song': 'one', 'lang': 'de', 'against': ['whisperx']}]
+    found = RC.candidates(two)
+    check('two lines of one witness kind can drop it',
+          len(found) == 1 and found[0]['lines'] == 2 and found[0]['key'] == 'one|de', str(found))
+
+    refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    both = {
+        'ctc_s': 1.0, 'second_s': 1.40, 'third_s': 1.45,
+        'second_kind': 'whisperx', 'third_kind': 'stable-ts', 'song': 'one', 'lang': 'de',
+    }
+    check('both clocks still refute when the map is empty',
+          Q.word_refuted(both, np.array([1.45]), refute) == 'witnesses-agree-elsewhere')
+    dropped = dict(refute, off={'one|de': ['whisperx']})
+    check('ignoring one witness leaves the single-clock case',
+          Q.word_refuted(both, np.array([1.45]), dropped) == 'witness-attack')
+    both_off = dict(refute, off={'one|de': ['whisperx', 'stable-ts']})
+    check('ignoring both witnesses is not a refutation',
+          Q.word_refuted(both, np.array([1.45]), both_off) is None)
+    other = dict(refute, off={'karitas|de': ['whisperx']})
+    check('a drop for another song does not excuse this word',
+          Q.word_refuted(both, np.array([1.45]), other) == 'witnesses-agree-elsewhere')
+
+    def rec(line_id, lang, cue):
+        return {
+            'id': line_id, 'lang': lang, 'status': 'weak', 'group': 'solo',
+            'cue_start': cue, 'cue_lang': lang, 'section': 's',
+            'words': [
+                {'w': 'a', 'roman': 'aa', 'second_s': cue + 0.05, 'third_s': cue + 0.08,
+                 'clock_mms': cue + 0.02, 'clock_second': cue + 0.05, 'clock_stable': cue + 0.08},
+                {'w': 'b', 'roman': 'bb', 'second_s': cue + 0.55, 'third_s': cue + 0.58,
+                 'clock_mms': cue + 0.52, 'clock_second': cue + 0.55, 'clock_stable': cue + 0.58},
+            ],
+        }
+
+    song = {
+        'slug': 's',
+        'all_lines': [],
+        'lines': [],
+        'open_place': {
+            'la-1': {'model': 'xlsr-53-espeak', 'lang': 'la', 'starts': [1.05, 1.55]},
+            'fa-1': {'model': 'xlsr-53-espeak', 'lang': 'fa', 'starts': [2.05, 2.55]},
+        },
+        'report_by_id': {'la-1': rec('la-1', 'la', 1.0), 'fa-1': rec('fa-1', 'fa', 2.0)},
+        'next_by_id': {},
+        'order_by_id': {'la-1': 0, 'fa-1': 1},
+    }
+    only_la = A._apply_latin([song], {'s': {'s': (0.0, 10.0)}}, only_lang='la')
+    placed_ids = [line['id'] for line in song['all_lines'] if line.get('placed_by') == 'phoneme']
+    check('one language of the phoneme placer does not place the other',
+          [row['id'] for row in only_la] == ['la-1'] and placed_ids == ['la-1'],
+          str((only_la, placed_ids)))
+    song['all_lines'] = []
+    legacy = {
+        'slug': 's', 'all_lines': [], 'lines': [],
+        'latin_place': {'la-1': {'model': 'xlsr-53-espeak', 'starts': [1.05, 1.55]}},
+        'report_by_id': {'la-1': rec('la-1', 'la', 1.0)},
+        'next_by_id': {}, 'order_by_id': {'la-1': 0},
+    }
+    old = A._apply_latin([legacy], {'s': {'s': (0.0, 10.0)}})
+    check('a report that only stored Latin still places that Latin line',
+          [row['id'] for row in old] == ['la-1'], str(old))
+
+
+def test_lang_ctc() -> None:
+    import attack_chance as A
+    import lang_ctc
+    import lang_ctc_choice as L
+
+    lang_ctc.assert_independent()
+    ids = {spec['id'] for spec in lang_ctc.MODELS}
+    ids.update(spec['fallback'] for spec in lang_ctc.MODELS if spec.get('fallback'))
+    banned = set(engines.WHISPERX_HF.values())
+    banned.update({
+        'facebook/mms-1b-all',
+        'nijatzeynalov/wav2vec2-large-mms-1b-azerbaijani-common_voice15.0',
+        'tahmaz/wav2vec2-large-mms-1b-azerbaijani',
+        'mpoyraz/wav2vec2-xls-r-300m-cv7-turkish',
+    })
+    check('language CTC checkpoints are not the second aligner or MMS', not ids & banned, str(ids & banned))
+    check('azerbaijani and latin have no language CTC model',
+          {spec['lang'] for spec in lang_ctc.MODELS}.isdisjoint({'az', 'la'})
+          and {row['lang'] for row in lang_ctc.ABSENT} >= {'az', 'la'})
+    check('the five language models are Apache-2.0 and commercial',
+          all(spec['license'] == 'Apache-2.0' and not spec['noncommercial'] for spec in lang_ctc.MODELS))
+    arabic = next(spec for spec in lang_ctc.MODELS if spec['lang'] == 'ar')
+    check('arabic CTC reads Arabic script, not Buckwalter',
+          arabic['id'] == 'kmfoda/wav2vec2-large-xlsr-arabic' and 'elgeish' not in arabic['id'])
+    check('a finished loop of empty clocks is not a measurement',
+          lang_ctc.only_empty_clocks([({'roman': 'ا'}, None), ({'roman': 'ب'}, None)])
+          and not lang_ctc.only_empty_clocks([({'roman': 'ا'}, 1.0), ({'roman': 'ب'}, None)])
+          and not lang_ctc.only_empty_clocks([({'roman': ''}, None)]))
+    check('a shifted hit rate of 1 is not admitted', not L.admits(1.0, 40))
+    check('a short language is not given its own role', not L.admits(0.0, 10))
+    check('a long language under 15 % is admitted', L.admits(0.14, 30))
+    check('pass 5 published three lines beyond the frozen 155',
+          set(A.PASS5_EXTRA) == {'english-8', 'coda-fa-3', 'shushtari-s2'})
+    check('language members do not borrow the phoneme feature',
+          A._member_features('lang') == {'lang'}
+          and A._member_features('pair') == {'pair'}
+          and A._member_features('overrule') == {'overrule'}
+          and A._member_features('lang-overrule') == {'lang', 'overrule'}
+          and A._member_features('phoneme') == {'phone'})
+
+    rule = A.witness_rules()[0]
+    peaks = np.array([1.0, 2.0])
+    perfect = [
+        {'t': 1.0, 'line': 'L', 'group': 'solo', 'second': None, 'third': None,
+         'phoneme': None, 'phoneme_role': 'off', 'lang_clock': 1.0, 'lang_role': 'or', 'pair': False},
+        {'t': 2.0, 'line': 'L', 'group': 'solo', 'second': None, 'third': None,
+         'phoneme': None, 'phoneme_role': 'off', 'lang_clock': 2.0, 'lang_role': 'or', 'pair': False},
+    ]
+    check('a language clock proves the unshifted word the others miss',
+          bool(A.hit_mask(perfect, peaks, 0.0, rule)[0]))
+    check('a language clock that stays put misses a 0.40 s shift',
+          not bool(A.hit_mask(perfect, peaks, 0.40, rule)[0]))
+    bare = [dict(row, lang_role='off', lang_clock=None) for row in perfect]
+    check('without the language role the same word is not proved',
+          not bool(A.hit_mask(bare, peaks, 0.0, rule)[0]))
+
+    proved = Q.prove_words(
+        [{'roman': 'aa', 'ctc_s': 1.0, 'ctc_e': 1.4, 'second_s': None, 'third_s': None,
+          'lang_s': 1.04, 'lang_role': 'or'}],
+        [0.0], 0.10, witnesses='one', agree_tol=0.10)
+    check('language OR is its own proof path', proved[0]['path'] == 'witness-lang', str(proved[0]['path']))
+    paired = Q.prove_words(
+        [{'roman': 'aa', 'ctc_s': 1.0, 'ctc_e': 1.4, 'second_s': None, 'third_s': None,
+          'phoneme_s': 1.04, 'lang_s': 1.06, 'pair': True}],
+        [0.0], 0.10, witnesses='one', agree_tol=0.10)
+    check('two weak clocks within 0.10 s of the placer prove the word',
+          paired[0]['path'] == 'witness-pair', str(paired[0]['path']))
+    far = Q.prove_words(
+        [{'roman': 'aa', 'ctc_s': 1.0, 'ctc_e': 1.4, 'second_s': None, 'third_s': None,
+          'phoneme_s': 1.40, 'lang_s': 1.42, 'pair': True}],
+        [0.0], 0.10, witnesses='one', agree_tol=0.10)
+    check('two clocks that agree far from the placer do not prove the word',
+          far[0]['path'] == 'fail', str(far[0]['path']))
+
+    refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    attack = np.array([1.50])
+    single = {
+        'ctc_s': 1.0, 'second_s': 1.50, 'third_s': None,
+        'second_kind': 'whisperx', 'phoneme_s': 1.02, 'lang_s': 1.06,
+        'overrule': True,
+    }
+    check('one witness against two agreeing supporters is overruled',
+          Q.word_refuted(single, attack, refute) is None)
+    lone = dict(single, lang_s=None)
+    check('one supporter does not overrule',
+          Q.word_refuted(lone, attack, refute) == 'witness-attack')
+    apart = dict(single, phoneme_s=0.91, lang_s=1.09)
+    check('two supporters more than 0.10 s apart do not overrule',
+          Q.word_refuted(apart, attack, refute) == 'witness-attack')
+    both_far = {
+        'ctc_s': 1.0, 'second_s': 1.40, 'third_s': 1.45,
+        'second_kind': 'whisperx', 'third_kind': 'stable-ts',
+        'phoneme_s': 1.02, 'lang_s': 1.04, 'overrule': True,
+    }
+    check('two clocks that agree elsewhere are not overruled',
+          Q.word_refuted(both_far, np.array([1.45]), refute) == 'witnesses-agree-elsewhere')
+    quiet = dict(single, overrule=False)
+    check('the overrule flag is required',
+          Q.word_refuted(quiet, attack, refute) == 'witness-attack')
+
+    song = {
+        'slug': 's',
+        'lines': [{
+            'id': 'l', 'lang': 'ar', 'placed': True, 'group': 'solo',
+            'words': [
+                {'t': 1.0, 'langs': {'xlsr-53-ar-elgeish': 1.02}, 'phones': {'xlsr-53-espeak': 1.03},
+                 'roman': 'aa'},
+                {'t': 1.5, 'langs': {'xlsr-53-ar-elgeish': 1.52}, 'phones': {'xlsr-53-espeak': 1.53},
+                 'roman': 'bb'},
+            ],
+        }],
+        'all_lines': [],
+    }
+    song['all_lines'] = song['lines']
+    admitted = [{'song': 's', 'lang': 'ar', 'model': 'xlsr-53-ar-elgeish'}]
+    check('language OR stamps the measured clock', L.apply_lang([song], admitted) == 2)
+    check('the stamp does not replace the language code', song['lines'][0]['words'][0].get('lang') is None)
+    L.clear([song])
+    check('clearing the language stamp leaves no role and no clock',
+          'lang_role' not in song['lines'][0]['words'][0]
+          and 'lang_clock' not in song['lines'][0]['words'][0]
+          and 'phoneme' not in song['lines'][0]['words'][0])
+    pair_rows = [{'song': 's', 'lang': 'ar', 'model': 'xlsr-53-ar-elgeish', 'phone': 'xlsr-53-espeak'}]
+    check('the pair stamp does not turn on the language role',
+          L.apply_pair([song], pair_rows) == 2 and song['lines'][0]['words'][0].get('pair') is True
+          and song['lines'][0]['words'][0].get('lang_role') is None)
+    L.clear([song])
+    check('clearing the pair stamp removes the phoneme it added',
+          'pair' not in song['lines'][0]['words'][0] and 'phoneme' not in song['lines'][0]['words'][0])
+    stamped = Q.stamp_lang_ctc(
+        [{'roman': 'aa', 'ctc_s': 1.0, 'phoneme_s': 1.40, 'phoneme_role': 'or',
+          'phoneme_models': {'xlsr-53-espeak': 1.03},
+          'lang_models': {'xlsr-53-ar-elgeish': 1.02}}],
+        lang_model='xlsr-53-ar-elgeish', phone_model='xlsr-53-espeak',
+        use_lang=False, use_pair=True, use_overrule=False)
+    check('a pair line keeps the phoneme clock the pair was calibrated on',
+          stamped[0].get('phoneme_s') == 1.03 and stamped[0].get('pair') is True
+          and stamped[0].get('lang_role') is None, str(stamped[0]))
+
+
 def main() -> int:
     test_viterbi()
     test_star_absorbs_a_hold()
@@ -2142,6 +2402,8 @@ def main() -> int:
     test_whisper_witness()
     test_whisper_choice()
     test_phoneme()
+    test_lang_ctc()
+    test_pass5_placement()
     test_calibration()
     test_bench_summary()
     test_harakat()

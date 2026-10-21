@@ -221,11 +221,21 @@ def load_word_rule() -> dict:
     rule['scopes'] = scopes
     refute_in = chosen.get('refute') if isinstance(chosen.get('refute'), dict) else None
     if refute_in:
+        off = {}
+        raw_off = refute_in.get('off')
+        if isinstance(raw_off, dict):
+            for key, kinds in raw_off.items():
+                if not isinstance(kinds, list):
+                    continue
+                kept = [str(kind) for kind in kinds if isinstance(kind, str) and kind]
+                if kept:
+                    off[str(key)] = kept
         rule['refute'] = {
             'both_agree': float(refute_in.get('both_agree', 0.10)),
             'both_far': float(refute_in.get('both_far', 0.20)),
             'only_far': float(refute_in.get('only_far', 0.30)),
             'attack_tol': float(refute_in.get('attack_tol', 0.10)),
+            'off': off,
         }
     else:
         rule['refute'] = None
@@ -267,6 +277,19 @@ def load_word_rule() -> dict:
     rule['line_stable'] = stable_of
     rule['line_placed_clock'] = [
         str(line_id) for line_id in (chosen.get('line_placed_clock') or []) if line_id]
+    rule['line_lang'] = [str(line_id) for line_id in (chosen.get('line_lang') or []) if line_id]
+    rule['line_pair'] = [str(line_id) for line_id in (chosen.get('line_pair') or []) if line_id]
+    rule['line_overrule'] = [str(line_id) for line_id in (chosen.get('line_overrule') or []) if line_id]
+    lang_of = {}
+    for key, model in (chosen.get('lang_of') or {}).items():
+        if isinstance(model, str) and model:
+            lang_of[str(key)] = model
+    rule['lang_of'] = lang_of
+    pair_phone = {}
+    for key, model in (chosen.get('pair_phone') or {}).items():
+        if isinstance(model, str) and model:
+            pair_phone[str(key)] = model
+    rule['pair_phone'] = pair_phone
     phone_of = {}
     for line_id, model in (chosen.get('line_phone_model') or {}).items():
         if isinstance(model, str) and model:
@@ -539,6 +562,56 @@ def phoneme_for(rule: dict | None, song: str | None, lang: str | None) -> tuple[
     return 'off', None
 
 
+def _clock_from(table: dict | None, model: str | None, order: tuple[str, ...]) -> float | None:
+    table = table or {}
+    if model and table.get(model) is not None:
+        return float(table[model])
+    for name in order:
+        if table.get(name) is not None:
+            return float(table[name])
+    return None
+
+
+def stamp_lang_ctc(words: list[dict] | None, *, lang_model: str | None,
+                   phone_model: str | None, use_lang: bool, use_pair: bool,
+                   use_overrule: bool) -> list[dict] | None:
+    """Copy language CTC clocks onto the words of one line the union assigned.
+
+    Role `or` is the only published language role. The pair and the overrule
+    need the clocks even when that role is off. A missing clock stays missing.
+    """
+    if not words or not (use_lang or use_pair or use_overrule):
+        return words
+    out = []
+    for word in words:
+        item = dict(word)
+        lang_clock = _clock_from(item.get('lang_models'), lang_model, ())
+        if lang_clock is not None:
+            item['lang_s'] = lang_clock
+        if use_lang and item.get('lang_s') is not None:
+            item['lang_role'] = 'or'
+        if use_pair or use_overrule:
+            phone = _clock_from(
+                item.get('phoneme_models'), phone_model,
+                ('xlsr-53-espeak', 'lv-60-espeak'))
+            # The pair was calibrated on this phoneme clock. A language-wide
+            # phoneme role may already have written a different model; the pair
+            # line has to keep the clock the measurement used. An overrule line
+            # keeps a phoneme clock that already sits on the placer.
+            ctc = item.get('ctc_s')
+            near = (
+                ctc is not None
+                and _witness_ok(item.get('phoneme_s'), float(ctc), SECOND_WORD_TOL))
+            if phone is not None and (use_pair or item.get('phoneme_s') is None or not near):
+                item['phoneme_s'] = phone
+        if use_pair and item.get('lang_s') is not None and item.get('phoneme_s') is not None:
+            item['pair'] = True
+        if use_overrule:
+            item['overrule'] = True
+        out.append(item)
+    return out
+
+
 def stamp_phoneme(words: list[dict] | None, role: str, model: str | None,
                   choir_vowel: bool = False) -> list[dict] | None:
     """Copy one model's phoneme clock onto phoneme_s. Missing clocks stay missing.
@@ -576,6 +649,66 @@ def _closer_sibling(ctc: float, clock: float, siblings: list[float] | None) -> b
     return False
 
 
+def _refuter_ignored(word: dict, refute: dict) -> set[str]:
+    """Witness kinds that do not refute this song and language.
+
+    A word with no song or language is not in the map, so older probes still
+    refute. A missing kind is whisperx or stable-ts, the two clocks the report
+    already stores.
+    """
+    off = refute.get('off')
+    if not isinstance(off, dict) or not off:
+        return set()
+    song = word.get('song')
+    lang = word.get('lang')
+    if song is None or lang is None:
+        return set()
+    kinds = off.get(f'{song}|{lang}') or []
+    if not isinstance(kinds, list):
+        return set()
+    return {str(kind) for kind in kinds if kind}
+
+
+def independent_near(word: dict, ctc: float, agree: float = SECOND_WORD_TOL,
+                     ignored: set | None = None) -> list[float]:
+    """Clocks within `agree` of the placer start. A silenced kind is left out.
+
+    The far refuter is not in this list: it sits outside `agree`. Phoneme and
+    language clocks are supporters only. They are not refuters.
+    """
+    ignored = ignored or set()
+    found = []
+    for key, kind_key, default in (
+            ('second_s', 'second_kind', 'whisperx'),
+            ('third_s', 'third_kind', 'stable-ts'),
+            ('phoneme_s', None, 'phoneme'),
+            ('lang_s', None, 'lang')):
+        if word.get(key) is None:
+            continue
+        if kind_key is not None:
+            kind = str(word.get(kind_key) or default)
+            if kind in ignored:
+                continue
+        value = float(word[key])
+        if abs(value - float(ctc)) <= float(agree) + 1e-12:
+            found.append(value)
+    return found
+
+
+def overrule_ready(word: dict, ctc: float, agree: float = SECOND_WORD_TOL,
+                   ignored: set | None = None) -> bool:
+    """True when at least two supporters are near the placer and near each other."""
+    found = independent_near(word, ctc, agree, ignored)
+    if len(found) < 2:
+        return False
+    limit = float(agree) + 1e-12
+    for i in range(len(found)):
+        for j in range(i + 1, len(found)):
+            if abs(found[i] - found[j]) <= limit:
+                return True
+    return False
+
+
 def word_refuted(word: dict, peaks: np.ndarray | None, refute: dict | None,
                  siblings: list[float] | None = None) -> str | None:
     """Why this word contradicts MMS, or None when there is simply no proof.
@@ -583,9 +716,16 @@ def word_refuted(word: dict, peaks: np.ndarray | None, refute: dict | None,
     Both clocks, when both exist, refute the word if they agree with each other and
     both sit far from MMS. One clock refutes it only when that clock is far from MMS
     and a strong attack sits on the clock but not on MMS. No clock is not a refutation.
+    A kind listed in `refute['off']` for this song and language is left out. One
+    ignored clock leaves the single-clock case. Both ignored is no refutation.
     `siblings` are the other lettered starts of the same line. They are read only for
     the single clock: if one of them is closer to that clock, the clock does not
     refute this word. Two agreeing clocks still do.
+    `overrule` may clear that single clock when two other independent clocks sit
+    within 0.10 s of the placer and within 0.10 s of each other. The flag is
+    recomputed against the start being tested, so a shifted label does not keep
+    an agreement that belonged to the true start. Two clocks that agree far
+    from the placer are not cleared.
     """
     if not refute or word.get('ctc_s') is None:
         return None
@@ -594,10 +734,17 @@ def word_refuted(word: dict, peaks: np.ndarray | None, refute: dict | None,
     both_far = float(refute.get('both_far', 0.20))
     only_far = float(refute.get('only_far', 0.30))
     attack_tol = float(refute.get('attack_tol', 0.10))
+    ignored = _refuter_ignored(word, refute)
     clocks = []
-    for key in ('second_s', 'third_s'):
-        if word.get(key) is not None:
-            clocks.append(float(word[key]))
+    for key, kind_key, default in (
+            ('second_s', 'second_kind', 'whisperx'),
+            ('third_s', 'third_kind', 'stable-ts')):
+        if word.get(key) is None:
+            continue
+        kind = str(word.get(kind_key) or default)
+        if kind in ignored:
+            continue
+        clocks.append(float(word[key]))
     if len(clocks) >= 2:
         if abs(clocks[0] - clocks[1]) <= both_agree + 1e-12 and all(abs(c - ctc) > both_far + 1e-12 for c in clocks[:2]):
             return 'witnesses-agree-elsewhere'
@@ -606,6 +753,8 @@ def word_refuted(word: dict, peaks: np.ndarray | None, refute: dict | None,
         if _closer_sibling(ctc, clocks[0], siblings):
             return None
         if _peak_near(clocks[0], peaks, attack_tol) and not _peak_near(ctc, peaks, attack_tol):
+            if word.get('overrule') and overrule_ready(word, ctc, SECOND_WORD_TOL, ignored):
+                return None
             return 'witness-attack'
     return None
 
@@ -810,6 +959,36 @@ def _witness_ok(clock, ctc_s: float, agree_tol: float) -> bool:
     return clock is not None and abs(float(clock) - float(ctc_s)) <= agree_tol
 
 
+def _pair_ok(word: dict, ctc_s: float, agree_tol: float) -> bool:
+    """Phoneme and language CTC agree with the placer and with each other.
+
+    Agreement of the two clocks away from the placer is not a proof.
+    """
+    if not word.get('pair'):
+        return False
+    phon = word.get('phoneme_s')
+    lang = word.get('lang_s')
+    if phon is None or lang is None:
+        return False
+    if abs(float(phon) - float(lang)) > agree_tol + 1e-12:
+        return False
+    return _witness_ok(phon, ctc_s, agree_tol) and _witness_ok(lang, ctc_s, agree_tol)
+
+
+def _proved_without_pair(legacy_ok: bool, role: str, phoneme_ok: bool,
+                         lang_role: str, lang_ok: bool) -> bool:
+    if role == 'only':
+        return bool(phoneme_ok)
+    if lang_role == 'only':
+        return bool(lang_ok)
+    proved = bool(legacy_ok)
+    if role == 'or' and phoneme_ok:
+        proved = True
+    if lang_role == 'or' and lang_ok:
+        proved = True
+    return proved
+
+
 def prove_words(align_words: list[dict] | None, presnap: list[float | None], tol: float,
                 require_second: bool = False, witnesses: str | None = None,
                 agree_tol: float = SECOND_WORD_TOL, phoneme_role: str | None = None,
@@ -829,6 +1008,15 @@ def prove_words(align_words: list[dict] | None, presnap: list[float | None], tol
     from the phoneme start alone. Role `or` proves it when the phoneme start
     agrees and the clocks the legacy mode already required do not. A missing
     phoneme clock is not an agreement and not a refutation.
+    witness-lang — the attack is still required. Role `or` on the language CTC
+    clock proves the word when that clock is within `agree_tol` and the clocks
+    already required do not. A missing language clock is not an agreement and
+    not a refutation. Role `only` is not published.
+    witness-pair — the attack is still required, and the phoneme clock and the
+    language clock are each within `agree_tol` of the placer and of each other.
+    The pair does not prove a word those clocks only agree with each other
+    about, away from the placer. It is the path only when nothing else proved
+    the word.
     fail — anything else. A consonant with no attack fails. A missing second start
     cannot take the second path. A missing CTC start fails.
     """
@@ -872,15 +1060,33 @@ def prove_words(align_words: list[dict] | None, presnap: list[float | None], tol
                 if role not in ('or', 'only'):
                     role = 'off'
                 phoneme_ok = _witness_ok(word.get('phoneme_s'), float(ctc_s), agree_tol)
+                lang_role = word.get('lang_role') or 'off'
+                if lang_role not in ('or', 'only'):
+                    lang_role = 'off'
+                lang_ok = _witness_ok(word.get('lang_s'), float(ctc_s), agree_tol)
                 if role == 'only':
                     ok = phoneme_ok
                 elif role == 'or':
                     ok = bool(legacy_ok or phoneme_ok)
                 else:
                     ok = legacy_ok
+                if lang_role == 'only':
+                    ok = lang_ok
+                elif lang_role == 'or':
+                    ok = bool(ok or lang_ok)
+                pair_ok = _pair_ok(word, float(ctc_s), agree_tol)
+                if pair_ok:
+                    ok = True
                 if ok:
                     if nucleus_used:
                         path = 'nucleus'
+                    elif pair_ok and not _proved_without_pair(
+                            legacy_ok, role, phoneme_ok, lang_role, lang_ok):
+                        path = 'witness-pair'
+                    elif lang_role == 'only' or (
+                            lang_role == 'or' and lang_ok and not legacy_ok
+                            and not (role == 'or' and phoneme_ok) and role != 'only'):
+                        path = 'witness-lang'
                     elif role == 'only' or (role == 'or' and phoneme_ok and not legacy_ok):
                         path = 'witness-phoneme'
                     elif second_ok and third_ok:
@@ -896,15 +1102,18 @@ def prove_words(align_words: list[dict] | None, presnap: list[float | None], tol
                 elif role == 'only':
                     reason = 'aligners-disagree'
                     detail = 'фонемное начало не совпало'
-                elif second is None and third is None and (role != 'or' or word.get('phoneme_s') is None):
+                elif (second is None and third is None and lang_role == 'off' and not word.get('pair')
+                      and (role != 'or' or word.get('phoneme_s') is None)):
                     reason = 'no-second-aligner'
                     detail = 'атака есть, независимых начал нет'
                 else:
                     reason = 'aligners-disagree'
-                    if role == 'or':
+                    if role == 'or' or lang_role == 'or' or word.get('pair'):
                         detail = (f'второй {"да" if second_ok else "нет"}, '
                                   f'третий {"да" if third_ok else "нет"}, '
-                                  f'фонема {"да" if phoneme_ok else "нет"}')
+                                  f'фонема {"да" if phoneme_ok else "нет"}, '
+                                  f'язык {"да" if lang_ok else "нет"}, '
+                                  f'пара {"да" if pair_ok else "нет"}')
                     else:
                         detail = f'второй {"да" if second_ok else "нет"}, третий {"да" if third_ok else "нет"}'
             elif abs_dt is None:
@@ -1192,6 +1401,27 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
             mode = 'two'
         elif mode is None:
             mode = global_mode
+        if align_words:
+            tagged = []
+            for aw in align_words:
+                item = dict(aw)
+                item['song'] = song
+                item['lang'] = line.get('lang')
+                if item.get('second_s') is not None and not item.get('second_kind'):
+                    item['second_kind'] = 'whisperx'
+                if item.get('third_s') is not None and not item.get('third_kind'):
+                    item['third_kind'] = 'stable-ts'
+                tagged.append(item)
+            align_words = tagged
+        lang_key = f"{song}|{line.get('lang') or '?'}"
+        align_words = stamp_lang_ctc(
+            align_words,
+            lang_model=(rule.get('lang_of') or {}).get(lang_key),
+            phone_model=(rule.get('pair_phone') or {}).get(lang_key),
+            use_lang=line['id'] in set(rule.get('line_lang') or []),
+            use_pair=line['id'] in set(rule.get('line_pair') or []),
+            use_overrule=line['id'] in set(rule.get('line_overrule') or []),
+        )
         placed_by = (rec or {}).get('placed_by')
         blocked = set(rule.get('blocked_primaries') or [])
         if placed_by and P.primary_family(placed_by) in blocked and (rec or {}).get('status') == 'good':
@@ -1261,6 +1491,7 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
     word_paths = {
         'attack': 0, 'second': 0, 'fail': 0,
         'witness-second': 0, 'witness-third': 0, 'witness-both': 0, 'witness-phoneme': 0,
+        'witness-lang': 0, 'witness-pair': 0,
         'nucleus': 0,
     }
     consonant: list[float | None] = []
@@ -1701,7 +1932,9 @@ def proof_md(proof: dict) -> list[str]:
                      'Сам постановщик себе свидетелем не служит. Путь без атаки при этом правиле закрыт. '
                      'Если для языка допущен фонемный свидетель, роль «или» добавляет его начало к уже нужным часам, '
                      'а роль «только он» доказывает слово атакой и одним фонемным началом. '
-                     'Фонемные часы строку не ставят и слово не опровергают.')
+                     'Роль свидетеля строку не ставит и слово не опровергает. '
+                     'Отдельная постановка ещё не поставленной строки допущенной пары пишется как phoneme '
+                     'и доказывается атакой и другим выравнивателем, не этими часами.')
         else:
             L.append('- Второй выравниватель на поставленных строках: ' + ', '.join(bits) + '. '
                      'Доказательством он служит только у слова на гласную или связного, если атаки ближе 0,3 с нет, '
@@ -1717,6 +1950,8 @@ def proof_md(proof: dict) -> list[str]:
                  f"Только третий (stable-ts): {paths.get('witness-third', 0)}. "
                  f"Оба: {paths.get('witness-both', 0)}. "
                  f"Фонемный свидетель: {paths.get('witness-phoneme', 0)}. "
+                 f"Языковой CTC: {paths.get('witness-lang', 0)}. "
+                 f"Пара слабых часов: {paths.get('witness-pair', 0)}. "
                  f"Не доказано: {paths.get('fail', 0)}. "
                  f"Интерполяция между соседними словами доказательством не считается.")
     else:

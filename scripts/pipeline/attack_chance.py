@@ -232,6 +232,21 @@ def hit_mask(records: list[dict], peaks: np.ndarray, shift: float, rule: dict,
                 witness_ok = np.where(roles == 'only', phon_ok, witness_ok)
                 witness_ok = np.where(roles == 'or', legacy | phon_ok, witness_ok)
                 witness_ok = np.asarray(witness_ok, dtype=bool)
+            lang = column('lang_clock')
+            lang_ok = np.isfinite(lang) & (np.abs(lang - times) <= agree + 1e-12)
+            lang_roles = np.array([r.get('lang_role') or 'off' for r in rows])
+            if np.any(lang_roles != 'off'):
+                witness_ok = np.where(lang_roles == 'only', lang_ok, witness_ok)
+                witness_ok = np.where(lang_roles == 'or', witness_ok | lang_ok, witness_ok)
+                witness_ok = np.asarray(witness_ok, dtype=bool)
+            pair_on = np.array([bool(r.get('pair')) for r in rows])
+            if np.any(pair_on):
+                close = (
+                    np.isfinite(phon) & np.isfinite(lang)
+                    & (np.abs(phon - lang) <= agree + 1e-12))
+                pair_ok = close & phon_ok & lang_ok
+                witness_ok = np.where(pair_on, witness_ok | pair_ok, witness_ok)
+                witness_ok = np.asarray(witness_ok, dtype=bool)
             mask = mask & witness_ok
         elif rule.get('require_second'):
             seconds = np.array([np.nan if r.get('second') is None else float(r['second']) for r in rows])
@@ -316,6 +331,10 @@ def true_proof(lines: list[dict], peaks: np.ndarray, rule: dict) -> tuple[int, i
                 'third_s': word.get('third'),
                 'phoneme_s': word.get('phoneme'),
                 'phoneme_role': word.get('phoneme_role'),
+                'lang_s': word.get('lang_clock'),
+                'lang_role': word.get('lang_role'),
+                'pair': word.get('pair'),
+                'overrule': word.get('overrule'),
             })
             owned = None if prev is None else prev + tol
             dt = Q.nearest_attack(float(word['t']), peaks, owned)
@@ -471,10 +490,12 @@ def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = No
                 'third_kind': word.get('third_kind'),
                 'phones': dict(word.get('phoneme_models') or {}),
                 'vowels': dict(word.get('vowel_models') or {}),
+                'langs': dict(word.get('lang_models') or {}),
                 'clock_mms': None if word.get('clock_mms') is None else float(word['clock_mms']),
                 'clock_second': None if word.get('clock_second') is None else float(word['clock_second']),
                 'clock_stable': None if word.get('clock_stable') is None else float(word['clock_stable']),
                 'clock_phoneme': _phoneme_clock(word),
+                'clock_stem': None if word.get('clock_stem') is None else float(word['clock_stem']),
                 'stable_models': {
                     str(name): float(value)
                     for name, value in (word.get('stable_models') or {}).items()
@@ -944,8 +965,11 @@ def assign_scopes(slices: list[dict]) -> tuple[list[dict], bool]:
     return out, ok
 
 
-def _refute_cut(both_far: float, only_far: float) -> dict:
-    return {'both_agree': 0.10, 'both_far': both_far, 'only_far': only_far, 'attack_tol': 0.10}
+def _refute_cut(both_far: float, only_far: float, off: dict | None = None) -> dict:
+    cut = {'both_agree': 0.10, 'both_far': both_far, 'only_far': only_far, 'attack_tol': 0.10}
+    if isinstance(off, dict) and off:
+        cut['off'] = off
+    return cut
 
 
 def measure_refute(per_song: list[dict]) -> list[dict]:
@@ -1096,8 +1120,16 @@ def _probe_parts(words: list[dict], peaks: np.ndarray, group: str | None, mode: 
             'own_e': word.get('own_e', word.get('ctc_e')),
             'second_s': word.get('second'),
             'third_s': word.get('third'),
+            'second_kind': word.get('second_kind') or 'whisperx',
+            'third_kind': word.get('third_kind') or 'stable-ts',
+            'song': word.get('song'),
+            'lang': word.get('lang'),
             'phoneme_s': word.get('phoneme'),
             'phoneme_role': word.get('phoneme_role'),
+            'lang_s': word.get('lang_clock'),
+            'lang_role': word.get('lang_role'),
+            'pair': bool(word.get('pair')),
+            'overrule': bool(word.get('overrule')),
             'vowel_s': _vowel_clock(word) if nucleus else None,
         }
         align_words.append(item)
@@ -1162,6 +1194,8 @@ def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: 
                 item['own_t'] = float(word['t'])
                 item['own_e'] = word.get('ctc_e')
                 item['t'] = float(donor['t'])
+                item['song'] = line.get('song')
+                item['lang'] = line.get('lang')
                 moved.append(item)
         else:
             for word in src:
@@ -1169,6 +1203,8 @@ def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: 
                 item['own_t'] = float(word['t'])
                 item['own_e'] = word.get('ctc_e')
                 item['t'] = float(word['t']) + float(shift)
+                item['song'] = line.get('song')
+                item['lang'] = line.get('lang')
                 moved.append(item)
         window_fail = False
         if (translation_half is not None and moved
@@ -1210,7 +1246,9 @@ def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: d
 
 
 def measure_line_table(per_song: list[dict], modes: dict, refute: dict, primary: str | None = None) -> list[dict]:
-    cut = _refute_cut(float(refute.get('both_far', 0.20)), float(refute.get('only_far', 0.30)))
+    cut = _refute_cut(
+        float(refute.get('both_far', 0.20)), float(refute.get('only_far', 0.30)),
+        refute.get('off') if isinstance(refute.get('off'), dict) else None)
     rows = []
     for share in LINE_SHARES:
         shift_hits = {mag: [0, 0] for mag in SHIFTS}
@@ -1830,7 +1868,15 @@ def collect_refutations(per_song: list[dict], refute: dict) -> list[dict]:
                 continue
             for word in line['words']:
                 why = Q.word_refuted(
-                    {'ctc_s': word['t'], 'second_s': word.get('second'), 'third_s': word.get('third')},
+                    {
+                        'ctc_s': word['t'],
+                        'second_s': word.get('second'),
+                        'third_s': word.get('third'),
+                        'second_kind': word.get('second_kind') or 'whisperx',
+                        'third_kind': word.get('third_kind') or 'stable-ts',
+                        'song': song['slug'],
+                        'lang': line.get('lang'),
+                    },
                     peaks, refute)
                 if not why:
                     continue
@@ -2319,11 +2365,19 @@ def _line_from_report(slug: str, rec: dict, words_src: list[tuple], order: int, 
     }
 
 
-def _apply_latin(per_song: list[dict], sections: dict) -> list[dict]:
-    """Place still-open Latin lines from the aligner's stored phoneme starts."""
+def _apply_latin(per_song: list[dict], sections: dict, only_lang: str | None = None) -> list[dict]:
+    """Place still-open lines from the aligner's stored phoneme starts.
+
+    `open_place` wins over `latin_place`. A report that only has `latin_place`
+    still places Latin and nothing else. `only_lang` keeps one language so a
+    later language can be restored without dropping the one already kept.
+    """
     moves = []
     for song in per_song:
-        proposals = song.get('latin_place') or {}
+        proposals = song.get('open_place') or None
+        legacy = proposals is None
+        if legacy:
+            proposals = song.get('latin_place') or {}
         if not proposals:
             continue
         by_id = {line['id']: line for line in song['all_lines']}
@@ -2336,7 +2390,12 @@ def _apply_latin(per_song: list[dict], sections: dict) -> list[dict]:
             rec = report_by.get(line_id)
             if not isinstance(spec, dict) or rec is None:
                 continue
-            if rec.get('lang') != 'la' or rec.get('status') == 'good':
+            lang = str(spec.get('lang') or rec.get('lang') or '')
+            if only_lang is not None and lang != only_lang:
+                continue
+            if legacy and lang != 'la':
+                continue
+            if rec.get('status') == 'good':
                 continue
             if rec.get('group') not in ('solo', 'choir'):
                 continue
@@ -2426,25 +2485,31 @@ def _measure_placement(per_song: list[dict], refute: dict, baseline_n: int) -> t
                     else:
                         _restore(per_song, origin)
                         print(f'передача не оставлена ({why})', flush=True)
-        before_latin = _snapshot(per_song)
-        latin_moves = _apply_latin(per_song, sections)
-        if latin_moves:
+        import phoneme as PhonePlace
+
+        any_open = False
+        for lang in PhonePlace.OPEN_LANG_ORDER:
+            before_lang = _snapshot(per_song)
+            lang_moves = _apply_latin(per_song, sections, only_lang=lang)
+            if not lang_moves:
+                continue
+            any_open = True
             scopes, ok, modes, tables, picked = _remeasure(per_song, refute)
             blocked = set(picked.get('blocked_primaries') or [])
             if _rises(ok, picked, base_n) and 'phoneme' not in blocked:
                 was = base_n
-                adopt(scopes, modes, tables, picked, latin_moves)
-                print(f"латынь: поставлена, доказано {picked.get('proved')} против {was}", flush=True)
+                adopt(scopes, modes, tables, picked, lang_moves)
+                print(f"фонема {lang}: поставлена, доказано {picked.get('proved')} против {was}", flush=True)
             else:
-                _restore(per_song, before_latin)
+                _restore(per_song, before_lang)
                 print(
-                    f"латынь не оставлена: доказано {picked.get('proved')} против {base_n}, "
+                    f"фонема {lang} не оставлена: доказано {picked.get('proved')} против {base_n}, "
                     f"within_limit {bool(picked.get('within_limit'))}, "
                     f"фонема исключена {'phoneme' in blocked}",
                     flush=True,
                 )
-        else:
-            print('латынь: предложений нет', flush=True)
+        if not any_open:
+            print('фонема: открытых строк нет', flush=True)
     except Exception as e:
         _restore(per_song, stable)
         print(f'постановка не допущена ({e.__class__.__name__}: {e})', flush=True)
@@ -2596,7 +2661,9 @@ def _capture_state(per_song: list[dict], modes: dict, refute: dict, *, fill: boo
                    nucleus: bool = False, translation_half: float | None = None,
                    nearest: bool = False, blocked: set | None = None) -> tuple[dict, dict, dict]:
     """Eight probe columns, plus the ±half columns of a translation cue."""
-    cut = _refute_cut(float(refute.get('both_far', 0.20)), float(refute.get('only_far', 0.30)))
+    cut = _refute_cut(
+        float(refute.get('both_far', 0.20)), float(refute.get('only_far', 0.30)),
+        refute.get('off') if isinstance(refute.get('off'), dict) else None)
     blocked = blocked or set()
     _stamp_neighbours(per_song)
     lines_out: dict = {}
@@ -2884,6 +2951,70 @@ def _stamp_one_phone(per_song: list[dict], slug: str, lang: str, model: str, rol
     return stamped
 
 
+def _lang_members(per_song: list[dict], origin: list, modes: dict, refute: dict,
+                 k, members: list[dict]) -> dict:
+    """Language CTC, weak-pair agreement, and 1-vs-2 overrule. Each is its own member.
+
+    A failure here is a missing witness, not a failed union. Stamps are cleared
+    before the next member, and the origin lines are put back on the way out.
+    """
+    report: dict = {'error': None, 'pairs': [], 'pair_rows': [], 'lang_admitted': [], 'pair_admitted': []}
+    try:
+        import lang_ctc_choice as Lang
+
+        _restore(per_song, origin)
+        _quiet_flags(per_song)
+        report = Lang.plan(per_song, modes)
+        report['error'] = None
+
+        def add(name: str, stamp) -> None:
+            _restore(per_song, origin)
+            _quiet_flags(per_song)
+            try:
+                if not stamp():
+                    return
+                member = _member_from_state(
+                    name, per_song, modes, refute, k, partial=True, min_words=0)
+                members.append(member)
+                print(
+                    f"объединение: {name} доказала {member['proved_n']}, "
+                    f"проход строки {member['chance']}, слов {member['word_chance']}, "
+                    f"внутри {member['within_limit']}",
+                    flush=True,
+                )
+            finally:
+                Lang.clear(per_song)
+                _quiet_flags(per_song)
+
+        add('lang', lambda: Lang.apply_lang(per_song, report.get('lang_admitted') or []))
+        add('pair', lambda: Lang.apply_pair(per_song, report.get('pair_admitted') or []))
+
+        def stamp_over() -> int:
+            return Lang.apply_overrule(per_song, report, refute)
+
+        add('overrule', stamp_over)
+        if report.get('lang_admitted'):
+            def stamp_both() -> int:
+                lang_n = Lang.apply_lang(per_song, report.get('lang_admitted') or [])
+                over_n = Lang.apply_overrule(per_song, report, refute)
+                return lang_n if lang_n and over_n else 0
+
+            add('lang-overrule', stamp_both)
+    except Exception as e:
+        report = dict(report) if isinstance(report, dict) else {}
+        report['error'] = f'{e.__class__.__name__}: {e}'
+        print(f'языковой CTC не допущен ({report["error"]})', flush=True)
+        try:
+            import lang_ctc_choice as Lang
+            Lang.clear(per_song)
+        except Exception:
+            pass
+    finally:
+        _restore(per_song, origin)
+        _quiet_flags(per_song)
+    return report
+
+
 def _moves_for(members_moves: list[tuple[str, list[dict]]], line_member: dict) -> dict[str, list[dict]]:
     """Retimes only for lines the join assigned to the placer that moved them."""
     by_song: dict[str, list[dict]] = {}
@@ -3105,18 +3236,23 @@ def _union_overlay(per_song: list[dict], origin: list, origin_modes: dict, refut
                         f"проход строки {mixed['chance']}, внутри {mixed['within_limit']}",
                         flush=True,
                     )
-        _restore(per_song, origin)
-        _quiet_flags(per_song)
-        latin_moves = _apply_latin(per_song, sections)
-        if latin_moves:
-            latin = _member_from_state(
-                'latin', per_song, origin_modes, refute, k,
+        import phoneme as PhonePlace
+
+        for lang in PhonePlace.OPEN_LANG_ORDER:
+            _restore(per_song, origin)
+            _quiet_flags(per_song)
+            lang_moves = _apply_latin(per_song, sections, only_lang=lang)
+            if not lang_moves:
+                continue
+            name = f'phoneme-place:{lang}'
+            placed_lang = _member_from_state(
+                name, per_song, origin_modes, refute, k,
                 translation_half=P.TRANSLATION_HALF, partial=True)
-            members.append(latin)
-            moves.append(('latin', latin_moves))
+            members.append(placed_lang)
+            moves.append((name, lang_moves))
             print(
-                f"объединение: латынь {latin['proved_n']}, проход строки {latin['chance']}, "
-                f"внутри {latin['within_limit']}",
+                f"объединение: фонема {lang} {placed_lang['proved_n']}, "
+                f"проход строки {placed_lang['chance']}, внутри {placed_lang['within_limit']}",
                 flush=True,
             )
         print('объединение: ближнее слово единственного свидетеля', flush=True)
@@ -3127,6 +3263,7 @@ def _union_overlay(per_song: list[dict], origin: list, origin_modes: dict, refut
             f"проход строки {members[-1]['chance']}, внутри {members[-1]['within_limit']}",
             flush=True,
         )
+        lang_report = _lang_members(per_song, origin, origin_modes, refute, k, members)
         result = admit_union(members)
         print(
             f"объединение: доказано {len(result.get('proved') or [])}, "
@@ -3135,13 +3272,12 @@ def _union_overlay(per_song: list[dict], origin: list, origin_modes: dict, refut
             f"снято {result.get('lost')}",
             flush=True,
         )
-        if not result.get('within_limit'):
-            return None
         return {
-            'result': result,
+            'result': result if result.get('within_limit') else None,
             'decision': origin_decision,
-            'retime': _moves_for(moves, result.get('line_member') or {}),
+            'retime': _moves_for(moves, result.get('line_member') or {}) if result.get('within_limit') else {},
             'wide_measured': True,
+            'lang_ctc': lang_report,
         }
     finally:
         _restore(per_song, live)
@@ -3169,6 +3305,14 @@ def _member_features(name: str) -> set[str]:
         features.add('nearest')
     if text in ('phoneme', 'phoneme-fill', 'handoff-phoneme', 'wide-phoneme', 'wide-phoneme-fill'):
         features.add('phone')
+    if text == 'lang':
+        features.add('lang')
+    elif text == 'pair':
+        features.add('pair')
+    elif text == 'overrule':
+        features.add('overrule')
+    elif text == 'lang-overrule':
+        features.update(('lang', 'overrule'))
     return features
 
 
@@ -3282,6 +3426,12 @@ def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: 
     chosen['line_stable'] = line_stable
     chosen['line_placed_clock'] = line_placed_clock
     chosen['line_phone_model'] = line_phone_model
+    lang_report = overlay.get('lang_ctc') or {}
+    chosen['line_lang'] = _ids_with(line_member, proved, 'lang')
+    chosen['line_pair'] = _ids_with(line_member, proved, 'pair')
+    chosen['line_overrule'] = _ids_with(line_member, proved, 'overrule')
+    chosen['lang_of'] = dict(lang_report.get('lang_of') or {})
+    chosen['pair_phone'] = dict(lang_report.get('pair_phone') or {})
     chosen['attack_fill'] = False
     chosen['choir_attack'] = 'spectral'
     chosen['choir_clock'] = 'phone'
@@ -3326,6 +3476,127 @@ def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: 
     decision['union'] = chosen['union']
 
 
+def _try_refuter(per_song: list[dict], refute: dict, baseline_n: int) -> dict:
+    """Drop a witness as a refuter only when placers and Gemini agree and the gates rise.
+
+    The comparison is recorded either way. Nothing is dropped when the shifted
+    line pass would go over 5 % or proved lines would not rise.
+    """
+    import refuter_choice as RC
+
+    report = {'kept': False, 'reason': 'не мерялось', 'lines': [], 'candidates': [], 'off': {}}
+    out = {'refute': refute, 'report': report, 'scopes': None, 'modes': None, 'tables': None, 'picked': None}
+    try:
+        gemini = {song.get('slug') or '': RC.gemini_starts(song.get('slug') or '') for song in per_song}
+        rows = RC.cases(per_song, refute, gemini)
+        cands = RC.candidates(rows)
+        report = {'kept': False, 'reason': 'кандидатов нет', 'lines': rows, 'candidates': cands, 'off': {}}
+        out['report'] = report
+        if not cands:
+            return out
+
+        def priced(off: dict):
+            nxt = dict(refute)
+            nxt['off'] = off
+            scopes, ok, modes, tables, picked = _remeasure(per_song, nxt)
+            return nxt, scopes, ok, modes, tables, picked
+
+        together = RC.off_map(cands)
+        nxt, scopes, ok, modes, tables, picked = priced(together)
+        why = 'все кандидаты вместе'
+        if not _rises(ok, picked, baseline_n):
+            kept_off: dict[str, list[str]] = {}
+            current_n = int(baseline_n)
+            nxt = refute
+            why = ''
+            for cand in cands:
+                trial_off = {key: list(value) for key, value in kept_off.items()}
+                kinds = trial_off.setdefault(str(cand.get('key') or ''), [])
+                kind = str(cand.get('kind') or '')
+                if kind and kind not in kinds:
+                    kinds.append(kind)
+                trial, scopes, ok, modes, tables, picked = priced(trial_off)
+                if not _rises(ok, picked, current_n):
+                    continue
+                kept_off = trial_off
+                current_n = int(picked.get('proved') or 0)
+                nxt = trial
+                why = 'по одному'
+            if not why:
+                report['reason'] = 'порог не удержан'
+                return out
+        report['kept'] = True
+        report['reason'] = why
+        report['off'] = dict(nxt.get('off') or {})
+        report['proved'] = int(picked.get('proved') or 0)
+        report['base_proved'] = int(baseline_n)
+        out.update({
+            'refute': nxt, 'report': report, 'scopes': scopes, 'modes': modes,
+            'tables': tables, 'picked': picked,
+        })
+        print(
+            f"свидетель снят как опровергатель ({why}): доказано {picked.get('proved')} против {baseline_n}",
+            flush=True)
+    except Exception as e:
+        report['reason'] = f'замер не собран: {e.__class__.__name__}'
+        print(f'сравнение свидетеля не допущено ({e.__class__.__name__}: {e})', flush=True)
+    return out
+
+
+# Published by run 39548436423 on top of baseline-155.json. Holding the file
+# alone would allow those three lines to disappear. A missing line is still
+# allowed only when keeping it would push the line pass over 5 %.
+PASS5_EXTRA = ('english-8', 'coda-fa-3', 'shushtari-s2')
+
+
+def _read_frozen() -> list[str]:
+    """Line ids proved before this pass. Missing file means the check cannot pass."""
+    path = ROOT / 'docs' / 'analysis' / 'bench' / 'baseline-155.json'
+    if not path.is_file():
+        return []
+    try:
+        payload = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return []
+    return [str(item) for item in (payload.get('ids') or []) if item]
+
+
+def _published_ids() -> list[str]:
+    """The frozen 155 plus the three lines pass 5 published."""
+    ids = _read_frozen()
+    seen = set(ids)
+    for lid in PASS5_EXTRA:
+        if lid not in seen:
+            ids.append(lid)
+            seen.add(lid)
+    return ids
+
+
+def _frozen_status(result: dict | None, ids: list[str]) -> dict:
+    """Whether the published join still holds the frozen proved lines.
+
+    A missing line is allowed only when holding it would push the line pass
+    over 5 %. No join means the check did not run, so it does not pass.
+    """
+    if not ids:
+        return {'kept': False, 'lost': [], 'n': 0, 'reason': 'нет списка базовых строк'}
+    if not result:
+        return {'kept': False, 'lost': [], 'n': len(ids), 'reason': 'объединение не собрано'}
+    proved = set(result.get('proved') or [])
+    detail = result.get('lost_detail') or {}
+    lost = []
+    for lid in ids:
+        if lid in proved:
+            continue
+        lost.append({'id': lid, 'chance': detail.get(lid)})
+    return {
+        'kept': pass_keeps_baseline(result, ids),
+        'lost': lost,
+        'n': len(ids),
+        'reason': 'удержано' if pass_keeps_baseline(result, ids) else 'базовая строка потеряна без прохода выше 5 %',
+    }
+
+
 def build_payload(slugs: list[str]) -> dict:
     import features as F
 
@@ -3359,6 +3630,7 @@ def build_payload(slugs: list[str]) -> dict:
             'envelope_peaks': Q.envelope_peak_times(sig, min_height=WITNESS_HEIGHT),
             'use_choir_envelope': False,
             'latin_place': phone_summary.get('latin_place') or {},
+            'open_place': phone_summary.get('open_place') or {},
             'report_by_id': report_by,
             'next_by_id': next_by,
             'order_by_id': order_by,
@@ -3383,6 +3655,15 @@ def build_payload(slugs: list[str]) -> dict:
     baseline_tables = measure_primary_tables(per_song, modes, refute)
     baseline_picked = choose_with_primaries(baseline_tables)
     print(f"атака: без фонемы доказано {baseline_picked.get('proved')}", flush=True)
+    refuter_try = _try_refuter(per_song, refute, int(baseline_picked.get('proved') or 0))
+    refute = refuter_try['refute']
+    refuter_report = refuter_try['report']
+    if refuter_try.get('picked') is not None:
+        scopes = refuter_try['scopes']
+        modes = refuter_try['modes']
+        baseline_tables = refuter_try['tables']
+        baseline_picked = refuter_try['picked']
+        scopes_ok = True
     origin_modes = dict(modes)
     origin_picked = baseline_picked
     origin_lines = _snapshot(per_song)
@@ -3521,7 +3802,8 @@ def build_payload(slugs: list[str]) -> dict:
     except Exception as exc:
         overlay = None
         print(f'объединение не собрано ({exc.__class__.__name__}: {exc})', flush=True)
-    if overlay:
+    published_union = bool(overlay and (overlay.get('result') or {}).get('within_limit'))
+    if published_union:
         _apply_union_choice(chosen, decision, overlay, scopes_ok)
         if overlay.get('decision') is not None:
             decision = overlay['decision']
@@ -3534,6 +3816,11 @@ def build_payload(slugs: list[str]) -> dict:
     public_rows = []
     for row in rows:
         public_rows.append({k: v for k, v in row.items() if not k.startswith('_')})
+    frozen = _frozen_status((overlay or {}).get('result') if overlay else None, _published_ids())
+    chosen['baseline_kept'] = frozen['kept']
+    chosen['baseline_lost'] = frozen['lost']
+    chosen['baseline_n'] = frozen['n']
+    chosen['baseline_reason'] = frozen['reason']
     return {
         'limit': LIMIT,
         'line_limit': LINE_LIMIT,
@@ -3551,8 +3838,11 @@ def build_payload(slugs: list[str]) -> dict:
         'density': density,
         'candidates': public_rows,
         'phoneme': decision,
+        'lang_ctc': (overlay or {}).get('lang_ctc') if overlay else None,
         'attack_fill': _public_fill(fill_report),
         '_refutations': collect_refutations(per_song, refute),
+        'refuter': refuter_report,
+        'frozen': frozen,
     }
 
 
@@ -3759,10 +4049,37 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as e:
         print(f'phoneme-choice.md не записан ({e.__class__.__name__}: {e})')
     try:
+        import lang_ctc_choice as LangCtc
+        (out_dir / 'lang-ctc.md').write_text(
+            LangCtc.render_md(payload.get('lang_ctc') or {}), encoding='utf-8')
+    except Exception as e:
+        print(f'lang-ctc.md не записан ({e.__class__.__name__}: {e})')
+    try:
         import phoneme_choice as Phone
         (out_dir / 'chorus.md').write_text(Phone.render_chorus(phone.get('chorus') or {}), encoding='utf-8')
     except Exception as e:
         print(f'chorus.md не записан ({e.__class__.__name__}: {e})')
+    try:
+        import stem_onset
+        onset_songs = []
+        for slug in args.slugs:
+            path = work_dir(slug) / 'align-report.json'
+            onset = {}
+            if path.exists():
+                report = json.loads(path.read_text(encoding='utf-8'))
+                onset = ((report.get('summary') or {}).get('placement') or {}).get('ft') or {}
+                onset = onset.get('onset') or {}
+            onset_songs.append({'slug': slug, 'onset': onset})
+        (out_dir / 'stem-onset.md').write_text(stem_onset.render_md(onset_songs), encoding='utf-8')
+        (out_dir / 'stem-onset.json').write_text(
+            json.dumps(onset_songs, ensure_ascii=False, indent=1), encoding='utf-8')
+    except Exception as e:
+        print(f'stem-onset.md не записан ({e.__class__.__name__}: {e})')
+    try:
+        import refuter_choice as RC
+        (out_dir / 'refuter.md').write_text(RC.render_md(payload.get('refuter') or {}), encoding='utf-8')
+    except Exception as e:
+        print(f'refuter.md не записан ({e.__class__.__name__}: {e})')
     chosen = payload['chosen']
     refute = chosen.get('refute') or {}
     print(f"правило {chosen.get('name')}: случайный проход строки {chosen.get('chance')}, "
@@ -3783,6 +4100,11 @@ def main(argv: list[str] | None = None) -> int:
     print(f"заливка огибающей {bool(fill.get('kept'))}: {fill.get('why')}, "
           f"{fill.get('proved')} против {fill.get('base_proved')}")
     if not chosen.get('within_limit'):
+        return 2
+    if chosen.get('baseline_reason') != 'объединение не собрано' and not chosen.get('baseline_kept'):
+        lost = ', '.join(str(row.get('id')) for row in (chosen.get('baseline_lost') or [])[:12])
+        print(f"монотонность не удержана: {chosen.get('baseline_reason')}"
+              + (f" ({lost})" if lost else ''))
         return 2
     have = set(payload.get('songs') or [])
     missing = [slug for slug in args.slugs if slug not in have]

@@ -12,8 +12,6 @@ time budget holds.
 """
 from __future__ import annotations
 
-import time
-
 import numpy as np
 
 import calibrate_score as Cal
@@ -293,9 +291,10 @@ def witness_slots(placed_by: str | None, mms: float | None, second: float | None
     return second, 'whisperx', stable, 'stable-ts'
 
 
-# A refuted line may move to a later placer. Phoneme is last and only when its clock exists.
+# A refuted line may move to a later placer. The clip stem is still the MMS
+# family (`mms-stem`): it is not a new witness of itself. Phoneme is last.
 HANDOFF_AFTER = {
-    'mms': ('stable-ts', 'second', 'phoneme'),
+    'mms': ('stem', 'stable-ts', 'second', 'phoneme'),
     'stable-ts': ('second', 'phoneme'),
     'second': ('phoneme',),
     'phoneme': (),
@@ -304,6 +303,7 @@ HANDOFF_AFTER = {
 
 def _placer_clock(word: dict, name: str) -> float | None:
     key = {
+        'stem': 'clock_stem',
         'stable-ts': 'clock_stable',
         'second': 'clock_second',
         'phoneme': 'clock_phoneme',
@@ -326,7 +326,15 @@ def handoff_proposal(line: dict, next_cue: float | None, peaks, refute: dict | N
     if len(words) < 2 or not refute:
         return None
     if not any(Q.word_refuted(
-            {'ctc_s': word.get('t'), 'second_s': word.get('second'), 'third_s': word.get('third')},
+            {
+                'ctc_s': word.get('t'),
+                'second_s': word.get('second'),
+                'third_s': word.get('third'),
+                'second_kind': word.get('second_kind') or 'whisperx',
+                'third_kind': word.get('third_kind') or 'stable-ts',
+                'song': line.get('song'),
+                'lang': line.get('lang'),
+            },
             peaks, refute) for word in words):
         return None
     family = primary_family(line.get('placed_by'))
@@ -341,20 +349,33 @@ def handoff_proposal(line: dict, next_cue: float | None, peaks, refute: dict | N
         ends = ends_from_starts(starts, next_cue)
         if not judge(starts, ends, cue, next_cue, section, limit=limit).get('placed'):
             continue
+        # The clip stem is another MMS pass. Proof still treats it as MMS, so
+        # Whisper and stable-ts stay the witnesses. A missing stem clock is
+        # skipped above and the line goes on to stable-ts.
+        by = 'mms-stem' if name == 'stem' else name
         witnesses = []
         refuted = False
         for word, start in zip(words, starts):
             slot = witness_slots(
-                name, _placer_clock(word, 'mms'), _placer_clock(word, 'second'),
+                by, _placer_clock(word, 'mms'), _placer_clock(word, 'second'),
                 _placer_clock(word, 'stable-ts'))
             witnesses.append(slot)
-            if Q.word_refuted({'ctc_s': start, 'second_s': slot[0], 'third_s': slot[2]}, peaks, refute):
+            probe = {
+                'ctc_s': start,
+                'second_s': slot[0],
+                'third_s': slot[2],
+                'second_kind': slot[1],
+                'third_kind': slot[3],
+                'song': line.get('song'),
+                'lang': line.get('lang'),
+            }
+            if Q.word_refuted(probe, peaks, refute):
                 refuted = True
                 break
         if refuted:
             continue
         return {
-            'by': name,
+            'by': by,
             'starts': [float(start) for start in starts],
             'ends': [float(end) for end in ends],
             'witnesses': witnesses,
@@ -505,45 +526,15 @@ def fit_budget(spans: list[tuple[float, float, list[str]]], budget_s: float, rtf
 
 
 def separate_ft_clips(mix_44k: np.ndarray, spans: list[tuple[float, float]], rate: int = FT_RATE,
-                      budget_s: float = FT_BUDGET_S) -> tuple[list[np.ndarray | None], dict]:
-    """Vocals of each span from one htdemucs_ft load. A span past the budget is None.
+                      budget_s: float = FT_BUDGET_S, spec: dict | None = None
+                      ) -> tuple[list[np.ndarray | None], dict]:
+    """Vocals of each span. A span past the budget is None.
 
-    `mix_44k` is mono float32 at `rate`. The model wants that rate and two channels.
-    The returned vocal is mono at the same rate. The caller resamples to 16 kHz.
+    `mix_44k` is mono float32 at `rate`. The returned vocal is mono at the same
+    rate. The caller resamples to 16 kHz. With no `spec` this is htdemucs_ft,
+    one shift, overlap 0.1 — the clip placer the rescue already ran. A measured
+    spec may raise the overlap, the shifts, or average two MIT Demucs vocals.
     """
-    import torch
-    from demucs.apply import apply_model
-    from demucs.pretrained import get_model
+    import stem_onset
 
-    model = get_model('htdemucs_ft')
-    model.cpu().eval()
-    # The download is not part of the separation budget. The clock starts once the model is loaded.
-    started = time.monotonic()
-    sources = list(getattr(model, 'sources', []) or [])
-    if 'vocals' not in sources:
-        raise RuntimeError('htdemucs_ft не отдал дорожку vocals')
-    vocal_i = sources.index('vocals')
-    out: list[np.ndarray | None] = []
-    done = 0
-    for t0, t1 in spans:
-        if time.monotonic() - started > budget_s:
-            out.append(None)
-            continue
-        a = max(0, int(float(t0) * rate))
-        b = min(len(mix_44k), int(float(t1) * rate))
-        if b - a < int(0.4 * rate):
-            out.append(None)
-            continue
-        clip = np.stack([mix_44k[a:b], mix_44k[a:b]])
-        tensor = torch.from_numpy(np.ascontiguousarray(clip)).float().unsqueeze(0)
-        with torch.inference_mode():
-            separated = apply_model(model, tensor, device='cpu', split=True, overlap=0.1, progress=False)
-        vocal = separated[0, vocal_i].mean(dim=0).detach().cpu().numpy().astype(np.float32)
-        out.append(vocal)
-        done += 1
-    info = {
-        'ran': True, 'clips': done, 'skipped': len(spans) - done,
-        'elapsed_s': round(time.monotonic() - started, 1), 'budget_s': budget_s,
-    }
-    del model
-    return out, info
+    return stem_onset.separate_spans(mix_44k, spans, rate=rate, budget_s=budget_s, spec=spec)

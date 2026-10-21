@@ -1,6 +1,6 @@
 {
  "metric": "word_mean",
- "threshold": 0.289865,
+ "threshold": 0.289866,
  "cap_met": true,
  "accepted": 108,
  "near": 90,
@@ -35,7 +35,7 @@
    "placed": 73,
    "cap_ok": true,
    "metric": "word_mean",
-   "threshold": 0.289865,
+   "threshold": 0.289866,
    "cap_met": true
   },
   {
@@ -48,7 +48,7 @@
    "placed": 16,
    "cap_ok": true,
    "metric": "word_min",
-   "threshold": 0.433979,
+   "threshold": 0.433978,
    "cap_met": true
   }
  ],
