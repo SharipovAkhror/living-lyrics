@@ -12,6 +12,7 @@ export type { IconName } from './types';
 
 const STYLE_ID = 'll-ico-style';
 const PAIR_CSS = [
+  '.ll-ico { --qalam-wash: color-mix(in srgb, currentColor 32%, var(--bg)); }',
   '.ll-ico.ll-pair .ll-on { display: none; }',
   "[aria-pressed='true'] .ll-ico.ll-pair .ll-off { display: none; }",
   "[aria-pressed='true'] .ll-ico.ll-pair .ll-on { display: block; }",
@@ -32,12 +33,12 @@ function Path({ mark, sw }: { mark: Mark; sw: number }) {
   return (
     <path
       d={mark.d}
-      fill={mark.draw === 'fill' ? 'currentColor' : 'none'}
+      fill={mark.tone === 'wash' ? 'var(--qalam-wash)' : mark.draw === 'fill' ? 'currentColor' : 'none'}
       stroke={mark.draw === 'stroke' ? 'currentColor' : 'none'}
       strokeWidth={mark.draw === 'stroke' ? (mark.sw ?? sw) : undefined}
       strokeLinecap="butt"
       strokeLinejoin="miter"
-      fillOpacity={mark.draw === 'fill' ? mark.opacity : undefined}
+      fillOpacity={mark.tone === 'wash' ? 1 : mark.draw === 'fill' ? mark.opacity : undefined}
       strokeOpacity={mark.draw === 'stroke' ? mark.opacity : undefined}
       fillRule={mark.rule ?? 'evenodd'}
       transform={mark.transform}

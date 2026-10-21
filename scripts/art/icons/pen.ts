@@ -4,6 +4,16 @@
  * Coordinates are on the 24 grid. The nib angle is the engraving hatch.
  */
 
+import {
+  arcStroke,
+  circleRing,
+  frameOf,
+  quadStroke,
+  roundLoop,
+  roundSamples,
+  solidRound,
+} from './curve';
+
 export type Pt = { x: number; y: number };
 
 export function n(v: number): string {
@@ -51,74 +61,17 @@ export function rrectPoly(x: number, y: number, w: number, h: number, r: number,
 }
 
 /**
- * Closed polygon with quadratic corners. The control point is the sharp
- * corner, so the visual tip sits inside it. `radius` is one value or one
- * per corner.
+ * Closed polygon with circular fillets. `radius` is the tangent length
+ * (the circle's radius on a right angle), one value or one per corner.
+ * A zero radius stays a corner.
  */
 export function roundPoly(pts: Pt[], radius: number | number[]): string {
-  const count = pts.length;
-  const radii = Array.isArray(radius) ? radius : pts.map(() => radius);
-  const corners = pts.map((cur, i) => {
-    const prev = pts[(i - 1 + count) % count]!;
-    const next = pts[(i + 1) % count]!;
-    const v1 = { x: cur.x - prev.x, y: cur.y - prev.y };
-    const v2 = { x: next.x - cur.x, y: next.y - cur.y };
-    const l1 = Math.hypot(v1.x, v1.y);
-    const l2 = Math.hypot(v2.x, v2.y);
-    const u1 = { x: v1.x / l1, y: v1.y / l1 };
-    const u2 = { x: v2.x / l2, y: v2.y / l2 };
-    const rr = Math.min(radii[i] ?? 0, l1 / 2.05, l2 / 2.05);
-    return {
-      p1: { x: cur.x - u1.x * rr, y: cur.y - u1.y * rr },
-      c: cur,
-      p2: { x: cur.x + u2.x * rr, y: cur.y + u2.y * rr },
-    };
-  });
-  const first = corners[0]!;
-  let d = `M${n(first.p2.x)} ${n(first.p2.y)}`;
-  for (let i = 0; i < count; i++) {
-    const corner = corners[(i + 1) % count]!;
-    d += `L${n(corner.p1.x)} ${n(corner.p1.y)}Q${n(corner.c.x)} ${n(corner.c.y)} ${n(corner.p2.x)} ${n(corner.p2.y)}`;
-  }
-  return d + 'Z';
+  return solidRound(pts, radius);
 }
 
-/** Same rounded polygon as a clip outline (samples the quadratics). */
+/** Same rounded polygon as a clip outline. */
 export function roundPolyPoints(pts: Pt[], radius: number | number[], steps = 4): Pt[] {
-  const count = pts.length;
-  const radii = Array.isArray(radius) ? radius : pts.map(() => radius);
-  const corners = pts.map((cur, i) => {
-    const prev = pts[(i - 1 + count) % count]!;
-    const next = pts[(i + 1) % count]!;
-    const v1 = { x: cur.x - prev.x, y: cur.y - prev.y };
-    const v2 = { x: next.x - cur.x, y: next.y - cur.y };
-    const l1 = Math.hypot(v1.x, v1.y);
-    const l2 = Math.hypot(v2.x, v2.y);
-    const u1 = { x: v1.x / l1, y: v1.y / l1 };
-    const u2 = { x: v2.x / l2, y: v2.y / l2 };
-    const rr = Math.min(radii[i] ?? 0, l1 / 2.05, l2 / 2.05);
-    return {
-      p1: { x: cur.x - u1.x * rr, y: cur.y - u1.y * rr },
-      c: cur,
-      p2: { x: cur.x + u2.x * rr, y: cur.y + u2.y * rr },
-    };
-  });
-  const out: Pt[] = [];
-  for (let i = 0; i < count; i++) {
-    const here = corners[i]!;
-    const next = corners[(i + 1) % count]!;
-    out.push(here.p2);
-    out.push(next.p1);
-    for (let s = 1; s < steps; s++) {
-      const t = s / steps;
-      const u = 1 - t;
-      out.push({
-        x: u * u * next.p1.x + 2 * u * t * next.c.x + t * t * next.p2.x,
-        y: u * u * next.p1.y + 2 * u * t * next.c.y + t * t * next.p2.y,
-      });
-    }
-  }
-  return out;
+  return roundSamples(pts, radius, steps);
 }
 
 /** Open chevron. The elbow is a quadratic so the tip stays soft. */
@@ -363,18 +316,29 @@ export function nibLozenge(cx: number, cy: number, along: number, across: number
   ]);
 }
 
-/** Oval with the same axes as `nibLozenge`. The note head uses it at every master. */
-export function nibOval(cx: number, cy: number, along: number, across: number, steps = 28): string {
-  const e = QATT_EDGE;
-  const a = QATT_ACROSS;
-  const pts: Pt[] = [];
-  for (let i = 0; i < steps; i++) {
-    const t = (i / steps) * Math.PI * 2;
-    const c = Math.cos(t);
-    const s = Math.sin(t);
-    pts.push({ x: cx + e.x * along * c + a.x * across * s, y: cy + e.y * along * c + a.y * across * s });
-  }
-  return polyPath(pts);
+/**
+ * Oval with the same axes as `nibLozenge`. Four quarter ellipses: a semicircle
+ * large-arc flag is ambiguous once the coordinates are rounded, and that
+ * ambiguity kinked the note head at the 16 master.
+ */
+function n3(v: number): string {
+  const r = Math.round(v * 1000) / 1000;
+  return Object.is(r, -0) ? '0' : String(r);
+}
+
+export function nibOval(cx: number, cy: number, along: number, across: number): string {
+  const at = (th: number) => {
+    const x = along * Math.cos(th);
+    const y = across * Math.sin(th);
+    return {
+      x: cx + QATT_EDGE.x * x + QATT_ACROSS.x * y,
+      y: cy + QATT_EDGE.y * x + QATT_ACROSS.y * y,
+    };
+  };
+  const q = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2].map(at);
+  const p = (pt: Pt) => `${n3(pt.x)} ${n3(pt.y)}`;
+  // Sweep 1 follows increasing θ, which is clockwise on screen (y grows down).
+  return `M${p(q[0]!)}A${n3(along)} ${n3(across)} ${n3(QATT)} 0 1 ${p(q[1]!)}A${n3(along)} ${n3(across)} ${n3(QATT)} 0 1 ${p(q[2]!)}A${n3(along)} ${n3(across)} ${n3(QATT)} 0 1 ${p(q[3]!)}A${n3(along)} ${n3(across)} ${n3(QATT)} 0 1 ${p(q[0]!)}Z`;
 }
 
 /** Solid bar. Both ends are the nib edge, so the bar is a parallelogram. */
@@ -987,4 +951,78 @@ export function nibPlate(x: number, y: number, w: number, h: number, cut: number
     [radius, 0, 0, radius, 0, 0],
     4,
   );
+}
+
+function vertsOf(nib: Nib, unit: number): Pt[] {
+  return nibShape(hintNib(nib, unit));
+}
+
+/** Pull a long axis-aligned edge onto the CSS pixel grid before a nib ring is built. */
+function snapAxisSource(pts: Pt[], unit: number): Pt[] {
+  if (unit <= 0 || pts.length < 3) return pts;
+  const out = pts.map((p) => ({ ...p }));
+  const nPts = out.length;
+  for (let i = 0; i < nPts; i++) {
+    const a = out[i]!;
+    const b = out[(i + 1) % nPts]!;
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const span = Math.hypot(dx, dy);
+    if (span < unit * 1.4) continue;
+    if (Math.abs(dy) < 0.2 && Math.abs(dx) > span * 0.94) {
+      const y = snapTo((a.y + b.y) / 2, unit);
+      a.y = y;
+      b.y = y;
+    } else if (Math.abs(dx) < 0.2 && Math.abs(dy) > span * 0.94) {
+      const x = snapTo((a.x + b.x) / 2, unit);
+      a.x = x;
+      b.x = x;
+    }
+  }
+  return out;
+}
+
+/** Closed nib ring of a circle. True arcs, joined by the nib edges on a shared tangent. */
+export function qalamCircle(cx: number, cy: number, r: number, nib: Nib, unit = builtUnit): string {
+  return circleRing(cx, cy, r, vertsOf(nib, unit));
+}
+
+/** Open nib stroke along a circular arc. The caps are the same nib edges as a straight stroke. */
+export function qalamArc(
+  cx: number,
+  cy: number,
+  r: number,
+  a0: number,
+  a1: number,
+  nib: Nib,
+  unit = builtUnit,
+): string {
+  return arcStroke(cx, cy, r, a0, a1, vertsOf(nib, unit));
+}
+
+/** Open nib stroke along one quadratic. The curve is translated, not resampled into lines. */
+export function qalamQuad(p0: Pt, p1: Pt, p2: Pt, nib: Nib, unit = builtUnit): string {
+  return quadStroke(p0, p1, p2, vertsOf(nib, unit));
+}
+
+/**
+ * Closed nib ring around a rounded polygon.
+ * Axis-aligned edges snap onto the CSS pixel grid first. Curves stay quadratics.
+ */
+export function qalamRoundLoop(pts: Pt[], radius: number | number[], nib: Nib, unit = builtUnit): string {
+  return roundLoop(snapAxisSource(pts, unit), radius, vertsOf(nib, unit));
+}
+
+/**
+ * Constant-width frame and the plate inside it.
+ * `stroke` and `unit` are grid units. `unit` 0 skips the pixel snap.
+ * Rounded corners are cubics within 0.015 of the true parallel curve.
+ */
+export function framePlate(
+  pts: Pt[],
+  radius: number | number[],
+  stroke: number,
+  unit = builtUnit,
+): { ring: string; plate: string } {
+  return frameOf(pts, radius, stroke, unit);
 }

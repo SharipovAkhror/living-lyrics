@@ -1,35 +1,41 @@
 /**
- * Qalam — the Living Lyrics icon family, round 9.
+ * Qalam — the Living Lyrics icon family, round 10.
  *
- * Every stroke is the same reed pen (`pen.ts`): one 35° nib swept as a
- * single outline, thick across the edge and thin along it. The nib itself
- * is the terminal. The dot is a nuqta, never a circle.
+ * Every stroke is the same reed pen (`pen.ts`): one 35° nib, thick across
+ * the edge and thin along it. Straight stems stay polygons so the pixel snap
+ * holds. Circles, arcs and rounded corners are real curves (`curve.ts`):
+ * arcs, translated quadratics, or cubics within 0.015 of the parallel curve.
+ * The nib itself is the terminal. The dot is a nuqta, never a circle.
  *
  * Optical masters are 16, 20, 24, 28 and 32 on one 24 grid.
  * Stems snap to the CSS pixel grid of the size being drawn.
  * 16 and 20 keep the silhouette and a quiet contrast.
  * 24 adds the bookmark. 28 is the play button's own master.
  * 32 opens the contrast and the rosette.
+ *
+ * A pressed framed tab (translation, gloss, methodology) paints an opaque
+ * wash of the plate: the second tone, not a second black slab. The ring
+ * stays on top and is one pixel heavier.
  */
 import { ICON_NAMES, type Glyph, type IconName, type IconSet, type Mark } from '../../../src/ui/icons/types';
 import {
   QATT_EDGE,
-  arcPoints,
   beginGlyph,
-  closedPath,
+  circle,
   endGlyph,
-  frameRing,
+  framePlate,
   nibFor,
   nibOval,
-  nibPlate,
   nibSlab,
   penDetail,
   pixelUnit,
   pt,
-  qalamLoop,
+  qalamArc,
+  qalamCircle,
   qalamOuter,
+  qalamQuad,
+  qalamRoundLoop,
   qalamStroke,
-  quadPoints,
   roundPoly,
   roundPolyPoints,
   rrect,
@@ -71,6 +77,11 @@ function hole(d: string): Mark {
   return { d, draw: 'fill', rule: 'nonzero', knock: true };
 }
 
+/** Opaque second tone. The renderer mixes the ink with the page; this is not a transparency. */
+function wash(d: string): Mark {
+  return { d, draw: 'fill', rule: 'nonzero', tone: 'wash' };
+}
+
 function marks(...list: Mark[]): Mark[] {
   return list.filter((mark) => mark.d.length > 0);
 }
@@ -94,30 +105,23 @@ function writing(o: Spec, pressed = false): Nib {
   return nibFor(o.id, pressed ? sw * 1.22 : sw, 1.05);
 }
 
-/** Idle is the nib ring. Pressed, the same ring fills and `cut` is knocked out. */
-function plate(center: Pt[], nib: Nib, cut: string, cutOn = cut): Glyph {
-  const ring = qalamLoop(center, nib);
-  const body = closedPath(center);
-  return {
-    off: marks(ink(ring), ink(cut)),
-    on: marks(ink(body), ink(ring), cutOn ? hole(cutOn) : ink('')),
-  };
-}
-
-/**
- * Translation and gloss. Pressed inks a heavier ring and a heavier mark.
- * The plate does not fill: a black slab was heavier than the tab bar.
- */
 /** Whole CSS pixels. 16–24 sit on a 2 px stem; 28 and 32 sit on 3. Pressed adds one. */
 function frameWidth(o: Spec, pressed: boolean): number {
   const idle = o.id <= 24 ? 2 : 3;
   return (pressed ? idle + 1 : idle) * uOf(o);
 }
 
-function framed(center: Pt[], o: Spec, cutOff: string, cutOn: string): Glyph {
+/**
+ * Framed tab. Idle is the ring and the writing. Pressed paints the plate in
+ * the second tone, under a heavier ring. The wash is the centreline, so a
+ * fit error of 0.02 cannot poke past the outer edge.
+ */
+function framed(pts: Pt[], radii: number | number[], o: Spec, cutOff: string, cutOn: string): Glyph {
+  const off = framePlate(pts, radii, frameWidth(o, false), uOf(o));
+  const on = framePlate(pts, radii, frameWidth(o, true), uOf(o));
   return {
-    off: marks(ink(frameRing(center, frameWidth(o, false), uOf(o))), ink(cutOff)),
-    on: marks(ink(frameRing(center, frameWidth(o, true), uOf(o))), ink(cutOn)),
+    off: marks(ink(off.ring), ink(cutOff)),
+    on: marks(wash(on.plate), ink(on.ring), ink(cutOn)),
   };
 }
 
@@ -192,11 +196,16 @@ function centroidOf(pts: Pt[]): Pt {
 }
 
 function centeredSolid(pts: Pt[], radii: number[]): string {
-  const sampled = roundPolyPoints(pts, radii, 8);
+  const sampled = roundPolyPoints(pts, radii, 16);
   const c = centroidOf(sampled);
   // The geometric centroid is already on the button centre. Rounding moves
-  // it by a fraction; shift the samples back. Angles, including 35°, stay.
-  return closedPath(sampled.map((p) => ({ x: p.x + (12 - c.x), y: p.y + (12 - c.y) })));
+  // it by a fraction; shift the source polygon, then round it as curves.
+  const dx = 12 - c.x;
+  const dy = 12 - c.y;
+  return roundPoly(
+    pts.map((p) => ({ x: p.x + dx, y: p.y + dy })),
+    radii,
+  );
 }
 
 /**
@@ -337,9 +346,20 @@ function skip(direction: 'back' | 'fwd', o: Spec): Glyph {
  * The Latin A is drawn with the pen. Its counter stays open at 20 px.
  * From 32 a second short stroke sits under it: the other language.
  */
+function cartouche(x: number, y: number, w: number, h: number, cut: number, radius: number): { pts: Pt[]; radii: number[] } {
+  const dx = QATT_EDGE.x * cut;
+  const dy = QATT_EDGE.y * cut;
+  const right = x + w;
+  const bottom = y + h;
+  return {
+    pts: [pt(x, y), pt(right - dx, y), pt(right, y + dy), pt(right, bottom), pt(x + dx, bottom), pt(x, bottom - dy)],
+    radii: [radius, 0, 0, radius, 0, 0],
+  };
+}
+
 function translation(o: Spec): Glyph {
   const cut = o.id >= 32 ? 3.15 : o.id >= 24 ? 2.55 : 2.15;
-  const frame = nibPlate(3.15, 3.55, 17.7, 16.7, cut, o.rad);
+  const frame = cartouche(3.15, 3.55, 17.7, 16.7, cut, o.rad);
   const letter = (pressed: boolean) => {
     const nib = writing(o, pressed);
     const apex = pt(12, 6.55);
@@ -353,29 +373,22 @@ function translation(o: Spec): Glyph {
     if (penDetail(o.id) === 2) d += qalamStroke([pt(8.7, 17.15), pt(15.3, 17.15)], nib);
     return d;
   };
-  return framed(frame, o, letter(false), letter(true));
+  return framed(frame.pts, frame.radii, o, letter(false), letter(true));
 }
 
 /**
  * A manuscript page with the nib taken off the top-right corner only.
  * Translation cuts two corners; this one cut is the dog-ear of a note.
  */
-function folio(x: number, y: number, w: number, h: number, cut: number, radius: number): Pt[] {
+function folio(x: number, y: number, w: number, h: number, cut: number, radius: number): { pts: Pt[]; radii: number[] } {
   const dx = QATT_EDGE.x * cut;
   const dy = QATT_EDGE.y * cut;
   const right = x + w;
   const bottom = y + h;
-  return roundPolyPoints(
-    [
-      { x, y },
-      { x: right - dx, y },
-      { x: right, y: y + dy },
-      { x: right, y: bottom },
-      { x, y: bottom },
-    ],
-    [radius, 0, 0, radius, radius],
-    4,
-  );
+  return {
+    pts: [pt(x, y), pt(right - dx, y), pt(right, y + dy), pt(right, bottom), pt(x, bottom)],
+    radii: [radius, 0, 0, radius, radius],
+  };
 }
 
 /**
@@ -402,7 +415,7 @@ function gloss(o: Spec): Glyph {
     const nib = writing(o, pressed);
     return rows.map(([x1, x2, y]) => qalamStroke([pt(x1!, y!), pt(x2!, y!)], nib)).join('');
   };
-  return framed(frame, o, lines(false), lines(true));
+  return framed(frame.pts, frame.radii, o, lines(false), lines(true));
 }
 
 /** All the words. Three rules, three nuqtas. The star of the previous round. */
@@ -457,12 +470,11 @@ function note(o: Spec): Glyph {
   const cy = 17.15;
   const along = o.id <= 16 ? 3.25 : 3.75;
   const across = o.id <= 16 ? 2.35 : 2.6;
-  const head = (k: number) => nibOval(cx, cy, along * k, across * k, o.id <= 16 ? 14 : 26);
+  const head = (k: number) => nibOval(cx, cy, along * k, across * k);
   const stemNib = (pressed: boolean) => nibFor(o.id, (pressed ? o.swOn : o.sw) * 0.86, 1.2);
   const stemX = 11.25;
   const stem = (nib: Nib) => qalamStroke([pt(stemX, 15.55), pt(stemX, 3.55)], nib);
-  const flag = (nib: Nib) =>
-    qalamStroke(quadPoints(pt(stemX, 3.75), pt(18.85, 6.55), pt(14.85, 10.85), o.id <= 16 ? 12 : 16), nib);
+  const flag = (nib: Nib) => qalamQuad(pt(stemX, 3.75), pt(18.85, 6.55), pt(14.85, 10.85), nib);
   return {
     off: marks(ink(head(1)), ink(stem(stemNib(false))), ink(flag(stemNib(false)))),
     on: marks(ink(head(1.08)), ink(stem(stemNib(true))), ink(flag(stemNib(true)))),
@@ -471,28 +483,29 @@ function note(o: Spec): Glyph {
 
 /** A pennant with a deep swallowtail. The staff ends are the nib. */
 function pennant(o: Spec): Glyph {
-  const cloth = roundPolyPoints(
-    [pt(7.5, 3.7), pt(20.5, 3.7), pt(11.6, 9.3), pt(20.5, 14.9), pt(7.5, 14.9)],
-    [0.45, 0.3, 0.2, 0.3, 0.45],
-    6,
-  );
+  const cloth = [pt(7.5, 3.7), pt(20.5, 3.7), pt(11.6, 9.3), pt(20.5, 14.9), pt(7.5, 14.9)];
+  const radii = [0.45, 0.3, 0.2, 0.3, 0.45];
   const staff = (nib: Nib) => qalamStroke([pt(5.35, 2.7), pt(5.35, 21.2)], nib);
   const nib = key(o);
-  const ring = qalamLoop(cloth, nib);
+  const ring = qalamRoundLoop(cloth, radii, nib);
   return {
     off: marks(ink(staff(nib)), ink(ring)),
-    on: marks(ink(staff(key(o, true))), ink(closedPath(cloth)), ink(ring)),
+    on: marks(ink(staff(key(o, true))), ink(roundPoly(cloth, radii)), ink(ring)),
   };
 }
 
 /** About the song. A pen-drawn ring, a stem, a nuqta. No extra spur. */
 function about(o: Spec): Glyph {
   const r = 8.35;
-  const ringPts = arcPoints(12, 12, r, 0, Math.PI * 2, o.id >= 32 ? 40 : 28).slice(0, -1);
   const nib = key(o);
+  const ring = qalamCircle(12, 12, r, nib);
   const stem = qalamStroke([pt(12, 10.35), pt(12, 16.15)], writing(o));
   const dot = nuqta(12, 6.95, o.id <= 16 ? 1.35 : 1.5);
-  return plate(ringPts, nib, stem + dot);
+  const cut = stem + dot;
+  return {
+    off: marks(ink(ring), ink(cut)),
+    on: marks(ink(circle(12, 12, r)), ink(ring), hole(cut)),
+  };
 }
 
 /**
@@ -503,19 +516,15 @@ function about(o: Spec): Glyph {
  * wave. Its ends are still the nib.
  */
 function horn(o: Spec): Glyph {
-  const body = roundPolyPoints(
-    [pt(3.15, 9.4), pt(6.4, 9.4), pt(10.55, 6.2), pt(10.55, 17.8), pt(6.4, 14.6), pt(3.15, 14.6)],
-    0.8,
-    6,
-  );
+  const body = [pt(3.15, 9.4), pt(6.4, 9.4), pt(10.55, 6.2), pt(10.55, 17.8), pt(6.4, 14.6), pt(3.15, 14.6)];
   const arcNib = (pressed: boolean) => nibFor(o.id, (pressed ? o.swOn : o.sw) * 0.66, 1.08);
   const arcs = (nib: Nib) =>
-    qalamStroke(arcPoints(11.05, 12, 3.15, -0.78, 0.72, 14), nib) +
-    qalamStroke(arcPoints(11.05, 12, 5.55, -0.92, 0.86, 16), nib);
+    qalamArc(11.05, 12, 3.15, -0.78, 0.72, nib) + qalamArc(11.05, 12, 5.55, -0.92, 0.86, nib);
   const nib = key(o);
+  const ring = qalamRoundLoop(body, 0.8, nib);
   return {
-    off: marks(ink(qalamLoop(body, nib)), ink(arcs(arcNib(false)))),
-    on: marks(ink(closedPath(body)), ink(qalamLoop(body, nib)), ink(arcs(arcNib(true)))),
+    off: marks(ink(ring), ink(arcs(arcNib(false)))),
+    on: marks(ink(roundPoly(body, 0.8)), ink(ring), ink(arcs(arcNib(true)))),
   };
 }
 
@@ -532,7 +541,7 @@ function bring(o: Spec): Glyph {
 function search(o: Spec): Glyph {
   const c = pt(10.05, 10.05);
   const radius = 6.25;
-  const ring = (nib: Nib) => qalamLoop(arcPoints(c.x, c.y, radius, 0, Math.PI * 2, 32).slice(0, -1), nib);
+  const ring = (nib: Nib) => qalamCircle(c.x, c.y, radius, nib);
   const handle = (nib: Nib) => {
     const join = radius + 1.55;
     return qalamStroke([pt(c.x + join * 0.7071, c.y + join * 0.7071), pt(20.15, 20.15)], nib);
@@ -554,7 +563,7 @@ function search(o: Spec): Glyph {
  */
 function rosette(o: Spec): Glyph {
   const radius = 8.05;
-  const ringPts = arcPoints(12, 12, radius, 0, Math.PI * 2, o.id >= 32 ? 40 : 28).slice(0, -1);
+  const ring = qalamCircle(12, 12, radius, key(o));
   const reach = o.id <= 16 ? 3.85 : o.id <= 20 ? 4.15 : o.id <= 24 ? 4.35 : 4.5;
   const petal = o.id <= 16 ? 1.28 : o.id <= 20 ? 1.38 : o.id <= 24 ? 1.48 : 1.55;
   const cardinal = [
@@ -575,40 +584,44 @@ function rosette(o: Spec): Glyph {
           .map(([x, y]) => nuqta(x!, y!, 0.72))
           .join('')
       : '';
-  return plate(ringPts, key(o), petals + extra);
+  const cut = petals + extra;
+  return {
+    off: marks(ink(ring), ink(cut)),
+    on: marks(ink(circle(12, 12, radius)), ink(ring), hole(cut)),
+  };
 }
 
 /**
  * Methodology. One open codex: pages rise into a shared gutter, the valley
  * is rounded so the fold is not a notch, and a spine sits inside the ring.
  * From 24, a nuqta bookmark on the right page. Pressing thickens the ink.
- * It does not fill the pages — two black slabs read as two boxes.
+ * Pressing washes the whole inner contour in the second tone, one book,
+ * and thickens the ring. It does not paint two black page slabs.
  */
 function codex(o: Spec): Glyph {
-  const cover = roundPolyPoints(
-    [
-      pt(2.85, 8.35),
-      pt(8.35, 4.7),
-      pt(12, 7.7),
-      pt(15.65, 4.7),
-      pt(21.15, 8.35),
-      pt(21.15, 19.35),
-      pt(14.85, 16.85),
-      pt(12, 18.05),
-      pt(9.15, 16.85),
-      pt(2.85, 19.35),
-    ],
-    [1.35, 0.7, 1.65, 0.7, 1.35, 1.35, 0.85, 1.7, 0.85, 1.35],
-    8,
-  );
+  const cover = [
+    pt(2.85, 8.35),
+    pt(8.35, 4.7),
+    pt(12, 7.7),
+    pt(15.65, 4.7),
+    pt(21.15, 8.35),
+    pt(21.15, 19.35),
+    pt(14.85, 16.85),
+    pt(12, 18.05),
+    pt(9.15, 16.85),
+    pt(2.85, 19.35),
+  ];
+  const radii = [1.35, 0.7, 1.65, 0.7, 1.35, 1.35, 0.85, 1.7, 0.85, 1.35];
+  const off = framePlate(cover, radii, frameWidth(o, false), uOf(o));
+  const on = framePlate(cover, radii, frameWidth(o, true), uOf(o));
   // Shorter than the counter, and a lighter pen, so the nib caps stay
   // inside the ring instead of pinching the valley or the bottom fold.
   const spine = (nib: Nib) => qalamStroke([pt(12, 11.15), pt(12, 14.85)], nib);
   const mark = (scale: number) =>
     penDetail(o.id) > 0 ? nuqta(17.15, 11.15, (penDetail(o.id) === 2 ? 1.12 : 0.98) * scale) : '';
   return {
-    off: marks(ink(frameRing(cover, frameWidth(o, false), uOf(o))), ink(spine(writing(o))), ink(mark(1))),
-    on: marks(ink(frameRing(cover, frameWidth(o, true), uOf(o))), ink(spine(writing(o, true))), ink(mark(1.12))),
+    off: marks(ink(off.ring), ink(spine(writing(o))), ink(mark(1))),
+    on: marks(wash(on.plate), ink(on.ring), ink(spine(writing(o, true))), ink(mark(1.12))),
   };
 }
 

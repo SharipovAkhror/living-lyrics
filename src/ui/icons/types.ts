@@ -33,6 +33,11 @@ export type Mark = {
   /** Stroke width in viewBox units. Omitted means the set's weight. */
   sw?: number;
   rule?: 'evenodd' | 'nonzero';
+  /**
+   * `wash` is the second tone: an opaque mix of the ink and the page.
+   * It is not a transparency and not a second black fill.
+   */
+  tone?: 'wash';
   transform?: string;
   /**
    * Knock this fill out of the other marks in the same state.
