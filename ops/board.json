@@ -1,7 +1,21 @@
 {
-  "updated": "2026-10-21T12:56:09Z",
+  "updated": "2026-10-21T22:00:00Z",
   "headline": "Утро: новый дизайн сайта и иконки ждут вашего выбора; список на прослушивание сократился до 9.",
   "tasks": [
+    {
+      "id": "you-projects",
+      "section": "you",
+      "status": "waiting",
+      "title": "Есть ли «Projects» в Claude Code",
+      "what": "Утром на ноутбуке: в боковом списке claude.ai/code или приложения (и в More) — есть пункт Projects?"
+    },
+    {
+      "id": "you-drive",
+      "section": "you",
+      "status": "waiting",
+      "title": "Снять синхронизацию «Документов» в Google Drive",
+      "what": "На Станции: значок Google Drive в трее → шестерёнка → Настройки → Мой компьютер → Документы → снять «Синхронизировать с Google Диском» → Готово. Когда удобно."
+    },
     {
       "id": "you-iphone",
       "section": "you",
