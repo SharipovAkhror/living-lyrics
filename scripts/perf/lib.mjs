@@ -95,24 +95,60 @@ export async function installStandInClock(context, seconds) {
         return 4;
       },
     });
+    // The clock used to advance even while the element stayed paused (native play()
+    // rejects the WAV). A paused control then looked like playback. Time moves only
+    // after play(), and pause() freezes it. The native decoder is never touched.
     let base = 0;
     let t0 = performance.now();
+    let playing = false;
+    const advance = () => {
+      if (!playing) return base;
+      let t = base + (performance.now() - t0) / 1000;
+      if (t >= dur) {
+        base = 0;
+        t0 = performance.now();
+        t = 0;
+      }
+      return t;
+    };
+    Object.defineProperty(HTMLMediaElement.prototype, 'paused', {
+      configurable: true,
+      get() {
+        return !playing;
+      },
+    });
     Object.defineProperty(HTMLMediaElement.prototype, 'currentTime', {
       configurable: true,
       get() {
-        let t = base + (performance.now() - t0) / 1000;
-        if (t >= dur) {
-          base = 0;
-          t0 = performance.now();
-          t = 0;
-        }
-        return t;
+        return advance();
       },
       // Do not forward to the native setter. WebKit leaks a decode buffer on every
       // seek of the WAV fixture, which is not how a real recording behaves.
       set(v) {
-        base = Math.max(0, Number(v) || 0);
+        base = Math.max(0, Math.min(dur, Number(v) || 0));
         t0 = performance.now();
+      },
+    });
+    Object.defineProperty(HTMLMediaElement.prototype, 'play', {
+      configurable: true,
+      value() {
+        if (!playing) {
+          t0 = performance.now();
+          playing = true;
+        }
+        this.dispatchEvent(new Event('play'));
+        return Promise.resolve();
+      },
+    });
+    Object.defineProperty(HTMLMediaElement.prototype, 'pause', {
+      configurable: true,
+      value() {
+        if (playing) {
+          base = advance();
+          playing = false;
+          t0 = performance.now();
+        }
+        this.dispatchEvent(new Event('pause'));
       },
     });
   }, seconds);

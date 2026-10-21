@@ -83,6 +83,10 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
   useLayoutEffect(() => {
     painted.current = { transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '' };
     filterRef.current = '';
+    if (orig.current) {
+      orig.current.style.opacity = '';
+      orig.current.style.removeProperty('--litf');
+    }
     for (const el of words.current) {
       if (!el) continue;
       delete el.dataset.f;
@@ -135,6 +139,11 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       // variables below. Walking font-size (eight tries per line, every seek)
       // kept a WebKit backing store for each write. A line that does not fit
       // wraps; it is not restyled.
+      if (bisect('measure')) {
+        widths.current = [];
+        register(cue.idx, call, { main: 72, sub: hasSubs ? 36 : 0 });
+        return;
+      }
       widths.current = words.current.map((w) => w?.offsetWidth ?? 0);
       const mainH = main.current!.offsetHeight;
       const m: Measure = { main: mainH, sub: subs.current ? r.offsetHeight - mainH : 0 };
@@ -222,12 +231,25 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
     if (o && !bisect('words')) {
       const lit = d <= 0 ? 1 : clamp01((0.5 - d) / 0.5);
       const rawLit = wordSync ? (d < 0 ? 1 : 0) : lit;
-      // Three decimals changed the opacity of every word almost every frame and
-      // the working set climbed about 16 MB/min. Tenths still read as a fade.
-      const litf = rawLit.toFixed(phone ? 1 : 3);
-      if (painted.current.lit !== litf) {
-        painted.current.lit = litf;
-        o.style.setProperty('--litf', litf);
+      if (wordSync) {
+        // 0 or 1 only. The sung word is the mask, not a new colour on the glyphs.
+        const litf = rawLit >= 1 ? '1' : '0';
+        if (painted.current.lit !== litf) {
+          painted.current.lit = litf;
+          o.style.opacity = '';
+          o.style.setProperty('--litf', litf);
+        }
+      } else {
+        // One opacity on the line. --litf on every word re-rasterised the glyphs
+        // and the working set climbed about 16 MB/min (T27). Tenths still read as a fade.
+        const step = phone ? rawLit.toFixed(1) : rawLit.toFixed(3);
+        if (painted.current.lit !== `o${step}`) {
+          painted.current.lit = `o${step}`;
+          const dim = Number(getComputedStyle(o).getPropertyValue('--dim-op'));
+          const dimN = Number.isFinite(dim) ? dim : 0.42;
+          o.style.removeProperty('--litf');
+          o.style.opacity = (dimN + (1 - dimN) * Number(step)).toFixed(phone ? 2 : 3);
+        }
       }
     }
     if (bisect('words')) return;
@@ -254,9 +276,10 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
           el.style.removeProperty('background-image');
           const W = widths.current[i] || el.offsetWidth || 1;
           // The edge is a step, and its place is fixed by t, so a seek lands on the same cut.
-          // Skip a repeated write: WebKit keeps a raster for each distinct mask string.
+          // A phone keeps a few dozen mask strings per word. WebKit rasterises each one.
           const dir = fillMaskDirection(cue.rtl);
-          const cut = `${fillEdgePercent(f, W, fontPx.current).toFixed(phone ? 0 : 2)}%`;
+          const edge = fillEdgePercent(f, W, fontPx.current);
+          const cut = phone ? `${Math.round(edge / 4) * 4}%` : `${edge.toFixed(2)}%`;
           if (el.style.getPropertyValue('--fill-dir') !== dir) el.style.setProperty('--fill-dir', dir);
           if (el.style.getPropertyValue('--fill-cut') !== cut) el.style.setProperty('--fill-cut', cut);
         }
@@ -316,7 +339,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
             )}
           </div>
         )}
-        <div ref={orig} className={`fb-orig ${fClass}`} dir={cue.rtl ? 'rtl' : 'ltr'}>
+        <div ref={orig} className={`fb-orig ${fClass}${wordSync ? '' : ' is-line-fade'}`} dir={cue.rtl ? 'rtl' : 'ltr'}>
           {phone
             ? Array.from({ length: wordPool.current }, (_, i) => {
                 const w = line.words[i];

@@ -20,6 +20,16 @@ function skyAt(t: number) {
   };
 }
 
+/**
+ * Percent translate of a 250% layer whose centre sits on the field centre.
+ * `percent` is the old gradient centre, measured on the inset -12% sky box
+ * (124% of the field). 50 on that box is the field centre, so the translate is 0.
+ */
+export function washTranslate(percent: number): number {
+  const field = -0.12 + 1.24 * (percent / 100);
+  return ((field - 0.5) / 2.5) * 100;
+}
+
 interface Star {
   x: number;
   y: number;
@@ -55,49 +65,49 @@ export const Field = memo(function Field({
   still?: boolean;
 }) {
   const root = useRef<HTMLDivElement>(null);
-  const sky = useRef<HTMLDivElement>(null);
+  const washes = useRef<(HTMLDivElement | null)[]>([]);
   const starEls = useRef<(HTMLElement | null)[]>([]);
   const stars = useMemo(starField, []);
   const [c1, c2, c3, c4] = colors;
 
   useEffect(() => {
     const host = root.current;
-    const wash = sky.current;
-    if (!host || !wash) return;
+    if (!host) return;
     let timer = 0;
     let lastT = -1;
+    let lastStar = Number.NaN;
     let seen = false;
     const nodes = starEls.current;
 
     const paint = (time: number) => {
       const phone = isPhone();
-      // The wash is three viewport-sized gradients. Rebuilding them every 100 ms
-      // on a phone grew the WebKit working set by about 16 MB/min (T27). A 1.2 s
-      // bucket is still a function of playback time, so a seek paints the same sky.
-      const skyTime = phone ? Math.floor(time / 1.2) * 1.2 : time;
-      const p = skyAt(skyTime);
-      const digits = phone ? 0 : 2;
+      // The three washes are fixed gradient images. Playback only translates
+      // them, which stays on the compositor. Rewriting the gradient string
+      // kept a new WebKit raster each time (T27). The translate is a function
+      // of playback time, so a seek paints the same sky.
       if (!bisect('wash')) {
-        const vars: Array<[string, string]> = [
-          ['--x1', `${p.x1.toFixed(digits)}%`],
-          ['--y1', `${p.y1.toFixed(digits)}%`],
-          ['--x2', `${p.x2.toFixed(digits)}%`],
-          ['--y2', `${p.y2.toFixed(digits)}%`],
-          ['--x3', `${p.x3.toFixed(digits)}%`],
-          ['--y3', `${p.y3.toFixed(digits)}%`],
+        const p = skyAt(time);
+        const centres = [
+          [p.x1, p.y1],
+          [p.x2, p.y2],
+          [p.x3, p.y3],
         ];
-        for (const [key, value] of vars) {
-          if (wash.style.getPropertyValue(key) !== value) wash.style.setProperty(key, value);
+        for (let i = 0; i < centres.length; i++) {
+          const node = washes.current[i];
+          if (!node) continue;
+          const transform = `translate3d(${washTranslate(centres[i][0]).toFixed(2)}%, ${washTranslate(centres[i][1]).toFixed(2)}%, 0)`;
+          if (node.style.transform !== transform) node.style.transform = transform;
         }
       }
-      if (!bisect('stars')) {
+      // Stars are a few opacity steps. Phones sample them on a 0.4 s bucket of
+      // the song clock so a seek repeats the frame and the writes stay few.
+      const starTime = phone ? Math.floor(time / 0.4) * 0.4 : time;
+      if (!bisect('stars') && starTime !== lastStar) {
+        lastStar = starTime;
         for (let i = 0; i < stars.length; i++) {
           const node = nodes[i];
           if (!node) continue;
-          const tw = 0.5 + 0.5 * Math.sin(time * 0.22 + stars[i].p);
-          // Quiet enough that the glass panels stay the surface. Still a function of time.
-          // Phones use two decimals and a slower tick: forty-eight writes a frame were
-          // about 10 MB/min when nothing else was capped.
+          const tw = 0.5 + 0.5 * Math.sin(starTime * 0.22 + stars[i].p);
           const opacity = (dark ? 0.04 + tw * 0.06 : 0.02 + tw * 0.03).toFixed(phone ? 2 : 3);
           if (node.style.opacity !== opacity) node.style.opacity = opacity;
         }
@@ -112,7 +122,7 @@ export const Field = memo(function Field({
         lastT = time;
         paint(time);
       }
-      if (!still && clock) timer = window.setTimeout(tick, isPhone() ? 400 : 100);
+      if (!still && clock) timer = window.setTimeout(tick, 100);
     };
 
     const start = () => {
@@ -156,7 +166,26 @@ export const Field = memo(function Field({
       style={{ ['--f1' as string]: c1, ['--f2' as string]: c2, ['--f3' as string]: c3, ['--f4' as string]: c4 ?? c3 }}
       aria-hidden
     >
-      <div ref={sky} className="field-sky" />
+      <div className="field-sky">
+        <div
+          ref={(el) => {
+            washes.current[0] = el;
+          }}
+          className="field-wash field-wash-1"
+        />
+        <div
+          ref={(el) => {
+            washes.current[1] = el;
+          }}
+          className="field-wash field-wash-2"
+        />
+        <div
+          ref={(el) => {
+            washes.current[2] = el;
+          }}
+          className="field-wash field-wash-3"
+        />
+      </div>
       <div className="field-veil" />
       {stars.map((star, i) => (
         <i

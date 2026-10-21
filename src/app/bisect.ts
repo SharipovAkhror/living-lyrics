@@ -10,6 +10,8 @@ const NAMES = new Set([
   'instruments',
   'words',
   'placement',
+  'slots',
+  'measure',
   'scrubber',
   'mediasession',
   'react',

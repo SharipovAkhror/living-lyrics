@@ -34,6 +34,8 @@ const slug = flag(args, '--slug', 'karitas');
 const checkFlat = args.includes('--check-flat');
 const bisectName = flag(args, '--bisect', '');
 const noSheet = args.includes('--no-sheet');
+const noPlay = args.includes('--no-play');
+const noSeek = args.includes('--no-seek');
 const label = flag(args, '--label', '');
 
 const songUrl = new URL(`${url.replace(/\/$/, '')}/song/${slug}`);
@@ -117,8 +119,10 @@ async function runOne(name) {
   try {
     await page.goto(SONG, { waitUntil: 'domcontentloaded', timeout: 45000 });
     await page.waitForSelector('.scrub-track', { timeout: 30000 });
-    const play = page.getByRole('button', { name: 'Воспроизвести' });
-    if (await play.count()) await play.click();
+    if (!noPlay) {
+      const play = page.getByRole('button', { name: 'Воспроизвести' });
+      if (await play.count()) await play.click();
+    }
     await page.waitForTimeout(800);
     if (name === 'chromium') {
       cdp = await context.newCDPSession(page);
@@ -131,7 +135,7 @@ async function runOne(name) {
     let seekN = 0;
     while (Date.now() < end && !crashed && !page.isClosed()) {
       const now = Date.now();
-      if (now >= nextSeek) {
+      if (!noSeek && now >= nextSeek) {
         seekN += 1;
         const frac = seekN % 5 === 0 ? 0.02 : 0.08 + Math.random() * 0.84;
         await seekFrac(page, frac).catch((err) => errors.push(`seek ${err.message}`));
@@ -166,6 +170,8 @@ async function runOne(name) {
     label: label || name,
     bisect: bisectName || 'all',
     noSheet,
+    noPlay,
+    noSeek,
     minutes,
     samples: samples.length,
     crashed,

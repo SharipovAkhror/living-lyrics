@@ -126,7 +126,12 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const key = list.join(',');
       if (key !== lastKey) {
         lastKey = key;
-        if (isPhone()) {
+        // Measurement only: leave the phone hosts empty, so lyric text is never
+        // committed. Those commits were the floor that kept climbing after the
+        // sky, the placement and the chrome had been stopped (T27).
+        if (bisect('slots')) {
+          /* no lyric hosts */
+        } else if (isPhone()) {
           const lineWant: number[] = [];
           const instWant: number[] = [];
           for (const k of list) {
@@ -145,6 +150,8 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
           if (linesChanged || instChanged) {
             // Drop the line layer before React writes the new lyric. A text
             // change inside a transformed line kept a WebKit backing store.
+            // Taking the host out of the document and writing there did not
+            // lower the slope (still about 5 MB/min, T27).
             const stageEl = stageRef.current;
             if (linesChanged && stageEl) {
               for (const el of stageEl.querySelectorAll<HTMLElement>('.fb--line')) {
