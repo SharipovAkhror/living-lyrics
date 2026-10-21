@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Timeline } from '@/data/timeline';
 import { formatTime } from '@/data/library';
+import { bisect } from '@/app/bisect';
 import { stageCovered, watchCover } from '@/scene/cover';
 
 export function Scrubber({
@@ -29,6 +30,7 @@ export function Scrubber({
   const dragT = useRef<number | null>(null);
 
   useEffect(() => {
+    if (bisect('scrubber')) return;
     let raf = 0;
     let lastText = '';
     let lastScale = '';

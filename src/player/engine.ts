@@ -6,6 +6,7 @@
  * The audio session is `playback` (see background.ts). Hiding the page does not pause.
  * Without any audio file the engine runs a silent clock, so the Scene can still be previewed.
  */
+import { bisect } from '@/app/bisect';
 import { coverMime, coverUrl, type CoverExt } from '@/data/covers';
 import type { Peaks } from '@/data/schema';
 import {
@@ -747,6 +748,7 @@ export class AudioEngine {
   }
 
   private syncPlaybackState() {
+    if (bisect('mediasession')) return;
     if (!('mediaSession' in navigator)) return;
     try {
       navigator.mediaSession.playbackState = this.state.playing ? 'playing' : 'paused';
@@ -756,6 +758,7 @@ export class AudioEngine {
   }
 
   private updatePositionState() {
+    if (bisect('mediasession')) return;
     if (!('mediaSession' in navigator) || !navigator.mediaSession.setPositionState) return;
     const d = this.state.duration;
     if (!Number.isFinite(d) || d <= 0) return;

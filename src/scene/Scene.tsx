@@ -8,6 +8,7 @@ import { showHarakatText } from '@/data/harakat';
 import { LineBlock, type BlockUpdater } from './LineBlock';
 import { InstBlock } from './InstBlock';
 import { stageCovered, watchCover } from './cover';
+import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
 import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, sameSlots, type PhoneSlot } from './slots';
 import { WAIT_ROOM, blockHeight, blockState, compressStack, flowPosition, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
@@ -99,10 +100,19 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let pool = '';
     let lastPlate = '';
     let lastT = Number.NaN;
+    let lastPaintMs = 0;
     const loop = () => {
       raf = 0;
       if (stageCovered()) return;
       raf = requestAnimationFrame(loop);
+      // Phone lyric layers restyled every frame grew the working set about 13 MB/min
+      // even with the sky and the word opacity stopped (T27). 8 Hz still seeks to the
+      // same frame: the paint is a function of the clock, not of how many frames ran.
+      if (isPhone()) {
+        const now = performance.now();
+        if (lastPaintMs !== 0 && now - lastPaintMs < 120) return;
+        lastPaintMs = now;
+      }
       const t = clock();
       // A paused clock used to restyle the stage anyway. WebKit kept that working set.
       if (t === lastT) return;
@@ -185,7 +195,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       // The material plate follows the current line (not the title card or an instrumental block,
       // which carry their own plates).
       const p = plate.current;
-      if (p) {
+      if (p && !bisect('placement')) {
         const box = (k: number) => {
           const b = blocks.current.get(k);
           const c = timeline.cues[k];
@@ -223,7 +233,9 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const owner = Math.max(-1, Math.min(timeline.cues.length - 1, Math.round(pos)));
       if (owner !== ownerRef.current) {
         ownerRef.current = owner;
-        if (isPhone()) {
+        if (bisect('react')) {
+          /* the header and the note stay on the first line */
+        } else if (isPhone()) {
           const comment = document.querySelector('.comment');
           if (comment instanceof HTMLElement) {
             comment.style.transform = 'none';

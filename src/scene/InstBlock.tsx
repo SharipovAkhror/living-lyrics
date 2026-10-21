@@ -9,6 +9,7 @@ import type { BlockUpdater } from './LineBlock';
 import { InstrumentStage, assignPerformers, type InstrumentStageHandle, type StagePose } from './InstrumentStage';
 import { castAt, castSignature, isVoicePassage, type CastMember } from './cast';
 import { stageDrive } from './stageDrive';
+import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
 
 interface Props {
@@ -135,7 +136,7 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   const call = useRef<BlockUpdater>((t, d, top, wait) => updater.current(t, d, top, wait)).current;
   updater.current = (t, d, top) => {
     const r = root.current;
-    if (!r) return;
+    if (!r || bisect('placement')) return;
     const s = blockState(d);
     const p = s.presence;
     const z = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
@@ -188,17 +189,19 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     const sig = castSignature(members);
     const frame = frameFor(members, features, t, motion);
     frameRef.current = frame;
-    if (sig !== castSig.current) {
-      castSig.current = sig;
-      setCast(members);
-    } else if (p > 0.02) {
-      stageRef.current?.pose(frame);
+    if (!bisect('instruments')) {
+      if (!bisect('react') && sig !== castSig.current) {
+        castSig.current = sig;
+        setCast(members);
+      } else if (p > 0.02) {
+        stageRef.current?.pose(frame);
+      }
     }
     const steps = 50;
     const q = (v: number) => Math.round(v * steps) / steps;
     const next = { progress: q(motion === 'off' ? 1 : clamp01((t - (cue.start - 0.3)) / 2.6)), presence: q(p) };
     const cur = animRef.current;
-    if (next.presence !== cur.presence || next.progress !== cur.progress) {
+    if (!bisect('react') && (next.presence !== cur.presence || next.progress !== cur.progress)) {
       animRef.current = next;
       setAnim(next);
     }
@@ -218,7 +221,7 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
         {title ? '' : ` ${names.join(' · ')}`}
       </div>
       <div ref={full} className="fb-inst-full" style={{ height: fullH }}>
-        {(heroes.length > 0 && (isPhone() || anim.presence > 0.02)) && (
+        {(heroes.length > 0 && !bisect('instruments') && (isPhone() || anim.presence > 0.02)) && (
           <InstrumentStage
             ref={stageRef}
             keys={heroes.map((m) => m.key)}

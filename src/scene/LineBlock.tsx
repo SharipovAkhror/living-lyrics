@@ -5,6 +5,7 @@ import { formatTime } from '@/data/library';
 import { blockState, clamp01, entranceOpacity, scriptShift, type Measure } from './flow';
 import { showHarakatText } from '@/data/harakat';
 import { fontClass } from './fonts';
+import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
 
 /**
@@ -169,26 +170,29 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
   const call = useRef<BlockUpdater>((t, d, top, wait) => updater.current(t, d, top, wait)).current;
   updater.current = (t, d, top, waitV) => {
     const r = root.current;
-    if (!r) return;
+    if (!r || bisect('placement')) return;
     const s = blockState(d);
     const still = motion === 'off';
+    const phone = isPhone();
     const x = entrance === 'script' ? scriptShift(d, cue.rtl, stage.w, still) : 0;
     const z = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
     if (painted.current.z !== z) {
       painted.current.z = z;
       r.style.zIndex = z;
     }
-    const transform = `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0) scale(${s.scale.toFixed(4)})`;
+    const transform = `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0) scale(${s.scale.toFixed(phone ? 3 : 4)})`;
     if (painted.current.transform !== transform) {
       painted.current.transform = transform;
       r.style.transform = transform;
     }
-    const opacity = entranceOpacity(d, entrance, s.opacity).toFixed(3);
+    const opacity = entranceOpacity(d, entrance, s.opacity).toFixed(phone ? 2 : 3);
     if (painted.current.opacity !== opacity) {
       painted.current.opacity = opacity;
       r.style.opacity = opacity;
     }
-    const blurOn = entrance === 'flow' && !still && motion === 'full' && s.blur > 0.05;
+    // A CSS blur on the line allocated a fresh filtered bitmap on this WebKit.
+    // The line already fades by opacity, which is what the phone keeps.
+    const blurOn = !phone && entrance === 'flow' && !still && motion === 'full' && s.blur > 0.05;
     const nextFilter = blurOn ? `blur(${s.blur.toFixed(2)}px)` : '';
     if (filterRef.current !== nextFilter) {
       filterRef.current = nextFilter;
@@ -217,15 +221,18 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
     // One text layer per word, coloured through background-clip:text — no overlay, so letters that
     // join (Arabic, Persian) are drawn once and never double at the joins.
     const o = orig.current;
-    if (o) {
+    if (o && !bisect('words')) {
       const lit = d <= 0 ? 1 : clamp01((0.5 - d) / 0.5);
       const rawLit = wordSync ? (d < 0 ? 1 : 0) : lit;
-      const litf = rawLit.toFixed(3);
+      // Three decimals changed the opacity of every word almost every frame and
+      // the working set climbed about 16 MB/min. Tenths still read as a fade.
+      const litf = rawLit.toFixed(phone ? 1 : 3);
       if (painted.current.lit !== litf) {
         painted.current.lit = litf;
         o.style.setProperty('--litf', litf);
       }
     }
+    if (bisect('words')) return;
     for (let i = 0; i < line.words.length; i++) {
       const el = words.current[i];
       if (!el) continue;

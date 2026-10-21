@@ -32,8 +32,13 @@ const sampleMs = Number(flag(args, '--sample-ms', '30000'));
 const songSeconds = Number(flag(args, '--song-seconds', '977'));
 const slug = flag(args, '--slug', 'karitas');
 const checkFlat = args.includes('--check-flat');
+const bisectName = flag(args, '--bisect', '');
+const noSheet = args.includes('--no-sheet');
+const label = flag(args, '--label', '');
 
-const SONG = `${url.replace(/\/$/, '')}/song/${slug}`;
+const songUrl = new URL(`${url.replace(/\/$/, '')}/song/${slug}`);
+if (bisectName) songUrl.searchParams.set('bisect', bisectName);
+const SONG = songUrl.toString();
 const audio = prepareAudio(songSeconds, outDir);
 
 mkdirSync(outDir, { recursive: true });
@@ -108,7 +113,7 @@ async function runOne(name) {
   const pid = process.pid;
   let cdp = null;
   const samples = [];
-  const file = `${outDir}/${name}-${stamp()}.jsonl`;
+  const file = `${outDir}/${label || name}-${stamp()}.jsonl`;
   try {
     await page.goto(SONG, { waitUntil: 'domcontentloaded', timeout: 45000 });
     await page.waitForSelector('.scrub-track', { timeout: 30000 });
@@ -132,7 +137,7 @@ async function runOne(name) {
         await seekFrac(page, frac).catch((err) => errors.push(`seek ${err.message}`));
         nextSeek = now + 35000;
       }
-      if (now >= nextSheet) {
+      if (!noSheet && now >= nextSheet) {
         await exerciseSettings(page).catch((err) => errors.push(`sheet ${err.message}`));
         nextSheet = now + 75000;
       }
@@ -158,6 +163,9 @@ async function runOne(name) {
   const warm = samples.filter((s) => s.tMin >= 1);
   const summary = {
     browser: name,
+    label: label || name,
+    bisect: bisectName || 'all',
+    noSheet,
     minutes,
     samples: samples.length,
     crashed,
@@ -182,7 +190,7 @@ async function runOne(name) {
 const names = browserName === 'both' ? ['webkit', 'chromium'] : [browserName];
 const summaries = [];
 for (const name of names) {
-  process.stdout.write(`\n--- ${name} ${minutes} min ---\n`);
+  process.stdout.write(`\n--- ${label || name} ${name} ${minutes} min bisect=${bisectName || 'all'} ---\n`);
   const summary = await runOne(name);
   summaries.push(summary);
   process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);

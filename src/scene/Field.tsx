@@ -4,6 +4,8 @@
  * Nothing here is a game engine. A hidden or off-screen field does not keep a timer.
  */
 import { memo, useEffect, useMemo, useRef } from 'react';
+import { bisect } from '@/app/bisect';
+import { isPhone } from '@/ui/phone';
 import { stageCovered, watchCover } from './cover';
 
 function skyAt(t: number) {
@@ -68,26 +70,37 @@ export const Field = memo(function Field({
     const nodes = starEls.current;
 
     const paint = (time: number) => {
-      const p = skyAt(time);
-      // Skip a rewrite of the same stop. A repeated custom-property write stuck in WebKit.
-      const vars: Array<[string, string]> = [
-        ['--x1', `${p.x1.toFixed(2)}%`],
-        ['--y1', `${p.y1.toFixed(2)}%`],
-        ['--x2', `${p.x2.toFixed(2)}%`],
-        ['--y2', `${p.y2.toFixed(2)}%`],
-        ['--x3', `${p.x3.toFixed(2)}%`],
-        ['--y3', `${p.y3.toFixed(2)}%`],
-      ];
-      for (const [key, value] of vars) {
-        if (wash.style.getPropertyValue(key) !== value) wash.style.setProperty(key, value);
+      const phone = isPhone();
+      // The wash is three viewport-sized gradients. Rebuilding them every 100 ms
+      // on a phone grew the WebKit working set by about 16 MB/min (T27). A 1.2 s
+      // bucket is still a function of playback time, so a seek paints the same sky.
+      const skyTime = phone ? Math.floor(time / 1.2) * 1.2 : time;
+      const p = skyAt(skyTime);
+      const digits = phone ? 0 : 2;
+      if (!bisect('wash')) {
+        const vars: Array<[string, string]> = [
+          ['--x1', `${p.x1.toFixed(digits)}%`],
+          ['--y1', `${p.y1.toFixed(digits)}%`],
+          ['--x2', `${p.x2.toFixed(digits)}%`],
+          ['--y2', `${p.y2.toFixed(digits)}%`],
+          ['--x3', `${p.x3.toFixed(digits)}%`],
+          ['--y3', `${p.y3.toFixed(digits)}%`],
+        ];
+        for (const [key, value] of vars) {
+          if (wash.style.getPropertyValue(key) !== value) wash.style.setProperty(key, value);
+        }
       }
-      for (let i = 0; i < stars.length; i++) {
-        const node = nodes[i];
-        if (!node) continue;
-        const tw = 0.5 + 0.5 * Math.sin(time * 0.22 + stars[i].p);
-        // Quiet enough that the glass panels stay the surface. Still a function of time.
-        const opacity = (dark ? 0.04 + tw * 0.06 : 0.02 + tw * 0.03).toFixed(3);
-        if (node.style.opacity !== opacity) node.style.opacity = opacity;
+      if (!bisect('stars')) {
+        for (let i = 0; i < stars.length; i++) {
+          const node = nodes[i];
+          if (!node) continue;
+          const tw = 0.5 + 0.5 * Math.sin(time * 0.22 + stars[i].p);
+          // Quiet enough that the glass panels stay the surface. Still a function of time.
+          // Phones use two decimals and a slower tick: forty-eight writes a frame were
+          // about 10 MB/min when nothing else was capped.
+          const opacity = (dark ? 0.04 + tw * 0.06 : 0.02 + tw * 0.03).toFixed(phone ? 2 : 3);
+          if (node.style.opacity !== opacity) node.style.opacity = opacity;
+        }
       }
     };
 
@@ -99,7 +112,7 @@ export const Field = memo(function Field({
         lastT = time;
         paint(time);
       }
-      if (!still && clock) timer = window.setTimeout(tick, 100);
+      if (!still && clock) timer = window.setTimeout(tick, isPhone() ? 400 : 100);
     };
 
     const start = () => {
@@ -133,6 +146,8 @@ export const Field = memo(function Field({
       document.removeEventListener('visibilitychange', onVis);
     };
   }, [clock, t, still, dark, stars]);
+
+  if (bisect('field')) return null;
 
   return (
     <div

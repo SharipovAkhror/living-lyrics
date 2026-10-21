@@ -5,10 +5,12 @@
  * While a song plays, the desktop stacks about four backdrop-filter layers
  * (top bar, player, comment, instrument plates). A full ban was not measured:
  * the working set still climbed with zero blur layers. Phones keep blur on the
- * top bar and the player (two layers) and drop it on the comment, the sheet
- * and the instrument plates. The sheet stays on the dense fill so it can open
- * and scroll on the CPU. The edge mask stays off: a steady vocal band grew
- * about 10 MB/min with the mask and held flat for three minutes without it.
+ * top bar and the player. Dropping the player blur as well left the slope at
+ * 10.7 MB/min against 11.6 with it on, so the player stays glass. The comment,
+ * the error banner, the sheet and the instrument plates use a dense fill. The
+ * sheet stays on that fill so it can open and scroll on the CPU. The edge mask
+ * stays off: a steady vocal band grew about 10 MB/min with the mask and held
+ * flat for three minutes without it.
  *
  * The two blocks are the same paint: the media query covers the first frame,
  * and html[data-phone] covers an iPhone user agent whose media features were
@@ -16,7 +18,8 @@
  */
 
 @media (hover: none) and (pointer: coarse) and (max-width: 1100px) {
-  .comment.glass {
+  .comment.glass,
+  .player-alert.glass {
     background: color-mix(in srgb, var(--glass-fallback) 92%, var(--song-field, var(--bg)));
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -76,7 +79,8 @@
   }
 }
 
-html[data-phone='1'] .comment.glass {
+html[data-phone='1'] .comment.glass,
+html[data-phone='1'] .player-alert.glass {
   background: color-mix(in srgb, var(--glass-fallback) 92%, var(--song-field, var(--bg)));
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
