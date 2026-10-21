@@ -398,6 +398,40 @@ async function publishLive($: EngineInterface, l: Live, heartbeat = false) {
 /** The orchestrator machine's chats and Actions runs; ops/agents/station_tick.py also pulls the main checkout. */
 let station: Pick<Live, 'chats' | 'pipeline' | 'hygiene'> = {}
 
+const WAIT_PUSH_MS = 2 * 60_000
+
+type WaitMark = { since: number; pushed: boolean }
+
+/**
+ * A chat waiting on the owner (a permission prompt or a question) for over two minutes gets one push
+ * per wait: which chat and what it waits on. `prev` is kept in $.store across reloads.
+ */
+export function waitPushes(prev: Record<string, WaitMark>, chats: ChatRow[], now: number) {
+  const next: Record<string, WaitMark> = {}
+  const push: string[] = []
+  for (const c of chats) {
+    if (c.state !== 'waiting') continue
+    const mark = prev[c.name] ?? { since: now, pushed: false }
+    if (!mark.pushed && now - mark.since >= WAIT_PUSH_MS) {
+      push.push(`${c.name.replace(/^LL · /, '')} ждёт вас${c.waiting_for ? `: ${c.waiting_for}` : ''}. Откройте чат.`)
+      next[c.name] = { ...mark, pushed: true }
+    } else next[c.name] = mark
+  }
+  return { next, push }
+}
+
+async function pushWaiting($: EngineInterface, chats: ChatRow[]) {
+  const { next, push } = waitPushes(((await $.store.get('chat-wait')) as Record<string, WaitMark> | undefined) ?? {}, chats, Date.now())
+  await $.store.set('chat-wait', next)
+  for (const text of push) {
+    try {
+      await $.tool.call({ tool: 'PushNotification', message: text, status: 'proactive' })
+    } catch {
+      await $.ui.notify(text, { title: 'Living Lyrics' }).catch(() => undefined)
+    }
+  }
+}
+
 async function stationTick($: EngineInterface) {
   if (!place.orchestrator || !place.repo) return
   try {
@@ -405,6 +439,7 @@ async function stationTick($: EngineInterface) {
     if (res.exitCode !== 0) return
     const tick = JSON.parse(res.stdout) as { chats: ChatRow[]; pipeline: PipelineRun[]; hygiene?: Hygiene | null }
     station = { chats: tick.chats, pipeline: tick.pipeline, hygiene: tick.hygiene ?? null }
+    await pushWaiting($, tick.chats)
   } catch {
     // A tool missing on PATH: the rest of the dashboard still draws.
   }
@@ -759,8 +794,11 @@ function versionIn(text: string) {
   return m ? Number(m[1] ?? m[2]) : 0
 }
 
+/** Off until the owner says yes to the mod writing its panel unattended (the tool.check hook below). */
+const PANEL_LIVE = false
+
 async function writePanel($: EngineInterface) {
-  if (!place.orchestrator) return
+  if (!PANEL_LIVE || !place.orchestrator) return
   const now = Date.now()
   const [b, l, lim, u] = [await read($, board), await read($, live), await read($, limits), await read($, usage)]
   const trend = trendNext(((await $.store.get('panel-trend')) as TrendPoint[] | undefined) ?? [], lim, u, now)
@@ -874,7 +912,7 @@ export const register: Register = on => {
   on('tool.check', { tool: 'ArtifactData' }, async ($, e, next) => {
     const input = e.input as { url?: string; collection?: string; doc_id?: string } | undefined
     const own = next.origin.plugin === 'll-dashboard' && input?.url === PANEL_URL && input.collection === 'dashboard' && input.doc_id === 'now'
-    return own ? { decision: 'allow' } : next(e)
+    return PANEL_LIVE && own ? { decision: 'allow' } : next(e)
   })
 
   on('command.run', { command: 'dashboard' }, async $ => {

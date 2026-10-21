@@ -1,6 +1,6 @@
 import { expect, mock, test } from 'claude-code/testing'
 
-import { agentRows, bandLine, cardContext, cardDoc, chatSince, codename, PANEL_URL, panelDoc, trendNext, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
+import { waitPushes, agentRows, bandLine, cardContext, cardDoc, chatSince, codename, PANEL_URL, panelDoc, trendNext, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -265,4 +265,16 @@ test('a panel write from anyone but the mod takes the usual permission path', as
   on('tool.check', () => ({ decision: 'ask' }) as never)
   const own = await $.tool.check({ tool: 'ArtifactData', input: { url: PANEL_URL, collection: 'dashboard', doc_id: 'now', action: 'set' } } as never)
   expect(own.decision).toBe('ask')
+})
+
+test('a chat waiting over two minutes pushes once per wait, naming what it waits on', async () => {
+  const chats = [{ name: 'LL · Tech', state: 'waiting', waiting_for: 'Artifact: publish' }, { name: 'LL · Site', state: 'working' }]
+  const a = waitPushes({}, chats, 0)
+  expect(a.push).toEqual([])
+  const b = waitPushes(a.next, chats, 2 * 60_000)
+  expect(b.push).toEqual(['Tech ждёт вас: Artifact: publish. Откройте чат.'])
+  expect(waitPushes(b.next, chats, 10 * 60_000).push).toEqual([])
+  const c = waitPushes(b.next, [{ name: 'LL · Tech', state: 'working' }], 11 * 60_000)
+  expect(c.next).toEqual({})
+  expect(waitPushes(waitPushes(c.next, chats, 12 * 60_000).next, chats, 15 * 60_000).push.length).toBe(1)
 })
