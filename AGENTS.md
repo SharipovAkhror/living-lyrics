@@ -73,4 +73,4 @@ npm run audio:encrypt -- <slug>     # зашифровать запись пер
 
 ## Стиль кода
 
-TypeScript strict, React 19 без сторонних UI-библиотек. Комментарии по-английски, тексты интерфейса и документация — по-русски, обычным регистром. Анимации сцены — функции времени (перемотка должна давать тот же кадр). Перед коммитом: `npm run validate && npm run typecheck`.
+TypeScript strict, React 19 без сторонних UI-библиотек. Комментарии по-английски, тексты интерфейса и документация — по-русски, обычным регистром. Анимации сцены — функции времени (перемотка должна давать тот же кадр). Перед коммитом: `npm run validate && npm run typecheck`. Приёмка — один список, его же держит `docs/tasks/README.md`. Команды, которые 2026-10-21 уже проходили на одной машине без `AUDIO_KEY` (замер `docs/research/repo-audit.md`, в CI не заводились): `npm run validate`, `npm run typecheck`, `npx vite build`, `npx tsx src/player/background.test.ts`, `npx tsx src/player/preload.test.ts`, `npx tsx src/app/marks.test.ts`, `npm run test:layout`, `python scripts/pipeline/test_sync.py`. Без `AUDIO_KEY` `npm run build` звук не проверяет: `scripts/tools/audio-crypt.mjs` предупреждает и выходит с кодом 0.
