@@ -28,12 +28,17 @@ from common import ROOT, load_audio, vocal_stem, work_dir
 MODELS = (
     {
         'lang': 'ar',
-        'id': 'elgeish/wav2vec2-large-xlsr-53-arabic',
+        'id': 'kmfoda/wav2vec2-large-xlsr-arabic',
         'fallback': None,
-        'name': 'xlsr-53-ar-elgeish',
+        'name': 'xlsr-53-ar-kmfoda',
         'license': 'Apache-2.0',
         'noncommercial': False,
-        'note': 'XLSR-53, Arabic Common Voice and the Arabic Speech Corpus. Not the WhisperX Arabic checkpoint.',
+        'note': (
+            'XLSR-53 on Arabic Common Voice, Arabic script. '
+            'Not the WhisperX Arabic checkpoint. '
+            'elgeish/wav2vec2-large-xlsr-53-arabic is Buckwalter and was not used: '
+            'Arabic letters did not encode, so every clock was empty.'
+        ),
     },
     {
         'lang': 'fa',
@@ -262,6 +267,11 @@ def _run_model(spec: dict, songs: list[dict], deadline: float) -> dict:
         del model, proc, torch
         gc.collect()
     elapsed = time.monotonic() - started
+    if complete and only_empty_clocks(buffered):
+        # A finished loop of empty clocks is not a measurement. Buckwalter
+        # vocab does this: the Arabic letters never enter the path.
+        complete = False
+        error = error or 'алфавит модели не покрыл слова'
     words_n = 0
     if complete:
         for word, start in buffered:
@@ -273,6 +283,16 @@ def _run_model(spec: dict, songs: list[dict], deadline: float) -> dict:
           f'{elapsed:.0f} с, карточка {loaded_id or spec["id"]}', flush=True)
     return _row(spec, loaded_id, elapsed, attempted if complete else 0, words_n,
                 error, error is None or complete or attempted > 0, complete)
+
+
+def only_empty_clocks(pairs: list[tuple[dict, float | None]]) -> bool:
+    """True when every lettered word was timed and every time is missing.
+
+    A Buckwalter vocabulary does this to Arabic script: the loop finishes,
+    and the path never contained a letter.
+    """
+    lettered = [start for word, start in pairs if word.get('roman')]
+    return bool(lettered) and all(start is None for start in lettered)
 
 
 def _row(spec: dict, loaded_id: str | None, elapsed: float, lines: int, words: int,

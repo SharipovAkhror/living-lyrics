@@ -324,7 +324,7 @@ stable-ts в том прогоне поставил начало у каждог
 
 | язык | короткое имя | карточка | чем не совпадает со вторым выравнивателем |
 |---|---|---|---|
-| ar | `xlsr-53-ar-elgeish` | `elgeish/wav2vec2-large-xlsr-53-arabic` | не `jonatasgrosman/wav2vec2-large-xlsr-53-arabic` |
+| ar | `xlsr-53-ar-kmfoda` | `kmfoda/wav2vec2-large-xlsr-arabic` | арабское письмо, не `jonatasgrosman/wav2vec2-large-xlsr-53-arabic`. Карточка `elgeish/wav2vec2-large-xlsr-53-arabic` пишет латиницей Букуолтера: арабские буквы в путь не входят, часы выходят пустыми, она не измерялась |
 | fa | `xlsr-53-fa-m3hrdadfi` | `m3hrdadfi/wav2vec2-large-xlsr-persian` | не `jonatasgrosman/wav2vec2-large-xlsr-53-persian` |
 | de | `xlsr-53-de-grosman` | `jonatasgrosman/wav2vec2-large-xlsr-53-german` | второй выравниватель немецкого — VoxPopuli base, не эта карточка |
 | tr | `xlsr-53-tr-cahya` | `cahya/wav2vec2-large-xlsr-turkish` | не `mpoyraz/wav2vec2-xls-r-300m-cv7-turkish`; если карточка переименована, грузится `cahya-wirawan/wav2vec2-large-xlsr-turkish` |

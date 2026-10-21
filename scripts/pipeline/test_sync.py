@@ -2257,6 +2257,13 @@ def test_lang_ctc() -> None:
           and {row['lang'] for row in lang_ctc.ABSENT} >= {'az', 'la'})
     check('the five language models are Apache-2.0 and commercial',
           all(spec['license'] == 'Apache-2.0' and not spec['noncommercial'] for spec in lang_ctc.MODELS))
+    arabic = next(spec for spec in lang_ctc.MODELS if spec['lang'] == 'ar')
+    check('arabic CTC reads Arabic script, not Buckwalter',
+          arabic['id'] == 'kmfoda/wav2vec2-large-xlsr-arabic' and 'elgeish' not in arabic['id'])
+    check('a finished loop of empty clocks is not a measurement',
+          lang_ctc.only_empty_clocks([({'roman': 'ا'}, None), ({'roman': 'ب'}, None)])
+          and not lang_ctc.only_empty_clocks([({'roman': 'ا'}, 1.0), ({'roman': 'ب'}, None)])
+          and not lang_ctc.only_empty_clocks([({'roman': ''}, None)]))
     check('a shifted hit rate of 1 is not admitted', not L.admits(1.0, 40))
     check('a short language is not given its own role', not L.admits(0.0, 10))
     check('a long language under 15 % is admitted', L.admits(0.14, 30))
