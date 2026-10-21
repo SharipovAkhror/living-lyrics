@@ -1,0 +1,627 @@
+{
+ "source": "Gemini 3.8 Flash (agy), by ear on the official video audio, captions excluded; 2026-10-20",
+ "clipOffsetApplied": true,
+ "segments": [
+  {
+   "confidence": "high",
+   "end_s": 45.4,
+   "heard": "öyle ser-mestem ki idrâk etmezem dünyâ nedir",
+   "line": "L1",
+   "start_s": 37.3,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 54.6,
+   "heard": "men kimem sâkî olan kimdir mey û sahbâ nedir",
+   "line": "L2",
+   "start_s": 46.8,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 64.2,
+   "heard": "gerçi cânândan dil-i şeydâ içün kâm isterem",
+   "line": "L3",
+   "start_s": 55.4,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 73.8,
+   "heard": "sorsa cânân bilmezem kâm-ı dil-i şeydâ nedir",
+   "line": "L4",
+   "start_s": 65.6,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 82.6,
+   "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+   "line": "L5",
+   "start_s": 76.4,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 89.9,
+   "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+   "line": "L6",
+   "start_s": 82.9,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 96.4,
+   "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+   "line": "L5",
+   "start_s": 90.1,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 103.8,
+   "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+   "line": "L6",
+   "start_s": 96.6,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 109.4,
+   "heard": "Karitas habundat in omnia",
+   "line": "L7",
+   "start_s": 104.5,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 112.4,
+   "heard": "in omnia",
+   "line": "L11",
+   "start_s": 109.5,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 116.8,
+   "heard": "de imis excellentissima",
+   "line": "L8",
+   "start_s": 112.6,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 120.6,
+   "heard": "super sidera",
+   "line": "L9",
+   "start_s": 117,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 124.8,
+   "heard": "atque amantissima",
+   "line": "L10",
+   "start_s": 120.8,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 128.5,
+   "heard": "in omnia",
+   "line": "L11",
+   "start_s": 125,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 136.8,
+   "heard": "quia summo regi osculum pacis dedit",
+   "line": "L12",
+   "start_s": 128.8,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 144.5,
+   "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+   "line": "L5",
+   "start_s": 138.5,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 151.5,
+   "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+   "line": "L6",
+   "start_s": 144.7,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 157.8,
+   "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+   "line": "L5",
+   "start_s": 151.7,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 164.8,
+   "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+   "line": "L6",
+   "start_s": 158,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 171.5,
+   "heard": "ah u feryâdın fuzûlî incidipdir âlemi",
+   "line": "L13",
+   "start_s": 165,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 178.5,
+   "heard": "ger belâ-yı aşk ile hoşnûd isen kavga nedir.",
+   "line": "L14",
+   "start_s": 171.6,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 200.5,
+   "heard": "Karitas habundat in omnia",
+   "line": "L7",
+   "start_s": 195.5,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 203.5,
+   "heard": "in omnia",
+   "line": "L11",
+   "start_s": 200.6,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 207.5,
+   "heard": "de imis excellentissima",
+   "line": "L8",
+   "start_s": 203.6,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 211,
+   "heard": "super sidera",
+   "line": "L9",
+   "start_s": 207.6,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 215.5,
+   "heard": "atque amantissima",
+   "line": "L10",
+   "start_s": 211.2,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 219,
+   "heard": "in omnia",
+   "line": "L11",
+   "start_s": 215.7,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 227.5,
+   "heard": "quia summo regi osculum pacis dedit",
+   "line": "L12",
+   "start_s": 219.2,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 235.2,
+   "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+   "line": "L5",
+   "start_s": 228.8,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 241.8,
+   "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+   "line": "L6",
+   "start_s": 235.4,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 248.5,
+   "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+   "line": "L5",
+   "start_s": 242.6,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 254.8,
+   "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+   "line": "L6",
+   "start_s": 248.7,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 267.6,
+   "heard": "ger belâ-yı aşk ile hoşnûd isen kavga nedir",
+   "line": "L14",
+   "start_s": 260.9,
+   "voice": "both",
+   "window": 250
+  },
+  {
+   "confidence": "high",
+   "end_s": 432.5,
+   "heard": "öyle ser-mestem ki idrâk etmezem",
+   "line": "L16",
+   "start_s": 427.8,
+   "voice": "solo",
+   "window": 250
+  },
+  {
+   "confidence": "high",
+   "end_s": 445,
+   "heard": "öyle ser-mestem ki idrâk etmezem dünyâ nedir",
+   "line": "L1",
+   "start_s": 437.2,
+   "voice": "solo",
+   "window": 250
+  },
+  {
+   "confidence": "high",
+   "end_s": 458,
+   "heard": "يَا مَوْلَانَا",
+   "line": "L17",
+   "start_s": 452.8,
+   "voice": "solo",
+   "window": 250
+  },
+  {
+   "confidence": "high",
+   "end_s": 466,
+   "heard": "يَا مَوْلَانَا",
+   "line": "L17",
+   "start_s": 459.2,
+   "voice": "solo",
+   "window": 250
+  },
+  {
+   "confidence": "high",
+   "end_s": 478.5,
+   "heard": "يَا سَاقِيَ الْقَوْمِ مِنْ شَذَاهُ",
+   "line": "L18",
+   "start_s": 467.5,
+   "voice": "solo",
+   "window": 250
+  },
+  {
+   "confidence": "high",
+   "end_s": 485.2,
+   "heard": "يَا سَاقِيَ الْقَوْمِ مِنْ شَذَاهُ",
+   "line": "L18",
+   "start_s": 480.2,
+   "voice": "solo",
+   "window": 250
+  },
+  {
+   "confidence": "high",
+   "end_s": 494,
+   "heard": "اَلْكُلُّ لَمَّا سَقَيْتَ تَاهُوا",
+   "line": "L19",
+   "start_s": 486.2,
+   "voice": "solo",
+   "window": 250
+  },
+  {
+   "confidence": "high",
+   "end_s": 501.8,
+   "heard": "اَلْكُلُّ لَمَّا سَقَيْتَ تَاهُوا",
+   "line": "L19",
+   "start_s": 495.2,
+   "voice": "solo",
+   "window": 250
+  },
+  {
+   "confidence": "high",
+   "end_s": 518.3,
+   "heard": "عَيْنِي لِغَيْرِ جَمَالِكُمْ لَا تَنْظُرُ",
+   "line": "L20",
+   "start_s": 509.5,
+   "voice": "solo",
+   "window": 500
+  },
+  {
+   "confidence": "high",
+   "end_s": 528.8,
+   "heard": "وَ سِوَاكُمْ فِي خَاطِرِي لَا يَخْطُرُ",
+   "line": "L21",
+   "start_s": 520.5,
+   "voice": "solo",
+   "window": 500
+  },
+  {
+   "confidence": "high",
+   "end_s": 532.8,
+   "heard": "صَبَّرْتُ قَلْبِي",
+   "line": "NONE",
+   "start_s": 530.2,
+   "voice": "solo",
+   "window": 500
+  },
+  {
+   "confidence": "high",
+   "end_s": 539,
+   "heard": "صَبَّرْتُ قَلْبِي عَلَيْكُمْ فَأَجَابَنِي",
+   "line": "L22",
+   "start_s": 533.8,
+   "voice": "solo",
+   "window": 500
+  },
+  {
+   "confidence": "high",
+   "end_s": 548,
+   "heard": "لَا صَبْرَ لِي، لَا صَبْرَ لِي، كَيْفَ أَصْبِرُ؟",
+   "line": "L23",
+   "start_s": 539.7,
+   "voice": "both",
+   "window": 500
+  },
+  {
+   "confidence": "high",
+   "end_s": 884,
+   "heard": "Karitas habundat in omnia",
+   "line": "L7",
+   "start_s": 878.8,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 887.3,
+   "heard": "de imis excellentissima",
+   "line": "L8",
+   "start_s": 884.3,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 890,
+   "heard": "super sidera",
+   "line": "L9",
+   "start_s": 887.5,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 892.4,
+   "heard": "atque amantissima",
+   "line": "L10",
+   "start_s": 890.2,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 895.1,
+   "heard": "in omnia",
+   "line": "L11",
+   "start_s": 892.6,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 900.3,
+   "heard": "quia summo regi osculum pacis dedit",
+   "line": "L12",
+   "start_s": 895.4,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 905.3,
+   "heard": "Karitas habundat in omnia",
+   "line": "L7",
+   "start_s": 900.6,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 908.2,
+   "heard": "de imis excellentissima",
+   "line": "L8",
+   "start_s": 905.5,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 910.8,
+   "heard": "super sidera",
+   "line": "L9",
+   "start_s": 908.4,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 913.2,
+   "heard": "atque amantissima",
+   "line": "L10",
+   "start_s": 911,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 915.9,
+   "heard": "in omnia",
+   "line": "L11",
+   "start_s": 913.4,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 921,
+   "heard": "quia summo regi osculum pacis dedit",
+   "line": "L12",
+   "start_s": 916.2,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 926.2,
+   "heard": "öyle ser-mestem ki idrâk etmezem dünyâ nedir",
+   "line": "L1",
+   "start_s": 921.2,
+   "voice": "solo",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 931.3,
+   "heard": "men kimem sâkî olan kimdir mey û sahbâ nedir",
+   "line": "L2",
+   "start_s": 926.4,
+   "voice": "solo",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 936.3,
+   "heard": "gerçi cânândan dil-i şeydâ içün kâm isterem",
+   "line": "L3",
+   "start_s": 931.4,
+   "voice": "solo",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 940,
+   "heard": "sorsa cânân bilmezem kâm-ı dil-i şeydâ nedir",
+   "line": "L4",
+   "start_s": 936.5,
+   "voice": "solo",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 942.3,
+   "heard": "öyle ser-mestem ki idrâk etmezem",
+   "line": "L16",
+   "start_s": 940.2,
+   "voice": "solo",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 965.3,
+   "heard": "Karitas habundat in omnia",
+   "line": "L7",
+   "start_s": 960.8,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 968.2,
+   "heard": "de imis excellentissima",
+   "line": "L8",
+   "start_s": 965.5,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 970.8,
+   "heard": "super sidera",
+   "line": "L9",
+   "start_s": 968.4,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 973.2,
+   "heard": "atque amantissima",
+   "line": "L10",
+   "start_s": 971,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 976,
+   "heard": "in omnia",
+   "line": "L11",
+   "start_s": 973.4,
+   "voice": "choir",
+   "window": 750
+  },
+  {
+   "confidence": "high",
+   "end_s": 978,
+   "heard": "quia summo regi",
+   "line": "NONE",
+   "start_s": 976.3,
+   "voice": "choir",
+   "window": 750
+  }
+ ]
+}

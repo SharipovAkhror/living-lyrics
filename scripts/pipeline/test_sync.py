@@ -113,7 +113,7 @@ def test_solo() -> None:
     n_solo = sum(T.is_solo(sec, line) for sec, line in pairs)
     n_choir = sum(T.is_choir(sec, line) for sec, line in pairs)
     n = len(pairs)
-    check('IHCA solo count', n_solo == 120 and n_choir == 0 and n == 120, f'{n_solo} solo, {n_choir} choir of {n}')
+    check('IHCA solo count', n_solo == 122 and n_choir == 0 and n == 122, f'{n_solo} solo, {n_choir} choir of {n}')
 
 
 def _bursts() -> tuple[np.ndarray, Q.Signals]:
@@ -330,26 +330,32 @@ def test_anchor_fence() -> None:
 
 
 def test_song_status() -> None:
+    check('the publication bar is 0.90', Q.SONG_SHARE == 0.90, str(Q.SONG_SHARE))
     check('one of 38 solos is not a song', not Q.song_proven(1, 38))
-    check('30 of 38 is under 80%', not Q.song_proven(30, 38))
-    check('31 of 38 clears 80%', Q.song_proven(31, 38))
+    check('34 of 38 is under 90%', not Q.song_proven(34, 38))
+    check('35 of 38 clears 90%', Q.song_proven(35, 38))
+    check('108 of 120 meets 90%', Q.song_proven(108, 120))
+    check('107 of 120 is under 90%', not Q.song_proven(107, 120))
+    check('31 of 38 no longer clears the bar', not Q.song_proven(31, 38))
+    check('9 of 10 meets 90%', Q.song_proven(9, 10))
+    check('8 of 10 is under 90%', not Q.song_proven(8, 10))
     check('no solo lines is not a song', not Q.song_proven(0, 0))
-    check('a choir under 80% blocks the song', not Q.song_ready([(31, 38), (1, 10)]))
-    check('an empty choir does not block', Q.song_ready([(31, 38), (0, 0)]))
-    check('both groups clear 80%', Q.song_ready([(31, 38), (8, 10)]))
+    check('a choir under 90% blocks the song', not Q.song_ready([(35, 38), (8, 10)]))
+    check('an empty choir does not block', Q.song_ready([(35, 38), (0, 0)]))
+    check('both groups clear 90%', Q.song_ready([(35, 38), (9, 10)]))
     check('no groups is not a song', not Q.song_ready([]))
     # timing_payload follows the flag build_proof already computed.
     proof = {
-        'aligned': True, 'solo': 38, 'passed': 31, 'failed_solo': 7, 'lines': [],
-        'reasons': {'onset': 7},
+        'aligned': True, 'solo': 38, 'passed': 35, 'failed_solo': 3, 'lines': [],
+        'reasons': {'onset': 3},
         'onset_median': 0.04, 'onset_p90': 0.08,
     }
     payload = Q.timing_payload('i-have-come-alive', proof, {'lines': []})
-    check('proved song is aligned', payload['status'] == 'aligned' and '80' in payload['notes'], payload['notes'][:120])
+    check('proved song is aligned', payload['status'] == 'aligned' and '90' in payload['notes'], payload['notes'][:120])
     proof['aligned'] = False
     proof['passed'] = 1
     payload = Q.timing_payload('i-have-come-alive', proof, {'lines': []})
-    check('unproved song stays draft', payload['status'] == 'draft' and '80' in payload['notes'], payload['notes'][:160])
+    check('unproved song stays draft', payload['status'] == 'draft' and '90' in payload['notes'], payload['notes'][:160])
 
 
 def test_build_proof_independent() -> None:
@@ -376,7 +382,7 @@ def test_build_proof_independent() -> None:
         rec('snapped', 'good', [0.70, 1.70, 2.70], [0.72, 1.72, 2.72], roman='b'),
     ]}, {'snapped': {'line': 'snapped', 'start': 0.70, 'end': 3.2}})
     check('snapped line does not prove itself', (not snap['lines'][0]['pass']) and snap['lines'][0]['reason'] == 'onset', str(snap['lines'][0]))
-    # A fair line and a text-not-found line. One proven solo of two is under 80 %.
+    # A fair line and a text-not-found line. One proven solo of two is under 90 %.
     proof = Q.build_proof(sig, [(sec, line('fair')), (sec, line('missing'))], qa * 2, {'lines': [
         rec('fair', 'good', [1.02, 2.02, 3.02], [1.04, 2.03, 3.05]),
         rec('missing', 'draft', [1.02, 2.02, 3.02], [1.04, 2.03, 3.05]),
@@ -1400,6 +1406,38 @@ def test_phoneme() -> None:
     rise = np.array([0.0, 0.0, 1.0, 0.0, 0.0])
     peaks = Q.onset_peak_times(None, min_height=0.7, curve=rise)
     check('an envelope curve peaks on its own', len(peaks) == 1 and abs(float(peaks[0]) - 0.02) < 1e-9, str(peaks))
+
+    spectral = np.array([1.50])
+    envelope = np.array([1.05])
+    check('a spectral gap of 0.40 s stays without the fill',
+          abs(Q.nearest_attack(1.10, spectral, None) - 0.40) < 1e-9)
+    filled = Q.fill_attack(1.10, spectral, envelope, None, 0.10)
+    check('the envelope fills a spectral gap outside 0.10 s', filled is not None and abs(filled - (1.05 - 1.10)) < 1e-9, str(filled))
+    kept_dt = Q.fill_attack(1.46, spectral, envelope, None, 0.10)
+    check('a spectral peak inside 0.10 s is kept', kept_dt is not None and abs(kept_dt - (1.50 - 1.46)) < 1e-9, str(kept_dt))
+    far = Q.fill_attack(1.10, spectral, np.array([2.00]), None, 0.10)
+    check('a far envelope leaves the spectral gap', far is not None and abs(far - 0.40) < 1e-9, str(far))
+    alone = Q.fill_attack(1.10, spectral, None, None, 0.10)
+    check('no envelope leaves the spectral gap', alone is not None and abs(alone - 0.40) < 1e-9, str(alone))
+    empty_fill = Q.fill_attack(1.10, np.zeros(0), envelope, None, 0.10)
+    check('an empty spectral list can use the envelope',
+          empty_fill is not None and abs(empty_fill - (1.05 - 1.10)) < 1e-9, str(empty_fill))
+    probe_word = {
+        't': 1.10, 'roman': 'am', 'ctc_e': 1.40,
+        'second': 1.10, 'third': 1.12, 'group': 'solo',
+    }
+    probe_refute = {'both_agree': 0.10, 'both_far': 0.20, 'only_far': 0.30, 'attack_tol': 0.10}
+    bare, bare_flags = A._probe_parts([probe_word], spectral, 'solo', 'one', probe_refute, None)
+    check('without the fill the word is not proved', bare[0]['path'] == 'fail' and not bare_flags[0], str(bare[0]))
+    filled_words, filled_flags = A._probe_parts(
+        [probe_word], spectral, 'solo', 'one', probe_refute, None, fill_peaks=envelope)
+    check('the fill proves the word and does not refute it',
+          filled_words[0]['path'] != 'fail' and not filled_flags[0], str(filled_words[0]['path']))
+    check('a word chance over 15 % refuses the fill', not A.fill_ok(40, 0.16, True, 5, 1))
+    check('a line chance over 5 % refuses the fill', not A.fill_ok(40, 0.01, False, 5, 1))
+    check('a fill that does not prove more lines is refused', not A.fill_ok(40, 0.01, True, 4, 4))
+    check('a fill inside both caps can be kept', A.fill_ok(40, 0.01, True, 5, 4))
+    check('fewer than 30 words cannot adopt the fill', not A.fill_ok(29, 0.01, True, 5, 1))
 
     def scan_attack(t, peak_times, owned):
         usable = peak_times

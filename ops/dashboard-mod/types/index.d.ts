@@ -39,6 +39,8 @@ export type Board = {
   songs: Song[]
   feed?: FeedItem[]
   roadmap?: Roadmap
+  /** Word-sync goal per group, in % of lines proven (the mark on each bar). */
+  syncGoal?: number
 }
 
 export type GrokRun = {
@@ -53,7 +55,16 @@ export type GrokRun = {
 export type GeminiRun = { slug: string; minutes: number }
 
 /** `at` is set on a published state (ops/live.json on the `live` branch): when it was produced. */
-export type Live = { grok: GrokRun[]; gemini: GeminiRun[]; at?: string }
+/** A chat of the registry (.claude/agents/ll-*.md) and its state on the orchestrator machine. */
+export type ChatRow = { name: string; role?: string; reports_to?: string; state: string }
+
+/** A GitHub Actions run in progress. */
+export type PipelineRun = { name: string; title: string; minutes: number }
+
+/** The last hygiene run on the Station (ops/agents/hygiene.py): what it deleted, what needs someone. */
+export type Hygiene = { at: string; fixed: string[]; issues: string[] }
+
+export type Live = { grok: GrokRun[]; gemini: GeminiRun[]; chats?: ChatRow[]; pipeline?: PipelineRun[]; hygiene?: Hygiene | null; at?: string }
 
 /** Claude plan windows as the status line has them. */
 export type Limit = { kind: string; percentUsed: number; resetsAt?: string }

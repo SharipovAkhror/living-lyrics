@@ -1,0 +1,3498 @@
+{
+  "slug": "i-have-come-alive",
+  "checked": "2026-10-20",
+  "gemini": "filled",
+  "frames": "Кадры официального видео без вшитого текста: lyric_frames не даёт букв.",
+  "lines": [
+    {
+      "id": "english-1",
+      "lang": "en",
+      "start": 100.92,
+      "end": 102.52,
+      "text": "I was dead",
+      "cue": {
+        "n": 1,
+        "track": "en-GB",
+        "role": "original",
+        "text": "I was dead"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L1",
+          "heard": "I was dead",
+          "start": 100.8,
+          "end": 102.3,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-2",
+      "lang": "en",
+      "start": 102.53,
+      "end": 104.42,
+      "text": "I came alive",
+      "cue": {
+        "n": 2,
+        "track": "en-GB",
+        "role": "original",
+        "text": "I came alive"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L2",
+          "heard": "I came alive",
+          "start": 102.5,
+          "end": 104.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-3",
+      "lang": "en",
+      "start": 104.42,
+      "end": 106.03,
+      "text": "I once wept",
+      "cue": {
+        "n": 3,
+        "track": "en-GB",
+        "role": "original",
+        "text": "I once wept"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L2",
+          "heard": "I came alive",
+          "start": 102.5,
+          "end": 104.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L3",
+          "heard": "I once wept",
+          "start": 105,
+          "end": 106.9,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-4",
+      "lang": "en",
+      "start": 106.38,
+      "end": 108.66,
+      "text": "Now I smile",
+      "cue": {
+        "n": 4,
+        "track": "en-GB",
+        "role": "original",
+        "text": "Now I smile"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L3",
+          "heard": "I once wept",
+          "start": 105,
+          "end": 106.9,
+          "confidence": "high"
+        },
+        {
+          "line": "L4",
+          "heard": "Now I smile",
+          "start": 107.1,
+          "end": 109.1,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-5",
+      "lang": "en",
+      "start": 108.87,
+      "end": 110.86,
+      "text": "You have lit the fire",
+      "cue": {
+        "n": 5,
+        "track": "en-GB",
+        "role": "original",
+        "text": "You have lit the fire"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "You have lit the fire",
+          "start": 109.3,
+          "end": 111.6,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-6",
+      "lang": "en",
+      "start": 110.87,
+      "end": 112.78,
+      "text": "I have come alive",
+      "cue": {
+        "n": 6,
+        "track": "en-GB",
+        "role": "original",
+        "text": "I have come alive"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "You have lit the fire",
+          "start": 109.3,
+          "end": 111.6,
+          "confidence": "high"
+        },
+        {
+          "line": "L6",
+          "heard": "I have come alive",
+          "start": 111.8,
+          "end": 113.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-7",
+      "lang": "en",
+      "start": 112.79,
+      "end": 114.47,
+      "text": "Lift me ever higher",
+      "cue": {
+        "n": 7,
+        "track": "en-GB",
+        "role": "original",
+        "text": "Lift me ever higher"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "I have come alive",
+          "start": 111.8,
+          "end": 113.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L7",
+          "heard": "Lift me ever higher",
+          "start": 114,
+          "end": 116,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-8",
+      "lang": "en",
+      "start": 114.48,
+      "end": 116.35,
+      "text": "I have come alive",
+      "cue": {
+        "n": 8,
+        "track": "en-GB",
+        "role": "original",
+        "text": "I have come alive"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L7",
+          "heard": "Lift me ever higher",
+          "start": 114,
+          "end": 116,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-9",
+      "lang": "en",
+      "start": 116.63,
+      "end": 118.23,
+      "text": "I was sane",
+      "cue": {
+        "n": 9,
+        "track": "en-GB",
+        "role": "original",
+        "text": "I was sane"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "I have come alive",
+          "start": 116.1,
+          "end": 117.7,
+          "confidence": "high"
+        },
+        {
+          "line": "L8",
+          "heard": "I was sane",
+          "start": 117.8,
+          "end": 119.6,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-10",
+      "lang": "en",
+      "start": 118.24,
+      "end": 120.47,
+      "text": "You drove me mad",
+      "cue": {
+        "n": 10,
+        "track": "en-GB",
+        "role": "original",
+        "text": "You drove me mad"
+      },
+      "whisper": "To be continued...",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L8",
+          "heard": "I was sane",
+          "start": 117.8,
+          "end": 119.6,
+          "confidence": "high"
+        },
+        {
+          "line": "L9",
+          "heard": "You drove me mad",
+          "start": 119.8,
+          "end": 121.7,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-11",
+      "lang": "en",
+      "start": 120.48,
+      "end": 122.22,
+      "text": "You put chains",
+      "cue": {
+        "n": 11,
+        "track": "en-GB",
+        "role": "original",
+        "text": "You put chains"
+      },
+      "whisper": "To be continued...",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L9",
+          "heard": "You drove me mad",
+          "start": 119.8,
+          "end": 121.7,
+          "confidence": "high"
+        },
+        {
+          "line": "L10",
+          "heard": "You put chains",
+          "start": 121.8,
+          "end": 123.6,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-11b",
+      "lang": "en",
+      "start": 122.23,
+      "end": 124.27,
+      "text": "On my hands",
+      "cue": {
+        "n": 12,
+        "track": "en-GB",
+        "role": "original",
+        "text": "On my hands"
+      },
+      "whisper": "My hands, you have lit the fire, I have come alive. Lift me ever higher, I have come alive.",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "You put chains",
+          "start": 121.8,
+          "end": 123.6,
+          "confidence": "high"
+        },
+        {
+          "line": "L11",
+          "heard": "On my hands",
+          "start": 123.7,
+          "end": 125.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-12",
+      "lang": "en",
+      "start": 124.5,
+      "end": 126.53,
+      "text": "You have lit the fire",
+      "cue": {
+        "n": 13,
+        "track": "en-GB",
+        "role": "original",
+        "text": "You have lit the fire"
+      },
+      "whisper": "My hands, you have lit the fire, I have come alive. Lift me ever higher, I have come alive.",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L11",
+          "heard": "On my hands",
+          "start": 123.7,
+          "end": 125.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L5",
+          "heard": "You have lit the fire",
+          "start": 125.6,
+          "end": 127.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-13",
+      "lang": "en",
+      "start": 126.54,
+      "end": 128.37,
+      "text": "I have come alive",
+      "cue": {
+        "n": 14,
+        "track": "en-GB",
+        "role": "original",
+        "text": "I have come alive"
+      },
+      "whisper": "My hands, you have lit the fire, I have come alive. Lift me ever higher, I have come alive.",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "You have lit the fire",
+          "start": 125.6,
+          "end": 127.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L6",
+          "heard": "I have come alive",
+          "start": 127.9,
+          "end": 129.9,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-14",
+      "lang": "en",
+      "start": 128.47,
+      "end": 130.57,
+      "text": "Lift me ever higher",
+      "cue": {
+        "n": 15,
+        "track": "en-GB",
+        "role": "original",
+        "text": "Lift me ever higher"
+      },
+      "whisper": "My hands, you have lit the fire, I have come alive. Lift me ever higher, I have come alive.",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "I have come alive",
+          "start": 127.9,
+          "end": 129.9,
+          "confidence": "high"
+        },
+        {
+          "line": "L7",
+          "heard": "Lift me ever higher",
+          "start": 130,
+          "end": 132,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "english-15",
+      "lang": "en",
+      "start": 130.57,
+      "end": 132.59,
+      "text": "I have come alive",
+      "cue": {
+        "n": 16,
+        "track": "en-GB",
+        "role": "original",
+        "text": "I have come alive"
+      },
+      "whisper": "My hands, you have lit the fire, I have come alive. Lift me ever higher, I have come alive.",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L7",
+          "heard": "Lift me ever higher",
+          "start": 130,
+          "end": 132,
+          "confidence": "high"
+        },
+        {
+          "line": "L6",
+          "heard": "I have come alive",
+          "start": 132.1,
+          "end": 134.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-1-1a",
+      "lang": "fa",
+      "start": 132.7,
+      "end": 136.66,
+      "text": "مُرْدِه بُدَمْ زِنْدِه شُدَمْ",
+      "cue": {
+        "n": 17,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I was dead, I came alive"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "I have come alive",
+          "start": 132.1,
+          "end": 134.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L12",
+          "heard": "مُرْدِه بُدَمْ زِنْدِه شُدَمْ",
+          "start": 134.6,
+          "end": 137.9,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-1-2a",
+      "lang": "fa",
+      "start": 136.66,
+      "end": 140.56,
+      "text": "گِرْیِه بُدَمْ خَنْدِه شُدَمْ",
+      "cue": {
+        "n": 18,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I once wept, now I smile"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L12",
+          "heard": "مُرْدِه بُدَمْ زِنْدِه شُدَمْ",
+          "start": 134.6,
+          "end": 137.9,
+          "confidence": "high"
+        },
+        {
+          "line": "L13",
+          "heard": "گِرْیِه بُدَمْ خَنْدِه شُدَمْ",
+          "start": 138,
+          "end": 141.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-1-3a",
+      "lang": "fa",
+      "start": 140.56,
+      "end": 144.54,
+      "text": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+      "cue": {
+        "n": 19,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "The power of love came to me"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L13",
+          "heard": "گِرْیِه بُدَمْ خَنْدِه شُدَمْ",
+          "start": 138,
+          "end": 141.2,
+          "confidence": "high"
+        },
+        {
+          "line": "L14",
+          "heard": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+          "start": 141.3,
+          "end": 145.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-1-4a",
+      "lang": "fa",
+      "start": 144.54,
+      "end": 148.47,
+      "text": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+      "cue": {
+        "n": 20,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I became that infinite power"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L14",
+          "heard": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+          "start": 141.3,
+          "end": 145.2,
+          "confidence": "high"
+        },
+        {
+          "line": "L15",
+          "heard": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+          "start": 145.3,
+          "end": 149.3,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-1-1b",
+      "lang": "fa",
+      "start": 148.47,
+      "end": 152.4,
+      "text": "مُرْدِه بُدَمْ زِنْدِه شُدَمْ",
+      "cue": {
+        "n": 21,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I was dead, I came alive"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L15",
+          "heard": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+          "start": 145.3,
+          "end": 149.3,
+          "confidence": "high"
+        },
+        {
+          "line": "L12",
+          "heard": "مُرْدِه بُدَمْ زِنْدِه شُدَمْ",
+          "start": 149.4,
+          "end": 152.7,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-1-2b",
+      "lang": "fa",
+      "start": 152.4,
+      "end": 156.3,
+      "text": "گِرْیِه بُدَمْ خَنْدِه شُدَمْ",
+      "cue": {
+        "n": 22,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I once wept, now I smile"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L13",
+          "heard": "گِرْیِه بُدَمْ خَنْدِه شُدَمْ",
+          "start": 152.8,
+          "end": 156,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-1-3b",
+      "lang": "fa",
+      "start": 156.3,
+      "end": 160.28,
+      "text": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+      "cue": {
+        "n": 23,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "The power of love came to me"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L14",
+          "heard": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+          "start": 156.1,
+          "end": 160,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-1-4b",
+      "lang": "fa",
+      "start": 160.28,
+      "end": 163.95,
+      "text": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+      "cue": {
+        "n": 24,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I became that infinite power"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L15",
+          "heard": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+          "start": 160.1,
+          "end": 165.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-1",
+      "lang": "tr",
+      "start": 183.44,
+      "end": 187.32,
+      "text": "Gözüm toktur benim",
+      "cue": {
+        "n": 25,
+        "track": "tr",
+        "role": "original",
+        "text": "Gözüm toktur benim,"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L16",
+          "heard": "Gözüm toktur benim",
+          "start": 183.5,
+          "end": 188,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-2",
+      "lang": "tr",
+      "start": 187.32,
+      "end": 191.31,
+      "text": "Canım pektir benim",
+      "cue": {
+        "n": 26,
+        "track": "tr",
+        "role": "original",
+        "text": "canım pektir benim"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L16",
+          "heard": "Gözüm toktur benim",
+          "start": 183.5,
+          "end": 188,
+          "confidence": "high"
+        },
+        {
+          "line": "L17",
+          "heard": "Canım pektir benim",
+          "start": 188.1,
+          "end": 192.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-3",
+      "lang": "tr",
+      "start": 191.31,
+      "end": 195.27,
+      "text": "Aslan gibi ödüm var",
+      "cue": {
+        "n": 27,
+        "track": "tr",
+        "role": "original",
+        "text": "Aslan gibi ödüm var,"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L17",
+          "heard": "Canım pektir benim",
+          "start": 188.1,
+          "end": 192.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L18",
+          "heard": "Aslan gibi ödüm var",
+          "start": 192.6,
+          "end": 196.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-4",
+      "lang": "tr",
+      "start": 195.27,
+      "end": 199.15,
+      "text": "Parlayan Zühre'yim",
+      "cue": {
+        "n": 28,
+        "track": "tr",
+        "role": "original",
+        "text": "parlayan Zühre’yim"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L18",
+          "heard": "Aslan gibi ödüm var",
+          "start": 192.6,
+          "end": 196.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L19",
+          "heard": "Parlayan Zühre'yim",
+          "start": 196.6,
+          "end": 200.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-5",
+      "lang": "tr",
+      "start": 199.15,
+      "end": 203.09,
+      "text": "Dedi değilsin sen divane",
+      "cue": {
+        "n": 29,
+        "track": "tr",
+        "role": "original",
+        "text": "Dedi değilsin sen divane,"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L19",
+          "heard": "Parlayan Zühre'yim",
+          "start": 196.6,
+          "end": 200.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L20",
+          "heard": "Dedi değilsin sen divane",
+          "start": 200.6,
+          "end": 204,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-6",
+      "lang": "tr",
+      "start": 203.09,
+      "end": 207.02,
+      "text": "Lâyık değilsin bu eve",
+      "cue": {
+        "n": 30,
+        "track": "tr",
+        "role": "original",
+        "text": "lâyık değilsin bu eve"
+      },
+      "whisper": "İzlediğiniz için teşekkür ederim. / Bu eve gittim divane oldum",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L20",
+          "heard": "Dedi değilsin sen divane",
+          "start": 200.6,
+          "end": 204,
+          "confidence": "high"
+        },
+        {
+          "line": "L21",
+          "heard": "Lâyık değilsin bu eve",
+          "start": 204.1,
+          "end": 207.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-7",
+      "lang": "tr",
+      "start": 207.02,
+      "end": 210.67,
+      "text": "Gittim divane oldum",
+      "cue": {
+        "n": 31,
+        "track": "tr",
+        "role": "original",
+        "text": "Gittim divane oldum,"
+      },
+      "whisper": "Bu eve gittim divane oldum",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L21",
+          "heard": "Lâyık değilsin bu eve",
+          "start": 204.1,
+          "end": 207.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L22",
+          "heard": "Gittim divane oldum",
+          "start": 207.6,
+          "end": 211.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-8",
+      "lang": "tr",
+      "start": 210.97,
+      "end": 215.35,
+      "text": "bağlandım zincirlere",
+      "cue": {
+        "n": 32,
+        "track": "tr",
+        "role": "original",
+        "text": "bağlandım zincirlere"
+      },
+      "whisper": "Bağlandım zincirlere / Dir uyudum canlı buldum",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L22",
+          "heard": "Gittim divane oldum",
+          "start": 207.6,
+          "end": 211.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L23",
+          "heard": "bağlandım zincirlere",
+          "start": 211.6,
+          "end": 215.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-9",
+      "lang": "tr",
+      "start": 215.35,
+      "end": 219.26,
+      "text": "Bir ölüydüm canla doldum",
+      "cue": {
+        "n": 33,
+        "track": "tr",
+        "role": "original",
+        "text": "Bir ölüydüm canla doldum;"
+      },
+      "whisper": "Dir uyudum canlı buldum",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L24",
+          "heard": "Bir ölüydüm canla doldum",
+          "start": 215.6,
+          "end": 219,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-10",
+      "lang": "tr",
+      "start": 219.26,
+      "end": 223.28,
+      "text": "ağlar idim gülüş oldum",
+      "cue": {
+        "n": 34,
+        "track": "tr",
+        "role": "original",
+        "text": "ağlar idim gülüş oldum"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L25",
+          "heard": "ağlar idim gülüş oldum",
+          "start": 219.1,
+          "end": 223,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-11",
+      "lang": "tr",
+      "start": 223.28,
+      "end": 227.22,
+      "text": "Aşk devleti gelince ben",
+      "cue": {
+        "n": 35,
+        "track": "tr",
+        "role": "original",
+        "text": "Aşk devleti gelince ben,"
+      },
+      "whisper": "Devleti geyce ben sonsuzluk devleti buldum",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L26",
+          "heard": "Aşk devleti gelince ben",
+          "start": 223.1,
+          "end": 227,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-12",
+      "lang": "tr",
+      "start": 227.22,
+      "end": 230.83,
+      "text": "sonsuzluk devleti buldum",
+      "cue": {
+        "n": 36,
+        "track": "tr",
+        "role": "original",
+        "text": "sonsuzluk devleti buldum"
+      },
+      "whisper": "Devleti geyce ben sonsuzluk devleti buldum",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L27",
+          "heard": "sonsuzluk devleti buldum",
+          "start": 227.1,
+          "end": 232,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-13",
+      "lang": "tr",
+      "start": 231.11,
+      "end": 234.99,
+      "text": "Bir ölüydüm canla doldum",
+      "cue": {
+        "n": 37,
+        "track": "tr",
+        "role": "original",
+        "text": "Bir ölüydüm canla doldum;"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L27",
+          "heard": "sonsuzluk devleti buldum",
+          "start": 227.1,
+          "end": 232,
+          "confidence": "high"
+        },
+        {
+          "line": "L24",
+          "heard": "Bir ölüydüm canla doldum",
+          "start": 232.1,
+          "end": 235.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-14",
+      "lang": "tr",
+      "start": 234.99,
+      "end": 239,
+      "text": "ağlar idim gülüş oldum",
+      "cue": {
+        "n": 38,
+        "track": "tr",
+        "role": "original",
+        "text": "ağlar idim gülüş oldum"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L24",
+          "heard": "Bir ölüydüm canla doldum",
+          "start": 232.1,
+          "end": 235.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L25",
+          "heard": "ağlar idim gülüş oldum",
+          "start": 235.9,
+          "end": 239.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-15",
+      "lang": "tr",
+      "start": 239,
+      "end": 242.88,
+      "text": "Aşk devleti gelince ben",
+      "cue": {
+        "n": 39,
+        "track": "tr",
+        "role": "original",
+        "text": "Aşk devleti gelince ben,"
+      },
+      "whisper": "Devleti geyce ben sonsuzluk devleti buldum",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L25",
+          "heard": "ağlar idim gülüş oldum",
+          "start": 235.9,
+          "end": 239.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L26",
+          "heard": "Aşk devleti gelince ben",
+          "start": 239.6,
+          "end": 243.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "turkish-16",
+      "lang": "tr",
+      "start": 242.88,
+      "end": 246.7,
+      "text": "sonsuzluk devleti buldum",
+      "cue": {
+        "n": 40,
+        "track": "tr",
+        "role": "original",
+        "text": "sonsuzluk devleti buldum"
+      },
+      "whisper": "Devleti geyce ben sonsuzluk devleti buldum",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L26",
+          "heard": "Aşk devleti gelince ben",
+          "start": 239.6,
+          "end": 243.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L27",
+          "heard": "sonsuzluk devleti buldum",
+          "start": 243.6,
+          "end": 248.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-1",
+      "lang": "ar",
+      "start": 286.45,
+      "end": 288.46,
+      "text": "عَيْنَايَ مَلْآنَةٌ",
+      "cue": {
+        "n": 41,
+        "track": "ar",
+        "role": "original",
+        "text": "عَينَايَ مَلْآنَةْ"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L28",
+          "heard": "عَيْنَايَ مَلْآنَةٌ",
+          "start": 286,
+          "end": 288,
+          "confidence": "high"
+        },
+        {
+          "line": "L29",
+          "heard": "أَكْرِمْ بِهَا نَظْرَةً",
+          "start": 288.1,
+          "end": 290,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-2",
+      "lang": "ar",
+      "start": 288.46,
+      "end": 290.5,
+      "text": "أَكْرِمْ بِهَا نَظْرَةً",
+      "cue": {
+        "n": 42,
+        "track": "ar",
+        "role": "original",
+        "text": "أكْرِمْ بِهَا نَظْرَة"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L29",
+          "heard": "أَكْرِمْ بِهَا نَظْرَةً",
+          "start": 288.1,
+          "end": 290,
+          "confidence": "high"
+        },
+        {
+          "line": "L30",
+          "heard": "ضَوْئِي لَهُ بُعْدٌ",
+          "start": 290.1,
+          "end": 292,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-3",
+      "lang": "ar",
+      "start": 290.5,
+      "end": 292.46,
+      "text": "ضَوْئِي لَهُ بُعْدٌ",
+      "cue": {
+        "n": 43,
+        "track": "ar",
+        "role": "original",
+        "text": "ضَوئِي لَهُ بُعْدٌ"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L30",
+          "heard": "ضَوْئِي لَهُ بُعْدٌ",
+          "start": 290.1,
+          "end": 292,
+          "confidence": "high"
+        },
+        {
+          "line": "L31",
+          "heard": "أُمَثِّلُ الزُّهَرَةَ",
+          "start": 292.1,
+          "end": 294.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-4",
+      "lang": "ar",
+      "start": 292.46,
+      "end": 294.2,
+      "text": "أُمَثِّلُ الزُّهَرَةَ",
+      "cue": {
+        "n": 44,
+        "track": "ar",
+        "role": "original",
+        "text": "أُمَثِّلُ الزُهْرَة"
+      },
+      "whisper": "وما أنا مجنون",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L31",
+          "heard": "أُمَثِّلُ الزُّهَرَةَ",
+          "start": 292.1,
+          "end": 294.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-5",
+      "lang": "ar",
+      "start": 294.26,
+      "end": 296.52,
+      "text": "وَمَا أَنَا مَجْنُونٌ",
+      "cue": {
+        "n": 45,
+        "track": "ar",
+        "role": "original",
+        "text": "وَماَ أَنا مَجْنُونْ"
+      },
+      "whisper": "وما أنا مجنون",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L32",
+          "heard": "وَمَا أَنَا مَجْنُونٌ",
+          "start": 294.6,
+          "end": 297.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-6",
+      "lang": "ar",
+      "start": 296.52,
+      "end": 298.53,
+      "text": "أُكَذِّبُ الظُّنُونَ",
+      "cue": {
+        "n": 46,
+        "track": "ar",
+        "role": "original",
+        "text": "أُكَذِّبُ الظُّنُونْ"
+      },
+      "whisper": "أكذب الظنون",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L32",
+          "heard": "وَمَا أَنَا مَجْنُونٌ",
+          "start": 294.6,
+          "end": 297.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L32",
+          "heard": "وَمَا أَنَا مَجْنُونٌ",
+          "start": 297.5,
+          "end": 299.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-7",
+      "lang": "ar",
+      "start": 298.53,
+      "end": 300.53,
+      "text": "أُصِبْتُ بِالْجُنُونِ",
+      "cue": {
+        "n": 47,
+        "track": "ar",
+        "role": "original",
+        "text": "أُصِبْتُ بِالْجُنُونْ"
+      },
+      "whisper": "وصبت بالجنون",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L32",
+          "heard": "وَمَا أَنَا مَجْنُونٌ",
+          "start": 297.5,
+          "end": 299.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L33",
+          "heard": "أُكَذِّبُ الظُّنُونَ",
+          "start": 299.7,
+          "end": 301.7,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-8",
+      "lang": "ar",
+      "start": 300.53,
+      "end": 304.65,
+      "text": "فِي رِحْلَةِ الْفُنُونِ",
+      "cue": {
+        "n": 48,
+        "track": "ar",
+        "role": "original",
+        "text": "فِي رِحْلَةِ الفُنُونْ"
+      },
+      "whisper": "في رحلتي الفنون / في رحلتي الفنون",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L33",
+          "heard": "أُكَذِّبُ الظُّنُونَ",
+          "start": 299.7,
+          "end": 301.7,
+          "confidence": "high"
+        },
+        {
+          "line": "L34",
+          "heard": "أُصِبْتُ بِالْجُنُونِ",
+          "start": 301.9,
+          "end": 303.9,
+          "confidence": "high"
+        },
+        {
+          "line": "L35",
+          "heard": "فِي رِحْلَةِ الْفُنُونِ",
+          "start": 304.1,
+          "end": 306.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-10",
+      "lang": "ar",
+      "start": 304.65,
+      "end": 306.61,
+      "text": "صِرْتُ مُقَيَّدًا",
+      "cue": {
+        "n": 49,
+        "track": "ar",
+        "role": "original",
+        "text": "صِرْتُ مُقَيَّدًا"
+      },
+      "whisper": "وصرت مقيدا",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L35",
+          "heard": "فِي رِحْلَةِ الْفُنُونِ",
+          "start": 304.1,
+          "end": 306.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-11",
+      "lang": "ar",
+      "start": 306.61,
+      "end": 308.64,
+      "text": "وَمَا أَنَا سَكْرَانُ",
+      "cue": {
+        "n": 50,
+        "track": "ar",
+        "role": "original",
+        "text": "وَمَا أنَا سَكْرَانْ"
+      },
+      "whisper": "وما أنا سخرا",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L35",
+          "heard": "فِي رِحْلَةِ الْفُنُونِ",
+          "start": 306.8,
+          "end": 309.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-12",
+      "lang": "ar",
+      "start": 308.64,
+      "end": 310.65,
+      "text": "بَلْ كُنْتُهُ بَعْدُ",
+      "cue": {
+        "n": 51,
+        "track": "ar",
+        "role": "original",
+        "text": "بَلْ كُنْتُهُ بَعْدُ"
+      },
+      "whisper": "بل كنته بعد / بالطراب شفعا",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L35",
+          "heard": "فِي رِحْلَةِ الْفُنُونِ",
+          "start": 306.8,
+          "end": 309.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L36",
+          "heard": "صِرْتُ مُقَيَّدًا",
+          "start": 309.8,
+          "end": 312,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-13",
+      "lang": "ar",
+      "start": 310.65,
+      "end": 312.08,
+      "text": "بِالطَّرَبِ شَبْعَانُ",
+      "cue": {
+        "n": 52,
+        "track": "ar",
+        "role": "original",
+        "text": "بِالطَّرَبِ شَبْعَانْ"
+      },
+      "whisper": "بالطراب شفعا",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L36",
+          "heard": "صِرْتُ مُقَيَّدًا",
+          "start": 309.8,
+          "end": 312,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-14",
+      "lang": "ar",
+      "start": 312.08,
+      "end": 314.37,
+      "text": "قَدْ قِيلَ لِي خَبِيثٌ",
+      "cue": {
+        "n": 53,
+        "track": "ar",
+        "role": "original",
+        "text": "قدْ قِيلَ لِي خَبِيثْ"
+      },
+      "whisper": "بالطراب شفعا / وواهم حيرا",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L37",
+          "heard": "وَمَا أَنَا سَكْرَانُ",
+          "start": 312.2,
+          "end": 314.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-15",
+      "lang": "ar",
+      "start": 314.37,
+      "end": 316.37,
+      "text": "وَوَاهِمٌ حَيْرَانُ",
+      "cue": {
+        "n": 54,
+        "track": "ar",
+        "role": "original",
+        "text": "وَوَاهِمٌ حَيْرَانْ"
+      },
+      "whisper": "وواهم حيرا",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L38",
+          "heard": "بَلْ كُنْتُهُ بَعْدُ",
+          "start": 314.7,
+          "end": 317,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-16",
+      "lang": "ar",
+      "start": 316.73,
+      "end": 318.37,
+      "text": "بَلْ اَحْمَقُ بَلِيدٌ",
+      "cue": {
+        "n": 55,
+        "track": "ar",
+        "role": "original",
+        "text": "بلْ أَحْــــمَقُ بَلِيدْ"
+      },
+      "whisper": "بل أحمق بلد مبتعد تعبان مبتعد تعبان",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L39",
+          "heard": "بِالطَّرَبِ شَبْعَانُ",
+          "start": 317.2,
+          "end": 320.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-17",
+      "lang": "ar",
+      "start": 318.37,
+      "end": 322.34,
+      "text": "مُبْتَعِدٌ تَعْبَانُ",
+      "cue": {
+        "n": 56,
+        "track": "ar",
+        "role": "original",
+        "text": "مُبْـــــتَعِدٌ تَعْبَانْ"
+      },
+      "whisper": "بل أحمق بلد مبتعد تعبان مبتعد تعبان",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L39",
+          "heard": "بِالطَّرَبِ شَبْعَانُ",
+          "start": 317.2,
+          "end": 320.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L40",
+          "heard": "قَدْ قِيلَ لِي خَبِيثٌ",
+          "start": 320.8,
+          "end": 322.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-19",
+      "lang": "ar",
+      "start": 322.77,
+      "end": 324.76,
+      "text": "قِيلَ اَنَا شَمْعَةٌ",
+      "cue": {
+        "n": 57,
+        "track": "ar",
+        "role": "original",
+        "text": "قِيلَ أَنَا شَمْعَة"
+      },
+      "whisper": "قيل أنا شمعة قطبا لذا المجلس",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L41",
+          "heard": "وَوَاهِمٌ حَيْرَانُ",
+          "start": 323,
+          "end": 325,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-20",
+      "lang": "ar",
+      "start": 324.76,
+      "end": 326.8,
+      "text": "قُطْبًا لِذَا الْمَجْلِسِ",
+      "cue": {
+        "n": 58,
+        "track": "ar",
+        "role": "original",
+        "text": "قُطْبًا لِذَا المَجْلِسْ"
+      },
+      "whisper": "قيل أنا شمعة قطبا لذا المجلس",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L42",
+          "heard": "بَلْ اَحْمَقُ بَلِيدٌ",
+          "start": 325.2,
+          "end": 327.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-21",
+      "lang": "ar",
+      "start": 326.8,
+      "end": 328.81,
+      "text": "وَمَا أَنَا شَيْخٌ",
+      "cue": {
+        "n": 59,
+        "track": "ar",
+        "role": "original",
+        "text": "وَمَا أَنَا شيخٌ"
+      },
+      "whisper": "وما أنا شيخ ولا أنا مريب ولا أنا زعين",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L42",
+          "heard": "بَلْ اَحْمَقُ بَلِيدٌ",
+          "start": 325.2,
+          "end": 327.2,
+          "confidence": "high"
+        },
+        {
+          "line": "L43",
+          "heard": "مُبْتَعِدٌ تَعْبَانُ",
+          "start": 327.4,
+          "end": 329.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-22",
+      "lang": "ar",
+      "start": 328.81,
+      "end": 330.86,
+      "text": "وَلَا اَنَا مُرِيدٌ",
+      "cue": {
+        "n": 60,
+        "track": "ar",
+        "role": "original",
+        "text": "وَلاَ أنَا مُرِيدْ"
+      },
+      "whisper": "وما أنا شيخ ولا أنا مريب ولا أنا زعين",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L43",
+          "heard": "مُبْتَعِدٌ تَعْبَانُ",
+          "start": 327.4,
+          "end": 329.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L43",
+          "heard": "مُبْتَعِدٌ تَعْبَانُ",
+          "start": 329.8,
+          "end": 332.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-23",
+      "lang": "ar",
+      "start": 330.86,
+      "end": 332.82,
+      "text": "وَلَا اَنَا زَعِيمٌ",
+      "cue": {
+        "n": 61,
+        "track": "ar",
+        "role": "original",
+        "text": "ولاَ أَنَا زَعِيمْ"
+      },
+      "whisper": "وما أنا شيخ ولا أنا مريب ولا أنا زعين",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L43",
+          "heard": "مُبْتَعِدٌ تَعْبَانُ",
+          "start": 329.8,
+          "end": 332.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-24",
+      "lang": "ar",
+      "start": 332.82,
+      "end": 334.86,
+      "text": "أُبْدِي أَوْ أُعِيدْ",
+      "cue": {
+        "n": 62,
+        "track": "ar",
+        "role": "original",
+        "text": "أُبْدِي أَوْ أُعِيدْ"
+      },
+      "whisper": "أبدي أو أعيد ولست كل ذا",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L44",
+          "heard": "قِيلَ اَنَا شَمْعَةٌ",
+          "start": 332.8,
+          "end": 335,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-25",
+      "lang": "ar",
+      "start": 334.86,
+      "end": 336.86,
+      "text": "وَلَسْتُ كُلَّ ذَاكَ",
+      "cue": {
+        "n": 63,
+        "track": "ar",
+        "role": "original",
+        "text": "ولَستُ كُلَّ ذاكْ"
+      },
+      "whisper": "أبدي أو أعيد ولست كل ذا",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L45",
+          "heard": "قُطْبًا لِذَا الْمَجْلِسِ",
+          "start": 335.2,
+          "end": 337.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-26",
+      "lang": "ar",
+      "start": 336.86,
+      "end": 342.44,
+      "text": "بَلْ خَادِمٌ مُطِيعٌ",
+      "cue": {
+        "n": 64,
+        "track": "ar",
+        "role": "original",
+        "text": "بلْ خَادِمٌ مُطِيعْ"
+      },
+      "whisper": "بل خاديم مطيق بل خاديم مطيق",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L45",
+          "heard": "قُطْبًا لِذَا الْمَجْلِسِ",
+          "start": 335.2,
+          "end": 337.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L46",
+          "heard": "وَمَا أَنَا شَيْخٌ",
+          "start": 337.8,
+          "end": 340,
+          "confidence": "high"
+        },
+        {
+          "line": "L47",
+          "heard": "وَلَا اَنَا مُرِيدٌ",
+          "start": 340.2,
+          "end": 342.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-29",
+      "lang": "ar",
+      "start": 345.06,
+      "end": 349.01,
+      "text": "قَدْ كُنْتُ قَبْلَ مَيْتًا",
+      "cue": {
+        "n": 65,
+        "track": "ar",
+        "role": "original",
+        "text": "قَد كُنتُ قَبلُ مَيِّتاً"
+      },
+      "whisper": "قب كبت قبل ميتا في ضحكتي",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L49",
+          "heard": "أُبْدِي أَوْ أُعِيدْ",
+          "start": 344.8,
+          "end": 347,
+          "confidence": "high"
+        },
+        {
+          "line": "L50",
+          "heard": "وَلَسْتُ كُلَّ ذَاكَ",
+          "start": 347.2,
+          "end": 349.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-30",
+      "lang": "ar",
+      "start": 349.01,
+      "end": 352.68,
+      "text": "فِي ضَحْكَتِي نَبْعٌ وَرِيٌّ",
+      "cue": {
+        "n": 66,
+        "track": "ar",
+        "role": "original",
+        "text": "فِي ضَحْكَتِي نبعٌ وريْ"
+      },
+      "whisper": "قب كبت قبل ميتا في ضحكتي / نضع ورأي مملكة العشق",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L50",
+          "heard": "وَلَسْتُ كُلَّ ذَاكَ",
+          "start": 347.2,
+          "end": 349.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L51",
+          "heard": "بَلْ خَادِمٌ مُطِيعٌ",
+          "start": 349.8,
+          "end": 351.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L51",
+          "heard": "بَلْ خَادِمٌ مُطِيعٌ",
+          "start": 352,
+          "end": 354,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-31",
+      "lang": "ar",
+      "start": 352.68,
+      "end": 356.83,
+      "text": "مَمْلَكَةَ الْعِشْقِ اَرَى",
+      "cue": {
+        "n": 67,
+        "track": "ar",
+        "role": "original",
+        "text": "مَملَكةَ العشقِ أَرَى"
+      },
+      "whisper": "نضع ورأي مملكة العشق / عرام و نعم و خالي",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L51",
+          "heard": "بَلْ خَادِمٌ مُطِيعٌ",
+          "start": 352,
+          "end": 354,
+          "confidence": "high"
+        },
+        {
+          "line": "L51",
+          "heard": "بَلْ خَادِمٌ مُطِيعٌ",
+          "start": 354.2,
+          "end": 356.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-32",
+      "lang": "ar",
+      "start": 356.84,
+      "end": 360.41,
+      "text": "مُنَعَّمٌ وَخَالِدٌ",
+      "cue": {
+        "n": 68,
+        "track": "ar",
+        "role": "original",
+        "text": "مُنَــعَّمٌ وخَالِدٌ"
+      },
+      "whisper": "عرام و نعم و خالي",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L52",
+          "heard": "قَدْ كُنْتُ قَبْلَ مَيْتًا",
+          "start": 360,
+          "end": 363,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-said-1",
+      "lang": "ar",
+      "start": 360.41,
+      "end": 365.37,
+      "text": "قَالَ لِي أَنْتَ شَيْخٌ",
+      "cue": {
+        "n": 69,
+        "track": "ar",
+        "role": "original",
+        "text": "قال لي أنَت شيخ"
+      },
+      "whisper": "قوة كالشيخ يوسادي",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L52",
+          "heard": "قَدْ كُنْتُ قَبْلَ مَيْتًا",
+          "start": 360,
+          "end": 363,
+          "confidence": "high"
+        },
+        {
+          "line": "L53",
+          "heard": "فِي ضَحْكَتِي نَبْعٌ وَرِيٌّ",
+          "start": 363.2,
+          "end": 366.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "arabic-said-2",
+      "lang": "ar",
+      "start": 366.63,
+      "end": 372.04,
+      "text": "وَ زَعِيمٌ",
+      "cue": {
+        "n": 70,
+        "track": "ar",
+        "role": "original",
+        "text": "‎ و زَعِيمْ"
+      },
+      "whisper": "بشر الله بني",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L54",
+          "heard": "مَمْلَكَةَ الْعِشْقِ اَرَى",
+          "start": 366.8,
+          "end": 370,
+          "confidence": "high"
+        },
+        {
+          "line": "L55",
+          "heard": "مُنَعَّمٌ وَخَالِدٌ",
+          "start": 370.2,
+          "end": 373.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-8-1",
+      "lang": "fa",
+      "start": 372.16,
+      "end": 374.08,
+      "text": "شَیْخْ نِیَمْ",
+      "cue": {
+        "n": 71,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Shaykh, I am not"
+      },
+      "whisper": "شیخ نیگم پیش نیگم عمر تو را بنده شد",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L55",
+          "heard": "مُنَعَّمٌ وَخَالِدٌ",
+          "start": 370.2,
+          "end": 373.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-8-2",
+      "lang": "fa",
+      "start": 374.08,
+      "end": 376.12,
+      "text": "پِیشْ نِیَمْ",
+      "cue": {
+        "n": 72,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Master, I am not"
+      },
+      "whisper": "شیخ نیگم پیش نیگم عمر تو را بنده شد",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "گفت که شیخی و سری",
+          "start": 374,
+          "end": 378,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-8-3",
+      "lang": "fa",
+      "start": 376.12,
+      "end": 379.52,
+      "text": "اَمْرِ تُو رَا بَنْدِه شُدَمْ",
+      "cue": {
+        "n": 73,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I have become a servant of your every word"
+      },
+      "whisper": "شیخ نیگم پیش نیگم عمر تو را بنده شد",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "گفت که شیخی و سری",
+          "start": 374,
+          "end": 378,
+          "confidence": "high"
+        },
+        {
+          "line": "NONE",
+          "heard": "پیشرو و راهبری",
+          "start": 378.5,
+          "end": 383,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-8-3b",
+      "lang": "fa",
+      "start": 379.52,
+      "end": 383.42,
+      "text": "اَمْرِ تُو رَا بَنْدِه شُدَمْ",
+      "cue": null,
+      "whisper": "عمر تو را بنده شد",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "پیشرو و راهبری",
+          "start": 378.5,
+          "end": 383,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "mawwal-1",
+      "lang": "ar",
+      "start": 404.16,
+      "end": 416.72,
+      "text": "فَأَحْيَا بِالْمُنَى وَأَمُوتُ شَوْقًا",
+      "cue": {
+        "n": 74,
+        "track": "ar",
+        "role": "original",
+        "text": "فأحْيا بِالمُنَى وأمُوتُ شوقًا"
+      },
+      "whisper": "فا احیابی",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L58",
+          "heard": "فَأَحْيَا بِالْمُنَى وَأَمُوتُ شَوْقًا",
+          "start": 404,
+          "end": 414.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "mawwal-2",
+      "lang": "ar",
+      "start": 417.87,
+      "end": 424.28,
+      "text": "فَكَمْ أَحْيَا وَكَمْ أَمُوتُ",
+      "cue": {
+        "n": 75,
+        "track": "ar",
+        "role": "original",
+        "text": "فكمْ أَحْيَا وَكَمْ أَمُوتُ"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L59",
+          "heard": "فَكَمْ أَحْيَا وَكَمْ أَمُوتُ",
+          "start": 417.5,
+          "end": 424.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "dowlat-2",
+      "lang": "fa",
+      "start": 424.28,
+      "end": 435.41,
+      "text": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+      "cue": {
+        "n": 76,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "The power of love came to me"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L26",
+          "heard": "Aşk devleti gelince ben",
+          "start": 425,
+          "end": 430.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-15-1",
+      "lang": "fa",
+      "start": 435.64,
+      "end": 437.83,
+      "text": "شُکْرْ کُنَدْ کَاغَذِ تُو",
+      "cue": {
+        "n": 77,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Your letter gives thanks"
+      },
+      "whisper": "شکوند کاغاز تو / از شگر بیحد تو",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L60",
+          "heard": "شُکْرْ کُنَدْ کَاغَذِ تُو",
+          "start": 436,
+          "end": 438,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-15-1b",
+      "lang": "fa",
+      "start": 437.83,
+      "end": 439.78,
+      "text": "اَزْ شِکَرِ بِی‌حَدِّ تُو",
+      "cue": {
+        "n": 78,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "For your boundless sweetness"
+      },
+      "whisper": "از شگر بیحد تو / قامد او در بر من",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L61",
+          "heard": "اَزْ شِکَرِ بِیحَدِّ تُو",
+          "start": 438.2,
+          "end": 440.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-15-2",
+      "lang": "fa",
+      "start": 439.78,
+      "end": 441.84,
+      "text": "کَآمَدْ اُو دَرْ بَرِ مَنْ",
+      "cue": {
+        "n": 79,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "For it embraced me"
+      },
+      "whisper": "قامد او در بر من / او ایماننده شدم",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L61",
+          "heard": "اَزْ شِکَرِ بِیحَدِّ تُو",
+          "start": 438.2,
+          "end": 440.2,
+          "confidence": "high"
+        },
+        {
+          "line": "L62",
+          "heard": "کَآمَدْ اُو دَرْ بَرِ مَنْ",
+          "start": 440.4,
+          "end": 442.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-15-2b",
+      "lang": "fa",
+      "start": 441.84,
+      "end": 443.46,
+      "text": "بَا وِیْ مَانَنْدِه شُدَمْ",
+      "cue": {
+        "n": 80,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "And I dwelt in it"
+      },
+      "whisper": "او ایماننده شدم",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L62",
+          "heard": "کَآمَدْ اُو دَرْ بَرِ مَنْ",
+          "start": 440.4,
+          "end": 442.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L63",
+          "heard": "بَا وِیْ مَانَنْدِه شُدَمْ",
+          "start": 442.7,
+          "end": 445.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-16-1",
+      "lang": "fa",
+      "start": 443.46,
+      "end": 445.4,
+      "text": "شُکْرْ کُنَدْ خَاکِ دُژَمْ",
+      "cue": {
+        "n": 81,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "My dark earth gives thanks"
+      },
+      "whisper": "شکوند کاخ دوشم",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L63",
+          "heard": "بَا وِیْ مَانَنْدِه شُدَمْ",
+          "start": 442.7,
+          "end": 445.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-16-1b",
+      "lang": "fa",
+      "start": 445.4,
+      "end": 447.84,
+      "text": "اَزْ فَلَکْ وُ چَرْخْ بِه خَمْ",
+      "cue": {
+        "n": 82,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "For the overarching sky"
+      },
+      "whisper": "از فلک و چرخ بخم / که از نظر و گردش اون دور پذیرند شدم",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L64",
+          "heard": "شُکْرْ کُنَدْ خَاکِ دُژَمْ",
+          "start": 445.8,
+          "end": 447.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-16-2",
+      "lang": "fa",
+      "start": 447.84,
+      "end": 449.92,
+      "text": "کَزْ نَظَرْ وُ گَرْدِشِ اُو",
+      "cue": {
+        "n": 83,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "For through its all-seeing gaze"
+      },
+      "whisper": "که از نظر و گردش اون دور پذیرند شدم",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L65",
+          "heard": "اَزْ فَلَکْ وُ چَرْخْ بِه خَمْ",
+          "start": 448,
+          "end": 450,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-16-2b",
+      "lang": "fa",
+      "start": 449.92,
+      "end": 453.98,
+      "text": "نُورْ پَذِیرَنْدِه شُدَمْ",
+      "cue": {
+        "n": 84,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I became able to receive its light"
+      },
+      "whisper": "که از نظر و گردش اون دور پذیرند شدم / شوق کند چرخ فاله از ملک و مارک و منه",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L66",
+          "heard": "کَزْ نَظَرْ وُ گَرْدِشِ اُو",
+          "start": 450.2,
+          "end": 452.2,
+          "confidence": "high"
+        },
+        {
+          "line": "L67",
+          "heard": "نُورْ پَذِیرَنْدِه شُدَمْ",
+          "start": 452.4,
+          "end": 454.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-17-1",
+      "lang": "fa",
+      "start": 453.98,
+      "end": 455.52,
+      "text": "شُکْرْ کُنَدْ چَرْخِ فَلَکْ",
+      "cue": {
+        "n": 85,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "The heavens give thanks"
+      },
+      "whisper": "شوق کند چرخ فاله از ملک و مارک و منه",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L67",
+          "heard": "نُورْ پَذِیرَنْدِه شُدَمْ",
+          "start": 452.4,
+          "end": 454.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L67",
+          "heard": "نُورْ پَذِیرَنْدِه شُدَمْ",
+          "start": 455,
+          "end": 458,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-17-1b",
+      "lang": "fa",
+      "start": 455.52,
+      "end": 458,
+      "text": "اَزْ مَلِکْ وُ مُلْکْ وُ مَلَکْ",
+      "cue": {
+        "n": 86,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "For king and kingdom and angel"
+      },
+      "whisper": "شوق کند چرخ فاله از ملک و مارک و منه / که از کرم و بخشش اون روشن و بخشند شدم",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L67",
+          "heard": "نُورْ پَذِیرَنْدِه شُدَمْ",
+          "start": 455,
+          "end": 458,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-17-2",
+      "lang": "fa",
+      "start": 458,
+      "end": 460.01,
+      "text": "کَزْ کَرَمْ وُ بَخْشِشِ اُو",
+      "cue": {
+        "n": 87,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Through whose generosity and riches"
+      },
+      "whisper": "که از کرم و بخشش اون روشن و بخشند شدم",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L68",
+          "heard": "شُکْرْ کُنَدْ چَرْخِ فَلَکْ",
+          "start": 458.5,
+          "end": 460.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-17-2b",
+      "lang": "fa",
+      "start": 460.01,
+      "end": 461.63,
+      "text": "رَوْشَنْ بَخْشَنْدِه شُدَمْ",
+      "cue": {
+        "n": 88,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I became bright and bountiful"
+      },
+      "whisper": "که از کرم و بخشش اون روشن و بخشند شدم",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L68",
+          "heard": "شُکْرْ کُنَدْ چَرْخِ فَلَکْ",
+          "start": 458.5,
+          "end": 460.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L69",
+          "heard": "اَزْ مَلِکْ وُ مُلْکْ وُ مَلَکْ",
+          "start": 460.7,
+          "end": 462.7,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-18-1",
+      "lang": "fa",
+      "start": 461.63,
+      "end": 464.05,
+      "text": "شُکْرْ کُنَدْ عَارِفِ حَقّْ",
+      "cue": {
+        "n": 89,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "The one possessed of wisdom and truth gives thanks"
+      },
+      "whisper": "شوق کند آرف حق از همه بردین سبق و زبر هفت طبق",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L69",
+          "heard": "اَزْ مَلِکْ وُ مُلْکْ وُ مَلَکْ",
+          "start": 460.7,
+          "end": 462.7,
+          "confidence": "high"
+        },
+        {
+          "line": "L70",
+          "heard": "کَزْ کَرَمْ وُ بَخْشِشِ اُو",
+          "start": 462.9,
+          "end": 464.9,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-18-1b",
+      "lang": "fa",
+      "start": 464.05,
+      "end": 466.06,
+      "text": "کَزْ هَمِه بُرْدِیمْ سَبَقْ",
+      "cue": {
+        "n": 90,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "For having attained the goal"
+      },
+      "whisper": "شوق کند آرف حق از همه بردین سبق و زبر هفت طبق",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L70",
+          "heard": "کَزْ کَرَمْ وُ بَخْشِشِ اُو",
+          "start": 462.9,
+          "end": 464.9,
+          "confidence": "high"
+        },
+        {
+          "line": "L71",
+          "heard": "رَوْشَنْ بَخْشَنْدِه شُدَمْ",
+          "start": 465.1,
+          "end": 468,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-18-planes",
+      "lang": "fa",
+      "start": 466.06,
+      "end": 468.09,
+      "text": "بَرْ زِبَرِ هَفْتْ طَبَقْ",
+      "cue": {
+        "n": 91,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Above the seven spiritual planes"
+      },
+      "whisper": "شوق کند آرف حق از همه بردین سبق و زبر هفت طبق",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L71",
+          "heard": "رَوْشَنْ بَخْشَنْدِه شُدَمْ",
+          "start": 465.1,
+          "end": 468,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-18-2",
+      "lang": "fa",
+      "start": 468.09,
+      "end": 469.7,
+      "text": "اَخْتَرِ رَخْشَنْدِه شُدَمْ",
+      "cue": {
+        "n": 92,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I became a shining star"
+      },
+      "whisper": "اختر رخشند شدم",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L72",
+          "heard": "شُکْرْ کُنَدْ عَارِفِ حَقّْ",
+          "start": 468.5,
+          "end": 470.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-18-2b",
+      "lang": "fa",
+      "start": 469.7,
+      "end": 472.3,
+      "text": "اَخْتَرِ رَخْشَنْدِه شُدَمْ",
+      "cue": null,
+      "whisper": "اختر رخشند شدم",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L72",
+          "heard": "شُکْرْ کُنَدْ عَارِفِ حَقّْ",
+          "start": 468.5,
+          "end": 470.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L73",
+          "heard": "کَزْ هَمِه بُرْدِیمْ سَبَقْ",
+          "start": 470.7,
+          "end": 472.7,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-19-1",
+      "lang": "fa",
+      "start": 473.86,
+      "end": 475.83,
+      "text": "زُهْرِه بُدَمْ مَاهْ شُدَمْ",
+      "cue": {
+        "n": 93,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I was Venus, I became the moon"
+      },
+      "whisper": "زاهره بودم ماخ شودم چرخ دوزد تا شودم",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L74",
+          "heard": "بَرْ زِبَرِ هَفْتْ طَبَقْ",
+          "start": 472.9,
+          "end": 474.9,
+          "confidence": "high"
+        },
+        {
+          "line": "L75",
+          "heard": "اَخْتَرِ رَخْشَنْدِه شُدَمْ",
+          "start": 475.1,
+          "end": 477.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-19-2",
+      "lang": "fa",
+      "start": 475.83,
+      "end": 477.89,
+      "text": "چَرْخِ دُو صَدْ تَاهْ شُدَمْ",
+      "cue": {
+        "n": 94,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I became the two hundred-fold sky"
+      },
+      "whisper": "زاهره بودم ماخ شودم چرخ دوزد تا شودم",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L75",
+          "heard": "اَخْتَرِ رَخْشَنْدِه شُدَمْ",
+          "start": 475.1,
+          "end": 477.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-19-3",
+      "lang": "fa",
+      "start": 477.89,
+      "end": 479.89,
+      "text": "زُهْرِه بُدَمْ مَاهْ شُدَمْ",
+      "cue": {
+        "n": 95,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I was Venus, I became the moon"
+      },
+      "whisper": "زاهره بودم ماخ شودم چرخ دوزد تا شودم",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L75",
+          "heard": "اَخْتَرِ رَخْشَنْدِه شُدَمْ",
+          "start": 477.7,
+          "end": 480.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-19-4",
+      "lang": "fa",
+      "start": 479.89,
+      "end": 481.84,
+      "text": "چَرْخِ دُو صَدْ تَاهْ شُدَمْ",
+      "cue": {
+        "n": 96,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I became the two hundred-fold sky"
+      },
+      "whisper": "زاهره بودم ماخ شودم چرخ دوزد تا شودم",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L75",
+          "heard": "اَخْتَرِ رَخْشَنْدِه شُدَمْ",
+          "start": 477.7,
+          "end": 480.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L76",
+          "heard": "زُهْرِه بُدَمْ مَاهْ شُدَمْ",
+          "start": 481,
+          "end": 483.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-19-5",
+      "lang": "fa",
+      "start": 481.84,
+      "end": 483.91,
+      "text": "یُوسُفْ بُودَمْ",
+      "cue": {
+        "n": 97,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I was Joseph"
+      },
+      "whisper": "یوسف بودم زکن و یوسف زاینه شودم",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L76",
+          "heard": "زُهْرِه بُدَمْ مَاهْ شُدَمْ",
+          "start": 481,
+          "end": 483.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-19-5b",
+      "lang": "fa",
+      "start": 484.21,
+      "end": 485.95,
+      "text": "زِ کُنُونْ یُوسُفِ زَایَنْدِه شُدَمْ",
+      "cue": {
+        "n": 98,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I became the creator of Joseph"
+      },
+      "whisper": "یوسف بودم زکن و یوسف زاینه شودم / از تو همه شهر قمن در من و در خود بنگر",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L77",
+          "heard": "چَرْخِ دُو صَدْ تَاهْ شُدَمْ",
+          "start": 483.7,
+          "end": 486.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-20-1",
+      "lang": "fa",
+      "start": 485.95,
+      "end": 488.24,
+      "text": "اَزْ تُواَمْ اِیْ شُهْرِه قَمَرْ",
+      "cue": {
+        "n": 99,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Famous moon, I am yours"
+      },
+      "whisper": "از تو همه شهر قمن در من و در خود بنگر",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L76",
+          "heard": "زُهْرِه بُدَمْ مَاهْ شُدَمْ",
+          "start": 486.5,
+          "end": 489,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-20-1b",
+      "lang": "fa",
+      "start": 488.24,
+      "end": 490.26,
+      "text": "دَرْ مَنْ وُ دَرْ خُودْ بِنْگَرْ",
+      "cue": {
+        "n": 100,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Look upon me and upon yourself"
+      },
+      "whisper": "از تو همه شهر قمن در من و در خود بنگر",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L76",
+          "heard": "زُهْرِه بُدَمْ مَاهْ شُدَمْ",
+          "start": 486.5,
+          "end": 489,
+          "confidence": "high"
+        },
+        {
+          "line": "L77",
+          "heard": "چَرْخِ دُو صَدْ تَاهْ شُدَمْ",
+          "start": 489.2,
+          "end": 492,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-20-2",
+      "lang": "fa",
+      "start": 490.26,
+      "end": 492.28,
+      "text": "کَزْ اَثَرِ خَنْدِهٔ تُو",
+      "cue": {
+        "n": 101,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "From the trace of your smile"
+      },
+      "whisper": "از اثر خنده تو گشن خندنده شودم",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L77",
+          "heard": "چَرْخِ دُو صَدْ تَاهْ شُدَمْ",
+          "start": 489.2,
+          "end": 492,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-20-2b",
+      "lang": "fa",
+      "start": 492.28,
+      "end": 494.04,
+      "text": "گُلْشَنِ خَنْدَنْدِه شُدَمْ",
+      "cue": {
+        "n": 102,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I became a smiling rose garden"
+      },
+      "whisper": "از اثر خنده تو گشن خندنده شودم",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L78",
+          "heard": "یُوسُفْ بُودَمْ",
+          "start": 492.5,
+          "end": 494.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-21-1",
+      "lang": "fa",
+      "start": 494.04,
+      "end": 496.33,
+      "text": "بَاشْ چُو شَطْرَنْجِ رَوَانْ",
+      "cue": {
+        "n": 103,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Be like a chess player?"
+      },
+      "whisper": "باش شهرن شربان / خاموش خود جمعه زبان",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L78",
+          "heard": "یُوسُفْ بُودَمْ",
+          "start": 492.5,
+          "end": 494.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L79",
+          "heard": "زِ کُنُونْ یُوسُفِ زَایَنْدِه شُدَمْ",
+          "start": 494.7,
+          "end": 498,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-21-1b",
+      "lang": "fa",
+      "start": 496.33,
+      "end": 498.3,
+      "text": "خَامُشْ وُ خُودْ جُمْلِه زَبَانْ",
+      "cue": {
+        "n": 104,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Whose language is silence"
+      },
+      "whisper": "خاموش خود جمعه زبان / که از رخ آن شاه جهان",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L79",
+          "heard": "زِ کُنُونْ یُوسُفِ زَایَنْدِه شُدَمْ",
+          "start": 494.7,
+          "end": 498,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-21-king",
+      "lang": "fa",
+      "start": 498.3,
+      "end": 500.34,
+      "text": "کَزْ رُخِ آنْ شَاهِ جَهَانْ",
+      "cue": {
+        "n": 105,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Through the king of the world"
+      },
+      "whisper": "که از رخ آن شاه جهان",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L80",
+          "heard": "اَزْ تُواَمْ اِیْ شُهْرِه قَمَرْ",
+          "start": 498.5,
+          "end": 500.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "rumi-21-2",
+      "lang": "fa",
+      "start": 500.34,
+      "end": 505.98,
+      "text": "فَرُّخْ وُ فَرْخُنْدِه شُدَمْ",
+      "cue": {
+        "n": 106,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I have become happy and filled with bliss"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L81",
+          "heard": "دَرْ مَنْ وُ دَرْ خُودْ بِنْگَرْ",
+          "start": 500.7,
+          "end": 502.7,
+          "confidence": "high"
+        },
+        {
+          "line": "L82",
+          "heard": "کَزْ اَثَرِ خَنْدِهٔ تُو",
+          "start": 502.9,
+          "end": 504.9,
+          "confidence": "high"
+        },
+        {
+          "line": "L83",
+          "heard": "گُلْشَنِ خَنْدَنْدِه شُدَمْ",
+          "start": 505.1,
+          "end": 508,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-ar-1",
+      "lang": "ar",
+      "start": 508.29,
+      "end": 512.12,
+      "text": "قَدْ كُنْتُ قَبْلَ مَيْتًا",
+      "cue": {
+        "n": 107,
+        "track": "ar",
+        "role": "original",
+        "text": "قَد كُنتُ قَبلُ مَيِّتاً"
+      },
+      "whisper": "قد كنت قادم ميتا في ضحكتي نضع ورائي مملكة العشق أرام",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L84",
+          "heard": "بَاشْ چُو شَطْرَنْجِ رَوَانْ",
+          "start": 508.5,
+          "end": 510.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L85",
+          "heard": "خَامُشْ وُ خُودْ جُمْلِه زَبَانْ",
+          "start": 510.7,
+          "end": 512.7,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-ar-2",
+      "lang": "ar",
+      "start": 512.13,
+      "end": 516.05,
+      "text": "فِي ضَحْكَتِي نَبْعٌ وَرِيٌّ",
+      "cue": {
+        "n": 108,
+        "track": "ar",
+        "role": "original",
+        "text": "فِي ضَحْكَتِي نبعٌ وريْ"
+      },
+      "whisper": "قد كنت قادم ميتا في ضحكتي نضع ورائي مملكة العشق أرام",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L85",
+          "heard": "خَامُشْ وُ خُودْ جُمْلِه زَبَانْ",
+          "start": 510.7,
+          "end": 512.7,
+          "confidence": "high"
+        },
+        {
+          "line": "L86",
+          "heard": "کَزْ رُخِ آنْ شَاهِ جَهَانْ",
+          "start": 512.9,
+          "end": 515,
+          "confidence": "high"
+        },
+        {
+          "line": "L87",
+          "heard": "فَرُّخْ وُ فَرْخُنْدِه شُدَمْ",
+          "start": 515.2,
+          "end": 518,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-ar-3",
+      "lang": "ar",
+      "start": 516.05,
+      "end": 519.9,
+      "text": "مَمْلَكَةَ الْعِشْقِ اَرَى",
+      "cue": {
+        "n": 109,
+        "track": "ar",
+        "role": "original",
+        "text": "مَملَكتَ العشقِ أَرَى"
+      },
+      "whisper": "قد كنت قادم ميتا في ضحكتي نضع ورائي مملكة العشق أرام",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L87",
+          "heard": "فَرُّخْ وُ فَرْخُنْدِه شُدَمْ",
+          "start": 515.2,
+          "end": 518,
+          "confidence": "high"
+        },
+        {
+          "line": "L87",
+          "heard": "فَرُّخْ وُ فَرْخُنْدِه شُدَمْ",
+          "start": 518.2,
+          "end": 521,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-ar-4",
+      "lang": "ar",
+      "start": 519.9,
+      "end": 523.57,
+      "text": "مُنَعَّمٌ وَخَالِدٌ",
+      "cue": {
+        "n": 110,
+        "track": "ar",
+        "role": "original",
+        "text": "مُنَــعَّمٌ وخَالِدٌ"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L87",
+          "heard": "فَرُّخْ وُ فَرْخُنْدِه شُدَمْ",
+          "start": 518.2,
+          "end": 521,
+          "confidence": "high"
+        },
+        {
+          "line": "L87",
+          "heard": "فَرُّخْ وُ فَرْخُنْدِه شُدَمْ",
+          "start": 521.2,
+          "end": 524.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-fa-a",
+      "lang": "fa",
+      "start": 523.57,
+      "end": 527.22,
+      "text": "مُرْدِه بُدَمْ زِنْدِه شُدَمْ",
+      "cue": {
+        "n": 111,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I was dead, I came alive"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L87",
+          "heard": "فَرُّخْ وُ فَرْخُنْدِه شُدَمْ",
+          "start": 521.2,
+          "end": 524.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L52",
+          "heard": "قَدْ كُنْتُ قَبْلَ مَيْتًا",
+          "start": 525,
+          "end": 528.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-fa-b",
+      "lang": "fa",
+      "start": 527.22,
+      "end": 531.44,
+      "text": "گِرْیِه بُدَمْ خَنْدِه شُدَمْ",
+      "cue": {
+        "n": 112,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I once wept, now I smile"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L52",
+          "heard": "قَدْ كُنْتُ قَبْلَ مَيْتًا",
+          "start": 525,
+          "end": 528.2,
+          "confidence": "high"
+        },
+        {
+          "line": "L53",
+          "heard": "فِي ضَحْكَتِي نَبْعٌ وَرِيٌّ",
+          "start": 528.4,
+          "end": 531.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-fa-1",
+      "lang": "fa",
+      "start": 531.44,
+      "end": 535.05,
+      "text": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+      "cue": {
+        "n": 113,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "The power of love came to me"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L53",
+          "heard": "فِي ضَحْكَتِي نَبْعٌ وَرِيٌّ",
+          "start": 528.4,
+          "end": 531.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L54",
+          "heard": "مَمْلَكَةَ الْعِشْقِ اَرَى",
+          "start": 532,
+          "end": 535.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-fa-2",
+      "lang": "fa",
+      "start": 535.05,
+      "end": 538.86,
+      "text": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+      "cue": {
+        "n": 114,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I became that infinite power"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L54",
+          "heard": "مَمْلَكَةَ الْعِشْقِ اَرَى",
+          "start": 532,
+          "end": 535.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L55",
+          "heard": "مُنَعَّمٌ وَخَالِدٌ",
+          "start": 535.7,
+          "end": 539.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-fa-3",
+      "lang": "fa",
+      "start": 538.97,
+      "end": 542.52,
+      "text": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+      "cue": {
+        "n": 115,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "The power of love came to me"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L55",
+          "heard": "مُنَعَّمٌ وَخَالِدٌ",
+          "start": 535.7,
+          "end": 539.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L24",
+          "heard": "Bir ölüydüm canla doldum",
+          "start": 540,
+          "end": 543.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-fa-4",
+      "lang": "fa",
+      "start": 542.59,
+      "end": 546.12,
+      "text": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+      "cue": {
+        "n": 116,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I became that infinite power"
+      },
+      "whisper": "دولت ایش آمد و من دولت پا گند شدم",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L24",
+          "heard": "Bir ölüydüm canla doldum",
+          "start": 540,
+          "end": 543.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L25",
+          "heard": "ağlar idim gülüş oldum",
+          "start": 543.8,
+          "end": 547,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-fa-5",
+      "lang": "fa",
+      "start": 546.49,
+      "end": 549.94,
+      "text": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+      "cue": {
+        "n": 117,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "The power of love came to me"
+      },
+      "whisper": "دولت ایش آمد و من دولت پا گند شدم",
+      "verdict": "whisper",
+      "gemini": [
+        {
+          "line": "L25",
+          "heard": "ağlar idim gülüş oldum",
+          "start": 543.8,
+          "end": 547,
+          "confidence": "high"
+        },
+        {
+          "line": "L26",
+          "heard": "Aşk devleti gelince ben",
+          "start": 547.2,
+          "end": 550.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-fa-6",
+      "lang": "fa",
+      "start": 549.94,
+      "end": 553.3,
+      "text": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+      "cue": {
+        "n": 118,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I became that infinite power"
+      },
+      "whisper": "دولت ایش آمد و من دولت پا گند شدم",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L26",
+          "heard": "Aşk devleti gelince ben",
+          "start": 547.2,
+          "end": 550.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L27",
+          "heard": "sonsuzluk devleti buldum",
+          "start": 551,
+          "end": 554.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-fa-7",
+      "lang": "fa",
+      "start": 553.3,
+      "end": 556.47,
+      "text": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+      "cue": {
+        "n": 119,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "The power of love came to me"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L27",
+          "heard": "sonsuzluk devleti buldum",
+          "start": 551,
+          "end": 554.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L26",
+          "heard": "Aşk devleti gelince ben",
+          "start": 555,
+          "end": 558.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "coda-fa-8",
+      "lang": "fa",
+      "start": 556.47,
+      "end": 565.09,
+      "text": "دَوْلَتِ پَایَنْدِه شُدَمْ",
+      "cue": {
+        "n": 120,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "I became that infinite power"
+      },
+      "whisper": "اشتركوا في القناة",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L26",
+          "heard": "Aşk devleti gelince ben",
+          "start": 555,
+          "end": 558.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L27",
+          "heard": "sonsuzluk devleti buldum",
+          "start": 558.8,
+          "end": 562.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L14",
+          "heard": "دَوْلَتِ عِشْقْ آمَدْ وُ مَنْ",
+          "start": 563,
+          "end": 566.5,
+          "confidence": "high"
+        }
+      ]
+    }
+  ],
+  "decisions": {
+    "checked": "2026-10-21",
+    "witness": "Точечное прослушивание 2026-10-21 (recheck-gemini-places.json) — один свидетель, та же модель, что recheck-gemini.json. Второй свидетель — транскрипт вокала или реплика того же языка. Переводная реплика говорит только о содержании.",
+    "note": "Текущий transcript.json в персидском блоке после прогона конвейера читает английское. Для персидских мест свидетель — колонка whisper этой таблицы и транскрипт до того прогона. Арабские удвоения в текущем файле есть.",
+    "fixed": [
+      "Место 4. في رحلة الفنون дважды, около 300,4 и 302,4 с. Строки arabic-8 и arabic-8b, одна реплика.",
+      "Место 5. مبتعد تعبان дважды, около 318,4 и 320,4 с. Строки arabic-17 и arabic-17b.",
+      "Место 7, второй проход. بل خادم مطيع. Строка arabic-26b, 338,68–343,41 с. Третий проход не поставлен.",
+      "Место 9. В rumi-17-2b добавлен союз و. Так Викитека, транскрипт и точечное прослушивание. У Ganjoor союза нет. text-unverified снят. Русский перевод черновой."
+    ],
+    "closed": [
+      "Место 2. Ответ бейта 8 на экране совпадает со слухом и транскриптом: شیخ نیم, پیش نیم, امر تو را дважды.",
+      "Место 3. Третьего امر تو را на 388–398 с нет.",
+      "Место 6. arabic-14 на 312–314 с есть в арабской дорожке, точечное прослушивание строку называет.",
+      "Место 11. На 512–523 с арабская кода, не فرخ و فرخنده. Так транскрипт и слух.",
+      "Место 13. 8–26 с — голос без слов. Мост 172–174 этим отрезком не переслушан.",
+      "Место 14. اختر رخشنده дважды. Строки rumi-18-2 и rumi-18-2b оставлены."
+    ],
+    "open": [
+      "Место 1, 360–372 с. arabic-said-1 и arabic-said-2 не заменены. Арабская дорожка переводит начало бейта 8. Два прослушивания одного окна противоречат друг другу. Транскрипт персидских букв не читает. Второе полустишие, которое слышит одно прослушивание, не из издания.",
+      "Место 7, третий проход, около 340,8–342,8 с. Слышит только прослушивание.",
+      "Место 8, 424–435 с. dowlat-2 оставлен персидским. Слух — турецкая строка. Турецкая дорожка здесь перевод. Транскрипт молчит.",
+      "Место 10, 451,7–453,8 с. Второй نور پذیرنده слышит только прослушивание.",
+      "Место 12, 523–566 с. Финал не переписан. Слух до 546 с — турецкий, с 546,8 с — персидский. Турецкая дорожка переводит весь финал. Транскрипт даёт одно دولت около 545,8 с."
+    ]
+  }
+}

@@ -154,8 +154,14 @@ def _near_mask(times: np.ndarray, peaks: np.ndarray, tol: float) -> np.ndarray:
     return dist <= tol + 1e-12
 
 
-def hit_count(records: list[dict], peaks: np.ndarray, shift: float, rule: dict) -> tuple[int, int]:
-    """How many probe times pass this rule's attack test, and how many were tested."""
+def hit_count(records: list[dict], peaks: np.ndarray, shift: float, rule: dict,
+              fill_peaks: np.ndarray | None = None) -> tuple[int, int]:
+    """How many probe times pass this rule's attack test, and how many were tested.
+
+    `fill_peaks` adds the envelope. A time hits when either curve is inside the
+    group tolerance. The line probe still prefers the spectral peak when that
+    peak is already inside the tolerance; for this binary rate the two agree.
+    """
     if not records:
         return 0, 0
     hits = 0
@@ -165,6 +171,8 @@ def hit_count(records: list[dict], peaks: np.ndarray, shift: float, rule: dict) 
             continue
         times = np.array([float(r['t']) + shift for r in rows], dtype=float)
         mask = _near_mask(times, peaks, tol)
+        if fill_peaks is not None and len(fill_peaks):
+            mask = mask | _near_mask(times, fill_peaks, tol)
         mode = rule.get('witnesses')
         if mode in ('one', 'two'):
             agree = float(rule.get('agree_tol', SECOND_TOL))
@@ -546,6 +554,22 @@ def _why_label(why: str | None) -> str:
     }.get(why or '', why or '—')
 
 
+def _fill_ru(fill: dict) -> str:
+    """One paragraph for the bench report. Numbers come from the measurement."""
+    if not fill:
+        return ('Заливка огибающей не измерялась. Это не свидетель: пик подъёма уровня '
+                'закрывает слово только там, где спектральной атаки внутри допуска группы нет.')
+    kept = 'В правиле есть.' if fill.get('kept') else f"В правиле нет: {fill.get('why') or 'не измерена'}."
+    return (
+        'Заливка огибающей — не свидетель и не постановщик. Слово без спектральной атаки внутри допуска группы '
+        'может опереться на пик подъёма уровня, если тот внутри того же допуска. '
+        'Спектральная атака внутри допуска остаётся. Огибающая не опровергает. '
+        f"Слов {fill.get('words', 0)}, проход слова {_ru(fill.get('word_chance'), 3)}, "
+        f"проход строки {_ru(fill.get('line_chance'), 3)}, "
+        f"доказано {fill.get('proved', 0)} против {fill.get('base_proved', 0)}. {kept}"
+    )
+
+
 def render_md(payload: dict) -> str:
     chosen = payload['chosen']
     songs = list(payload.get('songs') or [])
@@ -578,6 +602,8 @@ def render_md(payload: dict) -> str:
         'Фонемный свидетель, если его часы есть в отчёте выравнивания, допускается отдельно. '
         'Роль и модель — в столбце «фонема». Разбор пар — `docs/analysis/bench/phoneme-choice.md`, '
         'хор — `docs/analysis/bench/chorus.md`. Пороги те же: слово не выше 15 %, строка не выше 5 %.',
+        '',
+        _fill_ru(payload.get('attack_fill') or {}),
         '',
         _why_ru(chosen, payload.get('current_chance')),
         '',
@@ -940,8 +966,14 @@ def _mode_of_line(modes: dict, line: dict) -> str:
 
 
 def _probe_parts(words: list[dict], peaks: np.ndarray, group: str | None, mode: str,
-                 refute: dict, prev: float | None) -> tuple[list[dict], list[str | None]]:
-    """Proved-word rows and refutation flags. The share K is applied by the caller."""
+                 refute: dict, prev: float | None,
+                 fill_peaks: np.ndarray | None = None) -> tuple[list[dict], list[str | None]]:
+    """Proved-word rows and refutation flags. The share K is applied by the caller.
+
+    `fill_peaks` may supply the attack when the spectral peak is outside the
+    group tolerance. Refutation still reads `peaks`, so the envelope cannot
+    refute a word and cannot move a spectral hit that was already inside.
+    """
     tol = 0.20 if group == 'choir' else 0.10
     align_words = []
     presnap: list[float | None] = []
@@ -958,8 +990,12 @@ def _probe_parts(words: list[dict], peaks: np.ndarray, group: str | None, mode: 
         }
         align_words.append(item)
         owned = None if cursor is None else cursor + tol
-        presnap.append(Q.nearest_attack(float(word['t']), peaks, owned))
-        cursor = float(word['t'])
+        t = float(word['t'])
+        if fill_peaks is not None:
+            presnap.append(Q.fill_attack(t, peaks, fill_peaks, owned, tol))
+        else:
+            presnap.append(Q.nearest_attack(t, peaks, owned))
+        cursor = t
     proved = Q.prove_words(align_words, presnap, tol, witnesses=mode, agree_tol=SECOND_TOL)
     flags = [Q.word_refuted(word, peaks, refute) for word in align_words]
     return proved, flags
@@ -973,7 +1009,8 @@ def _probe_line(words: list[dict], peaks: np.ndarray, group: str | None, mode: s
 
 def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: dict,
                      shift: float = 0.0, shuffle: bool = False, primary: str | None = None,
-                     choir_peaks: np.ndarray | None = None) -> list[dict]:
+                     choir_peaks: np.ndarray | None = None,
+                     fill_peaks: np.ndarray | None = None) -> list[dict]:
     """One row per candidate line: proved words and refutation flags under this probe.
 
     The same shift and the same previous-line start as `line_pass_count`. K is not
@@ -1007,7 +1044,8 @@ def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: 
                 moved.append(item)
         use_peaks = choir_peaks if line.get('group') == 'choir' and choir_peaks is not None else peaks
         proved, flags = _probe_parts(
-            moved, use_peaks, line.get('group'), _mode_of_line(modes, line), refute, incoming[i])
+            moved, use_peaks, line.get('group'), _mode_of_line(modes, line), refute, incoming[i],
+            fill_peaks=fill_peaks)
         out.append({
             'id': line.get('id'),
             'lang': line.get('lang') or '?',
@@ -1021,7 +1059,8 @@ def line_probe_parts(lines: list[dict], peaks: np.ndarray, modes: dict, refute: 
 
 def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: dict, share: float,
                     shift: float = 0.0, shuffle: bool = False, primary: str | None = None,
-                    choir_peaks: np.ndarray | None = None) -> tuple[int, int]:
+                    choir_peaks: np.ndarray | None = None,
+                    fill_peaks: np.ndarray | None = None) -> tuple[int, int]:
     """Candidate lines that still pass after one shared shift, or after a rotation.
 
     The cue belongs to the real line and is not applied to the shifted first word.
@@ -1029,7 +1068,7 @@ def line_pass_count(lines: list[dict], peaks: np.ndarray, modes: dict, refute: d
     moved starts own the peaks. Witness clocks stay on the word they were measured for.
     """
     parts = line_probe_parts(lines, peaks, modes, refute, shift=shift, shuffle=shuffle, primary=primary,
-                             choir_peaks=choir_peaks)
+                             choir_peaks=choir_peaks, fill_peaks=fill_peaks)
     hits = sum(1 for item in parts if Q.line_word_ok(item['proved'], item['flags'], share))
     return hits, len(parts)
 
@@ -1045,18 +1084,20 @@ def measure_line_table(per_song: list[dict], modes: dict, refute: dict, primary:
         for song in per_song:
             peaks = song['sets'][(WITNESS_HEIGHT, False)]
             choir_peaks = song.get('envelope_peaks') if song.get('use_choir_envelope') else None
+            fill_peaks = song.get('envelope_peaks') if song.get('use_attack_fill') else None
             lines = song['all_lines']
             for mag in SHIFTS:
                 for sign in (mag, -mag):
                     h, n = line_pass_count(lines, peaks, modes, cut, share, shift=sign, primary=primary,
-                                           choir_peaks=choir_peaks)
+                                           choir_peaks=choir_peaks, fill_peaks=fill_peaks)
                     shift_hits[mag][0] += h
                     shift_hits[mag][1] += n
             h, n = line_pass_count(lines, peaks, modes, cut, share, shuffle=True, primary=primary,
-                                   choir_peaks=choir_peaks)
+                                   choir_peaks=choir_peaks, fill_peaks=fill_peaks)
             shuf[0] += h
             shuf[1] += n
-            h, n = line_pass_count(lines, peaks, modes, cut, share, primary=primary, choir_peaks=choir_peaks)
+            h, n = line_pass_count(lines, peaks, modes, cut, share, primary=primary,
+                                   choir_peaks=choir_peaks, fill_peaks=fill_peaks)
             true_hits[0] += h
             true_hits[1] += n
             by_song[song['slug']] = h
@@ -1376,6 +1417,165 @@ def _public_refute(row: dict) -> dict:
     return out
 
 
+def fill_ok(words: int, word_chance: float | None, within_limit: bool,
+            proved: int, base_proved: int) -> bool:
+    """Envelope fill for a missing spectral attack, or not.
+
+    At least 30 placed words. Word chance at or under 15 %. Every placer's
+    line chance at or under 5 %. Proved lines strictly rise. Solo lines may
+    change: the short-share gap is in the solo, and a choir-only envelope
+    already failed that test.
+    """
+    if int(words) < MIN_WORDS:
+        return False
+    if word_chance is None or float(word_chance) > LIMIT + 1e-12:
+        return False
+    if not within_limit:
+        return False
+    return int(proved) > int(base_proved)
+
+
+def _fill_rule(mode: str) -> dict:
+    return {
+        'tol': 0.10,
+        'choir_tol': 0.20,
+        'agree_tol': SECOND_TOL,
+        'require_second': False,
+        'witnesses': mode if mode in ('one', 'two') else 'two',
+    }
+
+
+def fill_word_chance(per_song: list[dict], modes: dict) -> tuple[int, float | None]:
+    """Random-pass of spectral-or-envelope, witnesses unchanged.
+
+    The previous-word claim is not applied here. The line probe applies it,
+    and that probe is what has to stay at or under 5 %.
+    """
+    buckets = []
+    words = 0
+    for song in per_song:
+        spectral = song['sets'][(WITNESS_HEIGHT, False)]
+        envelope = song.get('envelope_peaks')
+        if envelope is None:
+            envelope = np.zeros(0)
+        grouped: dict[str, list[dict]] = {}
+        lines_by_mode: dict[str, list[dict]] = {}
+        for line in song['lines']:
+            if not line.get('placed') or not line.get('words'):
+                continue
+            mode = _mode_of_line(modes, line)
+            grouped.setdefault(mode, []).extend(line['words'])
+            lines_by_mode.setdefault(mode, []).append(line)
+            words += len(line['words'])
+        for mode, recs in grouped.items():
+            buckets.append((
+                recs, spectral, envelope, _fill_rule(mode),
+                shuffled_records(lines_by_mode[mode]),
+            ))
+    if words == 0:
+        return 0, None
+    rates = []
+    for mag in SHIFTS:
+        hits = n = 0
+        for recs, spectral, envelope, rule, _shuf in buckets:
+            for sign in (mag, -mag):
+                h, c = hit_count(recs, spectral, sign, rule, fill_peaks=envelope)
+                hits += h
+                n += c
+        if n:
+            rates.append(hits / n)
+    hits = n = 0
+    for _recs, spectral, envelope, rule, shuf in buckets:
+        if not shuf:
+            continue
+        h, c = hit_count(shuf, spectral, 0.0, rule, fill_peaks=envelope)
+        hits += h
+        n += c
+    if n:
+        rates.append(hits / n)
+    if not rates:
+        return words, None
+    return words, float(max(rates))
+
+
+def _fill_why(words: int, word_chance: float | None, within_limit: bool,
+              proved: int, base_proved: int, kept: bool) -> str:
+    if kept:
+        return 'принят'
+    if int(words) < MIN_WORDS:
+        return 'слов меньше 30'
+    if word_chance is None or float(word_chance) > LIMIT + 1e-12:
+        return 'проход слова выше 15 %'
+    if not within_limit:
+        return 'проход строки выше 5 %'
+    if int(proved) <= int(base_proved):
+        return 'доказанных строк не больше'
+    return 'не уложился в те же пороги'
+
+
+def _public_fill(report: dict) -> dict:
+    return {
+        'kept': bool(report.get('kept')),
+        'words': int(report.get('words') or 0),
+        'word_chance': _round(report.get('word_chance')),
+        'line_chance': _round(report.get('line_chance')),
+        'proved': int(report.get('proved') or 0),
+        'base_proved': int(report.get('base_proved') or 0),
+        'within_limit': bool(report.get('within_limit')),
+        'why': report.get('why') or '',
+    }
+
+
+def _measure_attack_fill(per_song: list[dict], modes: dict, refute: dict, baseline: dict) -> dict:
+    """Remeasure the line grid with the envelope fill. Keep it only when fill_ok passes."""
+    for song in per_song:
+        song['use_attack_fill'] = True
+    print('атака: заливка огибающей', flush=True)
+    tables = measure_primary_tables(per_song, modes, refute)
+    got = choose_with_primaries(tables)
+    n_words, chance = fill_word_chance(per_song, modes)
+    base_n = int(baseline.get('proved') or 0)
+    got_n = int(got.get('proved') or 0)
+    within = bool(got.get('within_limit'))
+    kept = fill_ok(n_words, chance, within, got_n, base_n)
+    if not kept:
+        for song in per_song:
+            song['use_attack_fill'] = False
+    why = _fill_why(n_words, chance, within, got_n, base_n, kept)
+    print(
+        f'заливка огибающей: {why}, доказано {got_n} против {base_n}, '
+        f'проход слова {chance}, проход строки {got.get("chance")}',
+        flush=True,
+    )
+    return {
+        'kept': kept,
+        'words': n_words,
+        'word_chance': chance,
+        'line_chance': got.get('chance'),
+        'proved': got_n,
+        'base_proved': base_n,
+        'within_limit': within,
+        'why': why,
+        'tables': tables,
+        'picked': got,
+    }
+
+
+def _empty_fill(base_proved: int, why: str) -> dict:
+    return {
+        'kept': False,
+        'words': 0,
+        'word_chance': None,
+        'line_chance': None,
+        'proved': 0,
+        'base_proved': base_proved,
+        'within_limit': False,
+        'why': why,
+        'tables': None,
+        'picked': None,
+    }
+
+
 def build_payload(slugs: list[str]) -> dict:
     import features as F
 
@@ -1475,6 +1675,16 @@ def build_payload(slugs: list[str]) -> dict:
         primary_tables = baseline_tables
         picked = baseline_picked
         print(f'фонемный свидетель не допущен ({e.__class__.__name__}: {e})', flush=True)
+    try:
+        fill_report = _measure_attack_fill(per_song, modes, refute, picked)
+    except Exception as e:
+        for song in per_song:
+            song['use_attack_fill'] = False
+        fill_report = _empty_fill(int(picked.get('proved') or 0), f'замер не собран: {e.__class__.__name__}')
+        print(f'заливка огибающей не допущена ({e.__class__.__name__}: {e})', flush=True)
+    if fill_report.get('kept') and fill_report.get('tables') is not None:
+        primary_tables = fill_report['tables']
+        picked = fill_report['picked']
     blocked = set(picked.get('blocked_primaries') or [])
     line_rows = []
     for share in LINE_SHARES:
@@ -1542,6 +1752,7 @@ def build_payload(slugs: list[str]) -> dict:
         'adopt': adopt,
         'choir_attack': choir_attack,
         'choir_clock': choir_clock,
+        'attack_fill': bool(fill_report.get('kept')),
     }
     density = []
     for song in per_song:
@@ -1566,6 +1777,7 @@ def build_payload(slugs: list[str]) -> dict:
         'density': density,
         'candidates': public_rows,
         'phoneme': decision,
+        'attack_fill': _public_fill(fill_report),
         '_refutations': collect_refutations(per_song, refute),
     }
 
@@ -1793,6 +2005,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"{scope['song']}: {scope.get('witnesses')} проход {scope.get('chance')} ({scope.get('why')})")
     print(f"фонема оставлена {bool(phone.get('kept'))}, поиск {phone.get('search')}, "
           f"по перебору {phone.get('proved')}, хор {chosen.get('choir_attack')}/{chosen.get('choir_clock')}")
+    fill = payload.get('attack_fill') or {}
+    print(f"заливка огибающей {bool(fill.get('kept'))}: {fill.get('why')}, "
+          f"{fill.get('proved')} против {fill.get('base_proved')}")
     if not chosen.get('within_limit'):
         return 2
     have = set(payload.get('songs') or [])

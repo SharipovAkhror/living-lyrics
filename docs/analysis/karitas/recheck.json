@@ -1,0 +1,1563 @@
+{
+  "slug": "karitas",
+  "checked": "2026-10-20",
+  "gemini": "filled",
+  "frames": "Кадры официального видео не снимались.",
+  "lines": [
+    {
+      "id": "fuzuli-f1-1",
+      "lang": "az",
+      "start": 37.39,
+      "end": 45.3,
+      "text": "öyle ser-mestem ki idrâk etmezem dünyâ nedir",
+      "cue": {
+        "n": 1,
+        "track": "tr",
+        "role": "original",
+        "text": "öyle ser-mestem ki idrâk etmezem dünyâ nedir"
+      },
+      "whisper": "Ki idrak etmezen dünya nedir?",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L1",
+          "heard": "öyle ser-mestem ki idrâk etmezem dünyâ nedir",
+          "start": 37.3,
+          "end": 45.4,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f2-1",
+      "lang": "az",
+      "start": 46.82,
+      "end": 54.93,
+      "text": "men kimem sâkî olan kimdir mey û sahbâ nedir",
+      "cue": {
+        "n": 2,
+        "track": "tr",
+        "role": "original",
+        "text": "men kimem sâkî olan kimdir mey û sahbâ nedir"
+      },
+      "whisper": "Ben kim olsa ki olan kimdir? / Mey-i sahba nedir?",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L2",
+          "heard": "men kimem sâkî olan kimdir mey û sahbâ nedir",
+          "start": 46.8,
+          "end": 54.6,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f3-1",
+      "lang": "az",
+      "start": 55.67,
+      "end": 65.83,
+      "text": "gerçi cânândan dil-i şeydâ içün kâm isterem",
+      "cue": {
+        "n": 3,
+        "track": "tr",
+        "role": "original",
+        "text": "gerçi cânândan dil-i şeydâ içün kâm isterem"
+      },
+      "whisper": "Gerçi canandan dili şeytan için kâm isterem.",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L3",
+          "heard": "gerçi cânândan dil-i şeydâ içün kâm isterem",
+          "start": 55.4,
+          "end": 64.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f4-1",
+      "lang": "az",
+      "start": 65.84,
+      "end": 74.02,
+      "text": "sorsa cânân bilmezem kâm-ı dil-i şeydâ nedir",
+      "cue": {
+        "n": 4,
+        "track": "tr",
+        "role": "original",
+        "text": "sorsa cânân bilmezem kâm-ı dil-i şeydâ nedir"
+      },
+      "whisper": "Sorsa canan bilmezem kâmı dili şeytan nedir?",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L4",
+          "heard": "sorsa cânân bilmezem kâm-ı dil-i şeydâ nedir",
+          "start": 65.6,
+          "end": 73.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f5-1",
+      "lang": "az",
+      "start": 76.62,
+      "end": 83.43,
+      "text": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+      "cue": {
+        "n": 5,
+        "track": "tr",
+        "role": "original",
+        "text": "hikmet-i dünyâ vü mâfiha bilen arif degil"
+      },
+      "whisper": "Hikmeti dünyayı harif oldur",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 76.4,
+          "end": 82.6,
+          "confidence": "high"
+        },
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 82.9,
+          "end": 89.9,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f6-1",
+      "lang": "az",
+      "start": 83.44,
+      "end": 90.34,
+      "text": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+      "cue": {
+        "n": 6,
+        "track": "tr",
+        "role": "original",
+        "text": "arif oldur bilmeye dünyâ vü mâfiha nedir"
+      },
+      "whisper": "Hikmeti dünyayı harif oldur",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 82.9,
+          "end": 89.9,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f5-2",
+      "lang": "az",
+      "start": 90.35,
+      "end": 97.17,
+      "text": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+      "cue": {
+        "n": 7,
+        "track": "tr",
+        "role": "original",
+        "text": "hikmet-i dünyâ vü mâfiha bilen arif degil"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 90.1,
+          "end": 96.4,
+          "confidence": "high"
+        },
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 96.6,
+          "end": 103.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f6-2",
+      "lang": "az",
+      "start": 97.18,
+      "end": 104.15,
+      "text": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+      "cue": {
+        "n": 8,
+        "track": "tr",
+        "role": "original",
+        "text": "arif oldur bilmeye dünyâ vü mâfiha nedir"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 96.6,
+          "end": 103.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h1-1",
+      "lang": "la",
+      "start": 104.23,
+      "end": 112.35,
+      "text": "Karitas habundat in omnia",
+      "cue": {
+        "n": 9,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Love abounds in all"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L7",
+          "heard": "Karitas habundat in omnia",
+          "start": 104.5,
+          "end": 109.4,
+          "confidence": "high"
+        },
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 109.5,
+          "end": 112.4,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h2-1",
+      "lang": "la",
+      "start": 112.36,
+      "end": 117.17,
+      "text": "de imis excellentissima",
+      "cue": {
+        "n": 10,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "from the depths exalted and excelling"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L8",
+          "heard": "de imis excellentissima",
+          "start": 112.6,
+          "end": 116.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h3-1",
+      "lang": "la",
+      "start": 117.18,
+      "end": 120.46,
+      "text": "super sidera",
+      "cue": {
+        "n": 11,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "over every star,"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L9",
+          "heard": "super sidera",
+          "start": 117,
+          "end": 120.6,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h4-1",
+      "lang": "la",
+      "start": 120.47,
+      "end": 124.48,
+      "text": "atque amantissima",
+      "cue": {
+        "n": 12,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "and most beloved of all"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "atque amantissima",
+          "start": 120.8,
+          "end": 124.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h5-1",
+      "lang": "la",
+      "start": 124.48,
+      "end": 127.58,
+      "text": "in omnia",
+      "cue": {
+        "n": 13,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "in all"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "atque amantissima",
+          "start": 120.8,
+          "end": 124.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 125,
+          "end": 128.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h6-1",
+      "lang": "la",
+      "start": 128.86,
+      "end": 138.48,
+      "text": "quia summo regi osculum pacis dedit",
+      "cue": {
+        "n": 14,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "for to the highest King the kiss of peace was given."
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L12",
+          "heard": "quia summo regi osculum pacis dedit",
+          "start": 128.8,
+          "end": 136.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f5-3",
+      "lang": "az",
+      "start": 138.73,
+      "end": 145.48,
+      "text": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+      "cue": {
+        "n": 15,
+        "track": "tr",
+        "role": "original",
+        "text": "hikmet-i dünyâ vü mâfiha bilen arif degil"
+      },
+      "whisper": "Hikmeti dünyayı mavi harif oldur",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 138.5,
+          "end": 144.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 144.7,
+          "end": 151.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f6-3",
+      "lang": "az",
+      "start": 145.48,
+      "end": 152.09,
+      "text": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+      "cue": {
+        "n": 16,
+        "track": "tr",
+        "role": "original",
+        "text": "arif oldur bilmeye dünyâ vü mâfiha nedir"
+      },
+      "whisper": "Hikmeti dünyayı mavi harif oldur / Hikmeti dünyayı mavi harif oldur",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 144.7,
+          "end": 151.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 151.7,
+          "end": 157.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f5-4",
+      "lang": "az",
+      "start": 152.09,
+      "end": 158.78,
+      "text": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+      "cue": {
+        "n": 17,
+        "track": "tr",
+        "role": "original",
+        "text": "hikmet-i dünyâ vü mâfiha bilen arif degil"
+      },
+      "whisper": "Hikmeti dünyayı mavi harif oldur",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 151.7,
+          "end": 157.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 158,
+          "end": 164.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f6-4",
+      "lang": "az",
+      "start": 158.78,
+      "end": 164.77,
+      "text": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+      "cue": {
+        "n": 18,
+        "track": "tr",
+        "role": "original",
+        "text": "arif oldur bilmeye dünyâ vü mâfiha nedir"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 158,
+          "end": 164.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f7-1",
+      "lang": "az",
+      "start": 164.77,
+      "end": 171.09,
+      "text": "ah u feryâdın fuzûlî incidipdir âlemi",
+      "cue": {
+        "n": 19,
+        "track": "tr",
+        "role": "original",
+        "text": "ah u feryâdın fuzûlî incidipdir âlemi"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L13",
+          "heard": "ah u feryâdın fuzûlî incidipdir âlemi",
+          "start": 165,
+          "end": 171.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f8-1",
+      "lang": "az",
+      "start": 171.47,
+      "end": 180.26,
+      "text": "ger belâ-yı aşk ile hoşnûd isen kavga nedir.",
+      "cue": {
+        "n": 20,
+        "track": "tr",
+        "role": "original",
+        "text": "ger belâ-yı aşk ile hoşnûd isen kavga nedir."
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L14",
+          "heard": "ger belâ-yı aşk ile hoşnûd isen kavga nedir.",
+          "start": 171.6,
+          "end": 178.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h1-2",
+      "lang": "la",
+      "start": 195,
+      "end": 202.63,
+      "text": "Karitas habundat in omnia",
+      "cue": {
+        "n": 21,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Love abounds in all"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L7",
+          "heard": "Karitas habundat in omnia",
+          "start": 195.5,
+          "end": 200.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 200.6,
+          "end": 203.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h2-2",
+      "lang": "la",
+      "start": 202.8,
+      "end": 207.41,
+      "text": "de imis excellentissima",
+      "cue": {
+        "n": 22,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "from the depths exalted and excelling"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 200.6,
+          "end": 203.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L8",
+          "heard": "de imis excellentissima",
+          "start": 203.6,
+          "end": 207.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h3-2",
+      "lang": "la",
+      "start": 207.92,
+      "end": 211,
+      "text": "super sidera",
+      "cue": {
+        "n": 23,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "over every star,"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L9",
+          "heard": "super sidera",
+          "start": 207.6,
+          "end": 211,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h4-2",
+      "lang": "la",
+      "start": 211,
+      "end": 214.51,
+      "text": "atque amantissima",
+      "cue": {
+        "n": 24,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "and most beloved of all"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "atque amantissima",
+          "start": 211.2,
+          "end": 215.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h5-2",
+      "lang": "la",
+      "start": 214.58,
+      "end": 219.54,
+      "text": "in omnia",
+      "cue": {
+        "n": 25,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "in all"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "atque amantissima",
+          "start": 211.2,
+          "end": 215.5,
+          "confidence": "high"
+        },
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 215.7,
+          "end": 219,
+          "confidence": "high"
+        },
+        {
+          "line": "L12",
+          "heard": "quia summo regi osculum pacis dedit",
+          "start": 219.2,
+          "end": 227.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h6-2",
+      "lang": "la",
+      "start": 219.54,
+      "end": 229.1,
+      "text": "quia summo regi osculum pacis dedit",
+      "cue": {
+        "n": 26,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "for to the highest King the kiss of peace was given."
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L12",
+          "heard": "quia summo regi osculum pacis dedit",
+          "start": 219.2,
+          "end": 227.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f5-5",
+      "lang": "az",
+      "start": 229.19,
+      "end": 235.66,
+      "text": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+      "cue": {
+        "n": 27,
+        "track": "tr",
+        "role": "original",
+        "text": "hikmet-i dünyâ vü mâfiha bilen arif degil"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 228.8,
+          "end": 235.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f6-5",
+      "lang": "az",
+      "start": 235.66,
+      "end": 242.2,
+      "text": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+      "cue": {
+        "n": 28,
+        "track": "tr",
+        "role": "original",
+        "text": "arif oldur bilmeye dünyâ vü mâfiha nedir"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 235.4,
+          "end": 241.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f5-6",
+      "lang": "az",
+      "start": 242.2,
+      "end": 248.65,
+      "text": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+      "cue": {
+        "n": 29,
+        "track": "tr",
+        "role": "original",
+        "text": "hikmet-i dünyâ vü mâfiha bilen arif degil"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L5",
+          "heard": "hikmet-i dünyâ vü mâfiha bilen arif degil",
+          "start": 242.6,
+          "end": 248.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f6-6",
+      "lang": "az",
+      "start": 248.65,
+      "end": 254.5,
+      "text": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+      "cue": {
+        "n": 30,
+        "track": "tr",
+        "role": "original",
+        "text": "arif oldur bilmeye dünyâ vü mâfiha nedir"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L6",
+          "heard": "arif oldur bilmeye dünyâ vü mâfiha nedir",
+          "start": 248.7,
+          "end": 254.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f7-2",
+      "lang": "az",
+      "start": 254.51,
+      "end": 260.81,
+      "text": "ah u feryâdın fuzûlî incidipdir âlemi",
+      "cue": {
+        "n": 31,
+        "track": "tr",
+        "role": "original",
+        "text": "ah u feryâdın fuzûlî incidipdir âlemi"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": []
+    },
+    {
+      "id": "fuzuli-f8-2",
+      "lang": "az",
+      "start": 261.14,
+      "end": 268.16,
+      "text": "ger belâ-yı aşk ile hoşnûd isen kavga nedir.",
+      "cue": {
+        "n": 32,
+        "track": "tr",
+        "role": "original",
+        "text": "ger belâ-yı aşk ile hoşnûd isen kavga nedir."
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L14",
+          "heard": "ger belâ-yı aşk ile hoşnûd isen kavga nedir",
+          "start": 260.9,
+          "end": 267.6,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "call-y1",
+      "lang": "ar",
+      "start": 291.28,
+      "end": 298.42,
+      "text": "يَاهُو",
+      "cue": {
+        "n": 33,
+        "track": "ar",
+        "role": "original",
+        "text": "ياهو"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": []
+    },
+    {
+      "id": "fuzuli-f1a",
+      "lang": "az",
+      "start": 427.93,
+      "end": 435.44,
+      "text": "öyle ser-mestem ki idrâk etmezem",
+      "cue": {
+        "n": 34,
+        "track": "tr",
+        "role": "original",
+        "text": "öyle ser-mestem ki idrâk etmezem"
+      },
+      "whisper": "Öyle sermezdim ki idraket",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L16",
+          "heard": "öyle ser-mestem ki idrâk etmezem",
+          "start": 427.8,
+          "end": 432.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f1-2",
+      "lang": "az",
+      "start": 437.46,
+      "end": 448.16,
+      "text": "öyle ser-mestem ki idrâk etmezem dünyâ nedir",
+      "cue": {
+        "n": 35,
+        "track": "tr",
+        "role": "original",
+        "text": "öyle ser-mestem ki idrâk etmezem dünyâ nedir"
+      },
+      "whisper": "Ki idraket dünyayı nadir",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L1",
+          "heard": "öyle ser-mestem ki idrâk etmezem dünyâ nedir",
+          "start": 437.2,
+          "end": 445,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "call-y2-1",
+      "lang": "ar",
+      "start": 452.28,
+      "end": 458.68,
+      "text": "يَا مَوْلَانَا",
+      "cue": {
+        "n": 36,
+        "track": "ar",
+        "role": "original",
+        "text": "يا مَولانا"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L17",
+          "heard": "يَا مَوْلَانَا",
+          "start": 452.8,
+          "end": 458,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "call-y2-2",
+      "lang": "ar",
+      "start": 459.84,
+      "end": 466.31,
+      "text": "يَا مَوْلَانَا",
+      "cue": {
+        "n": 37,
+        "track": "ar",
+        "role": "original",
+        "text": "يا مَولانا"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L17",
+          "heard": "يَا مَوْلَانَا",
+          "start": 459.2,
+          "end": 466,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "shushtari-s1-1",
+      "lang": "ar",
+      "start": 467.07,
+      "end": 479.71,
+      "text": "يَا سَاقِيَ الْقَوْمِ مِنْ شَذَاهُ",
+      "cue": {
+        "n": 38,
+        "track": "ar",
+        "role": "original",
+        "text": "يا ساقيَ القَومِ مِن شَذاهُ"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L18",
+          "heard": "يَا سَاقِيَ الْقَوْمِ مِنْ شَذَاهُ",
+          "start": 467.5,
+          "end": 478.5,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "shushtari-s1-2",
+      "lang": "ar",
+      "start": 480.52,
+      "end": 486.32,
+      "text": "يَا سَاقِيَ الْقَوْمِ مِنْ شَذَاهُ",
+      "cue": {
+        "n": 39,
+        "track": "ar",
+        "role": "original",
+        "text": "يا ساقيَ القَومِ مِن شَذاهُ"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L18",
+          "heard": "يَا سَاقِيَ الْقَوْمِ مِنْ شَذَاهُ",
+          "start": 480.2,
+          "end": 485.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "shushtari-s2",
+      "lang": "ar",
+      "start": 486.32,
+      "end": 504.15,
+      "text": "اَلْكُلُّ لَمَّا سَقَيْتَ تَاهُوا",
+      "cue": {
+        "n": 40,
+        "track": "ar",
+        "role": "original",
+        "text": "الكلُّ لمَّا سَقيتَ تاهُوا"
+      },
+      "whisper": "Tehtar",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L19",
+          "heard": "اَلْكُلُّ لَمَّا سَقَيْتَ تَاهُوا",
+          "start": 486.2,
+          "end": 494,
+          "confidence": "high"
+        },
+        {
+          "line": "L19",
+          "heard": "اَلْكُلُّ لَمَّا سَقَيْتَ تَاهُوا",
+          "start": 495.2,
+          "end": 501.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "nabulsi-n1",
+      "lang": "ar",
+      "start": 509.94,
+      "end": 520.11,
+      "text": "عَيْنِي لِغَيْرِ جَمَالِكُمْ لَا تَنْظُرُ",
+      "cue": {
+        "n": 41,
+        "track": "ar",
+        "role": "original",
+        "text": "عَيني لغيرِ جمالِكُم لا تَنظُرُ"
+      },
+      "whisper": "Cemaat",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L20",
+          "heard": "عَيْنِي لِغَيْرِ جَمَالِكُمْ لَا تَنْظُرُ",
+          "start": 509.5,
+          "end": 518.3,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "nabulsi-n2",
+      "lang": "ar",
+      "start": 520.8,
+      "end": 529.88,
+      "text": "وَ سِوَاكُمْ فِي خَاطِرِي لَا يَخْطُرُ",
+      "cue": {
+        "n": 42,
+        "track": "ar",
+        "role": "original",
+        "text": "و سِواكُم في خاطِري لا يَخطُرُ"
+      },
+      "whisper": "Wasiwakum fi khatiri",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "L21",
+          "heard": "وَ سِوَاكُمْ فِي خَاطِرِي لَا يَخْطُرُ",
+          "start": 520.5,
+          "end": 528.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "sabr-p1",
+      "lang": "ar",
+      "start": 530.07,
+      "end": 540.03,
+      "text": "صَبَّرْتُ قَلْبِي عَلَيْكُمْ فَأَجَابَنِي",
+      "cue": {
+        "n": 43,
+        "track": "ar",
+        "role": "original",
+        "text": "صَبَّرتُ قَلبي عَليكُم فأجَابني"
+      },
+      "whisper": "Bortu kalb / Bortu kalbi alaykum / لا صبر لي لا صبر لي كيف أصبر",
+      "verdict": "weak",
+      "gemini": [
+        {
+          "line": "NONE",
+          "heard": "صَبَّرْتُ قَلْبِي",
+          "start": 530.2,
+          "end": 532.8,
+          "confidence": "high"
+        },
+        {
+          "line": "L22",
+          "heard": "صَبَّرْتُ قَلْبِي عَلَيْكُمْ فَأَجَابَنِي",
+          "start": 533.8,
+          "end": 539,
+          "confidence": "high"
+        },
+        {
+          "line": "L23",
+          "heard": "لَا صَبْرَ لِي، لَا صَبْرَ لِي، كَيْفَ أَصْبِرُ؟",
+          "start": 539.7,
+          "end": 548,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "sabr-p2",
+      "lang": "ar",
+      "start": 540.04,
+      "end": 550.2,
+      "text": "لَا صَبْرَ لِي، لَا صَبْرَ لِي، كَيْفَ أَصْبِرُ؟",
+      "cue": {
+        "n": 44,
+        "track": "ar",
+        "role": "original",
+        "text": "لا صَبرَ لِي، لا صَبرَ لِي، كَيفَ أصبِرُ؟"
+      },
+      "whisper": "لا صبر لي لا صبر لي كيف أصبر",
+      "verdict": "agree",
+      "gemini": [
+        {
+          "line": "L23",
+          "heard": "لَا صَبْرَ لِي، لَا صَبْرَ لِي، كَيْفَ أَصْبِرُ؟",
+          "start": 539.7,
+          "end": 548,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h1-3",
+      "lang": "la",
+      "start": 879.34,
+      "end": 884.74,
+      "text": "Karitas habundat in omnia",
+      "cue": {
+        "n": 45,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Love abounds in all"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L7",
+          "heard": "Karitas habundat in omnia",
+          "start": 878.8,
+          "end": 884,
+          "confidence": "high"
+        },
+        {
+          "line": "L8",
+          "heard": "de imis excellentissima",
+          "start": 884.3,
+          "end": 887.3,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h2-3",
+      "lang": "la",
+      "start": 884.76,
+      "end": 887.74,
+      "text": "de imis excellentissima",
+      "cue": {
+        "n": 46,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "from the depths exalted and excelling"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L8",
+          "heard": "de imis excellentissima",
+          "start": 884.3,
+          "end": 887.3,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h3-3",
+      "lang": "la",
+      "start": 887.74,
+      "end": 889.78,
+      "text": "super sidera",
+      "cue": {
+        "n": 47,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "over every star,"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L9",
+          "heard": "super sidera",
+          "start": 887.5,
+          "end": 890,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h4-3",
+      "lang": "la",
+      "start": 889.78,
+      "end": 892.46,
+      "text": "atque amantissima",
+      "cue": {
+        "n": 48,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "and most beloved of all,"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "atque amantissima",
+          "start": 890.2,
+          "end": 892.4,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h5-3",
+      "lang": "la",
+      "start": 892.46,
+      "end": 895.07,
+      "text": "in omnia",
+      "cue": {
+        "n": 49,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "in all"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 892.6,
+          "end": 895.1,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h6-3",
+      "lang": "la",
+      "start": 895.06,
+      "end": 900,
+      "text": "quia summo regi osculum pacis dedit",
+      "cue": {
+        "n": 50,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "for to the highest King the kiss of peace was given."
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L12",
+          "heard": "quia summo regi osculum pacis dedit",
+          "start": 895.4,
+          "end": 900.3,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h1-4",
+      "lang": "la",
+      "start": 900.2,
+      "end": 905.36,
+      "text": "Karitas habundat in omnia",
+      "cue": {
+        "n": 51,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "Love abounds in all"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L7",
+          "heard": "Karitas habundat in omnia",
+          "start": 900.6,
+          "end": 905.3,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h2-4",
+      "lang": "la",
+      "start": 905.36,
+      "end": 908.13,
+      "text": "de imis excellentissima",
+      "cue": {
+        "n": 52,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "from the depths exalted and excelling"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L8",
+          "heard": "de imis excellentissima",
+          "start": 905.5,
+          "end": 908.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h3-4",
+      "lang": "la",
+      "start": 908.14,
+      "end": 910.3,
+      "text": "super sidera",
+      "cue": {
+        "n": 53,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "over every star,"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L9",
+          "heard": "super sidera",
+          "start": 908.4,
+          "end": 910.8,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h4-4",
+      "lang": "la",
+      "start": 910.68,
+      "end": 913.2,
+      "text": "atque amantissima",
+      "cue": {
+        "n": 54,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "and most beloved of all,"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L10",
+          "heard": "atque amantissima",
+          "start": 911,
+          "end": 913.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h5-4",
+      "lang": "la",
+      "start": 913.2,
+      "end": 915.82,
+      "text": "in omnia",
+      "cue": {
+        "n": 55,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "in all"
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L11",
+          "heard": "in omnia",
+          "start": 913.4,
+          "end": 915.9,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "hildegard-h6-4",
+      "lang": "la",
+      "start": 915.86,
+      "end": 920.95,
+      "text": "quia summo regi osculum pacis dedit",
+      "cue": {
+        "n": 56,
+        "track": "en-GB",
+        "role": "translation",
+        "text": "for to the highest King the kiss of peace was given."
+      },
+      "whisper": "",
+      "verdict": "translation-only",
+      "gemini": [
+        {
+          "line": "L12",
+          "heard": "quia summo regi osculum pacis dedit",
+          "start": 916.2,
+          "end": 921,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f1-3",
+      "lang": "az",
+      "start": 921.08,
+      "end": 926.26,
+      "text": "öyle ser-mestem ki idrâk etmezem dünyâ nedir",
+      "cue": {
+        "n": 57,
+        "track": "tr",
+        "role": "original",
+        "text": "öyle ser-mestem ki idrâk etmezem dünyâ nedir"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L1",
+          "heard": "öyle ser-mestem ki idrâk etmezem dünyâ nedir",
+          "start": 921.2,
+          "end": 926.2,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f2-2",
+      "lang": "az",
+      "start": 926.26,
+      "end": 931.51,
+      "text": "men kimem sâkî olan kimdir mey û sahbâ nedir",
+      "cue": {
+        "n": 58,
+        "track": "tr",
+        "role": "original",
+        "text": "men kimem sâkî olan kimdir mey û sahbâ nedir"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L2",
+          "heard": "men kimem sâkî olan kimdir mey û sahbâ nedir",
+          "start": 926.4,
+          "end": 931.3,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f3-2",
+      "lang": "az",
+      "start": 931.51,
+      "end": 936.71,
+      "text": "gerçi cânândan dil-i şeydâ içün kâm isterem",
+      "cue": {
+        "n": 59,
+        "track": "tr",
+        "role": "original",
+        "text": "gerçi cânândan dil-i şeydâ içün kâm isterem"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L3",
+          "heard": "gerçi cânândan dil-i şeydâ içün kâm isterem",
+          "start": 931.4,
+          "end": 936.3,
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "fuzuli-f4-2",
+      "lang": "az",
+      "start": 936.71,
+      "end": 942.13,
+      "text": "sorsa cânân bilmezem kâm-ı dil-i şeydâ nedir",
+      "cue": {
+        "n": 60,
+        "track": "tr",
+        "role": "original",
+        "text": "sorsa cânân bilmezem kâm-ı dil-i şeydâ nedir"
+      },
+      "whisper": "",
+      "verdict": "subtitle",
+      "gemini": [
+        {
+          "line": "L4",
+          "heard": "sorsa cânân bilmezem kâm-ı dil-i şeydâ nedir",
+          "start": 936.5,
+          "end": 940,
+          "confidence": "high"
+        },
+        {
+          "line": "L16",
+          "heard": "öyle ser-mestem ki idrâk etmezem",
+          "start": 940.2,
+          "end": 942.3,
+          "confidence": "high"
+        }
+      ]
+    }
+  ],
+  "decisions": {
+    "checked": "2026-10-21",
+    "witness": "Точечное прослушивание 2026-10-21 (recheck-gemini-places.json) — один свидетель, та же модель, что recheck-gemini.json. Второй свидетель — транскрипт вокала или реплика того же языка. Переводная реплика говорит только о содержании.",
+    "note": "Удвоение зачина P1 есть в транскрипте, по которому собрана колонка whisper. Текущий transcript.json это удвоение уже не читает.",
+    "fixed": [
+      "Место 6. Зачин صبرت قلبي поставлен строкой sabr-p1a, 530,50–531,94 с. Полная строка sabr-p1 — 534,11–538,80 с. Обе внутри реплики 43."
+    ],
+    "closed": [
+      "Место 1. şeydâ оставлено: турецкая дорожка и точечное прослушивание. Транскрипт на первом проходе читает şeytan.",
+      "Место 3. fuzuli-f7-2 назван точечным прослушиванием и есть в турецкой дорожке.",
+      "Место 4. call-y1 назван точечным прослушиванием и есть в арабской дорожке.",
+      "Место 7. Обрывка первой строки Физули в конце fuzuli-f4-2 нет."
+    ],
+    "open": [
+      "Место 2. Отдельное хоровое in omnia около 109,7–111,8 с. Второй раз, 200,6–203,5 с, этим отрезком не переслушан. Реплики нет.",
+      "Место 5. shushtari-s2 дважды, 486,3–504,1 с, слышит только прослушивание. В дорожке одна реплика.",
+      "Место 8. Антифон 960,8–975,5 с, фразы H1–H5. Реплики нет, транскрипт молчит."
+    ]
+  }
+}

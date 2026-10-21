@@ -7,71 +7,71 @@
   {
     "kind": "vocal",
     "start": 10.6,
-    "end": 10.95
+    "end": 27.4
   },
   {
     "kind": "instrumental",
-    "start": 10.95,
-    "end": 15.5
+    "start": 27.4,
+    "end": 52.7
   },
   {
     "kind": "vocal",
-    "start": 15.5,
-    "end": 16.2
+    "start": 52.7,
+    "end": 52.75
   },
   {
     "kind": "instrumental",
-    "start": 16.2,
-    "end": 19.75
+    "start": 52.75,
+    "end": 98.35
   },
   {
     "kind": "vocal",
-    "start": 19.75,
-    "end": 29.75
+    "start": 98.35,
+    "end": 165.6
   },
   {
     "kind": "instrumental",
-    "start": 29.75,
-    "end": 100.9
+    "start": 165.6,
+    "end": 178.45
   },
   {
     "kind": "vocal",
-    "start": 100.9,
-    "end": 165.8
+    "start": 178.45,
+    "end": 178.55
   },
   {
     "kind": "instrumental",
-    "start": 165.8,
+    "start": 178.55,
     "end": 183.3
   },
   {
     "kind": "vocal",
     "start": 183.3,
-    "end": 251.75
+    "end": 251.8
   },
   {
     "kind": "instrumental",
-    "start": 251.75,
-    "end": 286.4
+    "start": 251.8,
+    "end": 284.3
   },
   {
     "kind": "vocal",
-    "start": 286.4,
-    "end": 388.3
+    "start": 284.3,
+    "end": 387.85
   },
   {
     "kind": "instrumental",
-    "start": 388.3,
+    "start": 387.85,
     "end": 404.15
   },
   {
     "kind": "vocal",
     "start": 404.15,
-    "end": 566.1
+    "end": 566.0
   },
   {
     "kind": "instrumental",
-    "start": 566.1,
+    "start": 566.0,
     "end": 580.05
   }
 ]

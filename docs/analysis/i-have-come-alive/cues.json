@@ -333,7 +333,14 @@
     "cue": 48,
     "lang": "ar",
     "start": 300.248,
-    "end": 304.45
+    "end": 302.34
+  },
+  {
+    "line": "arabic-8b",
+    "cue": 48,
+    "lang": "ar",
+    "start": 302.34,
+    "end": 304.4
   },
   {
     "line": "arabic-10",
@@ -388,8 +395,15 @@
     "line": "arabic-17",
     "cue": 56,
     "lang": "ar",
-    "start": 318.37,
-    "end": 322.57
+    "start": 318.41,
+    "end": 320.4
+  },
+  {
+    "line": "arabic-17b",
+    "cue": 56,
+    "lang": "ar",
+    "start": 320.55,
+    "end": 322.4
   },
   {
     "line": "arabic-19",
@@ -445,7 +459,14 @@
     "cue": 64,
     "lang": "ar",
     "start": 336.742,
-    "end": 344.908
+    "end": 338.68
+  },
+  {
+    "line": "arabic-26b",
+    "cue": 64,
+    "lang": "ar",
+    "start": 338.68,
+    "end": 343.41
   },
   {
     "line": "arabic-29",
@@ -490,25 +511,32 @@
     "end": 371.295
   },
   {
-    "line": "arabic-21b",
+    "line": "rumi-8-1",
     "cue": 71,
-    "lang": "ar",
-    "start": 372.45,
-    "end": 374.553
+    "lang": "en-GB",
+    "start": 372.43,
+    "end": 374.54
   },
   {
-    "line": "arabic-23b",
+    "line": "rumi-8-2",
     "cue": 72,
-    "lang": "ar",
-    "start": 374.553,
-    "end": 376.354
+    "lang": "en-GB",
+    "start": 374.54,
+    "end": 376.34
   },
   {
-    "line": "arabic-26b",
+    "line": "rumi-8-3",
     "cue": 73,
-    "lang": "ar",
-    "start": 376.354,
-    "end": 386.322
+    "lang": "en-GB",
+    "start": 376.34,
+    "end": 381.33
+  },
+  {
+    "line": "rumi-8-3b",
+    "cue": 73,
+    "lang": "en-GB",
+    "start": 381.33,
+    "end": 386.31
   },
   {
     "line": "mawwal-1",
@@ -641,6 +669,13 @@
     "cue": 92,
     "lang": "en-GB",
     "start": 467.952,
+    "end": 470.832
+  },
+  {
+    "line": "rumi-18-2b",
+    "cue": 92,
+    "lang": "en-GB",
+    "start": 470.832,
     "end": 473.712
   },
   {

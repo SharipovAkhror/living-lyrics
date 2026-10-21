@@ -1,0 +1,762 @@
+{
+ "source": "Gemini 3.8 Flash (agy), by ear on the official video audio, captions excluded; 2026-10-20",
+ "clipOffsetApplied": true,
+ "segments": [
+  {
+   "confidence": "high",
+   "end_s": 4.8,
+   "heard": "Daz ouge, da inne ich got sihe",
+   "line": "L1",
+   "start_s": 0.8,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 9.8,
+   "heard": "daz ist daz selbe ouge",
+   "line": "NONE",
+   "start_s": 5.8,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 17,
+   "heard": "da inne mich got sihet",
+   "line": "NONE",
+   "start_s": 13,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 21,
+   "heard": "min ouge und gotes ouge",
+   "line": "NONE",
+   "start_s": 17.6,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 25.6,
+   "heard": "daz ist ein ouge",
+   "line": "L19",
+   "start_s": 21.6,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 32,
+   "heard": "Daz ouge, da inne ich got sihe",
+   "line": "L1",
+   "start_s": 27.5,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 37.2,
+   "heard": "daz ist daz selbe ouge",
+   "line": "NONE",
+   "start_s": 32.6,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 45,
+   "heard": "da inne mich got sihet",
+   "line": "NONE",
+   "start_s": 40.6,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 49,
+   "heard": "min ouge und gotes ouge",
+   "line": "NONE",
+   "start_s": 45.6,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 53.8,
+   "heard": "daz ist ein ouge",
+   "line": "L19",
+   "start_s": 49.6,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 62.8,
+   "heard": "خَرَجْتُ فِي حِينٍ",
+   "line": "NONE",
+   "start_s": 57.8,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 69.5,
+   "heard": "بَعْدَ الْفَنَا",
+   "line": "NONE",
+   "start_s": 65.5,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 74.8,
+   "heard": "وَمِنْ هُنَا",
+   "line": "NONE",
+   "start_s": 71.2,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 81,
+   "heard": "بَقِيتُ بِلَا أَنَا",
+   "line": "NONE",
+   "start_s": 76,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 85.5,
+   "heard": "وَمَنْ أَنَا",
+   "line": "NONE",
+   "start_s": 82.2,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 90,
+   "heard": "يَا أَنَا إِلَّا أَنَا",
+   "line": "L7",
+   "start_s": 85.8,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 96.5,
+   "heard": "خَرَجْتُ فِي حِينٍ",
+   "line": "NONE",
+   "start_s": 91.5,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 101.5,
+   "heard": "بَعْدَ الْفَنَا",
+   "line": "NONE",
+   "start_s": 97,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 106.5,
+   "heard": "وَمِنْ هُنَا",
+   "line": "NONE",
+   "start_s": 102.8,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 112,
+   "heard": "بَقِيتُ بِلَا أَنَا",
+   "line": "NONE",
+   "start_s": 107,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 118,
+   "heard": "وَمَنْ أَنَا",
+   "line": "NONE",
+   "start_s": 113.5,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 123.5,
+   "heard": "يَا أَنَا إِلَّا أَنَا",
+   "line": "L7",
+   "start_s": 118.8,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 129.5,
+   "heard": "يَا أَنَا إِلَّا أَنَا",
+   "line": "L7",
+   "start_s": 124,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 135.5,
+   "heard": "إِلَّا أَنَا",
+   "line": "L8",
+   "start_s": 130,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 142,
+   "heard": "Daz ouge, da inne ich got sihe",
+   "line": "L1",
+   "start_s": 137.5,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 147,
+   "heard": "daz ist daz selbe ouge",
+   "line": "NONE",
+   "start_s": 142.5,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 153,
+   "heard": "da inne mich got sihet",
+   "line": "NONE",
+   "start_s": 149,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 157,
+   "heard": "min ouge und gotes ouge",
+   "line": "NONE",
+   "start_s": 153.5,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 161.2,
+   "heard": "daz ist ein ouge",
+   "line": "L19",
+   "start_s": 157.5,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 166.8,
+   "heard": "Daz ouge, da inne ich got sihe",
+   "line": "L1",
+   "start_s": 162,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 171.8,
+   "heard": "daz ist daz selbe ouge",
+   "line": "NONE",
+   "start_s": 167,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 177.2,
+   "heard": "da inne mich got sihet",
+   "line": "NONE",
+   "start_s": 173,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 181.8,
+   "heard": "min ouge und gotes ouge",
+   "line": "NONE",
+   "start_s": 177.5,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 186.5,
+   "heard": "daz ist ein ouge",
+   "line": "L19",
+   "start_s": 182.2,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 195.8,
+   "heard": "خَرَجْتُ فِي حِينٍ",
+   "line": "NONE",
+   "start_s": 191,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 200.5,
+   "heard": "بَعْدَ الْفَنَا",
+   "line": "NONE",
+   "start_s": 196,
+   "voice": "both",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 205.5,
+   "heard": "وَمِنْ هُنَا",
+   "line": "NONE",
+   "start_s": 201,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 210.5,
+   "heard": "بَقِيتُ بِلَا أَنَا",
+   "line": "NONE",
+   "start_s": 206,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 215.5,
+   "heard": "وَمَنْ أَنَا",
+   "line": "NONE",
+   "start_s": 211,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 220,
+   "heard": "يَا أَنَا إِلَّا أَنَا",
+   "line": "L7",
+   "start_s": 216,
+   "voice": "solo",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 225,
+   "heard": "يَا أَنَا إِلَّا أَنَا",
+   "line": "L7",
+   "start_s": 220.2,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 230.5,
+   "heard": "وَمَنْ أَنَا",
+   "line": "NONE",
+   "start_s": 226,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 240.5,
+   "heard": "يَا أَنَا إِلَّا أَنَا",
+   "line": "L7",
+   "start_s": 236,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 245.5,
+   "heard": "إِلَّا أَنَا",
+   "line": "L8",
+   "start_s": 241,
+   "voice": "choir",
+   "window": 0
+  },
+  {
+   "confidence": "high",
+   "end_s": 308.9,
+   "heard": "سُقَيْتُ كَأْسَ الْهَوَى قَدِيمًا",
+   "line": "L9",
+   "start_s": 303.8,
+   "voice": "choir",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 314.6,
+   "heard": "مِنْ غَيْرِ أَرْضٍ وَلَا سَمَاءِ",
+   "line": "L10",
+   "start_s": 309.2,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 320.3,
+   "heard": "أَصْبَحْتُ فِيهِ فَرِيدَ عَصْرِي",
+   "line": "L11",
+   "start_s": 315,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 326.2,
+   "heard": "بَيْنَ الْوَرَى حَامِلًا لِوَائِي",
+   "line": "L12",
+   "start_s": 320.7,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 337.8,
+   "heard": "لِي مَذْهَبٌ مَذْهَبٌ عَجِيبٌ",
+   "line": "L13",
+   "start_s": 332.8,
+   "voice": "choir",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 343.6,
+   "heard": "بِالْحُسْنِ قَدْ فَاقَ يَا هَنَائِي",
+   "line": "L14",
+   "start_s": 338.2,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 349.4,
+   "heard": "يَا مَنْ هُمُ لِلْجَمِيلِ أَهْلٌ",
+   "line": "L15",
+   "start_s": 344,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 355.4,
+   "heard": "إِنْ لَمْ تَمُنُّوا فَيَا شَقَائِي",
+   "line": "L16",
+   "start_s": 349.8,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 372.5,
+   "heard": "حَشَاكُمُ يَا أُهَيْلَ نَجْدٍ",
+   "line": "L17",
+   "start_s": 367.2,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 378.3,
+   "heard": "أَنْ تَقْطَعُوا مِنْكُمُ رَجَائِي",
+   "line": "L18",
+   "start_s": 372.9,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 384.1,
+   "heard": "يَا مَنْ هُمُ لِلْجَمِيلِ أَهْلٌ",
+   "line": "L15",
+   "start_s": 378.8,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 390.5,
+   "heard": "إِنْ لَمْ تَمُنُّوا فَيَا شَقَائِي",
+   "line": "L16",
+   "start_s": 384.5,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 447.9,
+   "heard": "حَشَاكُمُ يَا أُهَيْلَ نَجْدٍ",
+   "line": "L17",
+   "start_s": 442.5,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 453.5,
+   "heard": "أَنْ تَقْطَعُوا مِنْكُمُ رَجَائِي",
+   "line": "L18",
+   "start_s": 448.3,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 459.2,
+   "heard": "يَا مَنْ هُمُ لِلْجَمِيلِ أَهْلٌ",
+   "line": "L15",
+   "start_s": 453.9,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 464.9,
+   "heard": "إِنْ لَمْ تَمُنُّوا فَيَا شَقَائِي",
+   "line": "L16",
+   "start_s": 459.6,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 481.9,
+   "heard": "حَشَاكُمُ يَا أُهَيْلَ نَجْدٍ",
+   "line": "L17",
+   "start_s": 476.6,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 487.5,
+   "heard": "أَنْ تَقْطَعُوا مِنْكُمُ رَجَائِي",
+   "line": "L18",
+   "start_s": 482.3,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 493.1,
+   "heard": "يَا مَنْ هُمُ لِلْجَمِيلِ أَهْلٌ",
+   "line": "L15",
+   "start_s": 487.9,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 499.1,
+   "heard": "إِنْ لَمْ تَمُنُّوا فَيَا شَقَائِي",
+   "line": "L16",
+   "start_s": 493.5,
+   "voice": "solo",
+   "window": 280
+  },
+  {
+   "confidence": "high",
+   "end_s": 565.8,
+   "heard": "سُقَيْتُ كَأْسَ الْهَوَى قَدِيمًا",
+   "line": "L9",
+   "start_s": 561.2,
+   "voice": "solo",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 571.5,
+   "heard": "مِنْ غَيْرِ أَرْضٍ وَلَا سَمَاءِ",
+   "line": "L10",
+   "start_s": 566.6,
+   "voice": "solo",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 577.1,
+   "heard": "أَصْبَحْتُ فِيهِ فَرِيدَ عَصْرِي",
+   "line": "L11",
+   "start_s": 572.4,
+   "voice": "solo",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 583,
+   "heard": "بَيْنَ الْوَرَى حَامِلًا لِوَائِي",
+   "line": "L12",
+   "start_s": 577.8,
+   "voice": "solo",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 731.5,
+   "heard": "daz ist ein ouge",
+   "line": "L19",
+   "start_s": 729.3,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 733.7,
+   "heard": "und ein gesiht",
+   "line": "L20",
+   "start_s": 731.5,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 735.9,
+   "heard": "und ein bekennen",
+   "line": "L21",
+   "start_s": 733.7,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 738.6,
+   "heard": "und ein minnen",
+   "line": "L22",
+   "start_s": 735.9,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 740.8,
+   "heard": "daz ist ein ouge",
+   "line": "L19",
+   "start_s": 738.6,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 743,
+   "heard": "und ein gesiht",
+   "line": "L20",
+   "start_s": 740.8,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 745.3,
+   "heard": "daz ist ein ouge",
+   "line": "L19",
+   "start_s": 743,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 747.5,
+   "heard": "und ein gesiht",
+   "line": "L20",
+   "start_s": 745.3,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 749.7,
+   "heard": "und ein bekennen",
+   "line": "L21",
+   "start_s": 747.5,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 752.5,
+   "heard": "und ein minnen",
+   "line": "L22",
+   "start_s": 749.7,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 754.8,
+   "heard": "daz ist ein ouge",
+   "line": "L19",
+   "start_s": 752.5,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 757,
+   "heard": "und ein gesiht",
+   "line": "L20",
+   "start_s": 754.8,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 759.2,
+   "heard": "und ein bekennen",
+   "line": "L21",
+   "start_s": 757,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 762.5,
+   "heard": "und ein minnen",
+   "line": "L22",
+   "start_s": 759.2,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 820.8,
+   "heard": "خَرَجْتُ فِي حِينٍ بَعْدَ الْفَنَا",
+   "line": "L4",
+   "start_s": 811.2,
+   "voice": "choir",
+   "window": 550
+  },
+  {
+   "confidence": "high",
+   "end_s": 828,
+   "heard": "وَمِنْ هُنَا بَقِيتُ بِلَا أَنَا",
+   "line": "L5",
+   "start_s": 822.2,
+   "voice": "choir",
+   "window": 550
+  }
+ ]
+}

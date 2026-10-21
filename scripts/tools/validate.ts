@@ -13,6 +13,7 @@ import { LyricsSchema, SongSchema, type Lyrics, type Song } from '../../src/data
 import { harakatWarning } from '../../src/data/harakat.ts';
 import { INSTRUMENTS } from '../../src/instruments/list.ts';
 import { MODE_COUNTS, modeFit } from '../../src/instruments/layout.ts';
+import { checkSequence, sequenceSelfTest } from './sequence-check.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const args = process.argv.slice(2);
@@ -93,11 +94,15 @@ function voiceGroup(sectionVoice: string | undefined, lineVoice: string | undefi
   return 'solo';
 }
 
-/** Empty group does not block. Otherwise at least 80 % of its lines have lost timing-draft. */
+/** Publication gate. Goal is 100 %. An empty group does not block.
+ *  Otherwise at least 90 % of its lines have lost timing-draft.
+ *  Same integer test as qa_sync.song_proven: proved * 1000 >= n * 900. */
+const SONG_SHARE = 0.9;
+
 function shareOk(lines: { flags?: string[] }[]): boolean {
   if (lines.length === 0) return true;
   const proven = lines.filter((l) => !l.flags?.includes('timing-draft'));
-  return proven.length * 5 >= lines.length * 4;
+  return proven.length * 1000 >= lines.length * Math.round(SONG_SHARE * 1000);
 }
 
 /**
@@ -419,13 +424,14 @@ function check(slug: string): Issue[] {
     if (solo.length + choir.length === 0)
       err('song.json', 'timing.status = aligned, но нет ни соло, ни хора (дуэт и тутти в порог не входят): статус должен остаться draft');
     else if (!shareOk(solo) || !shareOk(choir))
-      err('song.json', `timing.status = aligned, но доказано соло ${soloProved} из ${solo.length}, хор ${choirProved} из ${choir.length}: нужно не меньше 80 % в каждой группе, где она есть, иначе статус draft`);
+      err('song.json', `timing.status = aligned, но доказано соло ${soloProved} из ${solo.length}, хор ${choirProved} из ${choir.length}: нужно не меньше ${Math.round(SONG_SHARE * 100)} % в каждой группе, где она есть, иначе статус draft`);
   }
 
   for (const l of song.languages) if (!langsSeen.has(l)) warn('song.json', `язык ${l} указан в languages, но строк на нём нет`);
   for (const l of langsSeen) if (!song.languages.includes(l)) warn('song.json', `строки на языке ${l} есть, но он не указан в languages`);
 
   checkParts(song, lyrics, sourcesText, err, warn);
+  issues.push(...checkSequence(slug));
   checkRouteFiles(slug, lyrics, err, warn);
   return issues;
 }
@@ -614,6 +620,12 @@ if (isCli()) {
     writeFileSync(join(root, 'docs/schema/song.schema.json'), JSON.stringify(z.toJSONSchema(SongSchema), null, 2) + '\n');
     writeFileSync(join(root, 'docs/schema/lyrics.schema.json'), JSON.stringify(z.toJSONSchema(LyricsSchema), null, 2) + '\n');
     console.log('schemas → docs/schema/');
+  }
+
+  const self = sequenceSelfTest();
+  if (self) {
+    console.log(`\n✗ sequence-check  ${self}`);
+    process.exit(1);
   }
 
   const slugs = readdirSync(join(root, 'content/songs')).filter((d) => !only.length || only.includes(d));
