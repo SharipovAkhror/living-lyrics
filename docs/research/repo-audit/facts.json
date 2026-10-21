@@ -1,0 +1,2561 @@
+{
+  "generatedBy": "docs/research/repo-audit/measure.py",
+  "head": "ecdfcee1e626aab791e6218b70d5e07836e3dc19",
+  "originMain": "bd92a0788939fc97f4303f5bf0156503dccd5f64",
+  "auditClock": "2026-10-21T02:55:24+05:00",
+  "diffHeadToOriginMain": "docs/tasks/T31-repo-audit.md                 |  39 ++++\n ops/README.md                                |   4 +-\n ops/board.json                               |  25 ++-\n ops/dashboard-mod/.claude-plugin/plugin.json |   2 +-\n ops/dashboard-mod/card/render.mjs            | 288 +++++++++++++++++++++++++++\n ops/dashboard-mod/hooks/register.tsx         |  82 +++++++-\n ops/dashboard-mod/tests/dashboard.test.tsx   |  31 ++-\n 7 files changed, 454 insertions(+), 17 deletions(-)",
+  "tasks": {
+    "tasks": [
+      {
+        "id": "T1",
+        "brief": "docs/tasks/T1-sync.md",
+        "title": "# Задача T1: синхронизация слов — до 90 % (цель 100 %) доказанных строк в каждой группе",
+        "added": {
+          "commit": "2bd588d047f1b215ba6d8be73be0ff252101b889",
+          "at": "2026-10-20T02:11:47+05:00",
+          "subject": "T1 brief: a phoneme witness for Latin, German and the choir, toward 80% proven lines"
+        },
+        "onMain": {
+          "commit": "2bd588d047f1b215ba6d8be73be0ff252101b889",
+          "at": "2026-10-20T02:11:47+05:00",
+          "subject": "T1 brief: a phoneme witness for Latin, German and the choir, toward 80% proven lines"
+        },
+        "marked": null,
+        "commitsOnMain": 3,
+        "mentionedCommits": [
+          {
+            "hash": "6eb52cc",
+            "ancestorOfMain": true,
+            "subject": "pipeline: i-have-come-alive karitas one",
+            "at": "2026-10-20T18:33:55Z"
+          }
+        ],
+        "markerInFirstCommit": false,
+        "leadHours": null,
+        "openHours": 24.73
+      },
+      {
+        "id": "T2",
+        "brief": null,
+        "leadHours": null,
+        "reason": "no file docs/tasks/T{n}-*.md on origin/main"
+      },
+      {
+        "id": "T3",
+        "brief": null,
+        "leadHours": null,
+        "reason": "no file docs/tasks/T{n}-*.md on origin/main"
+      },
+      {
+        "id": "T4",
+        "brief": null,
+        "leadHours": null,
+        "reason": "no file docs/tasks/T{n}-*.md on origin/main"
+      },
+      {
+        "id": "T5",
+        "brief": null,
+        "leadHours": null,
+        "reason": "no file docs/tasks/T{n}-*.md on origin/main"
+      },
+      {
+        "id": "T6",
+        "brief": null,
+        "leadHours": null,
+        "reason": "no file docs/tasks/T{n}-*.md on origin/main"
+      },
+      {
+        "id": "T7",
+        "brief": null,
+        "leadHours": null,
+        "reason": "no file docs/tasks/T{n}-*.md on origin/main"
+      },
+      {
+        "id": "T8",
+        "brief": null,
+        "leadHours": null,
+        "reason": "no file docs/tasks/T{n}-*.md on origin/main"
+      },
+      {
+        "id": "T9",
+        "brief": null,
+        "leadHours": null,
+        "reason": "no file docs/tasks/T{n}-*.md on origin/main"
+      },
+      {
+        "id": "T10",
+        "brief": null,
+        "leadHours": null,
+        "reason": "no file docs/tasks/T{n}-*.md on origin/main"
+      },
+      {
+        "id": "T11",
+        "brief": null,
+        "leadHours": null,
+        "reason": "no file docs/tasks/T{n}-*.md on origin/main"
+      },
+      {
+        "id": "T12",
+        "brief": null,
+        "leadHours": null,
+        "reason": "no file docs/tasks/T{n}-*.md on origin/main"
+      },
+      {
+        "id": "T13",
+        "brief": null,
+        "leadHours": null,
+        "reason": "no file docs/tasks/T{n}-*.md on origin/main"
+      },
+      {
+        "id": "T14",
+        "brief": "docs/tasks/T14-stage.md",
+        "title": "# Задача T14: сцена — больше инструментов, но аккуратно; адаптив под экран машины — сделано (2026-10-18)",
+        "added": {
+          "commit": "d0d0bd32f7fc73e8d3ec1bf57cd282ad3b2802d6",
+          "at": "2026-10-18T20:10:05+05:00",
+          "subject": "Keep the whole work state in the repo: task briefs, board, helpers"
+        },
+        "onMain": {
+          "commit": "d0d0bd32f7fc73e8d3ec1bf57cd282ad3b2802d6",
+          "at": "2026-10-18T20:10:05+05:00",
+          "subject": "Keep the whole work state in the repo: task briefs, board, helpers"
+        },
+        "marked": {
+          "commit": "439ae26953454ed581748337420958e3c963c5a4",
+          "at": "2026-10-18T20:15:55+05:00",
+          "title": "# Задача T14: сцена — больше инструментов, но аккуратно; адаптив под экран машины — сделано (2026-10-18)"
+        },
+        "commitsOnMain": 2,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": 0.1
+      },
+      {
+        "id": "T15",
+        "brief": null,
+        "leadHours": null,
+        "reason": "no file docs/tasks/T{n}-*.md on origin/main"
+      },
+      {
+        "id": "T16",
+        "brief": "docs/tasks/T16-voice.md",
+        "title": "# Задача T16: голос, хор, сцена и обложки — микрофон, книга, 3–4 инструмента, звучащий оживает — сделано (2026-10-19)",
+        "added": {
+          "commit": "d0d0bd32f7fc73e8d3ec1bf57cd282ad3b2802d6",
+          "at": "2026-10-18T20:10:05+05:00",
+          "subject": "Keep the whole work state in the repo: task briefs, board, helpers"
+        },
+        "onMain": {
+          "commit": "d0d0bd32f7fc73e8d3ec1bf57cd282ad3b2802d6",
+          "at": "2026-10-18T20:10:05+05:00",
+          "subject": "Keep the whole work state in the repo: task briefs, board, helpers"
+        },
+        "marked": {
+          "commit": "fc4bb119f7b5c3b8114e943be11580362ba40822",
+          "at": "2026-10-19T17:56:52+05:00",
+          "title": "# Задача T16: голос, хор, сцена и обложки — микрофон, книга, 3–4 инструмента, звучащий оживает — сделано (2026-10-19)"
+        },
+        "commitsOnMain": 6,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": 21.78
+      },
+      {
+        "id": "T17",
+        "brief": "docs/tasks/T17-translation.md",
+        "title": "# Задача T17: стандарт научного перевода и сверка трёх песен — сделано (2026-10-18)",
+        "added": {
+          "commit": "d0d0bd32f7fc73e8d3ec1bf57cd282ad3b2802d6",
+          "at": "2026-10-18T20:10:05+05:00",
+          "subject": "Keep the whole work state in the repo: task briefs, board, helpers"
+        },
+        "onMain": {
+          "commit": "d0d0bd32f7fc73e8d3ec1bf57cd282ad3b2802d6",
+          "at": "2026-10-18T20:10:05+05:00",
+          "subject": "Keep the whole work state in the repo: task briefs, board, helpers"
+        },
+        "marked": {
+          "commit": "ee2656d4f0ed80908ca6cb264ed6365ee87825a8",
+          "at": "2026-10-18T22:25:33+05:00",
+          "title": "# Задача T17: стандарт научного перевода и сверка трёх песен — сделано (2026-10-18)"
+        },
+        "commitsOnMain": 3,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": 2.26
+      },
+      {
+        "id": "T18",
+        "brief": "docs/tasks/T18-design.md",
+        "title": "# Задача T18: дизайн уровня лучших студий мира — исследование и три концепции — отклонено (2026-10-18)",
+        "added": {
+          "commit": "d0d0bd32f7fc73e8d3ec1bf57cd282ad3b2802d6",
+          "at": "2026-10-18T20:10:05+05:00",
+          "subject": "Keep the whole work state in the repo: task briefs, board, helpers"
+        },
+        "onMain": {
+          "commit": "d0d0bd32f7fc73e8d3ec1bf57cd282ad3b2802d6",
+          "at": "2026-10-18T20:10:05+05:00",
+          "subject": "Keep the whole work state in the repo: task briefs, board, helpers"
+        },
+        "marked": {
+          "commit": "fbd28e0ee69b4d0d0b1f8316ef9fd1c0e38ed323",
+          "at": "2026-10-18T23:02:20+05:00",
+          "title": "# Задача T18: дизайн уровня лучших студий мира — исследование и три концепции — отклонено (2026-10-18)"
+        },
+        "commitsOnMain": 3,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": 2.87
+      },
+      {
+        "id": "T19",
+        "brief": "docs/tasks/T19-speed.md",
+        "title": "# Задача T19: скорость и плавность — переходы между песнями и все места ожидания — сделано (2026-10-18)",
+        "added": {
+          "commit": "d0d0bd32f7fc73e8d3ec1bf57cd282ad3b2802d6",
+          "at": "2026-10-18T20:10:05+05:00",
+          "subject": "Keep the whole work state in the repo: task briefs, board, helpers"
+        },
+        "onMain": {
+          "commit": "d0d0bd32f7fc73e8d3ec1bf57cd282ad3b2802d6",
+          "at": "2026-10-18T20:10:05+05:00",
+          "subject": "Keep the whole work state in the repo: task briefs, board, helpers"
+        },
+        "marked": {
+          "commit": "ee2656d4f0ed80908ca6cb264ed6365ee87825a8",
+          "at": "2026-10-18T22:25:33+05:00",
+          "title": "# Задача T19: скорость и плавность — переходы между песнями и все места ожидания — сделано (2026-10-18)"
+        },
+        "commitsOnMain": 2,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": 2.26
+      },
+      {
+        "id": "T20",
+        "brief": "docs/tasks/T20-route.md",
+        "title": "# Задача T20: маршрут новой песни — встроить новые способы и отрепетировать",
+        "added": {
+          "commit": "d0d0bd32f7fc73e8d3ec1bf57cd282ad3b2802d6",
+          "at": "2026-10-18T20:10:05+05:00",
+          "subject": "Keep the whole work state in the repo: task briefs, board, helpers"
+        },
+        "onMain": {
+          "commit": "d0d0bd32f7fc73e8d3ec1bf57cd282ad3b2802d6",
+          "at": "2026-10-18T20:10:05+05:00",
+          "subject": "Keep the whole work state in the repo: task briefs, board, helpers"
+        },
+        "marked": null,
+        "commitsOnMain": 2,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": null,
+        "openHours": 54.76
+      },
+      {
+        "id": "T21",
+        "brief": "docs/tasks/T21-glass.md",
+        "title": "# Задача T21: «мягкое стекло» — новый облик всего сайта — сделано (2026-10-19)",
+        "added": {
+          "commit": "b1929f4c8e91f6633b1b1367d543ebf8f9c0b1ee",
+          "at": "2026-10-18T23:01:43+05:00",
+          "subject": "T21 brief: soft glass across the site, round icons, spring motion"
+        },
+        "onMain": {
+          "commit": "b1929f4c8e91f6633b1b1367d543ebf8f9c0b1ee",
+          "at": "2026-10-18T23:01:43+05:00",
+          "subject": "T21 brief: soft glass across the site, round icons, spring motion"
+        },
+        "marked": {
+          "commit": "fc4bb119f7b5c3b8114e943be11580362ba40822",
+          "at": "2026-10-19T17:56:52+05:00",
+          "title": "# Задача T21: «мягкое стекло» — новый облик всего сайта — сделано (2026-10-19)"
+        },
+        "commitsOnMain": 3,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": 18.92
+      },
+      {
+        "id": "T22",
+        "brief": "docs/tasks/T22-icons-covers.md",
+        "title": "# Задача T22: иконки на выбор владельца и обложки — сделано (2026-10-19): Phosphor Fill, официальные обложки",
+        "added": {
+          "commit": "275ea63797cb011eccb0288f4e08c5cf6a6ca3d9",
+          "at": "2026-10-19T17:55:59+05:00",
+          "subject": "T22 brief: icon options for the owner to pick, covers without text"
+        },
+        "onMain": {
+          "commit": "275ea63797cb011eccb0288f4e08c5cf6a6ca3d9",
+          "at": "2026-10-19T17:55:59+05:00",
+          "subject": "T22 brief: icon options for the owner to pick, covers without text"
+        },
+        "marked": {
+          "commit": "1a68751a717dc7c22cbd63cc8fcf1a131f24db57",
+          "at": "2026-10-19T19:36:19+05:00",
+          "title": "# Задача T22: иконки на выбор владельца и обложки — сделано (2026-10-19): Phosphor Fill, официальные обложки"
+        },
+        "commitsOnMain": 3,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": 1.67
+      },
+      {
+        "id": "T23",
+        "brief": "docs/tasks/T23-mod-infra.md",
+        "title": "# Задача T23: мод Dashboard в одном месте, живое состояние через GitHub, привязка к аккаунту",
+        "added": {
+          "commit": "d64ec99eee63f44f557a5ea716dd56a4c6f8f2cb",
+          "at": "2026-10-19T19:10:14+05:00",
+          "subject": "T23 brief: dashboard mod from one source, live state via GitHub, account sync"
+        },
+        "onMain": {
+          "commit": "d64ec99eee63f44f557a5ea716dd56a4c6f8f2cb",
+          "at": "2026-10-19T19:10:14+05:00",
+          "subject": "T23 brief: dashboard mod from one source, live state via GitHub, account sync"
+        },
+        "marked": null,
+        "commitsOnMain": 1,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": null,
+        "openHours": 31.75
+      },
+      {
+        "id": "T24",
+        "brief": "docs/tasks/T24-version.md",
+        "title": "# Задача T24: версия исполнения в названии песни — сделано (2026-10-19)",
+        "added": {
+          "commit": "9a3f2b8a3a3c622ce028aafe24bea6e31ea62d5b",
+          "at": "2026-10-19T19:46:59+05:00",
+          "subject": "T24 brief: show the performance version with every song title"
+        },
+        "onMain": {
+          "commit": "9a3f2b8a3a3c622ce028aafe24bea6e31ea62d5b",
+          "at": "2026-10-19T19:46:59+05:00",
+          "subject": "T24 brief: show the performance version with every song title"
+        },
+        "marked": {
+          "commit": "c4824d45ebde9fdce660f4adb443fea96f0740f7",
+          "at": "2026-10-19T20:18:55+05:00",
+          "title": "# Задача T24: версия исполнения в названии песни — сделано (2026-10-19)"
+        },
+        "commitsOnMain": 2,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": 0.53
+      },
+      {
+        "id": "T25",
+        "brief": "docs/tasks/T25-chat-rotation.md",
+        "title": "# Задача T25: ротация чатов — старый в архив, новый продолжает сам",
+        "added": {
+          "commit": "cf5c39c5fd609b29c9633536cd3190f9b093a212",
+          "at": "2026-10-20T02:33:24+05:00",
+          "subject": "T25 brief: chat rotation — hand off to the repo, archive, continue in a fresh chat"
+        },
+        "onMain": {
+          "commit": "cf5c39c5fd609b29c9633536cd3190f9b093a212",
+          "at": "2026-10-20T02:33:24+05:00",
+          "subject": "T25 brief: chat rotation — hand off to the repo, archive, continue in a fresh chat"
+        },
+        "marked": null,
+        "commitsOnMain": 3,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": null,
+        "openHours": 24.37
+      },
+      {
+        "id": "T26",
+        "brief": "docs/tasks/T26-agent-system-research.md",
+        "title": "# T26: research — how professionals build multi-agent systems, what we should adopt",
+        "added": {
+          "commit": "380bd0d05b0e4472a74d29f690b706a62f73b243",
+          "at": "2026-10-20T02:56:03+05:00",
+          "subject": "T26 brief: research how pros build multi-agent systems, what to adopt"
+        },
+        "onMain": {
+          "commit": "380bd0d05b0e4472a74d29f690b706a62f73b243",
+          "at": "2026-10-20T02:56:03+05:00",
+          "subject": "T26 brief: research how pros build multi-agent systems, what to adopt"
+        },
+        "marked": null,
+        "commitsOnMain": 1,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": null,
+        "openHours": 23.99
+      },
+      {
+        "id": "T27",
+        "brief": "docs/tasks/T27-iphone-stability.md",
+        "title": "# T27: iPhone Safari — the page reloads mid-song, settings lag",
+        "added": {
+          "commit": "b96845aae11677eb9daf361564819b98c81ffee0",
+          "at": "2026-10-20T14:28:33+05:00",
+          "subject": "Briefs T27 iPhone stability, T28 player polish, T29 text re-check (owner's test of 2026-10-20)"
+        },
+        "onMain": {
+          "commit": "b96845aae11677eb9daf361564819b98c81ffee0",
+          "at": "2026-10-20T14:28:33+05:00",
+          "subject": "Briefs T27 iPhone stability, T28 player polish, T29 text re-check (owner's test of 2026-10-20)"
+        },
+        "marked": null,
+        "commitsOnMain": 1,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": null,
+        "openHours": 12.45
+      },
+      {
+        "id": "T28",
+        "brief": "docs/tasks/T28-player-ux.md",
+        "title": "# T28: player polish — seek bar, resume, settings, product-grade icons",
+        "added": {
+          "commit": "b96845aae11677eb9daf361564819b98c81ffee0",
+          "at": "2026-10-20T14:28:33+05:00",
+          "subject": "Briefs T27 iPhone stability, T28 player polish, T29 text re-check (owner's test of 2026-10-20)"
+        },
+        "onMain": {
+          "commit": "b96845aae11677eb9daf361564819b98c81ffee0",
+          "at": "2026-10-20T14:28:33+05:00",
+          "subject": "Briefs T27 iPhone stability, T28 player polish, T29 text re-check (owner's test of 2026-10-20)"
+        },
+        "marked": null,
+        "commitsOnMain": 1,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": null,
+        "openHours": 12.45
+      },
+      {
+        "id": "T29",
+        "brief": "docs/tasks/T29-text-recheck.md",
+        "title": "# T29: re-check the sung text of all three songs, line by line",
+        "added": {
+          "commit": "b96845aae11677eb9daf361564819b98c81ffee0",
+          "at": "2026-10-20T14:28:33+05:00",
+          "subject": "Briefs T27 iPhone stability, T28 player polish, T29 text re-check (owner's test of 2026-10-20)"
+        },
+        "onMain": {
+          "commit": "b96845aae11677eb9daf361564819b98c81ffee0",
+          "at": "2026-10-20T14:28:33+05:00",
+          "subject": "Briefs T27 iPhone stability, T28 player polish, T29 text re-check (owner's test of 2026-10-20)"
+        },
+        "marked": null,
+        "commitsOnMain": 1,
+        "mentionedCommits": [],
+        "markerInFirstCommit": false,
+        "leadHours": null,
+        "openHours": 12.45
+      },
+      {
+        "id": "T30",
+        "brief": "docs/tasks/T30-web-status.md",
+        "title": "# T30: a status view the owner can open in the web version",
+        "added": {
+          "commit": "3bc640a68b08e50b01695b2f38a9f431a9ac9492",
+          "at": "2026-10-20T17:46:49+05:00",
+          "subject": "T30 brief: a status view the owner can open in the web version"
+        },
+        "onMain": {
+          "commit": "3bc640a68b08e50b01695b2f38a9f431a9ac9492",
+          "at": "2026-10-20T17:46:49+05:00",
+          "subject": "T30 brief: a status view the owner can open in the web version"
+        },
+        "marked": null,
+        "commitsOnMain": 3,
+        "mentionedCommits": [
+          {
+            "hash": "05cd3b3",
+            "ancestorOfMain": true,
+            "subject": "T30: /ops — the work status page for the owner's browser and phone",
+            "at": "2026-10-20T19:48:32+05:00"
+          }
+        ],
+        "markerInFirstCommit": false,
+        "leadHours": null,
+        "openHours": 9.14
+      }
+    ]
+  },
+  "merges": {
+    "mergeCommits": 57,
+    "directFirstParentCommits": 153,
+    "firstParentCommits": 210,
+    "branchHours": {
+      "n": 57,
+      "min": 0.0,
+      "median": 0.47,
+      "p90": 8.18,
+      "max": 17.98,
+      "sum": 121.56
+    },
+    "reviewHours": {
+      "n": 57,
+      "min": 0.0,
+      "median": 0.07,
+      "p90": 1.21,
+      "max": 14.08,
+      "sum": 43.67
+    },
+    "longest": [
+      {
+        "commit": "1b644fd0c7a6604b01847288cbeb94bd06af97de",
+        "at": "2026-10-19T17:54:26+05:00",
+        "subject": "Merge grok/t21-glass: soft glass across the site, round icons, spring sheets, larger lines, car layout",
+        "parents": 2,
+        "branchCommits": 5,
+        "branchHours": 17.98,
+        "reviewHours": 14.08,
+        "tipSubject": "Describe the thick sheet and the car footnote."
+      },
+      {
+        "commit": "2ce75104b95edc51ca137509d19e92a93f3b0a50",
+        "at": "2026-10-20T17:54:27+05:00",
+        "subject": "Merge main into grok/t1-sync",
+        "parents": 2,
+        "branchCommits": 30,
+        "branchHours": 15.84,
+        "reviewHours": 0.13,
+        "tipSubject": "T30 brief: a status view the owner can open in the web version"
+      },
+      {
+        "commit": "ecc931f7e0c677fa15b740399de8de1a04a5564f",
+        "at": "2026-10-19T17:54:53+05:00",
+        "subject": "Merge grok/t16-voice: three or four instruments stay put, the one playing comes alive from its stem",
+        "parents": 2,
+        "branchCommits": 3,
+        "branchHours": 14.11,
+        "reviewHours": 14.0,
+        "tipSubject": "Merge main into grok/t16-voice."
+      },
+      {
+        "commit": "8c0bc1987ad9385be44b587c9520e1d74035f6b0",
+        "at": "2026-10-17T17:15:33+05:00",
+        "subject": "Merge grok/t1-sync code: alignment pipeline, honest sync QA (song data kept from main)",
+        "parents": 2,
+        "branchCommits": 23,
+        "branchHours": 13.05,
+        "reviewHours": 0.12,
+        "tipSubject": "pipeline: i-have-come-alive"
+      },
+      {
+        "commit": "7bb1fa4643a7faaae4be2fc69ba3a59c00d4b9d5",
+        "at": "2026-10-18T19:43:16+05:00",
+        "subject": "Merge grok/t1-sync: whisper witness chosen per song and language by proven lines",
+        "parents": 2,
+        "branchCommits": 16,
+        "branchHours": 8.62,
+        "reviewHours": 0.05,
+        "tipSubject": "Record the measured witness choice in the alignment notes."
+      },
+      {
+        "commit": "6cdd3504fa930ded6bc54a94caa10c401a1fad7a",
+        "at": "2026-10-18T04:04:19+05:00",
+        "subject": "Merge grok/t1-sync: cue-calibrated line placement and a word proof that chance rarely passes",
+        "parents": 2,
+        "branchCommits": 25,
+        "branchHours": 8.18,
+        "reviewHours": 0.07,
+        "tipSubject": "Record the measured attack-chance rule"
+      },
+      {
+        "commit": "de8fa164baf5d72fb5401efd1b9d58bd406da358",
+        "at": "2026-10-18T02:39:16+05:00",
+        "subject": "Merge grok/t7b-recognizer: own instrument recognizer, eyes stage and a safe fusion",
+        "parents": 2,
+        "branchCommits": 13,
+        "branchHours": 6.3,
+        "reviewHours": 0.09,
+        "tipSubject": "Count a covered short anchor as a hit, not an edge graze."
+      },
+      {
+        "commit": "e93584096370e079997e41c87d47aedb833336f3",
+        "at": "2026-10-19T03:24:28+05:00",
+        "subject": "Merge grok/t20-route: notes for 17 wordless sections; stage 7 closed for three songs",
+        "parents": 2,
+        "branchCommits": 1,
+        "branchHours": 4.3,
+        "reviewHours": 4.3,
+        "tipSubject": "Note which instruments join each wordless section."
+      },
+      {
+        "commit": "5a35c1968e65cf309c9c060700ca7ac093921c20",
+        "at": "2026-10-18T00:44:42+05:00",
+        "subject": "Merge grok/t6b-stage: instruments enter one at a time and move with features.json",
+        "parents": 2,
+        "branchCommits": 3,
+        "branchHours": 3.85,
+        "reviewHours": 3.75,
+        "tipSubject": "Keep a credited player on their own instrument"
+      },
+      {
+        "commit": "7d38f2e86241849dfbeaac68992a9bec2a7965fd",
+        "at": "2026-10-18T22:58:51+05:00",
+        "subject": "Merge grok/t16-voice: choir book, vocal microphone, stage sized by prominence, song covers for the lock screen",
+        "parents": 2,
+        "branchCommits": 10,
+        "branchHours": 2.93,
+        "reviewHours": 0.06,
+        "tipSubject": "Give each song a square cover from its palette and sign."
+      },
+      {
+        "commit": "f0d6ee23d2a36e2146620f11bb49dd3a25a4d600",
+        "at": "2026-10-18T10:39:59+05:00",
+        "subject": "Merge grok/t1-sync: placement chain (other windows, htdemucs_ft, stable-ts, second aligner)",
+        "parents": 2,
+        "branchCommits": 10,
+        "branchHours": 2.77,
+        "reviewHours": 0.1,
+        "tipSubject": "Record the measured placement chain for the three songs."
+      },
+      {
+        "commit": "087fc54e1cd49c239ff38439ba47fa4661ae0bc7",
+        "at": "2026-10-18T22:23:18+05:00",
+        "subject": "Merge grok/t17-translation: scholarly translation standard, per-line dossiers, three songs checked against dictionaries and a Gemini back-translation",
+        "parents": 2,
+        "branchCommits": 3,
+        "branchHours": 2.39,
+        "reviewHours": 1.25,
+        "tipSubject": "Revise three sung translations after the reverse-translation review."
+      }
+    ]
+  },
+  "unmergedBranches": [
+    {
+      "branch": "grok/t1-sync",
+      "ahead": 6,
+      "commits": [
+        {
+          "hash": "651d948",
+          "at": "2026-10-21T02:37:03+05:00",
+          "subject": "Record the measured counts from the cover and handoff run."
+        },
+        {
+          "hash": "44436b2",
+          "at": "2026-10-21T02:37:03+05:00",
+          "subject": "Accept phoneme as a line placer in the lyrics schema."
+        },
+        {
+          "hash": "2cb65e0",
+          "at": "2026-10-20T21:25:28Z",
+          "subject": "pipeline: i-have-come-alive karitas one"
+        },
+        {
+          "hash": "d04070f",
+          "at": "2026-10-21T00:40:27+05:00",
+          "subject": "Queue alignment and proof for the cover, the handoff, and the Latin placer."
+        },
+        {
+          "hash": "230cb6f",
+          "at": "2026-10-21T00:40:18+05:00",
+          "subject": "Describe the phoneme cover, the refuted-line handoff, and the Latin placer."
+        },
+        {
+          "hash": "fc7c782",
+          "at": "2026-10-21T00:40:18+05:00",
+          "subject": "Keep a phoneme cover and hand a refuted line to the next placer."
+        }
+      ]
+    },
+    {
+      "branch": "grok/t28-icons",
+      "ahead": 2,
+      "commits": [
+        {
+          "hash": "e51245c",
+          "at": "2026-10-21T02:34:02+05:00",
+          "subject": "Describe the three icon directions, their licences and the glyph list."
+        },
+        {
+          "hash": "3dc12eb",
+          "at": "2026-10-21T02:33:25+05:00",
+          "subject": "Add three icon directions beside Phosphor and switch them from the query."
+        }
+      ]
+    },
+    {
+      "branch": "ll-tech/panel",
+      "ahead": 2,
+      "commits": [
+        {
+          "hash": "44ef203",
+          "at": "2026-10-21T02:38:42+05:00",
+          "subject": "Panel: compact, colour per service, Claude limits with resets; writer sends resets, plans, hygiene"
+        },
+        {
+          "hash": "507e827",
+          "at": "2026-10-21T02:23:00+05:00",
+          "subject": "WIP, on hold by the owner: the mod writes the live panel and allows only its own ArtifactData calls to that one artifact"
+        }
+      ]
+    },
+    {
+      "branch": "ll-tech/panel-live",
+      "ahead": 1,
+      "commits": [
+        {
+          "hash": "645650a",
+          "at": "2026-10-21T02:09:15+05:00",
+          "subject": "WIP, on hold by the owner: the mod writes the live panel and allows only its own ArtifactData calls to that one artifact"
+        }
+      ]
+    },
+    {
+      "branch": "origin/grok/t1-sync",
+      "ahead": 6,
+      "commits": [
+        {
+          "hash": "651d948",
+          "at": "2026-10-21T02:37:03+05:00",
+          "subject": "Record the measured counts from the cover and handoff run."
+        },
+        {
+          "hash": "44436b2",
+          "at": "2026-10-21T02:37:03+05:00",
+          "subject": "Accept phoneme as a line placer in the lyrics schema."
+        },
+        {
+          "hash": "2cb65e0",
+          "at": "2026-10-20T21:25:28Z",
+          "subject": "pipeline: i-have-come-alive karitas one"
+        },
+        {
+          "hash": "d04070f",
+          "at": "2026-10-21T00:40:27+05:00",
+          "subject": "Queue alignment and proof for the cover, the handoff, and the Latin placer."
+        },
+        {
+          "hash": "230cb6f",
+          "at": "2026-10-21T00:40:18+05:00",
+          "subject": "Describe the phoneme cover, the refuted-line handoff, and the Latin placer."
+        },
+        {
+          "hash": "fc7c782",
+          "at": "2026-10-21T00:40:18+05:00",
+          "subject": "Keep a phoneme cover and hand a refuted line to the next placer."
+        }
+      ]
+    },
+    {
+      "branch": "origin/grok/t28-icons",
+      "ahead": 2,
+      "commits": [
+        {
+          "hash": "e51245c",
+          "at": "2026-10-21T02:34:02+05:00",
+          "subject": "Describe the three icon directions, their licences and the glyph list."
+        },
+        {
+          "hash": "3dc12eb",
+          "at": "2026-10-21T02:33:25+05:00",
+          "subject": "Add three icon directions beside Phosphor and switch them from the query."
+        }
+      ]
+    },
+    {
+      "branch": "origin/ll-tech/panel",
+      "ahead": 2,
+      "commits": [
+        {
+          "hash": "44ef203",
+          "at": "2026-10-21T02:38:42+05:00",
+          "subject": "Panel: compact, colour per service, Claude limits with resets; writer sends resets, plans, hygiene"
+        },
+        {
+          "hash": "507e827",
+          "at": "2026-10-21T02:23:00+05:00",
+          "subject": "WIP, on hold by the owner: the mod writes the live panel and allows only its own ArtifactData calls to that one artifact"
+        }
+      ]
+    },
+    {
+      "branch": "origin/ll-tech/panel-live",
+      "ahead": 1,
+      "commits": [
+        {
+          "hash": "645650a",
+          "at": "2026-10-21T02:09:15+05:00",
+          "subject": "WIP, on hold by the owner: the mod writes the live panel and allows only its own ArtifactData calls to that one artifact"
+        }
+      ]
+    }
+  ],
+  "board": {
+    "revisions": 27,
+    "unparsed": 0,
+    "firstAt": "2026-10-18T20:10:05+05:00",
+    "lastAt": "2026-10-21T02:44:38+05:00",
+    "youClosed": [
+      {
+        "id": "you-icons",
+        "title": "Выбрать иконки: A, B, C, D или E",
+        "since": "2026-10-19T18:54:11+05:00",
+        "commit": "3cd45aa395f04cdf102442581694fda1e29f9e2e",
+        "until": "2026-10-19T19:36:19+05:00",
+        "hours": 0.7
+      },
+      {
+        "id": "you-song4",
+        "title": "Выбрать четвёртую песню",
+        "since": "2026-10-18T22:25:33+05:00",
+        "commit": "ee2656d4f0ed80908ca6cb264ed6365ee87825a8",
+        "until": "2026-10-20T19:53:26+05:00",
+        "hours": 45.46
+      },
+      {
+        "id": "you-chats",
+        "title": "Навести порядок в чатах",
+        "since": "2026-10-20T17:55:52+05:00",
+        "commit": "9f4ef92101a6773d8d1dc5a9e488bc48457893ed",
+        "until": "2026-10-20T19:53:26+05:00",
+        "hours": 1.96
+      },
+      {
+        "id": "you-listen",
+        "title": "Послушать 26 мест",
+        "since": "2026-10-20T21:10:48+05:00",
+        "commit": "0f07a9e269a7476fbd862d7796e58034608b3642",
+        "until": "2026-10-21T01:32:36+05:00",
+        "hours": 4.36
+      },
+      {
+        "id": "you-dashboard",
+        "title": "Проверить /dashboard в браузере",
+        "since": "2026-10-20T21:10:48+05:00",
+        "commit": "0f07a9e269a7476fbd862d7796e58034608b3642",
+        "until": "2026-10-21T01:32:36+05:00",
+        "hours": 4.36
+      },
+      {
+        "id": "you-dashboard",
+        "title": "Проверить /dashboard в браузере",
+        "since": "2026-10-21T01:33:03+05:00",
+        "commit": "7688d9d6b28b8f67152a254c9a9b1fc675f78eb0",
+        "until": "2026-10-21T02:15:24+05:00",
+        "hours": 0.71
+      }
+    ],
+    "youOpen": [
+      {
+        "id": "you-listen",
+        "title": "Послушать 26 мест",
+        "since": "2026-10-21T01:33:03+05:00",
+        "commit": "7688d9d6b28b8f67152a254c9a9b1fc675f78eb0",
+        "until": null,
+        "hours": 1.37
+      }
+    ],
+    "youUnionHours": 51.2,
+    "youSumHours": 58.92,
+    "runningUnionHours": 54.75,
+    "runningTaskHours": 175.67,
+    "revisionsWithDoneButRunning": 27,
+    "doneButRunningNow": [
+      {
+        "id": "gemini-watch",
+        "title": "Gemini посмотрел три концерта",
+        "status": "running",
+        "section": "done",
+        "date": "18 окт"
+      },
+      {
+        "id": "t7d",
+        "title": "Вступления инструментов на сцене",
+        "status": "running",
+        "section": "done",
+        "date": "18 окт"
+      },
+      {
+        "id": "t6c",
+        "title": "Новые рисунки инструментов",
+        "status": "running",
+        "section": "done",
+        "date": "18 окт"
+      },
+      {
+        "id": "t15",
+        "title": "Музыка при выключенном экране",
+        "status": "running",
+        "section": "done",
+        "date": "18 окт"
+      },
+      {
+        "id": "t7c",
+        "title": "Открытые записи инструментов",
+        "status": "running",
+        "section": "done",
+        "date": "18 окт"
+      },
+      {
+        "id": "t13",
+        "title": "Состав песни",
+        "status": "running",
+        "section": "done",
+        "date": "18 окт"
+      }
+    ],
+    "waitingChipNow": [
+      {
+        "id": "later-cloud",
+        "section": "later",
+        "status": "waiting",
+        "chip": "ждёт карту",
+        "title": "Облачная станция (Oracle Cloud Always Free)"
+      }
+    ],
+    "finalTasks": [
+      {
+        "id": "you-listen",
+        "section": "you",
+        "status": "waiting",
+        "worktree": null,
+        "date": null
+      },
+      {
+        "id": "t29",
+        "section": "done",
+        "status": "done",
+        "worktree": null,
+        "date": "2026-10-20"
+      },
+      {
+        "id": "t27",
+        "section": "now",
+        "status": "running",
+        "worktree": "t27-iphone",
+        "date": null
+      },
+      {
+        "id": "t28",
+        "section": "now",
+        "status": "running",
+        "worktree": "t28-icons",
+        "date": null
+      },
+      {
+        "id": "t30",
+        "section": "now",
+        "status": "running",
+        "worktree": null,
+        "date": null
+      },
+      {
+        "id": "t26",
+        "section": "done",
+        "status": "done",
+        "worktree": null,
+        "date": "2026-10-20"
+      },
+      {
+        "id": "t1",
+        "section": "now",
+        "status": "running",
+        "worktree": "t1-sync90",
+        "date": null
+      },
+      {
+        "id": "l-method",
+        "section": "later",
+        "status": "waiting",
+        "worktree": "t20-route",
+        "date": null
+      },
+      {
+        "id": "later-cloud",
+        "section": "later",
+        "status": "waiting",
+        "worktree": null,
+        "date": null
+      },
+      {
+        "id": "t23",
+        "section": "done",
+        "status": "done",
+        "worktree": null,
+        "date": "20 окт"
+      },
+      {
+        "id": "t24",
+        "section": "done",
+        "status": "done",
+        "worktree": null,
+        "date": "19 окт"
+      },
+      {
+        "id": "t22",
+        "section": "done",
+        "status": "done",
+        "worktree": null,
+        "date": "19 окт"
+      },
+      {
+        "id": "t16",
+        "section": "done",
+        "status": "done",
+        "worktree": null,
+        "date": "19 окт"
+      },
+      {
+        "id": "t21",
+        "section": "done",
+        "status": "done",
+        "worktree": null,
+        "date": "19 окт"
+      },
+      {
+        "id": "t18",
+        "section": "done",
+        "status": "rejected",
+        "worktree": null,
+        "date": "18 окт"
+      },
+      {
+        "id": "t17",
+        "section": "done",
+        "status": "done",
+        "worktree": null,
+        "date": "18 окт"
+      },
+      {
+        "id": "t19",
+        "section": "done",
+        "status": "done",
+        "worktree": null,
+        "date": "18 окт"
+      },
+      {
+        "id": "gemini-watch",
+        "section": "done",
+        "status": "running",
+        "worktree": null,
+        "date": "18 окт"
+      },
+      {
+        "id": "t7d",
+        "section": "done",
+        "status": "running",
+        "worktree": "t7d-entries",
+        "date": "18 окт"
+      },
+      {
+        "id": "t6c",
+        "section": "done",
+        "status": "running",
+        "worktree": "t6c-art",
+        "date": "18 окт"
+      },
+      {
+        "id": "t14",
+        "section": "done",
+        "status": "done",
+        "worktree": null,
+        "date": "18 окт"
+      },
+      {
+        "id": "t15",
+        "section": "done",
+        "status": "running",
+        "worktree": "t15-audio",
+        "date": "18 окт"
+      },
+      {
+        "id": "t7c",
+        "section": "done",
+        "status": "running",
+        "worktree": "t7c-sources",
+        "date": "18 окт"
+      },
+      {
+        "id": "t13",
+        "section": "done",
+        "status": "running",
+        "worktree": "t13-parts",
+        "date": "18 окт"
+      },
+      {
+        "id": "d-stage",
+        "section": "done",
+        "status": null,
+        "worktree": null,
+        "date": "18 окт"
+      },
+      {
+        "id": "d-lines",
+        "section": "done",
+        "status": null,
+        "worktree": null,
+        "date": "18 окт"
+      },
+      {
+        "id": "d-recog",
+        "section": "done",
+        "status": null,
+        "worktree": null,
+        "date": "18 окт"
+      },
+      {
+        "id": "d-voice",
+        "section": "done",
+        "status": null,
+        "worktree": null,
+        "date": "18 окт"
+      },
+      {
+        "id": "d-cosmos",
+        "section": "done",
+        "status": null,
+        "worktree": null,
+        "date": "17 окт"
+      },
+      {
+        "id": "d-harakat",
+        "section": "done",
+        "status": null,
+        "worktree": null,
+        "date": "17 окт"
+      },
+      {
+        "id": "d-fonts",
+        "section": "done",
+        "status": null,
+        "worktree": null,
+        "date": "17 окт"
+      },
+      {
+        "id": "d-texts",
+        "section": "done",
+        "status": null,
+        "worktree": null,
+        "date": "17 окт"
+      },
+      {
+        "id": "d-mark",
+        "section": "done",
+        "status": null,
+        "worktree": null,
+        "date": "17 окт"
+      },
+      {
+        "id": "t31",
+        "section": "now",
+        "status": "running",
+        "worktree": "t31-audit",
+        "date": null
+      }
+    ]
+  },
+  "usage": {
+    "file": "ops/usage/ledger/2026-10.jsonl",
+    "bytes": 6021305,
+    "lines": 20121,
+    "kinds": {
+      "grok:session": 19043,
+      "gemini:quota": 1072,
+      "gemini:run": 6
+    },
+    "firstTs": "2026-10-18T10:54:05Z",
+    "lastTs": "2026-10-20T21:06:41Z",
+    "uniqueTs": 541,
+    "grokSessions": 43,
+    "grokRows": 19043,
+    "grokRowsThatRepeatPreviousTuple": 18991,
+    "grokRowsThatChangeTuple": 52,
+    "sessionsWhoseTotalDecreased": 0,
+    "sumOfPeakTotalTokens": 876807251,
+    "sumOfPeakOutputTokens": 8855994,
+    "byTask": {
+      "t1-sync": {
+        "sessions": 2,
+        "totalTokens": 195278422,
+        "outputTokens": 2000798,
+        "modelCalls": 1486,
+        "turns": 13
+      },
+      "t16-voice": {
+        "sessions": 2,
+        "totalTokens": 70812723,
+        "outputTokens": 658601,
+        "modelCalls": 568,
+        "turns": 6
+      },
+      "t6-pilot": {
+        "sessions": 1,
+        "totalTokens": 50644556,
+        "outputTokens": 579440,
+        "modelCalls": 406,
+        "turns": 3
+      },
+      "t7b-recognizer": {
+        "sessions": 1,
+        "totalTokens": 44724149,
+        "outputTokens": 362134,
+        "modelCalls": 311,
+        "turns": 6
+      },
+      "t29-text": {
+        "sessions": 5,
+        "totalTokens": 44474801,
+        "outputTokens": 413662,
+        "modelCalls": 340,
+        "turns": 5
+      },
+      "t7-sound": {
+        "sessions": 1,
+        "totalTokens": 35853215,
+        "outputTokens": 293128,
+        "modelCalls": 265,
+        "turns": 2
+      },
+      "t7c-sources": {
+        "sessions": 1,
+        "totalTokens": 29878255,
+        "outputTokens": 250525,
+        "modelCalls": 238,
+        "turns": 2
+      },
+      "t7d-entries": {
+        "sessions": 1,
+        "totalTokens": 29540433,
+        "outputTokens": 269406,
+        "modelCalls": 245,
+        "turns": 2
+      },
+      "t22-icons": {
+        "sessions": 2,
+        "totalTokens": 28670442,
+        "outputTokens": 307175,
+        "modelCalls": 223,
+        "turns": 2
+      },
+      "t4-fonts": {
+        "sessions": 1,
+        "totalTokens": 28478048,
+        "outputTokens": 258226,
+        "modelCalls": 230,
+        "turns": 4
+      },
+      "t21-glass": {
+        "sessions": 2,
+        "totalTokens": 25137785,
+        "outputTokens": 264371,
+        "modelCalls": 200,
+        "turns": 2
+      },
+      "t11-method": {
+        "sessions": 1,
+        "totalTokens": 23446330,
+        "outputTokens": 198595,
+        "modelCalls": 185,
+        "turns": 2
+      },
+      "t1-sync90": {
+        "sessions": 1,
+        "totalTokens": 18622598,
+        "outputTokens": 142421,
+        "modelCalls": 142,
+        "turns": 1
+      },
+      "t12-harakat": {
+        "sessions": 1,
+        "totalTokens": 17643842,
+        "outputTokens": 242029,
+        "modelCalls": 149,
+        "turns": 1
+      },
+      "t17-translation": {
+        "sessions": 1,
+        "totalTokens": 16840579,
+        "outputTokens": 245567,
+        "modelCalls": 125,
+        "turns": 2
+      },
+      "t19-speed": {
+        "sessions": 1,
+        "totalTokens": 16340623,
+        "outputTokens": 170943,
+        "modelCalls": 119,
+        "turns": 1
+      },
+      "t13-parts": {
+        "sessions": 1,
+        "totalTokens": 16085307,
+        "outputTokens": 121293,
+        "modelCalls": 114,
+        "turns": 1
+      },
+      "t6b-stage": {
+        "sessions": 1,
+        "totalTokens": 14094557,
+        "outputTokens": 146622,
+        "modelCalls": 101,
+        "turns": 1
+      },
+      "t6c-art": {
+        "sessions": 1,
+        "totalTokens": 13803173,
+        "outputTokens": 126789,
+        "modelCalls": 105,
+        "turns": 1
+      },
+      "t20-route": {
+        "sessions": 1,
+        "totalTokens": 12883930,
+        "outputTokens": 145532,
+        "modelCalls": 92,
+        "turns": 2
+      },
+      "t5b-cosmos": {
+        "sessions": 1,
+        "totalTokens": 12622916,
+        "outputTokens": 135011,
+        "modelCalls": 102,
+        "turns": 1
+      },
+      "t14-stage": {
+        "sessions": 1,
+        "totalTokens": 12287364,
+        "outputTokens": 89748,
+        "modelCalls": 83,
+        "turns": 1
+      },
+      "t2-ihca-canon": {
+        "sessions": 1,
+        "totalTokens": 11877092,
+        "outputTokens": 103865,
+        "modelCalls": 75,
+        "turns": 1
+      },
+      "t24-version": {
+        "sessions": 1,
+        "totalTokens": 11840699,
+        "outputTokens": 93398,
+        "modelCalls": 96,
+        "turns": 1
+      },
+      "t2-one-lyrics": {
+        "sessions": 1,
+        "totalTokens": 11835409,
+        "outputTokens": 166156,
+        "modelCalls": 97,
+        "turns": 2
+      },
+      "t2-subs": {
+        "sessions": 1,
+        "totalTokens": 11314497,
+        "outputTokens": 154473,
+        "modelCalls": 95,
+        "turns": 1
+      },
+      "t2-ihca-lyrics": {
+        "sessions": 1,
+        "totalTokens": 10407829,
+        "outputTokens": 154626,
+        "modelCalls": 88,
+        "turns": 2
+      },
+      "t8-marks": {
+        "sessions": 1,
+        "totalTokens": 9354769,
+        "outputTokens": 118808,
+        "modelCalls": 80,
+        "turns": 1
+      },
+      "t2-one-canon": {
+        "sessions": 1,
+        "totalTokens": 9231869,
+        "outputTokens": 87200,
+        "modelCalls": 78,
+        "turns": 1
+      },
+      "t5-design": {
+        "sessions": 1,
+        "totalTokens": 8461426,
+        "outputTokens": 107878,
+        "modelCalls": 71,
+        "turns": 1
+      },
+      "t2-karitas-lyrics": {
+        "sessions": 1,
+        "totalTokens": 8372357,
+        "outputTokens": 160403,
+        "modelCalls": 77,
+        "turns": 2
+      },
+      "t2-karitas-canon": {
+        "sessions": 1,
+        "totalTokens": 8138497,
+        "outputTokens": 89878,
+        "modelCalls": 63,
+        "turns": 1
+      },
+      "t9-comment": {
+        "sessions": 1,
+        "totalTokens": 6985187,
+        "outputTokens": 54784,
+        "modelCalls": 57,
+        "turns": 1
+      },
+      "t15-audio": {
+        "sessions": 1,
+        "totalTokens": 5509620,
+        "outputTokens": 86131,
+        "modelCalls": 37,
+        "turns": 1
+      },
+      "t3-research": {
+        "sessions": 1,
+        "totalTokens": 5313952,
+        "outputTokens": 56378,
+        "modelCalls": 32,
+        "turns": 1
+      }
+    },
+    "week": {
+      "start": "2026-10-13T21:06:41+00:00",
+      "end": "2026-10-20T21:06:41+00:00",
+      "totalTokens": 876807251,
+      "byTask": {
+        "t1-sync": 195278422,
+        "t16-voice": 70812723,
+        "t6-pilot": 50644556,
+        "t7b-recognizer": 44724149,
+        "t29-text": 44474801,
+        "t7-sound": 35853215,
+        "t7c-sources": 29878255,
+        "t7d-entries": 29540433,
+        "t22-icons": 28670442,
+        "t4-fonts": 28478048,
+        "t21-glass": 25137785,
+        "t11-method": 23446330,
+        "t1-sync90": 18622598,
+        "t12-harakat": 17643842,
+        "t17-translation": 16840579,
+        "t19-speed": 16340623,
+        "t13-parts": 16085307,
+        "t6b-stage": 14094557,
+        "t6c-art": 13803173,
+        "t20-route": 12883930,
+        "t5b-cosmos": 12622916,
+        "t14-stage": 12287364,
+        "t2-ihca-canon": 11877092,
+        "t24-version": 11840699,
+        "t2-one-lyrics": 11835409,
+        "t2-subs": 11314497,
+        "t2-ihca-lyrics": 10407829,
+        "t8-marks": 9354769,
+        "t2-one-canon": 9231869,
+        "t5-design": 8461426,
+        "t2-karitas-lyrics": 8372357,
+        "t2-karitas-canon": 8138497,
+        "t9-comment": 6985187,
+        "t15-audio": 5509620,
+        "t3-research": 5313952
+      }
+    },
+    "claudeRows": 0,
+    "geminiRuns": [
+      {
+        "ts": "2026-10-18T11:02:33Z",
+        "agent": "gemini",
+        "kind": "run",
+        "task": "watch-video karitas",
+        "model": "gemini-3.8-flash-high",
+        "seconds": 708.4,
+        "tokens": 241232,
+        "status": "ERROR"
+      },
+      {
+        "ts": "2026-10-18T11:02:34Z",
+        "agent": "gemini",
+        "kind": "run",
+        "task": "watch-video one",
+        "model": "gemini-3.8-flash-high",
+        "seconds": 629.9,
+        "tokens": 210244,
+        "status": "ERROR"
+      },
+      {
+        "ts": "2026-10-18T11:02:34Z",
+        "agent": "gemini",
+        "kind": "run",
+        "task": "watch-video i-have-come-alive",
+        "model": "gemini-3.8-flash-high",
+        "seconds": 329.0,
+        "tokens": 142240,
+        "status": "SUCCESS"
+      },
+      {
+        "ts": "2026-10-18T15:33:15Z",
+        "agent": "gemini",
+        "kind": "run",
+        "task": "Gemini · Watch: обратный перевод, i-have-come-alive",
+        "model": "gemini-3.8-flash-high",
+        "seconds": 317.3,
+        "tokens": 60408,
+        "status": "SUCCESS"
+      },
+      {
+        "ts": "2026-10-18T15:33:15Z",
+        "agent": "gemini",
+        "kind": "run",
+        "task": "Gemini · Watch: обратный перевод, karitas",
+        "model": "gemini-3.8-flash-high",
+        "seconds": 362.5,
+        "tokens": 65925,
+        "status": "SUCCESS"
+      },
+      {
+        "ts": "2026-10-18T15:33:15Z",
+        "agent": "gemini",
+        "kind": "run",
+        "task": "Gemini · Watch: обратный перевод, one",
+        "model": "gemini-3.8-flash-high",
+        "seconds": 269.9,
+        "tokens": 57482,
+        "status": "SUCCESS"
+      }
+    ],
+    "geminiQuotaPoints": 536,
+    "geminiWeeklyFirst": 98.15,
+    "geminiWeeklyLast": 93.82,
+    "geminiWeeklyMin": 93.82,
+    "geminiWeeklyMax": 98.15,
+    "geminiWindowResetsDetected": 0
+  },
+  "blobs": {
+    "countObjects": "count: 900\nsize: 2.53 MiB\nin-pack: 5659\npacks: 2\nsize-pack: 55.56 MiB\nprune-packable: 0\ngarbage: 1\nsize-garbage: 0 bytes",
+    "files": 501,
+    "bytes": 58693123,
+    "top": [
+      {
+        "bytes": 15802080,
+        "path": "content/audio-enc/karitas/high.m4a.enc"
+      },
+      {
+        "bytes": 13392713,
+        "path": "content/audio-enc/one/high.m4a.enc"
+      },
+      {
+        "bytes": 9381790,
+        "path": "content/audio-enc/i-have-come-alive/high.m4a.enc"
+      },
+      {
+        "bytes": 6001184,
+        "path": "ops/usage/ledger/2026-10.jsonl"
+      },
+      {
+        "bytes": 1139598,
+        "path": "public/covers/one/source.jpg"
+      },
+      {
+        "bytes": 591148,
+        "path": "public/audio/karitas/features.json"
+      },
+      {
+        "bytes": 490555,
+        "path": "public/audio/one/features.json"
+      },
+      {
+        "bytes": 373377,
+        "path": "public/covers/i-have-come-alive/source.jpg"
+      },
+      {
+        "bytes": 365813,
+        "path": "public/audio/i-have-come-alive/features.json"
+      },
+      {
+        "bytes": 328226,
+        "path": "public/covers/karitas/source.jpg"
+      },
+      {
+        "bytes": 246428,
+        "path": "public/fonts/KFGQPC-Uthmanic-Script-HAFS.otf"
+      },
+      {
+        "bytes": 246371,
+        "path": "public/icons/icon-512.png"
+      },
+      {
+        "bytes": 238504,
+        "path": "public/covers/i-have-come-alive/1024.jpg"
+      },
+      {
+        "bytes": 233860,
+        "path": "public/covers/karitas/1024.jpg"
+      },
+      {
+        "bytes": 227144,
+        "path": "docs/analysis/bench/align.json"
+      },
+      {
+        "bytes": 226822,
+        "path": "public/covers/one/1024.jpg"
+      },
+      {
+        "bytes": 226180,
+        "path": "public/instruments/3d/daf.glb"
+      },
+      {
+        "bytes": 218318,
+        "path": "public/icons/icon-maskable-512.png"
+      },
+      {
+        "bytes": 212456,
+        "path": "public/audio/karitas/peaks.json"
+      },
+      {
+        "bytes": 211079,
+        "path": "docs/analysis/karitas-instruments.json"
+      },
+      {
+        "bytes": 197469,
+        "path": "scripts/instrument_id/weights/probe.npz"
+      },
+      {
+        "bytes": 180091,
+        "path": "public/audio/one/peaks.json"
+      },
+      {
+        "bytes": 170930,
+        "path": "docs/analysis/karitas/fusion.json"
+      },
+      {
+        "bytes": 145012,
+        "path": "docs/analysis/one-instruments.json"
+      },
+      {
+        "bytes": 141240,
+        "path": "docs/analysis/i-have-come-alive-instruments.json"
+      },
+      {
+        "bytes": 127436,
+        "path": "docs/analysis/one/fusion.json"
+      },
+      {
+        "bytes": 125997,
+        "path": "public/audio/i-have-come-alive/peaks.json"
+      },
+      {
+        "bytes": 113269,
+        "path": "content/songs/i-have-come-alive/lyrics.json"
+      },
+      {
+        "bytes": 112944,
+        "path": "docs/analysis/karitas/vision.json"
+      },
+      {
+        "bytes": 109491,
+        "path": "docs/analysis/i-have-come-alive/whisper-clocks.json"
+      }
+    ],
+    "byExt": {
+      ".enc": {
+        "files": 3,
+        "bytes": 38576583
+      },
+      ".jsonl": {
+        "files": 1,
+        "bytes": 6001184
+      },
+      ".json": {
+        "files": 97,
+        "bytes": 4782424
+      },
+      ".jpg": {
+        "files": 15,
+        "bytes": 2837641
+      },
+      ".md": {
+        "files": 122,
+        "bytes": 1863299
+      },
+      ".py": {
+        "files": 66,
+        "bytes": 1126969
+      },
+      ".svg": {
+        "files": 35,
+        "bytes": 962934
+      },
+      ".png": {
+        "files": 5,
+        "bytes": 570870
+      },
+      ".ts": {
+        "files": 46,
+        "bytes": 430169
+      },
+      ".glb": {
+        "files": 2,
+        "bytes": 332148
+      },
+      ".mjs": {
+        "files": 45,
+        "bytes": 278007
+      },
+      ".tsx": {
+        "files": 24,
+        "bytes": 247997
+      },
+      ".otf": {
+        "files": 1,
+        "bytes": 246428
+      },
+      ".npz": {
+        "files": 1,
+        "bytes": 197469
+      },
+      ".css": {
+        "files": 6,
+        "bytes": 88272
+      },
+      ".csv": {
+        "files": 16,
+        "bytes": 56722
+      },
+      ".yml": {
+        "files": 4,
+        "bytes": 53854
+      },
+      ".html": {
+        "files": 2,
+        "bytes": 18329
+      },
+      ".sh": {
+        "files": 4,
+        "bytes": 11637
+      },
+      ".pyc": {
+        "files": 1,
+        "bytes": 7591
+      },
+      ".txt": {
+        "files": 2,
+        "bytes": 1202
+      },
+      ".webmanifest": {
+        "files": 1,
+        "bytes": 747
+      },
+      "(none)": {
+        "files": 1,
+        "bytes": 440
+      },
+      ".example": {
+        "files": 1,
+        "bytes": 207
+      }
+    },
+    "byTop": {
+      "content": {
+        "files": 15,
+        "bytes": 39082820
+      },
+      "ops": {
+        "files": 34,
+        "bytes": 6224855
+      },
+      "public": {
+        "files": 34,
+        "bytes": 5962414
+      },
+      "docs": {
+        "files": 164,
+        "bytes": 3926265
+      },
+      "scripts": {
+        "files": 135,
+        "bytes": 1795711
+      },
+      "src": {
+        "files": 95,
+        "bytes": 1518917
+      },
+      "package-lock.json": {
+        "files": 1,
+        "bytes": 87326
+      },
+      ".github": {
+        "files": 4,
+        "bytes": 53854
+      },
+      "AGENTS.md": {
+        "files": 1,
+        "bytes": 12431
+      },
+      ".claude": {
+        "files": 6,
+        "bytes": 6654
+      },
+      "middleware.ts": {
+        "files": 1,
+        "bytes": 5692
+      },
+      "README.md": {
+        "files": 1,
+        "bytes": 5060
+      },
+      "vite.config.ts": {
+        "files": 1,
+        "bytes": 3813
+      },
+      "package.json": {
+        "files": 1,
+        "bytes": 1922
+      },
+      "vercel.json": {
+        "files": 1,
+        "bytes": 1810
+      },
+      "index.html": {
+        "files": 1,
+        "bytes": 1462
+      },
+      "tsconfig.json": {
+        "files": 1,
+        "bytes": 645
+      },
+      ".gitignore": {
+        "files": 1,
+        "bytes": 440
+      },
+      ".claude-plugin": {
+        "files": 1,
+        "bytes": 416
+      },
+      "CLAUDE.md": {
+        "files": 1,
+        "bytes": 295
+      },
+      ".env.example": {
+        "files": 1,
+        "bytes": 207
+      },
+      "GEMINI.md": {
+        "files": 1,
+        "bytes": 114
+      }
+    },
+    "trackedJunk": [
+      "scripts/pipeline/sandbox/__pycache__/research.cpython-313.pyc"
+    ]
+  },
+  "docs": {
+    "namedLines": {
+      "AGENTS.md": 76,
+      "CLAUDE.md": 7,
+      "GEMINI.md": 3,
+      "README.md": 55,
+      "docs/STATUS.md": 81,
+      "docs/BACKLOG.md": 189,
+      "docs/tasks/README.md": 26,
+      "docs/tasks/_executor.md": 24,
+      "docs/methodology/README.md": 156,
+      "ops/README.md": 97,
+      "ops/usage/README.md": 29,
+      "docs/process/chat-rotation.md": 91,
+      "docs/research/agent-system.md": 118
+    },
+    "mustReadLines": 396,
+    "methodologyLines": 2080,
+    "taskBriefLines": 843,
+    "analysisMarkdownLines": 8376,
+    "byDir": {
+      "docs/analysis": {
+        "files": 38,
+        "lines": 8376,
+        "bytes": 671667
+      },
+      "docs/methodology": {
+        "files": 17,
+        "lines": 2080,
+        "bytes": 367228
+      },
+      "content": {
+        "files": 6,
+        "lines": 1565,
+        "bytes": 191965
+      },
+      "docs/tasks": {
+        "files": 21,
+        "lines": 843,
+        "bytes": 166256
+      },
+      "docs/research": {
+        "files": 4,
+        "lines": 675,
+        "bytes": 119699
+      },
+      "docs/design": {
+        "files": 5,
+        "lines": 579,
+        "bytes": 86710
+      },
+      "docs/instruments": {
+        "files": 3,
+        "lines": 314,
+        "bytes": 42492
+      },
+      "ops": {
+        "files": 7,
+        "lines": 306,
+        "bytes": 44638
+      },
+      "docs/BACKLOG.md": {
+        "files": 1,
+        "lines": 189,
+        "bytes": 43492
+      },
+      "docs/business": {
+        "files": 4,
+        "lines": 178,
+        "bytes": 30036
+      },
+      "docs/data-format.md": {
+        "files": 1,
+        "lines": 130,
+        "bytes": 16528
+      },
+      "docs/performance": {
+        "files": 1,
+        "lines": 108,
+        "bytes": 12650
+      },
+      "docs/process": {
+        "files": 1,
+        "lines": 91,
+        "bytes": 11383
+      },
+      "docs/STATUS.md": {
+        "files": 1,
+        "lines": 81,
+        "bytes": 26165
+      },
+      "AGENTS.md": {
+        "files": 1,
+        "lines": 76,
+        "bytes": 12431
+      },
+      ".claude": {
+        "files": 5,
+        "lines": 68,
+        "bytes": 5681
+      },
+      "scripts": {
+        "files": 3,
+        "lines": 66,
+        "bytes": 8809
+      },
+      "README.md": {
+        "files": 1,
+        "lines": 55,
+        "bytes": 5060
+      },
+      "CLAUDE.md": {
+        "files": 1,
+        "lines": 7,
+        "bytes": 295
+      },
+      "GEMINI.md": {
+        "files": 1,
+        "lines": 3,
+        "bytes": 114
+      }
+    }
+  },
+  "duplicateParagraphs": [],
+  "zeroBasenameRefs": [
+    {
+      "path": "ops/dashboard-mod/tests/dashboard.test.tsx",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/baglama.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/bendir.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/darbuka.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/double-bass.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/duduk.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/ensemble.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/erhu.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/flute.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/guitar-classical.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/guitar.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/harp.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/kamancheh.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/orchestral-percussion.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/piano.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/qanun.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/riq.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/santur.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/sitar.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/tabla.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/tanbur.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/tombak.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/violin.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/art/instruments/zurna.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/instrument_id/anchors.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/instrument_id/dataset.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/instrument_id/embed.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/instrument_id/evaluate.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/instrument_id/fuse.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/instrument_id/loso.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/instrument_id/openset.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/instrument_id/paths.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/instrument_id/selftest.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/instrument_id/stems.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/instrument_id/train.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/instrument_id/verify_clips.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/instrument_id/watch.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/pipeline/ci_run.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/pipeline/common.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/pipeline/diagnose_locate.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/pipeline/phoneme.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/pipeline/placement.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/pipeline/sandbox/analyze.sh",
+      "basenameHitsElsewhere": -1
+    },
+    {
+      "path": "scripts/pipeline/sandbox/research.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/pipeline/sandbox/seal_key.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/pipeline/whisper_witness.py",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "scripts/tools/font-shots.mjs",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/app/App.tsx",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/app/marks.test.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/app/marks.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/app/prefetch.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/app/router.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/components/RichText.tsx",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/components/controls.tsx",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/data/covers.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/data/library.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/icons/Icon.tsx",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/instruments/render/models.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/instruments/render/support.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/instruments/render/three-lib.d.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/pages/MethodPage.tsx",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/pages/song/InfoSheet.tsx",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/pages/song/MarksSection.tsx",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/pages/song/PartsSection.tsx",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/pages/song/SettingsSheet.tsx",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/pages/song/SongPage.tsx",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/pages/song/TextSheet.tsx",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/pages/song/parts.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/player/eq.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/player/fileStore.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/player/preload.test.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/player/preload.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/scene/fonts.ts",
+      "basenameHitsElsewhere": 0
+    },
+    {
+      "path": "src/ui/controls.tsx",
+      "basenameHitsElsewhere": 0
+    }
+  ],
+  "tests": {
+    "files": [
+      {
+        "path": "ops/dashboard-mod/tests/dashboard.test.tsx",
+        "inPackageJson": false,
+        "workflows": []
+      },
+      {
+        "path": "scripts/pipeline/test_sync.py",
+        "inPackageJson": false,
+        "workflows": []
+      },
+      {
+        "path": "src/app/marks.test.ts",
+        "inPackageJson": false,
+        "workflows": []
+      },
+      {
+        "path": "src/player/background.test.ts",
+        "inPackageJson": false,
+        "workflows": []
+      },
+      {
+        "path": "src/player/preload.test.ts",
+        "inPackageJson": false,
+        "workflows": []
+      }
+    ],
+    "packageScripts": "\"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"node scripts/tools/audio-crypt.mjs decrypt && npm run validate && tsc --noEmit -p . && vite build\",\n    \"preview\": \"vite preview\",\n    \"typecheck\": \"tsc --noEmit -p .\",\n    \"validate\": \"tsx scripts/tools/validate.ts\",\n    \"draft-timing\": \"tsx scripts/tools/draft-timing.ts\",\n    \"new-song\": \"tsx scripts/tools/new-song.ts\",\n    \"song-status\": \"tsx scripts/tools/song-status.ts\",\n    \"art\": \"node scripts/art/build-instruments.mjs\",\n    \"art3d\": \"node scripts/art3d/build.mjs\",\n    \"test:layout\": \"tsx scripts/tools/layout-test.ts\",\n    \"shots\": \"node scripts/tools/screenshots.mjs\",\n    \"predev\": \"node scripts/tools/audio-crypt.mjs decrypt\",\n    \"audio:encrypt\": \"node scripts/tools/audio-crypt.mjs encrypt\"\n  }"
+  },
+  "actions": {
+    "runs": 54,
+    "from": "2026-10-16T20:21:05Z",
+    "to": "2026-10-20T21:56:21Z",
+    "byWorkflow": {
+      "cleanup": {
+        "runs": 4,
+        "minutes": 0.8,
+        "byConclusion": {
+          "success": 4
+        }
+      },
+      "pipeline": {
+        "runs": 40,
+        "minutes": 1400.8,
+        "byConclusion": {
+          "success": 29,
+          "cancelled": 5,
+          "failure": 6
+        }
+      },
+      "instrument-id": {
+        "runs": 6,
+        "minutes": 53.6,
+        "byConclusion": {
+          "success": 6
+        }
+      },
+      "audio-check": {
+        "runs": 1,
+        "minutes": 0.6,
+        "byConclusion": {
+          "success": 1
+        }
+      },
+      "probe": {
+        "runs": 3,
+        "minutes": 1.3,
+        "byConclusion": {
+          "success": 2,
+          "failure": 1
+        }
+      }
+    },
+    "summary": {
+      "cleanup:success": 4,
+      "pipeline:success": 29,
+      "pipeline:cancelled": 5,
+      "pipeline:failure": 6,
+      "instrument-id:success": 6,
+      "audio-check:success": 1,
+      "probe:success": 2,
+      "probe:failure": 1
+    },
+    "cancelledUnder2Min": 3,
+    "cancelledAtLeast20Min": [
+      {
+        "id": 39344308679,
+        "workflow": "pipeline",
+        "branch": "grok/t1-sync",
+        "conclusion": "cancelled",
+        "minutes": 120.4,
+        "createdAt": "2026-10-19T23:53:16Z",
+        "title": "Re-prove the three songs from the finished alignment."
+      },
+      {
+        "id": 39102852010,
+        "workflow": "pipeline",
+        "branch": "grok/t1-sync",
+        "conclusion": "cancelled",
+        "minutes": 150.3,
+        "createdAt": "2026-10-18T06:06:13Z",
+        "title": "Queue alignment for the three songs."
+      }
+    ],
+    "failures": [
+      {
+        "id": 39332050100,
+        "workflow": "pipeline",
+        "branch": "grok/t1-sync",
+        "conclusion": "failure",
+        "minutes": 96.7,
+        "createdAt": "2026-10-19T22:02:16Z",
+        "title": "Queue alignment of the three songs for the phoneme witness."
+      },
+      {
+        "id": 39093333782,
+        "workflow": "pipeline",
+        "branch": "grok/t1-sync",
+        "conclusion": "failure",
+        "minutes": 68.3,
+        "createdAt": "2026-10-18T03:21:32Z",
+        "title": "Queue alignment for the three songs."
+      },
+      {
+        "id": 39091705988,
+        "workflow": "pipeline",
+        "branch": "grok/t1-sync",
+        "conclusion": "failure",
+        "minutes": 23.9,
+        "createdAt": "2026-10-18T02:53:56Z",
+        "title": "Queue alignment for the three songs."
+      },
+      {
+        "id": 39079317851,
+        "workflow": "pipeline",
+        "branch": "grok/t1-sync",
+        "conclusion": "failure",
+        "minutes": 38.5,
+        "createdAt": "2026-10-17T23:30:52Z",
+        "title": "Queue alignment for the three songs"
+      },
+      {
+        "id": 39036618793,
+        "workflow": "pipeline",
+        "branch": "grok/t7-sound",
+        "conclusion": "failure",
+        "minutes": 1.6,
+        "createdAt": "2026-10-17T13:27:16Z",
+        "title": "Queue the instrument pass with the cosine gate"
+      },
+      {
+        "id": 39034541243,
+        "workflow": "pipeline",
+        "branch": "grok/t7-sound",
+        "conclusion": "failure",
+        "minutes": 7.6,
+        "createdAt": "2026-10-17T12:56:42Z",
+        "title": "Queue sound features for i-have-come-alive"
+      },
+      {
+        "id": 38961603494,
+        "workflow": "probe",
+        "branch": "ci/probe",
+        "conclusion": "failure",
+        "minutes": 0.2,
+        "createdAt": "2026-10-16T20:21:05Z",
+        "title": "CI probe: check YouTube access from GitHub runners"
+      }
+    ],
+    "overlapMinutesSameBranch": []
+  },
+  "churn": {
+    "commitsTouching": {
+      "AGENTS.md": 15,
+      "docs/STATUS.md": 53,
+      "docs/BACKLOG.md": 51,
+      "ops/board.json": 27,
+      "docs/methodology": 110,
+      "docs/tasks": 34,
+      "ops/usage/ledger": 19
+    },
+    "authors": {
+      "AkhrorSh": 456,
+      "github-actions[bot]": 38,
+      "living-lyrics-actions": 7,
+      "Claude": 36
+    },
+    "commitsByDay": {
+      "2026-10-16": 34,
+      "2026-10-17": 190,
+      "2026-10-18": 164,
+      "2026-10-19": 38,
+      "2026-10-20": 76,
+      "2026-10-21": 35
+    },
+    "phraseFiles": {
+      "LL · Main": [
+        ".claude/agents/ll-business.md",
+        ".claude/agents/ll-main.md",
+        ".claude/agents/ll-site.md",
+        ".claude/agents/ll-tech.md",
+        "AGENTS.md",
+        "docs/process/chat-rotation.md",
+        "docs/research/agent-system.md",
+        "docs/tasks/T26-agent-system-research.md",
+        "docs/tasks/T27-iphone-stability.md",
+        "docs/tasks/T28-player-ux.md",
+        "docs/tasks/T29-text-recheck.md",
+        "docs/tasks/T30-web-status.md",
+        "docs/tasks/T31-repo-audit.md",
+        "ops/handoff/2026-10-20-ll-main.md",
+        "ops/handoff/2026-10-21-ll-tech.md"
+      ],
+      "LL · Site": [
+        ".claude/agents/ll-main.md",
+        ".claude/agents/ll-site.md",
+        "AGENTS.md",
+        "docs/STATUS.md",
+        "docs/process/chat-rotation.md",
+        "docs/tasks/T25-chat-rotation.md",
+        "docs/tasks/T26-agent-system-research.md",
+        "docs/tasks/T27-iphone-stability.md",
+        "docs/tasks/T28-player-ux.md",
+        "docs/tasks/T29-text-recheck.md",
+        "ops/handoff/2026-10-20-ll-main.md",
+        "ops/handoff/2026-10-20-ll-site.md",
+        "ops/handoff/2026-10-20-ll-tech.md",
+        "ops/handoff/README.md"
+      ],
+      "оркестратор": [
+        "AGENTS.md",
+        "docs/BACKLOG.md",
+        "docs/STATUS.md",
+        "docs/analysis/translation/i-have-come-alive.md",
+        "docs/analysis/translation/karitas.md",
+        "docs/analysis/translation/one.md",
+        "docs/analysis/translation/review-2026-10-18.md",
+        "docs/methodology/12-publish.md",
+        "docs/methodology/new-song-route.md",
+        "docs/process/chat-rotation.md",
+        "docs/research/agent-system.md",
+        "docs/tasks/T17-translation.md",
+        "docs/tasks/T23-mod-infra.md",
+        "docs/tasks/_executor.md",
+        "docs/tasks/instruments-3d.md",
+        "ops/README.md",
+        "scripts/instrument_id/prompts/README.md"
+      ]
+    }
+  },
+  "mentions": {
+    "roundAndRedoLines": [
+      "content/songs/karitas/sources.md:12:- Альбом в `song.json`: When Paths Meet (Live at The Holland Festival), год 2023. Дата EP «12 декабря 2022» и дата каталога Samaa «13 января 2023» в этом проходе по Apple Music и карточке каталога заново ",
+      "content/songs/karitas/sources.md:29:| мавваль ан-Набулси | Ahmed Elmaai, Amsterdam Andalusian Orchestra | короткие ролики исполнителя [-5qOGo_ai0E](https://www.youtube.com/watch?v=-5qOGo_ai0E) и [ueuVK9cuLgQ](https://www.youtube.com/watch?v",
+      "content/songs/karitas/sources.md:108:Карточка называет релиз Karitas (ONE: When Paths Meet) - EP. Исполнители на карточке: Sami Yusuf, Cappella Amsterdam & Amsterdam Andalusian Orchestra. Дата релиза 2022-12-12. Длительность дорожки 951500 ",
+      "content/songs/one/canon.md:304:10. Поимённый состав живого концерта 2022 в открытых страницах samiyusuf.art не дан. Страница Samaa в этой сверке не открывалась. Описание ролика `BcSnZ-RuwyI` заново не прочитано: yt-dlp получил ответ 429.",
+      "content/songs/one/sources.md:5:Длительность в `song.json` — 828,05 с. Происхождение файла: дорожка YouTube 140 ролика https://www.youtube.com/watch?v=BcSnZ-RuwyI. В этой сверке ролик заново не измерялся (yt-dlp ответил 429). Старая пометка ",
+      "docs/BACKLOG.md:23:## T2. Тексты от оригиналов, заново для трёх песен",
+      "docs/BACKLOG.md:67:**Цель.** Все инструменты заново, качественно, в 3D, с управляемыми частями (струны дрожат, мембраны вздрагивают, смычок ходит, клавиши нажимаются), подходящие к большей части живой музыки; плюс новые инструменты. Делает ",
+      "docs/BACKLOG.md:71:**Отдельно (не зависит от 3D):** `features.json` по каждой песне → загрузка в `SongPage` → `driveAt` → входы рисунков. Без этого никакие рисунки не двигаются в такт. Внимание (T3): `features.py` из ветки `wip/sync-tools` ",
+      "docs/STATUS.md:81:- T1 (синхронизация слов): третий заход влит 2026-10-20 (фонемный свидетель IPA, прогон 39358042534): доказано IHCA соло 68/120, Karitas соло 28/60, ONE соло 21/37, хор 1/26; все три песни `draft`, до пословной заливки нуж",
+      "docs/methodology/05-alignment.md:41:2. **Стемы.** Demucs `htdemucs` без `--two-stems` → `work/<slug>/stems/{vocals,drums,bass,other}.wav`. Ударные, бас и остальное нужны следующей задаче (признаки звука для анимации); конвейер их считает и ",
+      "docs/methodology/05-alignment.md:139:Случайный проход строки считается на поставленных строках соло и хора, у которых есть реплика и не меньше двух слов. Все начала MMS внутри строки сдвигаются на одно и то же ±0,15, ±0,25 или ±0,40 с, и от",
+      "docs/methodology/05-alignment.md:266:Допуск тот же, что у Whisper, и пороги не сдвигаются. Для пары не короче 30 поставленных слов считается случайный проход слова: сдвиги ±0,15, ±0,25, ±0,40 с и перемешивание начал внутри строки, часы свид",
+      "docs/methodology/05-alignment.md:291:Прогон `39458963357` (коммит `6eb52cc`) заново померил те же пороги на строках после T29 и оставил заливку огибающей. Было, прогон `39358042534`. Стало: I Have Come Alive соло 68 / 120 → 74 / 122, Karita",
+      "docs/methodology/06-translation.md:88:`karitas`, строка `hildegard-h6-1`: «quia summo regi osculum pacis dedit». `em` на osculum. Длительность смотрите по `s`/`e` этой строки, не оценивайте заново.",
+      "docs/methodology/09-instruments.md:189:Состав меняется только на границе секции. Если с прошлой смены прошло меньше восьми секунд, остаётся прежний состав: короткая секция не подменяет гравюры. Общий инструмент соседних секций остаётся в то",
+      "docs/research/instrument-recognition.md:29:| LAION-CLAP | репозиторий; лицензию кода в этой заметке заново не сверяли | перед любой зависимостью читать карточку чекпоинта | можно сказать «най» текстом. Нулевая подсказка не доказывает, что к",
+      "docs/research/product.md:100:2. Решение владельца по современным текстам в публичном git — до того, как T2 переписывает `lyrics.json` заново и тем самым ещё раз публикует строки.",
+      "docs/tasks/README.md:13:3. Владелец дополнил задачу по ходу — допишите в конец файла задания раздел «Дополнение N (дата)» и отправьте исполнителю тот же текст.",
+      "docs/tasks/T1-sync.md:51:4. Короткая доля — 52 строки (21, 17 и 14). Заливка огибающей уже в правиле и прибавила 7 строк на всех песнях. Перевыбор уже записанных часов почти ничего не давал на прошлом наборе и заново не делается. Новый свид",
+      "docs/tasks/T14-stage.md:19:## Дополнение 1 (2026-10-18)",
+      "docs/tasks/T16-voice.md:16:## Дополнение 1 (2026-10-18): без людей",
+      "docs/tasks/T16-voice.md:31:## Дополнение 2 (2026-10-18): без живности; сцена — 3–4 по главности",
+      "docs/tasks/T16-voice.md:55:## Дополнение 3 (2026-10-18): свести с T14, микрофон v2, обложки песен",
+      "docs/tasks/T16-voice.md:81:## Дополнение 4 (2026-10-18): 3–4 инструмента стоят, звучащий оживает",
+      "docs/tasks/T17-translation.md:20:## Дополнение 1 (2026-10-18)",
+      "docs/tasks/T17-translation.md:30:## Дополнение 2 (2026-10-18): приёмка — замечания оркестратора и проверка Gemini",
+      "docs/tasks/T18-design.md:22:## Дополнение 1 (2026-10-18)",
+      "docs/tasks/T18-design.md:33:## Дополнение 2 (2026-10-18)",
+      "docs/tasks/T18-design.md:43:## Дополнение 3 (2026-10-18): крупный текст, читаемость, эффекты",
+      "docs/tasks/T20-route.md:28:## Дополнение 1 (2026-10-18): стадии влиты; заметки проигрышей",
+      "docs/tasks/T21-glass.md:45:## Дополнение 1 (2026-10-19): приёмка первой версии — доводка",
+      "docs/tasks/T21-glass.md:55:Кадры «после» заново в `work/shots/t21/after2/`: песня (строка + перевод + раскрытое пояснение), настройки, библиотека — iPhone 393×852, машина 800×480, десктоп 1440×900, тёмная и светлая. Проверки как в задаче. К",
+      "docs/tasks/T22-icons-covers.md:31:## Дополнение 1 (2026-10-19): выбор владельца — иконки A, чётко; обложки — официальные",
+      "docs/tasks/T31-repo-audit.md:19:   - отклонённые и переделанные проходы (повторные раунды, `rejected` на доске, «раунд N» в отчётах) и их причины;",
+      "docs/tasks/instruments-3d.md:13:Исследование T3 (`docs/research/technology.md`, разделы 3 и 6) эти выборы закрыло. Семейства после пилота идут по ним и конвейер заново не строят.",
+      "ops/handoff/2026-10-20-ll-main.md:16:- LL · Site, T29 (text re-check): Grok on `grok/t29-text`. Round 1 is done: sequence check `scripts/tools/sequence-check.ts`, and the IHCA 6:12–6:35 error was found (Arabic lines shown, Persian beit 8 su"
+    ],
+    "roundAndRedoCount": 36
+  }
+}
