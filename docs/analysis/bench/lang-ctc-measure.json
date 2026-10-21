@@ -1,0 +1,96 @@
+{
+  "budget_s": 4500.0,
+  "models": [
+    {
+      "lang": "ar",
+      "id": "elgeish/wav2vec2-large-xlsr-53-arabic",
+      "loaded_id": "elgeish/wav2vec2-large-xlsr-53-arabic",
+      "name": "xlsr-53-ar-elgeish",
+      "license": "Apache-2.0",
+      "noncommercial": false,
+      "note": "XLSR-53, Arabic Common Voice and the Arabic Speech Corpus. Not the WhisperX Arabic checkpoint.",
+      "elapsed_s": 12.7,
+      "lines": 83,
+      "words": 316,
+      "error": null,
+      "ran": true,
+      "complete": true
+    },
+    {
+      "lang": "fa",
+      "id": "m3hrdadfi/wav2vec2-large-xlsr-persian",
+      "loaded_id": "m3hrdadfi/wav2vec2-large-xlsr-persian",
+      "name": "xlsr-53-fa-m3hrdadfi",
+      "license": "Apache-2.0",
+      "noncommercial": false,
+      "note": "XLSR-53 on Persian Common Voice. Not the WhisperX Persian checkpoint.",
+      "elapsed_s": 74.7,
+      "lines": 54,
+      "words": 224,
+      "error": null,
+      "ran": true,
+      "complete": true
+    },
+    {
+      "lang": "de",
+      "id": "jonatasgrosman/wav2vec2-large-xlsr-53-german",
+      "loaded_id": "jonatasgrosman/wav2vec2-large-xlsr-53-german",
+      "name": "xlsr-53-de-grosman",
+      "license": "Apache-2.0",
+      "noncommercial": false,
+      "note": "XLSR-53 on German Common Voice 6.1. The second aligner for German is VoxPopuli base.",
+      "elapsed_s": 55.4,
+      "lines": 26,
+      "words": 150,
+      "error": null,
+      "ran": true,
+      "complete": true
+    },
+    {
+      "lang": "tr",
+      "id": "cahya/wav2vec2-large-xlsr-turkish",
+      "loaded_id": "cahya/wav2vec2-large-xlsr-turkish",
+      "name": "xlsr-53-tr-cahya",
+      "license": "Apache-2.0",
+      "noncommercial": false,
+      "note": "XLSR-53 on Turkish Common Voice. Not the WhisperX Turkish XLS-R 300M checkpoint.",
+      "elapsed_s": 30.8,
+      "lines": 16,
+      "words": 55,
+      "error": null,
+      "ran": true,
+      "complete": true
+    },
+    {
+      "lang": "en",
+      "id": "jonatasgrosman/wav2vec2-large-xlsr-53-english",
+      "loaded_id": "jonatasgrosman/wav2vec2-large-xlsr-53-english",
+      "name": "xlsr-53-en-grosman",
+      "license": "Apache-2.0",
+      "noncommercial": false,
+      "note": "XLSR-53 on English Common Voice. The second aligner for English is LibriSpeech base 960h.",
+      "elapsed_s": 17.2,
+      "lines": 14,
+      "words": 52,
+      "error": null,
+      "ran": true,
+      "complete": true
+    }
+  ],
+  "absent": [
+    {
+      "lang": "az",
+      "reason": "Отдельной модели, обученной на азербайджанском и не делящей контур MMS, нет. Найденные карточки — дообучение facebook/mms-1b-all, лицензия CC-BY-NC 4.0. Они не измерялись. Турецкая модель на азербайджанский не переносится."
+    },
+    {
+      "lang": "la",
+      "reason": "Отдельной CTC-модели латыни нет. Итальянская и испанская модели не переносятся: родного итальянского или испанского пения в этих записях нет."
+    }
+  ],
+  "mms_adapters": "Адаптеры facebook/mms-1b-all делят акустический контур с постановщиком MMS и не измерялись.",
+  "songs": [
+    "i-have-come-alive",
+    "karitas",
+    "one"
+  ]
+}
