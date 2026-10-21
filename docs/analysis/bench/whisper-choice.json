@@ -1,8 +1,8 @@
 {
  "k": 0.25,
- "line_chance": 0.03333333333333333,
+ "line_chance": 0.0330188679245283,
  "proved": 109,
- "refuted": 38,
+ "refuted": 39,
  "words": 1050,
  "cut": [
   0.2,
@@ -62,7 +62,7 @@
     "large-v3-turbo": 7,
     "large-v3": 0
    },
-   "word_chance": 0.125,
+   "word_chance": 0.1346153846153846,
    "line_chance": 0.0,
    "median": 0.093,
    "words": 52,
@@ -83,10 +83,10 @@
     "large-v3": 27
    },
    "word_chance": 0.049107142857142856,
-   "line_chance": 0.010869565217391304,
-   "median": 0.079,
+   "line_chance": 0.010638297872340425,
+   "median": 0.08,
    "words": 224,
-   "candidates": 48
+   "candidates": 49
   },
   {
    "song": "i-have-come-alive",
@@ -164,9 +164,9 @@
    },
    "word_chance": 0.019736842105263157,
    "line_chance": 0.0,
-   "median": 0.26,
+   "median": 0.273,
    "words": 76,
-   "candidates": 17
+   "candidates": 18
   },
   {
    "song": "one",
@@ -218,7 +218,7 @@
    "word_ok": true,
    "proved": 103,
    "k": 0.25,
-   "line_chance": 0.047619047619047616,
+   "line_chance": 0.04716981132075472,
    "word_chance": 0.14619883040935672,
    "by_song": {
     "i-have-come-alive": 69,
@@ -235,8 +235,8 @@
    "word_ok": true,
    "proved": 81,
    "k": 0.5,
-   "line_chance": 0.03333333333333333,
-   "word_chance": 0.13157894736842105,
+   "line_chance": 0.0330188679245283,
+   "word_chance": 0.1346153846153846,
    "by_song": {
     "i-have-come-alive": 64,
     "karitas": 7,
@@ -252,7 +252,7 @@
    "word_ok": true,
    "proved": 103,
    "k": 0.25,
-   "line_chance": 0.0380952380952381,
+   "line_chance": 0.03773584905660377,
    "word_chance": 0.14619883040935672,
    "by_song": {
     "i-have-come-alive": 63,
@@ -269,7 +269,7 @@
    "word_ok": true,
    "proved": 62,
    "k": 0.6,
-   "line_chance": 0.014285714285714285,
+   "line_chance": 0.014150943396226415,
    "word_chance": 0.13450292397660818,
    "by_song": {
     "i-have-come-alive": 46,
@@ -284,14 +284,14 @@
    "song": "i-have-come-alive",
    "ok": true,
    "k": 0.25,
-   "chance": 0.009009009009009009,
+   "chance": 0.008928571428571428,
    "proved": 69
   },
   {
    "song": "karitas",
    "ok": true,
    "k": 0.25,
-   "chance": 0.010869565217391304,
+   "chance": 0.010638297872340425,
    "proved": 18
   },
   {
@@ -303,8 +303,8 @@
   }
  ],
  "window_shift": {
-  "lines": 79,
-  "missing_clock": 19,
+  "lines": 78,
+  "missing_clock": 18,
   "both_clocks": 60,
   "early": 17,
   "first": {

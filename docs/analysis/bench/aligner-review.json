@@ -8,17 +8,17 @@
  "agree_tol": 0.1,
  "closer": {
   "words": {
-   "n": 315,
-   "mms": 166,
-   "second": 138,
-   "tie": 11,
+   "n": 313,
+   "mms": 163,
+   "second": 140,
+   "tie": 10,
    "no_peak": 0
   },
   "lines": {
    "n": 81,
-   "mms": 48,
-   "second": 28,
-   "tie": 5,
+   "mms": 47,
+   "second": 30,
+   "tie": 4,
    "no_peak": 0
   },
   "by_lang": {
@@ -40,17 +40,17 @@
    },
    "fa": {
     "words": {
-     "n": 77,
-     "mms": 36,
-     "second": 38,
-     "tie": 3,
+     "n": 75,
+     "mms": 34,
+     "second": 39,
+     "tie": 2,
      "no_peak": 0
     },
     "lines": {
      "n": 22,
      "mms": 11,
-     "second": 9,
-     "tie": 2,
+     "second": 10,
+     "tie": 1,
      "no_peak": 0
     }
    },
@@ -121,15 +121,15 @@
    "de": {
     "words": {
      "n": 105,
-     "mms": 55,
-     "second": 49,
+     "mms": 54,
+     "second": 50,
      "tie": 1,
      "no_peak": 0
     },
     "lines": {
      "n": 22,
-     "mms": 19,
-     "second": 3,
+     "mms": 18,
+     "second": 4,
      "tie": 0,
      "no_peak": 0
     }
@@ -138,17 +138,17 @@
   "by_song": {
    "i-have-come-alive": {
     "words": {
-     "n": 105,
-     "mms": 55,
-     "second": 46,
-     "tie": 4,
+     "n": 103,
+     "mms": 53,
+     "second": 47,
+     "tie": 3,
      "no_peak": 0
     },
     "lines": {
      "n": 35,
      "mms": 21,
-     "second": 12,
-     "tie": 2,
+     "second": 13,
+     "tie": 1,
      "no_peak": 0
     }
    },
@@ -171,15 +171,15 @@
    "one": {
     "words": {
      "n": 194,
-     "mms": 102,
-     "second": 86,
+     "mms": 101,
+     "second": 87,
      "tie": 6,
      "no_peak": 0
     },
     "lines": {
      "n": 43,
-     "mms": 25,
-     "second": 15,
+     "mms": 24,
+     "second": 16,
      "tie": 3,
      "no_peak": 0
     }
@@ -205,7 +205,7 @@
   "ar": {
    "words": 316,
    "third": 316,
-   "within_0_10": 42
+   "within_0_10": 41
   },
   "az": {
    "words": 177,
@@ -382,14 +382,14 @@
    "offset": 0.0,
    "applied": false,
    "reason": "shift-under-0.02",
-   "hold_agree_before": 0.5816,
+   "hold_agree_before": 0.602,
    "hold_agree_before_n": [
-    57,
+    59,
     98
    ],
-   "hold_agree_if_train_offset": 0.5918,
+   "hold_agree_if_train_offset": 0.6122,
    "hold_agree_if_train_offset_n": [
-    58,
+    60,
     98
    ],
    "key": "whisperx|fa"
