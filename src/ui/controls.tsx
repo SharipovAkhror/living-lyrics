@@ -1,7 +1,8 @@
-import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from './icons';
-import { springSettled, stepSpring, type SpringState } from './spring';
+import { PHONE_SPRING, SPRING, springSettled, stepSpring, type SpringState } from './spring';
+import { isPhone } from './phone';
 
 function motionOff() {
   if (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
@@ -63,8 +64,12 @@ export function Sheet({
     const p = Math.max(0, Math.min(1, 1 - travel / h));
     if (backdrop.current) backdrop.current.style.opacity = p.toFixed(3);
     const root = document.documentElement;
-    root.style.setProperty('--sheet-p', p.toFixed(3));
-    if (p > 0.02) root.dataset.sheet = '1';
+    // On a phone the page under the sheet does not scale, so this variable would only
+    // restyle the whole stage on the frame the sheet opens.
+    if (!isPhone()) root.style.setProperty('--sheet-p', p.toFixed(3));
+    // Stay covered for the whole open, including the first frame where the sheet is still off-screen.
+    // Clearing here used to wake the sky under the blur while the sheet was travelling.
+    if (openRef.current || p > 0.02) root.dataset.sheet = '1';
     else delete root.dataset.sheet;
   };
 
@@ -80,7 +85,7 @@ export function Sheet({
       if (drag.current?.active) return;
       const dt = Math.min(0.032, (now - last) / 1000);
       last = now;
-      state.current = stepSpring(state.current, target.current, dt);
+      state.current = stepSpring(state.current, target.current, dt, isPhone() ? PHONE_SPRING : SPRING);
       paint(state.current.x);
       if (springSettled(state.current, target.current)) {
         state.current = { x: target.current, v: 0 };
@@ -98,10 +103,37 @@ export function Sheet({
   };
 
   useEffect(() => {
-    if (open) setRender(true);
+    if (!open) return;
+    document.documentElement.dataset.sheet = '1';
+    setRender(true);
   }, [open]);
 
+  // A phone sheet is in place before the first paint. The stiff spring was one
+  // long frame per step, so the title arrived late and the scroller dropped frames.
+  useLayoutEffect(() => {
+    if (!isPhone() || motionOff()) return;
+    if (!open) {
+      if (render) {
+        setShown(false);
+        setRender(false);
+        clearSheetChrome();
+      }
+      return;
+    }
+    document.documentElement.dataset.sheet = '1';
+    if (!render) {
+      setRender(true);
+      return;
+    }
+    if (!panel.current) return;
+    stop();
+    state.current = { x: 0, v: 0 };
+    paint(0);
+    setShown(true);
+  }, [open, render]);
+
   useEffect(() => {
+    if (isPhone() && !motionOff()) return;
     if (!render || !panel.current) return;
     const el = panel.current;
     const away = () => el.offsetHeight + 48;

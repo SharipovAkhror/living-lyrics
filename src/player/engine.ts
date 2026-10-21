@@ -6,6 +6,7 @@
  * The audio session is `playback` (see background.ts). Hiding the page does not pause.
  * Without any audio file the engine runs a silent clock, so the Scene can still be previewed.
  */
+import { bisect } from '@/app/bisect';
 import { coverMime, coverUrl, type CoverExt } from '@/data/covers';
 import type { Peaks } from '@/data/schema';
 import {
@@ -88,6 +89,11 @@ export class AudioEngine {
    * The fresh element starts at 0; painting that would rewind the stage.
    */
   private bridge: number | null = null;
+  /**
+   * A seek that arrived before the element had metadata. The load captured an older
+   * time and would otherwise rewind to it when `loadedmetadata` fires.
+   */
+  private pendingSeek: number | null = null;
 
   state: EngineState;
 
@@ -208,7 +214,8 @@ export class AudioEngine {
       this.syncBuffering();
     });
     this.listen(el, 'error', () => {
-      this.bridge = null;
+      // A seek that has not landed yet still has to paint. Dropping the bridge here rewinds a reload.
+      if (this.pendingSeek == null) this.bridge = null;
       this.pendingPlay = false;
       if (this.state.source === 'silent') return;
       this.patch({ error: this.audioErrorMessage(), ready: false, buffering: false, canPlay: false });
@@ -293,11 +300,8 @@ export class AudioEngine {
     el.preload = this.preload;
     el.src = url;
     const restore = () => {
+      this.placeRestoredTime(el, t);
       if (el !== this.el) return;
-      if (t > 0) el.currentTime = t;
-      this.noteSeek();
-      this.applyRate();
-      this.resync();
       if (wasPlaying) void el.play().catch(() => this.patch({ playing: false }));
     };
     el.addEventListener('loadedmetadata', restore, { once: true });
@@ -374,6 +378,7 @@ export class AudioEngine {
     if (lib) this.setSource('library', lib);
     else {
       this.bridge = null;
+      this.pendingSeek = null;
       this.el.removeAttribute('src');
       this.el.load();
       this.patch({ source: 'silent', localName: undefined, ready: true, playing: false, duration: this.opts.duration });
@@ -421,10 +426,48 @@ export class AudioEngine {
     return decision.time;
   }
 
+  /** Put a just-loaded element back on the seek the reader asked for, not the time captured when the load started. */
+  private placeRestoredTime(el: HTMLAudioElement, captured: number) {
+    if (el !== this.el) return;
+    const target = this.pendingSeek != null ? this.pendingSeek : captured;
+    if (target > 0.05) {
+      try {
+        el.currentTime = target;
+      } catch {
+        /* currentTime before metadata throws on some browsers; pendingSeek retries on the next event */
+      }
+    }
+    if (this.pendingSeek != null) {
+      const stuck = el.readyState >= 1 && Math.abs(el.currentTime - this.pendingSeek) < 0.75;
+      if (stuck) this.pendingSeek = null;
+      else this.bridge = this.pendingSeek;
+    }
+    this.noteSeek();
+    this.applyRate();
+    this.resync();
+  }
+
+  /**
+   * The element's clock, or null when asking again would be pointless.
+   * A failed element (the iPhone reload was fed by polling `currentTime` on one)
+   * stays on the last published time instead of being queried every frame.
+   */
+  private mediaTime(): number | null {
+    if (this.el.error) return null;
+    try {
+      return this.el.currentTime;
+    } catch {
+      return null;
+    }
+  }
+
   private rawTime(): number {
+    const live = this.mediaTime();
+    if (this.pendingSeek != null && live != null && this.el.readyState >= 1 && Math.abs(live - this.pendingSeek) < 0.75) {
+      this.pendingSeek = null;
+    }
     if (this.bridge != null && this.state.source !== 'silent') {
-      const live = this.el.currentTime;
-      const caughtUp = this.el.readyState >= 1 && Math.abs(live - this.bridge) < 0.75;
+      const caughtUp = live != null && this.el.readyState >= 1 && Math.abs(live - this.bridge) < 0.75;
       if (!caughtUp) return this.bridge;
       this.bridge = null;
     }
@@ -433,10 +476,11 @@ export class AudioEngine {
       const t = this.silentTime + ((performance.now() - this.anchorPerf) / 1000) * this.rate;
       return Math.min(t, this.state.duration);
     }
-    if (this.el.paused) return this.el.currentTime;
+    if (live == null) return this.pendingSeek ?? this.published;
+    if (this.el.paused) return live;
     const predicted = this.anchorMedia + ((performance.now() - this.anchorPerf) / 1000) * this.el.playbackRate;
     // Never drift more than 120 ms from the element.
-    return Math.abs(predicted - this.el.currentTime) > 0.12 ? this.el.currentTime : predicted;
+    return Math.abs(predicted - live) > 0.12 ? live : predicted;
   }
 
   private resync() {
@@ -508,14 +552,26 @@ export class AudioEngine {
     this.noteSeek();
     if (this.state.source === 'silent') {
       this.bridge = null;
+      this.pendingSeek = null;
       this.silentTime = clamped;
       this.anchorPerf = performance.now();
       this.listeners.forEach((l) => l());
       return;
     }
-    this.el.currentTime = clamped;
+    this.pendingSeek = clamped;
+    try {
+      this.el.currentTime = clamped;
+    } catch {
+      /* ignored until metadata; pendingSeek is applied from loadedmetadata */
+    }
     // A reload may ignore the write until metadata arrives. Keep painting the requested time.
-    this.bridge = Math.abs(this.el.currentTime - clamped) > 0.75 ? clamped : null;
+    const stuck = this.el.readyState >= 1 && Math.abs(this.el.currentTime - clamped) < 0.75;
+    if (stuck) {
+      this.pendingSeek = null;
+      this.bridge = null;
+    } else {
+      this.bridge = clamped;
+    }
     this.resync();
     this.syncBuffering();
   }
@@ -624,12 +680,9 @@ export class AudioEngine {
     el.addEventListener(
       'loadedmetadata',
       () => {
+        this.placeRestoredTime(el, t);
         if (el !== this.el) return;
-        el.currentTime = t;
-        this.noteSeek();
-        this.applyRate();
         this.applyVolume();
-        this.resync();
         if (wasPlaying) void el.play();
       },
       { once: true },
@@ -695,6 +748,7 @@ export class AudioEngine {
   }
 
   private syncPlaybackState() {
+    if (bisect('mediasession')) return;
     if (!('mediaSession' in navigator)) return;
     try {
       navigator.mediaSession.playbackState = this.state.playing ? 'playing' : 'paused';
@@ -704,6 +758,7 @@ export class AudioEngine {
   }
 
   private updatePositionState() {
+    if (bisect('mediasession')) return;
     if (!('mediaSession' in navigator) || !navigator.mediaSession.setPositionState) return;
     const d = this.state.duration;
     if (!Number.isFinite(d) || d <= 0) return;
