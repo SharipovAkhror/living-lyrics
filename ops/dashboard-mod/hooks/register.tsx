@@ -750,8 +750,12 @@ export function cardDoc(b: Board | null, l: Live, lim: Limit[], u: Usage | null)
     limits: {
       claude: claudeWindows(lim).map((w, i) => ({ label: w.label, used: Math.round(w.used), reset: w.reset, resetAt: lim[i]?.resetsAt ?? null })),
       gemini: geminiWindows(u?.gemini?.quota?.gemini).map(w => ({ label: w.label, used: Math.round(w.used), reset: w.reset })),
-      grok: u?.grok ? { today: tokens(u.grok.today), week: u.grok.week ? tokens(u.grok.week) : '', plan: u.grok.plan ?? '' } : null,
-      plans: { claude: b.models?.claude ?? '', gemini: u?.gemini?.plan ?? '' },
+      grok: u?.grok ? {
+        today: tokens(u.grok.today), week: u.grok.week ? tokens(u.grok.week) : '', plan: u.grok.plan ?? '',
+        // The reset line is copied from Grok's screen without a timezone: shown as is, never converted.
+        weekly: u.grok.weekly ? { label: 'неделя', used: Math.round(u.grok.weekly.percentUsed), reset: u.grok.weekly.resetsAt ?? '', tz: u.grok.weekly.timezoneLabeled } : null,
+      } : null,
+      plans: { claude: u?.claude?.plan ?? '', gemini: u?.gemini?.plan ?? '' },
     },
   }
 }
@@ -769,7 +773,7 @@ const TREND_EVERY_MS = 15 * 60_000
 const TREND_KEEP_MS = 7 * 86_400_000
 
 /** One sample of the plan windows, in % used (Grok: tokens today). */
-export type TrendPoint = { t: number; c5?: number; cw?: number; g5?: number; gw?: number; gk?: number }
+export type TrendPoint = { t: number; c5?: number; cw?: number; g5?: number; gw?: number; gk?: number; kw?: number }
 
 /** The trend with a new sample when the last is older than TREND_EVERY_MS; a week is kept. */
 export function trendNext(prev: TrendPoint[], lim: Limit[], u: Usage | null, now: number): TrendPoint[] {
@@ -784,6 +788,7 @@ export function trendNext(prev: TrendPoint[], lim: Limit[], u: Usage | null, now
   if (q?.fiveHourRemaining !== undefined) p.g5 = Math.round(100 - q.fiveHourRemaining)
   if (q?.weeklyRemaining !== undefined) p.gw = Math.round(100 - q.weeklyRemaining)
   if (u?.grok?.today !== undefined) p.gk = u.grok.today
+  if (u?.grok?.weekly) p.kw = Math.round(u.grok.weekly.percentUsed)
   if (Object.keys(p).length === 1) return prev
   return [...prev.filter(x => now - x.t < TREND_KEEP_MS), p]
 }
