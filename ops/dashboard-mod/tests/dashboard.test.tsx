@@ -1,6 +1,6 @@
 import { expect, mock, test } from 'claude-code/testing'
 
-import { waitPushes, agentRows, bandLine, cardContext, cardDoc, chatSince, codename, PANEL_URL, panelDoc, trendNext, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
+import { newFailures, waitPushes, agentRows, bandLine, cardContext, cardDoc, chatSince, codename, PANEL_URL, panelDoc, trendNext, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -277,4 +277,13 @@ test('a chat waiting over two minutes pushes once per wait, naming what it waits
   const c = waitPushes(b.next, [{ name: 'LL · Tech', state: 'working' }], 11 * 60_000)
   expect(c.next).toEqual({})
   expect(waitPushes(waitPushes(c.next, chats, 12 * 60_000).next, chats, 15 * 60_000).push.length).toBe(1)
+})
+
+test('a failed Actions run is reported once; the first look only remembers', async () => {
+  const run = (id: number) => ({ id, name: 'pipeline', branch: 'grok/t1-sync', title: 'x', url: 'u', at: '' })
+  const first = newFailures(undefined, [run(1)])
+  expect(first.report).toEqual([])
+  const second = newFailures(first.seen, [run(1), run(2)])
+  expect(second.report.map(r => r.id)).toEqual([2])
+  expect(newFailures(second.seen, [run(2)]).report).toEqual([])
 })

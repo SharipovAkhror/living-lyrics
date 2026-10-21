@@ -432,14 +432,38 @@ async function pushWaiting($: EngineInterface, chats: ChatRow[]) {
   }
 }
 
+/** A failed GitHub Actions run, as station_tick.py reports the last 24 h. */
+export type FailedRun = { id: number; name: string; branch: string; title: string; url: string; at: string }
+
+/**
+ * New failures go to the orchestrator, once each: GitHub mails them to the owner's account (every
+ * push is his), so with those mails off this is where a failure surfaces. The first call only
+ * remembers what is already there.
+ */
+export function newFailures(seen: number[] | undefined, runs: FailedRun[]) {
+  const ids = runs.map(r => r.id)
+  if (!seen) return { seen: ids, report: [] as FailedRun[] }
+  return { seen: [...new Set([...seen, ...ids])].slice(-200), report: runs.filter(r => !seen.includes(r.id)) }
+}
+
+async function reportFailures($: EngineInterface, runs: FailedRun[]) {
+  const { seen, report } = newFailures((await $.store.get('failed-seen')) as number[] | undefined, runs)
+  await $.store.set('failed-seen', seen)
+  for (const r of report) {
+    const text = `GitHub Actions failed: ${r.name} on ${r.branch} — «${r.title}». ${r.url}`
+    await $.session.send({ to: 'LL · Main', text }).catch(() => undefined)
+  }
+}
+
 async function stationTick($: EngineInterface) {
   if (!place.orchestrator || !place.repo) return
   try {
     const res = await $.process.run(['python', `${place.repo}/ops/agents/station_tick.py`, place.repo], { cwd: place.repo, timeoutMs: 60_000 })
     if (res.exitCode !== 0) return
-    const tick = JSON.parse(res.stdout) as { chats: ChatRow[]; pipeline: PipelineRun[]; hygiene?: Hygiene | null }
+    const tick = JSON.parse(res.stdout) as { chats: ChatRow[]; pipeline: PipelineRun[]; failed?: FailedRun[]; hygiene?: Hygiene | null }
     station = { chats: tick.chats, pipeline: tick.pipeline, hygiene: tick.hygiene ?? null }
     await pushWaiting($, tick.chats)
+    await reportFailures($, tick.failed ?? [])
   } catch {
     // A tool missing on PATH: the rest of the dashboard still draws.
   }
@@ -794,8 +818,8 @@ function versionIn(text: string) {
   return m ? Number(m[1] ?? m[2]) : 0
 }
 
-/** Off until the owner says yes to the mod writing its panel unattended (the tool.check hook below). */
-const PANEL_LIVE = false
+/** The owner said yes (2026-10-21) to the mod writing its panel unattended (the tool.check hook below). */
+const PANEL_LIVE = true
 
 async function writePanel($: EngineInterface) {
   if (!PANEL_LIVE || !place.orchestrator) return
