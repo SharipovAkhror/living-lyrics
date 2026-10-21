@@ -307,11 +307,14 @@ jobs:
               # (run 39600662479). The CPU pair is torch 2.8.0 plus
               # fairseq2n 0.6+cpu from the FAIR index. Install that last:
               # omnilingual would otherwise put the CUDA wheel back.
+              # fairseq2 then pins NumPy 1.26.4, and pyarrow (via datasets)
+              # refuses anything below 2 (run 39601917952). NumPy 2 goes last.
               if /tmp/omni-venv/bin/python -m pip install -r scripts/pipeline/requirements.txt \
                 && /tmp/omni-venv/bin/python -m pip install --force-reinstall 'torch==2.8.0' 'torchaudio==2.8.0' --index-url https://download.pytorch.org/whl/cpu \
                 && /tmp/omni-venv/bin/python -m pip install 'omnilingual-asr==0.2.0' \
                 && /tmp/omni-venv/bin/python -m pip install --force-reinstall --no-deps --index-url https://fair.pkg.atmeta.com/fairseq2/whl/pt2.8.0/cpu 'fairseq2==0.6' 'fairseq2n==0.6+cpu' \
                 && /tmp/omni-venv/bin/python -m pip install --force-reinstall 'torch==2.8.0' 'torchaudio==2.8.0' --index-url https://download.pytorch.org/whl/cpu \
+                && /tmp/omni-venv/bin/python -m pip install 'numpy>=2,<3' \
                 && /tmp/omni-venv/bin/python -c "import torch, torchaudio, omnilingual_asr; print('omni torch', torch.__version__); raise SystemExit('+cu' in torch.__version__)"; then
                 echo "OMNI_PYTHON=/tmp/omni-venv/bin/python" >> "$GITHUB_ENV"
               else
