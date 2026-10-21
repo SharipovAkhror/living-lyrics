@@ -2,18 +2,31 @@
 
 ## Значки
 
-На сайте Phosphor Fill: пути в `src/ui/icons.tsx`. В репозиторий скопированы только пути нужных значков, без новой зависимости.
+На сайте Tabler Icons 3.49.0: контуры и заливки в `src/ui/icons.tsx`. В репозиторий скопированы только пути нужных значков, без новой зависимости. Пуск сдвинут на 1 единицу сетки вправо, чтобы треугольник стоял по оптическому центру круглой кнопки. У предыдущей и следующей строки разведён зазор между треугольником и чертой. Древко флажка выше полотна, рельс ползунка не входит в кружок, нажатый «Перевод» — буквы, вырезанные из плашки. Остальные контуры — как в наборе.
 
-MIT. Copyright (c) 2023 Phosphor Icons.
-Репозиторий: <https://github.com/phosphor-icons/core>, коммит `2b75f3ad12b420c9504ef05df8d2564a28f8500e`.
+MIT. Copyright (c) 2020-2026 Paweł Kuna.
+Репозиторий: <https://github.com/tabler/tabler-icons>, версия 3.49.0, коммит `bbed884d15354b5cebf2493371f20dc2d5e83eaf`.
+Текст разрешения: <https://github.com/tabler/tabler-icons/blob/v3.49.0/LICENSE>.
 
 Текст разрешения (MIT), как в файле набора:
 
-> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+> Permission is hereby granted, free of charge, to any person obtaining a copy
+> of this software and associated documentation files (the "Software"), to deal
+> in the Software without restriction, including without limitation the rights
+> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+> copies of the Software, and to permit persons to whom the Software is
+> furnished to do so, subject to the following conditions:
 >
-> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+> The above copyright notice and this permission notice shall be included in all
+> copies or substantial portions of the Software.
 >
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+> SOFTWARE.
 
 ## Обложки
 

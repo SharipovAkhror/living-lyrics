@@ -1,0 +1,13 @@
+/* Outline until a pressed control asks for the filled twin.
+   Glyphs without a fill stay strokes and take the accent from the control. */
+.ll-icon .ll-fill {
+  display: none;
+}
+
+[aria-pressed='true'] .ll-icon.ll-pair .ll-line {
+  display: none;
+}
+
+[aria-pressed='true'] .ll-icon.ll-pair .ll-fill {
+  display: inline;
+}
