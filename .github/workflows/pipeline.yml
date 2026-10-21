@@ -295,7 +295,10 @@ jobs:
           : > /tmp/summary.txt
           # Trailing newline: `while read` skips a last line that does not end with one,
           # and the last song would be left out of the threshold (run 39069466435 dropped ONE).
-          python3 -c "import json; jobs=json.load(open('/tmp/jobs.json')); open('/tmp/calibrate.txt','w').write('\n'.join(j['slug'] for j in jobs if 'align' in j.get('stages', [])) + '\n')"
+          # A job with no align stage must leave this file empty. A lone newline
+          # is non-empty, and -s would then demand a cue threshold that was
+          # never collected (run 39588051213, the roformer job).
+          python3 -c "import json; jobs=json.load(open('/tmp/jobs.json')); slugs=[j['slug'] for j in jobs if 'align' in j.get('stages', [])]; open('/tmp/calibrate.txt','w').write(('\n'.join(slugs)+'\n') if slugs else '')"
           cal_rc=0
           if [ -s /tmp/calibrate.txt ]; then
             while read -r slug; do
