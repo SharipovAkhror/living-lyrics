@@ -4,6 +4,6 @@
 
 Последние:
 - LL · Main: [2026-10-20-ll-main.md](2026-10-20-ll-main.md)
-- LL · Site: [2026-10-20-ll-site.md](2026-10-20-ll-site.md) — сдача старого главного чата в день, когда он ещё назывался LL · Site (Main)
+- LL · Site: [2026-10-21-ll-site.md](2026-10-21-ll-site.md)
 - LL · Tech: [2026-10-21-ll-tech.md](2026-10-21-ll-tech.md)
 - LL · Business: —
