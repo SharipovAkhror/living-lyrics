@@ -6,8 +6,9 @@ Safe, deleted with --apply (each one fully merged into origin/main and clean):
 - a local branch no worktree has checked out.
 Reported, never deleted: unmerged branches older than STALE_DAYS, worktrees with uncommitted work,
 archived chats still running, two running chats under one name, tasks in progress with nobody on
-them, paths in the docs that point to nothing, a done card still marked running, and sync
-counts that drift from the table in docs/tasks/T1-sync.md (section «Счёт синхронизации»).
+them, paths in the docs that point to nothing, a done card still marked running, sync
+counts that drift from the table in docs/tasks/T1-sync.md (section «Счёт синхронизации»),
+and a done or rejected card tN whose brief exists but does not say «сделано» or «отклонено» on line 1.
 
     python ops/agents/hygiene.py [<repo>] [--apply] [--repo-only] [--json]
 
@@ -262,6 +263,43 @@ def check_sync(repo: Path, issues: list) -> None:
                 issues.append(f'другой счёт синхронизации в {label}: {proven}/{total}')
 
 
+BRIEF_ID = re.compile(r'^t(\d+)$')
+
+
+def check_brief_marks(repo: Path, issues: list) -> None:
+    """A finished card tN with a brief must say so on the brief's first line.
+
+    Cards with no brief, and ids that are not t plus digits (t7d, d-mark), are skipped.
+    The mark belongs in the same commit that sets the card to done or rejected.
+    """
+    try:
+        board = json.loads((repo / 'ops' / 'board.json').read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return
+    tasks_dir = repo / 'docs' / 'tasks'
+    for task in board.get('tasks') or []:
+        match = BRIEF_ID.fullmatch(str(task.get('id') or ''))
+        if match is None or task.get('section') != 'done':
+            continue
+        status = task.get('status')
+        if status == 'done':
+            need = 'сделано'
+        elif status == 'rejected':
+            need = 'отклонено'
+        else:
+            continue
+        for brief in sorted(tasks_dir.glob(f'T{match.group(1)}-*.md')):
+            try:
+                first = brief.read_text(encoding='utf-8').splitlines()[0]
+            except (OSError, IndexError):
+                issues.append(f'бриф {brief.name} не читается')
+                continue
+            if need not in first:
+                issues.append(
+                    f'карточка {task.get("id")} — {status}, а первая строка {brief.name} без «{need}»'
+                )
+
+
 def check_docs(repo: Path, issues: list) -> None:
     # The standing docs only: task briefs and research name files that are still to be made.
     files = [repo / 'AGENTS.md', repo / 'docs' / 'STATUS.md', *repo.glob('docs/process/*.md'), *repo.glob('docs/methodology/*.md'),
@@ -295,6 +333,7 @@ def main() -> None:
         check_chats(repo, issues)
     check_board(repo, issues)
     check_sync(repo, issues)
+    check_brief_marks(repo, issues)
     check_docs(repo, issues)
     at = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     if '--json' in flags:

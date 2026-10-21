@@ -1,4 +1,4 @@
-# T27: iPhone Safari — the page reloads mid-song, settings lag
+# T27: iPhone Safari — the page reloads mid-song, settings lag — сделано в коде (2026-10-21); час на iPhone ещё у владельца
 
 Owner: LL · Site (gives the code to Grok, accepts it). Report to `LL · Main` in short English.
 
@@ -14,3 +14,7 @@ The interval shrinks while playing. That is the pattern of iOS killing the tab's
 4. If the page ever reloads, playback resumes at the saved position (shared with T28's resume).
 
 Done when: memory is flat over a 60-minute run in WebKit, the cause is named with numbers, `npm run validate && npm run typecheck && npx vite build` pass, and the owner confirms 60 minutes on his iPhone with no reload.
+
+## Где остановились (2026-10-21)
+
+Карточка `t27` на доске — `done`: код влит, что именно — в поле `now` карточки и в `docs/performance/t27-iphone.md`. Час на iPhone владельца — отдельная карточка `you-iphone` (`waiting`). Пометка «сделано» выше относится к влитому коду, не к этому часу.

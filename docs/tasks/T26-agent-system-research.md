@@ -1,4 +1,4 @@
-# T26: research — how professionals build multi-agent systems, what we should adopt
+# T26: research — how professionals build multi-agent systems, what we should adopt — сделано (2026-10-20)
 
 Owner: LL · Tech. Fan the research out to Grok and Gemini as you see fit, in parallel. Report to `LL · Main` in short English after each step. The final document is for the owner, so write it in Russian, plainly.
 
@@ -34,3 +34,7 @@ Owner's words (2026-10-20): «нужна полноценная агентная
 Then 2–3 key choices for the owner, given to `LL · Main` to ask by buttons. Don't build anything before the owner chooses. Your queue item 4 (registry + hygiene) waits for this result; it may be replaced by a ready tool.
 
 Done when: the document is in `main`, every claim has a source, the options are checked against the constraints above, and the choices are sent to `LL · Main`.
+
+## Где остановились (2026-10-20)
+
+Исследование влито: `docs/research/agent-system.md`. Карточка `t26` — `done`. Ночную уборку в облаке на карточке ещё ведёт LL · Tech; это не повод открывать исследование заново.
