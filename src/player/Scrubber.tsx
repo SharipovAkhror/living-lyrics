@@ -198,6 +198,9 @@ export function Scrubber({
       }
       track.current?.setAttribute('aria-valuenow', String(Math.round(t)));
       track.current?.setAttribute('aria-valuetext', `${formatTime(t)} из ${formatTime(duration)}`);
+      // The rounded second is what a person reads. The scene is the exact second.
+      const stamp = t.toFixed(3);
+      if (track.current && track.current.dataset.t !== stamp) track.current.dataset.t = stamp;
       const open = dragT.current != null || coast != null;
       bubble = stepSpring(bubble, open ? 1 : 0, dt, open ? BUBBLE : BUBBLE_OUT);
       if (open) {

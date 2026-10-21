@@ -1,4 +1,4 @@
-import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { memo, useLayoutEffect, useRef, useState } from 'react';
 import type { InstCue, Timeline } from '@/data/timeline';
 import type { AudioFeatures } from '@/instruments/animation';
 import type { LineEntrance, MotionPref } from '@/app/settings';
@@ -105,9 +105,15 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   const echoes = cast.filter((m) => m.place === 'echo');
   // The engravings are the long commit. The label paints first; the plates follow
   // on the next frame, after the song page has laid out.
-  const [platesOn, setPlatesOn] = useState(() => !isPhone());
-  useEffect(() => {
+  const [platesOn, setPlatesOn] = useState(() => !isPhone() || !!document.querySelector('.song.is-scrubbing'));
+  useLayoutEffect(() => {
     if (platesOn) return;
+    // A scrub has to show the engraving on this frame. Playback still waits
+    // one frame so the opening flight can paint the label first.
+    if (root.current?.closest('.song')?.classList.contains('is-scrubbing')) {
+      setPlatesOn(true);
+      return;
+    }
     const id = requestAnimationFrame(() => setPlatesOn(true));
     return () => cancelAnimationFrame(id);
   }, [platesOn]);
@@ -185,11 +191,11 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
       box.transform = transform;
       r.style.transform = transform;
     }
-    if (box.opacity !== opacity) {
+    if (box.opacity !== opacity || r.style.opacity !== opacity) {
       box.opacity = opacity;
       r.style.opacity = opacity;
     }
-    if (box.vis !== vis) {
+    if (box.vis !== vis || r.style.visibility !== vis) {
       box.vis = vis;
       r.style.visibility = vis;
     }
@@ -220,19 +226,24 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     const sig = castSignature(members);
     const frame = frameFor(members, features, t, motion);
     frameRef.current = frame;
+    const scrubbingNow = isPhone() && !!r.closest('.song')?.classList.contains('is-scrubbing');
     if (!bisect('instruments')) {
-      if (!bisect('react') && sig !== castSig.current) {
+      // A scrub already moves the plate through this updater. A React commit
+      // on every presence step was the long frame (the phone scrub budget).
+      if (!scrubbingNow && !bisect('react') && sig !== castSig.current) {
         castSig.current = sig;
         setCast(members);
-      } else if (p > 0.02) {
-        stageRef.current?.pose(frame);
       }
+      // The figure opacity is this frame's presence. Skipping the pose while
+      // the finger moved left the engraving at the section-start value, which
+      // is 0, so an instrumental passage drew only its chip.
+      if (p > 0.02 || scrubbingNow) stageRef.current?.pose({ ...frame, block: p });
     }
     const steps = 50;
     const q = (v: number) => Math.round(v * steps) / steps;
     const next = { progress: q(motion === 'off' ? 1 : clamp01((t - (cue.start - 0.3)) / 2.6)), presence: q(p) };
     const cur = animRef.current;
-    if (!bisect('react') && (next.presence !== cur.presence || next.progress !== cur.progress)) {
+    if (!scrubbingNow && !bisect('react') && (next.presence !== cur.presence || next.progress !== cur.progress)) {
       animRef.current = next;
       setAnim(next);
     }

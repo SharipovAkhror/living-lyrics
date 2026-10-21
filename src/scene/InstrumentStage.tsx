@@ -68,6 +68,12 @@ export interface StagePose {
   plates?: number[];
   /** Aligned with `echoes`. */
   echoes?: { drive: InstrumentDrive; presence: number }[];
+  /**
+   * Flow presence of the whole block (1 − |index − position|).
+   * The React prop lags: a phone slot keeps the presence it had at the
+   * section start, and a scrub does not commit. The pose uses this instead.
+   */
+  block?: number;
 }
 
 export interface InstrumentStageHandle {
@@ -357,10 +363,34 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
     const frame = poseRef.current;
     const host = hostRef.current;
     if (!frame || !host) return;
+    // The React style is the section-start presence. A commit after this pose
+    // would put the plate back at 0, so the layout effect writes the opacity
+    // again even when the motion variables have not changed.
+    const blockP = frame.block ?? presenceRef.current;
+    const plateOpacity = (el: HTMLElement) => {
+      const echoAt = el.dataset.echo;
+      if (echoAt != null) {
+        const item = frame.echoes?.[Number(echoAt)];
+        return item ? blockP * item.presence : 0;
+      }
+      // Phone art lives in a shadow root, so the figure carries the index.
+      const raw = el.dataset.plate ?? el.querySelector<HTMLElement>('.ist-art')?.dataset.slot;
+      const index = raw == null ? Number.NaN : Number(raw);
+      if (!Number.isFinite(index)) return null;
+      const slotOpacity = Number(el.dataset.opacity ?? '1');
+      const castP = frame.plates?.[index] ?? 1;
+      return blockP * castP * (Number.isFinite(slotOpacity) ? slotOpacity : 1);
+    };
+    host.querySelectorAll<HTMLElement>(':scope > .ist-plate').forEach((el) => {
+      const opacity = plateOpacity(el);
+      if (opacity == null) return;
+      const text = opacity.toFixed(3);
+      if (el.style.opacity !== text) el.style.opacity = text;
+      el.toggleAttribute('aria-hidden', opacity < 0.02);
+    });
     const sig = poseSignature(frame);
     if (sig === paintedRef.current) return;
     paintedRef.current = sig;
-    const blockP = presenceRef.current;
     host.querySelectorAll<HTMLElement>(':scope > .ist-plate').forEach((el) => {
       const echoAt = el.dataset.echo;
       if (echoAt != null) {
@@ -369,8 +399,8 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
         applyPlate(el, item.drive, frame.time, blockP * item.presence);
         return;
       }
-      const art = el.querySelector<HTMLElement>('.ist-art');
-      const index = Number(art?.dataset.slot);
+      const raw = el.dataset.plate ?? el.querySelector<HTMLElement>('.ist-art')?.dataset.slot;
+      const index = raw == null ? Number.NaN : Number(raw);
       const drive = frame.drives?.[index];
       if (!drive || !Number.isFinite(index)) return;
       const slotOpacity = Number(el.dataset.opacity ?? '1');
@@ -567,7 +597,7 @@ function Plate({
   } as CSSProperties;
   const { label, art } = slot;
   return (
-    <figure className={`ist-plate ist-plate--${slot.role} ist-t-${label.tier}`} style={style} data-opacity={slot.opacity ?? 1} aria-hidden={hidden || undefined}>
+    <figure className={`ist-plate ist-plate--${slot.role} ist-t-${label.tier}`} style={style} data-plate={slot.index} data-opacity={slot.opacity ?? 1} aria-hidden={hidden || undefined}>
       <Art
         svg={svg}
         suffix={idSuffix}

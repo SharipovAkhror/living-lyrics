@@ -113,6 +113,11 @@ html[data-phone='1'] .scene-stage {
   -webkit-mask-image: none;
   mask-image: none;
 }
+/* Only while the finger drags. A steady mask grew the working set; 28 px covers the 12 px shift. */
+html[data-phone='1'] .song.is-scrubbing .scene-stage {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 28px, #000 92%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 28px, #000 92%, transparent 100%);
+}
 
 html[data-phone='1'] .set-page.is-enter,
 html[data-phone='1'] .set-page.is-leave,

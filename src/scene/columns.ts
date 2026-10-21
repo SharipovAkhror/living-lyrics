@@ -52,15 +52,8 @@ function frame(
   };
 }
 
-/** How wide the margin may be before the lyric column is squeezed below 640 px. */
-function noteWidth(vw: number): number {
-  const want = Math.round(Math.min(360, Math.max(280, vw * 0.22)));
-  const minColumn = 640;
-  const room = vw - 28 - NOTE_GAP - PANEL_INSET - want;
-  if (room >= minColumn) return want;
-  const fit = vw - 28 - NOTE_GAP - PANEL_INSET - minColumn;
-  return fit >= 260 ? fit : 0;
-}
+/** One fixed column. The stage is centred in whatever width is left. */
+const NOTE_W = 320;
 
 /**
  * `noteOpen` is true when a note should stand in the margin. Narrow and short
@@ -75,15 +68,17 @@ export function stageFrame(vw: number, vh: number, noteOpen: boolean): StageFram
   if (vw < 800) return frame(0, 0, 0, vw, false);
 
   const wide = vw >= 1100 && vh > 640;
-  const noteW = noteOpen && wide ? noteWidth(vw) : 0;
+  const noteW = noteOpen && wide ? NOTE_W : 0;
   if (noteW > 0) {
-    // The column is the whole canvas left of the note. A capped 868 px bar
-    // left an empty band between the player and the drawer.
-    const inset = 28;
-    const gap = 24;
-    const colRight = PANEL_INSET + noteW + gap;
-    const column = Math.max(0, vw - inset - colRight);
-    return frame(inset, colRight, noteW, column, true);
+    // The note is a fixed column. The stage is centred in the space beside it,
+    // and capped at the measure so the dock does not stretch into the note.
+    const reserved = PANEL_INSET + noteW + NOTE_GAP;
+    const remaining = Math.max(0, vw - reserved);
+    const cap = MEASURE + LYRIC_PAD * 2;
+    const stageW = Math.min(cap, Math.max(0, remaining - 28));
+    const colLeft = Math.max(28, Math.round((remaining - stageW) / 2));
+    const colRight = vw - colLeft - stageW;
+    return frame(colLeft, colRight, noteW, stageW, true);
   }
 
   const column = Math.min(wide ? MEASURE + LYRIC_PAD * 2 : 760, vw - 56);

@@ -153,7 +153,6 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
   // Fit the original: as large as possible within the width and about a third of the stage height.
   useLayoutEffect(() => {
     if (parked) {
-      register(cue.idx, null);
       const r = root.current;
       if (r) {
         r.style.visibility = 'hidden';
@@ -161,6 +160,10 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
         r.style.zIndex = '0';
       }
       painted.current = { transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '' };
+      // Keep the updater. A scrub retargets this host without a React commit,
+      // and it can only place the next line if the function is still registered.
+      const known = phoneMeasures.get(cue.idx);
+      register(cue.idx, call, known ?? { main: 72, sub: hasSubs ? 36 : 0 });
       return;
     }
     if (root.current) root.current.style.pointerEvents = '';
@@ -312,7 +315,8 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       r.style.transform = transform;
     }
     const opacity = entranceOpacity(d, entrance, s.opacity).toFixed(phone ? 2 : 3);
-    if (painted.current.opacity !== opacity) {
+    // An outside write (a scrub hide) must not stick just because the cache matches.
+    if (painted.current.opacity !== opacity || r.style.opacity !== opacity) {
       painted.current.opacity = opacity;
       r.style.opacity = opacity;
     }
@@ -325,7 +329,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       r.style.filter = nextFilter;
     }
     const vis = s.opacity < 0.01 ? 'hidden' : 'visible';
-    if (painted.current.vis !== vis) {
+    if (painted.current.vis !== vis || r.style.visibility !== vis) {
       painted.current.vis = vis;
       r.style.visibility = vis;
     }

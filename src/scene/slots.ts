@@ -42,6 +42,20 @@ function setLeaf(el: HTMLElement | null, text: string) {
   }
 }
 
+/**
+ * A parked host stays hidden. A live host only drops the hide sentinel:
+ * a real opacity such as "0.72" belongs to the block updater.
+ */
+function showSlot(el: HTMLElement, live: boolean) {
+  if (!live) {
+    el.style.visibility = 'hidden';
+    el.style.opacity = '0';
+    return;
+  }
+  if (el.style.visibility === 'hidden') el.style.visibility = 'visible';
+  if (el.style.opacity === '0') el.style.opacity = '';
+}
+
 /** Write the next lyric into the host that already shows the previous one. */
 export function paintPhoneLine(
   el: HTMLElement,
@@ -97,7 +111,9 @@ export function retargetPhoneLines(
   settings: Pick<Settings, 'showHarakat' | 'fontPersian'>,
   wordSync: boolean,
 ): boolean {
-  const hosts = [...stage.querySelectorAll<PhoneLineHost>('.fb--line')];
+  // The departing clone also carries .fb--line. Counting it made every
+  // boundary fall back to a React commit, which was the long scrub frame.
+  const hosts = [...stage.querySelectorAll<PhoneLineHost>('.scene-view--lyric > .fb--line')];
   let seen = 0;
   const hostAt: Array<PhoneLineHost | null> = prev.map((slot) => (slot ? (hosts[seen++] ?? null) : null));
   if (seen !== hosts.length) return false;
@@ -110,10 +126,7 @@ export function retargetPhoneLines(
     const slot = next[i];
     const el = hostAt[i];
     if (!was || !slot || !el || slot.idx === was.idx) {
-      if (el && slot && !slot.live) {
-        el.style.visibility = 'hidden';
-        el.style.opacity = '0';
-      }
+      if (el && slot) showSlot(el, slot.live);
       continue;
     }
     const cue = timeline.cues[slot.idx];
@@ -121,10 +134,7 @@ export function retargetPhoneLines(
     if (el.__llCue) el.__llCue.current = cue;
     if (el.__llOverride) el.__llOverride.current = cue;
     paintPhoneLine(el, cue, settings, wordSync);
-    if (!slot.live) {
-      el.style.visibility = 'hidden';
-      el.style.opacity = '0';
-    }
+    showSlot(el, slot.live);
     moves.push({ from: was.idx, to: slot.idx });
   }
   if (moves.length) {

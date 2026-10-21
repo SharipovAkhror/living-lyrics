@@ -26,6 +26,53 @@ function columnGap() {
   return GAP;
 }
 
+/**
+ * Empty phone slots mount on the first commit. A scrub that mounts a line
+ * measured the text in that same frame and missed the interval.
+ */
+function fillSpare(slots: (PhoneSlot | null)[], ids: readonly number[]) {
+  const used = new Set<number>();
+  for (const slot of slots) if (slot) used.add(slot.idx);
+  let free = slots.findIndex((slot) => slot == null);
+  for (const id of ids) {
+    if (free < 0) return;
+    if (used.has(id)) continue;
+    slots[free] = { idx: id, live: false };
+    used.add(id);
+    free = slots.findIndex((slot) => slot == null);
+  }
+}
+
+/** Something on this block is actually drawn, so a departing clone is worth keeping. */
+function hasLightPixels(el: HTMLElement): boolean {
+  if (el.querySelector('.ist-art')) return true;
+  const plate = el.querySelector<HTMLElement>('.ist-plate');
+  if (plate) {
+    const opacity = plate.style.opacity === '' ? 1 : Number(plate.style.opacity);
+    if (opacity >= 0.08) return true;
+  }
+  for (const node of el.querySelectorAll('.fb-orig, .intro-title')) {
+    const text = (node.textContent || '').replace(/\u200b/g, '').trim();
+    if (text) return true;
+  }
+  return false;
+}
+
+/** cloneNode drops the open shadow root, which is where a phone engraving lives. */
+function cloneBlock(el: HTMLElement): HTMLElement {
+  const clone = el.cloneNode(true) as HTMLElement;
+  const src = [...el.querySelectorAll<HTMLElement>('.ist-art-mount')];
+  const dst = [...clone.querySelectorAll<HTMLElement>('.ist-art-mount')];
+  src.forEach((from, i) => {
+    const to = dst[i];
+    const inner = from.shadowRoot;
+    if (!to || !inner) return;
+    const shadow = to.attachShadow({ mode: 'open' });
+    shadow.innerHTML = inner.innerHTML;
+  });
+  return clone;
+}
+
 interface Props {
   song: Song;
   timeline: Timeline;
@@ -48,6 +95,7 @@ const INTRO = -1;
  */
 export const Scene = memo(function Scene({ song, timeline, settings, features, clock, onOwnerChange, onPick }: Props) {
   const stageRef = useRef<HTMLDivElement>(null);
+  const liveView = useRef<HTMLDivElement>(null);
   const plate = useRef<HTMLDivElement>(null);
   const intro = useRef<HTMLDivElement>(null);
   const [stage, setStage] = useState({ w: 0, h: 0 });
@@ -172,6 +220,57 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let pendingOwner: number | null = null;
     let ownerWait = false;
     let scrubWas = false;
+    // One departing clone while a scrub crosses from lines to an engraving, or back.
+    // A second boundary during the 120 ms updates the live view and does not stack another ghost.
+    let depart: HTMLElement | null = null;
+    let fadeStart = 0;
+    let fadeDir = 1;
+    let shownKind = '';
+    const dropDepart = () => {
+      depart?.remove();
+      depart = null;
+      fadeStart = 0;
+      const live = liveView.current;
+      if (live) {
+        live.style.opacity = '';
+        live.style.transform = '';
+      }
+    };
+    const applyFade = (nowMs: number) => {
+      if (!depart || fadeStart === 0) return;
+      const u = Math.min(1, (nowMs - fadeStart) / 120);
+      const eased = u * u * (3 - 2 * u);
+      const shift = (1 - eased) * 12 * fadeDir;
+      const live = liveView.current;
+      // The live view stays opaque. Fading it out emptied the stage for the whole
+      // crossfade, because the phone engraving is not in the departing clone.
+      if (live) {
+        live.style.opacity = '';
+        live.style.transform = `translate3d(0, ${shift.toFixed(1)}px, 0)`;
+      }
+      depart.style.opacity = (1 - eased).toFixed(3);
+      depart.style.transform = `translate3d(0, ${(-shift).toFixed(1)}px, 0)`;
+      if (u >= 1) dropDepart();
+    };
+    const takeDepart = (dir: number) => {
+      const stageEl = stageRef.current;
+      if (!stageEl || depart) return false;
+      const nodes = [...stageEl.querySelectorAll<HTMLElement>('.scene-view .fb')].filter((el) => {
+        if (el.style.visibility === 'hidden') return false;
+        const opacity = el.style.opacity === '' ? 1 : Number(el.style.opacity);
+        return opacity >= 0.08 && hasLightPixels(el);
+      });
+      if (!nodes.length) return false;
+      const layer = document.createElement('div');
+      layer.className = 'scene-depart';
+      layer.setAttribute('aria-hidden', 'true');
+      for (const el of nodes) layer.appendChild(cloneBlock(el));
+      stageEl.appendChild(layer);
+      depart = layer;
+      fadeStart = performance.now();
+      fadeDir = dir;
+      return true;
+    };
     // The opening seek (deep link or resume) is not a scrub. Ignore it.
     const veilReadyAt = performance.now() + 600;
     const kindAt = (time: number) => {
@@ -193,33 +292,64 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     const stageTop = stageRef.current?.offsetTop ?? 0;
     const host = stageRef.current?.closest('.song') as HTMLElement | null;
     let glow = Math.min(stageBox.current.h * 0.5, 380);
+    let cachedW = stageBox.current.w;
+    let cachedH = stageBox.current.h;
+    let cachedTop = 0;
     if (plate.current) plate.current.style.height = `${glow.toFixed(1)}px`;
+    const lineIds: number[] = [];
+    for (let i = 0; i < timeline.cues.length; i++) {
+      if (timeline.cues[i]?.kind === 'line') lineIds.push(i);
+    }
     const loop = () => {
       raf = 0;
       if (stageCovered()) return;
       raf = requestAnimationFrame(loop);
       let heavyCommit = false;
       const scrubbingNow = !!host?.classList.contains('is-scrubbing');
+      let releasePaint = false;
       if (scrubWas && !scrubbingNow) {
-        // The drag wrote lyrics into the hosts. This frame lets React catch up,
-        // and the frame after reads the real boxes. One each, not stacked.
-        const lines = lineSlotsRef.current;
-        const inst = instSlotsRef.current;
-        requestAnimationFrame(() => {
+        // The finger is up. Drop the fade in this frame so the picture matches a
+        // direct seek, then let React catch the hosts the drag rewrote.
+        releasePaint = true;
+        dropDepart();
+        veil = null;
+        const stageEl = stageRef.current;
+        if (stageEl) {
+          stageEl.style.opacity = '';
+          stageEl.style.transform = '';
+        }
+        if (isPhone()) {
+          const copy = (slots: (PhoneSlot | null)[]) => slots.map((slot) => (slot ? { idx: slot.idx, live: slot.live } : null));
+          const lines = copy(lineSlotsRef.current);
+          const inst = copy(instSlotsRef.current);
+          lineSlotsRef.current = lines;
+          instSlotsRef.current = inst;
           flushSync(() => {
             setLineSlots(lines);
             setInstSlots(inst);
           });
-          requestAnimationFrame(() => setLayoutEpoch((n) => n + 1));
-        });
+        }
+        lastT = Number.NaN;
+        lastPaintMs = 0;
+        stageDirty.current = true;
+        requestAnimationFrame(() => setLayoutEpoch((n) => n + 1));
       }
       scrubWas = scrubbingNow;
       const now = performance.now();
       const frameDt = frameAt ? Math.min(0.05, (now - frameAt) / 1000) : 0.016;
       frameAt = now;
-      // The veil is not the lyric throttle. A kind change across a scrub still
-      // has to dim on this frame, or the contact sheet only sees the cut.
-      if (motion !== 'off') {
+      // A scrub keeps the stage at full strength. The veil used to restart on
+      // every large step and, with the hide below, left the settled frame empty.
+      if (scrubbingNow) {
+        if (veil) {
+          veil = null;
+          const stageEl = stageRef.current;
+          if (stageEl) {
+            stageEl.style.opacity = '';
+            stageEl.style.transform = '';
+          }
+        }
+      } else if (motion !== 'off') {
         const time = clock();
         const kind = kindAt(time);
         const jumped = Number.isFinite(veilClock) && Math.abs(time - veilClock) > 0.45 && kind !== veilKind;
@@ -246,15 +376,33 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       // Phone lyric layers restyled every frame grew the working set about 13 MB/min
       // even with the sky and the word opacity stopped (T27). 8 Hz still seeks to the
       // same frame: the paint is a function of the clock, not of how many frames ran.
-      if (isPhone()) {
+      // Playback stays at 8 Hz. A drag paints the time under the finger, and the
+      // release frame has to paint even when the previous drag frame was recent.
+      if (isPhone() && !scrubbingNow && !depart && !releasePaint) {
         const dirty = stageDirty.current;
         if (!dirty && lastPaintMs !== 0 && now - lastPaintMs < 120) return;
         stageDirty.current = false;
         lastPaintMs = now;
+      } else if (isPhone()) {
+        stageDirty.current = false;
+        lastPaintMs = now;
       }
-      const live = stageRef.current?.getBoundingClientRect();
-      const liveW = live?.width ?? stageBox.current.w;
-      const liveH = live?.height ?? stageBox.current.h;
+      // A drag does not resize the stage. Reading the box here forced layout on
+      // every finger frame and pushed the phone scrub past the frame budget.
+      let liveW = cachedW;
+      let liveH = cachedH;
+      let liveTop = cachedTop;
+      if (!scrubbingNow) {
+        const live = stageRef.current?.getBoundingClientRect();
+        if (live) {
+          liveW = live.width;
+          liveH = live.height;
+          liveTop = live.top;
+          cachedW = liveW;
+          cachedH = liveH;
+          cachedTop = liveTop;
+        }
+      }
       const nextGlow = Math.min((liveH || stageBox.current.h) * 0.5, 380);
       if (plate.current && Math.abs(nextGlow - glow) > 0.5) {
         glow = nextGlow;
@@ -266,7 +414,14 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       // text-wrap balance, and the lyric would stay a line too high.
       const measuresMoved = measureGen.current !== placedGen.current;
       const liveKey = `${Math.round(liveW)}x${Math.round(liveH)}`;
-      if (t === lastT && !measuresMoved && liveKey === lastLive && pendingOwner == null) return;
+      if (depart) applyFade(now);
+      const kind = kindAt(t);
+      if (scrubbingNow && shownKind && kind !== shownKind && !depart && motion !== 'off') {
+        const dir = Number.isFinite(lastT) && t < lastT ? -1 : 1;
+        if (takeDepart(dir)) applyFade(performance.now());
+      }
+      shownKind = kind;
+      if (t === lastT && !measuresMoved && liveKey === lastLive && pendingOwner == null && !depart) return;
       lastT = t;
       lastLive = liveKey;
       const pos = flowPosition(plan, t);
@@ -293,13 +448,16 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
           const prevInst = instSlotsRef.current;
           const nextLines = assignSlots(prevLines, lineWant);
           const nextInst = assignSlots(prevInst, instWant);
+          // Mount the spare hosts on the first drag frame, not during the
+          // opening flight. Later steps retarget those hosts and skip React.
+          if (scrubbingNow) fillSpare(nextLines, lineIds);
           const linesChanged = !sameSlots(nextLines, prevLines);
           const instChanged = !sameSlots(nextInst, prevInst);
           if (linesChanged || instChanged) {
-            // One view at a time. The outgoing host is hidden before React
-            // writes the next lyric, so a scrub cannot stack the old line
-            // over the header. During a scrub the same host is rewritten in
-            // place: a React commit of the line was the long frame.
+            // One view at a time. During a scrub the same host is rewritten in
+            // place: a React commit of the line was the long frame. The hosts
+            // stay visible. Hiding them here left the stage empty, because the
+            // updater skips a write when its cache already matches.
             const stageEl = stageRef.current;
             const scrubbing = !!host?.classList.contains('is-scrubbing');
             const paint = paintSettings.current;
@@ -314,18 +472,6 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
             if (reactedLines) lineSlotsRef.current = nextLines;
             if (instChanged) instSlotsRef.current = nextInst;
             if (reactedLines || instChanged) {
-              if (stageEl) {
-                const hide = (el: HTMLElement) => {
-                  el.style.opacity = '0';
-                  el.style.visibility = 'hidden';
-                };
-                if (reactedLines) {
-                  for (const el of stageEl.querySelectorAll<HTMLElement>('.fb--line')) hide(el);
-                }
-                if (scrubbing && instChanged) {
-                  for (const el of stageEl.querySelectorAll<HTMLElement>('.fb--inst, .ist')) hide(el);
-                }
-              }
               flushSync(() => {
                 if (reactedLines) setLineSlots(nextLines);
                 if (instChanged) setInstSlots(nextInst);
@@ -378,7 +524,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         blended.set(k, lerp(A.get(k) ?? 0, B.get(k) ?? 0, f));
         bandH.set(k, blockHeight(measures.get(k), k - pos));
       }
-      const placed = clearBand(blended, pos, bandH, liveH, live?.top ?? 0, window.innerHeight);
+      const placed = clearBand(blended, pos, bandH, liveH, liveTop, window.innerHeight);
       for (const k of list) {
         const b = blocks.current.get(k);
         if (!b) continue;
@@ -479,6 +625,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     return () => {
       cancelAnimationFrame(raf);
       unwatch();
+      dropDepart();
       const stageEl = stageRef.current;
       if (stageEl) {
         stageEl.style.opacity = '';
@@ -515,6 +662,8 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     <div className="scene" data-align={settings.textAlign} data-enter={entrance} style={phoneLyric}>
       <div ref={stageRef} className="scene-stage">
         <div ref={plate} className="flow-plate" aria-hidden style={{ visibility: 'hidden' }} />
+        <div ref={liveView} className="scene-live">
+        <div className="scene-view scene-view--lyric">
         <div ref={intro} className="fb fb--intro" style={{ visibility: 'hidden' }}>
           <div className="intro-title">{song.title}</div>
           {song.titleOriginal && (
@@ -549,6 +698,27 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
               );
             })
           : null}
+        {!isPhone() &&
+          mounted.map((idx) => {
+            if (idx === INTRO) return null;
+            const c = timeline.cues[idx];
+            if (!c || c.kind !== 'line') return null;
+            return (
+              <LineBlock
+                key={`${idx}-${settings.fontPersian}-${settings.fontOriginal}-${settings.fontTranslation}`}
+                cue={c}
+                wordSync={lineWordSync(wordSync, !!c.line.flags?.includes('timing-draft'), forcedFill)}
+                settings={textSettings}
+                entrance={entrance}
+                motion={motion}
+                stage={stage}
+                register={register}
+                onPick={onPick}
+              />
+            );
+          })}
+        </div>
+        <div className="scene-view scene-view--inst">
         {isPhone()
           ? instSlots.map((slot, i) => {
               const cue = slot ? timeline.cues[slot.idx] : undefined;
@@ -575,23 +745,13 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
           mounted.map((idx) => {
             if (idx === INTRO) return null;
             const c = timeline.cues[idx];
-            if (!c) return null;
-            return c.kind === 'line' ? (
-              <LineBlock
-                key={`${idx}-${settings.fontPersian}-${settings.fontOriginal}-${settings.fontTranslation}`}
-                cue={c}
-                wordSync={lineWordSync(wordSync, !!c.line.flags?.includes('timing-draft'), forcedFill)}
-                settings={textSettings}
-                entrance={entrance}
-                motion={motion}
-                stage={stage}
-                register={register}
-                onPick={onPick}
-              />
-            ) : (
+            if (!c || c.kind !== 'inst') return null;
+            return (
               <InstBlock key={idx} cue={c} timeline={timeline} timed={wordSync} entrance={entrance} motion={motion} stage={stage} features={features} register={register} onPick={onPick} />
             );
           })}
+        </div>
+        </div>
       </div>
     </div>
   );

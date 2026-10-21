@@ -198,6 +198,18 @@
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 90%, transparent 100%);
   mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 90%, transparent 100%);
 }
+/* The two views share one box. A scrub fades the live view over a single departing clone. */
+.scene-live,
+.scene-view,
+.scene-depart {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.scene-live .fb,
+.scene-view .fb {
+  pointer-events: auto;
+}
 .fb {
   position: absolute;
   top: 0;
@@ -1742,13 +1754,13 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
     display: contents;
   }
   .player .scrub-now { order: 1; }
-  .player .scrub-track { order: 3; flex: 1 1 auto; min-width: 0; height: 36px; }
-  .player .scrub-remain { order: 4; }
+  .player .scrub-track { order: 2; flex: 1 1 auto; min-width: 0; height: 36px; }
+  .player .scrub-remain { order: 3; }
   .player .transport .btn:nth-child(1) { order: 5; }
   .player .transport .btn:nth-child(2) { order: 6; }
   .player .transport .btn:nth-child(3) { order: 7; }
   .player .mark-bar { display: contents; }
-  .player .mark-btn { order: 2; width: 44px; min-width: 44px; padding: 0; justify-content: center; }
+  .player .mark-btn { order: 4; width: 44px; min-width: 44px; padding: 0; justify-content: center; }
   .mark-kbd { display: none; }
   .scene-stage {
     left: max(12px, var(--safe-l));
@@ -3566,6 +3578,16 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
   .lib-hero-copy {
     max-width: 28rem;
   }
+  /* A wide window must not stretch two songs into hollow strips. */
+  .lib-hero {
+    width: min(960px, 100%);
+    max-width: 960px;
+    margin-inline: auto;
+  }
+  .lib-shelf {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 440px));
+    justify-content: center;
+  }
 }
 
 /* ===================== Round 8: the cover flies, the page does not hide ===================== */
@@ -3860,12 +3882,11 @@ html[data-sheet='1'] .song {
   }
   .player .scrub,
   .player .transport,
-  .player .utility,
-  .player .scrub-top,
-  .player .scrub-meta,
-  .player .mark-bar {
+  .player .utility {
     display: flex;
   }
+  /* The earlier query already flattens these. Flex here bundled the flag
+     with the elapsed time and pushed the track to the end of the row. */
   .player .player-row {
     display: contents;
   }
@@ -3878,7 +3899,7 @@ html[data-sheet='1'] .song {
   }
   .player .scrub-track {
     height: 36px;
-    order: 3;
+    order: 2;
     flex: 1 1 auto;
   }
   .player .transport {
@@ -4033,17 +4054,28 @@ html[data-sheet='1'] .song {
   }
 }
 
-/* 320 px cannot hold four Russian names in one row. Two columns, still no boxes. */
+/* Below 360 the four tasks stay one row. The names stay in the accessible name. */
 @media (max-width: 359px) and (min-height: 521px) {
   .player .utility {
-    grid-template-columns: 1fr 1fr;
-    gap: 2px 8px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
   }
   .player .util {
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 6px;
-    padding: 0 2px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+  }
+  .player .util-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
   }
 }
 
