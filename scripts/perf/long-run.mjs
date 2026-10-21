@@ -37,6 +37,7 @@ const noSheet = args.includes('--no-sheet');
 const noPlay = args.includes('--no-play');
 const noSeek = args.includes('--no-seek');
 const label = flag(args, '--label', '');
+const arm = flag(args, '--arm', '');
 
 const songUrl = new URL(`${url.replace(/\/$/, '')}/song/${slug}`);
 if (bisectName) songUrl.searchParams.set('bisect', bisectName);
@@ -47,6 +48,41 @@ mkdirSync(outDir, { recursive: true });
 
 function stamp() {
   return new Date().toISOString().replace(/[:.]/g, '-');
+}
+
+// Snap lyric sizes to the design steps. Continuous dvh values are one cache
+// key per fraction; this arm asks whether that key is the climb.
+async function installQuantize(page) {
+  const snapped = await page.evaluate((mode) => {
+    const steps = mode === 'quantize-px' ? null : [13, 17, 20, 24, 28, 33, 40];
+    const nearest = (px) => {
+      if (!steps) return Math.max(13, Math.round(px));
+      let best = steps[0];
+      for (const step of steps) if (Math.abs(step - px) < Math.abs(best - px)) best = step;
+      return best;
+    };
+    const root = document.documentElement;
+    const before = {};
+    const after = {};
+    for (const name of ['--lyric-latin', '--lyric-arab', '--lyric-tr', '--lyric-note']) {
+      const raw = parseFloat(getComputedStyle(root).getPropertyValue(name));
+      before[name] = raw;
+      if (!Number.isFinite(raw)) continue;
+      const step = nearest(raw);
+      after[name] = step;
+      root.style.setProperty(name, `${step}px`);
+    }
+    const extra = document.createElement('style');
+    extra.dataset.arm = 'quantize';
+    const translit = nearest(parseFloat(getComputedStyle(document.querySelector('.fb-translit') || root).fontSize) || 16);
+    const alt = nearest(parseFloat(getComputedStyle(document.querySelector('.fb-alt') || root).fontSize) || 24);
+    extra.textContent = `.fb-translit{font-size:${translit}px !important}.fb-alt{font-size:${alt}px !important}`;
+    document.head.appendChild(extra);
+    after.translit = translit;
+    after.alt = alt;
+    return { before, after };
+  }, arm);
+  process.stdout.write(`quantize ${JSON.stringify(snapped)}\n`);
 }
 
 async function seekFrac(page, frac) {
@@ -119,6 +155,7 @@ async function runOne(name) {
   try {
     await page.goto(SONG, { waitUntil: 'domcontentloaded', timeout: 45000 });
     await page.waitForSelector('.scrub-track', { timeout: 30000 });
+    if (arm === 'quantize' || arm === 'quantize-px') await installQuantize(page);
     if (!noPlay) {
       const play = page.getByRole('button', { name: 'Воспроизвести' });
       if (await play.count()) await play.click();
@@ -172,6 +209,7 @@ async function runOne(name) {
     noSheet,
     noPlay,
     noSeek,
+    arm: arm || null,
     minutes,
     samples: samples.length,
     crashed,

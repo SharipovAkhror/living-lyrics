@@ -9,6 +9,7 @@
  * Styles: src/styles/instruments.css (classes `ist-…`) and src/instruments/render/stage3d.css.
  */
 import { forwardRef, memo, useEffect, useId, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { bisect } from '@/app/bisect';
 import { effectiveMotion, useSettings } from '@/app/settings';
 import type { InstrumentDrive } from '@/instruments/animation';
 import { instrument, instrumentAspect, instrumentSvg, loadInstrumentSvg, scopeSvgIds } from '@/instruments/catalog';
@@ -113,7 +114,8 @@ function artFilter(drive: InstrumentDrive) {
   const halo = drive.halo ?? 0;
   const flash = drive.hit ?? 0;
   const brightness = `brightness(${life.toFixed(3)})`;
-  if (halo < 0.004 && flash < 0.004) return brightness;
+  // The glow arm drops the halo. Brightness stays, so the engraving still breathes.
+  if (bisect('glow') || (halo < 0.004 && flash < 0.004)) return brightness;
   const glow = `drop-shadow(0 0 ${(halo * 18).toFixed(2)}px var(--accent))`;
   const flare = flash >= 0.004 ? ` drop-shadow(0 0 ${(flash * 12).toFixed(2)}px var(--accent))` : '';
   return `${brightness} ${glow}${flare}`;

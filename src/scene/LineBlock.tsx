@@ -197,7 +197,11 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       painted.current.z = z;
       r.style.zIndex = z;
     }
-    const transform = `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0) scale(${s.scale.toFixed(phone ? 3 : 4)})`;
+    // translate3d promotes a backing store per slot. The layer arm checks whether
+    // that store is the WebKit climb; a 2d translate keeps the same position.
+    const transform = phone && bisect('layer')
+      ? `translate(${x.toFixed(1)}px, ${top.toFixed(1)}px) scale(${s.scale.toFixed(3)})`
+      : `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0) scale(${s.scale.toFixed(phone ? 3 : 4)})`;
     if (painted.current.transform !== transform) {
       painted.current.transform = transform;
       r.style.transform = transform;
@@ -296,7 +300,8 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
         if (motion === 'full') {
           // The word being sung rises a hair, then settles.
           const active = t >= w.s && t < w.e + 0.15 ? Math.sin(Math.PI * clamp01((t - w.s) / Math.max(0.25, w.e - w.s + 0.15))) : 0;
-          el.style.transform = active > 0.001 ? `translate3d(0, ${(-active * 0.05).toFixed(3)}em, 0)` : '';
+          const shift = (-active * 0.05).toFixed(3);
+          el.style.transform = active > 0.001 ? (phone && bisect('layer') ? `translate(0, ${shift}em)` : `translate3d(0, ${shift}em, 0)`) : '';
         }
       } else if (el.dataset.f) {
         delete el.dataset.f;

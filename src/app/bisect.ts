@@ -15,6 +15,10 @@ const NAMES = new Set([
   'scrubber',
   'mediasession',
   'react',
+  // Phone line hosts use a 2d translate, so the slot is not a translateZ layer.
+  'layer',
+  // Engraving halo and hit flash (drop-shadow) stay off. Brightness remains.
+  'glow',
 ]);
 
 /** `?bisect=field` or `?bisect=field,words`. Inert when the parameter is absent. */
