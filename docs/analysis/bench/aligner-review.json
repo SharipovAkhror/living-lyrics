@@ -8,16 +8,16 @@
  "agree_tol": 0.1,
  "closer": {
   "words": {
-   "n": 292,
-   "mms": 151,
-   "second": 130,
+   "n": 315,
+   "mms": 166,
+   "second": 138,
    "tie": 11,
    "no_peak": 0
   },
   "lines": {
-   "n": 69,
-   "mms": 34,
-   "second": 30,
+   "n": 81,
+   "mms": 48,
+   "second": 28,
    "tie": 5,
    "no_peak": 0
   },
@@ -40,16 +40,16 @@
    },
    "fa": {
     "words": {
-     "n": 71,
+     "n": 77,
      "mms": 36,
-     "second": 32,
+     "second": 38,
      "tie": 3,
      "no_peak": 0
     },
     "lines": {
-     "n": 20,
-     "mms": 8,
-     "second": 10,
+     "n": 22,
+     "mms": 11,
+     "second": 9,
      "tie": 2,
      "no_peak": 0
     }
@@ -72,31 +72,31 @@
    },
    "ar": {
     "words": {
-     "n": 110,
+     "n": 111,
      "mms": 61,
-     "second": 43,
+     "second": 44,
      "tie": 6,
      "no_peak": 0
     },
     "lines": {
-     "n": 28,
-     "mms": 11,
-     "second": 14,
+     "n": 32,
+     "mms": 13,
+     "second": 16,
      "tie": 3,
      "no_peak": 0
     }
    },
    "az": {
     "words": {
-     "n": 0,
-     "mms": 0,
-     "second": 0,
-     "tie": 0,
+     "n": 9,
+     "mms": 4,
+     "second": 4,
+     "tie": 1,
      "no_peak": 0
     },
     "lines": {
-     "n": 0,
-     "mms": 0,
+     "n": 1,
+     "mms": 1,
      "second": 0,
      "tie": 0,
      "no_peak": 0
@@ -104,59 +104,9 @@
    },
    "la": {
     "words": {
-     "n": 0,
-     "mms": 0,
+     "n": 2,
+     "mms": 2,
      "second": 0,
-     "tie": 0,
-     "no_peak": 0
-    },
-    "lines": {
-     "n": 0,
-     "mms": 0,
-     "second": 0,
-     "tie": 0,
-     "no_peak": 0
-    }
-   },
-   "de": {
-    "words": {
-     "n": 100,
-     "mms": 46,
-     "second": 52,
-     "tie": 2,
-     "no_peak": 0
-    },
-    "lines": {
-     "n": 18,
-     "mms": 12,
-     "second": 6,
-     "tie": 0,
-     "no_peak": 0
-    }
-   }
-  },
-  "by_song": {
-   "i-have-come-alive": {
-    "words": {
-     "n": 101,
-     "mms": 56,
-     "second": 41,
-     "tie": 4,
-     "no_peak": 0
-    },
-    "lines": {
-     "n": 33,
-     "mms": 18,
-     "second": 13,
-     "tie": 2,
-     "no_peak": 0
-    }
-   },
-   "karitas": {
-    "words": {
-     "n": 6,
-     "mms": 5,
-     "second": 1,
      "tie": 0,
      "no_peak": 0
     },
@@ -168,18 +118,68 @@
      "no_peak": 0
     }
    },
-   "one": {
+   "de": {
     "words": {
-     "n": 185,
-     "mms": 90,
-     "second": 88,
-     "tie": 7,
+     "n": 105,
+     "mms": 55,
+     "second": 49,
+     "tie": 1,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 22,
+     "mms": 19,
+     "second": 3,
+     "tie": 0,
+     "no_peak": 0
+    }
+   }
+  },
+  "by_song": {
+   "i-have-come-alive": {
+    "words": {
+     "n": 105,
+     "mms": 55,
+     "second": 46,
+     "tie": 4,
      "no_peak": 0
     },
     "lines": {
      "n": 35,
-     "mms": 15,
-     "second": 17,
+     "mms": 21,
+     "second": 12,
+     "tie": 2,
+     "no_peak": 0
+    }
+   },
+   "karitas": {
+    "words": {
+     "n": 16,
+     "mms": 9,
+     "second": 6,
+     "tie": 1,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 3,
+     "mms": 2,
+     "second": 1,
+     "tie": 0,
+     "no_peak": 0
+    }
+   },
+   "one": {
+    "words": {
+     "n": 194,
+     "mms": 102,
+     "second": 86,
+     "tie": 6,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 43,
+     "mms": 25,
+     "second": 15,
      "tie": 3,
      "no_peak": 0
     }
@@ -190,43 +190,43 @@
   "en": {
    "words": 52,
    "third": 52,
-   "within_0_10": 31
+   "within_0_10": 12
   },
   "fa": {
-   "words": 223,
-   "third": 223,
-   "within_0_10": 123
+   "words": 224,
+   "third": 224,
+   "within_0_10": 64
   },
   "tr": {
    "words": 55,
    "third": 55,
-   "within_0_10": 18
+   "within_0_10": 2
   },
   "ar": {
-   "words": 308,
-   "third": 308,
-   "within_0_10": 60
+   "words": 316,
+   "third": 316,
+   "within_0_10": 42
   },
   "az": {
-   "words": 184,
-   "third": 184,
-   "within_0_10": 27
+   "words": 177,
+   "third": 168,
+   "within_0_10": 25
   },
   "la": {
    "words": 76,
-   "third": 76,
-   "within_0_10": 5
+   "third": 74,
+   "within_0_10": 4
   },
   "de": {
    "words": 150,
    "third": 150,
-   "within_0_10": 13
+   "within_0_10": 11
   }
  },
  "stable_models": [
   {
    "song": "i-have-come-alive",
-   "model": "large-v3-turbo"
+   "model": "large-v3"
   },
   {
    "song": "karitas",
@@ -244,51 +244,77 @@
    "hold_lines": 7,
    "train_words": 43,
    "hold_words": 41,
-   "median_train": -0.004,
+   "median_train": -0.001,
    "median_hold": 0.002,
-   "line_median_train": -0.007,
+   "line_median_train": -0.004,
    "line_median_hold": 0.005,
-   "iqr_train": 0.0305,
+   "iqr_train": 0.056,
    "offset": 0.0,
    "applied": false,
    "reason": "shift-under-0.02",
-   "hold_agree_before": 0.8679,
+   "hold_agree_before": 0.8868,
    "hold_agree_before_n": [
-    46,
+    47,
     53
    ],
-   "hold_agree_if_train_offset": 0.8679,
+   "hold_agree_if_train_offset": 0.8868,
    "hold_agree_if_train_offset_n": [
-    46,
+    47,
     53
    ],
    "key": "borrow-tr|az"
   },
   {
-   "consonant_lines": 52,
-   "train_lines": 26,
-   "hold_lines": 26,
-   "train_words": 68,
-   "hold_words": 79,
+   "consonant_lines": 56,
+   "train_lines": 28,
+   "hold_lines": 28,
+   "train_words": 70,
+   "hold_words": 85,
    "median_train": 0.02,
    "median_hold": 0.05,
-   "line_median_train": 0.015,
+   "line_median_train": 0.0125,
    "line_median_hold": 0.06,
    "iqr_train": 0.03,
    "offset": 0.0,
    "applied": false,
    "reason": "shift-under-0.02",
-   "hold_agree_before": 0.5565,
+   "hold_agree_before": 0.5692,
    "hold_agree_before_n": [
-    69,
-    124
+    74,
+    130
    ],
-   "hold_agree_if_train_offset": 0.5645,
+   "hold_agree_if_train_offset": 0.5769,
    "hold_agree_if_train_offset_n": [
-    70,
-    124
+    75,
+    130
    ],
    "key": "whisperx|ar"
+  },
+  {
+   "consonant_lines": 1,
+   "train_lines": 0,
+   "hold_lines": 1,
+   "train_words": 0,
+   "hold_words": 7,
+   "median_train": null,
+   "median_hold": 0.358,
+   "line_median_train": null,
+   "line_median_hold": 0.358,
+   "iqr_train": null,
+   "offset": null,
+   "applied": false,
+   "reason": "too-few-words",
+   "hold_agree_before": 0.0,
+   "hold_agree_before_n": [
+    0,
+    9
+   ],
+   "hold_agree_if_train_offset": 0.0,
+   "hold_agree_if_train_offset_n": [
+    0,
+    9
+   ],
+   "key": "whisperx|az"
   },
   {
    "consonant_lines": 16,
@@ -297,21 +323,21 @@
    "train_words": 39,
    "hold_words": 21,
    "median_train": 0.1,
-   "median_hold": 0.14,
-   "line_median_train": 0.105,
-   "line_median_hold": 0.115,
-   "iqr_train": 0.1,
+   "median_hold": 0.13,
+   "line_median_train": 0.1025,
+   "line_median_hold": -0.2365,
+   "iqr_train": 0.125,
    "offset": null,
    "applied": false,
    "reason": "wide-spread",
-   "hold_agree_before": 0.2745,
+   "hold_agree_before": 0.2549,
    "hold_agree_before_n": [
-    14,
+    13,
     51
    ],
-   "hold_agree_if_train_offset": 0.4706,
+   "hold_agree_if_train_offset": 0.3725,
    "hold_agree_if_train_offset_n": [
-    24,
+    19,
     51
    ],
    "key": "whisperx|de"
@@ -346,27 +372,53 @@
    "consonant_lines": 45,
    "train_lines": 22,
    "hold_lines": 23,
-   "train_words": 76,
+   "train_words": 77,
    "hold_words": 87,
    "median_train": 0.01,
    "median_hold": 0.01,
    "line_median_train": 0.015,
    "line_median_hold": 0.01,
-   "iqr_train": 0.0225,
+   "iqr_train": 0.03,
    "offset": 0.0,
    "applied": false,
    "reason": "shift-under-0.02",
-   "hold_agree_before": 0.5918,
+   "hold_agree_before": 0.5816,
    "hold_agree_before_n": [
+    57,
+    98
+   ],
+   "hold_agree_if_train_offset": 0.5918,
+   "hold_agree_if_train_offset_n": [
     58,
     98
    ],
-   "hold_agree_if_train_offset": 0.602,
-   "hold_agree_if_train_offset_n": [
-    59,
-    98
-   ],
    "key": "whisperx|fa"
+  },
+  {
+   "consonant_lines": 0,
+   "train_lines": 0,
+   "hold_lines": 0,
+   "train_words": 0,
+   "hold_words": 0,
+   "median_train": null,
+   "median_hold": null,
+   "line_median_train": null,
+   "line_median_hold": null,
+   "iqr_train": null,
+   "offset": null,
+   "applied": false,
+   "reason": "too-few-words",
+   "hold_agree_before": null,
+   "hold_agree_before_n": [
+    0,
+    0
+   ],
+   "hold_agree_if_train_offset": null,
+   "hold_agree_if_train_offset_n": [
+    0,
+    0
+   ],
+   "key": "whisperx|la"
   },
   {
    "consonant_lines": 11,

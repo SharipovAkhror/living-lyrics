@@ -1,41 +1,41 @@
 {
- "metric": "letter",
- "threshold": 0.411349,
+ "metric": "word_mean",
+ "threshold": 0.289865,
  "cap_met": true,
- "accepted": 73,
- "near": 64,
- "mid": 8,
- "false": 1,
- "false_share": 0.0137,
- "structure_fail": 11,
- "placed": 57,
- "rows": 245,
- "cued": 245,
+ "accepted": 108,
+ "near": 90,
+ "mid": 16,
+ "false": 2,
+ "false_share": 0.0185,
+ "structure_fail": 22,
+ "placed": 73,
+ "rows": 249,
+ "cued": 249,
  "by_metric": [
   {
-   "accepted": 73,
-   "near": 64,
-   "mid": 8,
-   "false": 1,
-   "false_share": 0.0137,
-   "structure_fail": 11,
-   "placed": 57,
+   "accepted": 101,
+   "near": 86,
+   "mid": 13,
+   "false": 2,
+   "false_share": 0.0198,
+   "structure_fail": 18,
+   "placed": 72,
    "cap_ok": true,
    "metric": "letter",
-   "threshold": 0.411349,
+   "threshold": 0.314546,
    "cap_met": true
   },
   {
-   "accepted": 68,
-   "near": 60,
-   "mid": 7,
-   "false": 1,
-   "false_share": 0.0147,
-   "structure_fail": 9,
-   "placed": 54,
+   "accepted": 108,
+   "near": 90,
+   "mid": 16,
+   "false": 2,
+   "false_share": 0.0185,
+   "structure_fail": 22,
+   "placed": 73,
    "cap_ok": true,
    "metric": "word_mean",
-   "threshold": 0.421438,
+   "threshold": 0.289865,
    "cap_met": true
   },
   {
@@ -59,34 +59,40 @@
    "placed": 11,
    "false": 0
   },
+  "fa": {
+   "cued_accepted": 27,
+   "near": 24,
+   "placed": 19,
+   "false": 1
+  },
   "tr": {
-   "cued_accepted": 6,
-   "near": 6,
-   "placed": 6,
+   "cued_accepted": 8,
+   "near": 8,
+   "placed": 8,
    "false": 0
   },
   "ar": {
-   "cued_accepted": 23,
-   "near": 20,
-   "placed": 17,
+   "cued_accepted": 40,
+   "near": 33,
+   "placed": 25,
    "false": 1
   },
-  "fa": {
-   "cued_accepted": 18,
-   "near": 17,
-   "placed": 15,
-   "false": 0
-  },
   "az": {
-   "cued_accepted": 5,
-   "near": 3,
+   "cued_accepted": 7,
+   "near": 4,
    "placed": 3,
    "false": 0
   },
   "la": {
-   "cued_accepted": 6,
+   "cued_accepted": 7,
    "near": 6,
    "placed": 5,
+   "false": 0
+  },
+  "de": {
+   "cued_accepted": 4,
+   "near": 3,
+   "placed": 2,
    "false": 0
   }
  },
