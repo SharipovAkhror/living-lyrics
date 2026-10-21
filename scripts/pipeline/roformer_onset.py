@@ -909,7 +909,9 @@ def chance() -> int:
         print('нет отчёта ясности, случайный проход не запускался', flush=True)
         return 0
     old = payload.get('chance') or {}
-    if old.get('finished') and os.environ.get('ROFORMER_FORCE') != '1':
+    # A crash is "TypeError: …". A finished measurement is a Russian sentence.
+    crashed = str(old.get('why') or '').split(':', 1)[0].endswith('Error')
+    if old.get('finished') and not crashed and os.environ.get('ROFORMER_FORCE') != '1':
         print('случайный проход уже записан, повтор не считался', flush=True)
         return 0
     winners = [
@@ -961,8 +963,9 @@ def chance() -> int:
     for slug in winners:
         report = json.loads((work_dir(slug) / 'align-report.json').read_text(encoding='utf-8'))
         spans, counts = _windows(report, _draft_ids(slug))
-        plans.append({'slug': slug, 'spans': spans, **counts})
-    if not any(plan['spans'] for plan in plans):
+        # `counts` already uses the key `spans` for the count. Keep the list apart.
+        plans.append({'slug': slug, 'windows': spans, **counts})
+    if not any(plan['windows'] for plan in plans):
         info['songs'] = [
             {'slug': plan['slug'], 'status': 'нет окон', 'spans': 0, 'words': plan['words'],
              'skipped_close': plan['skipped_close']}
@@ -993,7 +996,7 @@ def chance() -> int:
     mixes = {}
     try:
         for plan in plans:
-            if not plan['spans']:
+            if not plan['windows']:
                 continue
             mixes[plan['slug']] = _mix(_decrypt(plan['slug']))
     except Exception as exc:
@@ -1003,8 +1006,8 @@ def chance() -> int:
         _write(payload)
         return 0
 
-    first = next(plan for plan in plans if plan['spans'])
-    t0, t1 = first['spans'][0]
+    first = next(plan for plan in plans if plan['windows'])
+    t0, t1 = first['windows'][0]
     mix = mixes[first['slug']]
     a = max(0, int(t0 * SR))
     b = min(mix.shape[1], int(t1 * SR))
@@ -1018,7 +1021,7 @@ def chance() -> int:
         _write(payload)
         return 0
     probe_s = time.monotonic() - probe_started
-    n_spans = sum(len(plan['spans']) for plan in plans)
+    n_spans = sum(len(plan['windows']) for plan in plans)
     estimate = probe_s * max(n_spans - 1, 0) * 1.15
     remaining = chance_budget_s() - (time.monotonic() - started)
     info['probe_s'] = round(probe_s, 1)
@@ -1029,7 +1032,7 @@ def chance() -> int:
             f'Одно окно заняло {probe_s:.0f} с. Полная песня не считалась, время строк не менялось.'
         )
         info['songs'] = [
-            {'slug': plan['slug'], 'status': 'не влезло', 'spans': len(plan['spans']),
+            {'slug': plan['slug'], 'status': 'не влезло', 'spans': len(plan['windows']),
              'words': plan['words'], 'skipped_close': plan['skipped_close']}
             for plan in plans
         ]
@@ -1042,7 +1045,7 @@ def chance() -> int:
     spliced = 0
     for plan in plans:
         slug = plan['slug']
-        if not plan['spans']:
+        if not plan['windows']:
             song_rows.append({
                 'slug': slug, 'status': 'нет окон', 'spans': 0,
                 'words': plan['words'], 'skipped_close': plan['skipped_close'],
@@ -1050,7 +1053,7 @@ def chance() -> int:
             continue
         mix = mixes[slug]
         vocals = []
-        for index, (t0, t1) in enumerate(plan['spans']):
+        for index, (t0, t1) in enumerate(plan['windows']):
             if slug == first['slug'] and index == 0:
                 vocals.append(probe)
                 continue
@@ -1059,11 +1062,11 @@ def chance() -> int:
             vocals.append(demix_vocals(config, model, mix[:, a:b], device))
         vocal_path = work_dir(slug) / 'stems' / 'vocals.wav'
         stem, sr = _read_wav(vocal_path)
-        n = _splice(stem, sr, plan['spans'], vocals)
+        n = _splice(stem, sr, plan['windows'], vocals)
         _write_wav(vocal_path, stem, sr)
         spliced += n
         song_rows.append({
-            'slug': slug, 'status': 'окно подставлено', 'spans': len(plan['spans']),
+            'slug': slug, 'status': 'окно подставлено', 'spans': len(plan['windows']),
             'words': plan['words'], 'skipped_close': plan['skipped_close'], 'spliced': n,
         })
     info['songs'] = song_rows
