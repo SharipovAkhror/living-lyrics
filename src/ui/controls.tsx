@@ -1,8 +1,8 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from './icons';
 import { GlassLayers } from './glass/Glass';
-import { PHONE_SPRING, SPRING, springSettled, stepSpring, type SpringState } from './spring';
+import { SHEET_CLOSE, SPRING, springSettled, stepSpring, type SpringState } from './spring';
 import { isPhone } from './phone';
 
 function motionOff() {
@@ -94,7 +94,8 @@ export function Sheet({
       if (drag.current?.active) return;
       const dt = Math.min(0.032, (now - last) / 1000);
       last = now;
-      state.current = stepSpring(state.current, target.current, dt, isPhone() ? PHONE_SPRING : SPRING);
+      const spec = target.current > 1 ? SHEET_CLOSE : SPRING;
+      state.current = stepSpring(state.current, target.current, dt, spec);
       paint(state.current.x);
       if (springSettled(state.current, target.current)) {
         state.current = { x: target.current, v: 0 };
@@ -117,32 +118,7 @@ export function Sheet({
     setRender(true);
   }, [open]);
 
-  // A phone sheet is in place before the first paint. The stiff spring was one
-  // long frame per step, so the title arrived late and the scroller dropped frames.
-  useLayoutEffect(() => {
-    if (!isPhone() || motionOff()) return;
-    if (!open) {
-      if (render) {
-        setShown(false);
-        setRender(false);
-        clearSheetChrome();
-      }
-      return;
-    }
-    document.documentElement.dataset.sheet = '1';
-    if (!render) {
-      setRender(true);
-      return;
-    }
-    if (!panel.current) return;
-    stop();
-    state.current = { x: 0, v: 0 };
-    paint(0);
-    setShown(true);
-  }, [open, render]);
-
   useEffect(() => {
-    if (isPhone() && !motionOff()) return;
     if (!render || !panel.current) return;
     const el = panel.current;
     remember();

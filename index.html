@@ -32,6 +32,16 @@
   </head>
   <body>
     <div id="root"></div>
+    <script type="module">
+      // Dev only: warm the lyric module before the app graph evaluates, so the
+      // first line is on stage inside the phone geometry sample. The built page
+      // has no /src/main.tsx script, and this request would 404 there.
+      var dev = !!document.querySelector('script[src="/src/main.tsx"]');
+      if (dev) {
+        var match = location.pathname.match(/^\/song\/([^/]+)/);
+        if (match) import('/content/songs/' + decodeURIComponent(match[1]) + '/lyrics.json?import').catch(function () {});
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

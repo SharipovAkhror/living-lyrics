@@ -28,11 +28,11 @@ export function takeFlight(): FlightBox | null {
   return held;
 }
 
-/** Desktop glass uses the browser transition. Everywhere else, the cover flies in script. */
+/**
+ * The library-to-song move is a transform of one plate and the cover.
+ * A view-transition snapshot of the glass was a long frame and left the
+ * title fading across the stage, so it stays off.
+ */
 export function sharedTransition(): boolean {
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const off = document.documentElement.dataset.motion === 'off';
-  const lens = document.documentElement.dataset.glass === 'lens';
-  const start = (document as Document & { startViewTransition?: unknown }).startViewTransition;
-  return !reduced && !off && lens && typeof start === 'function';
+  return false;
 }

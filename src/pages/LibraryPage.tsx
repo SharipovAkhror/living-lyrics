@@ -1,15 +1,15 @@
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type MouseEvent } from 'react';
 import { coverExt, coverUrl } from '@/data/covers';
 import { songs, LANG_NAMES } from '@/data/library';
 import type { Song } from '@/data/schema';
 import { prefetchLyrics } from '@/app/prefetch';
-import { linkHandler } from '@/app/router';
+import { linkHandler, navigate } from '@/app/router';
 import { rememberedSong } from '@/app/continue';
 import { useSettings } from '@/app/settings';
 import { useAppliedTheme } from '@/app/theme';
 import { Icon } from '@/ui/icons';
 import { Glass, GlassLayers } from '@/ui/glass/Glass';
-import { armFlight } from '@/app/flight';
+import { armMorph, motionBlocked } from '@/app/morph';
 import { Field } from '@/scene/Field';
 import { Status } from '@/components/Status';
 
@@ -22,17 +22,14 @@ function langsOf(song: Song) {
   return song.languages.map((code) => LANG_NAMES[code] ?? code).join(' · ');
 }
 
-/** The touched cover and title are the shared elements. Other cards give the names up. */
-function armPoster(event: { currentTarget: Element }) {
-  const root = event.currentTarget.closest('.library');
-  root?.querySelectorAll<HTMLElement>('[data-poster], [data-vt-title]').forEach((el) => {
-    el.style.viewTransitionName = '';
-  });
-  const poster = event.currentTarget.querySelector<HTMLElement>('[data-poster]');
-  const title = event.currentTarget.querySelector<HTMLElement>('[data-vt-title]');
-  if (poster) poster.style.viewTransitionName = 'song-poster';
-  if (title) title.style.viewTransitionName = 'song-title';
-  armFlight(poster);
+/** Words leave in place. The plate and the cover travel after a short beat. */
+function openSong(event: MouseEvent<HTMLAnchorElement>, slug: string) {
+  if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  event.preventDefault();
+  armMorph(event.currentTarget);
+  const to = `/song/${slug}`;
+  if (motionBlocked()) navigate(to);
+  else window.setTimeout(() => navigate(to), 70);
 }
 
 export function LibraryPage() {
@@ -155,10 +152,6 @@ function useWarm(slug: string) {
   return { ref, warm: () => prefetchLyrics(slug) };
 }
 
-function posterStyle(on: boolean): CSSProperties | undefined {
-  return on ? { viewTransitionName: 'song-poster' } : undefined;
-}
-
 function tone(song: Song, dark: boolean): CSSProperties {
   return {
     '--glow': song.palette.field[0],
@@ -166,13 +159,12 @@ function tone(song: Song, dark: boolean): CSSProperties {
   } as CSSProperties;
 }
 
-function Cover({ song, className, poster, sizes }: { song: Song; className: string; poster: boolean; sizes: string }) {
+function Cover({ song, className, sizes }: { song: Song; className: string; sizes: string }) {
   const ext = coverExt(song);
   return (
     <img
       data-poster=""
       className={className}
-      style={posterStyle(poster)}
       src={coverUrl(song.slug, 512, ext)}
       srcSet={`${coverUrl(song.slug, 512, ext)} 512w, ${coverUrl(song.slug, 1024, ext)} 1024w`}
       sizes={sizes}
@@ -189,23 +181,17 @@ function Hero({ song, continued, dark }: { song: Song; continued: boolean; dark:
       ref={ref}
       className="lib-hero lg-host lg-host--card"
       href={`/song/${song.slug}`}
-      onClick={(e) => {
-        armPoster(e);
-        linkHandler(`/song/${song.slug}`)(e);
-      }}
+      onClick={(e) => openSong(e, song.slug)}
       onPointerEnter={warm}
-      onPointerDown={(e) => {
-        armPoster(e);
-        warm();
-      }}
+      onPointerDown={() => warm()}
       onFocus={warm}
       aria-label={`${song.title}. ${song.version.label}. ${song.artist}`}
       style={tone(song, dark)}
     >
       <GlassLayers />
-      <Cover song={song} className="lib-hero-cover" poster={continued} sizes="(min-width: 800px) 380px, 92vw" />
+      <Cover song={song} className="lib-hero-cover" sizes="(min-width: 800px) 380px, 92vw" />
       <span className="lib-hero-copy">
-        <span className="lib-hero-title" data-vt-title="">
+        <span className="lib-hero-title">
           {song.title}
         </span>
         <span className="lib-hero-version">{song.version.label}</span>
@@ -226,27 +212,21 @@ function ShelfRow({ song, continued, dark }: { song: Song; continued: boolean; d
       ref={ref}
       className="lib-row lg-host lg-host--card"
       href={`/song/${song.slug}`}
-      onClick={(e) => {
-        armPoster(e);
-        linkHandler(`/song/${song.slug}`)(e);
-      }}
+      onClick={(e) => openSong(e, song.slug)}
       onPointerEnter={warm}
-      onPointerDown={(e) => {
-        armPoster(e);
-        warm();
-      }}
+      onPointerDown={() => warm()}
       onFocus={warm}
       aria-label={`${song.title}. ${song.version.label}. ${song.artist}`}
       style={tone(song, dark)}
     >
       <GlassLayers />
-      <Cover song={song} className="lib-row-cover" poster={continued} sizes="96px" />
+      <Cover song={song} className="lib-row-cover" sizes="96px" />
       <span className="lib-row-copy">
-        <span className="lib-row-lead" data-vt-title="">
+        <span className="lib-row-lead">
           {song.title}
         </span>
         <span className="lib-row-version">{song.version.label}</span>
-        <span className="lib-row-artist">{song.artist}</span>
+        <span className="lib-row-artist">{continued ? `Продолжить · ${song.artist}` : song.artist}</span>
       </span>
       {st && <span className={`chip chip--${st.tone} t-caption1`}>{st.text}</span>}
     </a>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { formatTime, getSong, loadLyrics, loadPeaks } from '@/data/library';
 import { coverExt, coverUrl } from '@/data/covers';
 import { rememberSong } from '@/app/continue';
@@ -10,7 +10,8 @@ import { useSongAccent } from '@/app/theme';
 import { enableSongFonts } from '@/app/fontCatalog';
 import { nextSlug, prefetchLyrics, prefetchRecording, recordingUrl } from '@/app/prefetch';
 import { linkHandler } from '@/app/router';
-import { sharedTransition, takeFlight } from '@/app/flight';
+import { motionBlocked, runMorph, takeMorph } from '@/app/morph';
+import { bindPress } from '@/ui/press';
 import { GlassLayers } from '@/ui/glass/Glass';
 import { AudioEngine } from '@/player/engine';
 import { preloadMode, readNetHint } from '@/player/preload';
@@ -19,18 +20,25 @@ import { Scrubber } from '@/player/Scrubber';
 import { Scene } from '@/scene/Scene';
 import { coverStage } from '@/scene/cover';
 import { Field } from '@/scene/Field';
-import { LEAD } from '@/scene/flow';
+import { LEAD, flowPosition, planFlow } from '@/scene/flow';
 import { Icon } from '@/ui/icons';
 import { RichText } from '@/components/RichText';
 import { Status } from '@/components/Status';
 import { showHarakatText, stripHarakat } from '@/data/harakat';
 import { stageFrame, type StageFrame } from '@/scene/columns';
 import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
-import { preloadInstruments } from '@/instruments/catalog';
-import { SettingsSheet } from './SettingsSheet';
-import { TextSheet } from './TextSheet';
-import { InfoSheet } from './InfoSheet';
 import { headerLine } from './parts';
+
+const SettingsSheet = lazy(() => import('./SettingsSheet').then((m) => ({ default: m.SettingsSheet })));
+const TextSheet = lazy(() => import('./TextSheet').then((m) => ({ default: m.TextSheet })));
+const InfoSheet = lazy(() => import('./InfoSheet').then((m) => ({ default: m.InfoSheet })));
+
+/** Keep a sheet mounted after its first open so the close spring can finish. */
+function useHeld(open: boolean) {
+  const [held, setHeld] = useState(open);
+  if (open && !held) setHeld(true);
+  return held;
+}
 
 type SheetName = 'settings' | 'text' | 'info' | null;
 
@@ -92,6 +100,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const topbarRef = useRef<HTMLElement>(null);
   const artRef = useRef<HTMLImageElement>(null);
   const floorRef = useRef<HTMLElement>(null);
+  const playRef = useRef<HTMLButtonElement>(null);
   const [lyrics, setLyrics] = useState<Lyrics | null>(null);
   const [peaks, setPeaks] = useState<Peaks | null>(null);
   const [features, setFeatures] = useState<AudioFeatures | null>(null);
@@ -159,8 +168,10 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         if (!alive) return;
         engine.setPreload(preloadMode('settle', net));
         enableSongFonts();
+        // The next song's text is a large parse. Doing it in this frame kept the
+        // first line off the stage past the 300 ms geometry sample.
         const next = nextSlug(song.slug);
-        if (next) prefetchLyrics(next);
+        if (next) window.setTimeout(() => alive && prefetchLyrics(next), 1600);
       });
     });
     const s = settings;
@@ -228,7 +239,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     const ctrl = new AbortController();
     const run = () => {
       if (!alive) return;
-      void preloadInstruments(lyrics.sections.flatMap((s) => (s.kind === 'instrumental' ? s.instruments : [])));
+      const names = lyrics.sections.flatMap((s) => (s.kind === 'instrumental' ? s.instruments : []));
+      void import('@/instruments/catalog').then((m) => m.preloadInstruments(names));
       if (song.audio.peaks) void loadPeaks(song.audio.peaks).then((p) => alive && p && setPeaks(p));
       fetch(`/audio/${song.slug}/features.json`, { signal: ctrl.signal, priority: 'low' })
         .then((res) => (res.ok ? res.json() : null))
@@ -267,10 +279,31 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
 
   const duration = state?.duration || song?.duration || 0;
   const timeline = useMemo(() => (lyrics ? buildTimeline(lyrics, duration, peaks) : null), [lyrics, duration, peaks]);
-  const clock = useCallback(() => engine?.currentTime() ?? 0, [engine]);
+  const deepLink = useMemo(() => {
+    const deep = parseFloat(new URLSearchParams(window.location.search).get('t') ?? '');
+    return Number.isFinite(deep) ? deep : null;
+  }, []);
+  // Until the engine has applied ?t=, paint that moment. Otherwise the first
+  // phone frame is the intro and the geometry sample reads the wrong block.
+  const clock = useCallback(() => {
+    if (deepLink != null && !clockArmed) return deepLink;
+    return engine?.currentTime() ?? 0;
+  }, [engine, deepLink, clockArmed]);
 
   const [owner, setOwner] = useState(-1);
+  // A deep link (?t=) knows its line before the stage clock ticks. Placing the
+  // note in that same commit keeps the first phone frame on the settled stage.
+  useLayoutEffect(() => {
+    if (!timeline) return;
+    if (deepLink == null) return;
+    const pos = flowPosition(planFlow(timeline), deepLink);
+    const next = Math.max(-1, Math.min(timeline.cues.length - 1, Math.round(pos)));
+    setOwner((prev) => (prev === next ? prev : next));
+  }, [timeline, deepLink]);
   const [sheet, setSheet] = useState<SheetName>(null);
+  const settingsHeld = useHeld(sheet === 'settings');
+  const infoHeld = useHeld(sheet === 'info');
+  const textHeld = useHeld(sheet === 'text');
   const playing = !!state?.playing;
   const noteText = timeline && owner >= 0 ? commentFor(timeline, owner) : null;
   const columns = useStageFrame(settings.showComment && !!noteText);
@@ -427,26 +460,41 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   }, [song, lyrics, state?.error, state?.source, columns.frame]);
 
   useLayoutEffect(() => {
-    const from = takeFlight();
+    const from = takeMorph();
+    const root = songRef.current;
     const img = artRef.current;
-    if (!from || !img || sharedTransition()) return;
-    if (document.documentElement.dataset.motion === 'off') return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const to = img.getBoundingClientRect();
-    if (to.width < 1) return;
-    const dx = from.left - to.left;
-    const dy = from.top - to.top;
-    const sx = from.width / to.width;
-    img.style.transition = 'none';
-    img.style.transformOrigin = 'top left';
-    img.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(${sx})`;
-    let frame = requestAnimationFrame(() => {
-      frame = requestAnimationFrame(() => {
-        img.style.transition = 'transform var(--dur-3) var(--ease-spring)';
-        img.style.transform = '';
-      });
+    if (!from || !root || !img || motionBlocked()) return;
+    root.classList.add('is-morphing');
+    const alive = { current: true };
+    const dest = () => {
+      const top = topbarRef.current?.getBoundingClientRect();
+      const stage = root.querySelector('.scene-stage')?.getBoundingClientRect();
+      if (!top || !stage || stage.height < 1) return null;
+      const art = img.getBoundingClientRect();
+      const cover = art.width >= 1 ? art : { left: top.left + 44, top: top.top + 6, width: 32, height: 32 };
+      const left = Math.min(top.left, stage.left);
+      const right = Math.max(top.right, stage.right);
+      return {
+        card: { left, top: top.top, width: Math.max(1, right - left), height: Math.max(1, stage.bottom - top.top), radius: 28 },
+        cover: { left: cover.left, top: cover.top, width: cover.width, height: cover.height, radius: 12 },
+      };
+    };
+    void runMorph(from, dest, () => {
+      if (alive.current) root.classList.add('is-morph-in');
+    }, alive).then(() => {
+      if (!alive.current) return;
+      root.classList.remove('is-morphing', 'is-morph-in');
     });
-    return () => cancelAnimationFrame(frame);
+    return () => {
+      alive.current = false;
+      root.classList.remove('is-morphing', 'is-morph-in');
+    };
+  }, [song?.slug]);
+
+  useEffect(() => {
+    const el = playRef.current;
+    if (!el || motionBlocked()) return;
+    return bindPress(el);
   }, [song?.slug]);
 
   useLayoutEffect(() => {
@@ -539,7 +587,6 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           width={96}
           height={96}
           src={coverUrl(song.slug, 192, coverExt(song))}
-          style={{ viewTransitionName: 'song-poster' }}
         />
         <div className="topbar-title">
           <div className="topbar-song">{song.title}</div>
@@ -553,6 +600,20 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           <Icon name="info.circle" size={22} />
         </button>
       </header>
+
+      {state?.error && (
+        <div className="player-alert" role="alert">
+          <p>{state.error}</p>
+          <button type="button" className="floor-retry" onClick={() => engine.retry()}>
+            Повторить
+          </button>
+        </div>
+      )}
+      {state?.source === 'silent' && !playing && !song.audio.high && !song.audio.saver && (
+        <button type="button" className="hint" onClick={() => setSheet('settings')}>
+          Аудио не подключено
+        </button>
+      )}
 
       <footer className={`player floor lg-host lg-host--floor${state?.error ? ' has-error' : ''}`} ref={floorRef}>
         <GlassLayers />
@@ -577,19 +638,6 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             </div>
           </aside>
         )}
-        {state?.error && (
-          <p className="floor-status" role="alert">
-            <span className="floor-status-text">{state.error}</span>
-            <button type="button" className="floor-retry" onClick={() => engine.retry()}>
-              Повторить
-            </button>
-          </p>
-        )}
-        {state?.source === 'silent' && !playing && !song.audio.high && !song.audio.saver && (
-          <button type="button" className="floor-status floor-status--btn" onClick={() => setSheet('settings')}>
-            <span>Аудио не подключено — подключить</span>
-          </button>
-        )}
         {toast && (
           <div className="mark-toast" role="status">
             <span>Отмечено {formatTime(toast.t)}</span>
@@ -604,6 +652,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             duration={duration}
             clock={clock}
             onSeek={(t) => engine.seek(t)}
+            colors={song.palette.field}
             accessory={
               <div className="mark-bar">
                 <button
@@ -651,6 +700,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               <Icon name="backward" size={24} />
             </button>
             <button
+              ref={playRef}
               className={`btn btn-circle btn-xl btn-ring${playing ? ' is-live' : ''}${buffering ? ' is-buffering' : ''}${state?.error ? ' is-error' : ''}`}
               onClick={togglePlay}
               aria-label={playLabel}
@@ -659,7 +709,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               {buffering && !playing ? (
                 <span className="btn-buffer" aria-hidden="true" />
               ) : (
-                <Icon name={playing ? 'pause' : 'play'} size={28} />
+                <span className="play-glyph" key={playing ? 'pause' : 'play'}>
+                  <Icon name={playing ? 'pause' : 'play'} size={28} />
+                </span>
               )}
             </button>
             <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)">
@@ -706,34 +758,42 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </aside>
       )}
 
-      <SettingsSheet open={sheet === 'settings'} onClose={() => setSheet(null)} song={song} engine={engine} state={state} settings={settings} has={has} />
-      <InfoSheet
-        open={sheet === 'info'}
-        onClose={() => setSheet(null)}
-        song={song}
-        lyrics={lyrics}
-        showHarakat={settings.showHarakat}
-        fontPersian={settings.fontPersian}
-        pendingNote={!lyrics ? (loadError ?? 'Подробности строк ещё открываются') : null}
-        onMark={placeMark}
-        onSeek={(t) => {
-          engine.seek(t);
-          setSheet(null);
-        }}
-      />
-      <TextSheet
-        open={sheet === 'text'}
-        onClose={() => setSheet(null)}
-        timeline={timeline}
-        owner={owner}
-        settings={settings}
-        error={loadError}
-        onRetry={() => setTextAttempt((n) => n + 1)}
-        onPick={(idx) => {
-          setSheet(null);
-          pick(idx);
-        }}
-      />
+      <Suspense fallback={null}>
+        {settingsHeld && (
+          <SettingsSheet open={sheet === 'settings'} onClose={() => setSheet(null)} song={song} engine={engine} state={state} settings={settings} has={has} />
+        )}
+        {infoHeld && (
+          <InfoSheet
+            open={sheet === 'info'}
+            onClose={() => setSheet(null)}
+            song={song}
+            lyrics={lyrics}
+            showHarakat={settings.showHarakat}
+            fontPersian={settings.fontPersian}
+            pendingNote={!lyrics ? (loadError ?? 'Подробности строк ещё открываются') : null}
+            onMark={placeMark}
+            onSeek={(t) => {
+              engine.seek(t);
+              setSheet(null);
+            }}
+          />
+        )}
+        {textHeld && (
+          <TextSheet
+            open={sheet === 'text'}
+            onClose={() => setSheet(null)}
+            timeline={timeline}
+            owner={owner}
+            settings={settings}
+            error={loadError}
+            onRetry={() => setTextAttempt((n) => n + 1)}
+            onPick={(idx) => {
+              setSheet(null);
+              pick(idx);
+            }}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }

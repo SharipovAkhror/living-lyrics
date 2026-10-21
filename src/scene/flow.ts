@@ -105,7 +105,7 @@ export function blockHeight(m: Measure | undefined, d: number) {
  * Tops of the blocks when `anchor` is exactly current: the current block's centre sits at
  * `centerY` (but never above `minTop`); the others stack below and above it.
  */
-export function layoutAt(anchor: number, indices: number[], m: Map<number, Measure>, centerY: number, minTop: number, room: (k: number) => number = () => 0) {
+export function layoutAt(anchor: number, indices: number[], m: Map<number, Measure>, centerY: number, minTop: number, room: (k: number) => number = () => 0, gap = GAP) {
   const tops = new Map<number, number>();
   if (!indices.length) return tops;
   const first = indices[0];
@@ -113,8 +113,8 @@ export function layoutAt(anchor: number, indices: number[], m: Map<number, Measu
   const cur = Math.max(first, Math.min(last, anchor));
   const h = (k: number) => blockHeight(m.get(k), k - anchor);
   tops.set(cur, Math.max(minTop, centerY - h(cur) / 2));
-  for (let k = cur + 1; k <= last; k++) tops.set(k, tops.get(k - 1)! + h(k - 1) + GAP + room(k));
-  for (let k = cur - 1; k >= first; k--) tops.set(k, tops.get(k + 1)! - GAP - room(k + 1) - h(k));
+  for (let k = cur + 1; k <= last; k++) tops.set(k, tops.get(k - 1)! + h(k - 1) + gap + room(k));
+  for (let k = cur - 1; k >= first; k--) tops.set(k, tops.get(k + 1)! - gap - room(k + 1) - h(k));
   return tops;
 }
 

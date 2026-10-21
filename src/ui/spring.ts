@@ -1,43 +1,87 @@
 /**
- * One underdamped spring for sheets, switches and the settings stack.
- * Stiffness 400 and damping 30 settle in about 420 ms with a small overshoot.
- * The CSS twin is --ease-spring in tokens.css, sampled from the same motion
- * and squeezed into 420 ms so a transition and a finger-driven spring agree.
+ * One underdamped spring. Mass, stiffness and damping are the motion.
+ * The step is the closed form, so a 32 ms frame cannot throw it off, and
+ * the velocity already on the state is kept when the target changes.
+ * Sheets use it: about 2% overshoot and a settle near 300 ms.
+ * The CSS twin is --ease-spring, sampled from this same spring.
  */
 
-export const SPRING = { stiffness: 400, damping: 30, mass: 1 };
-export const SPRING_MS = 420;
-/**
- * Phone sheet only. Critical damping, so a 32 ms frame cannot throw the sheet
- * off screen. The title crosses onto the screen inside 100 ms. Desktop keeps SPRING.
- */
-export const PHONE_SPRING = { stiffness: 1600, damping: 80, mass: 1 };
-
-/** CSS linear() of this spring, from rest at 0 to rest at 1. */
-export const SPRING_EASE =
-  'linear(0, 0.0988 5.6%, 0.2945 11.1%, 0.5049 16.7%, 0.6833 22.2%, 0.8242 27.8%, 0.9212 33.3%, 0.981 38.9%, 1.013 44.4%, 1.0263 50%, 1.0285 55.6%, 1.025 61.1%, 1.0191 66.7%, 1.0132 72.2%, 1.0081 77.8%, 1.0044 83.3%, 1.0019 88.9%, 1.0003 94.4%, 1)';
+export interface SpringSpec {
+  stiffness: number;
+  damping: number;
+  mass: number;
+}
 
 export interface SpringState {
   x: number;
   v: number;
 }
 
+/** Sheet, card and the settings stack. Peak about 1.025, settled by ~320 ms. */
+export const SPRING: SpringSpec = { stiffness: 900, damping: 46, mass: 1 };
+export const SPRING_MS = 320;
+
 /**
- * Semi-implicit step. `dt` is seconds. A single 32 ms step is unstable for a
- * stiff phone sheet, so the step is split into 8 ms pieces. Returns a new state.
+ * Phone used to carry a stiffer critically damped spring. The analytic step
+ * is stable, so the phone sheet now uses {@link SPRING} and still only writes
+ * a transform. Kept so older call sites have a name.
  */
-export function stepSpring(state: SpringState, target: number, dt: number, spring = SPRING): SpringState {
-  const total = Math.min(Math.max(dt, 0), 0.032);
-  const pieces = Math.max(1, Math.ceil(total / 0.008));
-  const step = total / pieces;
-  let x = state.x;
-  let v = state.v;
-  for (let i = 0; i < pieces; i++) {
-    const acc = (-spring.stiffness * (x - target) - spring.damping * v) / spring.mass;
-    v = v + acc * step;
-    x = x + v * step;
+export const PHONE_SPRING: SpringSpec = SPRING;
+
+/** Play button press: toward 0.92, settled in about 80 ms, no bounce. */
+export const PRESS_SPRING: SpringSpec = { stiffness: 2500, damping: 100, mass: 1 };
+
+/** Play button release, on the way to 1.05, before it is retargeted to 1. */
+export const RELEASE_SPRING: SpringSpec = { stiffness: 480, damping: 24, mass: 1 };
+
+/** Sheet close. Critically damped, so it does not bounce back onto the page. */
+export const SHEET_CLOSE: SpringSpec = { stiffness: 1600, damping: 80, mass: 1 };
+
+/** CSS linear() of {@link SPRING}, from rest at 0 to rest at 1, over {@link SPRING_MS}. */
+export const SPRING_EASE =
+  'linear(0, 0.21 8.3%, 0.549 16.7%, 0.806 25%, 0.948 33.3%, 1.009 41.7%, 1.023 50%, 1.019 58.3%, 1.011 66.7%, 1.005 75%, 1.001 83.3%, 1 91.7%, 1)';
+
+function advance(x0: number, v0: number, dt: number, spring: SpringSpec): SpringState {
+  const w0 = Math.sqrt(spring.stiffness / spring.mass);
+  const zeta = spring.damping / (2 * Math.sqrt(spring.stiffness * spring.mass));
+  if (zeta < 0.999) {
+    const wd = w0 * Math.sqrt(1 - zeta * zeta);
+    const e = Math.exp(-zeta * w0 * dt);
+    const cos = Math.cos(wd * dt);
+    const sin = Math.sin(wd * dt);
+    const a = x0;
+    const b = (v0 + zeta * w0 * a) / wd;
+    const x = e * (a * cos + b * sin);
+    const v = -zeta * w0 * x + e * wd * (-a * sin + b * cos);
+    return { x, v };
   }
-  return { x, v };
+  if (zeta > 1.001) {
+    const disc = Math.sqrt(zeta * zeta - 1);
+    const r1 = -w0 * (zeta - disc);
+    const r2 = -w0 * (zeta + disc);
+    const b = (v0 - r1 * x0) / (r2 - r1);
+    const a = x0 - b;
+    const e1 = Math.exp(r1 * dt);
+    const e2 = Math.exp(r2 * dt);
+    return { x: a * e1 + b * e2, v: a * r1 * e1 + b * r2 * e2 };
+  }
+  const e = Math.exp(-w0 * dt);
+  const a = x0;
+  const b = v0 + w0 * a;
+  const x = e * (a + b * dt);
+  return { x, v: e * (b - w0 * (a + b * dt)) };
+}
+
+/**
+ * Advance toward `target`. `dt` is seconds and is capped so a stalled frame
+ * cannot leap. Velocity on `state` is the velocity after the step's start,
+ * so a finger flick and a retarget both continue the motion in flight.
+ */
+export function stepSpring(state: SpringState, target: number, dt: number, spring: SpringSpec = SPRING): SpringState {
+  const total = Math.min(Math.max(dt, 0), 0.05);
+  if (total === 0) return state;
+  const next = advance(state.x - target, state.v, total, spring);
+  return { x: next.x + target, v: next.v };
 }
 
 export function springSettled(state: SpringState, target: number, eps = 0.6, velocity = 24): boolean {

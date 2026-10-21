@@ -23,8 +23,8 @@ const PAGE_TITLE: Record<Page, string> = {
   eq: 'Эквалайзер',
 };
 
-const THEME_NAME: Record<ThemePref, string> = { auto: 'Автоматически', light: 'Светлая', dark: 'Тёмная' };
-const MOTION_NAME: Record<MotionPref, string> = { full: 'Максимальная анимация', calm: 'Спокойная', off: 'Без анимации' };
+const THEME_NAME: Record<ThemePref, string> = { auto: 'Системная', light: 'Светлая', dark: 'Тёмная' };
+const MOTION_NAME: Record<MotionPref, string> = { full: 'Полная', calm: 'Спокойная', off: 'Выключена' };
 const STYLE_NAME: Record<InstrumentStyle, string> = {
   drawing: 'Рисунок',
   realistic: 'Реалистичный',
@@ -130,7 +130,7 @@ export function SettingsSheet({
 
   const back = page === 'home' ? undefined : () => go(page === 'eq' ? 'sound' : 'home');
   const shown: Page[] = leaving && leaving !== page ? [leaving, page] : [page];
-  const sourceLabel = state?.source === 'library' ? 'Запись из библиотеки' : state?.source === 'local' ? (state.localName ?? 'Свой файл') : 'Аудио не подключено';
+  const sourceLabel = state?.source === 'library' ? 'Библиотека' : state?.source === 'local' ? (state.localName ?? 'Свой файл') : 'Нет аудио';
   const fontLine = fontSummary(settings, has.persian);
 
   return (
@@ -152,7 +152,7 @@ export function SettingsSheet({
             <Row title="Инструменты" detail={STYLE_NAME[settings.instrumentStyle]} onClick={() => go('instruments')} chevron />
             <Row
               title="Звук"
-              detail={`${String(settings.rate).replace('.', ',')}× · ${settings.eqEnabled ? (EQ_PRESETS.some((p) => p.id === settings.eqPreset) ? presetById(settings.eqPreset).name : 'Своя настройка') : 'эквалайзер выключен'}`}
+              detail={`${String(settings.rate).replace('.', ',')}× · ${settings.eqEnabled ? (EQ_PRESETS.some((p) => p.id === settings.eqPreset) ? presetById(settings.eqPreset).name : 'Свой') : 'без эквалайзера'}`}
               onClick={() => go('sound')}
               chevron
             />
@@ -234,7 +234,7 @@ export function SettingsSheet({
             />
           )}
           <FontPick
-            label="Оригинал латиницей и кириллицей"
+            label="Латиница и кириллица"
             sample="I was dead"
             value={settings.fontOriginal}
             options={ORIGINAL_FONTS}
@@ -253,11 +253,11 @@ export function SettingsSheet({
 
       {p === 'comment' && (
         <Group footer="На широком экране пояснение стоит колонкой справа. На телефоне это верхняя кромка пола: одна строка, пока его не раскроют.">
-          <Row title="Показывать пояснения" detail="Колонка справа на широком экране">
+          <Row title="Пояснения" detail="Колонка справа на широком экране">
             <Switch label="Пояснения" checked={settings.showComment} onChange={(v) => setSettings({ showComment: v })} />
           </Row>
-          <Row title="Держать открытым" detail="На телефоне сноска сразу развёрнута">
-            <Switch label="Держать пояснение открытым" checked={settings.commentOpen} onChange={(v) => setSettings({ commentOpen: v })} />
+          <Row title="Сразу открыто" detail="На телефоне сноска развёрнута">
+            <Switch label="Сразу открыто" checked={settings.commentOpen} onChange={(v) => setSettings({ commentOpen: v })} />
           </Row>
         </Group>
       )}
@@ -282,8 +282,8 @@ export function SettingsSheet({
       {p === 'sound' && (
         <>
           <Group header="Слушать" footer="Пауза после строки — чтобы разбирать текст по строке. «Воспроизвести» продолжает со следующей.">
-            <Row title="Пауза после каждой строки">
-              <Switch label="Пауза после каждой строки" checked={settings.pauseAfterLine} onChange={(v) => setSettings({ pauseAfterLine: v })} />
+            <Row title="Пауза по строке">
+              <Switch label="Пауза по строке" checked={settings.pauseAfterLine} onChange={(v) => setSettings({ pauseAfterLine: v })} />
             </Row>
             <Choice label="Скорость">
               <Segmented
@@ -329,9 +329,9 @@ export function SettingsSheet({
                 />
               </div>
             )}
-            <Row title="Выравнивать громкость" detail="Все песни звучат одинаково громко">
+            <Row title="Ровная громкость" detail="Песни одной громкости">
               <Switch
-                label="Выравнивать громкость"
+                label="Ровная громкость"
                 checked={settings.normalize}
                 onChange={(v) => {
                   setSettings({ normalize: v });
@@ -343,7 +343,7 @@ export function SettingsSheet({
           </Group>
           <Group header="Запись" footer={state?.source === 'local' ? 'Свой файл хранится только на этом устройстве.' : 'Подойдут m4a, mp3, wav и flac. Файл останется только на этом устройстве.'}>
             <Row icon={<Icon name="music.note" size={20} />} title={sourceLabel} detail={state?.error ?? undefined} />
-            <Row icon={<Icon name="square.and.arrow.down" size={20} />} title="Подключить свой файл…" onClick={() => input.current?.click()} chevron />
+            <Row icon={<Icon name="square.and.arrow.down" size={20} />} title="Свой файл" onClick={() => input.current?.click()} chevron />
             {state?.source === 'local' && <Row icon={<Icon name="xmark" size={20} />} title="Убрать свой файл" onClick={() => void engine.detachFile()} />}
             <input
               ref={input}
@@ -443,22 +443,22 @@ export function SettingsSheet({
               className="seg--lines"
               value={settings.theme}
               options={[
-                { value: 'auto', label: 'Автоматически' },
+                { value: 'auto', label: 'Системная' },
                 { value: 'light', label: 'Светлая' },
                 { value: 'dark', label: 'Тёмная' },
               ]}
               onChange={(v) => setSettings({ theme: v })}
             />
           </Choice>
-          <Choice label="Движение" hint="Максимальная анимация, спокойная или без переездов строк.">
+          <Choice label="Движение" hint="Полная, спокойная или без переездов строк.">
             <Segmented
               label="Движение"
               className="seg--lines"
               value={settings.motion}
               options={[
-                { value: 'full', label: 'Максимальная' },
+                { value: 'full', label: 'Полная' },
                 { value: 'calm', label: 'Спокойная' },
-                { value: 'off', label: 'Без анимации' },
+                { value: 'off', label: 'Выключена' },
               ]}
               onChange={(v) => setSettings({ motion: v })}
             />

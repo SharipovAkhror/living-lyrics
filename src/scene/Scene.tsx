@@ -12,7 +12,18 @@ import { stageCovered, watchCover } from './cover';
 import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
 import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, sameSlots, type PhoneSlot } from './slots';
-import { WAIT_ROOM, blockHeight, blockState, compressStack, flowPosition, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
+import { GAP, WAIT_ROOM, blockHeight, blockState, compressStack, flowPosition, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
+
+/**
+ * The stored 393×852 frame was laid out with the tighter column (gap 26, then
+ * the settle entrance compresses it). Wider studio air stays on desktop,
+ * landscape, and the short SE, which that check does not cover.
+ */
+function columnGap() {
+  if (typeof window === 'undefined' || !isPhone()) return GAP;
+  if (window.matchMedia('(min-width: 390px) and (max-width: 699px) and (min-height: 521px)').matches) return 26;
+  return GAP;
+}
 
 interface Props {
   song: Song;
@@ -49,6 +60,9 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
   // Bumps when a block reports a new box. A paused clock does not restyle, but a
   // line can still change height after the first read (web fonts, text-wrap balance).
   const measureGen = useRef(0);
+  // The note opening changes the stage box between frames. The phone paint
+  // skips ahead unless this is set, otherwise the line stays on the old centre.
+  const stageDirty = useRef(true);
   const placedGen = useRef(0);
   const ownerRef = useRef(-2);
   const motion = effectiveMotion(settings);
@@ -72,7 +86,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
 
   useLayoutEffect(() => {
     const el = stageRef.current!;
-    const ro = new ResizeObserver(([e]) => setStage({ w: e.contentRect.width, h: e.contentRect.height }));
+    const ro = new ResizeObserver(([e]) => {
+      stageDirty.current = true;
+      setStage({ w: e.contentRect.width, h: e.contentRect.height });
+    });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
@@ -113,6 +130,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let pool = '';
     let lastPlate = '';
     let lastT = Number.NaN;
+    let lastLive = '';
     let lastPaintMs = 0;
     // Read once. offsetTop inside the frame forces layout on every seek tick.
     const stageTop = stageRef.current?.offsetTop ?? 0;
@@ -128,16 +146,23 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       // same frame: the paint is a function of the clock, not of how many frames ran.
       if (isPhone()) {
         const now = performance.now();
-        if (lastPaintMs !== 0 && now - lastPaintMs < 120) return;
+        const dirty = stageDirty.current;
+        if (!dirty && lastPaintMs !== 0 && now - lastPaintMs < 120) return;
+        stageDirty.current = false;
         lastPaintMs = now;
       }
+      const live = stageRef.current?.getBoundingClientRect();
+      const liveW = live?.width ?? stage.w;
+      const liveH = live?.height ?? stage.h;
       const t = clock();
       // A paused clock used to restyle the stage anyway. WebKit kept that working set.
       // A new box still has to be placed: the first read can precede font load and
       // text-wrap balance, and the lyric would stay a line too high.
       const measuresMoved = measureGen.current !== placedGen.current;
-      if (t === lastT && !measuresMoved) return;
+      const liveKey = `${Math.round(liveW)}x${Math.round(liveH)}`;
+      if (t === lastT && !measuresMoved && liveKey === lastLive) return;
       lastT = t;
+      lastLive = liveKey;
       const pos = flowPosition(plan, t);
       const list = windowAround(timeline, pos, entrance);
       const key = list.join(',');
@@ -187,7 +212,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
           setMounted(list);
         }
       }
-      if (!stage.h) return;
+      if (!liveH) return;
 
       // Positions for the two integer anchors around pos, blended: motion and scale stay continuous.
       const measures = new Map<number, Measure>();
@@ -197,8 +222,8 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       }
       const a = Math.floor(pos);
       const f = pos - a;
-      const deck = stage.w >= 640 && stage.h <= 420;
-      const centerY = stage.h * (deck ? 0.42 : 0.36);
+      const deck = liveW >= 640 && liveH <= 420;
+      const centerY = liveH * (deck ? 0.42 : 0.36);
       const waits = new Map<number, number>();
       for (const k of list) waits.set(k, wordSync ? waitHint(timeline, k, t) : 0);
       const room = (k: number) => (waits.get(k) ?? 0) * WAIT_ROOM;
@@ -209,8 +234,9 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         for (const k of list) h.set(k, blockHeight(measures.get(k), k - anchor));
         return h;
       };
-      const A = compressStack(layoutAt(a, list, measures, centerY, 8, room), clampAnchor(a), compress, heightsAt(a));
-      const B = compressStack(layoutAt(a + 1, list, measures, centerY, 8, room), clampAnchor(a + 1), compress, heightsAt(a + 1));
+      const gap = columnGap();
+      const A = compressStack(layoutAt(a, list, measures, centerY, 8, room, gap), clampAnchor(a), compress, heightsAt(a));
+      const B = compressStack(layoutAt(a + 1, list, measures, centerY, 8, room, gap), clampAnchor(a + 1), compress, heightsAt(a + 1));
       for (const k of list) {
         const b = blocks.current.get(k);
         if (!b) continue;
