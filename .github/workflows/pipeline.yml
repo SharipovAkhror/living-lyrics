@@ -297,11 +297,13 @@ jobs:
             sudo apt-get install -y -q libsndfile1
             python -m pip install uv
             # /tmp is writable by the runner user. /opt is not.
-            if python -m uv python install 3.12 && python -m uv venv /tmp/omni-venv --python 3.12; then
-              /tmp/omni-venv/bin/python -m pip install -r scripts/pipeline/requirements.txt
-              /tmp/omni-venv/bin/python -m pip install 'omnilingual-asr==0.2.0'
-              /tmp/omni-venv/bin/python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
-              if /tmp/omni-venv/bin/python -c "import torch, omnilingual_asr; raise SystemExit('+cu' in torch.__version__)"; then
+            # uv's venv has no pip unless --seed. A failed install must not
+            # fail this step: the stage records it and still returns.
+            if python -m uv python install 3.12 && python -m uv venv /tmp/omni-venv --python 3.12 --seed; then
+              if /tmp/omni-venv/bin/python -m pip install -r scripts/pipeline/requirements.txt \
+                && /tmp/omni-venv/bin/python -m pip install 'omnilingual-asr==0.2.0' \
+                && /tmp/omni-venv/bin/python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu \
+                && /tmp/omni-venv/bin/python -c "import torch, omnilingual_asr; raise SystemExit('+cu' in torch.__version__)"; then
                 echo "OMNI_PYTHON=/tmp/omni-venv/bin/python" >> "$GITHUB_ENV"
               else
                 echo 'omnilingual-asr: venv не прошёл проверку'
