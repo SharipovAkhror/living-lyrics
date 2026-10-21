@@ -8,8 +8,9 @@ latest state, so main and the history stay clean). The dashboard mod on other de
 https://raw.githubusercontent.com/<owner>/<repo>/refs/heads/live/ops/live.json
 (raw.githubusercontent caches for up to ~5 minutes).
 
-Publishes only when the set of states changed, plus a heartbeat while something runs, so a reader
-can tell a quiet machine from a dead one (`at` older than 45 min = no news). The last published
+Publishes when the set of states changed, plus a heartbeat every HEARTBEAT_MIN even when idle, so a
+reader can tell a quiet machine from a dead one (`at` older than 45 min = no news; the
+station-watch workflow opens an issue when it is older than 30 min). The last published
 signature is cached in <repo>/.git/ll-live.json; nothing in the working tree or any branch of
 the main checkout is touched (git plumbing only).
 
@@ -23,7 +24,8 @@ import sys
 from pathlib import Path
 
 BRANCH = 'live'
-HEARTBEAT_MIN = 20
+# The mod calls this every 10 min; 9 keeps a 10-min beat despite timer jitter.
+HEARTBEAT_MIN = 9
 HERE = Path(__file__).resolve().parent
 AGENTS_LIVE = HERE.parent / 'dashboard-mod' / 'hooks' / 'agents_live.py'
 # Vercel builds every pushed branch; this file in the branch's own tree turns that off for it.
@@ -49,10 +51,6 @@ def signature(live: dict) -> str:
     chats = sorted((c.get('name', ''), c.get('state', '')) for c in live.get('chats') or [])
     runs = sorted(r.get('title', '') for r in live.get('pipeline') or [])
     return hashlib.sha256(json.dumps([grok, gemini, chats, runs]).encode()).hexdigest()[:16]
-
-
-def busy(live: dict) -> bool:
-    return any(r.get('state') in ('working', 'stalled') for r in live.get('grok') or []) or bool(live.get('gemini'))
 
 
 def minutes_since(iso: str) -> float:
@@ -108,7 +106,7 @@ def main() -> int:
     except (OSError, ValueError):
         last = {}
     stale = minutes_since(last.get('at', '')) >= HEARTBEAT_MIN
-    if '--force' not in flags and last.get('signature') == sig and not (busy(live) and stale):
+    if '--force' not in flags and last.get('signature') == sig and not stale:
         print('unchanged')
         return 0
 

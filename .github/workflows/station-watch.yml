@@ -1,0 +1,38 @@
+# "Станция не отвечает": the Station's dashboard mod heartbeats ops/live.json on branch `live` every
+# 10 min (ops/agents/publish_live.py). When `at` is older than 30 min this opens ONE issue labelled
+# station-down and assigns the owner (mail + GitHub push); when fresh again it comments and closes it.
+# One notice per outage. GitHub's cron lags 5-20 min. Docs: ops/README.md.
+name: station-watch
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+permissions:
+  issues: write
+concurrency: { group: station-watch, cancel-in-progress: false }
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      OWNER: ${{ github.repository_owner }}
+      STALE_MIN: 30
+    steps:
+      - name: Check the heartbeat
+        run: |
+          at=$(gh api "repos/$GH_REPO/contents/ops/live.json?ref=live" --jq .content | base64 -d | jq -r .at)
+          age=$(( ( $(date -u +%s) - $(date -u -d "$at" +%s) ) / 60 ))
+          echo "live.json at $at, $age min ago" | tee -a "$GITHUB_STEP_SUMMARY"
+          gh label create station-down --color B60205 --description "Станция не отвечает (station-watch)" 2>/dev/null || true
+          open=$(gh issue list --label station-down --state open --json number --jq '.[0].number // empty')
+          if [ "$age" -ge "$STALE_MIN" ]; then
+            if [ -z "$open" ]; then
+              gh issue create --label station-down --assignee "$OWNER" \
+                --title "Станция не отвечает" \
+                --body "@$OWNER Станция не выкладывала живое состояние $age мин (последний раз $at UTC). Возможно, ПК выключен, нет сети или не работает ни один чат Claude Code. Задача закроется сама, когда Станция снова выйдет на связь."
+            fi
+          elif [ -n "$open" ]; then
+            gh issue close "$open" --comment "Станция снова на связи (живое состояние $at UTC)."
+          fi
