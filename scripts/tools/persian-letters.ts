@@ -1,9 +1,10 @@
 /**
  * Persian orthography for sung lines (`lang: fa`).
  *
- * Arabic yeh ي (U+064A) and kaf ك (U+0643) are errors: Persian editions use ی and ک.
- * Alef with hamza above أ (U+0623) is a warning, unless the same letter in canon.md
- * is also أ. Vowels are ignored, so a vocalized line still lines up with the edition.
+ * Arabic yeh ي (U+064A) and kaf ك (U+0643) are always errors: Persian editions use ی and ک.
+ * إ ة ؤ ى ٱ are errors too, unless the same letter in canon.md is that character.
+ * Alef with hamza above أ (U+0623) stays a warning on the same rule.
+ * Vowels are ignored, so a vocalized line still lines up with the edition.
  * The fold matches `letters()` in validate.ts; a self-test there checks they agree.
  */
 
@@ -21,7 +22,20 @@ export interface LetterAtom {
 
 const ARABIC_YEH = '\u064A';
 const ARABIC_KAF = '\u0643';
-const HAMZA_ALEF = '\u0623';
+
+/** Flagged only when the edition's letter at that place is different, or the line is not in canon. */
+const GATED: { raw: string; level: 'error' | 'warn' }[] = [
+  { raw: '\u0625', level: 'error' }, // إ
+  { raw: '\u0629', level: 'error' }, // ة
+  { raw: '\u0624', level: 'error' }, // ؤ
+  { raw: '\u0649', level: 'error' }, // ى
+  { raw: '\u0671', level: 'error' }, // ٱ
+  { raw: '\u0623', level: 'warn' }, // أ — warning, not an error
+];
+
+function hex(ch: string): string {
+  return ch.codePointAt(0)!.toString(16).toUpperCase().padStart(4, '0');
+}
 
 /** Combining marks and tatweel. Not base letters. No /g flag: `test` runs once per character. */
 const STRIP = /[\u0300-\u036f\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/;
@@ -89,33 +103,35 @@ export function persianOrthographyIssues(words: string[], canon: string | null):
   const lineAtoms = wordAtoms.flat();
   const canonAtoms = canon ? letterAtoms(canon) : null;
   const at = canonAtoms ? findAtomSpan(canonAtoms, lineAtoms) : -1;
-  const offenders: string[] = [];
-  let canonNote = '';
-  let offset = 0;
-  for (let wi = 0; wi < words.length; wi++) {
-    const atoms = wordAtoms[wi];
-    let flagged = false;
-    for (let j = 0; j < atoms.length; j++) {
-      if (atoms[j].raw !== HAMZA_ALEF) continue;
-      const canonRaw = at >= 0 ? canonAtoms![at + offset + j]?.raw : undefined;
-      if (canonRaw === HAMZA_ALEF) continue;
-      if (!flagged) {
-        offenders.push(words[wi]);
-        flagged = true;
-        if (!canonNote) {
-          canonNote = canonRaw
-            ? `в эталоне здесь «${canonRaw}» (U+${canonRaw.codePointAt(0)!.toString(16).toUpperCase().padStart(4, '0')})`
-            : 'строка не найдена в canon.md, поэтому أ изданием не подтверждена';
+  for (const gate of GATED) {
+    const offenders: string[] = [];
+    let canonNote = '';
+    let offset = 0;
+    for (let wi = 0; wi < words.length; wi++) {
+      const atoms = wordAtoms[wi];
+      let flagged = false;
+      for (let j = 0; j < atoms.length; j++) {
+        if (atoms[j].raw !== gate.raw) continue;
+        const canonRaw = at >= 0 ? canonAtoms![at + offset + j]?.raw : undefined;
+        if (canonRaw === gate.raw) continue;
+        if (!flagged) {
+          offenders.push(words[wi]);
+          flagged = true;
+          if (!canonNote) {
+            canonNote = canonRaw
+              ? `в эталоне здесь «${canonRaw}» (U+${hex(canonRaw)})`
+              : `строка не найдена в canon.md, поэтому ${gate.raw} изданием не подтверждена`;
+          }
         }
       }
+      offset += atoms.length;
     }
-    offset += atoms.length;
-  }
-  if (offenders.length) {
-    issues.push({
-      level: 'warn',
-      msg: `арабская أ (U+0623) в ${quoted(offenders)}: ${canonNote}`,
-    });
+    if (offenders.length) {
+      issues.push({
+        level: gate.level,
+        msg: `арабская ${gate.raw} (U+${hex(gate.raw)}) в ${quoted(offenders)}: ${canonNote}`,
+      });
+    }
   }
   return issues;
 }
@@ -156,6 +172,43 @@ export function persianSelfTest(): string | null {
   const both = persianOrthographyIssues(['يَك'], null);
   if (both.filter((i) => i.level === 'error').length !== 2) return 'ي и ك должны дать две ошибки';
   if (both.some((i) => i.level === 'warn')) return 'يَك без أ не должна предупреждать';
+
+  const hamzaBelow = persianOrthographyIssues(['إِلَّا'], 'الا');
+  if (!hamzaBelow.some((i) => i.level === 'error' && i.msg.includes('U+0625'))) return 'إ вместо ا не стала ошибкой';
+  if (hamzaBelow.some((i) => i.level === 'warn')) return 'إ не должна быть предупреждением';
+
+  const hamzaBelowKept = persianOrthographyIssues(['إِلَّا'], 'إِلَّا');
+  if (hamzaBelowKept.some((i) => i.msg.includes('U+0625'))) return 'إ, которая есть в эталоне, не должна замечаться';
+
+  const tehKept = persianOrthographyIssues(['نَظْرَةً'], 'نظرة');
+  if (tehKept.some((i) => i.msg.includes('U+0629'))) return 'ة, которая есть в эталоне, не должна замечаться';
+
+  const teh = persianOrthographyIssues(['نَظْرَةً'], 'نظره');
+  if (!teh.some((i) => i.level === 'error' && i.msg.includes('U+0629'))) return 'ة вместо ه не стала ошибкой';
+
+  const wawHamza = persianOrthographyIssues(['مُؤْمِن'], 'مومن');
+  if (!wawHamza.some((i) => i.level === 'error' && i.msg.includes('U+0624'))) return 'ؤ вместо و не стала ошибкой';
+  const wawKept = persianOrthographyIssues(['مُؤْمِن'], 'مؤمن');
+  if (wawKept.some((i) => i.msg.includes('U+0624'))) return 'ؤ, которая есть в эталоне, не должна замечаться';
+
+  const maksura = persianOrthographyIssues(['هُدَى'], 'هدی');
+  if (!maksura.some((i) => i.level === 'error' && i.msg.includes('U+0649'))) return 'ى вместо ی не стала ошибкой';
+  const maksuraKept = persianOrthographyIssues(['هُدَى'], 'هدى');
+  if (maksuraKept.some((i) => i.msg.includes('U+0649'))) return 'ى, которая есть в эталоне, не должна замечаться';
+
+  const wasla = persianOrthographyIssues(['ٱللَّه'], 'الله');
+  if (!wasla.some((i) => i.level === 'error' && i.msg.includes('U+0671'))) return 'ٱ вместо ا не стала ошибкой';
+  const waslaKept = persianOrthographyIssues(['ٱللَّه'], 'ٱلله');
+  if (waslaKept.some((i) => i.msg.includes('U+0671'))) return 'ٱ, которая есть в эталоне, не должна замечаться';
+
+  const yehHamza = persianOrthographyIssues(['ئ'], 'ی');
+  if (yehHamza.length) return 'ئ не должна замечаться';
+
+  const bareHamza = persianOrthographyIssues(['ء'], 'ء');
+  if (bareHamza.length) return 'ء не должна замечаться';
+
+  const missing = persianOrthographyIssues(['إِلَّا'], null);
+  if (!missing.some((i) => i.level === 'error' && i.msg.includes('не найдена'))) return 'إ без эталона должна быть ошибкой';
 
   return null;
 }
