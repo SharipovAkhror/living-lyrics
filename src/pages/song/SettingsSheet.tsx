@@ -240,9 +240,12 @@ export function SettingsSheet({
       )}
 
       {p === 'comment' && (
-        <Group footer="На широком экране пояснение стоит колонкой справа. На узком открывается кнопкой у плеера, в один тап.">
+        <Group footer="На широком экране пояснение стоит колонкой справа. На телефоне это верхняя кромка пола: одна строка, пока его не раскроют.">
           <Row title="Показывать пояснения" detail="Колонка справа на широком экране">
             <Switch label="Пояснения" checked={settings.showComment} onChange={(v) => setSettings({ showComment: v })} />
+          </Row>
+          <Row title="Держать открытым" detail="На телефоне сноска сразу развёрнута">
+            <Switch label="Держать пояснение открытым" checked={settings.commentOpen} onChange={(v) => setSettings({ commentOpen: v })} />
           </Row>
         </Group>
       )}

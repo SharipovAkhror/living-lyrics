@@ -164,6 +164,14 @@
   --glass-rim-low: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
   --glass-edge: rgba(255, 255, 255, 0.45);
   --glass-shadow: 0 24px 64px -28px rgba(26, 20, 15, 0.28);
+  /* Phone floor. Dense enough that a line under it is not a second line of type. */
+  --dock-bg: rgba(255, 252, 248, 0.9);
+  /* The phone floor sits on top of the verse. A translucent mix still ghosts 36 px type. */
+  --dock-solid: color-mix(in srgb, #fffaf6 97%, var(--song-field, #c9b8a4));
+  --dock-line: rgba(26, 20, 15, 0.08);
+  --alert-fg: #c24141;
+  --alert-bg: rgba(239, 68, 68, 0.12);
+  --alert-line: rgba(239, 68, 68, 0.22);
   --material-thick: rgba(255, 252, 248, 0.9);
   --material-regular: rgba(255, 255, 255, 0.72);
   --material-thin: rgba(255, 255, 255, 0.55);
@@ -203,6 +211,12 @@
     --glass-rim-low: inset 0 -1px 0 rgba(255, 255, 255, 0.05);
     --glass-edge: rgba(255, 255, 255, 0.16);
     --glass-shadow: 0 28px 70px -24px rgba(0, 0, 0, 0.5);
+    --dock-bg: rgba(16, 14, 20, 0.88);
+    --dock-solid: color-mix(in srgb, #100e14 96%, var(--song-field, #221820));
+    --dock-line: rgba(255, 255, 255, 0.08);
+    --alert-fg: #f87171;
+    --alert-bg: rgba(239, 68, 68, 0.16);
+    --alert-line: rgba(248, 113, 113, 0.28);
     --material-thick: rgba(14, 12, 18, 0.88);
     --material-regular: rgba(20, 16, 24, 0.8);
     --material-thin: rgba(255, 255, 255, 0.12);
@@ -247,6 +261,12 @@
   --glass-rim-low: inset 0 -1px 0 rgba(255, 255, 255, 0.05);
   --glass-edge: rgba(255, 255, 255, 0.16);
   --glass-shadow: 0 28px 70px -24px rgba(0, 0, 0, 0.5);
+  --dock-bg: rgba(16, 14, 20, 0.88);
+  --dock-solid: color-mix(in srgb, #100e14 96%, var(--song-field, #221820));
+  --dock-line: rgba(255, 255, 255, 0.08);
+  --alert-fg: #f87171;
+  --alert-bg: rgba(239, 68, 68, 0.16);
+  --alert-line: rgba(248, 113, 113, 0.28);
   --material-thick: rgba(14, 12, 18, 0.88);
   --material-regular: rgba(20, 16, 24, 0.8);
   --material-thin: rgba(255, 255, 255, 0.12);

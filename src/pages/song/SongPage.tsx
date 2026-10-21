@@ -19,17 +19,16 @@ import { LEAD } from '@/scene/flow';
 import { Icon } from '@/ui/icons';
 import { RichText } from '@/components/RichText';
 import { Status } from '@/components/Status';
-import { showHarakatText } from '@/data/harakat';
+import { showHarakatText, stripHarakat } from '@/data/harakat';
 import { stageFrame, type StageFrame } from '@/scene/columns';
 import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
 import { preloadInstruments } from '@/instruments/catalog';
-import { Sheet } from '@/ui/controls';
 import { SettingsSheet } from './SettingsSheet';
 import { TextSheet } from './TextSheet';
 import { InfoSheet } from './InfoSheet';
 import { headerLine } from './parts';
 
-type SheetName = 'settings' | 'text' | 'info' | 'note' | null;
+type SheetName = 'settings' | 'text' | 'info' | null;
 
 /** The stage width follows one geometry, including the margin note when it is open. */
 function useStageFrame(noteOpen: boolean) {
@@ -226,13 +225,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const playing = !!state?.playing;
   const noteText = timeline && owner >= 0 ? commentFor(timeline, owner) : null;
   const columns = useStageFrame(settings.showComment && !!noteText);
-
-  // A phone sheet must not stay up once the window is wide enough for the column.
-  useEffect(() => {
-    if (!columns.columnFits || sheet !== 'note') return;
-    setSheet(null);
-    if (!settings.showComment) setSettings({ showComment: true });
-  }, [columns.columnFits, sheet, settings.showComment]);
+  const floorNote = noteText && settings.showComment && !columns.frame.marginNote ? noteText : null;
 
   const seekToCue = useCallback(
     (c: Cue) => {
@@ -324,9 +317,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const noteKey = e.key === 'k' || e.key === 'л';
-      // K still closes the note sheet. Every other key waits until the sheet is gone.
-      if (sheet && !(sheet === 'note' && noteKey)) return;
+      // Keys wait until a sheet is gone, so a letter does not also hit a focused control underneath.
+      if (sheet) return;
       const tag = (e.target as HTMLElement).tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') {
         if (e.code === 'Space') return; // let the focused control handle it
@@ -335,10 +327,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       else if (e.key === 'ArrowRight') (e.shiftKey ? engine?.skip(10) : nav(1));
       else if (e.key === 'ArrowLeft') (e.shiftKey ? engine?.skip(-10) : nav(-1));
       else if (e.key === 't' || e.key === 'е') setSettings({ showTranslation: !settings.showTranslation });
-      else if (e.key === 'k' || e.key === 'л') {
-        if (columns.columnFits) setSettings({ showComment: !settings.showComment });
-        else setSheet((open) => (open === 'note' ? null : 'note'));
-      }
+      else if (e.key === 'k' || e.key === 'л') setSettings({ showComment: !settings.showComment });
       else if (e.code === 'KeyM') {
         if (!e.repeat) placeMark();
       } else return;
@@ -346,7 +335,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [sheet, togglePlay, nav, engine, settings.showTranslation, settings.showComment, placeMark, columns.columnFits]);
+  }, [sheet, togglePlay, nav, engine, settings.showTranslation, settings.showComment, placeMark]);
 
   const back = useHold(
     () => nav(-1),
@@ -482,11 +471,32 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       </header>
 
       <footer className={`player floor${state?.error ? ' has-error' : ''}`} ref={floorRef}>
+        {floorNote && (
+          <aside className={`comment${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
+            <button
+              type="button"
+              className="comment-head"
+              onClick={() => setSettings({ commentOpen: !settings.commentOpen })}
+              aria-expanded={settings.commentOpen}
+            >
+              <span className="comment-kicker">Пояснение</span>
+              {!settings.commentOpen && (
+                <span className="comment-preview">
+                  {(settings.showHarakat ? floorNote.text : stripHarakat(floorNote.text)).replace(/\*+/g, '').replace(/\s+/g, ' ').trim()}
+                </span>
+              )}
+              <Icon name="chevron.down" size={16} className="comment-chevron" />
+            </button>
+            <div className="comment-fold">
+              <RichText key={floorNote.from.idx} text={floorNote.text} showHarakat={settings.showHarakat} className="comment-body" />
+            </div>
+          </aside>
+        )}
         {state?.error && (
           <p className="floor-status" role="alert">
             <span className="floor-status-text">{state.error}</span>
             <button type="button" className="floor-retry" onClick={() => engine.retry()}>
-              повторить
+              Повторить
             </button>
           </p>
         )}
@@ -504,7 +514,29 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           </div>
         )}
         {timeline ? (
-          <Scrubber timeline={timeline} duration={duration} clock={clock} onSeek={(t) => engine.seek(t)} />
+          <Scrubber
+            timeline={timeline}
+            duration={duration}
+            clock={clock}
+            onSeek={(t) => engine.seek(t)}
+            accessory={
+              <div className="mark-bar">
+                <button
+                  type="button"
+                  className="mark-btn"
+                  onClick={placeMark}
+                  aria-label="Не совпадает"
+                  title="Не совпадает"
+                  aria-keyshortcuts="M"
+                >
+                  <Icon name="flag" size={20} />
+                  <span className="mark-kbd" aria-hidden="true">
+                    M
+                  </span>
+                </button>
+              </div>
+            }
+          />
         ) : (
           <div className="scrub scrub--hold" aria-hidden="true">
             <div className="scrub-top" />
@@ -543,14 +575,11 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               <span className="util-label">Перевод</span>
             </button>
             <button
-              className={`util${noteText && !columns.frame.marginNote && sheet !== 'note' ? ' has-note' : ''}`}
+              className={`util${noteText && !settings.showComment ? ' has-note' : ''}`}
               aria-label={noteText ? 'Пояснение к этой строке' : 'Пояснение'}
-              aria-pressed={columns.columnFits ? settings.showComment : sheet === 'note'}
+              aria-pressed={settings.showComment}
               aria-keyshortcuts="K"
-              onClick={() => {
-                if (columns.columnFits) setSettings({ showComment: !settings.showComment });
-                else setSheet(sheet === 'note' ? null : 'note');
-              }}
+              onClick={() => setSettings({ showComment: !settings.showComment })}
             >
               <Icon name="book.closed" size={20} />
               <span className="util-label">Пояснение</span>
@@ -594,13 +623,6 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           setSheet(null);
         }}
       />
-      <Sheet open={sheet === 'note'} onClose={() => setSheet(null)} title="Пояснение" size="medium">
-        {noteText ? (
-          <RichText key={noteText.from.idx} text={noteText.text} showHarakat={settings.showHarakat} className="comment-body note-sheet-body" />
-        ) : (
-          <p className="note-empty">К этой строке пояснения нет.</p>
-        )}
-      </Sheet>
       <TextSheet
         open={sheet === 'text'}
         onClose={() => setSheet(null)}

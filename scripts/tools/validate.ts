@@ -6,7 +6,7 @@
  * Exit code 1 on errors.
  */
 import { readFileSync, existsSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs';
-import { join, dirname, resolve } from 'node:path';
+import { join, dirname, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { z } from 'zod';
 import { LyricsSchema, SongSchema, type Lyrics, type Song } from '../../src/data/schema.ts';
@@ -608,6 +608,37 @@ function checkParts(
   }
 }
 
+/**
+ * The site is sentence case. Uppercase transforms and small-caps in `src` fail the build.
+ * `ops/dashboard-mod` is another chat's panel and is not scanned.
+ */
+function interfaceCaseIssues(): { file: string; line: number; text: string }[] {
+  const banned =
+    /text-transform\s*:\s*uppercase|font-variant-caps\s*:\s*(?:all-)?(?:small|petite)-caps|font-variant-caps\s*:\s*(?:unicase|titling-caps)|font-variant\s*:[^;{}\n]*\bsmall-caps\b|textTransform\s*:\s*['"]uppercase['"]|fontVariantCaps\s*:\s*['"][^'"]*caps['"]/i;
+  const files: string[] = [];
+  const walk = (dir: string) => {
+    for (const ent of readdirSync(dir, { withFileTypes: true })) {
+      if (ent.name === 'node_modules' || ent.name === 'dist') continue;
+      const p = join(dir, ent.name);
+      if (ent.isDirectory()) walk(p);
+      else if (/\.(css|tsx|ts)$/.test(ent.name)) files.push(p);
+    }
+  };
+  walk(join(root, 'src'));
+  const hits: { file: string; line: number; text: string }[] = [];
+  for (const file of files) {
+    const src = readFileSync(file, 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//g, (block) => block.replace(/[^\n]/g, ''))
+      .replace(/(^|[^:\\])\/\/.*$/gm, '$1');
+    const lines = src.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      if (!banned.test(lines[i])) continue;
+      hits.push({ file: relative(root, file), line: i + 1, text: lines[i].trim() });
+    }
+  }
+  return hits;
+}
+
 function isCli() {
   const entry = process.argv[1];
   if (!entry) return false;
@@ -629,8 +660,15 @@ if (isCli()) {
   }
 
   const slugs = readdirSync(join(root, 'content/songs')).filter((d) => !only.length || only.includes(d));
-  let errors = 0;
+  const caseHits = interfaceCaseIssues();
+  let errors = caseHits.length;
   let warnings = 0;
+  if (caseHits.length) {
+    console.log(`\n✗ интерфейс  (${caseHits.length} ошибок)`);
+    for (const hit of caseHits) console.log(`  ошибка  ${hit.file}:${hit.line}: капс запрещён (${hit.text})`);
+  } else {
+    console.log('\n✓ интерфейс  капса в стилях нет');
+  }
   for (const slug of slugs) {
     const issues = check(slug);
     const e = issues.filter((i) => i.level === 'error');

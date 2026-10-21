@@ -50,9 +50,11 @@
 
 /* ===================== Song page ===================== */
 .song {
-  /* Time row, rail, transport ring and the labelled tasks. The safe area is counted once, inside the player. */
-  --safe-t: env(safe-area-inset-top);
-  --safe-b: env(safe-area-inset-bottom);
+  /* Time row, rail, transport ring and the labelled tasks. The safe area is counted once, inside the chrome. */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
   /* Phone floor: one status line, scrub, transport, icon row. Measured after paint. */
   --player-h: calc(156px + var(--safe-b));
   /* Title, wrapping version, performer. Measured after paint. */
@@ -154,7 +156,8 @@
   position: absolute;
   left: var(--col-left);
   top: var(--chrome-top);
-  bottom: var(--player-h);
+  /* A clear band above the floor, so the last readable line does not sit on the dock. */
+  bottom: calc(var(--player-h) + 12px);
   /* An explicit width. A long line must not stretch this box over the margin note. */
   width: var(--stage-w);
   max-width: var(--stage-w);
@@ -617,7 +620,11 @@
   top: 0;
   left: 0;
   right: 0;
-  padding: calc(var(--safe-t, env(safe-area-inset-top)) + 6px) 8px 8px;
+  padding:
+    max(12px, var(--safe-t, env(safe-area-inset-top, 0px)))
+    max(8px, var(--safe-r, env(safe-area-inset-right, 0px)))
+    8px
+    max(8px, var(--safe-l, env(safe-area-inset-left, 0px)));
   display: flex;
   align-items: center;
   gap: 8px;
@@ -690,46 +697,60 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 6px 14px calc(8px + var(--safe-b, env(safe-area-inset-bottom)));
-  border-radius: 0;
+  padding:
+    10px
+    max(14px, var(--safe-r, env(safe-area-inset-right, 0px)))
+    max(12px, var(--safe-b, env(safe-area-inset-bottom, 0px)))
+    max(14px, var(--safe-l, env(safe-area-inset-left, 0px)));
+  border-radius: 24px 24px 0 0;
+  border-top: 1px solid var(--dock-line);
   display: flex;
   flex-direction: column;
   gap: 2px;
-  background: transparent;
-  box-shadow: none;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  background: var(--dock-solid);
+  box-shadow: 0 -16px 40px -28px rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
 }
-/* One floor. The blur climbs into the stage and fades, so the note and the player are not two pills. */
+/* A short dissolve above the floor. The floor itself is dense, so type does not show through it. */
 .player::before {
   content: '';
   position: absolute;
   z-index: -1;
   left: 0;
   right: 0;
-  top: -32px;
-  bottom: 0;
+  top: -28px;
+  height: 28px;
+  bottom: auto;
   pointer-events: none;
-  background: linear-gradient(to top, var(--glass-bg) 0%, var(--glass-bg) 64%, transparent 100%);
-  -webkit-backdrop-filter: blur(24px) saturate(var(--glass-saturate));
-  backdrop-filter: blur(24px) saturate(var(--glass-saturate));
-  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 70%, transparent 100%);
-  mask-image: linear-gradient(to top, #000 0%, #000 70%, transparent 100%);
+  background: linear-gradient(to top, var(--dock-bg) 0%, transparent 100%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, transparent 100%);
 }
 .floor-status {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
   min-height: 0;
-  margin: 0;
-  padding: 1px 2px 0;
+  margin: 0 0 8px;
+  padding: 4px 10px;
   border: 0;
+  border-radius: 8px;
   background: none;
-  color: color-mix(in srgb, var(--system-red) 82%, var(--ink));
+  color: var(--ink-2);
   font: 500 13px / 1.3 var(--font-ui);
   text-align: start;
   width: 100%;
   cursor: default;
+}
+.floor-status[role='alert'] {
+  min-height: 44px;
+  padding: 0 10px;
+  color: var(--alert-fg);
+  background: var(--alert-bg);
+  border: 1px solid var(--alert-line);
 }
 .floor-status-text {
   flex: 1;
@@ -738,16 +759,21 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.floor-status[role='alert'] .floor-status-text {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
 .floor-retry {
   flex: none;
-  min-height: 0;
-  padding: 0;
+  min-height: 44px;
+  padding: 0 2px;
   border: 0;
   background: none;
   color: inherit;
-  font: inherit;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  font: 600 13px / 1.2 var(--font-ui);
+  text-decoration: none;
+  opacity: 0.9;
   cursor: pointer;
 }
 .floor-retry:active {
@@ -759,6 +785,7 @@
   opacity: 0.3;
 }
 .floor-status--btn {
+  min-height: 44px;
   cursor: pointer;
 }
 .floor-status p,
@@ -920,6 +947,8 @@
 .utility {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  justify-items: center;
+  align-items: center;
   gap: 0;
   width: 100%;
   padding: 0;
@@ -932,17 +961,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 3px;
   min-width: 0;
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   min-height: 44px;
-  padding: 2px 2px 0;
+  padding: 4px 8px 5px;
   border: 0;
-  border-radius: var(--r-sm);
+  border-radius: 14px;
   background: none;
   /* --ink-2 is 72 % and stays muted on the glass over every song wash. */
   color: var(--ink-2);
-  font: 600 11px / 1.15 var(--font-ui);
+  font: 600 13px / 1.15 var(--font-ui);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition:
@@ -954,7 +984,7 @@
   max-width: 100%;
   text-align: center;
   white-space: nowrap;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 500;
   letter-spacing: 0;
 }
@@ -975,14 +1005,13 @@
 .util[aria-pressed='true'] {
   color: var(--accent);
   font-weight: 600;
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
 }
 /* The four actions already have their own row. A narrower phone only softens the type. */
 @media (max-width: 370px) {
   .util,
-  .util-label,
-  .mark-label {
-    font-size: 10px;
+  .util-label {
+    font-size: 13px;
   }
 }
 
@@ -994,25 +1023,21 @@
   min-height: 44px;
 }
 .mark-btn {
-  grid-column: 1;
-  grid-row: 1;
-  justify-self: start;
   display: inline-flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 1px;
-  width: auto;
+  gap: 6px;
+  width: 44px;
   max-width: 100%;
   min-width: 44px;
   min-height: 44px;
-  padding: 2px 2px;
+  padding: 0;
   border: 0;
-  border-radius: var(--r-sm);
-  background: transparent;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
   color: var(--ink-2);
-  font: 600 12px / 1.15 var(--font-ui);
-  text-align: start;
+  font: 600 13px / 1 var(--font-ui);
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -1046,6 +1071,10 @@
   font: 600 13px/1 var(--font-ui);
 }
 @media (min-width: 720px) {
+  .mark-btn {
+    width: auto;
+    padding: 0 10px 0 12px;
+  }
   .mark-kbd {
     display: inline-flex;
   }
@@ -1227,6 +1256,34 @@
   opacity: 1;
   transform: none;
 }
+/* On the phone the note is the top edge of the floor. Opening it climbs over the verse and the stage stays put. */
+.player .comment {
+  position: relative;
+  z-index: 1;
+}
+.player .comment.is-open .comment-fold {
+  position: absolute;
+  left: calc(-1 * max(14px, var(--safe-l, env(safe-area-inset-left, 0px))));
+  right: calc(-1 * max(14px, var(--safe-r, env(safe-area-inset-right, 0px))));
+  bottom: calc(100% - 1px);
+  z-index: 2;
+  padding: 10px 14px 6px;
+  border-radius: 24px 24px 0 0;
+  background: var(--dock-solid);
+  border: 1px solid var(--dock-line);
+  border-bottom: 0;
+  box-shadow: 0 -12px 32px -24px rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+}
+.player .comment .comment-head {
+  padding-top: 2px;
+  padding-bottom: 4px;
+}
+.rt-ar.f-persian {
+  line-height: 1.7;
+  font-size: 1.15em;
+}
 .comment-body p {
   margin: 0 0 10px;
 }
@@ -1277,25 +1334,27 @@
   }
   .topbar,
   .player {
-    left: var(--col-left);
-    right: var(--col-right);
+    left: max(var(--col-left), var(--safe-l));
+    right: max(var(--col-right), var(--safe-r));
     width: auto;
     margin: 0;
     transform: none;
-    background: var(--glass-bg);
+    background: var(--dock-bg);
     box-shadow: var(--glass-shadow), var(--glass-rim), var(--glass-rim-low);
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   }
   .topbar {
-    top: 16px;
+    top: max(16px, var(--safe-t));
     padding: 10px 12px;
     border-radius: var(--r-lg);
+    border-top: 0;
   }
   .player {
-    bottom: 18px;
+    bottom: max(18px, var(--safe-b));
     padding: 10px 18px 12px;
     border-radius: var(--r-lg);
+    border-top: 0;
   }
   .player .btn-xl {
     width: 56px;
@@ -1324,8 +1383,15 @@
   .util {
     flex-direction: row;
     gap: 6px;
-    min-height: 40px;
+    height: auto;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 999px;
     font-size: var(--t-footnote);
+  }
+  .util[aria-pressed='true'] {
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    color: var(--accent);
   }
   .util-label {
     font-size: var(--t-footnote);
@@ -1341,6 +1407,18 @@
     left: var(--col-left);
     right: var(--col-right);
     width: auto;
+  }
+}
+@media (min-width: 800px) and (hover: hover) and (pointer: fine) {
+  .util {
+    height: 32px;
+    min-height: 32px;
+  }
+  .util:hover {
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+  }
+  .util[aria-pressed='true']:hover {
+    background: color-mix(in srgb, var(--accent) 26%, transparent);
   }
 }
 
@@ -1427,9 +1505,9 @@
     display: none;
   }
   .topbar {
-    top: calc(var(--safe-t) + 4px);
-    left: 12px;
-    right: 12px;
+    top: max(4px, var(--safe-t));
+    left: max(12px, var(--safe-l));
+    right: max(12px, var(--safe-r));
     width: auto;
     margin-inline: 0;
     padding: 4px 6px;
@@ -1437,9 +1515,9 @@
   }
   .player,
   .song.has-comment .player {
-    left: 12px;
-    right: 12px;
-    bottom: calc(10px + var(--safe-b));
+    left: max(12px, var(--safe-l));
+    right: max(12px, var(--safe-r));
+    bottom: max(10px, var(--safe-b));
     width: auto;
     height: auto;
     max-height: none;
@@ -1473,12 +1551,33 @@
     display: contents;
   }
   .player .scrub-now { order: 1; }
-  .player .scrub-track { order: 3; flex: 1 1 auto; height: 36px; }
+  .player .scrub-track { order: 3; flex: 1 1 auto; min-width: 0; height: 36px; }
   .player .scrub-remain { order: 4; }
   .player .transport .btn:nth-child(1) { order: 5; }
   .player .transport .btn:nth-child(2) { order: 6; }
   .player .transport .btn:nth-child(3) { order: 7; }
-  .player .mark-btn { order: 8; width: 44px; min-width: 44px; padding: 0; justify-content: center; }
+  .player .mark-bar { display: contents; }
+  .player .mark-btn { order: 2; width: 44px; min-width: 44px; padding: 0; justify-content: center; }
+  .mark-kbd { display: none; }
+  .scene-stage {
+    left: max(12px, var(--safe-l));
+    width: calc(100vw - max(12px, var(--safe-l)) - max(12px, var(--safe-r)));
+    max-width: none;
+  }
+  .player .comment .comment-fold,
+  .player .comment.is-open .comment-fold {
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
   .player .util { order: 9; }
   .player .btn-xl {
     width: 48px;
@@ -1585,9 +1684,9 @@
 }
 .sheet {
   position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: calc(env(safe-area-inset-bottom) + 10px);
+  left: max(12px, env(safe-area-inset-left, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
   max-width: 560px;
   margin: 0 auto;
   max-height: calc(100dvh - env(safe-area-inset-top) - 36px);
@@ -1673,7 +1772,14 @@
   border: 0;
   background: none;
   color: var(--accent);
-  font: 600 var(--t-body) / 1.2 var(--font-ui);
+  font-family: var(--font-ui);
+  font-size: 17px;
+  font-weight: 600;
+  font-style: normal;
+  font-variant-caps: normal;
+  font-feature-settings: normal;
+  letter-spacing: 0;
+  line-height: 1.2;
   text-transform: none;
   white-space: nowrap;
   cursor: pointer;
@@ -2104,6 +2210,7 @@ html.is-sheet-drag .empty {
 .row-chevron {
   color: var(--label-3);
   flex: none;
+  display: block;
 }
 .row-accessory {
   flex: none;
@@ -2515,7 +2622,11 @@ html.is-sheet-drag .empty {
 .library {
   max-width: 1120px;
   margin: 0 auto;
-  padding: calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + 40px);
+  padding:
+    max(12px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    calc(40px + env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
 }
 .lib-head {
   display: flex;

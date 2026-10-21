@@ -254,7 +254,7 @@ export function Sheet({
               {title}
             </h2>
             <button type="button" className="sheet-done" onClick={onClose}>
-              готово
+              Готово
             </button>
           </div>
         </div>
@@ -302,7 +302,11 @@ export function Row({
         {detail && <span className="row-detail t-footnote">{detail}</span>}
       </span>
       {children && <span className="row-accessory">{children}</span>}
-      {chevron && <Icon name="chevron.right" size={16} className="row-chevron" />}
+      {chevron && (
+        <svg className="row-chevron" width="7" height="12" viewBox="0 0 7 12" fill="none" aria-hidden="true">
+          <path d="M1 1L6 6L1 11" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
     </>
   );
   return onClick ? (
