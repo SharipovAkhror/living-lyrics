@@ -341,7 +341,6 @@ async function refresh($: EngineInterface, seen: Record<string, number>) {
     const next: Limit[] = u.rateLimits.map(r => ({ kind: r.kind, percentUsed: r.percentUsed, resetsAt: r.resetsAt }))
     if (JSON.stringify(next) !== JSON.stringify(await read($, limits))) await update($, limits, () => next)
     await pushLimit($, next)
-    await saveCardState($)
     await writePanel($)
   } catch {
     // Off a subscription the windows are empty.
@@ -749,7 +748,7 @@ export function cardDoc(b: Board | null, l: Live, lim: Limit[], u: Usage | null)
     songs: songRows(b.songs).map(({ label, group }) => ({ label, proven: group.proven, placed: group.placed ?? group.proven, total: group.total })),
     hygiene: l.hygiene ? { fixed: l.hygiene.fixed.length, issues: l.hygiene.issues.slice(0, 3), more: Math.max(0, l.hygiene.issues.length - 3) } : null,
     limits: {
-      claude: claudeWindows(lim).map(w => ({ label: w.label, used: Math.round(w.used), reset: w.reset })),
+      claude: claudeWindows(lim).map((w, i) => ({ label: w.label, used: Math.round(w.used), reset: w.reset, resetAt: lim[i]?.resetsAt ?? null })),
       gemini: geminiWindows(u?.gemini?.quota?.gemini).map(w => ({ label: w.label, used: Math.round(w.used), reset: w.reset })),
       grok: u?.grok ? { today: tokens(u.grok.today), week: u.grok.week ? tokens(u.grok.week) : '', plan: u.grok.plan ?? '' } : null,
       plans: { claude: b.models?.claude ?? '', gemini: u?.gemini?.plan ?? '' },
@@ -796,16 +795,54 @@ export function chatSince(prev: Record<string, { state: string; at: number }>, c
   return next
 }
 
-/** The panel's document: the card's state plus trends, durations, tasks and the roadmap steps. */
-export function panelDoc(b: Board | null, l: Live, lim: Limit[], u: Usage | null, trend: TrendPoint[], since: Record<string, { state: string; at: number }>, now: number) {
+/** Word-sync samples, hourly, two days: what each group stood at, for the change since yesterday. */
+export type SyncPoint = { t: number; proven: Record<string, number> }
+
+export function syncNext(prev: SyncPoint[], songs: { label: string; proven: number }[], now: number): SyncPoint[] {
+  const last = prev[prev.length - 1]
+  if (last && now - last.t < 3_600_000) return prev
+  return [...prev.filter(p => now - p.t < 2 * 86_400_000), { t: now, proven: Object.fromEntries(songs.map(s => [s.label, s.proven])) }]
+}
+
+/** Lines proved since the newest sample at least a day old; null without such a sample. */
+export function syncDelta(hist: SyncPoint[], label: string, proven: number, now: number) {
+  const old = [...hist].reverse().find(p => now - p.t >= 86_400_000)
+  const was = old?.proven[label]
+  return was === undefined ? null : proven - was
+}
+
+/** When each task first showed in «now», kept across reloads. */
+export function taskSince(prev: Record<string, number>, ids: string[], now: number) {
+  return Object.fromEntries(ids.map(id => [id, prev[id] ?? now]))
+}
+
+/** The panel's document: the card's state plus trends, durations, the tasks at work and sync deltas. */
+export function panelDoc(
+  b: Board | null, l: Live, lim: Limit[], u: Usage | null, trend: TrendPoint[],
+  since: Record<string, { state: string; at: number }>, now: number,
+  tasksAt: Record<string, number> = {}, sync: SyncPoint[] = [],
+) {
   const base = cardDoc(b, l, lim, u)
   if (!b || !base) return null
   const mins = (at?: number) => (at === undefined ? null : Math.max(0, Math.round((now - at) / 60_000)))
+  const iso = (s?: string) => (s ? mins(Date.parse(s)) : null)
+  const work = b.tasks.filter(t => t.section === 'now').map(t => {
+    const run = t.worktree ? l.grok.find(r => r.name === t.worktree) : undefined
+    const gem = t.agent === 'gemini' ? l.gemini[0] : undefined
+    const state = run ? run.state : gem ? 'working' : t.agent === 'claude' ? 'working' : 'none'
+    return {
+      id: t.id, title: t.title, agent: t.agent ?? '',
+      who: t.agent === 'grok' ? `Grok · ${codename(t.worktree) || 'Task'}` : t.agent === 'gemini' ? 'Gemini' : t.agent === 'claude' ? (t.who || 'Claude') : '',
+      state, idle: run ? run.minutes : null, session: run?.age ?? null, step: run?.step || t.now || '',
+      open: mins(tasksAt[t.id]),
+    }
+  })
   return {
     ...base,
-    chats: (l.chats ?? []).map(c => ({ name: c.name, state: c.state, minutes: mins(since[c.name]?.at) })),
+    chats: (l.chats ?? []).map(c => ({ name: c.name, state: c.state, minutes: mins(since[c.name]?.at), waiting: c.waiting_for ?? '', last: c.last ?? '', lastMin: iso(c.last_at) })),
     agents: agentRows(b, l).map(r => ({ agent: r.agent, name: r.name, task: r.task, state: r.state, tone: r.tone, detail: r.detail, age: r.age ?? null })),
-    tasks: b.tasks.filter(t => t.section === 'now').map(t => ({ id: t.id, title: t.title, agent: t.agent ?? '', now: t.now ?? '', next: t.next ?? '' })),
+    work,
+    songs: base.songs.map(s => ({ ...s, delta: syncDelta(sync, s.label, s.proven, now) })),
     steps: b.roadmap?.steps.map(s => ({ name: s.name, weight: s.weight, done: s.done })) ?? [],
     trend,
   }
@@ -829,12 +866,17 @@ async function writePanel($: EngineInterface) {
   await $.store.set('panel-trend', trend)
   const since = chatSince(((await $.store.get('chat-since')) as Record<string, { state: string; at: number }> | undefined) ?? {}, l.chats ?? [], now)
   await $.store.set('chat-since', since)
-  const doc = panelDoc(b, l, lim, u, trend, since, now)
+  const tasksAt = taskSince(((await $.store.get('task-since')) as Record<string, number> | undefined) ?? {}, (b?.tasks ?? []).filter(t => t.section === 'now').map(t => t.id), now)
+  await $.store.set('task-since', tasksAt)
+  const sync = syncNext(((await $.store.get('sync-hist')) as SyncPoint[] | undefined) ?? [], b ? songRows(b.songs).map(({ label, group }) => ({ label, proven: group.proven })) : [], now)
+  await $.store.set('sync-hist', sync)
+  const doc = panelDoc(b, l, lim, u, trend, since, now, tasksAt, sync)
   if (!doc) return
   const { at: _at, chats: _chats, ...stable } = doc
   const key = JSON.stringify({ ...stable, chats: (l.chats ?? []).map(c => [c.name, c.state]) })
   if (key === panel.key && now - panel.at < PANEL_HEARTBEAT_MS) return
   panel = { ...panel, key, at: now }
+  void preRender($, doc)
   const where = { url: PANEL_URL, collection: 'dashboard', doc_id: 'now' }
   try {
     if (!panel.version) {
@@ -856,22 +898,35 @@ async function writePanel($: EngineInterface) {
   }
 }
 
-let cardKey = ''
+const CARD_FRESH_MS = 12 * 60_000
 
-/** The Station keeps the latest card state on disk, so the card can be redrawn and checked outside a chat. */
-async function saveCardState($: EngineInterface) {
-  if (!place.orchestrator) return
-  const doc = cardDoc(await read($, board), await read($, live), await read($, limits), await read($, usage))
+/**
+ * The Station keeps the /dashboard picture drawn ahead: on every panel write (a change, or the
+ * heartbeat) it saves the document and redraws dashboard.png, then notes when in card.json, so the
+ * reply only has to send the file. Off the Station, or when the copy is stale, the reply draws it.
+ */
+async function preRender($: EngineInterface, doc: object) {
   const dir = await $.env.get('LOCALAPPDATA')
-  if (!doc || !dir) return
-  const { at: _at, ...rest } = doc
-  const key = JSON.stringify(rest)
-  if (key === cardKey) return
-  cardKey = key
+  if (!dir) return
   try {
     await $.fs.write(`${dir}/ll-dashboard/state.json`, JSON.stringify(doc))
+    const r = await $.process.run(['node', `${$.plugin.root}/card/render.mjs`, `${dir}/ll-dashboard/state.json`], { timeoutMs: 60_000 })
+    const path = r.stdout.trim()
+    if (r.exitCode === 0 && path.endsWith('.png')) await $.fs.write(`${dir}/ll-dashboard/card.json`, JSON.stringify({ at: Date.now(), path }))
   } catch {
-    cardKey = ''
+    // No node or Playwright here: /dashboard falls back to drawing or to text.
+  }
+}
+
+/** The pre-drawn picture when it is fresh enough, else null. */
+async function cachedCard($: EngineInterface) {
+  const dir = await $.env.get('LOCALAPPDATA')
+  if (!dir) return null
+  try {
+    const card = JSON.parse(await $.fs.read(`${dir}/ll-dashboard/card.json`)) as { at: number; path: string }
+    return Date.now() - card.at < CARD_FRESH_MS ? card.path : null
+  } catch {
+    return null
   }
 }
 
@@ -996,7 +1051,7 @@ export const register: Register = on => {
       const [b, l, lim, u] = [await read($, board), await read($, live), await read($, limits), await read($, usage)]
       const summary = summaryText(b, l, lim, u)
       const doc = cardDoc(b, l, lim, u)
-      const png = doc ? await renderCard($, doc) : null
+      const png = (await cachedCard($)) ?? (doc ? await renderCard($, doc) : null)
       const waiting = b?.tasks.filter(t => t.section === 'you').length ?? 0
       extra.push(png ? cardContext(png, summary, waiting) : dashboardContext(summary))
     }
