@@ -113,7 +113,7 @@ def test_solo() -> None:
     n_solo = sum(T.is_solo(sec, line) for sec, line in pairs)
     n_choir = sum(T.is_choir(sec, line) for sec, line in pairs)
     n = len(pairs)
-    check('IHCA solo count', n_solo == 122 and n_choir == 0 and n == 122, f'{n_solo} solo, {n_choir} choir of {n}')
+    check('IHCA solo count', n_solo == 125 and n_choir == 0 and n == 125, f'{n_solo} solo, {n_choir} choir of {n}')
 
 
 def _bursts() -> tuple[np.ndarray, Q.Signals]:
@@ -1805,6 +1805,21 @@ def test_translation_window() -> None:
           P.in_translation_window(10.2, 10.0, 9.5, 10.4, 2.01))
     check('a start past the next cue is not accepted',
           not P.in_translation_window(10.5, 10.0, 9.5, 10.4, 2.01))
+    early = P.translation_leftover(
+        375.90, 376.34, 376.34, 381.0, structure_ok=True, translated=True)
+    check('a start before the previous cue end is not a wide leftover', not early)
+    inside = P.translation_leftover(
+        10.80, 10.0, 9.5, 12.0, structure_ok=True, translated=True)
+    check('a fenced translation start outside 0.30 s is a wide leftover', inside)
+    tight = P.translation_leftover(
+        10.20, 10.0, 9.5, 12.0, structure_ok=True, translated=True)
+    check('a start inside 0.30 s is not a wide leftover', not tight)
+    same = P.translation_leftover(
+        10.80, 10.0, 9.5, 12.0, structure_ok=True, translated=False)
+    check('a same-language start is not a wide leftover', not same)
+    unit = type('U', (), {'id': 'x', 'line': {'lang': 'fa'}})()
+    check('the adoption gate stays 0.30 s for a translation cue',
+          align._cue_limit(unit, {'x': {'lang': 'en-GB', 'start': 1.0}}) == P.CUE_TOL)
 
     words = [{
         'roman': 'aa', 'ctc_s': 1.0, 'ctc_e': 1.2,
@@ -1865,6 +1880,25 @@ def test_translation_window() -> None:
     check('a start outside the measured half is still returned to the cue',
           n_out == 1 and abs(outside['sections'][0]['lines'][0]['words'][0]['s'] - 10.0) < 1e-9,
           str(outside['sections'][0]['lines'][0]['words']))
+    # Published start drifted past 0.30 s. The raw aligner start did not.
+    tight_lyrics = {'sections': [{'kind': 'vocal', 'id': 's', 'lines': [
+        {'id': 'shushtari-1-1', 'lang': 'ar', 'words': [{'w': 'a', 's': 58.67, 'e': 59.20}]},
+    ]}]}
+    tight_report = {'lines': [{
+        'id': 'shushtari-1-1', 'status': 'good', 'placed_by': 'mms', 'ctc_start': 58.58,
+    }]}
+    tight_cues = {'shushtari-1-1': {'lang': 'en-GB', 'start': 58.298, 'end': 60.0}}
+    n_tight = Q.reject_wide_translation(
+        tight_lyrics, tight_report,
+        {'translation_measured': True, 'translation_half': 2.01, 'line_wide': []}, tight_cues)
+    published = tight_lyrics['sections'][0]['lines'][0]['words'][0]['s']
+    gap = abs(published - 58.298)
+    check('a raw start inside 0.30 s stays placed when the published start drifted',
+          n_tight == 1 and tight_report['lines'][0]['status'] == 'good'
+          and tight_report['lines'][0]['placed_by'] == 'mms'
+          and tight_report['lines'][0]['ctc_start'] == 58.58
+          and round(gap, 3) <= 0.30,
+          str((n_tight, tight_report['lines'][0], published, gap)))
 
 
 def test_monotone_union() -> None:
@@ -1925,6 +1959,15 @@ def test_monotone_union() -> None:
           and added.get('lost_chance') is not None and float(added['lost_chance']) > 0.05
           and A.pass_keeps_baseline(added, added['baseline_ids']),
           str((added['proved'], added['lost'], added['lost_chance'], added['chance'])))
+    clock = pack(
+        'stable:one:de:large-v3-turbo', ['kept'], within=False, partial=True, cols={})
+    clock['within_limit'] = False
+    held = A.admit_union([base, clock])
+    check('an alternate clock keeps its line and the baseline line',
+          'A' in held['proved'] and 'kept' in held['proved']
+          and held['line_member'].get('kept') == 'stable:one:de:large-v3-turbo'
+          and A.pass_keeps_baseline(held, held['baseline_ids']),
+          str((held['proved'], held['line_member'])))
 
 
 def main() -> int:

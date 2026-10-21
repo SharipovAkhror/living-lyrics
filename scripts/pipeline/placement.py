@@ -174,6 +174,21 @@ def in_translation_window(start: float, cue: float, prev_end: float | None,
     return lo - 1e-9 <= float(start) <= hi + 1e-9
 
 
+def translation_leftover(start: float | None, cue: float | None, prev_end: float | None,
+                         next_start: float | None, *, structure_ok: bool, translated: bool) -> bool:
+    """A translation start the 0.30 s gate refused, still inside the neighbour fence.
+
+    The chain does not adopt it while a later step can still land inside 0.30 s.
+    A start before the previous cue end is not a leftover: the wider proof uses
+    the same fence, so keeping it would publish a time the join cannot price.
+    """
+    if not structure_ok or not translated or start is None or cue is None:
+        return False
+    if round(abs(float(start) - float(cue)), 3) <= CUE_TOL:
+        return False
+    return in_translation_window(float(start), float(cue), prev_end, next_start, TRANSLATION_HALF)
+
+
 def judge(starts: list[float | None], ends: list[float | None], cue_start: float | None,
           next_cue: float | None, section: tuple[float, float] | None = None,
           limit: float | None = None) -> dict:

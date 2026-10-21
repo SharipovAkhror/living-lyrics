@@ -471,6 +471,11 @@ def placed_lines(report: dict, bias: dict | None = None, adopt: dict | None = No
                 'clock_second': None if word.get('clock_second') is None else float(word['clock_second']),
                 'clock_stable': None if word.get('clock_stable') is None else float(word['clock_stable']),
                 'clock_phoneme': _phoneme_clock(word),
+                'stable_models': {
+                    str(name): float(value)
+                    for name, value in (word.get('stable_models') or {}).items()
+                    if value is not None
+                },
             })
             prev_span = span
             prev_roman = word.get('roman')
@@ -2682,6 +2687,128 @@ def _phoneme_member(name: str, per_song: list[dict], decision: dict, modes: dict
         _quiet_flags(per_song)
 
 
+def _split_member(name: str) -> tuple[str, str, str, str] | None:
+    """`kind:song:lang:model`. Model names contain hyphens, not colons."""
+    kind, sep, rest = str(name).partition(':')
+    if kind not in ('stable', 'phone', 'phone-fill') or not sep:
+        return None
+    parts = rest.split(':', 2)
+    if len(parts) != 3 or not all(parts):
+        return None
+    return kind, parts[0], parts[1], parts[2]
+
+
+def _stable_targets(per_song: list[dict]) -> list[tuple[str, str, str]]:
+    """Measured stable-ts models other than the one already written into the witness slot."""
+    found = []
+    seen = set()
+    for song in per_song:
+        chosen = song.get('proof_models') or {}
+        for line in song.get('all_lines') or []:
+            lang = line.get('lang') or '?'
+            skip = chosen.get(lang)
+            for word in line.get('words') or []:
+                if word.get('third_kind') != 'stable-ts':
+                    continue
+                for name, clock in (word.get('stable_models') or {}).items():
+                    if clock is None or name == skip:
+                        continue
+                    key = (song.get('slug'), lang, str(name))
+                    if key in seen or not key[0]:
+                        continue
+                    seen.add(key)
+                    found.append(key)
+    return found
+
+
+def _swap_stable(per_song: list[dict], slug: str, lang: str, model: str) -> tuple[list, int]:
+    """Point the stable witness slot at one measured model. The placer clock stays."""
+    saved = []
+    changed = 0
+    for song in per_song:
+        if song.get('slug') != slug:
+            continue
+        for line in song.get('all_lines') or []:
+            if (line.get('lang') or '?') != lang:
+                continue
+            for word in line.get('words') or []:
+                if word.get('third_kind') != 'stable-ts':
+                    continue
+                clock = (word.get('stable_models') or {}).get(model)
+                if clock is None:
+                    continue
+                new = float(clock)
+                old = word.get('third')
+                if old is not None and abs(float(old) - new) <= 1e-9:
+                    continue
+                saved.append((word, word.get('third'), word.get('clock_stable')))
+                word['third'] = new
+                word['clock_stable'] = new
+                changed += 1
+    return saved, changed
+
+
+def _unswap_stable(saved: list) -> None:
+    for word, third, stable in saved:
+        word['third'] = third
+        word['clock_stable'] = stable
+
+
+def _phone_targets(per_song: list[dict], decision: dict | None) -> list[tuple[str, str, str, str]]:
+    """A phoneme model the pair did not choose. Role stays `or` unless the pair's own role is `only`."""
+    pairs = {
+        (row.get('song'), row.get('lang')): row
+        for row in (decision or {}).get('pairs') or []
+        if isinstance(row, dict)
+    }
+    out = []
+    seen = set()
+    for song in per_song:
+        present: dict[str, set[str]] = {}
+        for line in song.get('all_lines') or []:
+            lang = line.get('lang') or '?'
+            for word in line.get('words') or []:
+                for name, clock in (word.get('phones') or {}).items():
+                    if clock is None:
+                        continue
+                    present.setdefault(lang, set()).add(str(name))
+        for lang, models in present.items():
+            row = pairs.get((song.get('slug'), lang))
+            chosen = row.get('model') if isinstance(row, dict) and isinstance(row.get('model'), str) else None
+            pair_role = row.get('role') if isinstance(row, dict) and row.get('role') in ('or', 'only') else 'off'
+            role = 'only' if pair_role == 'only' else 'or'
+            for model in sorted(models):
+                if model == chosen:
+                    continue
+                key = (song.get('slug'), lang, model, role)
+                if not key[0] or key in seen:
+                    continue
+                seen.add(key)
+                out.append(key)
+    return out
+
+
+def _stamp_one_phone(per_song: list[dict], slug: str, lang: str, model: str, role: str) -> int:
+    """One model on one language. Two models are not written onto the same word."""
+    stamped = 0
+    for song in per_song:
+        if song.get('slug') != slug:
+            continue
+        for line in song.get('all_lines') or []:
+            if (line.get('lang') or '?') != lang:
+                continue
+            for word in line.get('words') or []:
+                clock = (word.get('phones') or {}).get(model)
+                if clock is None:
+                    word.pop('phoneme', None)
+                    word.pop('phoneme_role', None)
+                    continue
+                word['phoneme'] = float(clock)
+                word['phoneme_role'] = role
+                stamped += 1
+    return stamped
+
+
 def _moves_for(members_moves: list[tuple[str, list[dict]]], line_member: dict) -> dict[str, list[dict]]:
     """Retimes only for lines the join assigned to the placer that moved them."""
     by_song: dict[str, list[dict]] = {}
@@ -2780,6 +2907,58 @@ def _union_overlay(per_song: list[dict], origin: list, origin_modes: dict, refut
                     f"проход строки {both['chance']}, внутри {both['within_limit']}",
                     flush=True,
                 )
+        import phoneme_choice as Phone
+        _restore(per_song, origin)
+        _quiet_flags(per_song)
+        for slug, lang, model in _stable_targets(per_song):
+            saved, changed = _swap_stable(per_song, slug, lang, model)
+            if not changed:
+                _unswap_stable(saved)
+                continue
+            name = f'stable:{slug}:{lang}:{model}'
+            print(f'объединение: часы {name}', flush=True)
+            try:
+                if origin_decision and origin_decision.get('admitted'):
+                    stamped = dict(origin_decision)
+                    stamped['choir_attack'] = 'spectral'
+                    stamped['choir_clock'] = 'phone'
+                    Phone.apply(per_song, stamped)
+                _quiet_flags(per_song)
+                member = _member_from_state(
+                    name, per_song, origin_modes, refute, k, partial=True)
+            finally:
+                _unswap_stable(saved)
+                Phone.clear(per_song)
+                _quiet_flags(per_song)
+            members.append(member)
+            print(
+                f"объединение: {name} доказала {member['proved_n']}, "
+                f"проход строки {member['chance']}, внутри {member['within_limit']}",
+                flush=True,
+            )
+        for slug, lang, model, role in _phone_targets(per_song, origin_decision):
+            for fill, prefix in ((False, 'phone'), (True, 'phone-fill')):
+                name = f'{prefix}:{slug}:{lang}:{model}'
+                print(f'объединение: {name}', flush=True)
+                stamped_n = _stamp_one_phone(per_song, slug, lang, model, role)
+                if not stamped_n:
+                    Phone.clear(per_song)
+                    continue
+                if fill:
+                    for song in per_song:
+                        song['use_attack_fill'] = True
+                try:
+                    member = _member_from_state(
+                        name, per_song, origin_modes, refute, k, fill=fill, partial=True)
+                finally:
+                    Phone.clear(per_song)
+                    _quiet_flags(per_song)
+                members.append(member)
+                print(
+                    f"объединение: {name} доказала {member['proved_n']}, "
+                    f"проход строки {member['chance']}, внутри {member['within_limit']}",
+                    flush=True,
+                )
         _restore(per_song, origin)
         _quiet_flags(per_song)
         hand_moves = _apply_handoffs(per_song, refute, sections, True)
@@ -2846,14 +3025,51 @@ def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: 
     line_member = result.get('line_member') or {}
     baseline_ids = set(result.get('baseline_ids') or [])
     proved = set(result.get('proved') or [])
-    line_fill = sorted(lid for lid, name in line_member.items() if name in ('fill', 'phoneme-fill') and lid in proved)
+    line_fill = sorted(
+        lid for lid, name in line_member.items()
+        if lid in proved and (name in ('fill', 'phoneme-fill') or str(name).startswith('phone-fill:')))
     line_nucleus = sorted(lid for lid, name in line_member.items() if name == 'nucleus' and lid in proved)
     phone_names = {'phoneme', 'phoneme-fill', 'handoff-phoneme'}
-    phone_ids = {lid for lid, name in line_member.items() if name in phone_names}
-    roles = {}
-    pair_role = {}
+    phone_ids = {lid for lid, name in line_member.items() if name in phone_names and lid in proved}
+    line_stable: dict[str, str] = {}
+    line_phone_model: dict[str, str] = {}
+    extra_roles: dict[str, str] = {}
+    phone_lookup = None
     if origin_decision and origin_decision.get('admitted'):
         import phoneme_choice as Phone
+        phone_lookup = Phone
+    pair_rows = {
+        (row.get('song'), row.get('lang')): row
+        for row in (origin_decision or {}).get('pairs') or []
+        if isinstance(row, dict)
+    }
+    for lid, name in line_member.items():
+        if lid not in proved:
+            continue
+        parsed = _split_member(str(name))
+        if parsed is None:
+            continue
+        kind, slug, lang, model = parsed
+        if kind == 'stable':
+            line_stable[lid] = model
+            if phone_lookup is None:
+                continue
+            role, _chosen_model = phone_lookup._lookup(origin_decision, slug, lang)
+            if role == 'only' and lid in baseline_ids:
+                role = 'off'
+            if role in ('or', 'only'):
+                extra_roles[lid] = role
+                phone_ids.add(lid)
+            continue
+        row = pair_rows.get((slug, lang))
+        pair_here = row.get('role') if isinstance(row, dict) and row.get('role') in ('or', 'only') else 'off'
+        role = 'only' if pair_here == 'only' and lid not in baseline_ids else 'or'
+        extra_roles[lid] = role
+        line_phone_model[lid] = model
+        phone_ids.add(lid)
+    roles = {}
+    pair_role = {}
+    if phone_lookup is not None:
         for row in origin_decision.get('pairs') or []:
             role = row.get('role') if row.get('role') in ('or', 'only') else 'off'
             pair_role[(row.get('song'), row.get('lang'))] = (role, row.get('model'), row.get('word_chance'))
@@ -2885,9 +3101,14 @@ def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: 
     for lid, role in list(roles.items()):
         if role == 'only' and lid in baseline_ids:
             roles[lid] = 'off'
+    for lid, role in extra_roles.items():
+        if role in ('or', 'only') and not (role == 'only' and lid in baseline_ids):
+            roles[lid] = role
     chosen['line_roles'] = {lid: role for lid, role in roles.items() if role in ('or', 'only', 'off') and role != 'off'}
     chosen['line_fill'] = line_fill
     chosen['line_nucleus'] = line_nucleus
+    chosen['line_stable'] = line_stable
+    chosen['line_phone_model'] = line_phone_model
     chosen['attack_fill'] = False
     chosen['choir_attack'] = 'spectral'
     chosen['choir_clock'] = 'phone'
@@ -2921,6 +3142,8 @@ def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: 
         'line_nucleus': line_nucleus,
         'line_wide': chosen['line_wide'],
         'translation_half': chosen['translation_half'],
+        'line_stable': line_stable,
+        'line_phone_model': line_phone_model,
     }
     if origin_decision is not None and phone_ids:
         origin_decision['kept'] = True
@@ -2965,6 +3188,7 @@ def build_payload(slugs: list[str]) -> dict:
             'report_by_id': report_by,
             'next_by_id': next_by,
             'order_by_id': order_by,
+            'proof_models': (report.get('summary') or {}).get('proof_models') or {},
         })
     print(f'атака: пики {len(per_song)} песен', flush=True)
     # The pooled grid stays in the file as context. The decision is the per-slice

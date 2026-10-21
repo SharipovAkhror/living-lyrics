@@ -259,6 +259,16 @@ def load_word_rule() -> dict:
     rule['blocked_primaries'] = blocked
     rule['line_fill'] = [str(line_id) for line_id in (chosen.get('line_fill') or []) if line_id]
     rule['line_nucleus'] = [str(line_id) for line_id in (chosen.get('line_nucleus') or []) if line_id]
+    stable_of = {}
+    for line_id, model in (chosen.get('line_stable') or {}).items():
+        if isinstance(model, str) and model:
+            stable_of[str(line_id)] = model
+    rule['line_stable'] = stable_of
+    phone_of = {}
+    for line_id, model in (chosen.get('line_phone_model') or {}).items():
+        if isinstance(model, str) and model:
+            phone_of[str(line_id)] = model
+    rule['line_phone_model'] = phone_of
     if 'translation_half' in chosen and chosen.get('translation_half') is not None:
         rule['translation_half'] = float(chosen['translation_half'])
     else:
@@ -1059,6 +1069,9 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
             phone_role = override
             if override == 'off':
                 phone_model = None
+        alt_phone = (rule.get('line_phone_model') or {}).get(line['id'])
+        if alt_phone and phone_role in ('or', 'only'):
+            phone_model = alt_phone
         align_words = stamp_phoneme(
             align_words, phone_role, phone_model,
             choir_vowel=bool(choir_vowel and kind == 'choir'))
@@ -1079,6 +1092,18 @@ def build_proof(sig: Signals, lines: list[tuple[dict, dict]], qa_rows: list[dict
                     item['vowel_s'] = clock
                 stamped.append(item)
             align_words = stamped
+        stable_model = (rule.get('line_stable') or {}).get(line['id'])
+        if stable_model and align_words:
+            swapped = []
+            for aw in align_words:
+                item = dict(aw)
+                if item.get('third_kind') == 'stable-ts':
+                    clock = (item.get('stable_models') or {}).get(stable_model)
+                    if clock is not None:
+                        item['third_s'] = float(clock)
+                        item['clock_stable'] = float(clock)
+                swapped.append(item)
+            align_words = swapped
         line_peaks = env_peaks if kind == 'choir' and env_for_choir and env_peaks is not None else peaks
         fallback = env_peaks if (fill_on or line['id'] in line_fill) else None
         cue = cues.get(line['id'])
@@ -1973,6 +1998,21 @@ def reject_wide_translation(lyrics: dict, align_report: dict | None, rule: dict 
             heard = float(ctc) if ctc is not None else published
             covered = P.in_translation_window(heard, cue_s, prev, nxt, float(half))
         if covered:
+            continue
+        # The aligner already agreed with the cue. A published drift past 0.30 s
+        # is rounding, not a missed placement. Leave the proof status and pull
+        # only the published excess back inside the gate.
+        if ctc is not None and round(abs(float(ctc) - cue_s), 3) <= PROOF_CUE_TOL:
+            if far_published:
+                sign = 1.0 if published > cue_s else -1.0
+                target = T.r2(cue_s + sign * (PROOF_CUE_TOL - 0.01))
+                delta = target - published
+                if abs(delta) >= 0.001:
+                    for word in words:
+                        word['s'] = T.r2(float(word['s']) + delta)
+                        if word.get('e') is not None:
+                            word['e'] = T.r2(float(word['e']) + delta)
+                    moved += 1
             continue
         delta = cue_s - published
         if abs(delta) >= 0.001:
