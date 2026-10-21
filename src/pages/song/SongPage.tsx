@@ -17,7 +17,6 @@ import { coverStage } from '@/scene/cover';
 import { Field } from '@/scene/Field';
 import { LEAD } from '@/scene/flow';
 import { Icon } from '@/ui/icons';
-import { isPhone } from '@/ui/phone';
 import { RichText } from '@/components/RichText';
 import { showHarakatText, stripHarakat } from '@/data/harakat';
 import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
@@ -73,6 +72,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const [textAttempt, setTextAttempt] = useState(0);
   // Armed only after the restored seek, so a save cannot write 0 over a position we just read.
   const [clockArmed, setClockArmed] = useState(false);
+  // Set when a reload restored a playing point and the browser refused play().
+  const [resumeAt, setResumeAt] = useState<number | null>(null);
 
   const engine = useMemo(
     () =>
@@ -143,8 +144,13 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         const fresh = saved != null && Date.now() - saved.savedAt <= RESUME_AUTO_MS;
         if (saved && fresh && saved.t >= 1) {
           engine.seek(saved.t);
-          // A reload may block play() until the next tap. The playhead is still restored.
-          if (saved.playing) void engine.play();
+          // A reload may block play() until the next tap. Stay paused on that second
+          // and offer the button. Do not leave a failed play() looking like silence.
+          if (saved.playing) {
+            void engine.play().then(() => {
+              if (alive && !engine.playing) setResumeAt(saved.t);
+            });
+          }
         }
       }
       if (alive) setClockArmed(true);
@@ -234,6 +240,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const [owner, setOwner] = useState(-1);
   const [sheet, setSheet] = useState<SheetName>(null);
   const playing = !!state?.playing;
+  useEffect(() => {
+    if (playing) setResumeAt(null);
+  }, [playing]);
 
   const seekToCue = useCallback(
     (c: Cue) => {
@@ -437,15 +446,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             <Icon name="chevron.down" size={20} className="comment-chevron" />
           </button>
           <div className="comment-fold">
-            {isPhone() ? (
-              // One text node. Rebuilding bold and Arabic runs on each seek
-              // left WebKit layers behind. Direction stays on the container.
-              <div className="comment-body" dir="auto">
-                <p>{(settings.showHarakat ? comment.text : stripHarakat(comment.text)).replace(/\*+/g, '')}</p>
-              </div>
-            ) : (
-              <RichText text={comment.text} showHarakat={settings.showHarakat} className="comment-body" />
-            )}
+            <RichText key={comment.from.idx} text={comment.text} showHarakat={settings.showHarakat} className="comment-body" />
           </div>
         </aside>
       )}
@@ -509,6 +510,18 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               <span className="scrub-remain"> </span>
             </div>
           </div>
+        )}
+        {resumeAt != null && !playing && (
+          <button
+            type="button"
+            className="btn btn-capsule btn-tinted resume-offer"
+            onClick={() => {
+              setResumeAt(null);
+              void engine.play();
+            }}
+          >
+            Продолжить с {formatTime(resumeAt)}
+          </button>
         )}
         <div className="transport">
           <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)">

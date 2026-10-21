@@ -26,7 +26,6 @@ import type { InstrumentDrive, InstrumentRenderer } from '@/instruments/animatio
 export type VolumeLook = 'engraving' | 'materials';
 import { hitScale, jingleShift, skinWeight, stringWeight, sway } from './pose';
 import { stageCovered, watchCover } from '../../scene/cover';
-import { isPhone } from '../../ui/phone';
 
 import './stage3d.css';
 
@@ -532,22 +531,6 @@ function readInk(THREE: THREE, el: HTMLElement) {
   return color;
 }
 
-/** Phone canvases stay under about 800×520 device pixels and skip MSAA. Desktop stays at 1.5×. */
-function bufferSize(cssW: number, cssH: number) {
-  const cap = isPhone() ? 1.25 : 1.5;
-  const dpr = Math.min(window.devicePixelRatio || 1, cap);
-  let bw = Math.max(1, Math.round(cssW * dpr));
-  let bh = Math.max(1, Math.round(cssH * dpr));
-  const maxPixels = isPhone() ? 800 * 520 : 1920 * 1400;
-  const pixels = bw * bh;
-  if (pixels > maxPixels) {
-    const scale = Math.sqrt(maxPixels / pixels);
-    bw = Math.max(1, Math.round(bw * scale));
-    bh = Math.max(1, Math.round(bh * scale));
-  }
-  return { bw, bh, dpr: bw / Math.max(1, cssW) };
-}
-
 function isDark() {
   const theme = document.documentElement.dataset.theme;
   if (theme === 'dark') return true;
@@ -606,8 +589,8 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
   const renderer: WebGLRenderer = new THREE.WebGLRenderer({
     canvas,
     alpha: true,
-    antialias: !isPhone(),
-    powerPreference: isPhone() ? 'low-power' : 'high-performance',
+    antialias: true,
+    powerPreference: 'high-performance',
     preserveDrawingBuffer: opts?.preserve ?? false,
   });
   renderer.setClearColor(0x000000, 0);
@@ -708,8 +691,9 @@ export async function mountStage(host: HTMLElement, canvas: HTMLCanvasElement, o
   function draw() {
     if (disposed || !onScreen || stageCovered()) return;
     const rect = host.getBoundingClientRect();
-    const sized = bufferSize(rect.width, rect.height);
-    const { bw, bh, dpr } = sized;
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const bw = Math.max(1, Math.round(rect.width * dpr));
+    const bh = Math.max(1, Math.round(rect.height * dpr));
     if (canvas.width !== bw || canvas.height !== bh) renderer.setSize(bw, bh, false);
     applyTone();
     const ink = readInk(THREE, canvas);

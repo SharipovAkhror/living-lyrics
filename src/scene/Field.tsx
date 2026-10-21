@@ -4,7 +4,6 @@
  * Nothing here is a game engine. A hidden or off-screen field does not keep a timer.
  */
 import { memo, useEffect, useMemo, useRef } from 'react';
-import { isPhone } from '@/ui/phone';
 import { stageCovered, watchCover } from './cover';
 
 function skyAt(t: number) {
@@ -70,27 +69,17 @@ export const Field = memo(function Field({
 
     const paint = (time: number) => {
       const p = skyAt(time);
-      // One decimal: the washes move slowly, and a rewrite of the same stop used to stick in WebKit.
+      // Skip a rewrite of the same stop. A repeated custom-property write stuck in WebKit.
       const vars: Array<[string, string]> = [
-        ['--x1', `${p.x1.toFixed(1)}%`],
-        ['--y1', `${p.y1.toFixed(1)}%`],
-        ['--x2', `${p.x2.toFixed(1)}%`],
-        ['--y2', `${p.y2.toFixed(1)}%`],
-        ['--x3', `${p.x3.toFixed(1)}%`],
-        ['--y3', `${p.y3.toFixed(1)}%`],
+        ['--x1', `${p.x1.toFixed(2)}%`],
+        ['--y1', `${p.y1.toFixed(2)}%`],
+        ['--x2', `${p.x2.toFixed(2)}%`],
+        ['--y2', `${p.y2.toFixed(2)}%`],
+        ['--x3', `${p.x3.toFixed(2)}%`],
+        ['--y3', `${p.y3.toFixed(2)}%`],
       ];
       for (const [key, value] of vars) {
         if (wash.style.getPropertyValue(key) !== value) wash.style.setProperty(key, value);
-      }
-      // A phone does not retint every star. WebKit kept a backing store for each opacity write,
-      // and the working set climbed for the whole song. The sky still moves. Desktop still twinkles.
-      if (isPhone()) {
-        const steady = dark ? '0.07' : '0.035';
-        for (let i = 0; i < stars.length; i++) {
-          const node = nodes[i];
-          if (node && node.style.opacity !== steady) node.style.opacity = steady;
-        }
-        return;
       }
       for (let i = 0; i < stars.length; i++) {
         const node = nodes[i];
@@ -110,9 +99,7 @@ export const Field = memo(function Field({
         lastT = time;
         paint(time);
       }
-      // Phones repaint the washes a little less often. The blur layers are already gone;
-      // this only keeps the sky from dirtying the compositor ten times a second.
-      if (!still && clock) timer = window.setTimeout(tick, isPhone() ? 800 : 100);
+      if (!still && clock) timer = window.setTimeout(tick, 100);
     };
 
     const start = () => {

@@ -1,25 +1,22 @@
 /*
  * Phone budget for the live song. Desktop is not matched: a mouse, or a coarse
- * pointer wider than a phone in landscape, keeps the soft-glass blur.
+ * pointer wider than a phone in landscape, keeps every glass layer.
  *
- * On a phone the sky, the lines and the player all move under several backdrop-filter
- * layers. Safari keeps a new snapshot for each of those layers and the tab is killed.
- * The panels keep the rim, the shadow and the dense fallback fill (the same fill as
- * Reduce Transparency). The sheet does not blur, so it can open and scroll on the CPU.
- * The two blocks are the same paint: the media query covers the first frame, and
- * html[data-phone] covers an iPhone user agent whose media features were not emulated.
+ * While a song plays, the desktop stacks about four backdrop-filter layers
+ * (top bar, player, comment, instrument plates). A full ban was not measured:
+ * the working set still climbed with zero blur layers. Phones keep blur on the
+ * top bar and the player (two layers) and drop it on the comment, the sheet
+ * and the instrument plates. The sheet stays on the dense fill so it can open
+ * and scroll on the CPU. The edge mask stays off: a steady vocal band grew
+ * about 10 MB/min with the mask and held flat for three minutes without it.
+ *
+ * The two blocks are the same paint: the media query covers the first frame,
+ * and html[data-phone] covers an iPhone user agent whose media features were
+ * not emulated.
  */
 
 @media (hover: none) and (pointer: coarse) and (max-width: 1100px) {
-  .glass,
-  .glass--strong,
-  .btn-quiet,
-  .search,
-  .lib-tile .chip,
-  .method-top,
-  .ig-top,
-  .ig-card,
-  .pager-link {
+  .comment.glass {
     background: color-mix(in srgb, var(--glass-fallback) 92%, var(--song-field, var(--bg)));
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -38,12 +35,6 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-  /* brightness() and the small-plate drop-shadow rasterise the engraving.
-     Waiting plates dim by ink colour instead, so the bitmap is not rebuilt. */
-  .ist-art,
-  .ist-t-s .ist-art svg {
-    filter: none;
-  }
   .ist-art-mount {
     position: absolute;
   }
@@ -52,11 +43,6 @@
     inset: 0;
     width: 100%;
     height: 100%;
-  }
-  .flow-plate,
-  .scene .ist-art,
-  .ist-plate {
-    will-change: auto;
   }
   /* A masked stage is one layer. Moving a line under it allocated a new
      buffer on this WebKit and the previous buffer stayed. Lines already
@@ -90,15 +76,7 @@
   }
 }
 
-html[data-phone='1'] .glass,
-html[data-phone='1'] .glass--strong,
-html[data-phone='1'] .btn-quiet,
-html[data-phone='1'] .search,
-html[data-phone='1'] .lib-tile .chip,
-html[data-phone='1'] .method-top,
-html[data-phone='1'] .ig-top,
-html[data-phone='1'] .ig-card,
-html[data-phone='1'] .pager-link {
+html[data-phone='1'] .comment.glass {
   background: color-mix(in srgb, var(--glass-fallback) 92%, var(--song-field, var(--bg)));
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
@@ -120,11 +98,6 @@ html[data-phone='1'] .ist-chip {
   backdrop-filter: none;
 }
 
-html[data-phone='1'] .ist-art,
-html[data-phone='1'] .ist-t-s .ist-art svg {
-  filter: none;
-}
-
 html[data-phone='1'] .ist-art-mount {
   position: absolute;
 }
@@ -134,12 +107,6 @@ html[data-phone='1'] .ist-art-mount > .ist-art {
   inset: 0;
   width: 100%;
   height: 100%;
-}
-
-html[data-phone='1'] .flow-plate,
-html[data-phone='1'] .scene .ist-art,
-html[data-phone='1'] .ist-plate {
-  will-change: auto;
 }
 
 html[data-phone='1'] .scene-stage {

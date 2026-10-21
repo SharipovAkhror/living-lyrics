@@ -99,7 +99,6 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let pool = '';
     let lastPlate = '';
     let lastT = Number.NaN;
-    let lastPaint = Number.NaN;
     const loop = () => {
       raf = 0;
       if (stageCovered()) return;
@@ -107,11 +106,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const t = clock();
       // A paused clock used to restyle the stage anyway. WebKit kept that working set.
       if (t === lastT) return;
-      // A phone paints the flow at 12 Hz. Every frame rewrote line layers and the
-      // working set climbed. A jump of 80 ms or more (a seek) still paints at once.
-      if (isPhone() && Number.isFinite(lastPaint) && Math.abs(t - lastPaint) < 0.08) return;
       lastT = t;
-      lastPaint = t;
       const pos = flowPosition(plan, t);
       const list = windowAround(timeline, pos, entrance);
       const key = list.join(',');

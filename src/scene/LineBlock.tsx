@@ -178,9 +178,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       painted.current.z = z;
       r.style.zIndex = z;
     }
-    const transform = isPhone()
-      ? `translate3d(${Math.round(x)}px, ${Math.round(top)}px, 0) scale(${s.scale.toFixed(2)})`
-      : `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0) scale(${s.scale.toFixed(4)})`;
+    const transform = `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0) scale(${s.scale.toFixed(4)})`;
     if (painted.current.transform !== transform) {
       painted.current.transform = transform;
       r.style.transform = transform;
@@ -190,9 +188,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       painted.current.opacity = opacity;
       r.style.opacity = opacity;
     }
-    // A live CSS blur on the lines, under the glass bars, is a Safari layer leak.
-    // Phones keep the opacity and the move, and drop the blur.
-    const blurOn = !isPhone() && entrance === 'flow' && !still && motion === 'full' && s.blur > 0.05;
+    const blurOn = entrance === 'flow' && !still && motion === 'full' && s.blur > 0.05;
     const nextFilter = blurOn ? `blur(${s.blur.toFixed(2)}px)` : '';
     if (filterRef.current !== nextFilter) {
       filterRef.current = nextFilter;
@@ -224,8 +220,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
     if (o) {
       const lit = d <= 0 ? 1 : clamp01((0.5 - d) / 0.5);
       const rawLit = wordSync ? (d < 0 ? 1 : 0) : lit;
-      // Eight steps on a phone. A fresh opacity on every word, every frame, kept a text layer.
-      const litf = (isPhone() ? Math.round(rawLit * 8) / 8 : rawLit).toFixed(3);
+      const litf = rawLit.toFixed(3);
       if (painted.current.lit !== litf) {
         painted.current.lit = litf;
         o.style.setProperty('--litf', litf);
@@ -236,19 +231,6 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       if (!el) continue;
       const w = line.words[i];
       if (wordSync && d > -1) {
-        // A clipped gradient is a new text layer per step. On a phone the word lights
-        // as a whole: a seek was keeping one backing store per step and the tab grew.
-        if (isPhone()) {
-          const sung = t >= w.s;
-          const mark = sung ? '1' : '0';
-          if (el.dataset.f !== mark) {
-            el.dataset.f = mark;
-            el.classList.remove('is-filling');
-            el.classList.toggle('is-sung', sung);
-            if (el.style.backgroundImage) el.style.backgroundImage = '';
-          }
-          continue;
-        }
         const span = Math.min(FILL_MAX, Math.max(0.08, w.e - w.s));
         const raw = clamp01((t - w.s) / span);
         const f = raw;
@@ -273,7 +255,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
             el.style.backgroundImage = image;
           }
         }
-        if (motion === 'full' && !isPhone()) {
+        if (motion === 'full') {
           // The word being sung rises a hair, then settles.
           const active = t >= w.s && t < w.e + 0.15 ? Math.sin(Math.PI * clamp01((t - w.s) / Math.max(0.25, w.e - w.s + 0.15))) : 0;
           el.style.transform = active > 0.001 ? `translate3d(0, ${(-active * 0.05).toFixed(3)}em, 0)` : '';
@@ -379,7 +361,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
           )}
           {(showTr || phone) && (
             <p className="fb-tr" lang="ru" hidden={showTr ? undefined : true}>
-              {showTr ? phone ? line.tr.ru.replace(/\*+/g, '') : <TrText text={line.tr.ru} /> : '\u200b'}
+              {showTr ? <TrText text={line.tr.ru} /> : '\u200b'}
             </p>
           )}
         </div>

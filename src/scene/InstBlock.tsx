@@ -142,10 +142,8 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     const transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
     const opacity = entranceOpacity(d, entrance, s.opacity).toFixed(3);
     const vis = s.opacity < 0.01 ? 'hidden' : 'visible';
-    // A phone grows the block in 4px steps. A new height every tenth of a pixel
-    // was a layout on every frame, and WebKit kept the old boxes.
     const grown = compactH.current + (fullH - compactH.current) * p;
-    const height = isPhone() ? `${Math.round(grown / 4) * 4}px` : `${grown.toFixed(1)}px`;
+    const height = `${grown.toFixed(1)}px`;
     const box = painted.current;
     if (box.z !== z) {
       box.z = z;
@@ -196,9 +194,7 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     } else if (p > 0.02) {
       stageRef.current?.pose(frame);
     }
-    // Desktop eases the plate in fifty steps. A phone only needs the mount threshold
-    // and a few fades: each step re-renders the engravings.
-    const steps = isPhone() ? 4 : 50;
+    const steps = 50;
     const q = (v: number) => Math.round(v * steps) / steps;
     const next = { progress: q(motion === 'off' ? 1 : clamp01((t - (cue.start - 0.3)) / 2.6)), presence: q(p) };
     const cur = animRef.current;

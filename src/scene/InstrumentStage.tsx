@@ -102,16 +102,6 @@ export function assignPerformers(keys: string[], performers: string[] = []): (st
 }
 
 function poseSignature(frame: StagePose) {
-  // A phone holds the engraving. Following the stem every frame rewrote the SVG
-  // style and WebKit kept the old backing stores.
-  if (isPhone()) {
-    // Presence only. Life and the wave used to cross a threshold many times a second
-    // and each crossing restyled the SVG.
-    const on = (n: number) => (n > 0.04 ? '1' : '0');
-    const plates = (frame.plates ?? []).map((n) => on(n)).join('');
-    const echoes = (frame.echoes ?? []).map((e) => on(e.presence)).join('');
-    return `p#${(frame.drives ?? []).length}#${plates}#${echoes}`;
-  }
   const drive = (d: InstrumentDrive) =>
     [d.draw, d.hatch, d.energy, d.pulse, d.sustain, d.breath, d.beat, d.life ?? 1, d.halo ?? 0, d.hit ?? 0].map((n) => n.toFixed(3)).join(',');
   const echoes = (frame.echoes ?? []).map((e) => `${e.presence.toFixed(3)}:${drive(e.drive)}`).join('|');
@@ -123,8 +113,7 @@ function artFilter(drive: InstrumentDrive) {
   const halo = drive.halo ?? 0;
   const flash = drive.hit ?? 0;
   const brightness = `brightness(${life.toFixed(3)})`;
-  // drop-shadow on a large SVG, rewritten every frame, is another Safari layer leak.
-  if (isPhone() || (halo < 0.004 && flash < 0.004)) return brightness;
+  if (halo < 0.004 && flash < 0.004) return brightness;
   const glow = `drop-shadow(0 0 ${(halo * 18).toFixed(2)}px var(--accent))`;
   const flare = flash >= 0.004 ? ` drop-shadow(0 0 ${(flash * 12).toFixed(2)}px var(--accent))` : '';
   return `${brightness} ${glow}${flare}`;
@@ -133,9 +122,7 @@ function artFilter(drive: InstrumentDrive) {
 const plateVars = new WeakMap<HTMLElement, Map<string, string>>();
 
 function applyPlate(el: HTMLElement, drive: InstrumentDrive, time: number, opacity: number) {
-  // The sine wave on the strings is desktop-only. On a phone it rewrote the SVG
-  // style every frame and the WebKit working set climbed for the whole song.
-  const vars = svgMotionVars(drive, isPhone() ? 0 : time);
+  const vars = svgMotionVars(drive, time);
   let bag = plateVars.get(el);
   if (!bag) {
     bag = new Map();
@@ -158,20 +145,6 @@ function applyPlate(el: HTMLElement, drive: InstrumentDrive, time: number, opaci
   if (el.dataset.draw !== drawn) el.dataset.draw = drawn;
   const arts = el.querySelectorAll<HTMLElement>(isPhone() ? '.ist-art-mount' : '.ist-art');
   arts.forEach((art) => {
-    // A phone keeps every engraving it has shown and never filters it.
-    // brightness() and the hairline drop-shadow each rasterised the drawing,
-    // and WebKit kept the bitmap after the plate changed instrument.
-    // Colour is inherited into the shadow root, where the SVG strokes live.
-    if (isPhone()) {
-      const life = Math.round((drive.life ?? 1) * 20) / 20;
-      const next = String(life);
-      if (art.dataset.fx !== next) {
-        art.dataset.fx = next;
-        art.style.filter = 'none';
-        art.style.color = `color-mix(in srgb, var(--ist-ink) ${Math.round(life * 100)}%, var(--song-field, var(--bg)))`;
-      }
-      return;
-    }
     const next = artFilter(drive);
     if (art.dataset.fx !== next) {
       art.dataset.fx = next;
