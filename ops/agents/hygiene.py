@@ -171,15 +171,8 @@ def check_board(repo: Path, issues: list) -> None:
             issues.append(f'сделанная карточка всё ещё «идёт»: {t.get("id")}')
 
 
-SYNC_GROUPS = {
-    'i have come alive, соло': ('ihca', 'Соло'),
-    'karitas, соло': ('karitas', 'Соло'),
-    'one, соло': ('one', 'Соло'),
-    'one, хор': ('one', 'Хор'),
-}
-# Denominators that have been used for a sync group. A fraction with one of these
-# outside the canonical table is a second count of the same sync.
-SYNC_TOTALS = {120, 122, 125, 60, 61, 37, 26, 63}
+# A group of the table is named «<song title>, <group>» (e.g. «ONE, хор»); its board copy is the song
+# with that title and the group with that name, so a new song needs no change here.
 SYNC_FRACTION = re.compile(r'(\d+)\s*/\s*(\d+)|(\d+)\s+из\s+(\d+)')
 
 
@@ -205,8 +198,8 @@ def parse_sync_table(repo: Path) -> tuple[list[dict], str | None]:
         if len(nums) < 3:
             continue
         rows.append({'name': cells[0].lower(), 'proven': nums[0], 'placed': nums[1], 'total': nums[2]})
-    if len(rows) != 4:
-        return rows, f'в таблице синхронизации {len(rows)} строк, ожидается 4'
+    if not rows:
+        return rows, 'в таблице синхронизации нет строк'
     return rows, None
 
 
@@ -224,23 +217,20 @@ def check_sync(repo: Path, issues: list) -> None:
     found = {}
     for song in board.get('songs') or []:
         for group in song.get('groups') or []:
-            found[(song.get('id'), group.get('name'))] = (
-                group.get('proven'), group.get('placed'), group.get('total'),
-            )
+            name = f'{song.get("title", "")}, {group.get("name", "")}'.lower()
+            found[name] = (group.get('proven'), group.get('placed'), group.get('total'))
+    table = {row['name'] for row in rows}
     for row in rows:
-        key = SYNC_GROUPS.get(row['name'])
-        if key is None:
-            issues.append(f'неизвестная группа в таблице синхронизации: {row["name"]}')
-            continue
-        got = found.get(key)
+        got = found.get(row['name'])
         expect = (row['proven'], row['placed'], row['total'])
-        if got != expect:
-            issues.append(
-                f'доска songs {key[0]}/{key[1]} = {got}, таблица T1 = {expect}'
-            )
-    for key in found:
-        if key not in SYNC_GROUPS.values():
-            issues.append(f'на доске группа вне таблицы синхронизации: {key[0]}/{key[1]}')
+        if got is None:
+            issues.append(f'группы «{row["name"]}» из таблицы синхронизации нет на доске')
+        elif got != expect:
+            issues.append(f'доска «{row["name"]}» = {got}, таблица T1 = {expect}')
+    for name in found:
+        if name not in table:
+            issues.append(f'на доске группа вне таблицы синхронизации: {name}')
+    totals = {row['total'] for row in rows}
     prose = []
     for label, path in (('docs/STATUS.md', repo / 'docs' / 'STATUS.md'), ('docs/BACKLOG.md', repo / 'docs' / 'BACKLOG.md')):
         try:
@@ -259,7 +249,7 @@ def check_sync(repo: Path, issues: list) -> None:
         for match in SYNC_FRACTION.finditer(text):
             proven = int(match.group(1) or match.group(3))
             total = int(match.group(2) or match.group(4))
-            if total in SYNC_TOTALS and (proven, total) not in allowed:
+            if total in totals and (proven, total) not in allowed:
                 issues.append(f'другой счёт синхронизации в {label}: {proven}/{total}')
 
 
