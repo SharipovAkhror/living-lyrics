@@ -2,6 +2,8 @@ import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import { useRoute } from './router';
 import { effectiveMotion, useSettings } from './settings';
 import { useAppliedTheme } from './theme';
+import { GlassFilter } from '@/ui/glass/GlassFilter';
+import { mountGlassLight } from '@/ui/glass/light';
 import './fontCatalog';
 import { getSong } from '@/data/library';
 import { LibraryPage } from '@/pages/LibraryPage';
@@ -52,6 +54,10 @@ export function App() {
     document.documentElement.dataset.motion = effectiveMotion(settings);
   }, [settings]);
 
+  useEffect(() => {
+    mountGlassLight();
+  }, []);
+
   let page: ReactNode;
   switch (route.name) {
     case 'library':
@@ -86,5 +92,10 @@ export function App() {
       );
   }
 
-  return page;
+  return (
+    <>
+      <GlassFilter />
+      {page}
+    </>
+  );
 }

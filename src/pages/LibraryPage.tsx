@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from 'react';
 import { coverExt, coverUrl } from '@/data/covers';
 import { songs, LANG_NAMES } from '@/data/library';
 import type { Song } from '@/data/schema';
@@ -8,6 +8,8 @@ import { rememberedSong } from '@/app/continue';
 import { useSettings } from '@/app/settings';
 import { useAppliedTheme } from '@/app/theme';
 import { Icon } from '@/ui/icons';
+import { Glass, GlassLayers } from '@/ui/glass/Glass';
+import { armFlight } from '@/app/flight';
 import { Field } from '@/scene/Field';
 import { Status } from '@/components/Status';
 
@@ -20,14 +22,17 @@ function langsOf(song: Song) {
   return song.languages.map((code) => LANG_NAMES[code] ?? code).join(' · ');
 }
 
-/** One cover carries the shared name into the song. Pointer-down moves it onto the cover that was touched. */
-function armPoster(event: PointerEvent<HTMLAnchorElement>) {
+/** The touched cover and title are the shared elements. Other cards give the names up. */
+function armPoster(event: { currentTarget: Element }) {
   const root = event.currentTarget.closest('.library');
-  root?.querySelectorAll<HTMLElement>('[data-poster]').forEach((el) => {
+  root?.querySelectorAll<HTMLElement>('[data-poster], [data-vt-title]').forEach((el) => {
     el.style.viewTransitionName = '';
   });
   const poster = event.currentTarget.querySelector<HTMLElement>('[data-poster]');
+  const title = event.currentTarget.querySelector<HTMLElement>('[data-vt-title]');
   if (poster) poster.style.viewTransitionName = 'song-poster';
+  if (title) title.style.viewTransitionName = 'song-title';
+  armFlight(poster);
 }
 
 export function LibraryPage() {
@@ -39,6 +44,16 @@ export function LibraryPage() {
     return [0, 1, 2, 3].map((i) => colors[i % Math.max(colors.length, 1)] ?? '#3a2a22');
   }, []);
   const clock = useRef(() => performance.now() / 1000).current;
+  // A living sky under every frosted card repaints the phone each tick. The shelf keeps one frame.
+  const stillSky = useSyncExternalStore(
+    (onChange) => {
+      const query = window.matchMedia('(max-width: 799px), (pointer: coarse)');
+      query.addEventListener('change', onChange);
+      return () => query.removeEventListener('change', onChange);
+    },
+    () => window.matchMedia('(max-width: 799px), (pointer: coarse)').matches,
+    () => true,
+  );
   useEffect(() => {
     setRemembered(rememberedSong());
   }, []);
@@ -57,22 +72,22 @@ export function LibraryPage() {
 
   return (
     <div className="library">
-      <Field colors={wash} dark={dark} clock={clock} />
+      <Field colors={wash} dark={dark} clock={stillSky ? undefined : clock} still={stillSky} t={12} />
       <header className="lib-head">
         <div className="lib-titlebar">
           <h1 className="lib-title">Песни</h1>
           <nav className="lib-actions" aria-label="Разделы">
-            <a className="lib-nav" href="/instruments" onClick={linkHandler('/instruments')} aria-label="Инструменты: галерея гравюр">
+            <Glass as="a" variant="chip" className="lib-nav" href="/instruments" onClick={linkHandler('/instruments')} aria-label="Инструменты: галерея гравюр">
               <Icon name="square.grid.2x2" size={20} />
               <span className="lib-nav-label">Инструменты</span>
-            </a>
-            <a className="lib-nav" href="/method" onClick={linkHandler('/method')} aria-label="Методология">
+            </Glass>
+            <Glass as="a" variant="chip" className="lib-nav" href="/method" onClick={linkHandler('/method')} aria-label="Методология">
               <Icon name="book.pages" size={20} />
               <span className="lib-nav-label">Методология</span>
-            </a>
+            </Glass>
           </nav>
         </div>
-        <label className="search">
+        <Glass as="label" variant="chip" className="search">
           <Icon name="magnifyingglass" size={20} className="search-icon" />
           <input
             type="search"
@@ -82,7 +97,7 @@ export function LibraryPage() {
             onChange={(e) => setQ(e.target.value)}
             aria-label="Поиск"
           />
-        </label>
+        </Glass>
       </header>
 
       {featured && <Hero song={featured} continued={featured.slug === remembered} dark={dark} />}
@@ -172,9 +187,12 @@ function Hero({ song, continued, dark }: { song: Song; continued: boolean; dark:
   return (
     <a
       ref={ref}
-      className="lib-hero glass"
+      className="lib-hero lg-host lg-host--card"
       href={`/song/${song.slug}`}
-      onClick={linkHandler(`/song/${song.slug}`)}
+      onClick={(e) => {
+        armPoster(e);
+        linkHandler(`/song/${song.slug}`)(e);
+      }}
       onPointerEnter={warm}
       onPointerDown={(e) => {
         armPoster(e);
@@ -184,9 +202,12 @@ function Hero({ song, continued, dark }: { song: Song; continued: boolean; dark:
       aria-label={`${song.title}. ${song.version.label}. ${song.artist}`}
       style={tone(song, dark)}
     >
+      <GlassLayers />
       <Cover song={song} className="lib-hero-cover" poster={continued} sizes="(min-width: 800px) 380px, 92vw" />
       <span className="lib-hero-copy">
-        <span className="lib-hero-title">{song.title}</span>
+        <span className="lib-hero-title" data-vt-title="">
+          {song.title}
+        </span>
         <span className="lib-hero-version">{song.version.label}</span>
         <span className="lib-hero-artist">{song.artist}</span>
         <span className="lib-hero-langs">{langsOf(song)}</span>
@@ -203,9 +224,12 @@ function ShelfRow({ song, continued, dark }: { song: Song; continued: boolean; d
   return (
     <a
       ref={ref}
-      className="lib-row"
+      className="lib-row lg-host lg-host--card"
       href={`/song/${song.slug}`}
-      onClick={linkHandler(`/song/${song.slug}`)}
+      onClick={(e) => {
+        armPoster(e);
+        linkHandler(`/song/${song.slug}`)(e);
+      }}
       onPointerEnter={warm}
       onPointerDown={(e) => {
         armPoster(e);
@@ -215,9 +239,12 @@ function ShelfRow({ song, continued, dark }: { song: Song; continued: boolean; d
       aria-label={`${song.title}. ${song.version.label}. ${song.artist}`}
       style={tone(song, dark)}
     >
+      <GlassLayers />
       <Cover song={song} className="lib-row-cover" poster={continued} sizes="96px" />
       <span className="lib-row-copy">
-        <span className="lib-row-lead">{song.title}</span>
+        <span className="lib-row-lead" data-vt-title="">
+          {song.title}
+        </span>
         <span className="lib-row-version">{song.version.label}</span>
         <span className="lib-row-artist">{song.artist}</span>
       </span>

@@ -4,6 +4,7 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/app.css';
 import './styles/instruments.css';
+import './ui/glass/glass.css';
 import { App } from './app/App';
 
 createRoot(document.getElementById('root')!).render(

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Icon, type IconName } from '@/ui/icons';
+import { GlassLayers } from '@/ui/glass/Glass';
 
 /**
  * A designed empty, loading or error card. The copy is one or two lines;
@@ -21,8 +22,13 @@ export function Status({
   /** `alert` announces immediately. `status` is a polite update. */
   live?: 'alert' | 'status';
 }) {
+  const glass = className.split(/\s+/).includes('glass');
   return (
-    <div className={className ? `status ${className}` : 'status'} role={live === 'alert' ? 'alert' : live === 'status' ? 'status' : undefined}>
+    <div
+      className={`${glass ? 'lg-host lg-host--card ' : ''}status${className ? ` ${className}` : ''}`}
+      role={live === 'alert' ? 'alert' : live === 'status' ? 'status' : undefined}
+    >
+      {glass ? <GlassLayers /> : null}
       <span className="status-mark" aria-hidden="true">
         <Icon name={icon} size={20} />
       </span>

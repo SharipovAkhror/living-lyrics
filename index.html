@@ -23,6 +23,11 @@
         var session = navigator.audioSession;
         if (session) session.type = 'playback';
       } catch (e) {}
+      try {
+        var solid = matchMedia('(prefers-reduced-transparency: reduce)').matches;
+        var lens = matchMedia('(hover: hover) and (pointer: fine) and (min-width: 800px)').matches;
+        document.documentElement.dataset.glass = solid ? 'solid' : lens ? 'lens' : 'rim';
+      } catch (e) {}
     </script>
   </head>
   <body>

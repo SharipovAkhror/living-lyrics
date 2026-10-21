@@ -1,0 +1,256 @@
+/*
+ * Liquid glass. One lens per surface. Tokens live in tokens.css (--lg-*).
+ * Phone (html[data-glass=rim]) keeps the rim, tint and shadow, and skips the
+ * displacement filter. Thick surfaces skip backdrop-filter entirely there.
+ */
+
+.lg-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/*
+ * No `isolation` and no forced position. Isolation would become the backdrop
+ * root and the lens would blur an empty background. Positioned chrome
+ * (header, floor, sheet) keeps the position it already has; a negative
+ * z-index stays inside that stacking context and the backdrop is the page.
+ */
+.lg-host {
+  box-shadow: var(--lg-shadow);
+}
+
+.lib-hero.lg-host,
+.lib-row.lg-host,
+.search.lg-host,
+.lib-nav.lg-host,
+.status.lg-host {
+  position: relative;
+}
+
+.lg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.lg-lens,
+.lg-tint,
+.lg-spec,
+.lg-edge {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.lg-lens {
+  background: var(--lg-fill);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
+}
+
+/* Edge bulge, static map. Invalid url() is dropped and the blur above remains. */
+/* A view-transition snapshot of live filters is one long frame, so the capture is flat. */
+html[data-vt='flat'] .lg-lens,
+html[data-vt='flat'] .sheet.glass.lg-host {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html[data-glass='lens'] .lg-lens {
+  -webkit-backdrop-filter: url('#lg-refract') blur(var(--lg-blur)) saturate(var(--lg-sat));
+  backdrop-filter: url('#lg-refract') blur(var(--lg-blur)) saturate(var(--lg-sat));
+}
+
+.lg-tint {
+  background:
+    linear-gradient(180deg, transparent 0%, var(--lg-tint) 78%),
+    radial-gradient(120% 80% at 50% 120%, var(--lg-tint), transparent 60%);
+  opacity: 0.9;
+}
+
+.lg-spec {
+  background: radial-gradient(120% 78% at var(--lg-x) var(--lg-y), var(--lg-spec), transparent 46%);
+  opacity: 0.55;
+}
+
+html[data-glass='lens'] .lg-spec {
+  opacity: 0.8;
+}
+
+.lg-edge {
+  box-shadow:
+    inset 0 1px 0 var(--lg-hi),
+    inset 0 -1px 0 var(--lg-lo),
+    inset 0 0 0 1px var(--lg-hair);
+  background: linear-gradient(var(--lg-angle), rgba(255, 255, 255, 0.38), transparent 42%, transparent 70%, rgba(255, 255, 255, 0.1));
+}
+
+/* Thick: the verse must not read through the floor or a sheet. */
+.lg-host--floor .lg-lens,
+.lg-host--sheet .lg-lens {
+  background: var(--lg-fill-thick);
+}
+
+.lg-host--note .lg-lens {
+  background: var(--lg-fill-note);
+}
+
+.lg-host--bar .lg-lens,
+.lg-host--chip .lg-lens {
+  background: var(--lg-fill);
+}
+
+.lg-host--card .lg-lens {
+  background: var(--lg-fill-card);
+}
+
+/* Phone path. No displacement, and no backdrop snapshot on the thick pieces. */
+html[data-glass='rim'] .lg-lens,
+html[data-glass='solid'] .lg-lens {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+html[data-glass='rim'] .lg-host--bar .lg-lens,
+html[data-glass='rim'] .lg-host--card .lg-lens,
+html[data-glass='rim'] .lg-host--note .lg-lens,
+html[data-glass='rim'] .lg-host--chip .lg-lens {
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: blur(12px) saturate(150%);
+}
+
+html[data-glass='solid'] .lg-lens,
+html[data-glass='solid'] .lg-host--bar .lg-lens,
+html[data-glass='solid'] .lg-host--card .lg-lens,
+html[data-glass='solid'] .lg-host--note .lg-lens,
+html[data-glass='solid'] .lg-host--chip .lg-lens,
+html[data-glass='solid'] .lg-host--floor .lg-lens,
+html[data-glass='solid'] .lg-host--sheet .lg-lens {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: var(--lg-solid);
+}
+
+html[data-glass='solid'] .lg-tint,
+html[data-glass='solid'] .lg-spec {
+  opacity: 0;
+}
+
+/* Coarse pointers and narrow windows never snapshot the thick surfaces, even before the script runs. */
+@media (pointer: coarse), (max-width: 799px) {
+  .lg-host--floor .lg-lens,
+  .lg-host--sheet .lg-lens {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* A glass inside glass does not take a second snapshot. */
+.lg-host .lg-host .lg-lens {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: color-mix(in srgb, var(--ink) 6%, var(--lg-fill-thick));
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .lg-lens {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--lg-solid);
+  }
+  .lg-tint,
+  .lg-spec {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-spec,
+  .lg-edge {
+    transition: none;
+  }
+}
+
+/* The previous frost must not paint a second snapshot under the lens. */
+.topbar.lg-host,
+.player.lg-host,
+.comment.is-margin.lg-host,
+.lib-hero.lg-host,
+.lib-row.lg-host,
+.search.lg-host,
+.lib-nav.lg-host,
+.sheet.glass.lg-host,
+.status.lg-host {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.topbar.lg-host::before,
+.player.lg-host::before {
+  display: none;
+}
+
+.sheet.lg-host .sheet-head {
+  background: transparent;
+}
+
+.player.lg-host,
+.comment.is-margin.lg-host {
+  border-color: transparent;
+}
+
+/* The phone note climbs the floor. It is thick paint, not a second blur. */
+html[data-glass='rim'] .player .comment.is-open .comment-fold,
+html[data-glass='solid'] .player .comment.is-open .comment-fold {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: var(--lg-fill-thick);
+}
+
+.lg-host--card {
+  box-shadow:
+    var(--lg-shadow),
+    0 22px 44px -28px color-mix(in srgb, var(--glow, var(--ink)) 50%, transparent);
+}
+
+/*
+ * Desktop lens: the centre stays dense, the rim thins so the displaced
+ * backdrop reads. The sheet is transformed, and a filter on a child cannot
+ * see past that transform, so the sheet carries the filter itself.
+ */
+html[data-glass='lens'] .lg-host--bar .lg-lens,
+html[data-glass='lens'] .lg-host--card .lg-lens,
+html[data-glass='lens'] .lg-host--chip .lg-lens,
+html[data-glass='lens'] .lg-host--note .lg-lens {
+  background: radial-gradient(130% 120% at 50% 40%, var(--lg-fill) 46%, transparent 78%);
+}
+
+html[data-glass='lens'] .lg-host--floor .lg-lens {
+  background: radial-gradient(120% 140% at 50% 55%, var(--lg-fill-thick) 72%, transparent 100%);
+}
+
+/* The sheet moves every spring frame. A filter on that element would resample
+   the backdrop each frame, so the refraction turns on only once it has settled. */
+html[data-glass='lens'] .sheet.glass.lg-host {
+  background: var(--lg-fill-thick);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+html[data-glass='lens'] .sheet.glass.lg-host.is-settled {
+  background: radial-gradient(120% 140% at 50% 30%, var(--lg-fill-thick) 68%, transparent 100%);
+  -webkit-backdrop-filter: url('#lg-refract') blur(var(--lg-blur)) saturate(var(--lg-sat));
+  backdrop-filter: url('#lg-refract') blur(var(--lg-blur)) saturate(var(--lg-sat));
+}
+
+html[data-glass='lens'] .sheet.glass.lg-host .lg-lens {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}

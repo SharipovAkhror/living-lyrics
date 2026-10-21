@@ -10,6 +10,8 @@ import { useSongAccent } from '@/app/theme';
 import { enableSongFonts } from '@/app/fontCatalog';
 import { nextSlug, prefetchLyrics, prefetchRecording, recordingUrl } from '@/app/prefetch';
 import { linkHandler } from '@/app/router';
+import { sharedTransition, takeFlight } from '@/app/flight';
+import { GlassLayers } from '@/ui/glass/Glass';
 import { AudioEngine } from '@/player/engine';
 import { preloadMode, readNetHint } from '@/player/preload';
 import { Scrubber } from '@/player/Scrubber';
@@ -86,6 +88,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const settings = useSettings();
   const songRef = useRef<HTMLDivElement>(null);
   const topbarRef = useRef<HTMLElement>(null);
+  const artRef = useRef<HTMLImageElement>(null);
   const floorRef = useRef<HTMLElement>(null);
   const [lyrics, setLyrics] = useState<Lyrics | null>(null);
   const [peaks, setPeaks] = useState<Peaks | null>(null);
@@ -353,7 +356,10 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     const root = top?.closest('.song');
     if (!(root instanceof HTMLElement) || !top || !floor) return;
     const apply = () => {
-      root.style.setProperty('--chrome-top', `${top.offsetTop + top.offsetHeight}px`);
+      const px = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      const big = px >= 24;
+      if (root.classList.contains('is-big-type') !== big) root.classList.toggle('is-big-type', big);
+      root.style.setProperty('--chrome-top', `${top.offsetTop + top.offsetHeight + 10}px`);
       root.style.setProperty('--player-h', `${Math.max(0, root.clientHeight - floor.offsetTop)}px`);
     };
     const ro = new ResizeObserver(apply);
@@ -366,6 +372,29 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       window.removeEventListener('resize', apply);
     };
   }, [song, lyrics, state?.error, state?.source, columns.frame]);
+
+  useLayoutEffect(() => {
+    const from = takeFlight();
+    const img = artRef.current;
+    if (!from || !img || sharedTransition()) return;
+    if (document.documentElement.dataset.motion === 'off') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const to = img.getBoundingClientRect();
+    if (to.width < 1) return;
+    const dx = from.left - to.left;
+    const dy = from.top - to.top;
+    const sx = from.width / to.width;
+    img.style.transition = 'none';
+    img.style.transformOrigin = 'top left';
+    img.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(${sx})`;
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => {
+        img.style.transition = 'transform var(--dur-3) var(--ease-spring)';
+        img.style.transform = '';
+      });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [song?.slug]);
 
   useLayoutEffect(() => {
     const root = songRef.current;
@@ -445,11 +474,13 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </div>
       )}
 
-      <header className="topbar" ref={topbarRef}>
+      <header className="topbar lg-host lg-host--bar" ref={topbarRef}>
+        <GlassLayers />
         <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
           <Icon name="chevron.left" size={22} />
         </a>
         <img
+          ref={artRef}
           className="now-art"
           alt=""
           width={96}
@@ -470,7 +501,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </button>
       </header>
 
-      <footer className={`player floor${state?.error ? ' has-error' : ''}`} ref={floorRef}>
+      <footer className={`player floor lg-host lg-host--floor${state?.error ? ' has-error' : ''}`} ref={floorRef}>
+        <GlassLayers />
         {floorNote && (
           <aside className={`comment${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
             <button
@@ -554,7 +586,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               <Icon name="backward" size={24} />
             </button>
             <button
-              className={`btn btn-circle btn-xl btn-ring${buffering ? ' is-buffering' : ''}${state?.error ? ' is-error' : ''}`}
+              className={`btn btn-circle btn-xl btn-ring${playing ? ' is-live' : ''}${buffering ? ' is-buffering' : ''}${state?.error ? ' is-error' : ''}`}
               onClick={togglePlay}
               aria-label={playLabel}
               aria-busy={buffering}
@@ -597,7 +629,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       </footer>
 
       {columns.frame.marginNote && noteText && (
-        <aside className="comment is-margin" aria-label="Пояснение">
+        <aside className="comment is-margin lg-host lg-host--note" aria-label="Пояснение">
+          <GlassLayers />
           <div className="comment-head">
             <span className="comment-kicker">Пояснение</span>
             <button type="button" className="comment-close" aria-label="Закрыть пояснение" onClick={() => setSettings({ showComment: false })}>

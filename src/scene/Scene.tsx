@@ -84,6 +84,12 @@ export function Scene({ song, timeline, settings, features, clock, onOwnerChange
   useEffect(() => {
     let raf = 0;
     let lastKey = '';
+    let noteY = '';
+    // Read once. offsetTop inside the frame forces layout on every seek tick.
+    const stageTop = stageRef.current?.offsetTop ?? 0;
+    const host = stageRef.current?.closest('.song') as HTMLElement | null;
+    const glow = Math.min(stage.h * 0.5, 380);
+    if (plate.current) plate.current.style.height = `${glow.toFixed(1)}px`;
     const loop = () => {
       raf = requestAnimationFrame(loop);
       const t = clock();
@@ -144,18 +150,18 @@ export function Scene({ song, timeline, settings, features, clock, onOwnerChange
         const o = (b0 ? 1 - f : 0) + (b1 ? f : 0);
         const top = b0 && b1 ? lerp(b0.top, b1.top, f) : (b0 ?? b1)?.top ?? 0;
         const h = b0 && b1 ? lerp(b0.h, b1.h, f) : (b0 ?? b1)?.h ?? 0;
-        const glow = Math.min(stage.h * 0.5, 380);
         const shown = f < 0.5 ? timeline.cues[a] : timeline.cues[a + 1];
         stageRef.current?.parentElement?.setAttribute('data-pool', shown?.kind === 'line' && shown.rtl ? 'rtl' : 'ltr');
         p.style.opacity = (o * 0.95).toFixed(3);
         p.style.visibility = o < 0.01 ? 'hidden' : 'visible';
         p.style.transform = `translate3d(0, ${(top + h / 2 - glow / 2).toFixed(1)}px, 0)`;
-        p.style.height = `${glow.toFixed(1)}px`;
         // The margin note shares this frame: its top is the active line's top. A seek lands both together.
-        const host = stageRef.current?.closest('.song') as HTMLElement | null;
         if (host && (b0 || b1)) {
-          const y = (stageRef.current?.offsetTop ?? 0) + top + 2;
-          host.style.setProperty('--note-y', `${y.toFixed(1)}px`);
+          const y = `${(stageTop + top + 2).toFixed(1)}px`;
+          if (y !== noteY) {
+            noteY = y;
+            host.style.setProperty('--note-y', y);
+          }
         }
       }
 

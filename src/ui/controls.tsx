@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from './icons';
+import { GlassLayers } from './glass/Glass';
 import { springSettled, stepSpring, type SpringState } from './spring';
 
 function motionOff() {
@@ -38,6 +39,7 @@ export function Sheet({
   const panel = useRef<HTMLDivElement>(null);
   const backdrop = useRef<HTMLDivElement>(null);
   const body = useRef<HTMLDivElement>(null);
+  const height = useRef(1);
   const state = useRef<SpringState>({ x: 900, v: 0 });
   const target = useRef(0);
   const raf = useRef(0);
@@ -54,18 +56,25 @@ export function Sheet({
   const titleId = useId();
   openRef.current = open;
 
+  const remember = () => {
+    const el = panel.current;
+    if (el) height.current = Math.max(1, el.offsetHeight);
+  };
+
   const paint = (y: number) => {
     const el = panel.current;
     if (!el) return;
     const travel = Math.max(0, y);
     el.style.transform = `translate3d(0, ${travel.toFixed(2)}px, 0)`;
-    const h = el.offsetHeight || 1;
-    const p = Math.max(0, Math.min(1, 1 - travel / h));
+    const p = Math.max(0, Math.min(1, 1 - travel / height.current));
     if (backdrop.current) backdrop.current.style.opacity = p.toFixed(3);
     const root = document.documentElement;
     root.style.setProperty('--sheet-p', p.toFixed(3));
     if (p > 0.02) root.dataset.sheet = '1';
     else delete root.dataset.sheet;
+    // Refraction waits until the spring has arrived. Toggling it mid-flight resamples every frame.
+    const settled = openRef.current && travel < 0.8;
+    if (el.classList.contains('is-settled') !== settled) el.classList.toggle('is-settled', settled);
   };
 
   const stop = () => {
@@ -104,7 +113,10 @@ export function Sheet({
   useEffect(() => {
     if (!render || !panel.current) return;
     const el = panel.current;
-    const away = () => el.offsetHeight + 48;
+    remember();
+    const away = () => height.current + 48;
+    const ro = new ResizeObserver(() => remember());
+    ro.observe(el);
     if (motionOff()) {
       stop();
       state.current = { x: 0, v: 0 };
@@ -116,9 +128,12 @@ export function Sheet({
           setRender(false);
           clearSheetChrome();
         }, 200);
-        return () => window.clearTimeout(timer);
+        return () => {
+          window.clearTimeout(timer);
+          ro.disconnect();
+        };
       }
-      return;
+      return () => ro.disconnect();
     }
     if (open) {
       if (!shown) {
@@ -132,7 +147,10 @@ export function Sheet({
       target.current = away();
     }
     loop();
-    return () => stop();
+    return () => {
+      ro.disconnect();
+      stop();
+    };
     // `shown` is intentionally read once per open, not a dependency: including it restarts the spring.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, render]);
@@ -229,7 +247,7 @@ export function Sheet({
       <div ref={backdrop} className="sheet-backdrop" onClick={onClose} />
       <div
         ref={panel}
-        className={`sheet glass sheet--${size}`}
+        className={`sheet glass lg-host lg-host--sheet sheet--${size}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -239,6 +257,7 @@ export function Sheet({
         onPointerUp={onUp}
         onPointerCancel={onUp}
       >
+        <GlassLayers />
         <div className="sheet-head">
           <div className="sheet-grabber" />
           <div className="sheet-titlebar">

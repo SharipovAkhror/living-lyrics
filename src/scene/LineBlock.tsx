@@ -84,15 +84,22 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
       ? Math.max(64, stage.h * (hasSubs ? 0.62 : 0.74))
       : desk
         ? Math.max(140, stage.h * (hasSubs ? 0.52 : 0.62))
-        : Math.max(80, stage.h * (hasSubs ? (arab ? 0.52 : 0.44) : 0.5));
+        : stage.h < 180
+          ? Math.max(32, stage.h * (hasSubs ? 0.4 : 0.58))
+          : Math.max(80, stage.h * (hasSubs ? (arab ? 0.52 : 0.44) : 0.5));
     const floor = car ? (arab ? 34 : 28) : 13;
+    // System font size up to 200%, then the in-page slider, and never past double the design size.
+    // The fit below still refuses a line that will not sit in the stage.
+    const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    const os = Math.min(2, Math.max(0.85, rootPx / 16));
+    const scale = Math.min(2, settings.textScale * os);
     // Phone: 36px Latin/Cyrillic, 42px Arabic and Persian, scaled by the window, never below 13.
     // Wide and tall: 50 / 58, so the sung line is a stage line and not a caption.
     const design = car
-      ? Math.max(floor, (arab ? 36 : 30) * settings.textScale)
+      ? Math.max(floor, (arab ? 36 : 30) * scale)
       : desk
-        ? (arab ? 58 : 50) * settings.textScale
-        : (arab ? 42 : 36) * (Math.min(vh, 900) / 852) * settings.textScale;
+        ? (arab ? 58 : 50) * scale
+        : (arab ? 42 : 36) * (Math.min(vh, 900) / 852) * scale;
     const upper = Math.max(floor, design);
     const lower = floor;
     el.style.width = `${width}px`;
@@ -114,6 +121,20 @@ function LineBlockImpl({ cue, wordSync, settings, entrance, motion, stage, regis
       el.style.fontSize = `${fitted}px`;
     }
     fontPx.current = fitted;
+    // A short phone stage also has to hold the translation. The original's cap above
+    // does not shrink that second line, so the whole block steps down until it fits.
+    if (!car && !desk && stage.h > 0 && subs.current) {
+      const budget = stage.h * 0.9;
+      const tr = subs.current;
+      for (let i = 0; i < 4 && r.offsetHeight > budget; i++) {
+        const factor = budget / r.offsetHeight;
+        fitted = Math.max(lower, fitted * factor);
+        el.style.fontSize = `${fitted}px`;
+        const trNow = parseFloat(getComputedStyle(tr).fontSize) || 16;
+        tr.style.fontSize = `${Math.max(13, trNow * factor)}px`;
+      }
+      fontPx.current = fitted;
+    }
     widths.current = words.current.map((w) => w?.offsetWidth ?? 0);
     // The translation's share includes its top margin: total height minus the original's block.
     const mainH = main.current!.offsetHeight;

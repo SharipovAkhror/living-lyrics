@@ -199,12 +199,12 @@ export function SettingsSheet({
               <span className="t-footnote secondary" aria-hidden>
                 А
               </span>
-              <Slider label="Размер текста" min={0.8} max={1.3} step={0.05} value={settings.textScale} onChange={(v) => setSettings({ textScale: v })} />
+              <Slider label="Размер текста" min={0.8} max={2} step={0.05} value={settings.textScale} onChange={(v) => setSettings({ textScale: v })} />
               <span className="t-title3 secondary" aria-hidden>
                 А
               </span>
             </div>
-            <p className="choice-hint choice-hint--pad">Размер оригинала на сцене.</p>
+            <p className="choice-hint choice-hint--pad">Размер оригинала на сцене. Системный шрифт учитывается, верх — вдвое от рисунка.</p>
           </Group>
         </>
       )}

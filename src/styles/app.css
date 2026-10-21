@@ -253,7 +253,7 @@
   max-width: min(100%, 44ch);
   min-width: 0;
   color: var(--ink-unsung);
-  font-size: 40px;
+  font-size: 2.5rem;
   overflow: visible;
 }
 .scene[data-align='edge'] .fb-orig {
@@ -679,7 +679,7 @@
 }
 .topbar-song {
   font-family: var(--font-serif);
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: -0.02em;
@@ -687,7 +687,7 @@
 }
 .topbar-version,
 .topbar-who {
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.3;
   color: var(--ink-2);
 }
@@ -754,7 +754,7 @@
   border-radius: 8px;
   background: none;
   color: var(--ink-2);
-  font: 500 13px / 1.3 var(--font-ui);
+  font: 500 0.8125rem / 1.3 var(--font-ui);
   text-align: start;
   width: 100%;
   cursor: default;
@@ -785,7 +785,7 @@
   border: 0;
   background: none;
   color: inherit;
-  font: 600 13px / 1.2 var(--font-ui);
+  font: 600 0.8125rem / 1.2 var(--font-ui);
   text-decoration: none;
   opacity: 0.9;
   cursor: pointer;
@@ -986,7 +986,7 @@
   background: none;
   /* --ink-2 is 72 % and stays muted on the glass over every song wash. */
   color: var(--ink-2);
-  font: 600 13px / 1.15 var(--font-ui);
+  font: 600 0.8125rem / 1.15 var(--font-ui);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition:
@@ -998,7 +998,7 @@
   max-width: 100%;
   text-align: center;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: 0;
 }
@@ -1025,7 +1025,7 @@
 @media (max-width: 370px) {
   .util,
   .util-label {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
 }
 
@@ -1051,7 +1051,7 @@
   border-radius: var(--r-pill);
   background: color-mix(in srgb, var(--ink) 8%, transparent);
   color: var(--ink-2);
-  font: 600 13px / 1 var(--font-ui);
+  font: 600 0.8125rem / 1 var(--font-ui);
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -1082,7 +1082,7 @@
   border-radius: var(--r-xs);
   background: color-mix(in srgb, var(--ink) 10%, transparent);
   color: var(--label-2);
-  font: 600 13px/1 var(--font-ui);
+  font: 600 0.8125rem/1 var(--font-ui);
 }
 @media (min-width: 720px) {
   .mark-btn {
@@ -1102,7 +1102,7 @@
   min-width: 0;
   min-height: 44px;
   color: var(--label);
-  font: 600 14px/1 var(--font-ui);
+  font: 600 0.875rem/1 var(--font-ui);
   white-space: nowrap;
 }
 .mark-toast-undo {
@@ -1113,7 +1113,7 @@
   border-radius: var(--r-pill);
   background: none;
   color: var(--accent);
-  font: 600 14px/1 var(--font-ui);
+  font: 600 0.875rem/1 var(--font-ui);
   cursor: pointer;
   touch-action: manipulation;
 }
@@ -1168,10 +1168,12 @@
   border-radius: var(--r-pill);
   background: color-mix(in srgb, var(--ink) 16%, transparent);
   overflow: hidden;
-  transition: height var(--dur-2) var(--ease-spring);
+  transform: scaleY(1);
+  transform-origin: center;
+  transition: transform var(--dur-2) var(--ease-spring);
 }
 .scrub.is-dragging .scrub-rail {
-  height: 10px;
+  transform: scaleY(2.5);
 }
 .scrub-fill {
   position: absolute;
@@ -1337,7 +1339,7 @@
 }
 
 /* From here the page is a column, not a phone floor stretched across the window. */
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   .song {
     --chrome-top: calc(var(--safe-t) + 118px);
     --player-h: calc(176px + var(--safe-b));
@@ -1423,7 +1425,7 @@
     width: auto;
   }
 }
-@media (min-width: 800px) and (hover: hover) and (pointer: fine) {
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
   .util {
     height: 32px;
     min-height: 32px;
@@ -1506,8 +1508,10 @@
   }
 }
 
-/* Short landscape: the car screen. One capsule row, a one-line footnote, a large line. */
-@media (min-width: 700px) and (max-height: 640px) {
+/* Short landscape: the car screen. One capsule row, a one-line footnote, a large line.
+   Narrow phones (SE landscape) share this row; the 700 px query missed them. */
+@media (min-width: 700px) and (max-height: 640px),
+  (max-width: 699px) and (max-height: 520px) and (orientation: landscape) {
   .song {
     --col-left: 12px;
     --col-right: 12px;
@@ -1787,7 +1791,7 @@
   background: none;
   color: var(--accent);
   font-family: var(--font-ui);
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: 600;
   font-style: normal;
   font-variant-caps: normal;
@@ -1815,23 +1819,7 @@
   color: var(--ink-2);
   font-size: var(--t-subhead);
 }
-/* The page under a sheet steps back. --sheet-p is painted each frame by the spring, so there is no CSS transition on top. */
-html[data-sheet='1'] .song,
-html[data-sheet='1'] .library,
-html[data-sheet='1'] .ig,
-html[data-sheet='1'] .method,
-html[data-sheet='1'] .empty {
-  transform: scale(calc(1 - 0.04 * var(--sheet-p, 0)));
-  border-radius: calc(28px * var(--sheet-p, 0));
-  transform-origin: center center;
-}
-html.is-sheet-drag .song,
-html.is-sheet-drag .library,
-html.is-sheet-drag .ig,
-html.is-sheet-drag .method,
-html.is-sheet-drag .empty {
-  transition: none;
-}
+/* The sheet spring moves only the sheet. Scaling the page under it missed the frame budget. */
 .sheet-body {
   overflow: auto;
   padding: 0 var(--sp-4) var(--sp-6);
@@ -1948,7 +1936,7 @@ html.is-sheet-drag .empty {
   text-align: center;
 }
 .info-original {
-  font-size: 26px;
+  font-size: 1.625rem;
   line-height: 2.15;
 }
 .info-version {
@@ -2015,13 +2003,13 @@ html.is-sheet-drag .empty {
   border-top: 0.5px solid var(--separator);
 }
 .part-title {
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1.25;
   color: var(--ink);
 }
 .part-lang,
 .part-kicker {
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.3;
   color: var(--label-2);
 }
@@ -2034,26 +2022,26 @@ html.is-sheet-drag .empty {
 .part-author,
 .part-book-ru,
 .part-missing {
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.35;
   color: var(--ink);
 }
 .part-original {
   display: block;
   margin-top: 2px;
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1.4;
   color: var(--ink);
 }
 .part-original.f-mushaf,
 .part-original.f-persian,
 .part-original.f-nastaliq {
-  font-size: 20px;
+  font-size: 1.25rem;
   line-height: 2.05;
 }
 .part-ref {
   margin-top: 2px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.4;
   color: var(--accent);
 }
@@ -2064,7 +2052,7 @@ html.is-sheet-drag .empty {
   text-underline-offset: 2px;
 }
 .part-note {
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.45;
   color: color-mix(in srgb, var(--ink) 78%, transparent);
 }
@@ -2175,7 +2163,7 @@ html.is-sheet-drag .empty {
   overflow: hidden;
 }
 .mark-line.f-mushaf {
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 2.05;
 }
 .mark-section {
@@ -2243,13 +2231,13 @@ html.is-sheet-drag .empty {
   padding: 12px 16px 14px;
 }
 .choice-label {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
 }
 .choice-hint {
   margin: 0;
   color: var(--label-2);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.35;
   font-weight: 400;
 }
@@ -2329,7 +2317,7 @@ html.is-sheet-drag .empty {
   min-height: 44px;
   padding: 4px;
   background: none;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: -0.15px;
   white-space: nowrap;
@@ -2345,12 +2333,12 @@ html.is-sheet-drag .empty {
 }
 .seg.seg--lines .seg-item {
   white-space: normal;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.2;
   padding: 6px 3px;
 }
 .seg-sample {
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1;
 }
 
@@ -2383,20 +2371,20 @@ html.is-sheet-drag .empty {
   background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 .font-opt-sample {
-  font-size: 26px;
+  font-size: 1.625rem;
   line-height: 1.45;
   font-weight: 400;
   font-synthesis: none;
 }
 .font-opt-name {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 500;
   line-height: 1.3;
   color: color-mix(in srgb, var(--ink) 70%, transparent);
 }
 .font-opt-note {
   font-family: var(--font-ui);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.3;
   color: var(--label-2);
 }
@@ -2561,7 +2549,7 @@ html.is-sheet-drag .empty {
   border-radius: var(--r-sm);
   background: none;
   color: color-mix(in srgb, var(--ink) 46%, transparent);
-  font: 500 13px / 1.35 var(--font-ui);
+  font: 500 0.8125rem / 1.35 var(--font-ui);
   text-align: center;
   cursor: pointer;
 }
@@ -2607,7 +2595,7 @@ html.is-sheet-drag .empty {
   align-self: first baseline;
   min-width: 40px;
   padding-top: 0.35em;
-  font-size: 12px;
+  font-size: 0.8125rem;
   font-weight: 500;
   color: color-mix(in srgb, var(--ink) 36%, transparent);
 }
@@ -2619,16 +2607,16 @@ html.is-sheet-drag .empty {
   min-width: 0;
 }
 .tl-orig.f-serif {
-  font-size: 21px;
+  font-size: 1.3125rem;
   line-height: 1.25;
 }
 .tl-orig.f-mushaf,
 .tl-orig.f-persian {
-  font-size: 22px;
+  font-size: 1.375rem;
   line-height: 2.15;
 }
 .tl-orig.f-nastaliq {
-  font-size: 19px;
+  font-size: 1.1875rem;
   line-height: 2.45;
 }
 
@@ -2821,7 +2809,7 @@ html.is-sheet-drag .empty {
 .lib-hero-title {
   font-family: var(--font-serif);
   font-weight: 600;
-  font-size: clamp(28px, 5vw, 44px);
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
   line-height: 1.08;
   letter-spacing: -0.02em;
   text-wrap: balance;
@@ -2963,7 +2951,7 @@ html.is-sheet-drag .empty {
     aspect-ratio: auto;
   }
   .lib-hero-title {
-    font-size: 26px;
+    font-size: 1.625rem;
   }
   .lib-shelf {
     margin-top: 12px;
@@ -3160,7 +3148,7 @@ html.is-sheet-drag .empty {
   background: var(--bg-elevated);
   border: 0.5px solid var(--separator);
   overflow: auto;
-  font-size: 13.5px;
+  font-size: 0.84375rem;
   line-height: 1.5;
 }
 .doc pre code {
@@ -3213,12 +3201,12 @@ html.is-sheet-drag .empty {
   text-align: right;
 }
 
-/* Library to song: the cover that was touched travels into the rail. The rest of the page crossfades. */
-::view-transition-old(root) {
-  animation: vt-out var(--dur-3) var(--ease-spring) both;
-}
+/* The cover and the title travel. A full-page crossfade keeps two filtered trees
+   alive for the whole spring and drops frames, so the root snapshot does not animate. */
+::view-transition-group(root),
+::view-transition-old(root),
 ::view-transition-new(root) {
-  animation: vt-in var(--dur-3) var(--ease-spring) both;
+  animation: none;
 }
 ::view-transition-group(song-poster) {
   animation-duration: var(--dur-3);
@@ -3231,13 +3219,281 @@ html.is-sheet-drag .empty {
   overflow: hidden;
   border-radius: var(--r-md);
 }
-@keyframes vt-out {
-  to {
+/* ===================== Round 6: compositions and motion ===================== */
+
+.topbar-song {
+  view-transition-name: song-title;
+}
+
+::view-transition-group(song-title) {
+  animation-duration: var(--dur-3);
+  animation-timing-function: var(--ease-spring);
+}
+
+::view-transition-old(song-title),
+::view-transition-new(song-title) {
+  height: auto;
+  width: auto;
+  overflow: hidden;
+}
+
+@keyframes route-in {
+  from {
     opacity: 0;
   }
 }
-@keyframes vt-in {
-  from {
-    opacity: 0;
+
+html[data-glass='rim'] .song,
+html[data-glass='solid'] .song {
+  animation: route-in 320ms var(--ease-out) both;
+}
+
+@supports not (view-transition-name: none) {
+  html[data-glass='lens'] .song {
+    animation: route-in 320ms var(--ease-out) both;
+  }
+}
+
+@keyframes now-live {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  46% {
+    transform: scale(1.06);
+  }
+}
+
+.btn-xl.is-live {
+  animation: now-live 1.4s var(--ease-spring) infinite;
+}
+
+/* Phone portrait: header and floor are islands. The field stays in the margins. */
+@media (max-width: 699px) and (min-height: 521px),
+  (max-width: 767px) and (min-height: 641px) {
+  .topbar.lg-host {
+    top: max(8px, var(--safe-t));
+    left: max(10px, var(--safe-l));
+    right: max(10px, var(--safe-r));
+    width: auto;
+    padding: 8px 10px 8px 8px;
+    border-radius: 22px;
+  }
+  .player.lg-host {
+    left: max(10px, var(--safe-l));
+    right: max(10px, var(--safe-r));
+    bottom: max(8px, var(--safe-b));
+    width: auto;
+    border-radius: 26px;
+    border-top: 0;
+    overflow: visible;
+  }
+  .player .comment.is-open .comment-fold {
+    left: 0;
+    right: 0;
+    border-radius: 22px 22px 0 0;
+  }
+}
+
+/* iPhone SE: the hero is a row, the shelf is short, the title is a poster not a billboard. */
+@media (max-width: 389px) {
+  .lib-title {
+    font-size: 2rem;
+  }
+  .lib-hero {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 8px;
+  }
+  .lib-hero-cover {
+    width: 112px;
+    height: 112px;
+    flex: none;
+    aspect-ratio: auto;
+  }
+  .lib-hero-copy {
+    padding: 2px 2px 4px;
+  }
+  .lib-hero-title {
+    font-size: 1.35rem;
+  }
+  .lib-hero-go {
+    min-height: 36px;
+    margin-top: 2px;
+    padding: 0 14px;
+  }
+  .lib-row {
+    grid-template-columns: 72px minmax(0, 1fr);
+    min-height: 88px;
+    gap: 10px;
+  }
+  .lib-row-cover {
+    width: 72px;
+    height: 72px;
+  }
+  /* Four nowrap labels do not fit a 320 px floor. Two rows, icon beside the name. */
+  .utility {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .util {
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 8px;
+    padding: 0 8px;
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+  }
+  /* A doubled system size must not turn the header into a stack of wrapped lines. */
+  .topbar-song,
+  .topbar-version,
+  .topbar-who {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* 150% type and above: one line, or a short phone loses the verse between header and floor. */
+.song.is-big-type .topbar-song,
+.song.is-big-type .topbar-version,
+.song.is-big-type .topbar-who {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Phone landscape library: a filmstrip, not a stacked list under a short sky. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .library {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+  .lib-hero {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 8px;
+    padding: 8px;
+    gap: 12px;
+  }
+  .lib-hero-cover {
+    width: 96px;
+    height: 96px;
+    aspect-ratio: auto;
+    flex: none;
+  }
+  .lib-hero-title {
+    font-size: 1.35rem;
+  }
+  .lib-shelf {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+  .lib-shelf > li {
+    flex: 0 0 min(280px, 72vw);
+    scroll-snap-align: start;
+  }
+  .lib-row {
+    min-height: 76px;
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+  .lib-row-cover {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* iPad: a hall. The poster keeps the left, the shelf keeps the right. The song stays a column. */
+@media (min-width: 768px) and (max-width: 1099px) and (min-height: 700px) {
+  .library {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+    grid-template-areas:
+      'head head'
+      'hero shelf';
+    column-gap: 28px;
+    align-items: start;
+    max-width: 1080px;
+  }
+  .lib-head {
+    grid-area: head;
+  }
+  .lib-hero {
+    grid-area: hero;
+    flex-direction: column;
+    margin-top: 8px;
+  }
+  .lib-hero-cover {
+    width: 100%;
+    aspect-ratio: 1;
+  }
+  .lib-shelf {
+    grid-area: shelf;
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+  }
+  .lib-empty {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1100px) {
+  .library {
+    max-width: 1200px;
+  }
+}
+
+/* Cinema. The poster keeps the left. The other songs are a gallery column, not a stretched list. */
+@media (min-width: 1920px) {
+  .library {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(300px, 420px);
+    grid-template-areas:
+      'head head'
+      'hero shelf';
+    column-gap: 32px;
+    align-items: start;
+    max-width: 1520px;
+  }
+  .lib-head {
+    grid-area: head;
+  }
+  .lib-hero {
+    grid-area: hero;
+    gap: 36px;
+    padding: 20px;
+    margin-top: 12px;
+  }
+  .lib-hero-cover {
+    width: min(48%, 520px);
+  }
+  .lib-hero-title {
+    font-size: clamp(2.5rem, 3vw, 3.5rem);
+  }
+  .lib-shelf {
+    grid-area: shelf;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 12px;
+  }
+  .lib-shelf > li {
+    flex: none;
+    width: 100%;
+    max-width: 420px;
+  }
+}
+
+@media (min-width: 2400px) {
+  .library {
+    max-width: 1760px;
   }
 }
