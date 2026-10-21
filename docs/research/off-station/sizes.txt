@@ -1,0 +1,39 @@
+﻿measured 2026-10-22
+worktree t33-off branch grok/t33-off
+node v24.14.0
+npm 11.9.0
+command: npx vite build   (already run this session, no AUDIO_KEY, decrypt not invoked)
+vite build exit 0, 384 ms, entry gzip 179973 of 200000
+
+content/audio-enc files=3 bytes=38576583
+  9381790  content/audio-enc/i-have-come-alive/high.m4a.enc
+  15802080  content/audio-enc/karitas/high.m4a.enc
+  13392713  content/audio-enc/one/high.m4a.enc
+plaintext estimate bytes=38576499  (ciphertext minus 28 bytes AES-256-GCM header per file: 12 IV + 16 tag)
+public files=34 bytes=6010405  (no decrypted m4a)
+dist files=215 bytes=12133780
+dist m4a count=0
+dist by extension:
+  .js  bytes=2933024  files=40
+  .jpg  bytes=2837641  files=15
+  .json  bytes=2018101  files=9
+  .woff  bytes=1575836  files=44
+  .woff2  bytes=1534112  files=50
+  .png  bytes=570870  files=5
+  .glb  bytes=332148  files=2
+  .otf  bytes=246428  files=1
+  .css  bytes=78811  files=46
+  .svg  bytes=4450  files=1
+  .html  bytes=1592  files=1
+  .webmanifest  bytes=767  files=1
+largest dist files:
+  1139598  dist/covers/one/source.jpg
+  736440  dist/assets/three.module-C8enonVg.js
+  591148  dist/audio/karitas/features.json
+  541037  dist/assets/index-CvJ9Tm3C.js
+  490555  dist/audio/one/features.json
+  462246  dist/assets/MethodPage-DG-PSjpy.js
+  373377  dist/covers/i-have-come-alive/source.jpg
+  365813  dist/audio/i-have-come-alive/features.json
+deployed estimate bytes=50710279  (dist plus plaintext audio; production npm run build decrypts before vite)
+npm run build was not run (it would decrypt if AUDIO_KEY is present; the key was not used)
