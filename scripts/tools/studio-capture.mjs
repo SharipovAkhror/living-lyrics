@@ -1,6 +1,6 @@
 // Sheets and motion recordings for the studio pass.
-// Sheets: node scripts/tools/studio-capture.mjs --base http://127.0.0.1:4176 --tag round9 --sheets work/studio/sheets9
-// Videos: node scripts/tools/studio-capture.mjs --base http://127.0.0.1:4176 --videos work/studio/video9
+// Sheets: node scripts/tools/studio-capture.mjs --base http://127.0.0.1:4176 --tag round10 --sheets work/studio/sheets10
+// Videos: node scripts/tools/studio-capture.mjs --base http://127.0.0.1:4176 --videos work/studio/video10
 // Each clip is at least 6s, with a 1s hold before and after the action.
 // Chromium slows CSS through CDP (playback rate 0.25). Both engines slow springs with ?slowmo=4.
 // WebKit also sets ?anims=4, because it has no CDP playback rate. Contact sheets are a second, unscaled pass.
