@@ -3,6 +3,11 @@
  * unmounted it, and the working set climbed for the whole song. A slot stays in
  * the DOM: the cue it shows can change, the host element does not.
  */
+import type { Settings } from '@/app/settings';
+import { showHarakatText } from '@/data/harakat';
+import type { LineCue, Timeline } from '@/data/timeline';
+import type { Measure } from './flow';
+import { fontClass } from './fonts';
 
 export const PHONE_LINE_SLOTS = 8;
 export const PHONE_INST_SLOTS = 8;
@@ -11,6 +16,126 @@ export interface PhoneSlot {
   idx: number;
   /** In the current window. A parked slot keeps its host and is not laid out. */
   live: boolean;
+}
+
+/** The host publishes these so a scrub can retarget the line without a React commit. */
+export interface PhoneLineHost extends HTMLElement {
+  __llCue?: { current: LineCue };
+  __llOverride?: { current: LineCue | null };
+}
+
+type BlockEntry = { fn: (t: number, d: number, top: number, wait: number) => void; m: Measure };
+
+/** Plain text for the drag. The release render puts the emphasis markup back. */
+function plain(text: string | undefined): string {
+  if (!text) return '\u200b';
+  const stripped = text.replace(/\*\*/g, '').replace(/\*/g, '');
+  return stripped || '\u200b';
+}
+
+/** Change a leaf's characters without detaching the text node React still holds. */
+function setLeaf(el: HTMLElement | null, text: string) {
+  if (!el) return;
+  const child = el.firstChild;
+  if (child && child.nodeType === Node.TEXT_NODE && child.nextSibling == null) {
+    if (child.nodeValue !== text) child.nodeValue = text;
+  }
+}
+
+/** Write the next lyric into the host that already shows the previous one. */
+export function paintPhoneLine(
+  el: HTMLElement,
+  cue: LineCue,
+  settings: Pick<Settings, 'showHarakat' | 'fontPersian'>,
+  wordSync: boolean,
+) {
+  const line = cue.line;
+  el.lang = line.lang;
+  const orig = el.querySelector<HTMLElement>('.fb-orig');
+  if (orig) {
+    orig.dir = cue.rtl ? 'rtl' : 'ltr';
+    orig.className = `fb-orig ${fontClass(line, settings)}${wordSync ? '' : ' is-line-fade'}`;
+  }
+  el.querySelectorAll<HTMLElement>('.w-wrap').forEach((wrap, i) => {
+    const w = line.words[i];
+    const word = wrap.querySelector<HTMLElement>('.w');
+    if (word) {
+      setLeaf(word, w ? showHarakatText(w.w, settings.showHarakat) : '\u200b');
+      word.classList.toggle('w--em', !!w?.em);
+    }
+    wrap.hidden = !w;
+    const gap = wrap.querySelector<HTMLElement>('.w-br, .w-sp');
+    if (gap) {
+      gap.classList.toggle('w-br', !!w?.br);
+      gap.classList.toggle('w-sp', !w?.br);
+      gap.hidden = !(w && (w.br || i < line.words.length - 1));
+    }
+  });
+  // The translation keeps React's emphasis nodes. A plain string covers them
+  // until the release commit, which clears the attribute before paint.
+  const tr = el.querySelector<HTMLElement>('.fb-tr');
+  if (tr) {
+    const text = plain(line.tr?.ru);
+    tr.setAttribute('data-scrub', text === '\u200b' ? '' : text);
+  }
+  setLeaf(el.querySelector('.fb-alt'), line.alt ? showHarakatText(line.alt.text, settings.showHarakat) : '\u200b');
+  setLeaf(el.querySelector('.fb-translit'), plain(line.translit));
+  const rep = el.querySelector<HTMLElement>('.fb-repeat');
+  if (rep) rep.hidden = cue.repeat <= 0;
+}
+
+/**
+ * Point the mounted hosts at the next cues. Returns false when a host is missing,
+ * so the caller commits through React instead of writing into the wrong node.
+ */
+export function retargetPhoneLines(
+  stage: HTMLElement,
+  prev: readonly (PhoneSlot | null)[],
+  next: readonly (PhoneSlot | null)[],
+  timeline: Timeline,
+  blocks: Map<number, BlockEntry>,
+  settings: Pick<Settings, 'showHarakat' | 'fontPersian'>,
+  wordSync: boolean,
+): boolean {
+  const hosts = [...stage.querySelectorAll<PhoneLineHost>('.fb--line')];
+  let seen = 0;
+  const hostAt: Array<PhoneLineHost | null> = prev.map((slot) => (slot ? (hosts[seen++] ?? null) : null));
+  if (seen !== hosts.length) return false;
+  for (let i = 0; i < next.length; i++) {
+    if (next[i] && !hostAt[i]) return false;
+  }
+  const moves: Array<{ from: number; to: number }> = [];
+  for (let i = 0; i < prev.length; i++) {
+    const was = prev[i];
+    const slot = next[i];
+    const el = hostAt[i];
+    if (!was || !slot || !el || slot.idx === was.idx) {
+      if (el && slot && !slot.live) {
+        el.style.visibility = 'hidden';
+        el.style.opacity = '0';
+      }
+      continue;
+    }
+    const cue = timeline.cues[slot.idx];
+    if (!cue || cue.kind !== 'line') return false;
+    if (el.__llCue) el.__llCue.current = cue;
+    if (el.__llOverride) el.__llOverride.current = cue;
+    paintPhoneLine(el, cue, settings, wordSync);
+    if (!slot.live) {
+      el.style.visibility = 'hidden';
+      el.style.opacity = '0';
+    }
+    moves.push({ from: was.idx, to: slot.idx });
+  }
+  if (moves.length) {
+    const snapshot = new Map(blocks);
+    for (const move of moves) blocks.delete(move.from);
+    for (const move of moves) {
+      const entry = snapshot.get(move.from);
+      if (entry) blocks.set(move.to, entry);
+    }
+  }
+  return true;
 }
 
 export function sameSlots(a: readonly (PhoneSlot | null)[], b: readonly (PhoneSlot | null)[]): boolean {

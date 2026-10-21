@@ -1,11 +1,11 @@
-import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { formatTime, getSong, loadLyrics, loadPeaks } from '@/data/library';
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type RefObject } from 'react';
+import { formatTime, getSong, loadLyrics, loadPeaks, peekLyrics } from '@/data/library';
 import { coverExt, coverUrl } from '@/data/covers';
 import { rememberSong } from '@/app/continue';
 import { marksFor, momentAt } from '@/app/marks';
-import type { Lyrics, Peaks } from '@/data/schema';
-import { buildTimeline, commentFor, type Cue } from '@/data/timeline';
-import { useSettings, setSettings } from '@/app/settings';
+import type { Lyrics, Peaks, Song } from '@/data/schema';
+import { buildTimeline, commentFor, type Cue, type Timeline } from '@/data/timeline';
+import { useSettings, setSettings, type Settings } from '@/app/settings';
 import { useSongAccent } from '@/app/theme';
 import { enableSongFonts } from '@/app/fontCatalog';
 import { nextSlug, prefetchLyrics, prefetchRecording, recordingUrl } from '@/app/prefetch';
@@ -15,7 +15,7 @@ import { SPRING, stepSpring, type SpringState } from '@/ui/spring';
 import { bindPress } from '@/ui/press';
 import { PlayPause } from '@/ui/playglyph';
 import { GlassLayers } from '@/ui/glass/Glass';
-import { AudioEngine } from '@/player/engine';
+import { AudioEngine, type EngineState } from '@/player/engine';
 import { preloadMode, readNetHint } from '@/player/preload';
 import { RESUME_AUTO_MS, readResume, writeResume } from '@/player/resume';
 import { Scrubber } from '@/player/Scrubber';
@@ -207,12 +207,474 @@ function useStageFrame(noteOpen: boolean) {
   };
   const [box, setBox] = useState(read);
   useLayoutEffect(() => {
-    const apply = () => setBox(read());
+    const apply = () => {
+      const next = read();
+      // A phone frame ignores the note. Skip the render when the numbers did not move.
+      setBox((prev) => (sameStageBox(prev, next) ? prev : next));
+    };
     apply();
     window.addEventListener('resize', apply);
     return () => window.removeEventListener('resize', apply);
   }, [noteOpen]);
   return box;
+}
+
+function sameStageBox(
+  a: { frame: StageFrame; columnFits: boolean },
+  b: { frame: StageFrame; columnFits: boolean },
+) {
+  if (a.columnFits !== b.columnFits) return false;
+  const left = a.frame;
+  const right = b.frame;
+  return (
+    left.colLeft === right.colLeft &&
+    left.colRight === right.colRight &&
+    left.noteW === right.noteW &&
+    left.panelInset === right.panelInset &&
+    left.gap === right.gap &&
+    left.stageW === right.stageW &&
+    left.lyricW === right.lyricW &&
+    left.padX === right.padX &&
+    left.marginNote === right.marginNote
+  );
+}
+
+/**
+ * The sung line changes many times a second. Holding that index on the page
+ * reconciled the player on the same frame as the route, and the phone missed
+ * its interval. Subscribers are the header, the note and the column only.
+ */
+interface OwnerStore {
+  get: () => number;
+  set: (next: number) => void;
+  subscribe: (listener: () => void) => () => void;
+}
+
+function createOwnerStore(): OwnerStore {
+  let owner = -1;
+  const listeners = new Set<() => void>();
+  return {
+    get: () => owner,
+    set: (next: number) => {
+      if (next === owner) return;
+      owner = next;
+      for (const listener of listeners) listener();
+    },
+    subscribe: (listener: () => void) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+  };
+}
+
+function useOwner(store: OwnerStore) {
+  return useSyncExternalStore(store.subscribe, store.get, store.get);
+}
+
+/**
+ * The note object for this cue. The same text keeps the same reference, so a
+ * line change that does not change the commentary does not render the card.
+ */
+function useNoteSnapshot(store: OwnerStore, timeline: Timeline | null) {
+  const cache = useRef<{ key: string; note: { text: string; from: Cue } | null }>({ key: '\u0000', note: null });
+  const get = useCallback(() => {
+    const note = noteAt(timeline, store.get());
+    const key = note ? `${note.from.idx}\u0000${note.text}` : '';
+    const box = cache.current;
+    if (box.key === key) return box.note;
+    box.key = key;
+    box.note = note;
+    return note;
+  }, [store, timeline]);
+  return useSyncExternalStore(store.subscribe, get, get);
+}
+
+function noteAt(timeline: Timeline | null, owner: number) {
+  return timeline && owner >= 0 ? commentFor(timeline, owner) : null;
+}
+
+function PartExtra({ song, timeline, store }: { song: Song; timeline: Timeline | null; store: OwnerStore }) {
+  const owner = useOwner(store);
+  const cue = timeline && owner >= 0 ? timeline.cues[owner] : null;
+  const partLabel = headerLine(song, cue);
+  const partExtra = partLabel && partLabel !== song.artist && partLabel !== song.version.label ? partLabel : '';
+  if (!partExtra) return null;
+  return <span className="topbar-part"> · {partExtra}</span>;
+}
+
+/** Writes the stage column. A phone width does not grow a margin, so this stays quiet there. */
+function StageVars({
+  songRef,
+  store,
+  timeline,
+  showComment,
+}: {
+  songRef: RefObject<HTMLDivElement | null>;
+  store: OwnerStore;
+  timeline: Timeline | null;
+  showComment: boolean;
+}) {
+  const note = useNoteSnapshot(store, timeline);
+  const noteOpen = !!(showComment && note);
+  const { frame } = useStageFrame(noteOpen);
+  useLayoutEffect(() => {
+    const root = songRef.current;
+    if (!root) return;
+    root.classList.toggle('has-margin', frame.marginNote);
+    root.style.setProperty('--col-left', `${frame.colLeft}px`);
+    root.style.setProperty('--col-right', `${frame.colRight}px`);
+    root.style.setProperty('--stage-w', `${frame.stageW}px`);
+    root.style.setProperty('--note-w', `${frame.noteW}px`);
+    root.style.setProperty('--lyric-w', `${frame.lyricW}px`);
+    root.style.setProperty('--note-inset', `${frame.panelInset}px`);
+  }, [frame, songRef]);
+  return null;
+}
+
+function PortraitNote({
+  songRef,
+  topRef,
+  floorRef,
+  store,
+  timeline,
+  showComment,
+  showHarakat,
+  shortLand,
+  sheet,
+  scrubbing,
+  onClose,
+}: {
+  songRef: RefObject<HTMLDivElement | null>;
+  topRef: RefObject<HTMLElement | null>;
+  floorRef: RefObject<HTMLElement | null>;
+  store: OwnerStore;
+  timeline: Timeline | null;
+  showComment: boolean;
+  showHarakat: boolean;
+  shortLand: boolean;
+  sheet: boolean;
+  scrubbing: boolean;
+  onClose: () => void;
+}) {
+  const noteText = useNoteSnapshot(store, timeline);
+  const margin = !!noteText && stageFrame(window.innerWidth, window.innerHeight, true).marginNote;
+  const live = showComment && noteText && !margin && !shortLand ? noteText : null;
+  const held = useRef(live);
+  if (!scrubbing) held.current = live;
+  const current = scrubbing ? held.current : live;
+  const fadeHold = useRef(current);
+  if (!sheet) fadeHold.current = current;
+  const shown = sheet ? fadeHold.current : current;
+  const had = useRef(false);
+  useLayoutEffect(() => {
+    const show = !!shown;
+    if (!show && !had.current) return;
+    had.current = show;
+    const root = songRef.current;
+    const top = topRef.current;
+    const floor = floorRef.current;
+    if (!root || !top || !floor) return;
+    measureChrome(root, top, floor);
+  }, [shown?.text, shown?.from.idx, songRef, topRef, floorRef]);
+  if (!shown) return null;
+  return (
+    <NoteCard
+      text={shown.text}
+      textKey={shown.from.idx}
+      showHarakat={showHarakat}
+      onClose={onClose}
+      fading={sheet}
+      suppressed={scrubbing}
+    />
+  );
+}
+
+function FloorNote({
+  store,
+  timeline,
+  showComment,
+  showHarakat,
+  commentOpen,
+  shortLand,
+}: {
+  store: OwnerStore;
+  timeline: Timeline | null;
+  showComment: boolean;
+  showHarakat: boolean;
+  commentOpen: boolean;
+  shortLand: boolean;
+}) {
+  const noteText = useNoteSnapshot(store, timeline);
+  const margin = !!noteText && stageFrame(window.innerWidth, window.innerHeight, true).marginNote;
+  const floor = showComment && noteText && !margin && shortLand ? noteText : null;
+  if (!floor) return null;
+  return (
+    <aside className={`comment${commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
+      <button
+        type="button"
+        className="comment-head"
+        onClick={() => setSettings({ commentOpen: !commentOpen })}
+        aria-expanded={commentOpen}
+      >
+        <span className="comment-kicker">Пояснение</span>
+        {!commentOpen && (
+          <span className="comment-preview">
+            {(showHarakat ? floor.text : stripHarakat(floor.text)).replace(/\*+/g, '').replace(/\s+/g, ' ').trim()}
+          </span>
+        )}
+        <Icon name="chevron.down" size={16} className="comment-chevron" />
+      </button>
+      <div className="comment-fold">
+        <RichText key={floor.from.idx} text={floor.text} showHarakat={showHarakat} className="comment-body" />
+      </div>
+    </aside>
+  );
+}
+
+function MarginNote({
+  store,
+  timeline,
+  showComment,
+  showHarakat,
+}: {
+  store: OwnerStore;
+  timeline: Timeline | null;
+  showComment: boolean;
+  showHarakat: boolean;
+}) {
+  const noteText = useNoteSnapshot(store, timeline);
+  const margin = !!noteText && stageFrame(window.innerWidth, window.innerHeight, true).marginNote;
+  if (!showComment || !noteText || !margin) return null;
+  return (
+    <aside className="comment is-margin lg-host lg-host--note" aria-label="Пояснение">
+      <GlassLayers />
+      <div className="comment-head">
+        <span className="comment-kicker">Пояснение</span>
+        <CloseDisc label="Закрыть пояснение" onClick={() => setSettings({ showComment: false })} />
+      </div>
+      <RichText key={noteText.from.idx} text={noteText.text} showHarakat={showHarakat} className="comment-body" />
+    </aside>
+  );
+}
+
+function ExplainButton({
+  store,
+  timeline,
+  showComment,
+  commentOpen,
+  shortLand,
+  onToggle,
+}: {
+  store: OwnerStore;
+  timeline: Timeline | null;
+  showComment: boolean;
+  commentOpen: boolean;
+  shortLand: boolean;
+  onToggle: () => void;
+}) {
+  const noteText = useNoteSnapshot(store, timeline);
+  return (
+    <button
+      className={`util${noteText && !showComment ? ' has-note' : ''}`}
+      aria-label={noteText ? 'Пояснение к этой строке' : 'Пояснение'}
+      aria-pressed={shortLand ? commentOpen : showComment}
+      aria-keyshortcuts="K"
+      onClick={onToggle}
+    >
+      <Icon name="book.closed" size={24} />
+      <span className="util-label">Пояснение</span>
+    </button>
+  );
+}
+
+function OwnedText({
+  store,
+  open,
+  onClose,
+  timeline,
+  settings,
+  error,
+  onRetry,
+  onPick,
+}: {
+  store: OwnerStore;
+  open: boolean;
+  onClose: () => void;
+  timeline: Timeline | null;
+  settings: Settings;
+  error: string | null;
+  onRetry: () => void;
+  onPick: (idx: number) => void;
+}) {
+  const owner = useOwner(store);
+  return (
+    <TextSheet
+      open={open}
+      onClose={onClose}
+      timeline={timeline}
+      owner={owner}
+      settings={settings}
+      error={error}
+      onRetry={onRetry}
+      onPick={onPick}
+    />
+  );
+}
+
+/** Fields that rebuild the page. Play, buffering and the error stay on the controls. */
+function useEngineSlice(engine: AudioEngine | null) {
+  const cache = useRef<{ key: string; slice: EngineState | null }>({ key: '\u0000', slice: null });
+  const subscribe = useCallback((fn: () => void) => engine?.subscribe(fn) ?? (() => {}), [engine]);
+  const get = useCallback(() => {
+    const s = engine?.state;
+    if (!s) {
+      if (cache.current.key === '' ) return cache.current.slice;
+      cache.current = { key: '', slice: null };
+      return null;
+    }
+    // Play, errors and the source render their own controls. Duration is the
+    // only field that rebuilds the timeline.
+    const key = `${s.duration}`;
+    if (key === cache.current.key) return cache.current.slice;
+    cache.current = { key, slice: s };
+    return s;
+  }, [engine]);
+  return useSyncExternalStore(subscribe, get, get);
+}
+
+function useEngineView(engine: AudioEngine, keyOf: (s: EngineState) => string) {
+  const cache = useRef<{ key: string; state: EngineState }>({ key: '\u0000', state: engine.state });
+  const subscribe = useCallback((fn: () => void) => engine.subscribe(fn), [engine]);
+  const get = useCallback(() => {
+    const key = keyOf(engine.state);
+    if (key === cache.current.key) return cache.current.state;
+    cache.current = { key, state: engine.state };
+    return engine.state;
+  }, [engine, keyOf]);
+  return useSyncExternalStore(subscribe, get, get);
+}
+
+function playKey(s: EngineState) {
+  return `${s.playing ? 1 : 0}|${s.buffering ? 1 : 0}|${s.error ?? ''}`;
+}
+
+function alertKey(s: EngineState) {
+  return `${s.error ?? ''}|${s.source}|${s.playing ? 1 : 0}|${s.localName ?? ''}`;
+}
+
+const PlayButton = function PlayButton({
+  engine,
+  playRef,
+  onToggle,
+}: {
+  engine: AudioEngine;
+  playRef: RefObject<HTMLButtonElement | null>;
+  onToggle: () => void;
+}) {
+  const state = useEngineView(engine, playKey);
+  const playing = state.playing;
+  const buffering = state.buffering;
+  const playLabel = buffering ? (playing ? 'Буферизация' : 'Загрузка записи') : playing ? 'Пауза' : 'Воспроизвести';
+  return (
+    <button
+      ref={playRef}
+      className={`btn btn-circle btn-xl btn-ring${playing ? ' is-live' : ''}${buffering ? ' is-buffering' : ''}${state.error ? ' is-error' : ''}`}
+      onClick={onToggle}
+      aria-label={playLabel}
+      aria-busy={buffering}
+    >
+      {buffering && !playing ? <span className="btn-buffer" aria-hidden="true" /> : <PlayPause playing={playing} size={28} />}
+    </button>
+  );
+};
+
+function EngineAlerts({
+  engine,
+  floorRef,
+  songHasAudio,
+  onRetry,
+  onOpenSettings,
+}: {
+  engine: AudioEngine;
+  floorRef: RefObject<HTMLElement | null>;
+  songHasAudio: boolean;
+  onRetry: () => void;
+  onOpenSettings: () => void;
+}) {
+  const state = useEngineView(engine, alertKey);
+  useLayoutEffect(() => {
+    const floor = floorRef.current;
+    if (!floor) return;
+    floor.classList.toggle('has-error', !!state.error);
+    const root = floor.closest('.song');
+    const top = root?.querySelector('.topbar');
+    if (root instanceof HTMLElement && top instanceof HTMLElement) measureChrome(root, top, floor);
+  }, [floorRef, state.error, state.source]);
+  return (
+    <>
+      {state.error && (
+        <div className="player-alert" role="alert">
+          <p>{state.error}</p>
+          <button type="button" className="floor-retry" onClick={onRetry}>
+            Повторить
+          </button>
+        </div>
+      )}
+      {state.source === 'silent' && !state.playing && !songHasAudio && (
+        <button type="button" className="hint" onClick={onOpenSettings}>
+          Аудио не подключено
+        </button>
+      )}
+    </>
+  );
+}
+
+function LiveSettings({
+  engine,
+  open,
+  onClose,
+  song,
+  settings,
+  has,
+}: {
+  engine: AudioEngine;
+  open: boolean;
+  onClose: () => void;
+  song: Song;
+  settings: Settings;
+  has: { translit: boolean; alt: boolean; persian: boolean; arab: boolean };
+}) {
+  const state = useSyncExternalStore(
+    useCallback((fn: () => void) => engine.subscribe(fn), [engine]),
+    () => engine.state,
+  );
+  return <SettingsSheet open={open} onClose={onClose} song={song} engine={engine} state={state} settings={settings} has={has} />;
+}
+
+function measureChrome(root: HTMLElement, top: HTMLElement, floor: HTMLElement) {
+  const px = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  const big = px >= 24;
+  if (root.classList.contains('is-big-type') !== big) root.classList.toggle('is-big-type', big);
+  root.style.setProperty('--chrome-top', `${top.offsetTop + top.offsetHeight + 10}px`);
+  const rootBox = root.getBoundingClientRect();
+  const floorBox = floor.getBoundingClientRect();
+  // The card is positioned from the floor only, so measuring the floor cannot chase the card.
+  root.style.setProperty('--floor-h', `${Math.max(0, rootBox.bottom - floorBox.top)}px`);
+  let coverTop = floorBox.top;
+  const card = root.querySelector('.note-card');
+  if (card instanceof HTMLElement && getComputedStyle(card).display !== 'none') {
+    const box = card.getBoundingClientRect();
+    if (box.height > 8) coverTop = Math.min(coverTop, box.top);
+  }
+  const note = floor.querySelector('.comment');
+  if (note) {
+    const box = note.getBoundingClientRect();
+    if (box.height > 8) coverTop = Math.min(coverTop, box.top);
+  }
+  root.style.setProperty('--player-h', `${Math.max(0, rootBox.bottom - coverTop)}px`);
+  const banner = root.querySelector('.player-alert');
+  const bannerH = banner instanceof HTMLElement ? Math.ceil(banner.getBoundingClientRect().height) + 8 : 0;
+  root.style.setProperty('--banner-h', `${bannerH}px`);
 }
 
 /** Press-and-hold repeats an action (seek) while a tap does something else (go to a line), as on iOS. */
@@ -257,13 +719,15 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const artRef = useRef<HTMLImageElement>(null);
   const floorRef = useRef<HTMLElement>(null);
   const playRef = useRef<HTMLButtonElement>(null);
-  const [lyrics, setLyrics] = useState<Lyrics | null>(null);
+  const [lyrics, setLyrics] = useState<Lyrics | null>(() => peekLyrics(slug));
   const [peaks, setPeaks] = useState<Peaks | null>(null);
   const [features, setFeatures] = useState<AudioFeatures | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [textAttempt, setTextAttempt] = useState(0);
   // Armed only after the restored seek, so a save cannot write 0 over a position we just read.
-  const [clockArmed, setClockArmed] = useState(false);
+  // A ref, not state: arming the clock used to render the whole page again
+  // while the cover was still in the air.
+  const clockArmed = useRef(false);
   // Set when a reload restored a playing point and the browser refused play().
   const [resumeAt, setResumeAt] = useState<number | null>(null);
 
@@ -283,10 +747,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         : null,
     [song],
   );
-  const state = useSyncExternalStore(
-    useCallback((fn: () => void) => engine?.subscribe(fn) ?? (() => {}), [engine]),
-    () => engine?.state ?? null,
-  );
+  const state = useEngineSlice(engine);
 
   useEffect(() => {
     if (!song) return;
@@ -299,7 +760,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     setLoadError(null);
     loadLyrics(song.slug)
       .then((l) => {
-        if (alive) setLyrics(l);
+        if (!alive) return;
+        // The same object the page already painted. A second render was a missed frame.
+        setLyrics((prev) => (prev === l ? prev : l));
       })
       .catch(() => {
         if (!alive) return;
@@ -352,7 +815,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           }
         }
       }
-      if (alive) setClockArmed(true);
+      if (alive) clockArmed.current = true;
     });
     return () => {
       alive = false;
@@ -366,8 +829,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
 
   // Registered after init: React runs this cleanup first, while the element still exists.
   useEffect(() => {
-    if (!song || !engine || !clockArmed) return;
+    if (!song || !engine) return;
     const save = () => {
+      if (!clockArmed.current) return;
       const dur = engine.state.duration || song.duration;
       let t = engine.currentTime();
       if (engine.state.error && t < 1) return;
@@ -386,9 +850,10 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       document.removeEventListener('visibilitychange', onHide);
       save();
     };
-  }, [song, engine, clockArmed]);
+  }, [song, engine]);
 
-  // Peaks, engravings and the feature file are not on the first frame. They wait until the text is up and the browser is idle.
+  // Peaks and the feature file wait out the opening second. Loading them in
+  // the idle gap re-rendered the page while the cover was still in the air.
   useEffect(() => {
     if (!song || !lyrics) return;
     let alive = true;
@@ -407,31 +872,46 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           /* aborted, or no file: the drawings stay still */
         });
     };
-    const host = window as Window & {
-      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
-      cancelIdleCallback?: (id: number) => void;
-    };
-    const idleWasCallback = typeof host.requestIdleCallback === 'function';
-    const idle = idleWasCallback ? host.requestIdleCallback!(run, { timeout: 1500 }) : window.setTimeout(run, 80);
+    const idle = window.setTimeout(run, 1200);
     return () => {
       alive = false;
       ctrl.abort();
-      if (idleWasCallback) host.cancelIdleCallback?.(idle);
-      else clearTimeout(idle);
+      clearTimeout(idle);
     };
   }, [song, lyrics]);
 
   useEffect(() => {
-    if (!song || !state?.canPlay) return;
-    const next = nextSlug(song.slug);
-    const following = next ? getSong(next) : undefined;
-    if (following) prefetchRecording(recordingUrl(following, settings.quality));
-  }, [song, state?.canPlay, settings.quality]);
+    if (!song || !engine) return;
+    let once = false;
+    const go = () => {
+      if (once || !engine.state.canPlay) return;
+      once = true;
+      const next = nextSlug(song.slug);
+      const following = next ? getSong(next) : undefined;
+      if (following) prefetchRecording(recordingUrl(following, settings.quality));
+    };
+    go();
+    const unsub = engine.subscribe(go);
+    return () => {
+      unsub();
+    };
+  }, [song, engine, settings.quality]);
 
   // A file attached on this device has no peaks.json: compute an envelope once.
   useEffect(() => {
-    if (state?.source === 'local' && !song?.audio.peaks && engine) void engine.computePeaks().then((p) => p && setPeaks(p));
-  }, [state?.source, state?.localName, engine, song]);
+    if (!song || !engine || song.audio.peaks) return;
+    let once = false;
+    const go = () => {
+      if (once || engine.state.source !== 'local') return;
+      once = true;
+      void engine.computePeaks().then((p) => p && setPeaks(p));
+    };
+    go();
+    const unsub = engine.subscribe(go);
+    return () => {
+      unsub();
+    };
+  }, [engine, song]);
 
   const duration = state?.duration || song?.duration || 0;
   const timeline = useMemo(() => (lyrics ? buildTimeline(lyrics, duration, peaks) : null), [lyrics, duration, peaks]);
@@ -446,9 +926,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const scrubAt = useRef<number | null>(null);
   const clock = useCallback(() => {
     if (scrubAt.current != null) return scrubAt.current;
-    if (deepLink != null && !clockArmed) return deepLink;
+    if (deepLink != null && !clockArmed.current) return deepLink;
     return engine?.currentTime() ?? 0;
-  }, [engine, deepLink, clockArmed]);
+  }, [engine, deepLink]);
   const [scrubbing, setScrubbing] = useState(false);
   const onScrubPreview = useCallback((t: number | null) => {
     scrubAt.current = t;
@@ -458,7 +938,10 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     setScrubbing((prev) => (prev === on ? prev : on));
   }, []);
 
-  const [owner, setOwner] = useState(-1);
+  // The cue index lives outside this page. See createOwnerStore.
+  const owners = useRef<OwnerStore>(null!);
+  if (owners.current == null) owners.current = createOwnerStore();
+  const ownerStore = owners.current;
   // A deep link (?t=) knows its line before the stage clock ticks. Placing the
   // note in that same commit keeps the first phone frame on the settled stage.
   useLayoutEffect(() => {
@@ -466,34 +949,28 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     if (deepLink == null) return;
     const pos = flowPosition(planFlow(timeline), deepLink);
     const next = Math.max(-1, Math.min(timeline.cues.length - 1, Math.round(pos)));
-    setOwner((prev) => (prev === next ? prev : next));
-  }, [timeline, deepLink]);
+    ownerStore.set(next);
+  }, [timeline, deepLink, ownerStore]);
   const [sheet, setSheet] = useState<SheetName>(null);
-  const [fadingNote, setFadingNote] = useState<{ text: string; from: Cue } | null>(null);
   const settingsHeld = useHeld(sheet === 'settings');
   const infoHeld = useHeld(sheet === 'info');
   const textHeld = useHeld(sheet === 'text');
-  const playing = !!state?.playing;
-  const noteText = timeline && owner >= 0 ? commentFor(timeline, owner) : null;
   const shortLand = useShortLandscape();
   const toggleComment = useCallback(() => {
+    const note = noteAt(timeline, ownerStore.get());
     // Landscape keeps a single icon. It opens the drawer; it does not add a second pill.
-    if (shortLand && noteText) setSettings({ showComment: true, commentOpen: !settings.commentOpen });
+    if (shortLand && note) setSettings({ showComment: true, commentOpen: !settings.commentOpen });
     else setSettings({ showComment: !settings.showComment });
-  }, [shortLand, noteText, settings.commentOpen, settings.showComment]);
-  const columns = useStageFrame(settings.showComment && !!noteText);
-  // Landscape keeps the drawer inside the player. Portrait and the tablet get a card above the floor.
-  const floorNote = noteText && settings.showComment && !columns.frame.marginNote && shortLand ? noteText : null;
-  const portraitNote =
-    noteText && settings.showComment && !columns.frame.marginNote && !shortLand && !sheet ? noteText : null;
-  // Held for the whole drag. The live note drops out on an instrumental cue and
-  // would otherwise unmount the card on one frame and mount it on the next.
-  const heldNote = useRef<typeof portraitNote>(null);
-  if (!scrubbing) heldNote.current = portraitNote;
-  const cardNote = scrubbing ? heldNote.current : portraitNote;
+  }, [timeline, ownerStore, shortLand, settings.commentOpen, settings.showComment]);
   useEffect(() => {
-    if (playing) setResumeAt(null);
-  }, [playing]);
+    if (!engine) return;
+    const unsub = engine.subscribe(() => {
+      if (engine.state.playing) setResumeAt(null);
+    });
+    return () => {
+      unsub();
+    };
+  }, [engine]);
 
   const seekToCue = useCallback(
     (c: Cue) => {
@@ -535,9 +1012,11 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const armed = useRef(-1);
   const done = useRef(-1);
   useEffect(() => {
-    if (!timeline || !engine || !settings.pauseAfterLine || !playing) return;
+    if (!timeline || !engine || !settings.pauseAfterLine) return;
     let raf = 0;
     const loop = () => {
+      raf = 0;
+      if (!engine.state.playing) return;
       raf = requestAnimationFrame(loop);
       const t = engine.currentTime();
       const cues = timeline.cues;
@@ -556,30 +1035,35 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       const c = cues[i];
       if (armed.current < 0 && c && c.kind === 'line' && i !== done.current && t < c.end) armed.current = i;
     };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
-  }, [timeline, engine, settings.pauseAfterLine, playing]);
+    const unsub = engine.subscribe(() => {
+      if (engine.state.playing && !raf) raf = requestAnimationFrame(loop);
+    });
+    if (engine.state.playing) raf = requestAnimationFrame(loop);
+    return () => {
+      unsub();
+      cancelAnimationFrame(raf);
+    };
+  }, [timeline, engine, settings.pauseAfterLine]);
 
   const togglePlay = useCallback(() => engine?.toggle(), [engine]);
   const openSheet = useCallback(
     (name: SheetName) => {
       if (shortLand && settings.commentOpen) setSettings({ commentOpen: false });
-      // Keep the note mounted and fade it while the sheet rises. Unmounting
-      // first collapsed --player-h and the lyrics jumped, then the sheet arrived.
-      if (portraitNote) setFadingNote(portraitNote);
+      // The note stays mounted and hides in the same commit as the sheet.
+      // Unmounting first collapsed --player-h and the lyrics jumped.
       coverStage();
       setSheet(name);
     },
-    [portraitNote, shortLand, settings.commentOpen],
+    [shortLand, settings.commentOpen],
   );
 
   // A mismatch mark records the clock and the line on stage. It does not pause, seek, or open a sheet.
   const [toast, setToast] = useState<{ id: string; t: number } | null>(null);
   const placeMark = useCallback(() => {
     if (!song || !timeline || !engine) return;
-    const mark = marksFor(song.slug).add(momentAt(timeline.cues, owner, engine.currentTime()));
+    const mark = marksFor(song.slug).add(momentAt(timeline.cues, ownerStore.get(), engine.currentTime()));
     setToast({ id: mark.id, t: mark.t });
-  }, [song, timeline, engine, owner]);
+  }, [song, timeline, engine, ownerStore]);
   const undoToast = useCallback(() => {
     if (!song || !toast) return;
     marksFor(song.slug).remove(toast.id);
@@ -631,31 +1115,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     const floor = floorRef.current;
     const root = top?.closest('.song');
     if (!(root instanceof HTMLElement) || !top || !floor) return;
-    const apply = () => {
-      const px = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-      const big = px >= 24;
-      if (root.classList.contains('is-big-type') !== big) root.classList.toggle('is-big-type', big);
-      root.style.setProperty('--chrome-top', `${top.offsetTop + top.offsetHeight + 10}px`);
-      const rootBox = root.getBoundingClientRect();
-      const floorBox = floor.getBoundingClientRect();
-      // The card is positioned from the floor only, so measuring the floor cannot chase the card.
-      root.style.setProperty('--floor-h', `${Math.max(0, rootBox.bottom - floorBox.top)}px`);
-      let coverTop = floorBox.top;
-      const card = root.querySelector('.note-card');
-      if (card instanceof HTMLElement && getComputedStyle(card).display !== 'none') {
-        const box = card.getBoundingClientRect();
-        if (box.height > 8) coverTop = Math.min(coverTop, box.top);
-      }
-      const note = floor.querySelector('.comment');
-      if (note) {
-        const box = note.getBoundingClientRect();
-        if (box.height > 8) coverTop = Math.min(coverTop, box.top);
-      }
-      root.style.setProperty('--player-h', `${Math.max(0, rootBox.bottom - coverTop)}px`);
-      const banner = root.querySelector('.player-alert');
-      const bannerH = banner instanceof HTMLElement ? Math.ceil(banner.getBoundingClientRect().height) + 8 : 0;
-      root.style.setProperty('--banner-h', `${bannerH}px`);
-    };
+    const apply = () => measureChrome(root, top, floor);
     const ro = new ResizeObserver(apply);
     ro.observe(top);
     ro.observe(floor);
@@ -667,7 +1127,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       ro.disconnect();
       window.removeEventListener('resize', apply);
     };
-  }, [song, lyrics, state?.error, state?.source, columns.frame, shortLand, settings.showComment, portraitNote?.text]);
+  }, [song, lyrics, shortLand, settings.showComment]);
 
   useLayoutEffect(() => {
     const root = songRef.current;
@@ -678,12 +1138,19 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     root.classList.add('is-arriving', 'is-flying');
     // Inline, so the reduced-motion rule that restores the thumbnail cannot win early.
     img.style.opacity = '0';
+    // The radius does not change during the flight. Reading it every frame
+    // forced a style pass on top of the scene.
+    let radius = 0;
+    let radiusReady = false;
     const dest = () => {
       const art = img.getBoundingClientRect();
       if (art.width < 1 || art.height < 1) return null;
-      const raw = getComputedStyle(img).borderTopLeftRadius;
-      let radius = parseFloat(raw) || 0;
-      if (raw.trim().endsWith('%')) radius = (radius / 100) * Math.min(art.width, art.height);
+      if (!radiusReady) {
+        const raw = getComputedStyle(img).borderTopLeftRadius;
+        radius = parseFloat(raw) || 0;
+        if (raw.trim().endsWith('%')) radius = (radius / 100) * Math.min(art.width, art.height);
+        radiusReady = true;
+      }
       return { left: art.left, top: art.top, width: art.width, height: art.height, radius };
     };
     const reveal = () => {
@@ -706,27 +1173,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     return bindPress(el);
   }, [song?.slug]);
 
-  useLayoutEffect(() => {
-    const root = songRef.current;
-    if (!root) return;
-    const f = columns.frame;
-    root.style.setProperty('--col-left', `${f.colLeft}px`);
-    root.style.setProperty('--col-right', `${f.colRight}px`);
-    root.style.setProperty('--stage-w', `${f.stageW}px`);
-    root.style.setProperty('--note-w', `${f.noteW}px`);
-    root.style.setProperty('--lyric-w', `${f.lyricW}px`);
-    root.style.setProperty('--note-inset', `${f.panelInset}px`);
-  }, [columns.frame]);
-
   if (!song || !engine) return <NotFound />;
-  const shownNote = cardNote ?? (sheet ? fadingNote : null);
 
   const poets = song.poets?.map((p) => p.name).join(' · ');
-  const buffering = !!state?.buffering;
-  const playLabel = buffering ? (playing ? 'Буферизация' : 'Загрузка записи') : playing ? 'Пауза' : 'Воспроизвести';
-  const ownerCue = timeline && owner >= 0 ? timeline.cues[owner] : null;
-  const partLabel = headerLine(song, ownerCue);
-  const partExtra = partLabel && partLabel !== song.artist && partLabel !== song.version.label ? partLabel : '';
   const allLines = lyrics?.sections.flatMap((s) => (s.kind === 'vocal' ? s.lines : [])) ?? [];
   const arabScript = /[\u0600-\u06FF]/;
   const has = {
@@ -742,7 +1191,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   return (
     <div
       ref={songRef}
-      className={`song${columns.frame.marginNote ? ' has-margin' : ''}`}
+      className="song"
       style={{ background: dark ? '#07060c' : (song.palette.field[2] ?? song.palette.field[0]) }}
     >
       <Field colors={song.palette.field} dark={dark} clock={timeline ? clock : undefined} t={0} still={!timeline} />
@@ -751,8 +1200,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           <Field colors={leaving} dark={dark} t={0} still />
         </div>
       )}
+      <StageVars songRef={songRef} store={ownerStore} timeline={timeline} showComment={settings.showComment} />
       {timeline ? (
-        <Scene song={song} timeline={timeline} settings={settings} features={features} clock={clock} onOwnerChange={setOwner} onPick={pick} />
+        <Scene song={song} timeline={timeline} settings={settings} features={features} clock={clock} onOwnerChange={ownerStore.set} onPick={pick} />
       ) : (
         <div className="scene scene--hold">
           <div className="scene-stage">
@@ -804,7 +1254,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             <div className="topbar-version">{song.version.label}</div>
             <div className="topbar-who">
               {song.artist}
-              {partExtra ? <span className="topbar-part"> · {partExtra}</span> : null}
+              <PartExtra song={song} timeline={timeline} store={ownerStore} />
             </div>
           </div>
         </div>
@@ -813,54 +1263,38 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </button>
       </header>
 
-      {shownNote && (
-        <NoteCard
-          text={shownNote.text}
-          textKey={shownNote.from.idx}
-          showHarakat={settings.showHarakat}
-          onClose={() => setSettings({ showComment: false })}
-          fading={!!sheet && !portraitNote}
-          suppressed={scrubbing}
-        />
-      )}
+      <PortraitNote
+        songRef={songRef}
+        topRef={topbarRef}
+        floorRef={floorRef}
+        store={ownerStore}
+        timeline={timeline}
+        showComment={settings.showComment}
+        showHarakat={settings.showHarakat}
+        shortLand={shortLand}
+        sheet={sheet != null}
+        scrubbing={scrubbing}
+        onClose={() => setSettings({ showComment: false })}
+      />
 
-      {state?.error && (
-        <div className="player-alert" role="alert">
-          <p>{state.error}</p>
-          <button type="button" className="floor-retry" onClick={() => engine.retry()}>
-            Повторить
-          </button>
-        </div>
-      )}
-      {state?.source === 'silent' && !playing && !song.audio.high && !song.audio.saver && (
-        <button type="button" className="hint" onClick={() => openSheet('settings')}>
-          Аудио не подключено
-        </button>
-      )}
+      <EngineAlerts
+        engine={engine}
+        floorRef={floorRef}
+        songHasAudio={!!(song.audio.high || song.audio.saver)}
+        onRetry={() => engine.retry()}
+        onOpenSettings={() => openSheet('settings')}
+      />
 
-      <footer className={`player floor lg-host lg-host--floor${state?.error ? ' has-error' : ''}`} ref={floorRef}>
+      <footer className="player floor lg-host lg-host--floor" ref={floorRef}>
         <GlassLayers />
-        {floorNote && (
-          <aside className={`comment${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
-            <button
-              type="button"
-              className="comment-head"
-              onClick={() => setSettings({ commentOpen: !settings.commentOpen })}
-              aria-expanded={settings.commentOpen}
-            >
-              <span className="comment-kicker">Пояснение</span>
-              {!settings.commentOpen && (
-                <span className="comment-preview">
-                  {(settings.showHarakat ? floorNote.text : stripHarakat(floorNote.text)).replace(/\*+/g, '').replace(/\s+/g, ' ').trim()}
-                </span>
-              )}
-              <Icon name="chevron.down" size={16} className="comment-chevron" />
-            </button>
-            <div className="comment-fold">
-              <RichText key={floorNote.from.idx} text={floorNote.text} showHarakat={settings.showHarakat} className="comment-body" />
-            </div>
-          </aside>
-        )}
+        <FloorNote
+          store={ownerStore}
+          timeline={timeline}
+          showComment={settings.showComment}
+          showHarakat={settings.showHarakat}
+          commentOpen={settings.commentOpen}
+          shortLand={shortLand}
+        />
         {toast && (
           <div className="mark-toast" role="status">
             <span>Отмечено {formatTime(toast.t)}</span>
@@ -903,7 +1337,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             </div>
           </div>
         )}
-        {resumeAt != null && !playing && (
+        {resumeAt != null && (
           <button
             type="button"
             className="resume-offer"
@@ -920,19 +1354,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)">
               <Icon name="backward" size={24} />
             </button>
-            <button
-              ref={playRef}
-              className={`btn btn-circle btn-xl btn-ring${playing ? ' is-live' : ''}${buffering ? ' is-buffering' : ''}${state?.error ? ' is-error' : ''}`}
-              onClick={togglePlay}
-              aria-label={playLabel}
-              aria-busy={buffering}
-            >
-              {buffering && !playing ? (
-                <span className="btn-buffer" aria-hidden="true" />
-              ) : (
-                <PlayPause playing={playing} size={28} />
-              )}
-            </button>
+            <PlayButton engine={engine} playRef={playRef} onToggle={togglePlay} />
             <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)">
               <Icon name="forward" size={24} />
             </button>
@@ -942,16 +1364,14 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               <Icon name="character.bubble" size={24} />
               <span className="util-label">Перевод</span>
             </button>
-            <button
-              className={`util${noteText && !settings.showComment ? ' has-note' : ''}`}
-              aria-label={noteText ? 'Пояснение к этой строке' : 'Пояснение'}
-              aria-pressed={shortLand ? settings.commentOpen : settings.showComment}
-              aria-keyshortcuts="K"
-              onClick={toggleComment}
-            >
-              <Icon name="book.closed" size={24} />
-              <span className="util-label">Пояснение</span>
-            </button>
+            <ExplainButton
+              store={ownerStore}
+              timeline={timeline}
+              showComment={settings.showComment}
+              commentOpen={settings.commentOpen}
+              shortLand={shortLand}
+              onToggle={toggleComment}
+            />
             <button className="util" aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={() => openSheet('text')}>
               <Icon name="list.bullet" size={24} />
               <span className="util-label">Весь текст</span>
@@ -964,20 +1384,16 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </div>
       </footer>
 
-      {columns.frame.marginNote && noteText && (
-        <aside className="comment is-margin lg-host lg-host--note" aria-label="Пояснение">
-          <GlassLayers />
-          <div className="comment-head">
-            <span className="comment-kicker">Пояснение</span>
-            <CloseDisc label="Закрыть пояснение" onClick={() => setSettings({ showComment: false })} />
-          </div>
-          <RichText key={noteText.from.idx} text={noteText.text} showHarakat={settings.showHarakat} className="comment-body" />
-        </aside>
-      )}
+      <MarginNote
+        store={ownerStore}
+        timeline={timeline}
+        showComment={settings.showComment}
+        showHarakat={settings.showHarakat}
+      />
 
       <Suspense fallback={null}>
         {settingsHeld && (
-          <SettingsSheet open={sheet === 'settings'} onClose={() => setSheet(null)} song={song} engine={engine} state={state} settings={settings} has={has} />
+          <LiveSettings engine={engine} open={sheet === 'settings'} onClose={() => setSheet(null)} song={song} settings={settings} has={has} />
         )}
         {infoHeld && (
           <InfoSheet
@@ -996,11 +1412,11 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           />
         )}
         {textHeld && (
-          <TextSheet
+          <OwnedText
+            store={ownerStore}
             open={sheet === 'text'}
             onClose={() => setSheet(null)}
             timeline={timeline}
-            owner={owner}
             settings={settings}
             error={loadError}
             onRetry={() => setTextAttempt((n) => n + 1)}

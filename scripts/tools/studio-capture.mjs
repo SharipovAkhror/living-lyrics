@@ -64,11 +64,24 @@ function dropHashVideos(dir) {
 
 async function quietAlert(context) {
   if (!hideAlert) return;
+  // The init script also runs on the blank document, before documentElement
+  // exists. Appending there threw and the banner stayed in the recording.
   await context.addInitScript(() => {
-    const css = document.createElement('style');
-    css.setAttribute('data-studio-rec', '1');
-    css.textContent = '.player-alert{display:none !important;visibility:hidden !important}';
-    document.documentElement.append(css);
+    const mount = () => {
+      const root = document.head || document.documentElement;
+      if (!root) return false;
+      if (root.querySelector('style[data-studio-rec]')) return true;
+      const css = document.createElement('style');
+      css.setAttribute('data-studio-rec', '1');
+      css.textContent = '.player-alert{display:none !important;visibility:hidden !important}';
+      root.append(css);
+      return true;
+    };
+    if (!mount()) {
+      const timer = setInterval(() => {
+        if (mount()) clearInterval(timer);
+      }, 10);
+    }
   });
 }
 

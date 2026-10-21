@@ -11,7 +11,7 @@ import { InstBlock } from './InstBlock';
 import { stageCovered, watchCover } from './cover';
 import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
-import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, sameSlots, type PhoneSlot } from './slots';
+import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, retargetPhoneLines, sameSlots, type PhoneSlot } from './slots';
 import { GAP, WAIT_ROOM, blockHeight, blockState, clearBand, compressStack, flowPosition, keepInStage, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
 import { stepSpring, type SpringState } from '@/ui/spring';
 
@@ -55,6 +55,8 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
   // Phone hosts are created once and then only change which cue they show.
   const [lineSlots, setLineSlots] = useState<(PhoneSlot | null)[]>(() => Array.from({ length: PHONE_LINE_SLOTS }, () => null));
   const [instSlots, setInstSlots] = useState<(PhoneSlot | null)[]>(() => Array.from({ length: PHONE_INST_SLOTS }, () => null));
+  // One read of the real boxes after the finger lifts. The drag itself does not lay out.
+  const [layoutEpoch, setLayoutEpoch] = useState(0);
   const lineSlotsRef = useRef(lineSlots);
   const instSlotsRef = useRef(instSlots);
   const blocks = useRef(new Map<number, { fn: BlockUpdater; m: Measure }>());
@@ -66,6 +68,9 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
   const stageDirty = useRef(true);
   const placedGen = useRef(0);
   const ownerRef = useRef(-2);
+  // The loop reads these. A scrub retargets lines without waiting for a new effect.
+  const paintSettings = useRef(settings);
+  paintSettings.current = settings;
   const motion = effectiveMotion(settings);
   const entrance = settings.lineEntrance;
   // Word-by-word fill only for measured and checked timing: a fill that runs ahead of or behind the
@@ -74,7 +79,13 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
   const search = typeof window === 'undefined' ? '' : window.location.search;
   const forcedFill = fillQuery(search);
   const wordSync = wordSyncOn(song.timing.status, search);
+  const wordSyncRef = useRef(wordSync);
+  wordSyncRef.current = wordSync;
   const plan = useMemo(() => planFlow(timeline, motion === 'off'), [timeline, motion]);
+  // The frame loop must not restart when the stage box changes. A restart
+  // committed the lyric hosts again and spent a second phone frame.
+  const stageBox = useRef(stage);
+  stageBox.current = stage;
 
   const register = useCallback((idx: number, fn: BlockUpdater | null, m?: Measure) => {
     if (fn && m) {
@@ -89,18 +100,37 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     const el = stageRef.current!;
     const ro = new ResizeObserver(([e]) => {
       stageDirty.current = true;
-      setStage({ w: e.contentRect.width, h: e.contentRect.height });
+      const w = e.contentRect.width;
+      const h = e.contentRect.height;
+      setStage((s) => (Math.abs(s.w - w) < 0.5 && Math.abs(s.h - h) < 0.5 ? s : { w, h }));
     });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
-  // Re-measure once web fonts have arrived (line heights change).
+  // A new stage object used to restart the frame loop on the opening. Fonts
+  // that are already loaded have not moved the box, so the remeasure waits
+  // until the cover has landed and then only bumps the line epoch.
   useEffect(() => {
     let alive = true;
-    document.fonts?.ready.then(() => alive && setStage((s) => ({ ...s })));
+    let timer = 0;
+    const el = stageRef.current;
+    const remeasure = () => {
+      if (!alive) return;
+      if (document.querySelector('.song.is-flying, .morph-cover')) {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(remeasure, 1200);
+        return;
+      }
+      setLayoutEpoch((n) => n + 1);
+    };
+    document.fonts?.ready.then(() => alive && remeasure());
+    const onRemeasure = () => alive && remeasure();
+    el?.addEventListener('ll-remeasure', onRemeasure);
     return () => {
       alive = false;
+      window.clearTimeout(timer);
+      el?.removeEventListener('ll-remeasure', onRemeasure);
     };
   }, []);
 
@@ -139,6 +169,9 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let veil: SpringState | null = null;
     let veilKind = '';
     let veilClock = Number.NaN;
+    let pendingOwner: number | null = null;
+    let ownerWait = false;
+    let scrubWas = false;
     // The opening seek (deep link or resume) is not a scrub. Ignore it.
     const veilReadyAt = performance.now() + 600;
     const kindAt = (time: number) => {
@@ -159,12 +192,28 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     // Read once. offsetTop inside the frame forces layout on every seek tick.
     const stageTop = stageRef.current?.offsetTop ?? 0;
     const host = stageRef.current?.closest('.song') as HTMLElement | null;
-    const glow = Math.min(stage.h * 0.5, 380);
+    let glow = Math.min(stageBox.current.h * 0.5, 380);
     if (plate.current) plate.current.style.height = `${glow.toFixed(1)}px`;
     const loop = () => {
       raf = 0;
       if (stageCovered()) return;
       raf = requestAnimationFrame(loop);
+      let heavyCommit = false;
+      const scrubbingNow = !!host?.classList.contains('is-scrubbing');
+      if (scrubWas && !scrubbingNow) {
+        // The drag wrote lyrics into the hosts. This frame lets React catch up,
+        // and the frame after reads the real boxes. One each, not stacked.
+        const lines = lineSlotsRef.current;
+        const inst = instSlotsRef.current;
+        requestAnimationFrame(() => {
+          flushSync(() => {
+            setLineSlots(lines);
+            setInstSlots(inst);
+          });
+          requestAnimationFrame(() => setLayoutEpoch((n) => n + 1));
+        });
+      }
+      scrubWas = scrubbingNow;
       const now = performance.now();
       const frameDt = frameAt ? Math.min(0.05, (now - frameAt) / 1000) : 0.016;
       frameAt = now;
@@ -204,15 +253,20 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         lastPaintMs = now;
       }
       const live = stageRef.current?.getBoundingClientRect();
-      const liveW = live?.width ?? stage.w;
-      const liveH = live?.height ?? stage.h;
+      const liveW = live?.width ?? stageBox.current.w;
+      const liveH = live?.height ?? stageBox.current.h;
+      const nextGlow = Math.min((liveH || stageBox.current.h) * 0.5, 380);
+      if (plate.current && Math.abs(nextGlow - glow) > 0.5) {
+        glow = nextGlow;
+        plate.current.style.height = `${glow.toFixed(1)}px`;
+      }
       const t = clock();
       // A paused clock used to restyle the stage anyway. WebKit kept that working set.
       // A new box still has to be placed: the first read can precede font load and
       // text-wrap balance, and the lyric would stay a line too high.
       const measuresMoved = measureGen.current !== placedGen.current;
       const liveKey = `${Math.round(liveW)}x${Math.round(liveH)}`;
-      if (t === lastT && !measuresMoved && liveKey === lastLive) return;
+      if (t === lastT && !measuresMoved && liveKey === lastLive && pendingOwner == null) return;
       lastT = t;
       lastLive = liveKey;
       const pos = flowPosition(plan, t);
@@ -235,38 +289,49 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
             if (c.kind === 'line') lineWant.push(k);
             else instWant.push(k);
           }
-          const nextLines = assignSlots(lineSlotsRef.current, lineWant);
-          const nextInst = assignSlots(instSlotsRef.current, instWant);
-          const linesChanged = !sameSlots(nextLines, lineSlotsRef.current);
-          const instChanged = !sameSlots(nextInst, instSlotsRef.current);
-          if (linesChanged) lineSlotsRef.current = nextLines;
-          if (instChanged) instSlotsRef.current = nextInst;
+          const prevLines = lineSlotsRef.current;
+          const prevInst = instSlotsRef.current;
+          const nextLines = assignSlots(prevLines, lineWant);
+          const nextInst = assignSlots(prevInst, instWant);
+          const linesChanged = !sameSlots(nextLines, prevLines);
+          const instChanged = !sameSlots(nextInst, prevInst);
           if (linesChanged || instChanged) {
             // One view at a time. The outgoing host is hidden before React
             // writes the next lyric, so a scrub cannot stack the old line
-            // over the header. A forced reflow here used to park that line
-            // at the origin for a frame. The slot host stays in the document:
-            // pulling it out did not lower the WebKit slope (T27).
+            // over the header. During a scrub the same host is rewritten in
+            // place: a React commit of the line was the long frame.
             const stageEl = stageRef.current;
             const scrubbing = !!host?.classList.contains('is-scrubbing');
-            if (stageEl && (linesChanged || scrubbing)) {
-              const hide = (el: HTMLElement) => {
-                el.style.opacity = '0';
-                el.style.visibility = 'hidden';
-                el.style.transform = 'none';
-                el.style.filter = 'none';
-              };
-              if (linesChanged) {
-                for (const el of stageEl.querySelectorAll<HTMLElement>('.fb--line')) hide(el);
-              }
-              if (scrubbing) {
-                for (const el of stageEl.querySelectorAll<HTMLElement>('.fb--inst, .ist')) hide(el);
+            const paint = paintSettings.current;
+            let reactedLines = linesChanged;
+            if (scrubbing && linesChanged && stageEl) {
+              const wrote = retargetPhoneLines(stageEl, prevLines, nextLines, timeline, blocks.current, paint, wordSyncRef.current);
+              if (wrote) {
+                lineSlotsRef.current = nextLines;
+                reactedLines = false;
               }
             }
-            flushSync(() => {
-              if (linesChanged) setLineSlots(nextLines);
-              if (instChanged) setInstSlots(nextInst);
-            });
+            if (reactedLines) lineSlotsRef.current = nextLines;
+            if (instChanged) instSlotsRef.current = nextInst;
+            if (reactedLines || instChanged) {
+              if (stageEl) {
+                const hide = (el: HTMLElement) => {
+                  el.style.opacity = '0';
+                  el.style.visibility = 'hidden';
+                };
+                if (reactedLines) {
+                  for (const el of stageEl.querySelectorAll<HTMLElement>('.fb--line')) hide(el);
+                }
+                if (scrubbing && instChanged) {
+                  for (const el of stageEl.querySelectorAll<HTMLElement>('.fb--inst, .ist')) hide(el);
+                }
+              }
+              flushSync(() => {
+                if (reactedLines) setLineSlots(nextLines);
+                if (instChanged) setInstSlots(nextInst);
+              });
+              heavyCommit = true;
+            }
           }
         } else {
           // Commit before this frame paints. A hidden new block and a removed
@@ -368,20 +433,42 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
 
       placedGen.current = measureGen.current;
       const owner = Math.max(-1, Math.min(timeline.cues.length - 1, Math.round(pos)));
-      if (owner !== ownerRef.current) {
-        ownerRef.current = owner;
-        if (bisect('react')) {
-          /* the header and the note stay on the first line */
-        } else if (isPhone()) {
-          const comment = document.querySelector('.comment');
-          if (comment instanceof HTMLElement) {
-            comment.style.transform = 'none';
-            comment.style.filter = 'none';
-            void comment.offsetWidth;
-          }
-          flushSync(() => onOwnerChange(owner));
+      const scrubbing = !!host?.classList.contains('is-scrubbing');
+      // A slot commit already spent this frame. The plates use the next one,
+      // so the header waits one more and does not share that commit.
+      if (heavyCommit && isPhone() && !scrubbing && owner !== ownerRef.current) {
+        pendingOwner = owner;
+        ownerWait = true;
+      } else if (scrubbing) {
+        // The note is held for the whole drag. Committing the header on every
+        // cue stacked a React render on the lyric swap.
+        if (owner !== ownerRef.current) pendingOwner = owner;
+      } else if (owner !== ownerRef.current || pendingOwner != null) {
+        if (ownerWait) {
+          ownerWait = false;
         } else {
-          onOwnerChange(owner);
+          const next = pendingOwner ?? owner;
+          pendingOwner = null;
+          if (next !== ownerRef.current) {
+            ownerRef.current = next;
+            if (bisect('react')) {
+              /* the header and the note stay on the first line */
+            } else if (isPhone()) {
+              const comment = document.querySelector('.comment');
+              // Portrait keeps the note in the card, and the margin note is not
+              // shown. Forcing layout here to drop a WebKit layer made the
+              // opening frame miss its interval.
+              const portrait = window.innerHeight >= window.innerWidth;
+              if (comment instanceof HTMLElement && !portrait) {
+                comment.style.transform = 'none';
+                comment.style.filter = 'none';
+                void comment.offsetWidth;
+              }
+              flushSync(() => onOwnerChange(next));
+            } else {
+              onOwnerChange(next);
+            }
+          }
         }
       }
     };
@@ -398,7 +485,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         stageEl.style.transform = '';
       }
     };
-  }, [timeline, plan, clock, onOwnerChange, stage, wordSync, entrance, motion]);
+  }, [timeline, plan, clock, onOwnerChange, wordSync, entrance, motion]);
 
   const poets = song.poets?.map((p) => p.name).join(' · ');
   const textSettings = useMemo(
@@ -457,6 +544,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
                   stage={stage}
                   register={register}
                   onPick={onPick}
+                  measureEpoch={layoutEpoch}
                 />
               );
             })
@@ -478,6 +566,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
                   features={features}
                   register={register}
                   onPick={onPick}
+                  measureEpoch={layoutEpoch}
                 />
               );
             })

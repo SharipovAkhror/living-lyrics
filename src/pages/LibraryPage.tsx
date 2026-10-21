@@ -5,11 +5,12 @@ import type { Song } from '@/data/schema';
 import { prefetchLyrics } from '@/app/prefetch';
 import { linkHandler, navigate } from '@/app/router';
 import { rememberedSong } from '@/app/continue';
-import { useSettings } from '@/app/settings';
+import { getSettings, useSettings } from '@/app/settings';
+import { enableSongFonts, loadSelectedFonts } from '@/app/fontCatalog';
 import { useAppliedTheme } from '@/app/theme';
 import { Icon } from '@/ui/icons';
 import { Glass, GlassLayers } from '@/ui/glass/Glass';
-import { armMorph, motionBlocked } from '@/app/morph';
+import { armLibraryExit, armMorph, motionBlocked } from '@/app/morph';
 import { Field } from '@/scene/Field';
 import { Status } from '@/components/Status';
 
@@ -31,7 +32,14 @@ function openSong(event: MouseEvent<HTMLAnchorElement>, slug: string) {
     navigate(to);
     return;
   }
-  armMorph(event.currentTarget);
+  const card = event.currentTarget;
+  // The verse faces are on before the song commits, so the first line measure
+  // is already in the right font and does not render the stage a second time.
+  enableSongFonts();
+  // Copies on the click, route on the next frame. Doing both in one turn
+  // spilled the song commit across an extra phone frame.
+  armLibraryExit(card);
+  armMorph(card);
   requestAnimationFrame(() => navigate(to));
 }
 
@@ -69,6 +77,12 @@ export function LibraryPage() {
   const searching = q.trim().length > 0;
   const featured = searching ? null : (list.find((song) => song.slug === remembered) ?? list[0] ?? null);
   const shelf = featured ? list.filter((song) => song.slug !== featured.slug) : list;
+  // The hero is the song a tap opens. Parsed text is ready, so the song page
+  // does not render twice while the cover is in the air.
+  useEffect(() => {
+    void loadSelectedFonts(getSettings());
+    if (featured) prefetchLyrics(featured.slug);
+  }, [featured]);
 
   return (
     <div className="library">

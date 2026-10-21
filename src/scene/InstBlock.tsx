@@ -1,4 +1,4 @@
-import { memo, useLayoutEffect, useRef, useState } from 'react';
+import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { InstCue, Timeline } from '@/data/timeline';
 import type { AudioFeatures } from '@/instruments/animation';
 import type { LineEntrance, MotionPref } from '@/app/settings';
@@ -11,6 +11,9 @@ import { castAt, castSignature, isVoicePassage, type CastMember } from './cast';
 import { stageDrive } from './stageDrive';
 import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
+
+/** Compact height already read. A phone scrub reuses it and does not lay out. */
+const instCompact = new Map<number, number>();
 
 interface Props {
   cue: InstCue;
@@ -26,6 +29,8 @@ interface Props {
   features: AudioFeatures | null;
   register: (idx: number, fn: BlockUpdater | null, m?: Measure) => void;
   onPick: (idx: number) => void;
+  /** Bumps once when a scrub ends, so a passage that used a cached box is read again. */
+  measureEpoch?: number;
 }
 
 function passageTitle(keys: string[]) {
@@ -54,7 +59,7 @@ function frameFor(members: CastMember[], features: AudioFeatures | null, t: numb
  * brightens and moves; the others stay dim until their entrance. Who plays, and when the voice returns, stays under the drawings.
  * A passage that is only voice or choir keeps that engraving and does not invent an orchestra.
  */
-function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion, stage, features, register, onPick }: Props) {
+function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion, stage, features, register, onPick, measureEpoch = 0 }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const compact = useRef<HTMLDivElement>(null);
   const full = useRef<HTMLDivElement>(null);
@@ -91,9 +96,21 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   const compactH = useRef(56);
   // Sections that already stood. Shared plates keep their slot and skip the cascade.
   const earlier = timeline.cues.flatMap((c) => (c.kind === 'inst' && c.start < cue.start ? [c.section] : []));
-  const [cast, setCast] = useState<CastMember[]>(() => castAt(section, section.start, stageSize.w, motion, earlier));
+  const [cast, setCast] = useState<CastMember[]>(() => {
+    const members = castAt(section, section.start, stageSize.w, motion, earlier);
+    castSig.current = castSignature(members);
+    return members;
+  });
   const heroes = cast.filter((m) => m.place === 'hero');
   const echoes = cast.filter((m) => m.place === 'echo');
+  // The engravings are the long commit. The label paints first; the plates follow
+  // on the next frame, after the song page has laid out.
+  const [platesOn, setPlatesOn] = useState(() => !isPhone());
+  useEffect(() => {
+    if (platesOn) return;
+    const id = requestAnimationFrame(() => setPlatesOn(true));
+    return () => cancelAnimationFrame(id);
+  }, [platesOn]);
 
   useLayoutEffect(() => {
     if (parked) {
@@ -109,7 +126,17 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     }
     if (root.current) root.current.style.pointerEvents = '';
     if (!compact.current) return;
-    compactH.current = compact.current.offsetHeight;
+    // measureEpoch forces a fresh read after the finger lifts. During the drag
+    // the box is the last one we measured, so the frame does not lay out.
+    const scrubbing = isPhone() && !!root.current?.closest('.song')?.classList.contains('is-scrubbing');
+    if (scrubbing) {
+      const known = instCompact.get(cue.idx);
+      if (known != null) compactH.current = known;
+    } else {
+      compactH.current = compact.current.offsetHeight;
+      instCompact.set(cue.idx, compactH.current);
+    }
+    void measureEpoch;
     register(cue.idx, call, { main: 0, sub: 0, compact: compactH.current, full: fullH });
   });
 
@@ -118,7 +145,11 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   useLayoutEffect(() => {
     if (!isPhone()) return;
     const members = castAt(section, section.start, stageSize.w, motion, earlier);
-    castSig.current = castSignature(members);
+    const sig = castSignature(members);
+    // The mount already built this roster. A second setState in the same commit
+    // was a long frame on the way in from the library.
+    if (sig === castSig.current) return;
+    castSig.current = sig;
     setCast(members);
     // The roster inputs are current when the cue changes. Listing them would refit every frame.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -221,7 +252,7 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
         {title ? '' : ` ${names.join(' · ')}`}
       </div>
       <div ref={full} className="fb-inst-full" style={{ height: fullH }}>
-        {(heroes.length > 0 && !bisect('instruments') && (isPhone() || anim.presence > 0.02)) && (
+        {(platesOn && heroes.length > 0 && !bisect('instruments') && (isPhone() || anim.presence > 0.02)) && (
           <InstrumentStage
             ref={stageRef}
             keys={heroes.map((m) => m.key)}

@@ -9,6 +9,7 @@ import { showHarakatText } from '@/data/harakat';
 import { fontClass } from './fonts';
 import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
+import { paintPhoneLine, type PhoneLineHost } from './slots';
 
 /**
  * Per-frame update from the Scene: time, distance from the current position, top in px, and
@@ -28,6 +29,8 @@ interface Props {
   stage: { w: number; h: number };
   register: (idx: number, fn: BlockUpdater | null, m?: Measure) => void;
   onPick: (idx: number) => void;
+  /** Bumps once when a scrub ends, so a line that used a cached box is read again. */
+  measureEpoch?: number;
 }
 
 /**
@@ -35,6 +38,23 @@ interface Props {
  * only changes text: WebKit was retaining a backing store for every removed span.
  */
 const PHONE_WORD_POOL = 40;
+
+/** Box already read for a phone line. A scrub reuses it and does not lay out. */
+const phoneMeasures = new Map<number, Measure>();
+
+/** Word widths are not needed to place the line. One line per frame stays inside the frame budget. */
+const widthQueue: Array<() => void> = [];
+let widthPump = 0;
+function pumpWidths() {
+  widthPump = 0;
+  const job = widthQueue.shift();
+  if (job) job();
+  if (widthQueue.length) widthPump = requestAnimationFrame(pumpWidths);
+}
+function queuePhoneWidths(job: () => void) {
+  widthQueue.push(job);
+  if (!widthPump) widthPump = requestAnimationFrame(pumpWidths);
+}
 
 /** Light markup in translations: **key word** (the counterpart of the accented original word), *nuance*. */
 export function TrText({ text }: { text: string }) {
@@ -56,7 +76,7 @@ export function TrText({ text }: { text: string }) {
   );
 }
 
-function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, motion, stage, register, onPick }: Props) {
+function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, motion, stage, register, onPick, measureEpoch = 0 }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const main = useRef<HTMLDivElement>(null);
   const orig = useRef<HTMLDivElement>(null);
@@ -70,6 +90,15 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
   const filterRef = useRef('');
   // Last strings actually written. WebKit grows its working set on a repeated write even when the pixels match.
   const painted = useRef({ transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '' });
+  // A queued width read belongs to one cue. The next lyric or a scrub release drops it.
+  const widthGen = useRef(0);
+  const epochRef = useRef(measureEpoch);
+  epochRef.current = measureEpoch;
+  // A scrub writes the next lyric here and skips React. The render keeps that
+  // cue until the release commit matches it.
+  const overrideRef = useRef<LineCue | null>(null);
+  const cueRef = useRef(cue);
+  cueRef.current = overrideRef.current ?? cue;
 
   const { line } = cue;
   const fClass = fontClass(line, settings);
@@ -86,6 +115,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
     painted.current = { transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '' };
     filterRef.current = '';
     fitSig.current = '';
+    widthGen.current += 1;
     if (orig.current) {
       orig.current.style.opacity = '';
       orig.current.style.removeProperty('--litf');
@@ -101,6 +131,24 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
     }
     if (root.current) root.current.style.visibility = 'hidden';
   }, [cue.idx]);
+
+  useLayoutEffect(() => {
+    const host = root.current as PhoneLineHost | null;
+    if (!host) return;
+    host.__llCue = cueRef;
+    host.__llOverride = overrideRef;
+    const over = overrideRef.current;
+    if (!over) return;
+    if (over.idx === cue.idx) {
+      overrideRef.current = null;
+      cueRef.current = cue;
+      host.querySelectorAll<HTMLElement>('[data-scrub]').forEach((node) => node.removeAttribute('data-scrub'));
+      return;
+    }
+    // A parent render reconciled the old lyric back. Put the scrubbed one on screen.
+    paintPhoneLine(host, over, settings, wordSync);
+    cueRef.current = over;
+  });
 
   // Fit the original: as large as possible within the width and about a third of the stage height.
   useLayoutEffect(() => {
@@ -172,15 +220,24 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
         const mainH = main.current!.offsetHeight;
         return { main: mainH, sub: subs.current ? r.offsetHeight - mainH : 0 };
       };
-      widths.current = words.current.map((w) => w?.offsetWidth ?? 0);
-      const m = readBox();
-      register(cue.idx, call, m);
-      // text-wrap: balance and late fonts can drop a line after this read. One more
-      // frame picks that up; the scene places again only if the box actually changed.
-      requestAnimationFrame(() => {
+      const scrubbing = !!r.closest('.song')?.classList.contains('is-scrubbing');
+      // Reading the box forces layout. A drag reuses the last box. Any other
+      // commit registers that box now and reads the real one on a later frame,
+      // one line at a time, so the opening flight stays inside 16 ms.
+      const known = phoneMeasures.get(cue.idx);
+      register(cue.idx, call, known ?? { main: 72, sub: hasSubs ? 36 : 0 });
+      if (scrubbing) return;
+      const gen = widthGen.current;
+      const epoch = measureEpoch;
+      const idx = cue.idx;
+      queuePhoneWidths(() => {
+        if (widthGen.current !== gen || epochRef.current !== epoch) return;
         if (!orig.current || !root.current || !main.current) return;
+        if (root.current.closest('.song')?.classList.contains('is-scrubbing')) return;
         widths.current = words.current.map((w) => w?.offsetWidth ?? 0);
-        register(cue.idx, call, readBox());
+        const next = readBox();
+        phoneMeasures.set(idx, next);
+        register(idx, call, next);
       });
       return;
     }
@@ -233,10 +290,13 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
   updater.current = (t, d, top, waitV) => {
     const r = root.current;
     if (!r || bisect('placement')) return;
+    const liveCue = cueRef.current;
+    const liveLine = liveCue.line;
     const s = blockState(d);
     const still = motion === 'off';
     const phone = isPhone();
-    const x = entrance === 'script' ? scriptShift(d, cue.rtl, stage.w, still) : 0;
+    const scrubbing = phone && !!r.closest('.song')?.classList.contains('is-scrubbing');
+    const x = entrance === 'script' ? scriptShift(d, liveCue.rtl, stage.w, still) : 0;
     const z = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
     if (painted.current.z !== z) {
       painted.current.z = z;
@@ -320,10 +380,10 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       }
     }
     if (bisect('words')) return;
-    for (let i = 0; i < line.words.length; i++) {
+    for (let i = 0; i < liveLine.words.length; i++) {
       const el = words.current[i];
       if (!el) continue;
-      const w = line.words[i];
+      const w = liveLine.words[i];
       if (wordSync && d > -1) {
         const f = wordFillFraction(t, w.s, w.e);
         if (f <= 0 || f >= 1) {
@@ -341,10 +401,10 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
           el.classList.add('is-filling');
           el.classList.remove('is-sung');
           el.style.removeProperty('background-image');
-          const W = widths.current[i] || el.offsetWidth || 1;
+          const W = widths.current[i] || (scrubbing ? 1 : el.offsetWidth || 1);
           // The edge is a step, and its place is fixed by t, so a seek lands on the same cut.
           // A phone keeps a few dozen mask strings per word. WebKit rasterises each one.
-          const dir = fillMaskDirection(cue.rtl);
+          const dir = fillMaskDirection(liveCue.rtl);
           const edge = fillEdgePercent(f, W, fontPx.current);
           const cut = phone ? `${Math.round(edge / 4) * 4}%` : `${edge.toFixed(2)}%`;
           if (el.style.getPropertyValue('--fill-dir') !== dir) el.style.setProperty('--fill-dir', dir);
@@ -374,7 +434,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
         wait.current.style.opacity = waitO;
       }
       if (waitV > 0) {
-        const txt = `через ${formatTime(Math.max(0, cue.start - t))}`;
+        const txt = `через ${formatTime(Math.max(0, liveCue.start - t))}`;
         if (wait.current.textContent !== txt) wait.current.textContent = txt;
       }
     }

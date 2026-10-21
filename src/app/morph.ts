@@ -79,21 +79,21 @@ export function flightProgress(): number {
  * contact sheet fast-forwards that transition to the end. The copy is
  * opacity and translate only, on the same spring as the flight.
  */
-function pinExit(source: HTMLElement, delay: number, dist: number): ExitNode | null {
+function pinExit(source: HTMLElement, delay: number, dist: number, flat = false): ExitNode | null {
   const rect = source.getBoundingClientRect();
   if (rect.width < 2 || rect.height < 2) return null;
   const el = source.cloneNode(true) as HTMLElement;
   el.classList.add('lib-exit');
   el.setAttribute('aria-hidden', 'true');
-  // A filtered clone of the shelf is a long frame. Strip it before the first paint.
-  const quiet = (node: HTMLElement) => {
-    node.style.backdropFilter = 'none';
-    node.style.setProperty('-webkit-backdrop-filter', 'none');
-    node.style.animation = 'none';
-    node.style.transition = 'none';
-  };
-  quiet(el);
-  el.querySelectorAll<HTMLElement>('*').forEach(quiet);
+  // Filters and motion are killed by .lib-exit. Walking every node to set
+  // inline styles was itself the long frame. Shelf covers are already on
+  // screen; painting them again inside the clone decoded a second time.
+  if (flat) {
+    el.querySelectorAll('img').forEach((img) => {
+      img.removeAttribute('src');
+      img.style.background = '#3a322c';
+    });
+  }
   el.style.position = 'fixed';
   el.style.left = `${rect.left.toFixed(2)}px`;
   el.style.top = `${rect.top.toFixed(2)}px`;
@@ -150,7 +150,7 @@ function armExit(library: HTMLElement, chosen: HTMLElement) {
     if (pinned) nodes.push(pinned);
   }
   if (shelf) {
-    const pinned = pinExit(shelf, 0.09, 8);
+    const pinned = pinExit(shelf, 0.09, 8, true);
     if (pinned) nodes.push(pinned);
   }
   if (copy) {
@@ -252,14 +252,8 @@ export function armMorph(card: HTMLElement): void {
   card.style.transition = 'none';
   card.style.transform = 'none';
   const box = boxOf(cover);
-  const library = card.closest('.library');
-  const copy = card.querySelector<HTMLElement>('.lib-hero-copy, .lib-row-copy');
-  if (copy) {
-    copy.style.transition = 'none';
-    copy.style.opacity = '0';
-  }
-  // The live page unmounts on the next frame. Copies keep the exit on screen.
-  if (library instanceof HTMLElement && !motionBlocked()) armExit(library, card);
+  // Labels stay on the card until the exit copies exist. Hiding them here
+  // left a blank frame before the route changed.
   if (motionBlocked() || !src || box.width < 2) return;
   cover.style.visibility = 'hidden';
   const el = document.createElement('img');
@@ -280,6 +274,17 @@ export function armMorph(card: HTMLElement): void {
   fromBox = box;
   started = performance.now();
   ensureLoop();
+}
+
+/**
+ * Copies of the header, the shelf and the card labels. Call this while the
+ * library is still mounted, in the same turn that unmounts it, so the click
+ * itself only puts the cover in the air.
+ */
+export function armLibraryExit(card: HTMLElement): void {
+  const library = card.closest('.library');
+  if (!(library instanceof HTMLElement) || motionBlocked()) return;
+  armExit(library, card);
 }
 
 /**
@@ -314,6 +319,7 @@ export function playRise(root: HTMLElement, done: () => void): () => void {
   }
   const springs: SpringState[] = RISES.map(() => ({ x: 0, v: 0 }));
   const touched = new Set<HTMLElement>();
+  const found = new Map<string, HTMLElement[]>();
   let lastT = 0;
   let id = 0;
   let alive = true;
@@ -330,7 +336,11 @@ export function playRise(root: HTMLElement, done: () => void): () => void {
       root.style.setProperty('--floor-in', t.toFixed(3));
       return;
     }
-    const nodes = root.querySelectorAll<HTMLElement>(sel);
+    let nodes = found.get(sel);
+    if (!nodes) {
+      nodes = [...root.querySelectorAll<HTMLElement>(sel)];
+      if (nodes.length) found.set(sel, nodes);
+    }
     nodes.forEach((el) => {
       touched.add(el);
       const y = (1 - t) * dist;
@@ -367,6 +377,16 @@ export function playRise(root: HTMLElement, done: () => void): () => void {
       if (progress < group.gate) {
         paint(group.sel, group.dist, 0);
         quiet = false;
+        return;
+      }
+      // The title used to wait on a spring that opened at this gate, so the
+      // last third of the flight was still a dark stage on a 100 ms sheet.
+      // It now tracks the flight itself and is already up as the cover lands.
+      if (group.sel !== '.player') {
+        const span = Math.max(0.001, 1 - group.gate);
+        const t = Math.max(0, Math.min(1, (progress - group.gate) / span));
+        paint(group.sel, group.dist, t);
+        if (t < 0.99) quiet = false;
         return;
       }
       springs[i] = stepSpring(springs[i], 1, dt, RISE);

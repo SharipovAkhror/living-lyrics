@@ -264,6 +264,11 @@ export function loadFontLabels() {
 function nudgeMeasure() {
   const stage = document.querySelector('.scene-stage');
   if (!(stage instanceof HTMLElement)) return;
+  // A width toggle lays the phone out twice. The scene remeasures on the event.
+  if (document.documentElement.dataset.phone === '1') {
+    stage.dispatchEvent(new Event('ll-remeasure'));
+    return;
+  }
   const previous = stage.style.width;
   stage.style.width = 'calc(100% - 0.5px)';
   requestAnimationFrame(() => {

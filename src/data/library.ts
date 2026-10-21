@@ -24,15 +24,25 @@ export function getSong(slug: string): Song | undefined {
 }
 
 const lyricsPending = new Map<string, Promise<Lyrics>>();
+const lyricsReady = new Map<string, Lyrics>();
+
+/** Already parsed text, if a warm-up finished before the page rendered. */
+export function peekLyrics(slug: string): Lyrics | null {
+  return lyricsReady.get(slug) ?? null;
+}
 
 export function loadLyrics(slug: string): Promise<Lyrics> {
+  const ready = lyricsReady.get(slug);
+  if (ready) return Promise.resolve(ready);
   const pending = lyricsPending.get(slug);
   if (pending) return pending;
   const job = (async () => {
     const loader = lyricsModules[`/content/songs/${slug}/lyrics.json`];
     if (!loader) throw new Error(`No lyrics for ${slug}`);
     const raw = await loader();
-    return LyricsSchema.parse(raw);
+    const lyrics = LyricsSchema.parse(raw);
+    lyricsReady.set(slug, lyrics);
+    return lyrics;
   })();
   lyricsPending.set(slug, job);
   return job;
