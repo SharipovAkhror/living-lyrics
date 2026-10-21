@@ -41,7 +41,7 @@ export const SHEET_OPEN: SpringSpec = { stiffness: 280, damping: 24, mass: 1 };
  */
 export const PHONE_SPRING: SpringSpec = SPRING;
 
-/** Play button press: toward 0.92, settled in about 80 ms, no bounce. */
+/** Play button press. Fast approach, no bounce. The caller picks the scale. */
 export const PRESS_SPRING: SpringSpec = { stiffness: 2500, damping: 100, mass: 1 };
 
 /** Play button release, on the way to 1.04, before it is retargeted to 1. */
@@ -90,6 +90,11 @@ let motionScale = 1;
 
 export function setMotionScale(scale: number) {
   motionScale = Number.isFinite(scale) && scale > 0 ? scale : 1;
+}
+
+/** Recording stretch. 1 in ordinary use, 4 when a clip is shot with `?slowmo=4`. */
+export function getMotionScale(): number {
+  return motionScale;
 }
 
 /**

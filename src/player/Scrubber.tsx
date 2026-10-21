@@ -14,6 +14,8 @@ const BUBBLE = { stiffness: 790, damping: 40, mass: 1 };
 const BUBBLE_OUT = { stiffness: 1600, damping: 80, mass: 1 };
 const WIDTH_SPRING = { stiffness: 420, damping: 32, mass: 1 };
 const LABEL_SPRING = { stiffness: 900, damping: 46, mass: 1 };
+/** Rail and thumb swell over about 400 ms, so a 100 ms sheet sees the growth. */
+const GRAB = { stiffness: 100, damping: 18, mass: 1 };
 
 interface Segment {
   id: string;
@@ -69,6 +71,7 @@ export function Scrubber({
   duration,
   clock,
   onSeek,
+  onPreview,
   accessory,
   colors,
 }: {
@@ -76,6 +79,8 @@ export function Scrubber({
   duration: number;
   clock: () => number;
   onSeek: (t: number) => void;
+  /** Song time under the finger, or null once the engine clock is the source again. */
+  onPreview?: (t: number | null) => void;
   /** Sits on the time row, opposite the current time. The mismatch key lives here. */
   accessory?: ReactNode;
   /** Song field colours, one per part, in order. */
@@ -96,6 +101,8 @@ export function Scrubber({
   const dragT = useRef<number | null>(null);
   const seekRef = useRef(onSeek);
   seekRef.current = onSeek;
+  const previewRef = useRef(onPreview);
+  previewRef.current = onPreview;
   const segments = segmentsOf(timeline, duration, colors);
   const span = Math.max(duration, 0.001);
   let lastMark = 0;
@@ -119,20 +126,68 @@ export function Scrubber({
     let widthSpring: SpringState = { x: 0, v: 0 };
     let widthTarget = 0;
     let haveWidth = false;
+    let heightSpring: SpringState = { x: 0, v: 0 };
+    let heightTarget = 0;
+    let haveHeight = false;
     let labelSpring: SpringState = { x: 1, v: 0 };
     let smoothX = -1;
+    let grab: SpringState = { x: 0, v: 0 };
+    let grabSince = 0;
+    let previewGap = -1;
     const width = () => track.current?.getBoundingClientRect().width ?? 1;
 
-    const paint = (t: number, dt: number) => {
+    const liftFor = (node: HTMLElement) => {
+      const host = track.current;
+      if (!host) return 0;
+      const trackRect = host.getBoundingClientRect();
+      if (previewGap < 0) previewGap = parseFloat(getComputedStyle(node).bottom) || 8;
+      const layoutBottom = trackRect.top - previewGap;
+      const layoutTop = layoutBottom - node.offsetHeight;
+      const note = document.querySelector('.note-card');
+      if (!(note instanceof HTMLElement)) return 0;
+      const noteBox = note.getBoundingClientRect();
+      if (noteBox.height < 8) return 0;
+      if (layoutBottom > noteBox.top + 4 && layoutTop < noteBox.bottom - 4) {
+        return Math.min(0, noteBox.top - 8 - layoutBottom);
+      }
+      return 0;
+    };
+
+    const paint = (t: number, dt: number, live: boolean) => {
+      previewRef.current?.(live ? t : null);
       const span = duration > 0 ? duration : 1;
       const p = Math.min(1, Math.max(0, t / span));
       const w = width();
-      const grabbed = dragT.current != null;
-      const headScale = grabbed ? 1.3 : 1;
+      const holding = dragT.current != null;
+      // WebKit may deliver one frame for the whole hold. Integrate the wall
+      // time, or the 320 ms sample still reads the resting scale.
+      if (holding && grabSince) {
+        const elapsed = Math.min(1.2, Math.max(0, (performance.now() - grabSince) / 1000));
+        let state: SpringState = { x: 0, v: 0 };
+        let left = elapsed;
+        let guard = 0;
+        while (left > 0.0001 && guard < 24) {
+          const slice = Math.min(0.05, left);
+          state = stepSpring(state, 1, slice, GRAB);
+          left -= slice;
+          guard += 1;
+        }
+        grab = state;
+      } else grab = stepSpring(grab, 0, dt, GRAB);
+      const g = Math.max(0, grab.x);
+      const headScale = (1 + 0.3 * g).toFixed(3);
       if (head.current) head.current.style.transform = `translate3d(${(p * w).toFixed(2)}px, -50%, 0) scale(${headScale})`;
-      // The bloom is the same frame as the thumb. Writing it again each frame would restart the 150 ms rise.
-      const railScale = grabbed ? 'scaleY(2)' : '';
-      if (rail.current && rail.current.style.transform !== railScale) rail.current.style.transform = railScale;
+      if (rail.current) {
+        if (!holding && g < 0.02 && Math.abs(grab.v) < 0.02) {
+          if (rail.current.style.transform) {
+            rail.current.style.transform = '';
+            rail.current.style.transition = '';
+          }
+        } else {
+          rail.current.style.transition = 'none';
+          rail.current.style.transform = `scaleY(${(1 + g).toFixed(3)})`;
+        }
+      }
       if (played.current) played.current.style.transform = `scaleX(${p.toFixed(4)})`;
       if (rest.current) rest.current.style.transform = `scaleX(${(1 - p).toFixed(4)})`;
       const text = formatTime(t) + '|' + formatTime(duration - t);
@@ -159,16 +214,23 @@ export function Scrubber({
           const body = bubbleBody.current;
           if (body) {
             const measured = body.offsetWidth;
+            const measuredH = body.offsetHeight;
             if (!haveWidth || measured < 2) {
               haveWidth = measured > 1;
               widthSpring = { x: measured, v: 0 };
               widthTarget = measured;
             } else widthTarget = measured;
+            if (!haveHeight || measuredH < 2) {
+              haveHeight = measuredH > 1;
+              heightSpring = { x: measuredH, v: 0 };
+              heightTarget = measuredH;
+            } else heightTarget = measuredH;
           }
         }
       }
       labelSpring = stepSpring(labelSpring, 1, dt, LABEL_SPRING);
       if (haveWidth) widthSpring = stepSpring(widthSpring, widthTarget, dt, WIDTH_SPRING);
+      if (haveHeight) heightSpring = stepSpring(heightSpring, heightTarget, dt, WIDTH_SPRING);
       const x = bubble.x;
       const closing = !open;
       const clamped = Math.max(0, Math.min(1, x));
@@ -183,21 +245,29 @@ export function Scrubber({
         node.style.transformOrigin = 'center bottom';
         const drawn = haveWidth ? Math.max(1, widthSpring.x) : node.scrollWidth;
         node.style.width = `${drawn.toFixed(1)}px`;
+        if (haveHeight) node.style.height = `${Math.max(1, heightTarget).toFixed(1)}px`;
+        const hScale = heightTarget > 1 ? Math.max(0.35, Math.min(1.15, heightSpring.x / heightTarget)) : 1;
         const tipX = p * w;
         smoothX = smoothX < 0 ? tipX : smoothX + (tipX - smoothX) * 0.22;
-        node.style.transform = `translate3d(${smoothX.toFixed(2)}px, 0, 0) scale(${scale.toFixed(3)})`;
+        const lift = open ? liftFor(node) : 0;
+        node.style.transform = `translate3d(${smoothX.toFixed(2)}px, ${lift.toFixed(2)}px, 0) scale(${scale.toFixed(3)}) scaleY(${hScale.toFixed(3)})`;
         const body = bubbleBody.current;
         if (body) {
           const ly = (1 - Math.max(0, Math.min(1, labelSpring.x))) * 4;
+          const counter = 1 / Math.max(0.35, hScale);
           body.style.opacity = Math.max(0, Math.min(1, labelSpring.x)).toFixed(3);
-          body.style.transform = `translate3d(0, ${ly.toFixed(2)}px, 0)`;
+          body.style.transformOrigin = 'center bottom';
+          body.style.transform = `translate3d(0, ${ly.toFixed(2)}px, 0) scaleY(${counter.toFixed(3)})`;
         }
       } else if (!node.hidden) {
         node.hidden = true;
         node.style.opacity = '0';
+        node.style.height = '';
         lastPreview = '';
         haveWidth = false;
+        haveHeight = false;
         smoothX = -1;
+        previewGap = -1;
       }
     };
 
@@ -225,9 +295,9 @@ export function Scrubber({
         const gap = magnet - dragT.current;
         if (Math.abs(gap) < window) {
           const pull = 1 - Math.abs(gap) / window;
-          paint(dragT.current + gap * pull * 0.7, dt);
+          paint(dragT.current + gap * pull * 0.7, dt, true);
         } else {
-          paint(dragT.current, dt);
+          paint(dragT.current, dt, true);
         }
         return;
       }
@@ -242,15 +312,17 @@ export function Scrubber({
           coast.v *= Math.exp(-4.2 * dt);
           coast.t = Math.min(duration, Math.max(0, coast.t + coast.v * dt));
         }
-        paint(coast.t, dt);
+        paint(coast.t, dt, true);
         if (Math.abs(coast.v) < 0.35) {
           const landed = slow && Math.abs(magnet - coast.t) < window ? magnet : coast.t;
           coast = null;
-          seekRef.current(Math.min(duration, Math.max(0, landed)));
+          const at = Math.min(duration, Math.max(0, landed));
+          seekRef.current(at);
+          previewRef.current?.(null);
         }
         return;
       }
-      paint(clock(), dt);
+      paint(clock(), dt, false);
     };
     raf = requestAnimationFrame(loop);
 
@@ -277,6 +349,7 @@ export function Scrubber({
       lastMove = performance.now();
       vx = 0;
       dragT.current = originT;
+      grabSince = performance.now();
       setDragging(true);
     };
     const move = (event: PointerEvent) => {
@@ -297,17 +370,23 @@ export function Scrubber({
       const velocity = vx * 1000 * secondsPerPx;
       const t = dragT.current;
       dragT.current = null;
+      grabSince = 0;
       setDragging(false);
       if (Math.abs(velocity) > Math.max(6, duration * 0.08)) coast = { t, v: velocity };
-      else seekRef.current(t);
+      else {
+        seekRef.current(t);
+        previewRef.current?.(null);
+      }
     };
     const cancel = () => {
       if (dragT.current == null) return;
       const t = dragT.current;
       dragT.current = null;
+      grabSince = 0;
       coast = null;
       setDragging(false);
       seekRef.current(t);
+      previewRef.current?.(null);
     };
 
     node.addEventListener('pointerdown', down);

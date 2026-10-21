@@ -11,6 +11,7 @@ import { enableSongFonts } from '@/app/fontCatalog';
 import { nextSlug, prefetchLyrics, prefetchRecording, recordingUrl } from '@/app/prefetch';
 import { linkHandler } from '@/app/router';
 import { followHeader, hasFlight, motionBlocked, playRise } from '@/app/morph';
+import { stepSpring, type SpringState } from '@/ui/spring';
 import { bindPress } from '@/ui/press';
 import { PlayPause } from '@/ui/playglyph';
 import { GlassLayers } from '@/ui/glass/Glass';
@@ -69,27 +70,70 @@ function CloseDisc({ label, onClick }: { label: string; onClick: () => void }) {
 }
 
 /** Portrait note. Not a dialog: the settings test takes the first one, and the grabber class is theirs. */
+const NOTE_LEAVE = { stiffness: 220, damping: 24, mass: 1 };
+
 function NoteCard({
   text,
   textKey,
   showHarakat,
   onClose,
-  leaving,
+  fading,
+  onFaded,
 }: {
   text: string;
   textKey: number;
   showHarakat: boolean;
   onClose: () => void;
-  leaving?: boolean;
+  /** The sheet is rising. Fade in place instead of dropping the card. */
+  fading?: boolean;
+  onFaded?: () => void;
 }) {
   const ref = useRef<HTMLElement>(null);
   const drag = useRef<{ y: number; id: number } | null>(null);
+  const fadedRef = useRef(onFaded);
+  fadedRef.current = onFaded;
   useLayoutEffect(() => {
-    if (leaving && ref.current) ref.current.style.transform = '';
     const body = ref.current?.querySelector('.comment-body');
     if (!(body instanceof HTMLElement)) return;
     body.classList.toggle('is-faded', body.scrollHeight > body.clientHeight + 8);
-  }, [leaving, text]);
+  }, [text]);
+  useLayoutEffect(() => {
+    const card = ref.current;
+    if (!card || !fading) return;
+    if (motionBlocked()) {
+      fadedRef.current?.();
+      return;
+    }
+    let spring: SpringState = { x: 0, v: 0 };
+    let last = 0;
+    let raf = 0;
+    let alive = true;
+    card.style.transition = 'none';
+    card.style.pointerEvents = 'none';
+    const tick = (now: number) => {
+      if (!alive) return;
+      const dt = Math.min(0.032, last ? (now - last) / 1000 : 0.016);
+      last = now;
+      spring = stepSpring(spring, 1, dt, NOTE_LEAVE);
+      const t = Math.max(0, Math.min(1, spring.x));
+      card.style.opacity = (1 - t).toFixed(3);
+      card.style.transform = `translate3d(0, ${(10 * t).toFixed(2)}px, 0)`;
+      if (t > 0.98 && Math.abs(spring.v) < 0.05) {
+        fadedRef.current?.();
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => {
+      alive = false;
+      if (raf) cancelAnimationFrame(raf);
+      card.style.opacity = '';
+      card.style.transform = '';
+      card.style.transition = '';
+      card.style.pointerEvents = '';
+    };
+  }, [fading]);
   const move = (clientY: number) => {
     const card = ref.current;
     const d = drag.current;
@@ -100,7 +144,7 @@ function NoteCard({
   return (
     <aside
       ref={ref}
-      className={`note-card${leaving ? ' is-leaving' : ''}`}
+      className="note-card"
       role="region"
       aria-label="Пояснение"
       onPointerDown={(e) => {
@@ -378,10 +422,17 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   }, []);
   // Until the engine has applied ?t=, paint that moment. Otherwise the first
   // phone frame is the intro and the geometry sample reads the wrong block.
+  // The scrubber writes this while a finger or a coast is on the rail.
+  // Seeking on every move would notify the engine; the scene just reads the ref.
+  const scrubAt = useRef<number | null>(null);
   const clock = useCallback(() => {
+    if (scrubAt.current != null) return scrubAt.current;
     if (deepLink != null && !clockArmed) return deepLink;
     return engine?.currentTime() ?? 0;
   }, [engine, deepLink, clockArmed]);
+  const onScrubPreview = useCallback((t: number | null) => {
+    scrubAt.current = t;
+  }, []);
 
   const [owner, setOwner] = useState(-1);
   // A deep link (?t=) knows its line before the stage clock ticks. Placing the
@@ -394,8 +445,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     setOwner((prev) => (prev === next ? prev : next));
   }, [timeline, deepLink]);
   const [sheet, setSheet] = useState<SheetName>(null);
-  const [noteDismiss, setNoteDismiss] = useState(false);
-  const openTimer = useRef(0);
+  const [fadingNote, setFadingNote] = useState<{ text: string; from: Cue } | null>(null);
   const settingsHeld = useHeld(sheet === 'settings');
   const infoHeld = useHeld(sheet === 'info');
   const textHeld = useHeld(sheet === 'text');
@@ -484,26 +534,15 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const togglePlay = useCallback(() => engine?.toggle(), [engine]);
   const openSheet = useCallback(
     (name: SheetName) => {
-      window.clearTimeout(openTimer.current);
-      const cardUp = !!(portraitNote && !noteDismiss);
       if (shortLand && settings.commentOpen) setSettings({ commentOpen: false });
-      if (!cardUp) {
-        setNoteDismiss(false);
-        coverStage();
-        setSheet(name);
-        return;
-      }
-      // The note leaves before the sheet rises. Two panels never share the screen.
-      setNoteDismiss(true);
-      openTimer.current = window.setTimeout(() => {
-        coverStage();
-        setSheet(name);
-        setNoteDismiss(false);
-      }, 200);
+      // Keep the note mounted and fade it while the sheet rises. Unmounting
+      // first collapsed --player-h and the lyrics jumped, then the sheet arrived.
+      if (portraitNote) setFadingNote(portraitNote);
+      coverStage();
+      setSheet(name);
     },
-    [portraitNote, noteDismiss, shortLand, settings.commentOpen],
+    [portraitNote, shortLand, settings.commentOpen],
   );
-  useEffect(() => () => window.clearTimeout(openTimer.current), []);
 
   // A mismatch mark records the clock and the line on stage. It does not pause, seek, or open a sheet.
   const [toast, setToast] = useState<{ id: string; t: number } | null>(null);
@@ -646,6 +685,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   }, [columns.frame]);
 
   if (!song || !engine) return <NotFound />;
+  const shownNote = portraitNote ?? (sheet ? fadingNote : null);
 
   const poets = song.poets?.map((p) => p.name).join(' · ');
   const buffering = !!state?.buffering;
@@ -739,13 +779,14 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </button>
       </header>
 
-      {portraitNote && (
+      {shownNote && (
         <NoteCard
-          text={portraitNote.text}
-          textKey={portraitNote.from.idx}
+          text={shownNote.text}
+          textKey={shownNote.from.idx}
           showHarakat={settings.showHarakat}
           onClose={() => setSettings({ showComment: false })}
-          leaving={noteDismiss}
+          fading={!portraitNote}
+          onFaded={() => setFadingNote(null)}
         />
       )}
 
@@ -800,6 +841,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             duration={duration}
             clock={clock}
             onSeek={(t) => engine.seek(t)}
+            onPreview={onScrubPreview}
             colors={song.palette.field}
             accessory={
               <div className="mark-bar">

@@ -2,22 +2,27 @@
  * Play and pause from the icon set, crossed by a spring.
  * The swap is opacity, scale and rotation, written inline.
  * A CSS animation is skipped by the contact-sheet capture, so the critic
- * would only see the cut. The glyphs themselves stay the set's filled twins.
+ * would only see the cut. The middle of the spring is small and turned.
+ * The glyphs themselves stay the set's filled twins.
  */
 import { useLayoutEffect, useRef } from 'react';
 import { motionBlocked } from '@/app/morph';
 import { Icon } from './icons';
 import { stepSpring, type SpringState } from './spring';
 
-/** About 280 ms, wide enough that a 100 ms contact sheet catches the turn. */
-const MORPH = { stiffness: 320, damping: 22, mass: 1 };
+/** About 400 ms. The middle frame is a small turned glyph, not a second full icon. */
+const MORPH = { stiffness: 70, damping: 14, mass: 1 };
 
 function paint(play: HTMLElement, pause: HTMLElement, t: number) {
   const a = Math.max(0, Math.min(1, t));
+  const dip = Math.sin(Math.PI * a);
+  const scale = 1 - dip * 0.6;
+  const playTurn = Math.min(1, a * 2);
+  const pauseTurn = Math.min(1, (1 - a) * 2);
   play.style.opacity = (1 - a).toFixed(3);
   pause.style.opacity = a.toFixed(3);
-  play.style.transform = `scale(${(1 - a * 0.38).toFixed(3)}) rotate(${(-72 * a).toFixed(2)}deg)`;
-  pause.style.transform = `scale(${(0.62 + 0.38 * a).toFixed(3)}) rotate(${(72 * (1 - a)).toFixed(2)}deg)`;
+  play.style.transform = `scale(${scale.toFixed(3)}) rotate(${(-90 * playTurn).toFixed(2)}deg)`;
+  pause.style.transform = `scale(${scale.toFixed(3)}) rotate(${(90 * pauseTurn).toFixed(2)}deg)`;
 }
 
 export function PlayPause({ playing, size = 28 }: { playing: boolean; size?: number }) {
@@ -58,13 +63,15 @@ export function PlayPause({ playing, size = 28 }: { playing: boolean; size?: num
   }, [playing]);
 
   const px = Math.round(size);
-  const gone = { opacity: 0, transform: 'scale(0.62) rotate(-72deg)' } as const;
+  // Matches paint() at the hidden end, so the first frame is not a flash.
+  const hiddenPlay = { opacity: 0, transform: 'scale(1) rotate(-90deg)' } as const;
+  const hiddenPause = { opacity: 0, transform: 'scale(1) rotate(90deg)' } as const;
   return (
     <span className="play-glyph" style={{ width: px, height: px }}>
-      <span ref={playRef} className="play-glyph-mark" style={playing ? gone : undefined}>
+      <span ref={playRef} className="play-glyph-mark" style={playing ? hiddenPlay : undefined}>
         <Icon name="play" size={px} />
       </span>
-      <span ref={pauseRef} className="play-glyph-mark" style={playing ? undefined : gone}>
+      <span ref={pauseRef} className="play-glyph-mark" style={playing ? undefined : hiddenPause}>
         <Icon name="pause" size={px} />
       </span>
     </span>

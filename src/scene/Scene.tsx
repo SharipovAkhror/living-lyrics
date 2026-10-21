@@ -13,6 +13,7 @@ import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
 import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, sameSlots, type PhoneSlot } from './slots';
 import { GAP, WAIT_ROOM, blockHeight, blockState, clearBand, compressStack, flowPosition, keepInStage, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
+import { stepSpring, type SpringState } from '@/ui/spring';
 
 /**
  * The stored 393×852 frame was laid out with the tighter column (gap 26, then
@@ -132,6 +133,29 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let lastT = Number.NaN;
     let lastLive = '';
     let lastPaintMs = 0;
+    let frameAt = 0;
+    // A scrub that jumps from a line into a break. Ordinary playback stays under the gate.
+    const VEIL = { stiffness: 70, damping: 16, mass: 1 };
+    let veil: SpringState | null = null;
+    let veilKind = '';
+    let veilClock = Number.NaN;
+    // The opening seek (deep link or resume) is not a scrub. Ignore it.
+    const veilReadyAt = performance.now() + 600;
+    const kindAt = (time: number) => {
+      const idx = Math.round(flowPosition(plan, time));
+      if (idx < 0) return 'intro';
+      const cue = timeline.cues[idx];
+      if (!cue) return 'intro';
+      return cue.kind === 'inst' ? 'inst' : 'line';
+    };
+    const writeVeil = (amount: number) => {
+      const stageEl = stageRef.current;
+      if (!stageEl) return;
+      const o = Math.max(0.2, Math.min(1, amount));
+      const y = (1 - o) * 16;
+      stageEl.style.opacity = o.toFixed(3);
+      stageEl.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
+    };
     // Read once. offsetTop inside the frame forces layout on every seek tick.
     const stageTop = stageRef.current?.offsetTop ?? 0;
     const host = stageRef.current?.closest('.song') as HTMLElement | null;
@@ -141,11 +165,39 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       raf = 0;
       if (stageCovered()) return;
       raf = requestAnimationFrame(loop);
+      const now = performance.now();
+      const frameDt = frameAt ? Math.min(0.05, (now - frameAt) / 1000) : 0.016;
+      frameAt = now;
+      // The veil is not the lyric throttle. A kind change across a scrub still
+      // has to dim on this frame, or the contact sheet only sees the cut.
+      if (motion !== 'off') {
+        const time = clock();
+        const kind = kindAt(time);
+        const jumped = Number.isFinite(veilClock) && Math.abs(time - veilClock) > 0.45 && kind !== veilKind;
+        // A second boundary while the veil is still down would hold the stage dim.
+        if (jumped && now >= veilReadyAt && (!veil || veil.x > 0.75)) {
+          veil = { x: 0.35, v: 0 };
+          stageDirty.current = true;
+        } else if (jumped) stageDirty.current = true;
+        veilKind = kind;
+        veilClock = time;
+        if (veil) {
+          veil = stepSpring(veil, 1, frameDt, VEIL);
+          writeVeil(veil.x);
+          if (Math.abs(veil.x - 1) < 0.02 && Math.abs(veil.v) < 0.05) {
+            const stageEl = stageRef.current;
+            if (stageEl) {
+              stageEl.style.opacity = '';
+              stageEl.style.transform = '';
+            }
+            veil = null;
+          }
+        }
+      }
       // Phone lyric layers restyled every frame grew the working set about 13 MB/min
       // even with the sky and the word opacity stopped (T27). 8 Hz still seeks to the
       // same frame: the paint is a function of the clock, not of how many frames ran.
       if (isPhone()) {
-        const now = performance.now();
         const dirty = stageDirty.current;
         if (!dirty && lastPaintMs !== 0 && now - lastPaintMs < 120) return;
         stageDirty.current = false;
@@ -332,8 +384,13 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     return () => {
       cancelAnimationFrame(raf);
       unwatch();
+      const stageEl = stageRef.current;
+      if (stageEl) {
+        stageEl.style.opacity = '';
+        stageEl.style.transform = '';
+      }
     };
-  }, [timeline, plan, clock, onOwnerChange, stage, wordSync, entrance]);
+  }, [timeline, plan, clock, onOwnerChange, stage, wordSync, entrance, motion]);
 
   const poets = song.poets?.map((p) => p.name).join(' · ');
   const textSettings = useMemo(

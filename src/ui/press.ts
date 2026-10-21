@@ -1,22 +1,34 @@
 /**
  * Press and release for the play control.
- * Down springs to 0.92. Up springs toward 1.04 (stiffness 450, damping 18),
- * then retargets to 1 without dropping the velocity. Only `transform` is written.
+ * Down springs to 0.80 and stays there long enough for a 100 ms contact sheet.
+ * A short tap snaps to that scale, holds, then springs through about 1.12
+ * before the return to 1. Only `transform` is written. Velocity is kept
+ * when the target changes, except the snap that makes a fast click visible.
  */
-import { PRESS_SPRING, RELEASE_SPRING, SPRING, springSettled, stepSpring, type SpringState } from './spring';
+import { getMotionScale, PRESS_SPRING, SPRING, springSettled, stepSpring, type SpringState } from './spring';
+
+const PRESSED = 0.8;
+const PEAK = 1.12;
+/** Wall time at the pressed scale. Slow recordings stretch it with the springs. */
+const HOLD_MS = 150;
+/** Softer than the press, so the overshoot stays on screen for a few frames. */
+const OVER_SPRING = { stiffness: 180, damping: 16, mass: 1 };
 
 export function bindPress(el: HTMLElement): () => void {
   let state: SpringState = { x: 1, v: 0 };
   let target = 1;
-  let mode: 'idle' | 'down' | 'over' = 'idle';
+  let mode: 'idle' | 'down' | 'hold' | 'over' = 'idle';
+  let holdUntil = 0;
   let raf = 0;
   let last = 0;
 
   const paint = () => {
     if (mode === 'idle' && Math.abs(state.x - 1) < 0.0015 && Math.abs(state.v) < 0.02) {
       el.style.transform = '';
+      el.style.transition = '';
       return;
     }
+    el.style.transition = 'none';
     el.style.transform = `scale(${state.x.toFixed(4)})`;
   };
 
@@ -28,9 +40,20 @@ export function bindPress(el: HTMLElement): () => void {
   const tick = (now: number) => {
     const dt = Math.min(0.032, (now - last) / 1000);
     last = now;
-    const spec = mode === 'down' ? PRESS_SPRING : mode === 'over' ? RELEASE_SPRING : SPRING;
+    if (mode === 'hold') {
+      state = stepSpring(state, PRESSED, dt, PRESS_SPRING);
+      if (now >= holdUntil) {
+        mode = 'over';
+        target = PEAK;
+      }
+      paint();
+      raf = requestAnimationFrame(tick);
+      return;
+    }
+    const spec = mode === 'down' ? PRESS_SPRING : mode === 'over' ? OVER_SPRING : SPRING;
     state = stepSpring(state, target, dt, spec);
-    if (mode === 'over' && state.x >= 1.035 && state.v >= 0) {
+    // Turn around at the crest. Retargeting on the way up would hide the peak.
+    if (mode === 'over' && state.x >= 1.08 && state.v <= 0) {
       mode = 'idle';
       target = 1;
     }
@@ -53,7 +76,7 @@ export function bindPress(el: HTMLElement): () => void {
   const down = (event: PointerEvent) => {
     if (event.button !== 0) return;
     mode = 'down';
-    target = 0.92;
+    target = PRESSED;
     try {
       el.setPointerCapture(event.pointerId);
     } catch {
@@ -63,10 +86,13 @@ export function bindPress(el: HTMLElement): () => void {
   };
 
   const up = (event: PointerEvent) => {
-    if (mode !== 'down') return;
+    if (mode !== 'down' && mode !== 'hold') return;
     if (el.hasPointerCapture(event.pointerId)) el.releasePointerCapture(event.pointerId);
-    mode = 'over';
-    target = 1.04;
+    // A click is over before the press spring moves. Snap, or the sheet misses it.
+    if (state.x > 0.9) state = { x: PRESSED, v: 0 };
+    mode = 'hold';
+    target = PRESSED;
+    holdUntil = performance.now() + HOLD_MS * getMotionScale();
     start();
   };
 
@@ -79,5 +105,6 @@ export function bindPress(el: HTMLElement): () => void {
     el.removeEventListener('pointerup', up);
     el.removeEventListener('pointercancel', up);
     el.style.transform = '';
+    el.style.transition = '';
   };
 }
