@@ -2947,18 +2947,20 @@ def _union_overlay(per_song: list[dict], origin: list, origin_modes: dict, refut
         import phoneme_choice as Phone
         _restore(per_song, origin)
         _quiet_flags(per_song)
-        print('объединение: часы модели постановки на пустом слоте', flush=True)
+        print('объединение: пустой слот вместе с заливкой атаки', flush=True)
         saved_gap, gap_n = _fill_placed_clocks(per_song)
         if gap_n:
+            for song in per_song:
+                song['use_attack_fill'] = True
             try:
                 gap_member = _member_from_state(
-                    'placed-clock', per_song, origin_modes, refute, k, partial=True)
+                    'placed-fill', per_song, origin_modes, refute, k, fill=True, partial=True)
             finally:
                 _unfill_placed_clocks(saved_gap)
                 _quiet_flags(per_song)
             members.append(gap_member)
             print(
-                f"объединение: пустой слот {gap_member['proved_n']}, "
+                f"объединение: пустой слот и заливка {gap_member['proved_n']}, "
                 f"проход строки {gap_member['chance']}, слов {gap_member['word_chance']}, "
                 f"внутри {gap_member['within_limit']}",
                 flush=True,
@@ -3071,6 +3073,26 @@ def _union_overlay(per_song: list[dict], origin: list, origin_modes: dict, refut
         _quiet_flags(per_song)
 
 
+def _union_line_flags(line_member: dict, proved: set) -> tuple[list[str], list[str]]:
+    """Which kept lines take the envelope fill, and which take the empty-slot clock.
+
+    `placed-fill` needs both: the restored clock clears a one-witness refutation,
+    and the envelope supplies the attack the spectral peaks missed. Either one
+    alone left that line unproved.
+    """
+    fill: list[str] = []
+    placed: list[str] = []
+    for lid, name in line_member.items():
+        if lid not in proved:
+            continue
+        text = str(name)
+        if text in ('fill', 'phoneme-fill', 'placed-fill') or text.startswith('phone-fill:'):
+            fill.append(str(lid))
+        if text == 'placed-fill':
+            placed.append(str(lid))
+    return sorted(fill), sorted(placed)
+
+
 def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: bool) -> None:
     """Publish the join. Baseline lines keep the baseline clocks."""
     result = overlay['result']
@@ -3078,15 +3100,11 @@ def _apply_union_choice(chosen: dict, decision: dict, overlay: dict, scopes_ok: 
     line_member = result.get('line_member') or {}
     baseline_ids = set(result.get('baseline_ids') or [])
     proved = set(result.get('proved') or [])
-    line_fill = sorted(
-        lid for lid, name in line_member.items()
-        if lid in proved and (name in ('fill', 'phoneme-fill') or str(name).startswith('phone-fill:')))
+    line_fill, line_placed_clock = _union_line_flags(line_member, proved)
     line_nucleus = sorted(lid for lid, name in line_member.items() if name == 'nucleus' and lid in proved)
     phone_names = {'phoneme', 'phoneme-fill', 'handoff-phoneme'}
     phone_ids = {lid for lid, name in line_member.items() if name in phone_names and lid in proved}
     line_stable: dict[str, str] = {}
-    line_placed_clock = sorted(
-        lid for lid, name in line_member.items() if name == 'placed-clock' and lid in proved)
     line_phone_model: dict[str, str] = {}
     extra_roles: dict[str, str] = {}
     phone_lookup = None

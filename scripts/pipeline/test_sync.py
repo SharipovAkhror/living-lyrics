@@ -2021,6 +2021,12 @@ def test_monotone_union() -> None:
           and held['line_member'].get('kept') == 'stable:one:de:large-v3-turbo'
           and A.pass_keeps_baseline(held, held['baseline_ids']),
           str((held['proved'], held['line_member'])))
+    fill_ids, placed_ids = A._union_line_flags(
+        {'old': 'fill', 'gap': 'placed-fill', 'phone': 'phone-fill:karitas:la:lv-60-espeak', 'skip': 'placed-fill'},
+        {'old', 'gap', 'phone'})
+    check('a placed-fill line takes both the envelope and the empty-slot clock',
+          fill_ids == ['gap', 'old', 'phone'] and placed_ids == ['gap'],
+          str((fill_ids, placed_ids)))
 
 
 def main() -> int:
