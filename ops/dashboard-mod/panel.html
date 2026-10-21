@@ -1,184 +1,244 @@
 <title>Living Lyrics Dashboard</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
 <style>
-/* Layout: one narrow column of quiet sections, read top to bottom in ten seconds; state lives in dots, chips and bars. */
+/* Layout: a status sheet, read in ten seconds. Rows on hairline rules, no cards; numbers in tabular
+   figures, right-aligned; one accent for progress, semantic colour only in 6px dots and deltas.
+   Order: what waits on the owner, plan limits, work in progress, chats, word sync. */
 :root {
-  --bg: #f3eee6; --card: #fbf8f3; --ink: #1d1813; --ink-2: #6b6157; --ink-3: #9a8f84; --line: rgba(60, 45, 30, 0.12);
-  --accent: #6c63d6; --accent-soft: rgba(108, 99, 214, 0.18);
-  --ok: #2f9e5f; --warn: #d9861f; --bad: #d04a3f; --idle: #b5aba0;
-  --you: #fff1dc; --you-line: #f0c27f;
-  --sans: 'IBM Plex Sans', -apple-system, 'Segoe UI', system-ui, sans-serif;
-  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+  --bg: #ffffff; --ink: #16181d; --ink-2: #4b5260; --ink-3: #6b7280; --rule: #e4e6eb; --track: #e1e4ea;
+  --accent: #3b5bdb; --ok: #1a8a4a; --warn: #9a5b00; --bad: #d03b3b; --you: rgba(214, 140, 10, 0.07); --you-rule: rgba(214, 140, 10, 0.28);
+  --sans: Inter, -apple-system, 'Segoe UI', system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #15130f; --card: #1f1c17; --ink: #f2ece3; --ink-2: #b3a99d; --ink-3: #7d746a; --line: rgba(242, 236, 227, 0.1);
-    --accent: #a59dff; --accent-soft: rgba(165, 157, 255, 0.2);
-    --ok: #45c07a; --warn: #f0a33f; --bad: #ef6a5d; --idle: #6e665d;
-    --you: #2e2416; --you-line: #8a6430;
+    --bg: #0f1013; --ink: #e9ebef; --ink-2: #a1a7b3; --ink-3: #6b717d; --rule: #22252b; --track: #23262d;
+    --accent: #7b93f2; --ok: #3fbf79; --warn: #e3a53a; --bad: #ef6b6b; --you: rgba(227, 165, 58, 0.08); --you-rule: rgba(227, 165, 58, 0.3);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #15130f; --card: #1f1c17; --ink: #f2ece3; --ink-2: #b3a99d; --ink-3: #7d746a; --line: rgba(242, 236, 227, 0.1);
-  --accent: #a59dff; --accent-soft: rgba(165, 157, 255, 0.2);
-  --ok: #45c07a; --warn: #f0a33f; --bad: #ef6a5d; --idle: #6e665d;
-  --you: #2e2416; --you-line: #8a6430;
+  --bg: #0f1013; --ink: #e9ebef; --ink-2: #a1a7b3; --ink-3: #6b717d; --rule: #22252b; --track: #23262d;
+  --accent: #7b93f2; --ok: #3fbf79; --warn: #e3a53a; --bad: #ef6b6b; --you: rgba(227, 165, 58, 0.08); --you-rule: rgba(227, 165, 58, 0.3);
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
-body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.4; }
-main { max-width: 560px; margin: 0 auto; padding-block: 14px 28px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 10px; }
-header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-h1 { font-size: 17px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
-.age { color: var(--ink-3); font-size: 12px; font-variant-numeric: tabular-nums; }
-.age.stale { color: var(--warn); }
-section { background: var(--card); border-radius: 14px; padding: 10px 12px; display: grid; gap: 6px; box-shadow: 0 0 0 1px var(--line); }
-h2 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); margin: 0; }
-.you { background: var(--you); box-shadow: 0 0 0 1px var(--you-line); }
-.you p { margin: 0; }
-.you b { font-weight: 600; }
-.you .how { color: var(--ink-2); font-size: 12px; }
-.chats { display: flex; flex-wrap: wrap; gap: 6px; }
-.pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px 3px 7px; border-radius: 999px; background: var(--bg); font-size: 12.5px; }
-.pill small { color: var(--ink-3); font-size: 11.5px; }
-.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--idle); flex: none; }
-.dot.working { background: var(--ok); }
-.dot.waiting, .dot.stalled { background: var(--warn); }
-.dot.retired, .dot.none { background: transparent; box-shadow: inset 0 0 0 1.5px var(--idle); }
-.dot.review { background: var(--accent); }
-.row { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 2px 8px; align-items: start; }
-.row + .row { border-top: 1px solid var(--line); padding-top: 6px; }
-.icon { width: 18px; height: 18px; margin-top: 1px; }
-.icon svg { width: 18px; height: 18px; display: block; }
-.who { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; }
-.who b { font-weight: 600; }
-.chip { font-size: 11.5px; color: var(--ink-2); display: inline-flex; align-items: center; gap: 5px; }
-.task { color: var(--ink-2); font-size: 12.5px; grid-column: 2; }
-.detail { color: var(--ink-3); font-size: 12px; grid-column: 2; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
-.song { display: grid; grid-template-columns: minmax(0, 1fr) 120px 52px; gap: 8px; align-items: center; }
-.song span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.num { font-family: var(--mono); font-size: 12px; color: var(--ink-2); text-align: right; font-variant-numeric: tabular-nums; }
-.bar { position: relative; height: 6px; border-radius: 3px; background: var(--line); overflow: visible; }
-.bar i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; }
-.bar .placed { background: var(--accent-soft); }
-.bar .proven { background: var(--accent); }
-.bar .goal { position: absolute; top: -3px; width: 2px; height: 12px; border-radius: 1px; background: var(--ink-3); }
-.limits { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 5px 10px; align-items: center; }
-.limits .name { display: flex; align-items: center; gap: 6px; font-size: 12.5px; }
-.limits .name svg { width: 14px; height: 14px; }
-.meter { height: 5px; border-radius: 3px; background: var(--line); position: relative; }
-.meter i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: var(--ok); }
-.meter i.warn { background: var(--warn); }
-.meter i.bad { background: var(--bad); }
-.empty { color: var(--ink-3); font-size: 13px; }
-@media (max-width: 380px) { .song { grid-template-columns: minmax(0, 1fr) 80px 48px; } }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 12.5px; line-height: 1.4; -webkit-font-smoothing: antialiased; font-feature-settings: 'tnum', 'cv11'; }
+main { max-width: 560px; margin: 0 auto; padding-block: 12px 24px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+section { padding-block: 10px; border-top: 1px solid var(--rule); display: grid; gap: 6px; min-width: 0; }
+h2 { margin: 0 0 2px; font-size: 11.5px; font-weight: 600; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; }
+h2 span { font-weight: 400; color: var(--ink-3); }
+.mute { color: var(--ink-3); }
+.sub { color: var(--ink-2); }
+.r { text-align: right; white-space: nowrap; }
+.clip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.ic { width: 12px; height: 12px; display: inline-block; vertical-align: -1px; color: var(--ink); }
+.ic svg { width: 100%; height: 100%; display: block; }
+.dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; background: var(--ink-3); flex: none; }
+.dot.working { background: var(--ok); } .dot.waiting, .dot.stalled { background: var(--warn); } .dot.bad { background: var(--bad); }
+.dot.finished { background: color-mix(in srgb, var(--accent) 35%, transparent); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.dot.idle, .dot.retired, .dot.none { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+.dot { align-self: center; }
+.bar { position: relative; height: 3px; background: var(--track); }
+.bar i { position: absolute; inset: 0 auto 0 0; background: var(--accent); }
+.bar i.warn { background: var(--warn); } .bar i.bad { background: var(--bad); }
+.bar i.soft { background: var(--accent); opacity: 0.28; }
+.bar .goal { position: absolute; top: -3px; bottom: -3px; width: 1.5px; background: var(--ink-2); }
+
+/* Header */
+.head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding-bottom: 8px; }
+.head b { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
+.live { font-size: 11.5px; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; }
+.road { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; padding-bottom: 10px; }
+.road .bar { grid-column: 1 / 3; }
+.road .steps { grid-column: 1 / 3; color: var(--ink-3); font-size: 11.5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Owner */
+.you { border-top-color: transparent; border-left: 2px solid var(--warn); padding-left: 12px; margin-block: 2px 8px; }
+.you + section { border-top-color: transparent; }
+.you h2 { color: var(--warn); }
+.you ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.you li { display: grid; gap: 2px; }
+.you li .sub { font-size: 11.5px; }
+.you li b { font-weight: 600; }
+
+/* Limits: one grid, a row per window */
+.lim { display: grid; grid-template-columns: minmax(84px, 1fr) 44px minmax(36px, 120px) 36px 64px 52px; gap: 5px 8px; align-items: center; }
+.lim .svc { font-weight: 600; display: flex; gap: 5px; align-items: center; white-space: nowrap; }
+.lim .plan { color: var(--ink-3); font-size: 11px; }
+.lim .w { color: var(--ink-2); }
+.lim .p { text-align: right; font-weight: 500; }
+.lim .rs { color: var(--ink-3); font-size: 11px; white-space: nowrap; text-align: right; }
+.lim svg.sp { width: 52px; height: 14px; display: block; overflow: visible; justify-self: end; }
+.lim .rule { grid-column: 1 / -1; border-top: 1px solid var(--rule); height: 0; }
+.lim .note { grid-column: 3 / -1; color: var(--ink-3); font-size: 11px; }
+.lim .hd { color: var(--ink-3); font-size: 10.5px; }
+.lim .hd.r { text-align: right; }
+.lim .plan.wide { grid-column: 1 / 3; }
+
+/* Work and chats: two lines per row */
+.rows { display: grid; }
+.row { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 2px 0; padding-block: 8px; }
+.row > .dot { margin-top: 5px; align-self: start; }
+.row + .row { border-top: 1px solid var(--rule); }
+.row .t { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.row .t b { font-weight: 600; white-space: nowrap; }
+.row .t.wt { grid-column: 2 / 4; align-items: baseline; }
+.row .t.wt b { white-space: normal; font-weight: 500; }
+.row .t.wt .dot { align-self: center; }
+.row .t .id { color: var(--ink-3); font-size: 11px; display: inline-block; min-width: 3.2ch; }
+.row .s { grid-column: 2 / 4; color: var(--ink-2); font-size: 12px; }
+.row .s.mute { color: var(--ink-3); font-size: 11px; }
+.row .m { color: var(--ink-3); font-size: 11px; white-space: nowrap; text-align: right; }
+
+/* Word sync */
+.sync { display: grid; grid-template-columns: minmax(0, max-content) minmax(56px, 1fr) 50px 32px 44px; gap: 6px 12px; align-items: center; }
+.sync .p { text-align: right; font-weight: 500; }
+.sync .d { text-align: right; font-size: 11px; }
+.sync .srule { grid-column: 1 / -1; border-top: 1px solid var(--rule); margin-top: -2px; }
+.sync .hd { color: var(--ink-3); font-size: 10.5px; text-align: right; }
+.sync .d.up { color: var(--ok); }
+.sync .n { text-align: right; color: var(--ink-3); font-size: 11px; }
+.sync .met { color: var(--ok); }
+
+footer { border-top: 1px solid var(--rule); padding-top: 10px; margin-top: 4px; display: flex; justify-content: space-between; gap: 10px; color: var(--ink-3); font-size: 11px; }
+.empty { color: var(--ink-3); padding-block: 12px; border-top: 1px solid var(--rule); }
+@media (max-width: 370px) { .lim { grid-template-columns: 66px 42px minmax(30px, 1fr) 32px 62px; } .lim svg.sp, .lim .spc { display: none; } }
 </style>
 
 <main>
-  <header>
-    <h1>Living Lyrics</h1>
-    <span class="age" id="age">ждём первую запись со Станции</span>
-  </header>
-  <section class="you" id="you" hidden></section>
-  <section id="chats-box"><h2>Чаты</h2><div class="chats" id="chats"><span class="empty">Список появится, когда Станция пришлёт состояние.</span></div></section>
-  <section id="agents-box"><h2>Кто что делает</h2><div id="agents"><span class="empty">Пока ничего не идёт.</span></div></section>
-  <section id="songs-box" hidden><h2 id="songs-title">Подсветка по словам</h2><div id="songs"></div></section>
-  <section id="limits-box" hidden><h2>Израсходовано</h2><div class="limits" id="limits"></div></section>
+  <div class="head"><b>Living Lyrics</b><span class="live"><span class="dot none" id="dot"></span><span id="live">ждём Станцию</span></span></div>
+  <div id="root"><div class="empty">Состояние придёт со Станции в течение двух минут.</div></div>
 </main>
 
 <template id="icons">
-  <span data-k="claude"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z" fill="#D97757" fill-rule="nonzero"></path></svg></span>
-  <span data-k="grok"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="#0b0b0c"/><rect x="0.5" y="0.5" width="23" height="23" rx="5.5" fill="none" stroke="#5c5c66"/><g transform="translate(4.2 4.2) scale(0.65)" fill="#ffffff"><path d="M9.27 15.29l7.978-5.897c.391-.29.95-.177 1.137.272.98 2.369.542 5.215-1.41 7.169-1.951 1.954-4.667 2.382-7.149 1.406l-2.711 1.257c3.889 2.661 8.611 2.003 11.562-.953 2.341-2.344 3.066-5.539 2.388-8.42l.006.007c-.983-4.232.242-5.924 2.75-9.383.06-.082.12-.164.179-.248l-3.301 3.305v-.01L9.267 15.292M7.623 16.723c-2.792-2.67-2.31-6.801.071-9.184 1.761-1.763 4.647-2.483 7.166-1.425l2.705-1.25a7.808 7.808 0 00-1.829-1A8.975 8.975 0 005.984 5.83c-2.533 2.536-3.33 6.436-1.962 9.764 1.022 2.487-.653 4.246-2.34 6.022-.599.63-1.199 1.259-1.682 1.925l7.62-6.815"></path></g></svg></span>
-  <span data-k="gemini"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="#3186FF"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-0-_R_0_)"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-1-_R_0_)"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-2-_R_0_)"></path><defs><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-0-_R_0_" x1="7" x2="11" y1="15.5" y2="12"><stop stop-color="#08B962"></stop><stop offset="1" stop-color="#08B962" stop-opacity="0"></stop></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-1-_R_0_" x1="8" x2="11.5" y1="5.5" y2="11"><stop stop-color="#F94543"></stop><stop offset="1" stop-color="#F94543" stop-opacity="0"></stop></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-2-_R_0_" x1="3.5" x2="17.5" y1="13.5" y2="12"><stop stop-color="#FABC12"></stop><stop offset=".46" stop-color="#FABC12" stop-opacity="0"></stop></linearGradient></defs></svg></span>
-  <span data-k="github"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></span>
+  <span data-k="claude"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.970 2.970 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z" fill="#D97757" fill-rule="nonzero"></path></svg></span>
+  <span data-k="grok"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M9.27 15.29l7.978-5.897c.391-.29.95-.177 1.137.272.98 2.369.542 5.215-1.41 7.169-1.951 1.954-4.667 2.382-7.149 1.406l-2.711 1.257c3.889 2.661 8.611 2.003 11.562-.953 2.341-2.344 3.066-5.539 2.388-8.42l.006.007c-.983-4.232.242-5.924 2.75-9.383.06-.082.12-.164.179-.248l-3.301 3.305v-.01L9.267 15.292M7.623 16.723c-2.792-2.67-2.31-6.801.071-9.184 1.761-1.763 4.647-2.483 7.166-1.425l2.705-1.25a7.808 7.808 0 00-1.829-1A8.975 8.975 0 005.984 5.830c-2.533 2.536-3.33 6.436-1.962 9.764 1.022 2.487-.653 4.246-2.34 6.022-.599.63-1.199 1.259-1.682 1.925l7.62-6.815"></path></svg></span>
+  <span data-k="gemini"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="#3186FF"></path></svg></span>
 </template>
 
 <script>
 const ICON = {};
-document.querySelectorAll('#icons')[0].content.querySelectorAll('span').forEach(s => { ICON[s.dataset.k] = s.innerHTML; });
-const CHAT = { working: 'работает', waiting: 'ждёт ответа', idle: 'свободен', retired: 'спит', none: 'не запущен' };
+document.getElementById('icons').content.querySelectorAll('span').forEach(s => { ICON[s.dataset.k] = s.innerHTML; });
+const CHAT = { working: 'работает', waiting: 'ждёт вас', idle: 'свободен', retired: 'спит', none: 'не запущен' };
+const WORK = { working: 'работает', stalled: 'остановился', finished: 'сдал, на проверке', none: 'не начат' };
 const STALE_MIN = 45;
-const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const level = u => (u >= 90 ? 'bad' : u >= 75 ? 'warn' : '');
+/** '1347 М' → '1 347 М' (thin no-break space between thousands). */
+const group = t => String(t ?? '').replace(/\d{4,}/g, n => Number(n).toLocaleString('ru-RU'));
 let last = null;
 
-function ago(iso) {
-  const t = Date.parse(iso || '');
-  if (Number.isNaN(t)) return null;
-  return Math.max(0, Math.round((Date.now() - t) / 60000));
+function dur(m) {
+  if (m === null || m === undefined) return '';
+  if (m < 1) return 'сейчас';
+  if (m < 60) return `${m} мин`;
+  if (m < 1440) return `${Math.floor(m / 60)} ч${m % 60 ? ` ${m % 60} мин` : ''}`;
+  return `${Math.floor(m / 1440)} дн ${Math.floor((m % 1440) / 60)} ч`;
 }
-function agoText(m) {
-  if (m === null) return '';
-  if (m < 1) return 'только что';
-  if (m < 60) return `${m} мин назад`;
-  return `${Math.floor(m / 60)} ч ${m % 60} мин назад`;
+const minutesSince = iso => { const t = Date.parse(iso || ''); return Number.isNaN(t) ? null : Math.max(0, Math.round((Date.now() - t) / 60000)); };
+const hhmm = iso => { const t = new Date(iso || ''); return Number.isNaN(t.getTime()) ? '' : t.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }); };
+
+/** Time to a reset: from the exact moment when the Station sent it, else from its countdown text. */
+function resetIn(w, at) {
+  if (w.resetAt) { const t = Date.parse(w.resetAt); if (!Number.isNaN(t)) return short(Math.max(0, Math.round((t - Date.now()) / 60000))); }
+  const m = (w.reset || '').match(/через\s+(?:(\d+)d\s*)?(?:(\d+)h)?\s*(?:(\d+)m)?/);
+  if (m) return short(Math.max(0, (Number(m[1] || 0) * 24 + Number(m[2] || 0)) * 60 + Number(m[3] || 0) - (minutesSince(at) || 0)));
+  return w.reset ? w.reset.replace(/^сброс\s+/, 'в ') : '—';
 }
-function tone(used) { return used >= 90 ? 'bad' : used >= 75 ? 'warn' : ''; }
+
+/** Compact countdown: '3 ч 35 м', '3 д 2 ч'. */
+function short(m) { return m >= 1440 ? `${Math.floor(m / 1440)} д ${Math.floor((m % 1440) / 60)} ч` : m >= 60 ? `${Math.floor(m / 60)} ч ${m % 60} м` : `${m} м`; }
+
+/** 'сброс 07:10' → 'в 07:10'; 'сброс через 4h 47m' → '4 ч 47 м'. */
+function reset(text) {
+  if (!text) return '';
+  const m = text.match(/через\s+(?:(\d+)d\s*)?(?:(\d+)h)?\s*(?:(\d+)m)?/);
+  if (!m) return text.replace(/^сброс\s+/, 'в ');
+  return short((Number(m[1] || 0) * 24 + Number(m[2] || 0)) * 60 + Number(m[3] || 0));
+}
+
+/** The window's last seven days as a line: one scale (0–100 %), the latest point marked. */
+function spark(trend, key) {
+  const bins = new Map();
+  for (const p of trend || []) {
+    if (typeof p[key] !== 'number') continue;
+    const k = Math.floor(p.t / 21600000), b = bins.get(k);
+    if (!b || p[key] >= b[key]) bins.set(k, { t: k * 21600000, [key]: p[key] });
+  }
+  const pts = [...bins.values()];
+  if (pts.length < 2) return '<span class="spc"></span>';
+  const t0 = pts[0].t, span = Math.max(1, pts[pts.length - 1].t - t0), W = 52, H = 14;
+  const xy = pts.map(p => [((p.t - t0) / span) * W, H - (Math.min(100, p[key]) / 100) * H]);
+  const d = xy.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`).join('');
+  const [ex, ey] = xy[xy.length - 1];
+  return `<svg class="sp" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><title>за ${span >= 86400000 ? `${Math.round(span / 86400000)} дн` : `${Math.max(1, Math.round(span / 3600000))} ч`}</title><line x1="0" x2="${W}" y1="${H}" y2="${H}" stroke="var(--rule)" vector-effect="non-scaling-stroke"/><path d="${d}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity="0.8" vector-effect="non-scaling-stroke"/><circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="1.6" fill="var(--accent)"/></svg>`;
+}
+
+function limitRows(icon, name, plan, wins, trend, keys, at) {
+  const head = `<span class="svc"><i class="ic">${ICON[icon]}</i>${name}</span>`;
+  if (!wins || !wins.length) return `${head}<span class="note">${plan ? `${esc(plan)} · ` : ''}нет данных</span>`;
+  return wins.map((w, i) => `${i ? `<span class="plan clip">${i === 1 ? esc(plan) : ''}</span>` : head}<span class="w">${esc(w.label)}</span><span class="bar"><i class="${level(w.used)}" style="width:${Math.min(100, Math.max(0, w.used))}%"></i></span><span class="p">${Math.round(w.used)} %</span><span class="rs">${esc(resetIn(w, at))}</span>${spark(trend, keys[i])}`).join('')
+    + (wins.length === 1 && plan ? `<span class="plan clip">${esc(plan)}</span><span class="note" style="grid-column:2/-1"></span>` : '');
+}
 
 function render(d) {
   last = d;
   if (!d) return;
-  const m = ago(d.at);
-  const age = $('age');
-  age.textContent = `обновлено ${agoText(m)}${d.roadmap ? ` · ${d.roadmap.title.toLowerCase()} ${d.roadmap.percent} %` : ''}`;
-  age.classList.toggle('stale', m !== null && m > STALE_MIN);
-  if (m !== null && m > STALE_MIN) age.textContent += ' · Станция давно не писала';
+  const m = minutesSince(d.at), stale = m === null || m > STALE_MIN;
+  document.getElementById('dot').className = `dot ${stale ? 'waiting' : 'working'}`;
+  document.getElementById('live').textContent = stale ? (m === null ? 'нет данных' : `Станция молчит ${dur(m)}`) : `обновлено ${m < 1 ? 'только что' : `${dur(m)} назад`} · ${hhmm(d.at)}`;
+  const out = [];
+  const L = d.limits || {}, P = L.plans || {}, trend = d.trend || [];
+
+  if (d.roadmap) {
+    const steps = d.steps || [], open = steps.filter(s => s.done < 1);
+    out.push(`<div class="road"><span><b>${esc(d.roadmap.title)}</b></span><span class="r"><b>${d.roadmap.percent} %</b></span><span class="bar"><i style="width:${d.roadmap.percent}%"></i></span>${open.length ? `<span class="steps">осталось — ${open.map(s => `${esc(s.name.toLowerCase())}${s.done > 0 ? ` (${Math.round(s.done * 100)} %)` : ''}`).join('; ')}</span>` : ''}</div>`);
+  }
 
   const you = d.you || [];
-  $('you').hidden = !you.length;
-  $('you').innerHTML = `<h2>Нужно от вас</h2>` + you.map(t => `<p><b>${esc(t.title)}</b>${t.how ? `<br><span class="how">${esc(t.how)}</span>` : ''}</p>`).join('');
+  if (you.length) out.push(`<section class="you"><h2>Нужно от вас · ${you.length}</h2><ul>${you.map(t => `<li><b>${esc(t.title)}</b>${t.how ? `<span class="sub">${esc(t.how)}</span>` : ''}</li>`).join('')}</ul></section>`);
 
-  const chats = d.chats || [];
-  $('chats').innerHTML = chats.length
-    ? chats.map(c => `<span class="pill"><span class="dot ${esc(c.state)}"></span>${esc(c.name.replace(/^LL · /, ''))} <small>${esc(CHAT[c.state] || c.state)}</small></span>`).join('')
-    : '<span class="empty">Нет данных о чатах.</span>';
+  const g = L.grok;
+  const grok = g ? `<span class="svc"><i class="ic">${ICON.grok}</i>Grok</span><span class="w">сутки</span><span class="p" style="grid-column:3/5">${esc(group(g.today))} ток.</span><span class="r mute" style="font-size:11px;grid-column:5/7">${g.week ? `${esc(group(g.week))}` : '—'}</span>${g.plan ? `<span class="plan clip">${esc(g.plan)}</span><span class="note" style="grid-column:2/-1">окно лимита: нет данных</span>` : ''}` : `<span class="svc"><i class="ic">${ICON.grok}</i>Grok</span><span class="note">нет данных</span>`;
+  out.push(`<section><h2>Лимиты</h2><div class="lim"><span></span><span class="hd">окно</span><span class="hd r" style="grid-column:3/5">использовано</span><span class="hd r">сброс</span><span class="hd r">7 дней</span><span class="rule"></span>
+    ${limitRows('claude', 'Claude', P.claude, L.claude, trend, ['c5', 'cw'], d.at)}<span class="rule"></span>
+    ${limitRows('gemini', 'Gemini', P.gemini, L.gemini, trend, ['g5', 'gw'], d.at)}<span class="rule"></span>
+    ${grok}</div></section>`);
 
-  const rows = (d.agents || []).map(r => `
-    <div class="row">
-      <span class="icon">${ICON[r.agent] || ''}</span>
-      <div class="who"><b>${esc(r.name)}</b>${r.state ? `<span class="chip"><span class="dot ${esc(r.tone)}"></span>${esc(r.state)}</span>` : ''}</div>
-      ${r.task ? `<div class="task">${esc(r.task)}</div>` : ''}
-      ${r.detail ? `<div class="detail">${esc(r.detail)}</div>` : ''}
-    </div>`);
-  for (const run of d.runs || []) rows.push(`
-    <div class="row">
-      <span class="icon">${ICON.github}</span>
-      <div class="who"><b>GitHub · ${esc(run.name)}</b><span class="chip"><span class="dot working"></span>${run.minutes} мин</span></div>
-      <div class="task">${esc(run.title)}</div>
-    </div>`);
-  $('agents').innerHTML = rows.length ? rows.join('') : '<span class="empty">Пока ничего не идёт.</span>';
+  const work = d.work || [];
+  out.push(`<section><h2>В работе <span><span class="dot working"></span> идёт · <span class="dot finished"></span> на проверке</span></h2>${work.length ? `<div class="rows">${work.map(w => `<div class="row">
+      <span class="dot ${esc(w.state)}"></span><span class="t wt"><span class="id">${esc(w.id.toUpperCase())}</span><b>${esc(w.title)}</b></span>
+      <span class="s mute">${[esc(w.who), w.state === 'working' ? '' : esc(WORK[w.state] || w.state), w.session !== null && w.session !== undefined ? `сессия ${dur(w.session)}` : '', w.state === 'working' && w.idle !== null && w.idle !== undefined ? `шаг ${w.idle < 1 ? 'только что' : `${dur(w.idle)} назад`}` : '', w.open !== null && w.open !== undefined ? `в работе ${dur(w.open)}` : ''].filter(Boolean).join(' · ')}</span>
+      ${w.step ? `<span class="s clip" title="${esc(w.step)}">${esc(w.step)}</span>` : ''}
+    </div>`).join('')}</div>` : '<span class="mute">Сейчас задач нет.</span>'}</section>`);
+
+  const rank = c => (c.state === 'waiting' ? 0 : c.state === 'working' ? 1 : 2);
+  const chats = [...(d.chats || [])].sort((a, b) => rank(a) - rank(b) || (a.lastMin ?? 1e9) - (b.lastMin ?? 1e9));
+  if (chats.length) out.push(`<section><h2>Чаты <span><span class="dot working"></span> работает · <span class="dot idle"></span> свободен</span></h2><div class="rows">${chats.map(c => `<div class="row">
+      <span class="dot ${esc(c.state)}"></span><span class="t"><b>${esc(c.name.replace(/^LL · /, ''))}</b>${c.state === 'waiting' ? `<span style="color:var(--warn)">ждёт вас${c.minutes !== null && c.minutes !== undefined ? ` ${esc(dur(c.minutes))}` : ''}</span>` : c.state === 'none' || c.state === 'retired' ? `<span class="mute">${esc(CHAT[c.state])}</span>` : ''}</span>
+      <span class="m">${c.lastMin === null || c.lastMin === undefined ? '' : c.lastMin < 1 ? 'только что' : `${esc(dur(c.lastMin))} назад`}</span>
+      ${c.state === 'waiting' && c.waiting ? `<span class="s" style="color:var(--warn)">ждёт: ${esc(c.waiting)}</span>` : c.last ? `<span class="s clip" title="${esc(c.last)}">${esc(c.last)}</span>` : ''}
+    </div>`).join('')}</div></section>`);
 
   const songs = d.songs || [];
-  $('songs-box').hidden = !songs.length;
-  $('songs-title').textContent = d.goal ? `Подсветка по словам · цель ${d.goal} %` : 'Подсветка по словам';
-  $('songs').innerHTML = songs.map(s => {
-    const p = s.total ? s.proven / s.total : 0;
-    const pl = s.total ? Math.max(p, (s.placed ?? s.proven) / s.total) : 0;
-    return `<div class="song"><span>${esc(s.label)}</span>
-      <span class="bar" title="${Math.round(p * 100)} %"><i class="placed" style="width:${(pl * 100).toFixed(1)}%"></i><i class="proven" style="width:${(p * 100).toFixed(1)}%"></i>${d.goal ? `<span class="goal" style="left:calc(${d.goal}% - 1px)"></span>` : ''}</span>
-      <span class="num">${s.proven}/${s.total}</span></div>`;
-  }).join('');
+  if (songs.length) out.push(`<section><h2><span style="color:var(--ink-2);font-weight:600">Подсветка по словам · цель ${d.goal ?? '—'} %</span></h2><div class="sync"><span></span><span></span><span class="hd">доказано</span><span class="hd">сутки</span><span class="hd">строк</span><span class="srule"></span>${songs.map(s => {
+    const p = s.total ? s.proven / s.total : 0, pl = s.total ? Math.max(p, (s.placed ?? s.proven) / s.total) : 0, pct = Math.round(p * 100), met = d.goal && pct >= d.goal;
+    const dl = s.delta === null || s.delta === undefined ? '—' : s.delta > 0 ? `+${s.delta}` : s.delta < 0 ? `−${-s.delta}` : '0';
+    return `<span class="clip">${esc(s.label)}</span><span class="bar"><i class="soft" style="width:${(pl * 100).toFixed(1)}%"></i><i style="width:${(p * 100).toFixed(1)}%"></i>${d.goal ? `<span class="goal" style="left:${d.goal}%"></span>` : ''}</span><span class="p ${met ? 'met' : ''}">${pct} %</span><span class="d ${s.delta > 0 ? 'up' : 'mute'}">${dl}</span><span class="n">${s.proven}/${s.total}</span>`;
+  }).join('')}</div></section>`);
 
-  const L = d.limits || {};
-  const lines = [];
-  for (const [k, name] of [['claude', 'Claude'], ['gemini', 'Gemini']]) {
-    for (const w of L[k] || []) {
-      lines.push(`<span class="name">${ICON[k]}${name} · ${esc(w.label)}</span><span class="meter"><i class="${tone(w.used)}" style="width:${Math.min(100, w.used)}%"></i></span><span class="num">${Math.round(w.used)} %</span>`);
-    }
-  }
-  if (L.grok) lines.push(`<span class="name">${ICON.grok}Grok · сегодня</span><span></span><span class="num">${esc(L.grok)}</span>`);
-  $('limits-box').hidden = !lines.length;
-  $('limits').innerHTML = lines.join('');
+  const h = d.hygiene;
+  out.push(`<footer><span>${h ? (h.issues && h.issues.length ? `<span title="${esc(h.issues.join('\n'))}">порядок: ${h.issues.length + (h.more || 0)} на заметку</span>` : 'порядок: чисто') : ''}</span><span>данные Станции</span></footer>`);
+  document.getElementById('root').innerHTML = out.join('');
 }
 
 setInterval(() => render(last), 30000);
 
 (async () => {
-  const db = await claude.use('db');
-  if (!db) { $('age').textContent = 'войдите в claude.ai, чтобы видеть состояние'; return; }
-  db.doc('dashboard/now').onSnapshot(snap => render(snap && snap.exists ? snap.data() : null), () => { $('age').textContent = 'нет связи с базой страницы'; });
+  const db = window.claude && await claude.use('db');
+  if (!db) { document.getElementById('live').textContent = 'войдите в claude.ai'; return; }
+  db.doc('dashboard/now').onSnapshot(snap => render(snap && snap.exists ? snap.data() : null), () => { document.getElementById('live').textContent = 'нет связи'; });
 })();
 </script>

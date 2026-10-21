@@ -67,7 +67,7 @@ def last_step(sdir: Path):
         elif o.get('type') == 'assistant' and o.get('content'):
             step = o['content']
     step = ' '.join(step.replace('*', '').replace('`', '').split())
-    return step if len(step) <= 160 else step[:159] + '…'
+    return step[:400]
 
 
 def grok_usage(session_id: str):
@@ -118,12 +118,13 @@ def main():
                 grok.append({'name': wt.name, 'state': 'none', 'minutes': 0, 'step': ''})
                 continue
             minutes = int((time.time() - (sdir / 'chat_history.jsonl').stat().st_mtime) // 60)
+            age = int((time.time() - sdir.stat().st_ctime) // 60)
             if turn_running(sdir):
                 state = 'working' if (sdir.name in grok_cmds or wt.name in grok_cmds) else 'stalled'
             else:
                 state = 'finished'
             tokens, model = grok_usage(sdir.name)
-            grok.append({'name': wt.name, 'state': state, 'minutes': minutes, 'step': last_step(sdir), 'tokens': tokens, 'model': model})
+            grok.append({'name': wt.name, 'state': state, 'minutes': minutes, 'age': age, 'step': last_step(sdir), 'tokens': tokens, 'model': model})
     gemini = []
     for p in procs:
         if (p.get('name') or '').lower() != 'agy.exe':
