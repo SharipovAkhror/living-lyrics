@@ -8,7 +8,16 @@
 # and docs/analysis/<slug>-instruments.json / .md (docs/methodology/09-instruments.md). They do not
 # edit lyrics.json; the agent copies confirmed entrances afterwards.
 #
-# Job file fields: "stages" (decrypt separate sections transcribe diagnose bench align qa features instruments).
+# Job file fields: "stages" (decrypt separate sections transcribe diagnose bench align qa features instruments roformer omni).
+# roformer measures Kimberley Jensen's Mel-Band RoFormer on proved-word clips only
+# (docs/analysis/bench/roformer-onset.md). It does not separate the song. If the
+# clarity bar is cleared, the same stage reruns the chance pass on unproved
+# windows of that song and edits lyrics only when the published count rises
+# and the 158-line baseline is kept. One job file is enough: the script loops
+# the three songs.
+# omni aligns Latin and Azerbaijani with omniASR_CTC_300M (docs/analysis/bench/omni-ctc.md).
+# It does not remeasure the five XLS-R languages and does not edit lyrics unless the
+# published line count rises and the 158-line baseline is kept.
 # Before any align, the run collects a score row per cued line and writes docs/analysis/bench/calibration.json.
 # Jobs do not list that stage. A failed calibration does not fall through to the old 0.30 gate.
 # After every align and before qa, the run writes docs/analysis/bench/aligner-review.json
@@ -174,6 +183,7 @@ jobs:
     timeout-minutes: 150
     env:
       AUDIO_KEY: ${{ secrets.AUDIO_KEY }}
+      GH_TOKEN: ${{ github.token }}
       PIP_DISABLE_PIP_VERSION_CHECK: '1'
       PYTHONUNBUFFERED: '1'
       OMP_NUM_THREADS: '4'
@@ -275,6 +285,45 @@ jobs:
             python -m pip install phonemizer 'audio-separator[cpu]'
             python -m pip install 'nemo_toolkit[asr]' || echo 'nemo: пакет на CPU не встал'
           fi
+          # Mel-Band RoFormer inference imports. Not in requirements.txt: a song job
+          # must not pull them. CPU torch is installed again afterwards.
+          if python3 -c "import json,sys; jobs=json.load(open('/tmp/jobs.json')); sys.exit(0 if any('roformer' in j.get('stages',[]) for j in jobs) else 1)"; then
+            python -m pip install pyyaml ml_collections beartype rotary_embedding_torch einops packaging
+          fi
+          # omnilingual-asr 0.2.0 declares Requires-Python <=3.12, which pip
+          # reads as <=3.12.0, so a 3.12.15 venv refuses the wheel (run
+          # 39598504820). 3.11 is inside >=3.10,<=3.12. The venv does not
+          # replace the 3.13 interpreter the other stages use. A failed
+          # install is recorded by the stage.
+          if python3 -c "import json,sys; jobs=json.load(open('/tmp/jobs.json')); sys.exit(0 if any('omni' in j.get('stages',[]) for j in jobs) else 1)"; then
+            sudo apt-get install -y -q libsndfile1
+            python -m pip install uv
+            # /tmp is writable by the runner user. /opt is not.
+            # uv's venv has no pip unless --seed. A failed install must not
+            # fail this step: the stage records it and still returns.
+            if python -m uv python install 3.11 && python -m uv venv /tmp/omni-venv --python 3.11 --seed; then
+              /tmp/omni-venv/bin/python -c "import sys; print('omni python', sys.version)" || true
+              # PyPI fairseq2 0.6 is the CUDA build and refuses a CPU torch
+              # (run 39600662479). The CPU pair is torch 2.8.0 plus
+              # fairseq2n 0.6+cpu from the FAIR index. Install that last:
+              # omnilingual would otherwise put the CUDA wheel back.
+              # fairseq2 then pins NumPy 1.26.4, and pyarrow (via datasets)
+              # refuses anything below 2 (run 39601917952). NumPy 2 goes last.
+              if /tmp/omni-venv/bin/python -m pip install -r scripts/pipeline/requirements.txt \
+                && /tmp/omni-venv/bin/python -m pip install --force-reinstall 'torch==2.8.0' 'torchaudio==2.8.0' --index-url https://download.pytorch.org/whl/cpu \
+                && /tmp/omni-venv/bin/python -m pip install 'omnilingual-asr==0.2.0' \
+                && /tmp/omni-venv/bin/python -m pip install --force-reinstall --no-deps --index-url https://fair.pkg.atmeta.com/fairseq2/whl/pt2.8.0/cpu 'fairseq2==0.6' 'fairseq2n==0.6+cpu' \
+                && /tmp/omni-venv/bin/python -m pip install --force-reinstall 'torch==2.8.0' 'torchaudio==2.8.0' --index-url https://download.pytorch.org/whl/cpu \
+                && /tmp/omni-venv/bin/python -m pip install 'numpy>=2,<3' \
+                && /tmp/omni-venv/bin/python -c "import torch, torchaudio, omnilingual_asr; print('omni torch', torch.__version__); raise SystemExit('+cu' in torch.__version__)"; then
+                echo "OMNI_PYTHON=/tmp/omni-venv/bin/python" >> "$GITHUB_ENV"
+              else
+                echo 'omnilingual-asr: venv не прошёл проверку'
+              fi
+            else
+              echo 'omnilingual-asr: Python 3.11 не встал'
+            fi
+          fi
           python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           python -c "import torch; print('torch', torch.__version__, 'cuda', torch.cuda.is_available()); raise SystemExit('+cu' in torch.__version__)"
 
@@ -287,7 +336,10 @@ jobs:
           : > /tmp/summary.txt
           # Trailing newline: `while read` skips a last line that does not end with one,
           # and the last song would be left out of the threshold (run 39069466435 dropped ONE).
-          python3 -c "import json; jobs=json.load(open('/tmp/jobs.json')); open('/tmp/calibrate.txt','w').write('\n'.join(j['slug'] for j in jobs if 'align' in j.get('stages', [])) + '\n')"
+          # A job with no align stage must leave this file empty. A lone newline
+          # is non-empty, and -s would then demand a cue threshold that was
+          # never collected (run 39588051213, the roformer job).
+          python3 -c "import json; jobs=json.load(open('/tmp/jobs.json')); slugs=[j['slug'] for j in jobs if 'align' in j.get('stages', [])]; open('/tmp/calibrate.txt','w').write(('\n'.join(slugs)+'\n') if slugs else '')"
           cal_rc=0
           if [ -s /tmp/calibrate.txt ]; then
             while read -r slug; do

@@ -47,15 +47,38 @@ def sessions(include_done: bool = False) -> list[dict]:
     return json.loads(out.stdout or '[]')
 
 
-def pending_tool(session_id: str) -> str:
-    """What a waiting session waits on: its last tool call that has no result yet, in a few words."""
+def transcript_tail(session_id: str, size: int = 400_000) -> list[str]:
     hits = list((Path.home() / '.claude' / 'projects').glob(f'*/{session_id}.jsonl')) if session_id else []
     if not hits:
-        return ''
+        return []
     with open(hits[0], 'rb') as fh:
         fh.seek(0, 2)
-        fh.seek(max(0, fh.tell() - 400_000))
-        lines = fh.read().decode('utf-8', 'replace').splitlines()
+        fh.seek(max(0, fh.tell() - size))
+        return fh.read().decode('utf-8', 'replace').splitlines()
+
+
+def last_said(session_id: str) -> dict:
+    """The chat's last line of text to its user, and when: what it is doing, in its own words."""
+    for line in reversed(transcript_tail(session_id, 200_000)):
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        msg = row.get('message') or {}
+        if msg.get('role') != 'assistant' or not isinstance(msg.get('content'), list):
+            continue
+        text = ' '.join(b.get('text', '') for b in msg['content'] if b.get('type') == 'text').strip()
+        if text:
+            text = ' '.join(text.replace('*', '').replace('`', '').split())
+            return {'text': text[:400], 'at': row.get('timestamp', '')}
+    return {}
+
+
+def pending_tool(session_id: str) -> str:
+    """What a waiting session waits on: its last tool call that has no result yet, in a few words."""
+    lines = transcript_tail(session_id)
+    if not lines:
+        return ''
     calls, done = {}, set()
     for line in lines:
         try:
@@ -88,6 +111,11 @@ def live_chats(repo: Path = REPO, running: list[dict] | None = None) -> list[dic
         row = {'name': card['chat'], 'role': card['name'], 'reports_to': card.get('reports_to', ''), 'state': state}
         if state == 'waiting':
             row['waiting_for'] = pending_tool(s.get('sessionId', ''))
+        if s.get('sessionId'):
+            last = last_said(s['sessionId'])
+            if last:
+                row['last'] = last['text']
+                row['last_at'] = last['at']
         rows.append(row)
     return rows
 

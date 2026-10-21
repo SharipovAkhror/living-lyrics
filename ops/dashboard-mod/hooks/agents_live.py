@@ -67,7 +67,7 @@ def last_step(sdir: Path):
         elif o.get('type') == 'assistant' and o.get('content'):
             step = o['content']
     step = ' '.join(step.replace('*', '').replace('`', '').split())
-    return step if len(step) <= 160 else step[:159] + '…'
+    return step[:400]
 
 
 def grok_usage(session_id: str):

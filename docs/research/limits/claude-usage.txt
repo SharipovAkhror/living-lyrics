@@ -1,0 +1,40 @@
+Снимок экрана Claude Code 2.1.302, команда /usage в новом сеансе.
+Станция, 2026-10-21 03:16 (+05). Почта, имя организации и идентификаторы сеанса убраны.
+Повтор в 03:19 дал те же 41 % и 6 %; подпись сброса сдвинулась на минуту
+из-за округления (см. limits.md).
+
+Шапка сеанса:
+  Claude Code v2.1.302
+  Haiku 5.5 with xhigh effort · Claude Pro
+
+Вкладка Status (тот же клиент, 03:08, диалог /status):
+  Login method:        Claude Pro account
+  Model:               haiku (claude-haiku-5-5)
+
+Вкладка Usage:
+
+  Current session
+  ████████████████████                               40% used
+  Resets 7:10am (Etc/GMT-5)
+
+  Current week (all models)
+  ██▌                                                5% used
+  Resets Oct 23, 9am (Etc/GMT-5)
+
+Через несколько секунд тот же экран, пока он был открыт:
+
+  Current session                                      41% used
+  Resets 7:10am (Etc/GMT-5)
+  Current week (all models)                            6% used
+  Resets Oct 23, 9am (Etc/GMT-5)
+
+Ниже, не как окно лимита, а как местная оценка:
+
+  What's contributing to your limits usage?
+  Approximate, based on local sessions on this machine — does not include other devices or claude.ai
+
+  Usage credits
+  Usage credits are off · /usage-credits to turn them on
+
+Строк «Current week (Sonnet only)», отдельных недель по моделям,
+долларовых сумм и абсолютного числа токенов на этом экране нет.

@@ -58,7 +58,7 @@ export type GeminiRun = { slug: string; minutes: number }
 
 /** `at` is set on a published state (ops/live.json on the `live` branch): when it was produced. */
 /** A chat of the registry (.claude/agents/ll-*.md) and its state on the orchestrator machine. */
-export type ChatRow = { name: string; role?: string; reports_to?: string; state: string; /** When waiting: the tool call it waits on. */ waiting_for?: string }
+export type ChatRow = { name: string; role?: string; reports_to?: string; state: string; /** When waiting: the tool call it waits on. */ waiting_for?: string; /** Its last line to its user, and when (ISO). */ last?: string; last_at?: string }
 
 /** A GitHub Actions run in progress. */
 export type PipelineRun = { name: string; title: string; minutes: number }
@@ -68,17 +68,74 @@ export type Hygiene = { at: string; fixed: string[]; issues: string[] }
 
 export type Live = { grok: GrokRun[]; gemini: GeminiRun[]; chats?: ChatRow[]; pipeline?: PipelineRun[]; hygiene?: Hygiene | null; at?: string }
 
-/** Claude plan windows as the status line has them. */
+/** Claude plan windows as the status line has them. The mod fills these from session.usage(); latest.json does not. */
 export type Limit = { kind: string; percentUsed: number; resetsAt?: string }
 
-/** Quota windows Antigravity's /usage shows, per model group. */
-export type QuotaGroup = { weeklyRemaining?: number; weeklyResetIn?: string; fiveHourRemaining?: number; fiveHourResetIn?: string; at?: string }
+/**
+ * One Antigravity model group from /usage.
+ * Remaining percents are what is left. A reset field is absent when the screen says "Quota available".
+ * `source` and `at` say where the numbers were read and when.
+ */
+export type QuotaGroup = {
+  weeklyRemaining?: number
+  weeklyResetIn?: string
+  fiveHourRemaining?: number
+  fiveHourResetIn?: string
+  source?: string
+  at?: string
+}
 
-/** ops/usage/latest.json, written by ops/usage/collect.py. */
+/** Grok's weekly allowance as the /usage modal prints it. Percent is already used, not remaining. */
+export type GrokWeekly = {
+  percentUsed: number
+  /** Reset line copied from the screen. It is not a UTC timestamp. */
+  resetsAt?: string
+  /** False when that line names no timezone. Do not convert it. */
+  timezoneLabeled: boolean
+  source: string
+  at: string
+}
+
+/**
+ * ops/usage/latest.json, written by ops/usage/collect.py.
+ * Claude's 5-hour and 7-day windows are not here: the mod already has them in `limits`.
+ * Credit baskets (extra usage, unlabelled caches) are not here either.
+ */
 export type Usage = {
   updated?: string
-  grok?: { plan?: string; today?: number; week?: number; todayByTask?: Record<string, number>; limit?: string }
-  gemini?: { plan?: string; quota?: Record<string, QuotaGroup>; runsToday?: number; secondsToday?: number }
+  claude?: { plan?: string; planSource?: string; at?: string }
+  grok?: {
+    plan?: string
+    planSource?: string
+    planAt?: string
+    today?: number
+    todaySource?: string
+    todayAt?: string
+    week?: number
+    weekSource?: string
+    weekAt?: string
+    todayByTask?: Record<string, number>
+    todayByTaskSource?: string
+    todayByTaskAt?: string
+    weekly?: GrokWeekly
+    /** Older files only. The collector no longer writes this sentence. */
+    limit?: string
+  }
+  gemini?: {
+    plan?: string
+    planSource?: string
+    at?: string
+    /** Gemini Flash / Gemini Pro. The mod reads `quota.gemini`. */
+    quota?: { gemini?: QuotaGroup; 'claude-gpt'?: QuotaGroup }
+    /** Same numbers as `quota['claude-gpt']`: Antigravity's Claude and GPT bucket, not Claude Pro. */
+    claudeGpt?: QuotaGroup
+    runsToday?: number
+    runsTodaySource?: string
+    runsTodayAt?: string
+    secondsToday?: number
+    secondsTodaySource?: string
+    secondsTodayAt?: string
+  }
 }
 
 declare module 'claude-code' {

@@ -1,20 +1,23 @@
-"""Usage ledger of the project's agents: Grok token totals per session, Gemini quota windows.
+"""Usage ledger of the project's agents.
 
-Appends snapshots to ops/usage/ledger/<YYYY-MM>.jsonl and writes ops/usage/latest.json, which
-the in-app dashboard reads. Run on the owner's machine (that is where Grok and Antigravity are
-signed in):
+Appends a row to ops/usage/ledger/<YYYY-MM>.jsonl only when the measured tuple changed,
+and writes ops/usage/latest.json. The in-app dashboard reads that summary. Run on the
+owner's machine (Grok, Claude Code and Antigravity are signed in there):
 
-    python ops/usage/collect.py            # Grok + Gemini quota (Gemini opens agy for ~20 s)
+    python ops/usage/collect.py            # tokens, Grok weekly window, Gemini quota, Claude plan
     python ops/usage/collect.py --no-gemini
     python ops/usage/collect.py --run <agy-output.json> --task "watch-video karitas"
 
-`--run` records one finished Gemini job from the JSON that `agy -p --output-format json` printed.
-Nothing here reads credentials; the account e-mail agy prints is never written.
+`--run` records one finished Gemini job from the JSON `agy -p --output-format json` printed.
+Nothing here reads credentials. Account e-mail, organisation ids and tokens are never written.
+Claude's 5-hour and weekly windows stay in the Claude Code runtime; this file records only the plan.
 """
 import argparse
 import datetime as dt
 import json
+import os
 import re
+import shutil
 import subprocess
 import sys
 import threading
@@ -28,6 +31,21 @@ LEDGER = OUT / 'ledger'
 SESSIONS = Path.home() / '.grok' / 'sessions'
 GROK_SETTINGS = Path.home() / '.grok' / 'settings_cache.json'
 WT_MARK = urllib.parse.quote('living-lyrics-wt\\', safe='')
+PROBE_NAME = 'll-t32-usage-probe'
+
+SOURCE_GROK_USAGE = 'grok usage'
+SOURCE_GROK_SCREEN = 'grok /usage'
+SOURCE_GROK_SETTINGS = '~/.grok/settings_cache.json'
+SOURCE_AGY_SCREEN = 'agy /usage'
+SOURCE_AGY_RUN = 'agy -p'
+SOURCE_CLAUDE = 'claude auth status --json'
+
+# Confirmed on the Station screen: subscriptionType "pro" is labelled "Claude Pro".
+# Other subscriptionType values are not given a display name here.
+CLAUDE_PLAN = {'pro': 'Claude Pro'}
+
+ANSI = re.compile(r'\x1b\[[0-9;?<>=]*[ -/]*[@-~]|\x1b\][^\x07]*(\x07|\x1b\\)|\x1b[=>()][0-9A-Za-z]?')
+TZ_MARK = re.compile(r'(?i)\b(?:UTC|GMT)\b|Etc/GMT|[+-]\d{2}:?\d{2}|\bZ\b')
 
 
 def now():
@@ -48,14 +66,24 @@ def append(rows):
             fh.write(json.dumps(row, ensure_ascii=False) + '\n')
 
 
-def read_ledger(days=8):
+def read_ledger(days=None):
+    """Every journal row, or only the last `days` when that is set.
+
+    The week total is a difference of peaks, so the peak from before the window has to be
+    visible. Change-only rows can be older than eight days; the whole file stays the source.
+    """
     rows = []
-    since = now() - dt.timedelta(days=days)
+    since = now() - dt.timedelta(days=days) if days is not None else None
+    if not LEDGER.is_dir():
+        return rows
     for path in sorted(LEDGER.glob('*.jsonl')):
         for line in path.read_text(encoding='utf-8').splitlines():
             try:
                 row = json.loads(line)
             except ValueError:
+                continue
+            if since is None:
+                rows.append(row)
                 continue
             try:
                 if dt.datetime.fromisoformat(row['ts'].replace('Z', '+00:00')) >= since:
@@ -65,15 +93,84 @@ def read_ledger(days=8):
     return rows
 
 
-# ---- Grok ----
+def snapshot_key(row):
+    """Identity of a repeating snapshot. None means the row is an event and is always kept."""
+    if row.get('agent') == 'grok' and row.get('kind') == 'session':
+        return ('grok-session', row.get('session'))
+    if row.get('agent') == 'gemini' and row.get('kind') == 'quota':
+        return ('gemini-quota', row.get('group'))
+    if row.get('agent') == 'grok' and row.get('kind') == 'quota':
+        return ('grok-quota',)
+    return None
 
-def grok_plan():
+
+def measured(row):
+    """The tuple a later identical snapshot must not repeat. Reset countdowns are not part of it."""
+    if row.get('agent') == 'grok' and row.get('kind') == 'session':
+        return (row.get('totalTokens'), row.get('outputTokens'), row.get('modelCalls'), row.get('turns'))
+    if row.get('agent') == 'gemini' and row.get('kind') == 'quota':
+        return (row.get('plan'), row.get('weeklyRemaining'), row.get('fiveHourRemaining'))
+    if row.get('agent') == 'grok' and row.get('kind') == 'quota':
+        return (row.get('plan'), row.get('percentUsed'), row.get('resetsAt'))
+    return None
+
+
+def keep_changed(rows, last):
+    """Copy of `last` is updated. Events (no snapshot key) are always kept."""
+    kept = []
+    for row in rows:
+        key = snapshot_key(row)
+        sig = measured(row)
+        if key is None or last.get(key) != sig:
+            kept.append(row)
+            if key is not None:
+                last[key] = sig
+    return kept
+
+
+def load_signatures():
+    last = {}
+    if not LEDGER.is_dir():
+        return last
+    for path in sorted(LEDGER.glob('*.jsonl')):
+        for line in path.read_text(encoding='utf-8').splitlines():
+            try:
+                row = json.loads(line)
+            except ValueError:
+                continue
+            key = snapshot_key(row)
+            if key is not None:
+                last[key] = measured(row)
+    return last
+
+
+def day_shrink(rows, day):
+    """(lines that day, lines the change-only rule would have kept). `day` is a YYYY-MM-DD prefix."""
+    prior = {}
+    day_rows = []
+    for row in rows:
+        ts = str(row.get('ts') or '')
+        if ts[:10] < day:
+            key = snapshot_key(row)
+            if key is not None:
+                prior[key] = measured(row)
+        elif ts.startswith(day):
+            day_rows.append(row)
+    return len(day_rows), len(keep_changed(day_rows, prior))
+
+
+# ---- Grok tokens ----
+
+def grok_plan_meta():
+    """(display name, fetched_at) from the local settings cache. No identity fields."""
     try:
-        payload = json.loads(GROK_SETTINGS.read_text(encoding='utf-8'))['payload']
+        raw = json.loads(GROK_SETTINGS.read_text(encoding='utf-8'))
+        payload = raw['payload']
         payload = json.loads(payload) if isinstance(payload, str) else payload
-        return payload['settings'].get('subscription_tier_display') or ''
+        settings = payload.get('settings') or {}
+        return settings.get('subscription_tier_display') or '', payload.get('fetched_at') or ''
     except Exception:
-        return ''
+        return '', ''
 
 
 def grok_sessions():
@@ -93,7 +190,9 @@ def grok_sessions():
 
 def grok_usage(session_id):
     try:
-        text = subprocess.run(['grok', 'usage', session_id], capture_output=True, encoding='utf-8', errors='replace', timeout=20).stdout
+        text = subprocess.run(
+            ['grok', 'usage', session_id], capture_output=True, encoding='utf-8', errors='replace', timeout=20,
+        ).stdout
         data = json.loads(text)
     except Exception:
         return None
@@ -144,14 +243,291 @@ def grok_window(rows, start):
     return total, by_task
 
 
+def _reset_label(raw):
+    """The reset phrase only. Modal borders and a loading row are not part of it."""
+    label = raw.strip()
+    label = re.split(r'[│┃┌┐└┘├┤┬┴┼─]', label)[0]
+    label = re.split(r'\s{3,}', label)[0]
+    return label.strip()
+
+
+def parse_grok_usage(screen):
+    """Weekly allowance from the Grok /usage modal. The reset string is kept as printed."""
+    text = ANSI.sub('', screen or '').replace('\r', '\n')
+    header = re.search(r'Weekly limit \(([^)\r\n]+)\)', text, re.I)
+    if not header:
+        return None
+    window = text[header.end():header.end() + 800]
+    reset = re.search(r'Resets:\s*([^\r\n]+)', window)
+    out = {'plan': header.group(1).strip()}
+    before = window[:reset.start()] if reset else window
+    percents = list(re.finditer(r'(\d+(?:\.\d+)?)\s*%', before))
+    if percents:
+        value = float(percents[-1].group(1))
+        out['percentUsed'] = int(value) if value.is_integer() else value
+    if reset:
+        label = _reset_label(reset.group(1))
+        if label:
+            out['resetsAt'] = label
+            out['timezoneLabeled'] = bool(TZ_MARK.search(label))
+    return out
+
+
+class Screen:
+    """Minimal VT100 grid so a cursor-addressed modal can be read as lines."""
+
+    def __init__(self, rows=50, cols=140):
+        self.rows = rows
+        self.cols = cols
+        self.grid = [[' '] * cols for _ in range(rows)]
+        self.cy = 0
+        self.cx = 0
+
+    def _clamp(self):
+        self.cy = max(0, min(self.rows - 1, self.cy))
+        self.cx = max(0, min(self.cols - 1, self.cx))
+
+    def put(self, ch):
+        if ch == '\n':
+            self.cy = min(self.rows - 1, self.cy + 1)
+            self.cx = 0
+            return
+        if ch == '\r':
+            self.cx = 0
+            return
+        if ch == '\b':
+            self.cx = max(0, self.cx - 1)
+            return
+        if ch == '\t':
+            self.cx = min(self.cols - 1, ((self.cx // 8) + 1) * 8)
+            return
+        if ord(ch) < 32:
+            return
+        self._clamp()
+        self.grid[self.cy][self.cx] = ch
+        if self.cx + 1 < self.cols:
+            self.cx += 1
+        else:
+            self.cx = 0
+            self.cy = min(self.rows - 1, self.cy + 1)
+
+    def erase_display(self, mode):
+        if mode in (2, 3):
+            self.grid = [[' '] * self.cols for _ in range(self.rows)]
+            return
+        if mode == 0:
+            self.erase_line(0)
+            for r in range(self.cy + 1, self.rows):
+                self.grid[r] = [' '] * self.cols
+        elif mode == 1:
+            self.erase_line(1)
+            for r in range(self.cy):
+                self.grid[r] = [' '] * self.cols
+
+    def erase_line(self, mode):
+        if mode == 2:
+            self.grid[self.cy] = [' '] * self.cols
+        elif mode == 0:
+            for c in range(self.cx, self.cols):
+                self.grid[self.cy][c] = ' '
+        elif mode == 1:
+            for c in range(0, self.cx + 1):
+                self.grid[self.cy][c] = ' '
+
+    def csi(self, params, final):
+        nums = []
+        for part in params.split(';'):
+            part = part.strip()
+            if part == '':
+                nums.append(None)
+            else:
+                try:
+                    nums.append(int(part))
+                except ValueError:
+                    nums.append(None)
+
+        def n(i, default):
+            if i < len(nums) and nums[i] is not None:
+                return nums[i]
+            return default
+
+        if final in ('H', 'f'):
+            self.cy = n(0, 1) - 1
+            self.cx = n(1, 1) - 1
+            self._clamp()
+        elif final == 'A':
+            self.cy -= n(0, 1)
+            self._clamp()
+        elif final == 'B':
+            self.cy += n(0, 1)
+            self._clamp()
+        elif final == 'C':
+            self.cx += n(0, 1)
+            self._clamp()
+        elif final == 'D':
+            self.cx -= n(0, 1)
+            self._clamp()
+        elif final == 'G':
+            self.cx = n(0, 1) - 1
+            self._clamp()
+        elif final == 'J':
+            self.erase_display(n(0, 0))
+        elif final == 'K':
+            self.erase_line(n(0, 0))
+
+    def feed(self, data):
+        i = 0
+        n = len(data)
+        while i < n:
+            c = data[i]
+            if c != '\x1b':
+                self.put(c)
+                i += 1
+                continue
+            if i + 1 >= n:
+                break
+            nxt = data[i + 1]
+            if nxt == '[':
+                j = i + 2
+                while j < n and not (0x40 <= ord(data[j]) <= 0x7E):
+                    j += 1
+                if j >= n:
+                    break
+                params = data[i + 2:j].lstrip('?>=<')
+                self.csi(params, data[j])
+                i = j + 1
+            elif nxt == ']':
+                j = i + 2
+                while j < n and data[j] != '\x07':
+                    if data[j] == '\x1b' and j + 1 < n and data[j + 1] == '\\':
+                        j += 2
+                        break
+                    j += 1
+                else:
+                    j += 1
+                i = j
+            else:
+                i += 2
+
+    def text(self):
+        lines = [''.join(row).rstrip() for row in self.grid]
+        while lines and not lines[-1].strip():
+            lines.pop()
+        return '\n'.join(lines)
+
+
+def forget_probe_sessions():
+    """Drop sessions the quota probe created. Never touches a project session."""
+    if not SESSIONS.is_dir():
+        return
+    for base in list(SESSIONS.iterdir()):
+        try:
+            name = urllib.parse.unquote(base.name)
+        except Exception:
+            name = base.name
+        if PROBE_NAME in name.lower() and base.is_dir():
+            shutil.rmtree(base, ignore_errors=True)
+
+
+def _terminate(proc):
+    pid = getattr(proc, 'pid', None)
+    try:
+        proc.terminate(force=True)
+    except Exception:
+        pass
+    if pid:
+        subprocess.run(['taskkill', '/F', '/T', '/PID', str(pid)], capture_output=True)
+
+
+def grok_usage_screen():
+    """Open an isolated grok, run /usage, return the screen. Does not attach to the live leader."""
+    from winpty import PtyProcess
+
+    rows, cols = 50, 140
+    probe = Path(os.environ.get('TEMP') or '.') / PROBE_NAME
+    probe.mkdir(exist_ok=True)
+    sock = Path(os.environ.get('TEMP') or '.') / 'll-t32-usage-leader.sock'
+    try:
+        sock.unlink()
+    except OSError:
+        pass
+    forget_probe_sessions()
+    exe = shutil.which('grok') or shutil.which('grok.exe') or str(Path.home() / '.grok' / 'bin' / 'grok.exe')
+    proc = PtyProcess.spawn([exe, '--leader-socket', str(sock)], cwd=str(probe), dimensions=(rows, cols))
+    screen = Screen(rows, cols)
+    lock = threading.Lock()
+
+    def reader():
+        while True:
+            try:
+                data = proc.read(4096)
+            except Exception:
+                return
+            if data:
+                with lock:
+                    screen.feed(data)
+
+    threading.Thread(target=reader, daemon=True).start()
+    text = ''
+    try:
+        time.sleep(12)
+        with lock:
+            seen = screen.text().lower()
+        proc.write('\r')
+        time.sleep(4 if 'trust' in seen else 2)
+        proc.write('/usage\r')
+        deadline = time.time() + 12
+        text = ''
+        while time.time() < deadline:
+            time.sleep(0.4)
+            with lock:
+                text = screen.text()
+            if 'Weekly limit' in text and 'Resets:' in text and 'Loading session usage' not in text:
+                break
+        proc.write('\x1b')
+        time.sleep(0.4)
+        proc.write('/exit\r')
+        time.sleep(1.5)
+    finally:
+        _terminate(proc)
+        forget_probe_sessions()
+        try:
+            sock.unlink()
+        except OSError:
+            pass
+    return text
+
+
+def collect_grok_weekly(ts):
+    try:
+        screen = grok_usage_screen()
+    except Exception as exc:
+        print(f'grok weekly: {exc}', file=sys.stderr)
+        return None
+    parsed = parse_grok_usage(screen)
+    if not parsed or parsed.get('percentUsed') is None:
+        print('grok weekly: screen had no weekly limit', file=sys.stderr)
+        return None
+    parsed['at'] = ts
+    return parsed
+
+
+def grok_quota_row(ts, weekly):
+    row = {
+        'ts': ts, 'agent': 'grok', 'kind': 'quota',
+        'plan': weekly.get('plan') or '',
+        'percentUsed': weekly.get('percentUsed'),
+        'resetsAt': weekly.get('resetsAt') or '',
+        'timezoneLabeled': bool(weekly.get('timezoneLabeled')),
+    }
+    return row
+
+
 # ---- Gemini (Antigravity) ----
-
-ANSI = re.compile(r'\x1b\[[0-9;?<>=]*[ -/]*[@-~]|\x1b\][^\x07]*(\x07|\x1b\\)|\x1b[=>()][0-9A-Za-z]?')
-
 
 def agy_usage_screen():
     """Open agy in a pseudo-console, run /usage, return the screen text."""
-    from winpty import PtyProcess  # pip install pywinpty
+    from winpty import PtyProcess
 
     proc = PtyProcess.spawn('agy', cwd=str(ROOT), dimensions=(60, 160))
     chunks = []
@@ -185,50 +561,86 @@ def agy_usage_screen():
         proc.write('/exit' + chr(13))
         time.sleep(1)
     finally:
-        proc.terminate(force=True)
+        _terminate(proc)
     return header, screen
 
 
+def _as_number(text):
+    value = float(text)
+    return int(value) if value.is_integer() else value
+
+
 def parse_quota(header, screen):
+    """Plan and remaining percents from an agy /usage screen.
+
+    "Quota available" is a full window: remaining 100 and no reset time.
+    A reset is stored only when the screen prints "Refreshes in ...".
+    """
     plan = ''
-    m = re.search(r'\(([^()@]*(?:Pro|Ultra|Free|Plus|Standard)[^()@]*)\)', header)
-    if m:
-        plan = m.group(1).strip()
+    found = re.search(r'\(([^()@]*(?:Pro|Ultra|Free|Plus|Standard)[^()@]*)\)', header or '')
+    if found:
+        plan = found.group(1).strip()
     groups = {}
     current = None
     window = None
-    for line in screen.replace('\r', '\n').split('\n'):
+    for line in (screen or '').replace('\r', '\n').split('\n'):
         s = line.strip()
         if s.endswith('MODELS') and s.isupper():
             current = 'gemini' if 'GEMINI' in s else 'claude-gpt' if 'CLAUDE' in s else s.lower()
             groups[current] = {}
+            window = None
         elif current and 'Weekly Limit Remaining' in s:
             window = 'weekly'
         elif current and 'Five Hour Limit Remaining' in s:
             window = 'fiveHour'
         elif current and window:
-            p = re.search(r'(\d+(?:\.\d+)?)%', s)
-            if p and window + 'Remaining' not in groups[current]:
-                groups[current][window + 'Remaining'] = float(p.group(1))
+            percent = re.search(r'(\d+(?:\.\d+)?)%', s)
+            if percent and window + 'Remaining' not in groups[current]:
+                groups[current][window + 'Remaining'] = _as_number(percent.group(1))
                 continue
-            r = re.search(r'Refreshes in\s+(.+)$', s)
-            if r:
-                groups[current][window + 'ResetIn'] = r.group(1).strip()
+            refreshes = re.search(r'Refreshes in\s+(.+)$', s)
+            if refreshes:
+                groups[current][window + 'ResetIn'] = refreshes.group(1).strip()
                 window = None
             elif 'Quota available' in s:
-                groups[current][window + 'ResetIn'] = ''
+                if window + 'Remaining' not in groups[current]:
+                    groups[current][window + 'Remaining'] = 100
                 window = None
-    return plan, groups
+    return plan, {name: values for name, values in groups.items() if values}
 
 
-def collect_gemini(ts):
+def quota_fields(src, at):
+    """One group's numbers for latest.json. Empty reset strings are omitted."""
+    out = {'source': SOURCE_AGY_SCREEN, 'at': at}
+    for key in ('weeklyRemaining', 'fiveHourRemaining'):
+        if src.get(key) is not None and src.get(key) != '':
+            out[key] = src[key]
+    for key in ('weeklyResetIn', 'fiveHourResetIn'):
+        if src.get(key):
+            out[key] = src[key]
+    return out
+
+
+def collect_gemini_live(ts):
     try:
         header, screen = agy_usage_screen()
     except Exception as exc:
         print(f'gemini quota: {exc}', file=sys.stderr)
-        return []
+        return None
     plan, groups = parse_quota(header, screen)
-    return [{'ts': ts, 'agent': 'gemini', 'kind': 'quota', 'plan': plan, 'group': g, **v} for g, v in groups.items() if v]
+    if not groups:
+        print('gemini quota: screen had no windows', file=sys.stderr)
+        return None
+    return {'plan': plan, 'groups': groups, 'at': ts}
+
+
+def gemini_rows(ts, live):
+    rows = []
+    for name, values in live['groups'].items():
+        row = {'ts': ts, 'agent': 'gemini', 'kind': 'quota', 'plan': live.get('plan') or '', 'group': name}
+        row.update(values)
+        rows.append(row)
+    return rows
 
 
 def record_run(path, task):
@@ -239,7 +651,10 @@ def record_run(path, task):
         if key in usage:
             tokens = int(usage[key] or 0)
     if not tokens:
-        tokens = sum(int(v or 0) for k, v in usage.items() if isinstance(v, (int, float)) and 'token' in k.lower() and 'cache' not in k.lower())
+        tokens = sum(
+            int(v or 0) for k, v in usage.items()
+            if isinstance(v, (int, float)) and 'token' in k.lower() and 'cache' not in k.lower()
+        )
     return {
         'ts': iso(now()), 'agent': 'gemini', 'kind': 'run', 'task': task,
         'model': data.get('model') or 'gemini-3.8-flash-high',
@@ -248,30 +663,193 @@ def record_run(path, task):
     }
 
 
+# ---- Claude plan ----
+
+def claude_executable():
+    appdata = os.environ.get('APPDATA', '')
+    exe = Path(appdata) / 'npm' / 'node_modules' / '@anthropic-ai' / 'claude-code' / 'bin' / 'claude.exe'
+    if exe.is_file():
+        return str(exe)
+    for name in ('claude.exe', 'claude.cmd', 'claude'):
+        found = shutil.which(name)
+        if found:
+            return found
+    return 'claude'
+
+
+def parse_claude_auth(text):
+    """Display plan from `claude auth status --json`. Identity fields are ignored."""
+    start = (text or '').find('{')
+    if start < 0:
+        return None
+    try:
+        data, _ = json.JSONDecoder().raw_decode(text[start:])
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(data, dict) or not data.get('loggedIn', True):
+        return None
+    return CLAUDE_PLAN.get(data.get('subscriptionType'))
+
+
+def collect_claude(ts):
+    try:
+        proc = subprocess.run(
+            [claude_executable(), 'auth', 'status', '--json'],
+            capture_output=True, encoding='utf-8', errors='replace', timeout=40,
+        )
+    except Exception as exc:
+        print(f'claude plan: {exc}', file=sys.stderr)
+        return None
+    plan = parse_claude_auth(proc.stdout or '')
+    if not plan:
+        print('claude plan: no confirmed plan name', file=sys.stderr)
+        return None
+    return {'plan': plan, 'planSource': SOURCE_CLAUDE, 'at': ts}
+
+
 # ---- Summary ----
 
-def write_latest(rows):
-    t = now()
+def _gemini_from_rows(rows):
+    quota_rows = {}
+    plan = ''
+    at = ''
+    for row in rows:
+        if row.get('agent') == 'gemini' and row.get('kind') == 'quota':
+            quota_rows[row['group']] = row
+            if row.get('plan'):
+                plan = row['plan']
+            at = row.get('ts') or at
+    return plan, quota_rows, at
+
+
+def build_latest(rows, stamp, *, claude=None, gemini_live=None, grok_live=None, prev=None, settings_plan=('', '')):
+    """The summary dict. Missing measurements are omitted. Nothing is guessed."""
+    prev = prev or {}
+    t = dt.datetime.fromisoformat(stamp.replace('Z', '+00:00'))
     day_start = t.astimezone().replace(hour=0, minute=0, second=0, microsecond=0).astimezone(dt.timezone.utc)
     week_start = t - dt.timedelta(days=7)
     grok_today, grok_today_by = grok_window(rows, day_start)
     grok_week, _ = grok_window(rows, week_start)
-    quota = {}
-    for row in rows:
-        if row.get('agent') == 'gemini' and row.get('kind') == 'quota':
-            quota[row['group']] = {**row}
-    gem_runs = [r for r in rows if r.get('agent') == 'gemini' and r.get('kind') == 'run' and r['ts'] >= iso(day_start)]
-    latest = {
-        'updated': iso(t),
-        'grok': {'plan': grok_plan(), 'today': grok_today, 'week': grok_week, 'todayByTask': grok_today_by,
-                 'limit': 'xAI не сообщает лимит подписки: виден только расход'},
-        'gemini': {
-            'plan': (quota.get('gemini') or {}).get('plan', ''),
-            'quota': {g: {k: v for k, v in q.items() if k.endswith('Remaining') or k.endswith('ResetIn')} | {'at': q['ts']} for g, q in quota.items()},
-            'runsToday': len(gem_runs),
-            'secondsToday': round(sum(r.get('seconds', 0) for r in gem_runs)),
-        },
+
+    grok = {
+        'today': grok_today,
+        'todaySource': SOURCE_GROK_USAGE,
+        'todayAt': stamp,
+        'week': grok_week,
+        'weekSource': SOURCE_GROK_USAGE,
+        'weekAt': stamp,
+        'todayByTask': grok_today_by,
+        'todayByTaskSource': SOURCE_GROK_USAGE,
+        'todayByTaskAt': stamp,
     }
+    if grok_live and grok_live.get('plan'):
+        grok['plan'] = grok_live['plan']
+        grok['planSource'] = SOURCE_GROK_SCREEN
+        grok['planAt'] = grok_live.get('at') or stamp
+    elif settings_plan[0]:
+        grok['plan'] = settings_plan[0]
+        grok['planSource'] = SOURCE_GROK_SETTINGS
+        grok['planAt'] = _short_stamp(settings_plan[1]) or stamp
+    elif prev.get('grok', {}).get('plan'):
+        grok['plan'] = prev['grok']['plan']
+        if prev['grok'].get('planSource'):
+            grok['planSource'] = prev['grok']['planSource']
+        if prev['grok'].get('planAt'):
+            grok['planAt'] = prev['grok']['planAt']
+
+    if grok_live and grok_live.get('percentUsed') is not None:
+        weekly = {
+            'percentUsed': grok_live['percentUsed'],
+            'source': SOURCE_GROK_SCREEN,
+            'at': grok_live.get('at') or stamp,
+            'timezoneLabeled': bool(grok_live.get('timezoneLabeled')),
+        }
+        if grok_live.get('resetsAt'):
+            weekly['resetsAt'] = grok_live['resetsAt']
+        grok['weekly'] = weekly
+    elif prev.get('grok', {}).get('weekly'):
+        grok['weekly'] = prev['grok']['weekly']
+
+    if gemini_live:
+        plan = gemini_live.get('plan') or ''
+        groups = gemini_live.get('groups') or {}
+        gem_at = gemini_live.get('at') or stamp
+        quota = {name: quota_fields(values, gem_at) for name, values in groups.items()}
+        gem_source = SOURCE_AGY_SCREEN
+    else:
+        plan, group_rows, gem_at = _gemini_from_rows(rows)
+        quota = {name: quota_fields(values, values.get('ts') or gem_at) for name, values in group_rows.items()}
+        gem_source = SOURCE_AGY_SCREEN
+        if not quota and prev.get('gemini', {}).get('quota'):
+            quota = prev['gemini']['quota']
+            plan = plan or prev['gemini'].get('plan') or ''
+            gem_at = prev['gemini'].get('at') or ''
+            gem_source = prev['gemini'].get('planSource') or SOURCE_AGY_SCREEN
+
+    gem_runs = [
+        r for r in rows
+        if r.get('agent') == 'gemini' and r.get('kind') == 'run' and r['ts'] >= iso(day_start)
+    ]
+    gemini = {
+        'quota': quota,
+        'runsToday': len(gem_runs),
+        'runsTodaySource': SOURCE_AGY_RUN,
+        'runsTodayAt': stamp,
+        'secondsToday': round(sum(r.get('seconds', 0) for r in gem_runs)),
+        'secondsTodaySource': SOURCE_AGY_RUN,
+        'secondsTodayAt': stamp,
+    }
+    if plan:
+        gemini['plan'] = plan
+        gemini['planSource'] = gem_source
+        if gem_at:
+            gemini['at'] = gem_at
+    if 'claude-gpt' in quota:
+        gemini['claudeGpt'] = quota['claude-gpt']
+
+    latest = {'updated': stamp, 'grok': grok, 'gemini': gemini}
+    if claude and claude.get('plan'):
+        latest['claude'] = {
+            'plan': claude['plan'],
+            'planSource': claude.get('planSource') or SOURCE_CLAUDE,
+            'at': claude.get('at') or stamp,
+        }
+    elif prev.get('claude', {}).get('plan'):
+        latest['claude'] = prev['claude']
+    return latest
+
+
+def _short_stamp(value):
+    """Trim a client timestamp to the second, UTC, or return ''."""
+    if not value:
+        return ''
+    text = str(value).replace('Z', '+00:00')
+    try:
+        parsed = dt.datetime.fromisoformat(text[:32])
+    except ValueError:
+        return ''
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=dt.timezone.utc)
+    return iso(parsed.astimezone(dt.timezone.utc))
+
+
+def previous_latest():
+    try:
+        return json.loads((OUT / 'latest.json').read_text(encoding='utf-8'))
+    except Exception:
+        return {}
+
+
+def write_latest(rows, stamp=None, **live):
+    stamp = stamp or iso(now())
+    latest = build_latest(
+        rows, stamp,
+        claude=live.get('claude'),
+        gemini_live=live.get('gemini_live'),
+        grok_live=live.get('grok_live'),
+        prev=previous_latest(),
+        settings_plan=grok_plan_meta(),
+    )
     (OUT / 'latest.json').write_text(json.dumps(latest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     return latest
 
@@ -282,17 +860,28 @@ def main():
     ap.add_argument('--no-gemini', action='store_true')
     ap.add_argument('--run', help='agy JSON output of a finished Gemini job')
     ap.add_argument('--task', default='', help='what the Gemini job was, for --run')
-    a = ap.parse_args()
+    args = ap.parse_args()
     ts = iso(now())
     rows = []
-    if a.run:
-        rows.append(record_run(a.run, a.task))
+    claude = collect_claude(ts)
+    gemini_live = None
+    grok_live = None
+    if args.run:
+        rows.append(record_run(args.run, args.task))
     else:
         rows += collect_grok(ts)
-        if not a.no_gemini:
-            rows += collect_gemini(ts)
-    append(rows)
-    print(json.dumps(write_latest(read_ledger()), ensure_ascii=False))
+        if not args.no_gemini:
+            gemini_live = collect_gemini_live(ts)
+            if gemini_live:
+                rows += gemini_rows(ts, gemini_live)
+        grok_live = collect_grok_weekly(ts)
+        if grok_live:
+            rows.append(grok_quota_row(ts, grok_live))
+    append(keep_changed(rows, load_signatures()))
+    print(json.dumps(
+        write_latest(read_ledger(), ts, claude=claude, gemini_live=gemini_live, grok_live=grok_live),
+        ensure_ascii=False,
+    ))
 
 
 if __name__ == '__main__':
