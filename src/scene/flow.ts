@@ -62,6 +62,18 @@ export function flowPosition(plan: FlowPlan, t: number): number {
 /** Size of a non-current line relative to the current one. Close enough to read, clearly smaller than the line in the light. */
 export const SMALL = 0.78;
 
+/**
+ * How much of an instrumental passage is the picture.
+ * Before `start` the flow eases it in. Once the passage has started it is fully
+ * on stage, and once it has ended it leaves. A move that straddles `start`
+ * used to freeze both captions on the shared boundary.
+ */
+export function instPresence(t: number, start: number, end: number, flow: number): number {
+  if (t >= end) return 0;
+  if (t >= start) return 1;
+  return flow;
+}
+
 /** Visual state of a block at distance d from the current position (d = index − position). */
 export function blockState(d: number) {
   const a = Math.abs(d);

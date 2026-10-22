@@ -4,7 +4,7 @@ import type { AudioFeatures } from '@/instruments/animation';
 import type { LineEntrance, MotionPref } from '@/app/settings';
 import { formatTime } from '@/data/library';
 import { instrument } from '@/instruments/catalog';
-import { blockState, clamp01, entranceOpacity, type Measure } from './flow';
+import { blockState, clamp01, entranceOpacity, instPresence, type Measure } from './flow';
 import type { BlockUpdater } from './LineBlock';
 import { InstrumentStage, assignPerformers, type InstrumentStageHandle, type StagePose } from './InstrumentStage';
 import { castAt, castSignature, isVoicePassage, type CastMember } from './cast';
@@ -77,6 +77,10 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   const animRef = useRef(anim);
   const castSig = useRef('');
   const frameRef = useRef<StagePose | null>(null);
+  // The last pose may belong to the magnet time under the finger. The release
+  // clock is the raw seek, and a block that has already faded skips pose, so
+  // its engraving stayed at full opacity inside the chip.
+  const plateLit = useRef(false);
   const painted = useRef({ z: '', transform: '', opacity: '', vis: '', height: '', compact: '', fullO: '', fullS: '' });
 
   // A short wide screen (the car) gives the drawings the height and keeps the note short.
@@ -178,12 +182,16 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     // At t = 0 the title card still shares the stage, so this block's distance is not 0.
     // The opening roster is already playing: keep the full engraving, not the empty cascade.
     const opening = earlier.length === 0 && t >= section.start && t < section.end && d < 1.05;
-    const p = opening ? Math.max(s.presence, 0.92) : s.presence;
+    const flowP = opening ? Math.max(s.presence, 0.92) : s.presence;
+    // A passage that has started is the picture. One that has ended is gone:
+    // the flow move straddles the shared boundary and used to draw both captions.
+    const ended = t >= section.end;
+    const p = instPresence(t, section.start, section.end, flowP);
     const z = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
     const transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
-    const opacity = entranceOpacity(d, entrance, s.opacity).toFixed(3);
-    const vis = s.opacity < 0.01 ? 'hidden' : 'visible';
-    const grown = compactH.current + (fullH - compactH.current) * p;
+    const opacity = (ended ? 0 : entranceOpacity(d, entrance, s.opacity)).toFixed(3);
+    const vis = ended || s.opacity < 0.01 ? 'hidden' : 'visible';
+    const grown = ended ? 0 : compactH.current + (fullH - compactH.current) * p;
     const height = `${grown.toFixed(1)}px`;
     const box = painted.current;
     if (box.z !== z) {
@@ -207,14 +215,16 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
       r.style.height = height;
     }
     if (compact.current) {
-      const compactO = (1 - clamp01(p * 2.5)).toFixed(3);
+      // One caption at a time. The old crossfade kept the chip and the note
+      // both above 0.05 while the box was still growing.
+      const compactO = ended || p >= 0.5 ? '0' : '1';
       if (box.compact !== compactO) {
         box.compact = compactO;
         compact.current.style.opacity = compactO;
       }
     }
     if (full.current) {
-      const fullO = clamp01(p * 1.6 - 0.4).toFixed(3);
+      const fullO = ended || p < 0.5 ? '0' : '1';
       const fullS = `scale(${(0.94 + 0.06 * p).toFixed(4)})`;
       if (box.fullO !== fullO) {
         box.fullO = fullO;
@@ -239,8 +249,11 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
       }
       // The figure opacity is this frame's presence. Skipping the pose while
       // the finger moved left the engraving at the section-start value, which
-      // is 0, so an instrumental passage drew only its chip.
-      if (p > 0.02 || scrubbingNow) stageRef.current?.pose({ ...frame, block: p });
+      // is 0, so an instrumental passage drew only its chip. A block that was
+      // lit and then fell quiet still needs one pose: otherwise the plates
+      // keep the opacity and the halo from the moment under the finger.
+      if (p > 0.02 || scrubbingNow || plateLit.current) stageRef.current?.pose({ ...frame, block: p });
+      plateLit.current = p > 0.02;
     }
     const steps = 50;
     const q = (v: number) => Math.round(v * steps) / steps;

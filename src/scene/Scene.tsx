@@ -11,8 +11,8 @@ import { InstBlock } from './InstBlock';
 import { stageCovered, watchCover } from './cover';
 import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
-import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, retargetPhoneLines, sameSlots, type PhoneSlot } from './slots';
-import { GAP, WAIT_ROOM, blockHeight, blockState, clearBand, compressStack, flowPosition, keepInStage, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
+import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, generousLine, retargetPhoneLines, sameSlots, type PhoneSlot } from './slots';
+import { GAP, WAIT_ROOM, blockHeight, blockState, clearBand, compressStack, flowPosition, instPresence, keepInStage, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
 import { stepSpring, type SpringState } from '@/ui/spring';
 
 /**
@@ -111,6 +111,14 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
   // Bumps when a block reports a new box. A paused clock does not restyle, but a
   // line can still change height after the first read (web fonts, text-wrap balance).
   const measureGen = useRef(0);
+  // A paused clock does not restyle. The feature file arrives later, and the
+  // halo is part of that second, so the loop has to pose once more.
+  const featureEpoch = useRef(0);
+  const featureSeen = useRef(features);
+  if (featureSeen.current !== features) {
+    featureSeen.current = features;
+    featureEpoch.current += 1;
+  }
   // The note opening changes the stage box between frames. The phone paint
   // skips ahead unless this is set, otherwise the line stays on the old centre.
   const stageDirty = useRef(true);
@@ -212,6 +220,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let pool = '';
     let lastPlate = '';
     let lastT = Number.NaN;
+    let placedFeatures = featureEpoch.current;
     let lastLive = '';
     let lastPaintMs = 0;
     let frameAt = 0;
@@ -325,6 +334,12 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         releasePaint = true;
         dropDepart();
         veil = null;
+        // The finger moved the clock. That is not a playback jump, so the veil
+        // must not fade the settled picture. The detector below still sees the
+        // time from before the drag unless this frame records where we landed.
+        const landed = clock();
+        veilClock = landed;
+        veilKind = kindAt(landed);
         const stageEl = stageRef.current;
         if (stageEl) {
           stageEl.style.opacity = '';
@@ -390,7 +405,8 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       // same frame: the paint is a function of the clock, not of how many frames ran.
       // Playback stays at 8 Hz. A drag paints the time under the finger, and the
       // release frame has to paint even when the previous drag frame was recent.
-      if (isPhone() && !scrubbingNow && !depart && !releasePaint) {
+      const featuresMoved = featureEpoch.current !== placedFeatures;
+      if (isPhone() && !scrubbingNow && !depart && !releasePaint && !featuresMoved) {
         const dirty = stageDirty.current;
         if (!dirty && lastPaintMs !== 0 && now - lastPaintMs < 120) return;
         stageDirty.current = false;
@@ -447,7 +463,8 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         viewKey = '';
         viewAt = 0;
       }
-      if (t === lastT && !measuresMoved && liveKey === lastLive && pendingOwner == null && !depart) return;
+      if (t === lastT && !measuresMoved && !featuresMoved && liveKey === lastLive && pendingOwner == null && !depart) return;
+      placedFeatures = featureEpoch.current;
       lastT = t;
       lastLive = liveKey;
       const pos = flowPosition(plan, t);
@@ -518,26 +535,23 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const measures = new Map<number, Measure>();
       for (const k of list) {
         const b = blocks.current.get(k);
-        if (b) measures.set(k, b.m);
-      }
-      // The opening engraving is drawn near full height while the title still
-      // shares the stage. Reserve that height so the next chip does not land
-      // on the plate. Later cues keep the ordinary presence curve.
-      const openingCue = timeline.cues[0];
-      if (
-        openingCue &&
-        openingCue.kind === 'inst' &&
-        openingCue.start <= 0.05 &&
-        t >= openingCue.start &&
-        t < openingCue.end &&
-        Math.abs(pos) < 1.05
-      ) {
-        const opening = measures.get(0);
-        if (opening && opening.full != null) {
-          const base = blockHeight(opening, -pos);
-          const reserved = Math.max(base, opening.full * 0.92);
-          measures.set(0, { ...opening, compact: reserved, full: reserved });
+        if (!b) continue;
+        const cue = timeline.cues[k];
+        // A phone drag does not remeasure. An unmeasured line used to be 72px
+        // tall while its words stayed at full size, so the next line sat on them.
+        if (scrubbingNow && cue?.kind === 'line') {
+          const guess = generousLine(cue);
+          measures.set(k, { ...b.m, main: Math.max(b.m.main, guess.main), sub: Math.max(b.m.sub, guess.sub) });
+          continue;
         }
+        // Same rule as the block's own picture. A mid-move height left the
+        // absolute engraving hanging over the next caption.
+        if (cue?.kind === 'inst' && b.m.full != null) {
+          const span = instPresence(t, cue.start, cue.end, blockState(k - pos).presence);
+          if (t >= cue.end) measures.set(k, { ...b.m, compact: 0, full: 0 });
+          else if (span >= 1) measures.set(k, { ...b.m, compact: b.m.full, full: b.m.full });
+          else measures.set(k, b.m);
+        } else measures.set(k, b.m);
       }
       const a = Math.floor(pos);
       const f = pos - a;

@@ -91,11 +91,6 @@ function NoteCard({
   const ref = useRef<HTMLElement>(null);
   const drag = useRef<{ y: number; id: number } | null>(null);
   useLayoutEffect(() => {
-    const body = ref.current?.querySelector('.comment-body');
-    if (!(body instanceof HTMLElement)) return;
-    body.classList.toggle('is-faded', body.scrollHeight > body.clientHeight + 8);
-  }, [text]);
-  useLayoutEffect(() => {
     const card = ref.current;
     if (!card || !fading) return;
     // Same commit as the sheet. A spring here overlapped the rising panel for two frames.

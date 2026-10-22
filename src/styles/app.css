@@ -431,17 +431,21 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   color: color-mix(in srgb, var(--ink) 90%, transparent);
   text-wrap: balance;
 }
-/* Scrub overlay. The emphasis stays mounted so the release commit does not
-   remove a node the drag already replaced. Cleared before the next paint. */
+/* Scrub overlay. Every child stays mounted, including the plain spans, so the
+   release commit does not remove a node the drag already replaced. Only the
+   attribute is drawn. Cleared before the next paint. */
+.fb-tr[data-scrub] {
+  font-size: 0;
+}
 .fb-tr[data-scrub] > * {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
+  display: none;
 }
 .fb-tr[data-scrub]::before {
   content: attr(data-scrub);
+  display: block;
+  font-size: var(--lyric-tr);
+  line-height: 1.4;
+  font-weight: 400;
 }
 .fb-translit {
   font-size: clamp(14px, 0.5vw + 12px, 18px);
@@ -534,7 +538,7 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 
 /* ----- Instrumental passages in the flow ----- */
 .fb--inst {
-  overflow: visible;
+  overflow: hidden;
 }
 .fb-inst-compact {
   display: inline-flex;
@@ -1619,11 +1623,13 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 .comment.is-margin {
   position: fixed;
   z-index: 5;
-  top: var(--note-inset, 16px);
+  top: auto;
   right: var(--note-right, var(--note-inset, 16px));
-  bottom: var(--note-inset, 16px);
+  bottom: max(18px, var(--safe-b, 0px));
   left: auto;
   width: var(--note-w);
+  height: auto;
+  max-height: calc(100dvh - var(--chrome-top, 120px) - 28px);
   display: flex;
   flex-direction: column;
   margin: 0;
@@ -1669,8 +1675,8 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   height: 44px;
 }
 .comment.is-margin .comment-body {
-  max-height: none;
-  flex: 1;
+  max-height: min(52dvh, 480px);
+  flex: 0 1 auto;
   overflow: auto;
   opacity: 1;
   transform: none;
@@ -4106,8 +4112,8 @@ html[data-sheet='1'] .song {
   }
 }
 
-/* 1920 and wider: one centered spread. Search sits in the head, the shelf is a row. */
-@media (min-width: 1920px) {
+/* Desk and wider: one centered spread. Search sits in the head, the shelf is a poster row. */
+@media (min-width: 1200px) and (min-height: 700px) {
   .library {
     display: flex;
     flex-direction: column;
@@ -4157,7 +4163,7 @@ html[data-sheet='1'] .song {
   .lib-hero-cover {
     width: min(34%, 440px);
     height: auto;
-    max-height: 440px;
+    max-height: 36dvh;
     aspect-ratio: 1;
   }
   .lib-hero-title {
@@ -4208,10 +4214,10 @@ html[data-sheet='1'] .song {
   z-index: 5;
   left: max(10px, var(--col-left, 10px));
   right: max(10px, var(--col-right, 10px));
-  bottom: var(--floor-h, 210px);
+  bottom: calc(var(--floor-h, 210px) + 8px);
   display: flex;
   flex-direction: column;
-  height: min(24dvh, 196px);
+  height: auto;
   max-height: min(24dvh, 196px);
   margin: 0;
   padding: 4px 14px 0;
@@ -4221,6 +4227,9 @@ html[data-sheet='1'] .song {
   border-radius: 22px 22px 12px 12px;
   background: var(--dock-solid);
   box-shadow: 0 -12px 32px -24px rgba(0, 0, 0, 0.45);
+}
+.song:has(.note-card) .player::before {
+  content: none;
 }
 .note-grab {
   width: 36px;
@@ -4232,23 +4241,18 @@ html[data-sheet='1'] .song {
 }
 .note-card-head { display: flex; align-items: center; min-height: 44px; }
 .note-card .comment-body {
-  flex: 1 1 0;
+  flex: 1 1 auto;
   min-height: 0;
   margin: 0;
-  padding: 0 0 24px;
+  padding: 0 0 12px;
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   opacity: 1;
   transform: none;
 }
-.note-card .comment-body.is-faded {
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 82%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 82%, transparent 100%);
-}
 @media (max-height: 640px) {
   .note-card {
-    height: min(28dvh, 168px);
     max-height: min(28dvh, 168px);
   }
 }

@@ -26,6 +26,23 @@ export interface PhoneLineHost extends HTMLElement {
 
 type BlockEntry = { fn: (t: number, d: number, top: number, wait: number) => void; m: Measure };
 
+/** The line block owns the measured boxes. A scrub asks for the cue it is about to show. */
+let measureOf: (idx: number) => Measure | undefined = () => undefined;
+
+export function bindPhoneMeasures(fn: (idx: number) => Measure | undefined) {
+  measureOf = fn;
+}
+
+/**
+ * A line we have not measured yet. Taller than a fitted phone line, so the next
+ * block cannot land on it. The release read replaces this with the real box.
+ */
+export function generousLine(cue: LineCue): Measure {
+  const n = cue.line.words.length;
+  const sub = cue.line.tr?.ru || cue.line.translit || cue.line.alt ? 180 : 0;
+  return { main: Math.max(240, Math.min(520, 96 + n * 28)), sub };
+}
+
 /** Plain text for the drag. The release render puts the emphasis markup back. */
 function plain(text: string | undefined): string {
   if (!text) return '\u200b';
@@ -78,6 +95,14 @@ export function paintPhoneLine(
       word.classList.toggle('w--em', !!w?.em);
     }
     wrap.hidden = !w;
+    if (word) {
+      word.classList.remove('is-filling', 'is-sung');
+      delete word.dataset.f;
+      word.style.removeProperty('--fill-cut');
+      word.style.removeProperty('--fill-dir');
+      word.style.removeProperty('background-image');
+      word.style.transform = '';
+    }
     const gap = wrap.querySelector<HTMLElement>('.w-br, .w-sp');
     if (gap) {
       gap.classList.toggle('w-br', !!w?.br);
@@ -120,7 +145,7 @@ export function retargetPhoneLines(
   for (let i = 0; i < next.length; i++) {
     if (next[i] && !hostAt[i]) return false;
   }
-  const moves: Array<{ from: number; to: number }> = [];
+  const moves: Array<{ from: number; to: number; cue: LineCue }> = [];
   for (let i = 0; i < prev.length; i++) {
     const was = prev[i];
     const slot = next[i];
@@ -135,14 +160,18 @@ export function retargetPhoneLines(
     if (el.__llOverride) el.__llOverride.current = cue;
     paintPhoneLine(el, cue, settings, wordSync);
     showSlot(el, slot.live);
-    moves.push({ from: was.idx, to: slot.idx });
+    moves.push({ from: was.idx, to: slot.idx, cue });
   }
   if (moves.length) {
     const snapshot = new Map(blocks);
     for (const move of moves) blocks.delete(move.from);
     for (const move of moves) {
       const entry = snapshot.get(move.from);
-      if (entry) blocks.set(move.to, entry);
+      if (!entry) continue;
+      // The host's updater moves with the host. The box does not: the previous
+      // line's height stacked the next line on top of a taller one.
+      const known = measureOf(move.to);
+      blocks.set(move.to, { fn: entry.fn, m: known ?? generousLine(move.cue) });
     }
   }
   return true;

@@ -9,7 +9,7 @@ import { showHarakatText } from '@/data/harakat';
 import { fontClass } from './fonts';
 import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
-import { paintPhoneLine, type PhoneLineHost } from './slots';
+import { bindPhoneMeasures, generousLine, paintPhoneLine, type PhoneLineHost } from './slots';
 
 /**
  * Per-frame update from the Scene: time, distance from the current position, top in px, and
@@ -41,6 +41,7 @@ const PHONE_WORD_POOL = 40;
 
 /** Box already read for a phone line. A scrub reuses it and does not lay out. */
 const phoneMeasures = new Map<number, Measure>();
+bindPhoneMeasures((idx) => phoneMeasures.get(idx));
 
 /** Word widths are not needed to place the line. One line per frame stays inside the frame budget. */
 const widthQueue: Array<() => void> = [];
@@ -69,7 +70,9 @@ export function TrText({ text }: { text: string }) {
         ) : p.startsWith('*') ? (
           <em key={i}>{p.slice(1, -1)}</em>
         ) : (
-          p
+          <span key={i} className="tr-tx">
+            {p}
+          </span>
         ),
       )}
     </>
@@ -228,7 +231,9 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       // commit registers that box now and reads the real one on a later frame,
       // one line at a time, so the opening flight stays inside 16 ms.
       const known = phoneMeasures.get(cue.idx);
-      register(cue.idx, call, known ?? { main: 72, sub: hasSubs ? 36 : 0 });
+      // 72px was shorter than the words. The drag keeps the last real box, or a
+      // tall guess, until the finger lifts and the queue reads the line.
+      register(cue.idx, call, known ?? generousLine(cue));
       if (scrubbing) return;
       const gen = widthGen.current;
       const epoch = measureEpoch;

@@ -1,7 +1,8 @@
 /**
  * The drive one plate receives. `driveAt` is the contract; this quiets it and adds life.
- * Before `playAt` the engraving is dim (`life` near 0.35) and nothing moves.
- * After it, brightness rests near 0.60 and rises with that family's stem. Hits scale the
+ * Before `playAt` the engraving is still and the halo is off. The ink stays at full
+ * brightness on either side of the entrance, so a waiting plate is not a grey silhouette.
+ * After it, the halo rises with that family's stem. Hits scale the
  * drawing; a silent stem settles the motion. `off` (including the OS reduce-motion switch)
  * keeps the brightness and drops the impulse. A voice or choir plate keeps a little air
  * and loses the attack. The contour is already drawn: the cascade is the plate's opacity.
