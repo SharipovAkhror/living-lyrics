@@ -1,4 +1,4 @@
-// One regression gate: fixed-defect checks, geometry, speed budget, validate, typecheck.
+// One regression gate: fixed-defect checks, motion on drawn frames, geometry, speed budget, validate, typecheck.
 // node scripts/perf/gate.mjs
 import { spawn } from 'node:child_process';
 import { gzipSync } from 'node:zlib';
@@ -6,6 +6,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { setTimeout as delay } from 'node:timers/promises';
 
 const PORT = 4176;
+const gateStart = Date.now();
 const base = `http://127.0.0.1:${PORT}`;
 
 function run(command, args, capture = false) {
@@ -78,6 +79,8 @@ try {
   if (defects.code !== 0) failed = true;
   const geometry = await run('node', ['scripts/perf/geometry.mjs', '--base', base]);
   if (geometry.code !== 0) failed = true;
+  const motion = await run('node', ['scripts/perf/motion.mjs', '--base', base]);
+  if (motion.code !== 0) failed = true;
 } catch (err) {
   console.error(err instanceof Error ? err.message : err);
   failed = true;
@@ -86,5 +89,9 @@ try {
   await delay(400);
 }
 
-if (failed) process.exit(1);
-console.log('gate ok');
+const minutes = ((Date.now() - gateStart) / 60000).toFixed(1);
+if (failed) {
+  console.log(`gate failed after ${minutes} min`);
+  process.exit(1);
+}
+console.log(`gate ok in ${minutes} min`);
