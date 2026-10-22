@@ -1811,15 +1811,6 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
     background: none;
     color: var(--accent);
   }
-  .util-label,
-  .mark-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
   .comment-head {
     pointer-events: auto;
     cursor: pointer;
@@ -1870,27 +1861,27 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   }
 }
 
-/* land-15 is wide enough for the four names. A shorter phone keeps the glyphs. */
-@media (min-width: 800px) and (max-height: 640px) {
-  .player {
-    flex-wrap: nowrap;
+/* land-15 fits the four names on the row. A shorter landscape phone keeps glyphs. */
+@media (max-width: 799px) and (max-height: 640px) {
+  .util-label,
+  .mark-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
+}
+@media (min-width: 800px) and (max-height: 640px) {
+  .player { flex-wrap: nowrap; }
   .player .util {
     flex-direction: row;
     width: auto;
     gap: 4px;
     padding: 0 6px;
   }
-  .util-label,
-  .mark-label {
-    position: static;
-    width: auto;
-    height: auto;
-    overflow: visible;
-    clip: auto;
-    white-space: nowrap;
-    font-size: 0.75rem;
-  }
+  .util-label { font-size: 0.75rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

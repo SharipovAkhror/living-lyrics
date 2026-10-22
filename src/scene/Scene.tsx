@@ -22,6 +22,8 @@ import { stepSpring, type SpringState } from '@/ui/spring';
  */
 function columnGap() {
   if (typeof window === 'undefined' || !isPhone()) return GAP;
+  // land-15 is 251 px of stage. The verse gap of 44 pushed the next line into the floor.
+  if (window.matchMedia('(min-width: 800px) and (max-height: 640px)').matches) return 18;
   if (window.matchMedia('(min-width: 390px) and (max-width: 699px) and (min-height: 521px)').matches) return 26;
   return GAP;
 }
@@ -197,10 +199,13 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let lastIntro = '';
     const fn: BlockUpdater = (_t, d, top) => {
       const s = blockState(d);
-      const transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
       // The extra fade used to start on the first step below 0 and left the title grey
       // on the frame the song opens (distance about −0.5). It leaves only once the card is off stage.
       const leave = d < -0.85 ? Math.max(0, Math.min(1, 1 + (d + 0.85) * 2.2)) : 1;
+      // At t = 0 the card is already halfway to the first passage and used to sit in the header.
+      // Hold it in the stage while it is still the picture. The fade above is when it may leave.
+      const seated = isPhone() && leave >= 1 ? Math.max(8, top) : top;
+      const transform = `translate3d(0, ${seated.toFixed(1)}px, 0)`;
       const opacity = (s.opacity * leave).toFixed(3);
       const visibility = s.opacity < 0.01 ? 'hidden' : 'visible';
       const key = `${transform}|${opacity}|${visibility}`;
@@ -355,12 +360,30 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       host.classList.toggle('is-scrub-line', line);
       host.classList.toggle('is-scrub-inst', !line);
       quietArt(stageEl, line);
+      const live = stageEl.querySelector('.scene-live');
+      if (!live) return;
+      // Inline priority, re-applied after the block updater. A stylesheet rule
+      // would not fit the CSS budget, and the updater replaces a normal inline.
+      for (const el of live.querySelectorAll<HTMLElement>('.fb--inst')) {
+        if (!line) continue;
+        el.style.setProperty('opacity', '0', 'important');
+        el.style.setProperty('visibility', 'hidden', 'important');
+      }
+      for (const el of live.querySelectorAll<HTMLElement>('.fb--line, .fb--intro')) {
+        if (line) continue;
+        el.style.setProperty('opacity', '0', 'important');
+      }
     };
     const clearScrubPicture = () => {
       if (!host) return;
       host.classList.remove('is-scrub-line', 'is-scrub-inst');
       const stageEl = stageRef.current;
-      if (stageEl) quietArt(stageEl, false);
+      if (!stageEl) return;
+      quietArt(stageEl, false);
+      for (const el of stageEl.querySelectorAll<HTMLElement>('.scene-live .fb')) {
+        if (el.style.getPropertyPriority('opacity') === 'important') el.style.removeProperty('opacity');
+        if (el.style.getPropertyPriority('visibility') === 'important') el.style.removeProperty('visibility');
+      }
     };
     let glow = Math.min(stageBox.current.h * 0.5, 380);
     let cachedW = stageBox.current.w;
@@ -608,13 +631,14 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const a = Math.floor(pos);
       const f = pos - a;
       const deck = liveW >= 640 && liveH <= 420;
-      // A wide landscape keeps the deck. The short-stage lift parked the line
-      // in the top third and left the lower half empty (land-15).
-      const roomyLandscape = liveW >= 800 && liveW > liveH;
+      // land-15. The deck centre left the next line past the floor, and clearBand
+      // then parked it off the screen, so the lower half stayed empty.
+      const roomyLandscape = isPhone() && liveW >= 800 && liveW > liveH;
       const shortStage = !roomyLandscape && liveH > 0 && liveH < 240;
       // Centre of the visible stage, not of a box that continues under the floor.
-      // A short stage keeps the current line high so its translation clears the note.
-      const centerY = liveH * (shortStage ? 0.32 : deck ? 0.46 : 0.42);
+      // A short stage, and the wide landscape phone, keep the current line high
+      // so the next line has the lower half.
+      const centerY = liveH * (shortStage || roomyLandscape ? 0.32 : deck ? 0.46 : 0.42);
       const waits = new Map<number, number>();
       for (const k of list) waits.set(k, wordSync ? waitHint(timeline, k, t) : 0);
       const room = (k: number) => (waits.get(k) ?? 0) * WAIT_ROOM;
@@ -640,12 +664,13 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         blended.set(k, lerp(A.get(k) ?? 0, B.get(k) ?? 0, f));
         bandH.set(k, blockHeight(measures.get(k), k - pos));
       }
-      const placed = clearBand(blended, pos, bandH, liveH, liveTop, window.innerHeight);
+      const placed = clearBand(blended, pos, bandH, liveH, liveTop, window.innerHeight, !roomyLandscape);
       for (const k of list) {
         const b = blocks.current.get(k);
         if (!b) continue;
         b.fn(t, k - pos, placed.get(k) ?? 0, waits.get(k) ?? 0);
       }
+      if (isPhone() && scrubbingNow) applyScrubPicture(kindAt(t));
       // The title card is always in the DOM; once it leaves the window nothing updates it, so hide it
       // explicitly (otherwise a seek from the start leaves it frozen over the lyrics).
       if (!list.includes(INTRO) && intro.current && intro.current.style.visibility !== 'hidden') intro.current.style.visibility = 'hidden';

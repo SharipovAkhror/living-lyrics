@@ -114,14 +114,3 @@ html[data-phone='1'][data-sheet='1'] .empty {
   transform: none;
   border-radius: 0;
 }
-
-/* One picture while the finger moves. The other kind is not drawn, including
-   an engraving that WebKit would paint outside the plate's clip. */
-.song.is-scrub-line .scene-live .fb--inst {
-  opacity: 0 !important;
-  visibility: hidden !important;
-}
-.song.is-scrub-inst .scene-live .fb--line,
-.song.is-scrub-inst .scene-live .fb--intro {
-  opacity: 0 !important;
-}

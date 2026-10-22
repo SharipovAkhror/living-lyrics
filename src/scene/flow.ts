@@ -160,6 +160,7 @@ export function clearBand(
   stageH: number,
   stageTop: number,
   viewH: number,
+  parkOverflow = true,
 ): Map<number, number> {
   if (!(stageH > 0) || stageH >= 280 || tops.size === 0) return tops;
   const out = new Map(tops);
@@ -203,7 +204,8 @@ export function clearBand(
     const h = heights.get(k) ?? 0;
     const top = out.get(k) ?? y;
     // The floor note starts about 40 px under the stage. A block past that band covers it.
-    if (top > heldTop && top + h > stageH + 32) out.set(k, belowAt);
+    // A wide landscape phone opts out: that band is the lower half, and the next line belongs there.
+    if (parkOverflow && top > heldTop && top + h > stageH + 32) out.set(k, belowAt);
     else if (top < -6) out.set(k, -stageTop - h - 8);
   }
   return out;
