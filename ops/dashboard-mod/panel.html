@@ -64,11 +64,11 @@ h2 span { font-weight: 400; color: var(--ink-3); }
 .you li b { font-weight: 600; }
 
 /* Limits: one grid, a row per window */
-.lim { display: grid; grid-template-columns: minmax(84px, 1fr) 44px minmax(36px, 120px) 36px 72px 52px; gap: 5px 8px; align-items: center; }
+.lim { display: grid; grid-template-columns: minmax(84px, 1fr) 44px minmax(36px, 120px) 42px 72px 52px; gap: 5px 8px; align-items: center; }
 .lim .svc { font-weight: 600; display: flex; gap: 5px; align-items: center; white-space: nowrap; }
 .lim .plan { color: var(--ink-3); font-size: 11px; }
 .lim .w { color: var(--ink-2); }
-.lim .p { text-align: right; font-weight: 500; }
+.lim .p { text-align: right; font-weight: 500; white-space: nowrap; }
 .lim .rs { color: var(--ink-3); font-size: 11px; white-space: nowrap; text-align: right; }
 .lim svg.sp { width: 52px; height: 14px; display: block; overflow: visible; justify-self: end; }
 .lim .rule { grid-column: 1 / -1; border-top: 1px solid var(--rule); height: 0; }
@@ -104,7 +104,7 @@ h2 span { font-weight: 400; color: var(--ink-3); }
 
 footer { border-top: 1px solid var(--rule); padding-top: 10px; margin-top: 4px; display: flex; justify-content: space-between; gap: 10px; color: var(--ink-3); font-size: 11px; }
 .empty { color: var(--ink-3); padding-block: 12px; border-top: 1px solid var(--rule); }
-@media (max-width: 370px) { .lim { grid-template-columns: 66px 42px minmax(30px, 1fr) 32px 62px; } .lim svg.sp, .lim .spc { display: none; } }
+@media (max-width: 370px) { .lim { grid-template-columns: 66px 42px minmax(30px, 1fr) 40px 62px; } .lim svg.sp, .lim .spc { display: none; } }
 </style>
 
 <main>
