@@ -150,8 +150,8 @@ export type Usage = {
   }
 }
 
-/** `value`: tokens for kind tokens and no-commit, seconds for wall, percent for weekly. */
-export type UsageAlert = { kind: 'tokens' | 'wall' | 'no-commit' | 'weekly'; task: string; session: string; value: number; at: string }
+/** `value`: tokens for kind tokens and no-commit, seconds for wall, percent for weekly, runs for agy-unlogged. */
+export type UsageAlert = { kind: 'tokens' | 'wall' | 'no-commit' | 'weekly' | 'agy-unlogged'; task: string; session: string; value: number; at: string }
 
 declare module 'claude-code' {
   interface PluginState {

@@ -113,10 +113,13 @@ def main() -> None:
     card = next((c for c in cards(REPO) if c['chat'] == name), None)
     if card:
         cmd += ['--agent', card['name']]
-    if '--model' in opts:
-        cmd += ['--model', opts['--model']]
-    if '--effort' in opts:
-        cmd += ['--effort', opts['--effort']]
+    # Model and effort: the flag when given, else the card's (`model:`, `effort:`).
+    model = opts.get('--model') or (card or {}).get('model')
+    effort = opts.get('--effort') or (card or {}).get('effort')
+    if model:
+        cmd += ['--model', model]
+    if effort:
+        cmd += ['--effort', effort]
     cmd.append(prompt)
     if dry:
         print(json.dumps({'cwd': str(cwd), 'cmd': cmd}, ensure_ascii=False, indent=2))

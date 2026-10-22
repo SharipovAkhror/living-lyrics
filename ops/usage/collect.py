@@ -910,7 +910,11 @@ def build_latest(rows, stamp, *, claude=None, gemini_live=None, grok_live=None, 
     if 'claude-gpt' in quota:
         gemini['claudeGpt'] = quota['claude-gpt']
 
-    latest = {'updated': stamp, 'grok': grok, 'gemini': gemini, 'alerts': grok_alerts(rows, stamp, grok.get('weekly'))}
+    alerts = grok_alerts(rows, stamp, grok.get('weekly'))
+    # agy runs that skipped ops/agents/agy_run.py: conversations started today minus logged runs.
+    if started is not None and started > len(gem_runs):
+        alerts.append({'kind': 'agy-unlogged', 'task': '', 'session': '', 'value': started - len(gem_runs), 'at': stamp})
+    latest = {'updated': stamp, 'grok': grok, 'gemini': gemini, 'alerts': alerts}
     # Filled by LL · Ops (ops/usage/review.py) and committed as ops/usage/value.json, weekly or on
     # demand; the file wins over a value carried over from the last latest.json.
     value = read_value() or prev.get('value')

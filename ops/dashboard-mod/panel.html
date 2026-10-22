@@ -216,7 +216,8 @@ function render(d) {
   // Spend: waste caps crossed (flags only) and what last week's tokens bought (LL · Ops).
   const sp = d.spend || {}, alerts = sp.alerts || [], val = sp.value;
   const mtok = n => `${group(Math.round(n / 1e6))} М`;
-  const alertText = a => a.kind === 'weekly' ? `Grok: неделя ${a.value} %, а до сброса больше суток`
+  const alertText = a => a.kind === 'agy-unlogged' ? `Antigravity: ${a.value} запуск(ов) за сутки мимо agy_run.py, не в учёте`
+    : a.kind === 'weekly' ? `Grok: неделя ${a.value} %, а до сброса больше суток`
     : a.kind === 'wall' ? `Grok · ${a.task}: сессия идёт ${dur(Math.round(a.value / 60))}, порог 2 ч`
     : a.kind === 'no-commit' ? `Grok · ${a.task}: ${mtok(a.value)} ток. и ни одного коммита`
     : `Grok · ${a.task}: ${mtok(a.value)} ток. в сессии, порог 30 М`;

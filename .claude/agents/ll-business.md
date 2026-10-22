@@ -1,7 +1,8 @@
 ---
 name: ll-business
 description: Living Lyrics worker chat «LL · Business», product and business. Not for delegated subtasks.
-model: haiku
+model: opus
+effort: high
 chat: LL · Business
 cwd: ../living-lyrics-wt/ll-business
 branch: ll-business

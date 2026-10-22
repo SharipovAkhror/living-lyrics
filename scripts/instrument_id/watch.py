@@ -221,39 +221,20 @@ def ask_sheet(sheet: Path, times: list[float], backend: str = "agy") -> dict:
     return payload
 
 
-def _log_agy(stdout: str, task: str) -> None:
-    """Log a finished agy run in the usage ledger (ops/usage/collect.py --run -); never fails the caller."""
-    collect = Path(__file__).resolve().parents[2] / 'ops' / 'usage' / 'collect.py'
-    try:
-        subprocess.run([sys.executable, str(collect), '--run', '-', '--task', task], input=stdout,
-                       capture_output=True, text=True, encoding='utf-8', timeout=60)
-    except Exception:
-        pass
+# Every agy run goes through ops/agents/agy_run.py: one folder, logged in the usage ledger.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'ops' / 'agents'))
+import agy_run  # noqa: E402
 
 
 def _ask_agy(sheet: Path, prompt: str) -> dict:
-    base = [
-        _agy_bin(), "-p", prompt,
-        "--model", MODEL,
-        "--output-format", "json",
-        "--json-schema", str(SCHEMA_PATH),
-        "--print-timeout", "300s",
-    ]
-    commands = [base, base + ["--dangerously-skip-permissions"]]
     last = ""
     for attempt in range(3):
-        cmd = commands[0] if attempt == 0 else commands[1]
         print(f"agy {sheet.name} попытка {attempt + 1}")
-        proc = subprocess.run(
-            cmd, cwd=str(sheet.parent), capture_output=True, text=True,
-            encoding="utf-8", errors="replace", timeout=360,
-        )
-        last = (proc.stdout or "") + "\n" + (proc.stderr or "")
-        if proc.stdout.strip():
-            _log_agy(proc.stdout, f"instrument-id {sheet.parent.name}")
-        if proc.returncode == 0 and proc.stdout.strip():
+        code, out, _ = agy_run.run(sheet.parent, MODEL, "-", "300s", SCHEMA_PATH, prompt, f"instrument-id {sheet.parent.name}")
+        last = out or f"agy_run exit {code}"
+        if code == 0 and out.strip():
             try:
-                parsed = _parse_stdout(proc.stdout)
+                parsed = _parse_stdout(out)
             except ValueError as exc:
                 last = f"{exc}\n{last[-1500:]}"
             else:

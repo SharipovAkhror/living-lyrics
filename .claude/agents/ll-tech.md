@@ -2,6 +2,7 @@
 name: ll-tech
 description: Living Lyrics worker chat «LL · Tech», mods, settings, devices, chats and their rotation. Not for delegated subtasks.
 model: opus
+effort: high
 chat: LL · Tech
 cwd: .
 branch: main

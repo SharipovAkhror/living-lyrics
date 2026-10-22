@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "done": { "type": "boolean" },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": { "cmd": { "type": "string" }, "exit": { "type": "integer" }, "tail": { "type": "string" } },
+        "required": ["cmd", "exit", "tail"]
+      }
+    },
+    "commit": { "type": "string" },
+    "notes": { "type": "string" }
+  },
+  "required": ["done", "checks", "commit", "notes"]
+}

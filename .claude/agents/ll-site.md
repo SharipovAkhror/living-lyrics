@@ -2,6 +2,7 @@
 name: ll-site
 description: Living Lyrics worker chat «LL · Site», the site and the songs. Not for delegated subtasks.
 model: opus
+effort: high
 chat: LL · Site
 cwd: .
 branch: main

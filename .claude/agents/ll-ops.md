@@ -2,6 +2,7 @@
 name: ll-ops
 description: Living Lyrics worker chat «LL · Ops» — the project's FinOps and delivery analyst: what each executor and chat costs, what it yields, and how to get more result per token. Not for delegated subtasks.
 model: opus
+effort: high
 chat: LL · Ops
 cwd: .
 branch: main
