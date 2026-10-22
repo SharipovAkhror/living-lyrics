@@ -18,6 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 COLLECT = ROOT / 'ops' / 'usage' / 'collect.py'
 FALLBACK = Path.home() / 'AppData' / 'Local' / 'agy' / 'bin' / 'agy.exe'
+EFFORT_REJECTED = '--effort is not supported for model'
 
 
 def agy_bin() -> str:
@@ -50,6 +51,12 @@ def run(worktree, model, effort, timeout, schema, prompt, task) -> tuple[int, st
     if effort and effort != '-':
         cmd += ['--effort', effort]
     proc = subprocess.run(cmd, cwd=wt, capture_output=True, text=True, encoding='utf-8', errors='replace')
+    if effort and effort != '-' and proc.returncode != 0 and EFFORT_REJECTED in (proc.stdout or '') + (proc.stderr or ''):
+        # agy refuses --effort for some models (claude-sonnet-4-6, claude-opus-4-6-thinking): run again
+        # without it rather than losing the start. The refusal happens before any turn, so it costs nothing.
+        print(f'agy_run: {model} takes no --effort, running without it', file=sys.stderr)
+        cmd = cmd[:-2]
+        proc = subprocess.run(cmd, cwd=wt, capture_output=True, text=True, encoding='utf-8', errors='replace')
     out = proc.stdout or ''
     if out.strip():
         log(out, model, task)
