@@ -478,7 +478,10 @@ async function stationTick($: EngineInterface) {
 async function collectUsage($: EngineInterface) {
   if (!place.orchestrator || !place.repo) return
   try {
-    await $.process.run(['python', `${place.repo}/ops/usage/collect.py`], { cwd: place.repo, timeoutMs: 120_000 })
+    // Claude's windows live only in this runtime: hand them over so latest.json holds every provider.
+    const lim = (await read($, limits)) as Limit[] | undefined
+    const args = lim?.length ? ['--claude-windows', JSON.stringify(lim)] : []
+    await $.process.run(['python', `${place.repo}/ops/usage/collect.py`, ...args], { cwd: place.repo, timeoutMs: 120_000 })
   } catch {
     // agy or grok missing: the ledger keeps its last snapshot.
   }
@@ -720,7 +723,7 @@ async function dashboardTree($: EngineInterface, e: RenderInput<'Pane' | 'UserMe
   )
 }
 
-const ROTATE_AT = 60
+const ROTATE_AT = 30
 
 /** The rotation signal for a Living Lyrics chat whose context passed the threshold; null otherwise. */
 export function rotationNote(percent: number | undefined, cwd: string) {

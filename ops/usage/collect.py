@@ -39,6 +39,7 @@ SOURCE_GROK_SETTINGS = '~/.grok/settings_cache.json'
 SOURCE_AGY_SCREEN = 'agy /usage'
 SOURCE_AGY_RUN = 'agy -p'
 SOURCE_CLAUDE = 'claude auth status --json'
+SOURCE_CLAUDE_WINDOWS = 'Claude Code runtime (rateLimits, via the Dashboard mod)'
 
 # Confirmed on the Station screen: subscriptionType "pro" is labelled "Claude Pro".
 # Other subscriptionType values are not given a display name here.
@@ -808,7 +809,7 @@ def read_value():
     return value if isinstance(value, dict) and value.get('weekTokens') else None
 
 
-def build_latest(rows, stamp, *, claude=None, gemini_live=None, grok_live=None, prev=None, settings_plan=('', '')):
+def build_latest(rows, stamp, *, claude=None, gemini_live=None, grok_live=None, prev=None, settings_plan=('', ''), claude_windows=None):
     """The summary dict. Missing measurements are omitted. Nothing is guessed."""
     prev = prev or {}
     t = dt.datetime.fromisoformat(stamp.replace('Z', '+00:00'))
@@ -907,7 +908,22 @@ def build_latest(rows, stamp, *, claude=None, gemini_live=None, grok_live=None, 
         }
     elif prev.get('claude', {}).get('plan'):
         latest['claude'] = prev['claude']
+    windows = claude_windows_rows(claude_windows, stamp) if claude_windows else prev.get('claude', {}).get('windows')
+    if windows:
+        latest.setdefault('claude', {})['windows'] = windows
     return latest
+
+
+def claude_windows_rows(raw, stamp):
+    """[{kind, percentUsed, resetsAt}] from the mod → the same plus source and at; malformed entries dropped."""
+    out = []
+    for w in raw if isinstance(raw, list) else []:
+        if isinstance(w, dict) and w.get('kind') and isinstance(w.get('percentUsed'), (int, float)):
+            row = {'kind': w['kind'], 'percentUsed': w['percentUsed'], 'source': SOURCE_CLAUDE_WINDOWS, 'at': stamp}
+            if w.get('resetsAt'):
+                row['resetsAt'] = w['resetsAt']
+            out.append(row)
+    return out
 
 
 def _short_stamp(value):
@@ -940,9 +956,17 @@ def write_latest(rows, stamp=None, **live):
         grok_live=live.get('grok_live'),
         prev=previous_latest(),
         settings_plan=grok_plan_meta(),
+        claude_windows=live.get('claude_windows'),
     )
     (OUT / 'latest.json').write_text(json.dumps(latest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     return latest
+
+
+def _json_arg(text):
+    try:
+        return json.loads(text) if text else None
+    except ValueError:
+        return None
 
 
 def main():
@@ -951,6 +975,7 @@ def main():
     ap.add_argument('--no-gemini', action='store_true')
     ap.add_argument('--run', help='agy JSON output of a finished Gemini job')
     ap.add_argument('--task', default='', help='what the Gemini job was, for --run')
+    ap.add_argument('--claude-windows', default='', help="Claude's rate-limit windows as JSON, from the Dashboard mod")
     args = ap.parse_args()
     ts = iso(now())
     rows = []
@@ -970,7 +995,8 @@ def main():
             rows.append(grok_quota_row(ts, grok_live))
     append(keep_changed(rows, load_signatures()))
     print(json.dumps(
-        write_latest(read_ledger(), ts, claude=claude, gemini_live=gemini_live, grok_live=grok_live),
+        write_latest(read_ledger(), ts, claude=claude, gemini_live=gemini_live, grok_live=grok_live,
+                     claude_windows=_json_arg(args.claude_windows)),
         ensure_ascii=False,
     ))
 

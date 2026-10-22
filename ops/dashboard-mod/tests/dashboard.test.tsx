@@ -184,9 +184,9 @@ test('the chat card lists the chats and the Actions runs the orchestrator publis
   expect(text).toContain('- ⚙ **GitHub · pipeline** — Proof of ONE · 12 мин')
 })
 
-test('the rotation signal comes at 60 % of context, only in Living Lyrics folders', async () => {
-  expect(rotationNote(59, 'C:/Users/User/Documents/GitHub/living-lyrics')).toBe(null)
-  expect(rotationNote(61, 'C:/Users/User/Documents/GitHub/living-lyrics')).toContain('docs/process/chat-rotation.md')
+test('the rotation signal comes at 30 % of context, only in Living Lyrics folders', async () => {
+  expect(rotationNote(29, 'C:/Users/User/Documents/GitHub/living-lyrics')).toBe(null)
+  expect(rotationNote(31, 'C:/Users/User/Documents/GitHub/living-lyrics')).toContain('docs/process/chat-rotation.md')
   expect(rotationNote(80, 'C:/Users/User/Documents/GitHub/living-lyrics-wt/ll-business')).toContain('80 %')
   expect(rotationNote(90, 'C:/Users/User/Documents/GitHub/tenek-brand')).toBe(null)
   expect(rotationNote(undefined, 'C:/x/living-lyrics')).toBe(null)

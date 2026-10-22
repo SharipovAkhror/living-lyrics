@@ -182,3 +182,14 @@ def test_weekly_alert_only_when_the_reset_is_more_than_a_day_away():
     assert [a['kind'] for a in collect.grok_alerts([], '2026-10-21T13:30:00Z', weekly)] == ['weekly']
     assert collect.grok_alerts([], '2026-10-23T13:30:00Z', {**weekly, 'at': '2026-10-23T13:24:01Z'}) == []
     assert collect.grok_alerts([], '2026-10-21T13:30:00Z', {**weekly, 'percentUsed': 50}) == []
+
+
+def test_claude_windows_from_the_mod_land_in_latest_and_carry_over():
+    raw = [{'kind': 'five_hour', 'percentUsed': 23, 'resetsAt': '2026-10-22T20:00:00Z'}, {'kind': 'seven_day', 'percentUsed': 61}, {'bad': 1}]
+    latest = collect.build_latest([], '2026-10-22T16:00:00Z', claude_windows=raw)
+    assert latest['claude']['windows'] == [
+        {'kind': 'five_hour', 'percentUsed': 23, 'resetsAt': '2026-10-22T20:00:00Z', 'source': collect.SOURCE_CLAUDE_WINDOWS, 'at': '2026-10-22T16:00:00Z'},
+        {'kind': 'seven_day', 'percentUsed': 61, 'source': collect.SOURCE_CLAUDE_WINDOWS, 'at': '2026-10-22T16:00:00Z'},
+    ]
+    again = collect.build_latest([], '2026-10-22T16:10:00Z', prev=latest)
+    assert again['claude']['windows'] == latest['claude']['windows']
