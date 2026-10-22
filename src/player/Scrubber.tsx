@@ -190,6 +190,16 @@ export function Scrubber({
       }
       if (played.current) played.current.style.transform = `scaleX(${p.toFixed(4)})`;
       if (rest.current) rest.current.style.transform = `scaleX(${(1 - p).toFixed(4)})`;
+      // Part marks stay, but only the ones next to the thumb. Far ticks read as a ruler.
+      const marks = rail.current?.querySelectorAll<HTMLElement>('.scrub-seg');
+      if (marks) {
+        for (const seg of marks) {
+          const at = parseFloat(seg.style.left) / 100;
+          const near = Number.isFinite(at) && Math.abs(at - p) < 0.045;
+          const next = near ? (seg.classList.contains('is-inst') ? '0.18' : '0.28') : '0';
+          if (seg.style.opacity !== next) seg.style.opacity = next;
+        }
+      }
       const text = formatTime(t) + '|' + formatTime(duration - t);
       if (text !== lastText) {
         lastText = text;

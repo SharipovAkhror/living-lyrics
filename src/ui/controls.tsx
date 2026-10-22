@@ -91,6 +91,16 @@ export function Sheet({
     let last = performance.now();
     const tick = (now: number) => {
       if (drag.current?.active) return;
+      // The note card fades on its own clock. Hold the sheet below it so the
+      // card is gone before the sheet's top can pass the card.
+      if (document.documentElement.dataset.noteFade === '1' && target.current <= 1 && openRef.current) {
+        const awayY = height.current + 48;
+        state.current = { x: awayY, v: 0 };
+        paint(awayY);
+        last = now;
+        raf.current = requestAnimationFrame(tick);
+        return;
+      }
       const dt = Math.min(0.032, (now - last) / 1000);
       last = now;
       const spec = target.current > 1 ? SHEET_CLOSE : SHEET_OPEN;

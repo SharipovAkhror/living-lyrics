@@ -28,10 +28,6 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-  /* The shell is already the open size, so the title does not jump when the rows arrive. */
-  .sheet {
-    min-height: min(68dvh, calc(100dvh - env(safe-area-inset-top) - 36px));
-  }
   .ist-plate,
   .ist-chip {
     -webkit-backdrop-filter: none;
@@ -80,10 +76,6 @@ html[data-phone='1'] .sheet.glass {
   backdrop-filter: none;
 }
 
-html[data-phone='1'] .sheet {
-  min-height: min(68dvh, calc(100dvh - env(safe-area-inset-top) - 36px));
-}
-
 html[data-phone='1'] .ist-plate,
 html[data-phone='1'] .ist-chip {
   -webkit-backdrop-filter: none;
@@ -121,4 +113,15 @@ html[data-phone='1'][data-sheet='1'] .method,
 html[data-phone='1'][data-sheet='1'] .empty {
   transform: none;
   border-radius: 0;
+}
+
+/* One picture while the finger moves. The other kind is not drawn, including
+   an engraving that WebKit would paint outside the plate's clip. */
+.song.is-scrub-line .scene-live .fb--inst {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+.song.is-scrub-inst .scene-live .fb--line,
+.song.is-scrub-inst .scene-live .fb--intro {
+  opacity: 0 !important;
 }

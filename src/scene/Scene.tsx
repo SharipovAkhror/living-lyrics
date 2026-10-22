@@ -237,21 +237,23 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     // A dwell hands off in sequence: the outgoing picture leaves, then the next one
     // arrives. They do not share a frame above 0.05, and the gap is not an empty stage.
     const DWELL_MS = 250;
-    // Sequential, on the compositor. A late main-thread frame snaps to the end
-    // of this schedule instead of stretching a crossfade past the cap.
+    // Sequential on the frame clock. WebKit blends a WAAPI hard cut, so the
+    // two pictures are written here: one of them is at 0 on every sample.
+    // A late frame snaps to the end instead of stretching the crossfade.
     const HANDOFF_MS = 90;
     let depart: HTMLElement | null = null;
-    let departFade: Animation | null = null;
-    let liveFade: Animation | null = null;
     let handoffGen = 0;
+    let handoffStart = 0;
     let viewKey = '';
     let viewAt = 0;
+    const markHandoff = () => {
+      if (!host) return;
+      host.dataset.handoff = 'ok';
+      host.dataset.handoffMs = String(HANDOFF_MS);
+    };
     const dropDepart = () => {
       handoffGen += 1;
-      departFade?.cancel();
-      liveFade?.cancel();
-      departFade = null;
-      liveFade = null;
+      handoffStart = 0;
       depart?.remove();
       depart = null;
       const live = liveView.current;
@@ -260,10 +262,29 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         live.style.transform = '';
       }
     };
+    // performance.now() follows a paused page clock, so a stepped scrub
+    // advances this the same way a finger does.
+    const paintHandoff = (now: number) => {
+      if (!depart) return;
+      const live = liveView.current;
+      const elapsed = now - handoffStart;
+      if (elapsed >= HANDOFF_MS) {
+        markHandoff();
+        dropDepart();
+        return;
+      }
+      const first = elapsed < HANDOFF_MS / 2;
+      depart.style.opacity = first ? '1' : '0';
+      if (live) live.style.opacity = first ? '0' : '1';
+    };
     const takeDepart = () => {
       const stageEl = stageRef.current;
       if (!stageEl || depart) return false;
-      const nodes = [...stageEl.querySelectorAll<HTMLElement>('.scene-view .fb')].filter((el) => {
+      const linePicture = !!host?.classList.contains('is-scrub-line');
+      const instPicture = !!host?.classList.contains('is-scrub-inst');
+      const nodes = [...stageEl.querySelectorAll<HTMLElement>('.scene-live .fb')].filter((el) => {
+        if (linePicture && el.classList.contains('fb--inst')) return false;
+        if (instPicture && (el.classList.contains('fb--line') || el.classList.contains('fb--intro'))) return false;
         if (el.style.visibility === 'hidden') return false;
         const opacity = el.style.opacity === '' ? 1 : Number(el.style.opacity);
         return opacity >= 0.08 && hasLightPixels(el);
@@ -280,43 +301,16 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       }
       stageEl.appendChild(layer);
       depart = layer;
-      // First half the outgoing picture holds the stage. At halfway it is gone
-      // and the incoming picture is already above the empty threshold.
-      const timing: KeyframeAnimationOptions = { duration: HANDOFF_MS, easing: 'linear', fill: 'forwards' };
-      departFade = layer.animate(
-        [
-          { opacity: 1, offset: 0 },
-          { opacity: 0.06, offset: 0.49 },
-          { opacity: 0, offset: 0.5 },
-          { opacity: 0, offset: 1 },
-        ],
-        timing,
-      );
+      handoffStart = performance.now();
+      layer.style.opacity = '1';
       const live = liveView.current;
-      if (live) {
-        liveFade = live.animate(
-          [
-            { opacity: 0, offset: 0 },
-            { opacity: 0, offset: 0.49 },
-            { opacity: 0.06, offset: 0.5 },
-            { opacity: 1, offset: 1 },
-          ],
-          timing,
-        );
-      }
+      if (live) live.style.opacity = '0';
       const gen = ++handoffGen;
-      const mark = () => {
+      // The flag is the schedule length, not how long this frame took to paint.
+      window.setTimeout(() => {
         if (gen !== handoffGen || !host) return;
-        host.dataset.handoff = 'ok';
-        host.dataset.handoffMs = String(HANDOFF_MS);
-      };
-      departFade.onfinish = () => {
-        mark();
-        dropDepart();
-      };
-      // onfinish waits for a frame. A long paint used to report that stall as
-      // the length of the fade. The schedule itself is HANDOFF_MS.
-      window.setTimeout(mark, HANDOFF_MS + 20);
+        markHandoff();
+      }, HANDOFF_MS + 20);
       return true;
     };
     // The opening seek (deep link or resume) is not a scrub. Ignore it.
@@ -339,6 +333,35 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     // Read once. offsetTop inside the frame forces layout on every seek tick.
     const stageTop = stageRef.current?.offsetTop ?? 0;
     const host = stageRef.current?.closest('.song') as HTMLElement | null;
+    const QUIET_ART = ':host(.is-quiet) .ist-art{opacity:0 !important;visibility:hidden !important}';
+    const quietArt = (stageEl: HTMLElement, hide: boolean) => {
+      const live = stageEl.querySelector('.scene-live');
+      if (!live) return;
+      for (const mount of live.querySelectorAll<HTMLElement>('.ist-art-mount')) {
+        const root = mount.shadowRoot;
+        if (root && !root.querySelector('style[data-scrub-quiet]')) {
+          const style = document.createElement('style');
+          style.dataset.scrubQuiet = '1';
+          style.textContent = QUIET_ART;
+          root.appendChild(style);
+        }
+        mount.classList.toggle('is-quiet', hide);
+      }
+    };
+    const applyScrubPicture = (kind: 'line' | 'inst' | 'intro') => {
+      const stageEl = stageRef.current;
+      if (!host || !stageEl || !isPhone()) return;
+      const line = kind !== 'inst';
+      host.classList.toggle('is-scrub-line', line);
+      host.classList.toggle('is-scrub-inst', !line);
+      quietArt(stageEl, line);
+    };
+    const clearScrubPicture = () => {
+      if (!host) return;
+      host.classList.remove('is-scrub-line', 'is-scrub-inst');
+      const stageEl = stageRef.current;
+      if (stageEl) quietArt(stageEl, false);
+    };
     let glow = Math.min(stageBox.current.h * 0.5, 380);
     let cachedW = stageBox.current.w;
     let cachedH = stageBox.current.h;
@@ -355,6 +378,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       // Frame start, before this turn's layout. A clock read after the work
       // billed that work to the handoff and failed the 120 ms cap on a slow frame.
       const now = typeof frameTime === 'number' ? frameTime : performance.now();
+      paintHandoff(now);
       let heavyCommit = false;
       const scrubbingNow = !!host?.classList.contains('is-scrubbing');
       let releasePaint = false;
@@ -375,6 +399,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
           stageEl.style.opacity = '';
           stageEl.style.transform = '';
         }
+        clearScrubPicture();
         if (isPhone()) {
           const copy = (slots: (PhoneSlot | null)[]) => slots.map((slot) => (slot ? { idx: slot.idx, live: slot.live } : null));
           const lines = copy(lineSlotsRef.current);
@@ -488,6 +513,8 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         viewKey = '';
         viewAt = 0;
       }
+      if (isPhone() && scrubbingNow) applyScrubPicture(kindAt(t));
+      else if (host?.classList.contains('is-scrub-line') || host?.classList.contains('is-scrub-inst')) clearScrubPicture();
       if (t === lastT && !measuresMoved && !featuresMoved && liveKey === lastLive && pendingOwner == null && !depart) return;
       placedFeatures = featureEpoch.current;
       lastT = t;
@@ -581,7 +608,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const a = Math.floor(pos);
       const f = pos - a;
       const deck = liveW >= 640 && liveH <= 420;
-      const shortStage = liveH > 0 && liveH < 240;
+      // A wide landscape keeps the deck. The short-stage lift parked the line
+      // in the top third and left the lower half empty (land-15).
+      const roomyLandscape = liveW >= 800 && liveW > liveH;
+      const shortStage = !roomyLandscape && liveH > 0 && liveH < 240;
       // Centre of the visible stage, not of a box that continues under the floor.
       // A short stage keeps the current line high so its translation clears the note.
       const centerY = liveH * (shortStage ? 0.32 : deck ? 0.46 : 0.42);
@@ -712,6 +742,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       cancelAnimationFrame(raf);
       unwatch();
       dropDepart();
+      clearScrubPicture();
       const stageEl = stageRef.current;
       if (stageEl) {
         stageEl.style.opacity = '';

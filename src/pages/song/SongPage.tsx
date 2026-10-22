@@ -92,39 +92,51 @@ function NoteCard({
   const drag = useRef<{ y: number; id: number } | null>(null);
   useLayoutEffect(() => {
     const card = ref.current;
-    if (!card || !fading) return;
-    // The sheet is born off the bottom of this commit. The card fades and
-    // slides over the next frames and is gone before the sheet's top reaches it.
+    const root = document.documentElement;
+    if (!card || !fading) {
+      delete root.dataset.noteFade;
+      return;
+    }
+    // The sheet stays off-screen while this flag is set. The card fades on the
+    // clock, across several plateaus, and is gone before the sheet can reach it.
     card.style.pointerEvents = 'none';
     card.style.transition = 'none';
     if (motionBlocked()) {
       card.style.opacity = '0';
       card.style.visibility = 'hidden';
       card.style.transform = 'none';
+      delete root.dataset.noteFade;
       return;
     }
+    root.dataset.noteFade = '1';
     const home = card.getBoundingClientRect();
-    let frame = 1;
+    const started = performance.now();
     let raf = 0;
     let alive = true;
-    const steps = 4;
-    const paint = () => {
+    const paint = (now: number) => {
       if (!alive) return;
       const sheet = document.querySelector('.sheet');
       const sheetTop = sheet instanceof HTMLElement ? sheet.getBoundingClientRect().top : window.innerHeight + 80;
-      const urgency = sheetTop < home.bottom + 12 ? 1 : 0;
-      const paced = Math.min(1, frame / (steps - 1));
-      const t = Math.max(paced, urgency);
+      const elapsed = now - started;
+      let t = 0;
+      if (elapsed >= 160) t = 1;
+      else if (elapsed >= 120) t = 0.75;
+      else if (elapsed >= 80) t = 0.5;
+      else if (elapsed >= 40) t = 0.25;
+      if (sheetTop < home.bottom + 8) t = 1;
       card.style.opacity = (1 - t).toFixed(3);
-      card.style.transform = `translate3d(0, ${(Math.min(1, t) * 18).toFixed(1)}px, 0)`;
+      card.style.transform = `translate3d(0, ${(t * 18).toFixed(1)}px, 0)`;
       card.style.visibility = t >= 0.98 ? 'hidden' : 'visible';
-      if (t >= 1) return;
-      frame += 1;
+      if (t >= 1) {
+        delete root.dataset.noteFade;
+        return;
+      }
       raf = requestAnimationFrame(paint);
     };
-    paint();
+    raf = requestAnimationFrame(paint);
     return () => {
       alive = false;
+      delete root.dataset.noteFade;
       if (raf) cancelAnimationFrame(raf);
     };
   }, [fading]);
