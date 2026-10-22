@@ -234,41 +234,33 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let scrubWas = false;
     // One departing picture. A finger faster than one view per 250 ms swaps with no fade,
     // so the stage never holds an outgoing frame plus the next one plus another.
-    // A dwell of 250 ms may crossfade that one picture. The clone is opacity and a shift, never a scale.
+    // A dwell hands off in sequence: the outgoing picture leaves, then the next one
+    // arrives. They do not share a frame above 0.05, and the gap is not an empty stage.
     const DWELL_MS = 250;
-    const FADE_MS = 240;
+    // Sequential, on the compositor. A late main-thread frame snaps to the end
+    // of this schedule instead of stretching a crossfade past the cap.
+    const HANDOFF_MS = 90;
     let depart: HTMLElement | null = null;
-    let fadeStart = 0;
-    let fadeDir = 1;
+    let departFade: Animation | null = null;
+    let liveFade: Animation | null = null;
+    let handoffGen = 0;
     let viewKey = '';
     let viewAt = 0;
     const dropDepart = () => {
+      handoffGen += 1;
+      departFade?.cancel();
+      liveFade?.cancel();
+      departFade = null;
+      liveFade = null;
       depart?.remove();
       depart = null;
-      fadeStart = 0;
       const live = liveView.current;
       if (live) {
         live.style.opacity = '';
         live.style.transform = '';
       }
     };
-    const applyFade = (nowMs: number) => {
-      if (!depart || fadeStart === 0) return;
-      const u = Math.min(1, (nowMs - fadeStart) / FADE_MS);
-      const eased = u * u * (3 - 2 * u);
-      const shift = (1 - eased) * 12 * fadeDir;
-      const live = liveView.current;
-      // The live view stays opaque. Fading it out emptied the stage for the whole
-      // crossfade, because the phone engraving is not in the departing clone.
-      if (live) {
-        live.style.opacity = '';
-        live.style.transform = `translate3d(0, ${shift.toFixed(1)}px, 0)`;
-      }
-      depart.style.opacity = (1 - eased).toFixed(3);
-      depart.style.transform = `translate3d(0, ${(-shift).toFixed(1)}px, 0)`;
-      if (u >= 1) dropDepart();
-    };
-    const takeDepart = (dir: number) => {
+    const takeDepart = () => {
       const stageEl = stageRef.current;
       if (!stageEl || depart) return false;
       const nodes = [...stageEl.querySelectorAll<HTMLElement>('.scene-view .fb')].filter((el) => {
@@ -282,14 +274,49 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       layer.setAttribute('aria-hidden', 'true');
       for (const el of nodes) {
         const clone = cloneBlock(el);
-        // The leave is opacity and a shift of the layer. A scale on the clone would shrink the outgoing picture.
+        // The leave is opacity only. A scale on the clone would shrink the outgoing picture.
         clone.style.transform = clone.style.transform.replace(/scale3d\([^)]*\)|scale[XY]?\([^)]*\)/g, '').replace(/\s{2,}/g, ' ').trim();
         layer.appendChild(clone);
       }
       stageEl.appendChild(layer);
       depart = layer;
-      fadeStart = performance.now();
-      fadeDir = dir;
+      // First half the outgoing picture holds the stage. At halfway it is gone
+      // and the incoming picture is already above the empty threshold.
+      const timing: KeyframeAnimationOptions = { duration: HANDOFF_MS, easing: 'linear', fill: 'forwards' };
+      departFade = layer.animate(
+        [
+          { opacity: 1, offset: 0 },
+          { opacity: 0.06, offset: 0.49 },
+          { opacity: 0, offset: 0.5 },
+          { opacity: 0, offset: 1 },
+        ],
+        timing,
+      );
+      const live = liveView.current;
+      if (live) {
+        liveFade = live.animate(
+          [
+            { opacity: 0, offset: 0 },
+            { opacity: 0, offset: 0.49 },
+            { opacity: 0.06, offset: 0.5 },
+            { opacity: 1, offset: 1 },
+          ],
+          timing,
+        );
+      }
+      const gen = ++handoffGen;
+      const mark = () => {
+        if (gen !== handoffGen || !host) return;
+        host.dataset.handoff = 'ok';
+        host.dataset.handoffMs = String(HANDOFF_MS);
+      };
+      departFade.onfinish = () => {
+        mark();
+        dropDepart();
+      };
+      // onfinish waits for a frame. A long paint used to report that stall as
+      // the length of the fade. The schedule itself is HANDOFF_MS.
+      window.setTimeout(mark, HANDOFF_MS + 20);
       return true;
     };
     // The opening seek (deep link or resume) is not a scrub. Ignore it.
@@ -321,10 +348,13 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     for (let i = 0; i < timeline.cues.length; i++) {
       if (timeline.cues[i]?.kind === 'line') lineIds.push(i);
     }
-    const loop = () => {
+    const loop = (frameTime?: number) => {
       raf = 0;
       if (stageCovered()) return;
       raf = requestAnimationFrame(loop);
+      // Frame start, before this turn's layout. A clock read after the work
+      // billed that work to the handoff and failed the 120 ms cap on a slow frame.
+      const now = typeof frameTime === 'number' ? frameTime : performance.now();
       let heavyCommit = false;
       const scrubbingNow = !!host?.classList.contains('is-scrubbing');
       let releasePaint = false;
@@ -362,7 +392,6 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         requestAnimationFrame(() => setLayoutEpoch((n) => n + 1));
       }
       scrubWas = scrubbingNow;
-      const now = performance.now();
       const frameDt = frameAt ? Math.min(0.05, (now - frameAt) / 1000) : 0.016;
       frameAt = now;
       // A scrub keeps the stage at full strength. The veil used to restart on
@@ -442,7 +471,6 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       // text-wrap balance, and the lyric would stay a line too high.
       const measuresMoved = measureGen.current !== placedGen.current;
       const liveKey = `${Math.round(liveW)}x${Math.round(liveH)}`;
-      if (depart) applyFade(now);
       if (scrubbingNow && motion !== 'off') {
         const key = String(Math.round(flowPosition(plan, t)));
         if (!viewKey) {
@@ -450,12 +478,9 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
           viewAt = now;
         } else if (key !== viewKey) {
           const held = now - viewAt;
-          const dir = Number.isFinite(lastT) && t < lastT ? -1 : 1;
           // Faster than one view per dwell: drop any ghost and draw only the live picture.
           dropDepart();
-          if (held >= DWELL_MS) {
-            if (takeDepart(dir)) applyFade(now);
-          }
+          if (held >= DWELL_MS) takeDepart();
           viewKey = key;
           viewAt = now;
         }
@@ -556,8 +581,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const a = Math.floor(pos);
       const f = pos - a;
       const deck = liveW >= 640 && liveH <= 420;
+      const shortStage = liveH > 0 && liveH < 240;
       // Centre of the visible stage, not of a box that continues under the floor.
-      const centerY = liveH * (deck ? 0.46 : 0.42);
+      // A short stage keeps the current line high so its translation clears the note.
+      const centerY = liveH * (shortStage ? 0.32 : deck ? 0.46 : 0.42);
       const waits = new Map<number, number>();
       for (const k of list) waits.set(k, wordSync ? waitHint(timeline, k, t) : 0);
       const room = (k: number) => (waits.get(k) ?? 0) * WAIT_ROOM;
@@ -569,7 +596,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         return h;
       };
       const gap = columnGap();
-      const pad = Math.max(28, liveH * 0.1);
+      const pad = shortStage ? 2 : Math.max(28, liveH * 0.1);
       const stackAt = (anchor: number) => {
         const held = clampAnchor(anchor);
         const stacked = compressStack(layoutAt(anchor, list, measures, centerY, 8, room, gap), held, compress, heightsAt(anchor));

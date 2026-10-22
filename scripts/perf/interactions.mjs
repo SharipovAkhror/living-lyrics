@@ -96,6 +96,56 @@ async function sampleFlight(page) {
   return samples;
 }
 
+async function measureFlight(page) {
+  return page.evaluate(
+    () =>
+      new Promise((resolve) => {
+        const hero = document.querySelector('.lib-hero');
+        const poster = hero?.querySelector('[data-poster]');
+        if (!hero || !poster) {
+          resolve({ ok: false, ms: -1, detail: 'no hero' });
+          return;
+        }
+        const home = poster.getBoundingClientRect();
+        let settled = false;
+        document.addEventListener(
+          'click',
+          () => {
+            const t0 = performance.now();
+            // Against the card, not the flyer. The flight steps inside the click,
+            // before this listener, so the tap frame has already moved.
+            const sample = (now) => {
+              if (settled) return;
+              const box = document.querySelector('.morph-cover')?.getBoundingClientRect();
+              const moved =
+                !!box &&
+                (Math.abs(box.width - home.width) > 1 || Math.abs(box.left - home.left) > 1 || Math.abs(box.top - home.top) > 1);
+              const ms = Math.max(0, Math.round(now - t0));
+              if (moved) {
+                settled = true;
+                resolve({ ok: ms <= 100, ms, w: Math.round(box.width), detail: `${ms} ms → ${Math.round(box.width)} px` });
+                return;
+              }
+              if (now - t0 > 450) {
+                settled = true;
+                resolve({ ok: false, ms, w: box ? Math.round(box.width) : 0, detail: `no move by ${ms} ms` });
+              }
+            };
+            sample(t0);
+            const tick = (frameNow) => {
+              const now = typeof frameNow === 'number' ? frameNow : performance.now();
+              sample(now);
+              if (!settled) requestAnimationFrame(tick);
+            };
+            if (!settled) requestAnimationFrame(tick);
+          },
+          { once: true },
+        );
+        hero.click();
+      }),
+  );
+}
+
 function flightVerdict(samples) {
   const black = samples.filter((s) => s.mean < 10 && s.darkPct > 0.9);
   const plate = samples.filter((s) => {
@@ -450,6 +500,10 @@ async function runCore(page, label) {
     );
   }
 
+  const started = await measureFlight(page);
+  note('flight-start', !!started && started.ok, started ? started.detail : 'missing');
+  await page.goto(base + '/', { waitUntil: 'networkidle' });
+  await page.locator('.lib-hero').waitFor();
   const samples = await sampleFlight(page);
   const flight = flightVerdict(samples);
   note('flight-no-black', flight.ok, flight.detail);
@@ -469,6 +523,70 @@ async function runCore(page, label) {
   note('stage-visible', stage.stageH > 80 && stage.blockH > 8 && stage.opacity > 0.85, JSON.stringify(stage));
 
   await openSong(page);
+
+  if (label.includes('desktop')) {
+    const rank = await page.evaluate(() => {
+      const parse = (color) => {
+        const raw = String(color);
+        const m = raw.match(/[\d.]+/g);
+        if (!m) return null;
+        let r = Number(m[0]);
+        let g = Number(m[1]);
+        let b = Number(m[2]);
+        const a = m[3] == null ? 1 : Number(m[3]);
+        // color(srgb …) is 0–1. rgb() is 0–255. Dividing the first by 255 made the translation look like the page.
+        if (/srgb|display-p3|color\(/.test(raw) && Math.max(r, g, b) <= 1) {
+          r *= 255;
+          g *= 255;
+          b *= 255;
+        }
+        return { r, g, b, a };
+      };
+      const channel = (c) => {
+        const s = c / 255;
+        return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+      };
+      const rel = (r, g, b) => 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+      const used = (el) => {
+        let a = 1;
+        let node = el;
+        while (node && node !== document.documentElement) {
+          const style = getComputedStyle(node);
+          if (style.visibility === 'hidden' || style.display === 'none') return 0;
+          a *= Number(style.opacity);
+          node = node.parentElement;
+        }
+        return a;
+      };
+      const bg = parse(getComputedStyle(document.documentElement).backgroundColor) || { r: 7, g: 6, b: 12, a: 1 };
+      const contrast = (el) => {
+        const fg = parse(getComputedStyle(el).color);
+        if (!fg) return 0;
+        const alpha = Math.max(0, Math.min(1, fg.a * used(el)));
+        const L = rel(fg.r, fg.g, fg.b) * alpha + rel(bg.r, bg.g, bg.b) * (1 - alpha);
+        const Lb = rel(bg.r, bg.g, bg.b);
+        return (Math.max(L, Lb) + 0.05) / (Math.min(L, Lb) + 0.05);
+      };
+      const brightest = (list) => list.filter(Boolean).sort((a, b) => used(b) - used(a))[0] || null;
+      const orig = document.querySelector('.fb--line.is-current .w');
+      const tr = document.querySelector('.fb--line.is-current .fb-tr');
+      const idle = [...document.querySelectorAll('.fb--line:not(.is-current)')];
+      const dimOrig = brightest(idle.map((el) => el.querySelector('.w')));
+      const dimTr = brightest(idle.map((el) => el.querySelector('.fb-tr')).filter((el) => el && used(el) > 0.35));
+      if (!orig || !tr) return null;
+      return {
+        origC: Math.round(contrast(orig) * 100) / 100,
+        trC: Math.round(contrast(tr) * 100) / 100,
+        dimO: Math.round((dimOrig ? contrast(dimOrig) : 0) * 100) / 100,
+        dimT: dimTr ? Math.round(contrast(dimTr) * 100) / 100 : null,
+      };
+    });
+    note(
+      'hierarchy',
+      !!rank && rank.origC > rank.trC && rank.dimO >= 3 && (rank.dimT == null || rank.dimT >= 4.5),
+      rank ? JSON.stringify(rank) : 'missing',
+    );
+  }
 
   if (label.includes('phone')) {
     const phoneBlur = await page.evaluate(() => {
@@ -511,7 +629,51 @@ async function runCore(page, label) {
   const kbd = await page.locator('.mark-kbd').count();
   note('no-latin-m', kbd === 0 && !/\bM\b/.test(mark), `kbd=${kbd} text=${JSON.stringify(mark.trim())}`);
 
-  await page.locator('button[aria-label="Настройки"]').click();
+  if (label.includes('phone')) {
+    const noteFade = await page.evaluate(
+      () =>
+        new Promise((resolve) => {
+          const rows = [];
+          let rest = 0;
+          const read = () => {
+            const card = document.querySelector('.note-card');
+            const sheet = document.querySelector('.sheet');
+            const cardBox = card ? card.getBoundingClientRect() : null;
+            const sheetBox = sheet ? sheet.getBoundingClientRect() : null;
+            if (!rest && cardBox) rest = cardBox.bottom;
+            rows.push({
+              opacity: card ? Number(getComputedStyle(card).opacity) : null,
+              passed: !!(sheetBox && rest && sheetBox.height > 80 && sheetBox.top < rest - 1),
+            });
+          };
+          document.addEventListener(
+            'click',
+            () => {
+              read();
+              const tick = () => {
+                read();
+                const last = rows[rows.length - 1];
+                if (rows.length >= 14 || (last && last.passed && rows.length > 4)) resolve(rows);
+                else requestAnimationFrame(tick);
+              };
+              requestAnimationFrame(tick);
+            },
+            { once: true },
+          );
+          const button = document.querySelector('button[aria-label="Настройки"]');
+          if (!button) resolve([]);
+          else button.click();
+        }),
+    );
+    const opacities = (noteFade || []).map((row) => row.opacity).filter((n) => n != null);
+    const buckets = new Set(opacities.map((n) => Math.round(n * 10) / 10));
+    const passedAt = (noteFade || []).findIndex((row) => row.passed);
+    const until = passedAt < 0 ? opacities : opacities.slice(0, passedAt + 1);
+    const hidden = until.length > 0 && until[until.length - 1] <= 0.05;
+    note('note-fade', buckets.size >= 3 && hidden, JSON.stringify({ buckets: [...buckets], passedAt, n: opacities.length }));
+  } else {
+    await page.locator('button[aria-label="Настройки"]').click();
+  }
   let opened = false;
   try {
     await dialogSettled(page);
@@ -595,6 +757,7 @@ async function runCore(page, label) {
     note('scrub-inst', false, 'track has no box');
     note('scrub-lyric', false, 'track has no box');
     note('scrub-views', false, 'track has no box');
+    note('handoff', false, 'track has no box');
   } else {
     await page.mouse.move(trackBox.x + 8, trackBox.y + trackBox.height / 2);
     await page.mouse.down();
@@ -708,6 +871,29 @@ async function runCore(page, label) {
     await page.mouse.up();
     const slowJudge = judgeDrawn(slowDrawn);
     note('drawn-slow', slowJudge.ok, slowJudge.detail);
+    const max = Number(await track.getAttribute('aria-valuemax'));
+    const handRail = (await track.boundingBox()) || trackBox;
+    if (handRail && max > 40) {
+      const yRail = handRail.y + handRail.height / 2;
+      const xAt = (sec) => handRail.x + (sec / max) * handRail.width;
+      await page.mouse.move(xAt(30), yRail);
+      await page.mouse.down();
+      await page.waitForTimeout(300);
+      await page.mouse.move(xAt(40), yRail);
+      await page.waitForTimeout(360);
+      await page.mouse.up();
+      await page.waitForTimeout(80);
+      const hand = await page.evaluate(() => {
+        const song = document.querySelector('.song');
+        return {
+          flag: song?.dataset.handoff || '',
+          ms: Number(song?.dataset.handoffMs || 0),
+        };
+      });
+      note('handoff', hand.flag === 'ok' && hand.ms > 0 && hand.ms <= 120, JSON.stringify(hand));
+    } else {
+      note('handoff', false, 'no rail');
+    }
   }
 
   const play = page.locator('button.btn-xl').first();
@@ -801,6 +987,26 @@ async function runDesign(browser) {
   await openSong(sePage);
   const seCard = await sePage.evaluate(noteCardInPage);
   note('se-note-card', !!seCard && seCard.ok, seCard ? seCard.why : 'missing');
+  const seLine = await sePage.evaluate(() => {
+    const orig = document.querySelector('.fb--line.is-current .fb-orig');
+    const tr = document.querySelector('.fb--line.is-current .fb-tr');
+    const card = document.querySelector('.note-card');
+    const stage = document.querySelector('.scene-stage');
+    if (!orig || !tr || !card || !stage) return null;
+    const o = orig.getBoundingClientRect();
+    const t = tr.getBoundingClientRect();
+    const c = card.getBoundingClientRect();
+    const s = stage.getBoundingClientRect();
+    return {
+      origBottom: Math.round(o.bottom),
+      trBottom: Math.round(t.bottom),
+      cardTop: Math.round(c.top),
+      stageBottom: Math.round(s.bottom),
+      trH: Math.round(t.height),
+      clear: o.bottom <= c.top - 1 && t.bottom <= c.top - 1 && t.bottom <= s.bottom + 1 && o.height > 8 && t.height > 8,
+    };
+  });
+  note('se-line-clear', !!seLine && seLine.clear, seLine ? JSON.stringify(seLine) : 'missing');
   const title = await sePage.evaluate(() => {
     const song = document.querySelector('.topbar-song');
     const version = document.querySelector('.topbar-version');
@@ -911,22 +1117,45 @@ async function runDesign(browser) {
   note('desk-posters', !!shelf && shelf.bottom < 48 && shelf.cover >= 180, shelf ? JSON.stringify(shelf) : 'missing');
   await deskLib.close();
 
+  const columnNote = () => {
+    const noteEl = document.querySelector('.comment.is-margin');
+    const header = document.querySelector('.topbar');
+    const stage = document.querySelector('.scene-stage');
+    if (!noteEl || !header || !stage) return null;
+    const n = noteEl.getBoundingClientRect();
+    const h = header.getBoundingClientRect();
+    const s = stage.getBoundingClientRect();
+    return {
+      topDelta: Math.round(Math.abs(n.top - h.top) * 10) / 10,
+      beside: n.left >= s.right - 4,
+      headerLeft: Math.round(Math.abs(h.left - s.left) * 10) / 10,
+      headerW: Math.round(Math.abs(h.width - s.width) * 10) / 10,
+      noteH: Math.round(n.height),
+      stageW: Math.round(s.width),
+      vh: window.innerHeight,
+    };
+  };
+  const columnOk = (box, minStage) =>
+    !!box &&
+    box.topDelta < 8 &&
+    box.beside &&
+    box.headerLeft < 4 &&
+    box.headerW < 8 &&
+    box.noteH > 48 &&
+    box.noteH < box.vh * 0.72 &&
+    box.stageW >= minStage;
+  const deskSong = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'dark' });
+  const deskSongPage = await deskSong.newPage();
+  await openSong(deskSongPage);
+  const deskColumn = await deskSongPage.evaluate(columnNote);
+  note('desk-note', columnOk(deskColumn, 800), deskColumn ? JSON.stringify(deskColumn) : 'missing');
+  await deskSong.close();
+
   const wide = await browser.newContext({ viewport: { width: 2560, height: 1440 }, colorScheme: 'light' });
   const widePage = await wide.newPage();
   await openSong(widePage);
-  const margin = await widePage.evaluate(() => {
-    const noteEl = document.querySelector('.comment.is-margin');
-    const player = document.querySelector('.player');
-    if (!noteEl || !player) return null;
-    const n = noteEl.getBoundingClientRect();
-    const p = player.getBoundingClientRect();
-    return { noteH: Math.round(n.height), noteBottom: Math.round(n.bottom), playerBottom: Math.round(p.bottom), vh: window.innerHeight };
-  });
-  note(
-    'wide-note',
-    !!margin && margin.noteH < margin.vh * 0.72 && Math.abs(margin.noteBottom - margin.playerBottom) < 8,
-    margin ? JSON.stringify(margin) : 'missing',
-  );
+  const margin = await widePage.evaluate(columnNote);
+  note('wide-note', columnOk(margin, 1400), margin ? JSON.stringify(margin) : 'missing');
   await wide.close();
   return out;
 }

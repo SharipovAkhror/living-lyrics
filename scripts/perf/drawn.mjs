@@ -277,6 +277,49 @@ export function sampleInPage(corpus) {
       }
     }
   });
+  const textBoxes = [];
+  const artBoxes = [];
+  const chainShown = (el) => {
+    let node = el;
+    while (node && node !== document.documentElement) {
+      if (node instanceof HTMLElement) {
+        const style = getComputedStyle(node);
+        if (style.display === 'none' || style.visibility === 'hidden') return false;
+        if (!(Number(style.opacity) > 0.05)) return false;
+      }
+      const root = node.getRootNode();
+      const next = node.parentElement || (root instanceof ShadowRoot ? root.host : null);
+      if (!next || next === node) break;
+      node = next;
+    }
+    const box = el.getBoundingClientRect();
+    const ix = Math.min(box.right, stageBox.right) - Math.max(box.left, stageBox.left);
+    const iy = Math.min(box.bottom, stageBox.bottom) - Math.max(box.top, stageBox.top);
+    return box.width > 1 && box.height > 1 && ix > 1 && iy > 1;
+  };
+  for (const el of stage.querySelectorAll('.fb-orig .w, .fb-tr, .intro-title')) {
+    if (!chainShown(el)) continue;
+    const box = el.getBoundingClientRect();
+    textBoxes.push(box);
+  }
+  const walkArt = (root) => {
+    for (const el of root.querySelectorAll('.ist-art, .ist-art-mount')) {
+      if (el.classList.contains('ist-art') && chainShown(el)) artBoxes.push(el.getBoundingClientRect());
+      if (el.shadowRoot) walkArt(el.shadowRoot);
+    }
+  };
+  walkArt(stage);
+  for (const art of artBoxes) {
+    for (const text of textBoxes) {
+      const x = Math.min(art.right, text.right) - Math.max(art.left, text.left);
+      const y = Math.min(art.bottom, text.bottom) - Math.max(art.top, text.top);
+      if (x > 1 && y > 1) {
+        overlap.push('engraving × text');
+        break;
+      }
+    }
+  }
+  if (textBoxes.length === 0 && artBoxes.length === 0) bad.push('empty');
   return {
     ok: bad.length === 0 && overlap.length === 0,
     texts,
@@ -294,11 +337,17 @@ export function noteCardInPage() {
   const body = card.querySelector('.comment-body');
   const bodyBox = body instanceof HTMLElement ? body.getBoundingClientRect() : null;
   const mask = body instanceof HTMLElement ? getComputedStyle(body).webkitMaskImage || getComputedStyle(body).maskImage : 'none';
-  const faded = mask && mask !== 'none';
+  const faded = typeof mask === 'string' && mask.includes('gradient');
+  const pad = body instanceof HTMLElement ? parseFloat(getComputedStyle(body).paddingBottom) : 0;
+  if (body instanceof HTMLElement) body.scrollTop = body.scrollHeight;
+  const last = body instanceof HTMLElement ? body.lastElementChild : null;
+  const lastBox = last instanceof HTMLElement ? last.getBoundingClientRect() : null;
+  const fadeTop = bodyBox ? bodyBox.bottom - 24 : 0;
+  const rested = !lastBox || lastBox.height < 1 || lastBox.bottom <= fadeTop + 1;
   const above = cardBox.bottom <= playerBox.top + 0.5;
   const inside = !bodyBox || bodyBox.bottom <= cardBox.bottom + 0.5;
   return {
-    ok: cardBox.height > 32 && above && inside && !faded,
-    why: `card ${Math.round(cardBox.bottom)} player ${Math.round(playerBox.top)} h ${Math.round(cardBox.height)} mask ${faded ? 'yes' : 'no'}`,
+    ok: cardBox.height > 32 && above && inside && faded && pad >= 24 && rested,
+    why: `card ${Math.round(cardBox.bottom)} player ${Math.round(playerBox.top)} h ${Math.round(cardBox.height)} mask ${faded ? 'yes' : 'no'} pad ${pad} rested ${rested}`,
   };
 }

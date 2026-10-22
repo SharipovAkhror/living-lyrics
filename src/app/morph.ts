@@ -5,6 +5,7 @@
  * only: a scaled, clipped layer the size of the stage paints black in WebKit.
  * The loop lives here, not in an effect, so a strict remount cannot eat it.
  */
+import { stageFrame } from '@/scene/columns';
 import { FLIGHT_SPRING, getMotionScale, stepSpring, type SpringState } from '@/ui/spring';
 
 export interface MorphBox {
@@ -235,6 +236,66 @@ function ensureLoop() {
   raf = requestAnimationFrame(frame);
 }
 
+function readPx(style: CSSStyleDeclaration, name: string, fallback: number): number {
+  const n = parseFloat(style.getPropertyValue(name));
+  return Number.isFinite(n) ? n : fallback;
+}
+
+/**
+ * Where the header art will be, before the song page has laid out.
+ * The first flight frame runs before the route commits. On WebKit the song's
+ * first layout then blocks the next frame for about 300 ms, so a cover that
+ * is still parked on that first frame does not move until the block ends.
+ * The numbers follow the header rules in app.css. followHeader replaces this
+ * with the measured box once the song has painted.
+ */
+function predictHeader(): MorphBox {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const root = getComputedStyle(document.documentElement);
+  const safeT = readPx(root, '--safe-t', 0);
+  const safeL = readPx(root, '--safe-l', 0);
+  const hit = readPx(root, '--hit', 44);
+  const shortLand = (vw >= 700 && vh <= 640) || (vw <= 699 && vh <= 520 && vw > vh);
+  const se = vw <= 389;
+  const phone = !shortLand && ((vw <= 699 && vh >= 521) || (vw <= 767 && vh >= 641));
+  let art = 40;
+  let barTop = 0;
+  let barLeft = 0;
+  let padT = 12;
+  let padL = 8;
+  const gap = 8;
+  if (shortLand) {
+    art = 32;
+    barTop = Math.max(4, safeT);
+    barLeft = Math.max(12, safeL);
+    padT = 4;
+    padL = 6;
+  } else if (phone) {
+    art = se ? 32 : 40;
+    barTop = Math.max(se ? 2 : 8, safeT);
+    barLeft = Math.max(10, safeL);
+    padT = se ? 4 : 8;
+    padL = se ? 6 : 8;
+  } else if (vw >= 768) {
+    const wideArt = vw >= 1100 && vh > 640;
+    art = wideArt ? 52 : 48;
+    barTop = Math.max(16, safeT);
+    padT = 10;
+    padL = 12;
+    const dock = stageFrame(vw, vh, true);
+    barLeft = vw >= 1280 && vh > 640 ? dock.colLeft : Math.max(dock.colLeft, safeL);
+  }
+  const row = Math.max(hit, art);
+  return {
+    left: barLeft + padL + hit + gap,
+    top: barTop + padT + Math.max(0, (row - art) / 2),
+    width: art,
+    height: art,
+    radius: art / 2,
+  };
+}
+
 /** Hide the card image and put the one flyer on the body, at the card's rect. */
 export function armMorph(card: HTMLElement): void {
   const cover = card.querySelector<HTMLElement>('[data-poster]');
@@ -272,6 +333,21 @@ export function armMorph(card: HTMLElement): void {
   place(el, box, box, 0);
   node = el;
   fromBox = box;
+  // A destination on the tap. The song page has not committed yet, and WebKit
+  // does not deliver the next frame until that first layout has painted.
+  if (!destGet) {
+    const header = predictHeader();
+    destGet = () => header;
+    // Step once before yielding. The tap frame then already shows the cover
+    // leaving, including when WebKit's next callback waits on the song layout.
+    started = performance.now();
+    last = started;
+    state = stepSpring(state, 1, 0.016, FLIGHT_SPRING);
+    place(el, fromBox, header, Math.max(0, Math.min(1, state.x)));
+    running = true;
+    raf = requestAnimationFrame(frame);
+    return;
+  }
   started = performance.now();
   ensureLoop();
 }

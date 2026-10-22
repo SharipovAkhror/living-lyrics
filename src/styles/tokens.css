@@ -352,9 +352,9 @@
 /* A wide, tall window is a spread, not a taller phone. The sung line has its own size. */
 @media (min-width: 1100px) and (min-height: 641px) {
   :root {
-    --lyric-latin: clamp(1.75rem, 3.125rem, 4rem);
-    --lyric-arab: clamp(2rem, 3.625rem, 4.5rem);
-    --lyric-tr: clamp(1rem, 1.375rem, 1.75rem);
+    --lyric-latin: clamp(3.125rem, 2rem + 1.25vw, 4rem);
+    --lyric-arab: clamp(3.625rem, 2.5rem + 1.25vw, 4.5rem);
+    --lyric-tr: clamp(1.375rem, 0.9rem + 0.54vw, 1.75rem);
     --lyric-note: clamp(0.8125rem, 1.0625rem, 1.5rem);
   }
 }

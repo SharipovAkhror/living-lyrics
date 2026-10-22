@@ -180,7 +180,9 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
     const car = vw >= 700 && vh <= 640;
     // SE and the car window are short enough that an unfitted phone line
     // runs through the note and the section kicker runs through the status pill.
-    const short = stage.h > 0 && stage.h < 260;
+    // SE's stage is about 155px. The 393px phone stage is about 300px and must
+    // keep the cheap path: fitting every line was a long scrub frame.
+    const short = stage.h > 0 && stage.h < 240;
     // Desktop is its own scale, not the phone size stretched by the window height.
     const desk = vw >= 1100 && vh > 640;
     // The stage is already the column left of the margin note. The line fills that
@@ -273,7 +275,9 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       // The original's cap does not shrink the translation. On a short stage the
       // whole block has to leave room for the section kicker above it.
       if (!desk && stage.h > 0 && subs.current) {
-        const budget = car ? stage.h * 0.58 : short ? stage.h * 0.62 : stage.h * 0.9;
+        // The whole block, original and translation, has to sit inside the stage.
+        // On a short phone the note card is the sheet under the line.
+        const budget = car ? stage.h * 0.58 : short ? Math.max(72, stage.h - 12) : stage.h * 0.9;
         const tr = subs.current;
         for (let i = 0; i < 4 && r.offsetHeight > budget; i++) {
           const factor = budget / r.offsetHeight;

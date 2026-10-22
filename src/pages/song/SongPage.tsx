@@ -93,12 +93,40 @@ function NoteCard({
   useLayoutEffect(() => {
     const card = ref.current;
     if (!card || !fading) return;
-    // Same commit as the sheet. A spring here overlapped the rising panel for two frames.
-    card.style.transition = 'none';
-    card.style.opacity = '0';
-    card.style.visibility = 'hidden';
+    // The sheet is born off the bottom of this commit. The card fades and
+    // slides over the next frames and is gone before the sheet's top reaches it.
     card.style.pointerEvents = 'none';
-    card.style.transform = 'none';
+    card.style.transition = 'none';
+    if (motionBlocked()) {
+      card.style.opacity = '0';
+      card.style.visibility = 'hidden';
+      card.style.transform = 'none';
+      return;
+    }
+    const home = card.getBoundingClientRect();
+    let frame = 1;
+    let raf = 0;
+    let alive = true;
+    const steps = 4;
+    const paint = () => {
+      if (!alive) return;
+      const sheet = document.querySelector('.sheet');
+      const sheetTop = sheet instanceof HTMLElement ? sheet.getBoundingClientRect().top : window.innerHeight + 80;
+      const urgency = sheetTop < home.bottom + 12 ? 1 : 0;
+      const paced = Math.min(1, frame / (steps - 1));
+      const t = Math.max(paced, urgency);
+      card.style.opacity = (1 - t).toFixed(3);
+      card.style.transform = `translate3d(0, ${(Math.min(1, t) * 18).toFixed(1)}px, 0)`;
+      card.style.visibility = t >= 0.98 ? 'hidden' : 'visible';
+      if (t >= 1) return;
+      frame += 1;
+      raf = requestAnimationFrame(paint);
+    };
+    paint();
+    return () => {
+      alive = false;
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, [fading]);
   useLayoutEffect(() => {
     const card = ref.current;

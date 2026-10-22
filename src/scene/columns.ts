@@ -41,8 +41,9 @@ function frame(
   padX = LYRIC_PAD,
   panelInset = marginNote ? PANEL_INSET : 0,
   noteRight = panelInset,
+  measure = MEASURE,
 ): StageFrame {
-  const lyricW = Math.max(0, Math.min(MEASURE, stageW - padX * 2));
+  const lyricW = Math.max(0, Math.min(measure, stageW - padX * 2));
   return {
     colLeft,
     colRight,
@@ -61,6 +62,15 @@ function frame(
 const NOTE_W = 320;
 
 /**
+ * Desk keeps the 820 spread. A large display grows it with the column so the
+ * line, the header and the floor fill the frame. 4rem type still wraps.
+ */
+function measureFor(vw: number): number {
+  if (vw < 2000) return MEASURE;
+  return Math.round(Math.min(1680, MEASURE + (vw - 2000) * 1.4));
+}
+
+/**
  * `noteOpen` is true when a note should stand in the margin. Narrow and short
  * windows keep the note one tap away instead, and this returns `marginNote: false`.
  */
@@ -74,31 +84,28 @@ export function stageFrame(vw: number, vh: number, noteOpen: boolean): StageFram
 
   const wide = vw >= 1100 && vh > 640;
   const noteW = noteOpen && wide ? NOTE_W : 0;
+  const measure = measureFor(vw);
   if (noteW > 0) {
-    // The note is a fixed column. The stage is centred in the space beside it,
-    // and capped at the measure so the dock does not stretch into the note.
+    // One group: the stage and the note, centred together. Desk and a large
+    // display use the same rule. A window that cannot hold the group keeps the
+    // note on the window edge, which the 800–1920 checks still cover.
+    const cap = measure + LYRIC_PAD * 2;
+    const wanted = cap + NOTE_GAP + noteW;
+    if ((vw - wanted) / 2 >= 28) {
+      const colLeft = Math.floor((vw - wanted) / 2);
+      const noteRight = vw - colLeft - wanted;
+      const colRight = vw - colLeft - cap;
+      return frame(colLeft, colRight, noteW, cap, true, LYRIC_PAD, PANEL_INSET, noteRight, measure);
+    }
     const reserved = PANEL_INSET + noteW + NOTE_GAP;
     const remaining = Math.max(0, vw - reserved);
-    const cap = MEASURE + LYRIC_PAD * 2;
     const stageW = Math.min(cap, Math.max(0, remaining - 28));
-    // From 2000 the lyric column and the note share one centred group (~1400).
-    // Narrower desktop widths keep the note on the window edge, which the 800–1920 checks cover.
-    if (vw >= 2000) {
-      const span = Math.min(1400, stageW + NOTE_GAP + noteW);
-      const stageUsed = Math.min(stageW, Math.max(0, span - NOTE_GAP - noteW));
-      const group = stageUsed + NOTE_GAP + noteW;
-      const colLeft = Math.max(28, Math.round((vw - group) / 2));
-      const inset = Math.max(PANEL_INSET, vw - colLeft - group);
-      const colRight = vw - colLeft - stageUsed;
-      // panelInset stays the vertical inset. The large number is only the right edge.
-      return frame(colLeft, colRight, noteW, stageUsed, true, LYRIC_PAD, PANEL_INSET, inset);
-    }
     const colLeft = Math.max(28, Math.round((remaining - stageW) / 2));
     const colRight = vw - colLeft - stageW;
-    return frame(colLeft, colRight, noteW, stageW, true);
+    return frame(colLeft, colRight, noteW, stageW, true, LYRIC_PAD, PANEL_INSET, PANEL_INSET, measure);
   }
 
-  const column = Math.min(wide ? MEASURE + LYRIC_PAD * 2 : 760, vw - 56);
+  const column = Math.min(wide ? measure + LYRIC_PAD * 2 : 760, vw - 56);
   const colLeft = Math.max(28, Math.round((vw - column) / 2));
   const colRight = vw - colLeft - column;
   return frame(colLeft, colRight, 0, column, false);
