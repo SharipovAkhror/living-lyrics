@@ -369,6 +369,12 @@ function PortraitNote({
   if (!sheet) fadeHold.current = current;
   const shown = sheet ? fadeHold.current : current;
   const had = useRef(false);
+  // The stage leaves a footnote's room under each line that has a note, while the phone footnote is in use.
+  const footMode = showComment && !shortLand && !stageFrame(window.innerWidth, window.innerHeight, true).marginNote;
+  // Passive: a child's layout effect runs before the page's own ref is attached.
+  useEffect(() => {
+    songRef.current?.classList.toggle('foot-mode', footMode);
+  }, [footMode, songRef]);
   useLayoutEffect(() => {
     const show = !!shown;
     if (!show && !had.current) return;
@@ -1260,8 +1266,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </div>
       )}
 
-      <header className="topbar lg-host lg-host--bar" ref={topbarRef}>
-        <GlassLayers />
+      {/* One thin layer on the field: no glass plate of its own. */}
+      <header className="topbar lg-host" ref={topbarRef}>
         <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
           <Icon name="chevron.left" size={22} />
         </a>

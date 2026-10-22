@@ -118,21 +118,22 @@ html[data-glass='lens'] .lg-host--card .lg-edge {
   background: var(--lg-fill-thick);
 }
 .lg-host--floor .lg-lens {
-  background: color-mix(in srgb, var(--bg-elevated) 42%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated) 30%, transparent);
+}
+/* No sheen of its own: the floor is a pane over the song, not a second picture. */
+.lg-host--floor .lg-edge {
+  background: none;
 }
 
 .lg-host--note .lg-lens {
   background: var(--lg-fill-note);
 }
 
-.lg-host--bar .lg-lens {
-  background: color-mix(in srgb, var(--bg-elevated) 18%, transparent);
-}
 .lg-host--chip .lg-lens {
   background: var(--lg-fill);
 }
 .lg-host--floor .lg-tint,
-.lg-host--bar .lg-tint {
+.lg-host.lg-host--floor .lg-spec {
   opacity: 0;
 }
 
@@ -147,7 +148,6 @@ html[data-glass='solid'] .lg-lens {
   backdrop-filter: none;
 }
 
-html[data-glass='rim'] .lg-host--bar .lg-lens,
 html[data-glass='rim'] .lg-host--card .lg-lens,
 html[data-glass='rim'] .lg-host--note .lg-lens,
 html[data-glass='rim'] .lg-host--chip .lg-lens {
@@ -156,7 +156,6 @@ html[data-glass='rim'] .lg-host--chip .lg-lens {
 }
 
 html[data-glass='solid'] .lg-lens,
-html[data-glass='solid'] .lg-host--bar .lg-lens,
 html[data-glass='solid'] .lg-host--card .lg-lens,
 html[data-glass='solid'] .lg-host--note .lg-lens,
 html[data-glass='solid'] .lg-host--chip .lg-lens,
@@ -266,12 +265,8 @@ html[data-glass='lens'] .lg-host--note .lg-lens {
   background: radial-gradient(130% 120% at 50% 40%, var(--lg-fill) 46%, transparent 78%);
 }
 
-html[data-glass='lens'] .lg-host--bar .lg-lens {
-  background: color-mix(in srgb, var(--bg-elevated) 18%, transparent);
-}
-
 html[data-glass='lens'] .lg-host--floor .lg-lens {
-  background: radial-gradient(120% 140% at 50% 55%, color-mix(in srgb, var(--bg-elevated) 48%, transparent) 62%, transparent 100%);
+  background: radial-gradient(120% 140% at 50% 55%, color-mix(in srgb, var(--bg-elevated) 34%, transparent) 62%, transparent 100%);
 }
 
 /* The sheet moves every spring frame. A filter on that element would resample

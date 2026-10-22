@@ -1,4 +1,4 @@
-import { memo, useLayoutEffect, useRef } from 'react';
+import { memo, useEffect, useLayoutEffect, useRef } from 'react';
 import type { LineCue } from '@/data/timeline';
 import type { LineEntrance, MotionPref, Settings } from '@/app/settings';
 import { formatTime } from '@/data/library';
@@ -57,6 +57,21 @@ function queuePhoneWidths(job: () => void) {
   if (!widthPump) widthPump = requestAnimationFrame(pumpWidths);
 }
 
+/**
+ * The phone footnote sits under the painted line. The layout slot can be
+ * shorter until the measure queue lands, and a resting clock does not place again.
+ */
+export function syncNoteFoot(line: HTMLElement): void {
+  const stage = line.closest('.scene-stage');
+  const host = line.closest('.song');
+  if (!(stage instanceof HTMLElement) || !(host instanceof HTMLElement)) return;
+  const stageBox = stage.getBoundingClientRect();
+  const lineBox = line.getBoundingClientRect();
+  if (lineBox.height < 8) return;
+  const foot = `${(stage.offsetTop + (lineBox.bottom - stageBox.top) + 4).toFixed(1)}px`;
+  if (host.style.getPropertyValue('--note-foot') !== foot) host.style.setProperty('--note-foot', foot);
+}
+
 /** Light markup in translations: **key word** (the counterpart of the accented original word), *nuance*. */
 export function TrText({ text }: { text: string }) {
   const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).filter(Boolean);
@@ -97,6 +112,17 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
   const widthGen = useRef(0);
   const epochRef = useRef(measureEpoch);
   epochRef.current = measureEpoch;
+  // The footnote is placed from this box. A later wrap must move it; the clock does not.
+  useEffect(() => {
+    const el = root.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => {
+      if (!el.classList.contains('is-current')) return;
+      syncNoteFoot(el);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
   // A scrub writes the next lyric here and skips React. The render keeps that
   // cue until the release commit matches it.
   const overrideRef = useRef<LineCue | null>(null);
@@ -347,6 +373,9 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       painted.current.cur = cur;
       r.classList.toggle('is-current', cur === '1');
     }
+    // After the transform. The layout height is not the ink, and the footnote
+    // must clear this box on the same frame the line is placed.
+    if (cur === '1' && phone && !scrubbing) syncNoteFoot(r);
     if (subs.current) {
       const sub = s.sub.toFixed(3);
       if (painted.current.sub !== sub) {

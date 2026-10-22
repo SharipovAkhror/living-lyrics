@@ -1543,7 +1543,7 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   }
   .topbar {
-    top: max(0px, var(--safe-t));
+    top: max(16px, var(--safe-t));
     padding: 8px 12px;
     border-radius: 0;
     border-top: 0;
@@ -4031,8 +4031,8 @@ html[data-sheet='1'] .song {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto auto;
     grid-template-areas:
-      'now . remain flag'
-      'track track track track';
+      'track track track track'
+      'now . remain flag';
     column-gap: 8px;
     row-gap: 0;
     align-items: center;
@@ -4040,10 +4040,10 @@ html[data-sheet='1'] .song {
   }
   .player .scrub-now { grid-area: now; }
   .player .scrub-remain { grid-area: remain; justify-self: end; }
-  .player .mark-bar { grid-area: flag; min-height: 44px; }
+  .player .mark-bar { grid-area: flag; margin: -8px 0; }
   .player .scrub-track {
     grid-area: track;
-    height: 28px;
+    height: 24px;
   }
   .player .utility {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4245,7 +4245,8 @@ html[data-sheet='1'] .song {
   align-items: center;
   height: 36px;
   max-height: 36px;
-  margin: 0;
+  max-width: 600px;
+  margin: 0 auto;
   padding: 0;
   overflow: hidden;
   border: 0;
@@ -4255,6 +4256,7 @@ html[data-sheet='1'] .song {
 }
 .note-line {
   display: flex;
+  justify-content: center;
   align-items: baseline;
   width: 100%;
   min-height: 36px;
@@ -4294,7 +4296,7 @@ html[data-sheet='1'] .song {
 
 /* From 1280 the floor and the top bar stay inside a dock on the stage column.
    Transport is centred. Tasks group on the right. The scrubber is the dock, not the window. */
-@media (min-width: 1280px) and (min-height: 641px) {
+@media (min-width: 1280px) and (min-height: 641px), (min-width: 768px) and (min-height: 1000px) {
   .topbar {
     left: var(--col-left, 0px);
     right: auto;

@@ -1,12 +1,12 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { flushSync } from 'react-dom';
 import type { Song } from '@/data/schema';
-import type { Timeline } from '@/data/timeline';
+import { commentFor, type Timeline } from '@/data/timeline';
 import type { AudioFeatures } from '@/instruments/animation';
 import { effectiveMotion, type Settings } from '@/app/settings';
 import { showHarakatText } from '@/data/harakat';
 import { fillQuery, lineWordSync, wordSyncOn } from './fill';
-import { LineBlock, type BlockUpdater } from './LineBlock';
+import { LineBlock, syncNoteFoot, type BlockUpdater } from './LineBlock';
 import { InstBlock } from './InstBlock';
 import { stageCovered, watchCover } from './cover';
 import { bisect } from '@/app/bisect';
@@ -20,6 +20,9 @@ import { stepSpring, type SpringState } from '@/ui/spring';
  * the settle entrance compresses it). Wider studio air stays on desktop,
  * landscape, and the short SE, which that check does not cover.
  */
+/** Room for the one-line footnote between the current line and the next. */
+const FOOT_ROOM = 40;
+
 function columnGap() {
   if (typeof window === 'undefined' || !isPhone()) return GAP;
   // land-15 is 251 px of stage. The verse gap of 44 pushed the next line into the floor.
@@ -222,8 +225,18 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let raf = 0;
     let lastKey = '';
     let noteY = '';
-    let noteFoot = '';
     let pool = '';
+    let footAt = 0;
+    // A line with a note leaves the footnote's room under it.
+    const notes = new Map<number, boolean>();
+    const noted = (k: number) => {
+      let hit = notes.get(k);
+      if (hit == null) {
+        hit = timeline.cues[k]?.kind === 'line' && !!commentFor(timeline, k);
+        notes.set(k, hit);
+      }
+      return hit;
+    };
     let lastPlate = '';
     let lastT = Number.NaN;
     let placedFeatures = featureEpoch.current;
@@ -519,7 +532,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       // A new box still has to be placed: the first read can precede font load and
       // text-wrap balance, and the lyric would stay a line too high.
       const measuresMoved = measureGen.current !== placedGen.current;
-      const liveKey = `${Math.round(liveW)}x${Math.round(liveH)}`;
+      // The footnote's room under the current line is part of the placement.
+      // The page says whether the phone footnote is in use (not which note: that is data).
+      const footMode = !!host?.classList.contains('foot-mode');
+      const liveKey = `${Math.round(liveW)}x${Math.round(liveH)}x${footMode ? 1 : 0}`;
       if (scrubbingNow && motion !== 'off') {
         const key = String(Math.round(flowPosition(plan, t)));
         if (!viewKey) {
@@ -539,7 +555,16 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       }
       if (isPhone() && scrubbingNow) applyScrubPicture(kindAt(t));
       else if (host?.classList.contains('is-scrub-line') || host?.classList.contains('is-scrub-inst')) clearScrubPicture();
-      if (t === lastT && !measuresMoved && !featuresMoved && liveKey === lastLive && pendingOwner == null && !depart) return;
+      if (t === lastT && !measuresMoved && !featuresMoved && liveKey === lastLive && pendingOwner == null && !depart) {
+        // Fonts and the phone measure queue change the ink after the clock has
+        // settled. Follow the painted line; do not keep the short layout slot.
+        if (!scrubbingNow && now - footAt >= 100) {
+          footAt = now;
+          const painted = stageRef.current?.querySelector('.fb--line.is-current');
+          if (painted instanceof HTMLElement) syncNoteFoot(painted);
+        }
+        return;
+      }
       placedFeatures = featureEpoch.current;
       lastT = t;
       lastLive = liveKey;
@@ -639,7 +664,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       // Centre of the visible stage, not of a box that continues under the floor.
       // A short stage, and the wide landscape phone, keep the current line high
       // so the next line has the lower half.
-      const centerY = liveH * (shortStage || roomyLandscape ? 0.32 : deck ? 0.46 : 0.42);
+      // Phone portrait holds the sung line in the upper part, as a reader's eye does;
+      // the footnote and the receding lines take the room under it.
+      const tallPhone = isPhone() && liveH > liveW;
+      const centerY = liveH * (shortStage || roomyLandscape ? 0.32 : deck ? 0.46 : tallPhone ? 0.36 : 0.42);
       const waits = new Map<number, number>();
       for (const k of list) waits.set(k, wordSync ? waitHint(timeline, k, t) : 0);
       const room = (k: number) => (waits.get(k) ?? 0) * WAIT_ROOM;
@@ -655,6 +683,9 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const stackAt = (anchor: number) => {
         const held = clampAnchor(anchor);
         const stacked = compressStack(layoutAt(anchor, list, measures, centerY, 8, room, gap), held, compress, heightsAt(anchor));
+        // After the compression: the settle entrance must not squeeze the footnote's room.
+        // A function of the anchor, so a seek and a release place the same frame.
+        if (footMode && noted(held)) for (const [k, y] of stacked) if (k > held) stacked.set(k, y + FOOT_ROOM);
         return keepInStage(stacked, held, heightsAt(anchor).get(held) ?? 0, liveH, pad);
       };
       const A = stackAt(a);
@@ -712,14 +743,15 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         // The margin note shares this frame: its top is the active line's top. A seek lands both together.
         if (host && (b0 || b1)) {
           const y = `${(stageTop + top + 2).toFixed(1)}px`;
-          const foot = `${(stageTop + top + h + 4).toFixed(1)}px`;
           if (y !== noteY) {
             noteY = y;
             host.style.setProperty('--note-y', y);
           }
-          if (foot !== noteFoot) {
-            noteFoot = foot;
-            host.style.setProperty('--note-foot', foot);
+          // Phone writes the footnote from the line, after its transform.
+          // iPad portrait is not on that path and still uses this box.
+          if (!isPhone()) {
+            const painted = stageRef.current?.querySelector('.fb--line.is-current');
+            if (painted instanceof HTMLElement) syncNoteFoot(painted);
           }
         }
       }
