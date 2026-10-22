@@ -222,6 +222,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let raf = 0;
     let lastKey = '';
     let noteY = '';
+    let noteFoot = '';
     let pool = '';
     let lastPlate = '';
     let lastT = Number.NaN;
@@ -711,9 +712,14 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         // The margin note shares this frame: its top is the active line's top. A seek lands both together.
         if (host && (b0 || b1)) {
           const y = `${(stageTop + top + 2).toFixed(1)}px`;
+          const foot = `${(stageTop + top + h + 4).toFixed(1)}px`;
           if (y !== noteY) {
             noteY = y;
             host.style.setProperty('--note-y', y);
+          }
+          if (foot !== noteFoot) {
+            noteFoot = foot;
+            host.style.setProperty('--note-foot', foot);
           }
         }
       }

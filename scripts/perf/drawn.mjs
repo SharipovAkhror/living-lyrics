@@ -331,23 +331,17 @@ export function sampleInPage(corpus) {
 export function noteCardInPage() {
   const card = document.querySelector('.note-card');
   const player = document.querySelector('.player');
+  const line = document.querySelector('.fb--line.is-current');
   if (!(card instanceof HTMLElement) || !(player instanceof HTMLElement)) return { ok: false, why: 'missing' };
   const cardBox = card.getBoundingClientRect();
   const playerBox = player.getBoundingClientRect();
-  const body = card.querySelector('.comment-body');
-  const bodyBox = body instanceof HTMLElement ? body.getBoundingClientRect() : null;
-  const mask = body instanceof HTMLElement ? getComputedStyle(body).webkitMaskImage || getComputedStyle(body).maskImage : 'none';
-  const faded = typeof mask === 'string' && mask.includes('gradient');
-  const pad = body instanceof HTMLElement ? parseFloat(getComputedStyle(body).paddingBottom) : 0;
-  if (body instanceof HTMLElement) body.scrollTop = body.scrollHeight;
-  const last = body instanceof HTMLElement ? body.lastElementChild : null;
-  const lastBox = last instanceof HTMLElement ? last.getBoundingClientRect() : null;
-  const fadeTop = bodyBox ? bodyBox.bottom - 24 : 0;
-  const rested = !lastBox || lastBox.height < 1 || lastBox.bottom <= fadeTop + 1;
+  const lineBox = line instanceof HTMLElement ? line.getBoundingClientRect() : null;
+  const text = card.querySelector('.note-line-text');
   const above = cardBox.bottom <= playerBox.top + 0.5;
-  const inside = !bodyBox || bodyBox.bottom <= cardBox.bottom + 0.5;
+  const clear = !lineBox || cardBox.top >= lineBox.bottom - 2;
+  const oneLine = text instanceof HTMLElement && getComputedStyle(text).whiteSpace === 'nowrap';
   return {
-    ok: cardBox.height > 32 && above && inside && faded && pad >= 24 && rested,
-    why: `card ${Math.round(cardBox.bottom)} player ${Math.round(playerBox.top)} h ${Math.round(cardBox.height)} mask ${faded ? 'yes' : 'no'} pad ${pad} rested ${rested}`,
+    ok: cardBox.height > 32 && cardBox.height <= 52 && above && clear && oneLine && cardBox.width > 40,
+    why: `card ${Math.round(cardBox.bottom)} player ${Math.round(playerBox.top)} h ${Math.round(cardBox.height)} clear ${clear} line ${oneLine}`,
   };
 }

@@ -59,8 +59,10 @@ export function flowPosition(plan: FlowPlan, t: number): number {
   return i - 1 + easeInOut(clamp01((t - begins[i]) / moves[i]));
 }
 
-/** Size of a non-current line relative to the current one. Close enough to read, clearly smaller than the line in the light. */
-export const SMALL = 0.78;
+/** Size of the nearest non-current line. The current line is the only large object; the ones after it step down. */
+export const SMALL = 0.58;
+/** Size once a line is two steps away. Still present, no longer a second verse. */
+const FAR = 0.44;
 
 /**
  * How much of an instrumental passage is the picture.
@@ -77,17 +79,19 @@ export function instPresence(t: number, start: number, end: number, flow: number
 /** Visual state of a block at distance d from the current position (d = index − position). */
 export function blockState(d: number) {
   const a = Math.abs(d);
-  const scale = a >= 1 ? SMALL : 1 - (1 - SMALL) * a;
-  // Neighbours stay readable and secondary. The floor stays at half so a pastel field cannot wash them out.
+  // One size for the line in the light. The next line is clearly smaller, and the one after that steps down again.
+  const scale = a >= 2 ? FAR : a >= 1 ? lerp(SMALL, FAR, a - 1) : 1 - (1 - SMALL) * a;
+  // The current line stays at full ink. Everything else recedes, including the line that just left.
   let opacity: number;
-  if (d >= 0) opacity = d <= 1 ? 1 : d <= 3 ? 1 - 0.16 * (d - 1) : Math.max(0.5, 0.68 - 0.05 * (d - 3));
-  else opacity = a <= 1 ? 1 - 0.22 * a : Math.max(0.5, 0.78 - 0.08 * (a - 1));
+  if (a <= 0.2) opacity = 1;
+  else if (a <= 1) opacity = lerp(1, 0.36, (a - 0.2) / 0.8);
+  else if (a <= 2.5) opacity = lerp(0.36, 0.16, (a - 1) / 1.5);
+  else opacity = 0.14;
   const blur = a < 1.15 ? 0 : d < 0 ? Math.min(1.6, (a - 1.15) * 1.4) : Math.min(1, (a - 1.15) * 0.8);
-  // The translation belongs to its line. The current cluster and the nearest neighbours keep it;
-  // lines further down the stage show the original only, so the column does not become a wall of glosses.
-  const sub = a <= 0.2 ? 1 : a <= 1.25 ? lerp(1, 0.72, (a - 0.2) / 1.05) : 0;
+  // The translation belongs to the current line only. By the next line it is gone, so the column is not pairs of equal blocks.
+  const sub = a <= 0.2 ? 1 : a <= 0.9 ? lerp(1, 0, (a - 0.2) / 0.7) : 0;
   /** Share of the translation's height the layout reserves (it fades inside that room). */
-  const subRoom = a <= 1.3 ? 1 : 0;
+  const subRoom = a <= 0.35 ? 1 : a <= 1.05 ? lerp(1, 0, (a - 0.35) / 0.7) : 0;
   /** Instrument blocks: 1 = full stage, 0 = the compact "next" chip. */
   const presence = clamp01(1 - a);
   return { scale, opacity, blur, sub, subRoom, presence };
@@ -307,14 +311,14 @@ export function scriptShift(d: number, rtl: boolean, stageW: number, motionOff: 
 export function entranceOpacity(d: number, entrance: LineEntrance, flowOpacity: number): number {
   if (entrance === 'flow') return flowOpacity;
   const a = Math.abs(d);
-  // Settle: the current line is the light. The lines beside it stay readable, the ones further back step down, none of them vanish.
+  // Settle is the default. The current line is the light; the next one is already quiet, and none of them vanish.
   if (entrance === 'settle') {
-    if (a <= 0.28) return 1;
-    if (a <= 1.15) return lerp(1, 0.72, (a - 0.28) / 0.87);
-    return Math.max(0.55, 0.72 - 0.08 * (a - 1.15));
+    if (a <= 0.2) return 1;
+    if (a <= 1) return lerp(1, 0.36, (a - 0.2) / 0.8);
+    return Math.max(0.18, 0.36 - 0.08 * (a - 1));
   }
-  // Script: the line travelling in from the writing side stays readable until it arrives.
+  // Script: the line travelling in from the writing side is readable, then drops to the same quiet neighbour.
   if (a <= 0.35) return 1;
-  if (a <= 1.05) return 0.62 + 0.38 * (1 - (a - 0.35) / 0.7);
-  return Math.max(0.5, 0.62 - 0.08 * (a - 1.05));
+  if (a <= 1.05) return lerp(1, 0.4, (a - 0.35) / 0.7);
+  return Math.max(0.22, 0.4 - 0.08 * (a - 1.05));
 }

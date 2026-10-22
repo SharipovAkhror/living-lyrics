@@ -68,9 +68,9 @@
      below, not this fraction on a tall window. Registered so viewport units
      compute to a length. An unregistered max() stays a token and font-size
      falls back to the body size. */
-  --lyric-latin: clamp(0.8125rem, calc(2.25rem * 100dvh / 852), 3.25rem);
-  --lyric-arab: clamp(0.8125rem, calc(2.625rem * 100dvh / 852), 3.75rem);
-  --lyric-tr: clamp(0.8125rem, calc(1.25rem * 100dvh / 852), 1.75rem);
+  --lyric-latin: clamp(0.8125rem, calc(2.65rem * 100dvh / 852), 3.25rem);
+  --lyric-arab: clamp(0.8125rem, calc(3rem * 100dvh / 852), 3.75rem);
+  --lyric-tr: clamp(0.8125rem, calc(1.0625rem * 100dvh / 852), 1.375rem);
   --lyric-note: clamp(0.8125rem, calc(1.0625rem * 100dvh / 852), 1.5rem);
 
   /* Thick sheet. 80 % white still left the player labels readable, so the light
@@ -171,7 +171,7 @@
   --lg-sat: 190%;
   --lg-fill: color-mix(in srgb, #fff 42%, transparent);
   --lg-fill-card: color-mix(in srgb, #fff 40%, transparent);
-  --lg-fill-note: color-mix(in srgb, #fffaf6 72%, var(--song-field, #c9b8a4));
+  --lg-fill-note: color-mix(in srgb, #fffaf6 46%, transparent);
   --lg-fill-thick: color-mix(in srgb, #fffaf6 94%, var(--song-field, #c9b8a4));
   --lg-tint: color-mix(in srgb, var(--accent) 18%, transparent);
   --lg-spec: rgba(255, 255, 255, 0.86);
@@ -234,7 +234,7 @@
     --glass-shadow: 0 28px 70px -24px rgba(0, 0, 0, 0.5);
     --lg-fill: color-mix(in srgb, #0c0b10 38%, transparent);
     --lg-fill-card: color-mix(in srgb, #14121a 55%, transparent);
-    --lg-fill-note: color-mix(in srgb, #100e14 86%, var(--song-field, #221820));
+    --lg-fill-note: color-mix(in srgb, #100e14 55%, transparent);
     --lg-fill-thick: color-mix(in srgb, #100e14 94%, var(--song-field, #221820));
     --lg-tint: color-mix(in srgb, var(--accent) 36%, transparent);
     --lg-spec: rgba(255, 255, 255, 0.72);
@@ -296,7 +296,7 @@
   --glass-shadow: 0 28px 70px -24px rgba(0, 0, 0, 0.5);
   --lg-fill: color-mix(in srgb, #0c0b10 38%, transparent);
   --lg-fill-card: color-mix(in srgb, #14121a 55%, transparent);
-  --lg-fill-note: color-mix(in srgb, #100e14 86%, var(--song-field, #221820));
+  --lg-fill-note: color-mix(in srgb, #100e14 55%, transparent);
   --lg-fill-thick: color-mix(in srgb, #100e14 94%, var(--song-field, #221820));
   --lg-tint: color-mix(in srgb, var(--accent) 36%, transparent);
   --lg-spec: rgba(255, 255, 255, 0.72);
@@ -354,7 +354,7 @@
   :root {
     --lyric-latin: clamp(3.125rem, 2rem + 1.25vw, 4rem);
     --lyric-arab: clamp(3.625rem, 2.5rem + 1.25vw, 4.5rem);
-    --lyric-tr: clamp(1.375rem, 0.9rem + 0.54vw, 1.75rem);
+    --lyric-tr: clamp(1.125rem, 0.8rem + 0.35vw, 1.5rem);
     --lyric-note: clamp(0.8125rem, 1.0625rem, 1.5rem);
   }
 }

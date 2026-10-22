@@ -113,19 +113,27 @@ html[data-glass='lens'] .lg-host--card .lg-edge {
   }
 }
 
-/* Thick: the verse must not read through the floor or a sheet. */
-.lg-host--floor .lg-lens,
+/* The sheet stays dense. The floor is thin enough that the song field reads through. */
 .lg-host--sheet .lg-lens {
   background: var(--lg-fill-thick);
+}
+.lg-host--floor .lg-lens {
+  background: color-mix(in srgb, var(--bg-elevated) 42%, transparent);
 }
 
 .lg-host--note .lg-lens {
   background: var(--lg-fill-note);
 }
 
-.lg-host--bar .lg-lens,
+.lg-host--bar .lg-lens {
+  background: color-mix(in srgb, var(--bg-elevated) 18%, transparent);
+}
 .lg-host--chip .lg-lens {
   background: var(--lg-fill);
+}
+.lg-host--floor .lg-tint,
+.lg-host--bar .lg-tint {
+  opacity: 0;
 }
 
 .lg-host--card .lg-lens {
@@ -219,6 +227,11 @@ html[data-glass='solid'] .lg-spec {
   display: none;
 }
 
+.topbar.lg-host {
+  box-shadow: none;
+  border-radius: 0;
+}
+
 .sheet.lg-host .sheet-head {
   background: transparent;
 }
@@ -247,15 +260,18 @@ html[data-glass='solid'] .player .comment.is-open .comment-fold {
  * backdrop reads. The sheet is transformed, and a filter on a child cannot
  * see past that transform, so the sheet carries the filter itself.
  */
-html[data-glass='lens'] .lg-host--bar .lg-lens,
 html[data-glass='lens'] .lg-host--card .lg-lens,
 html[data-glass='lens'] .lg-host--chip .lg-lens,
 html[data-glass='lens'] .lg-host--note .lg-lens {
   background: radial-gradient(130% 120% at 50% 40%, var(--lg-fill) 46%, transparent 78%);
 }
 
+html[data-glass='lens'] .lg-host--bar .lg-lens {
+  background: color-mix(in srgb, var(--bg-elevated) 18%, transparent);
+}
+
 html[data-glass='lens'] .lg-host--floor .lg-lens {
-  background: radial-gradient(120% 140% at 50% 55%, var(--lg-fill-thick) 72%, transparent 100%);
+  background: radial-gradient(120% 140% at 50% 55%, color-mix(in srgb, var(--bg-elevated) 48%, transparent) 62%, transparent 100%);
 }
 
 /* The sheet moves every spring frame. A filter on that element would resample

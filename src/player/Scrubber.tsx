@@ -175,7 +175,7 @@ export function Scrubber({
         grab = state;
       } else grab = stepSpring(grab, 0, dt, GRAB);
       const g = Math.max(0, grab.x);
-      const headScale = (1 + 0.3 * g).toFixed(3);
+      const headScale = (1 + 1.15 * g).toFixed(3);
       if (head.current) head.current.style.transform = `translate3d(${(p * w).toFixed(2)}px, -50%, 0) scale(${headScale})`;
       if (rail.current) {
         if (!holding && g < 0.02 && Math.abs(grab.v) < 0.02) {
@@ -196,7 +196,7 @@ export function Scrubber({
         for (const seg of marks) {
           const at = parseFloat(seg.style.left) / 100;
           const near = Number.isFinite(at) && Math.abs(at - p) < 0.045;
-          const next = near ? (seg.classList.contains('is-inst') ? '0.18' : '0.28') : '0';
+          const next = near ? (seg.classList.contains('is-inst') ? '0.12' : '0.16') : '0';
           if (seg.style.opacity !== next) seg.style.opacity = next;
         }
       }

@@ -34,6 +34,7 @@ import { headerLine } from './parts';
 const SettingsSheet = lazy(() => import('./SettingsSheet').then((m) => ({ default: m.SettingsSheet })));
 const TextSheet = lazy(() => import('./TextSheet').then((m) => ({ default: m.TextSheet })));
 const InfoSheet = lazy(() => import('./InfoSheet').then((m) => ({ default: m.InfoSheet })));
+const NoteSheet = lazy(() => import('./NoteSheet').then((m) => ({ default: m.NoteSheet })));
 
 /** Keep a sheet mounted after its first open so the close spring can finish. */
 function useHeld(open: boolean) {
@@ -42,7 +43,7 @@ function useHeld(open: boolean) {
   return held;
 }
 
-type SheetName = 'settings' | 'text' | 'info' | null;
+type SheetName = 'settings' | 'text' | 'info' | 'note' | null;
 
 /** The landscape query that used to turn the floor note into a second «Пояснение» pill. */
 const SHORT_LAND =
@@ -73,23 +74,21 @@ function CloseDisc({ label, onClick }: { label: string; onClick: () => void }) {
 
 function NoteCard({
   text,
-  textKey,
   showHarakat,
-  onClose,
+  onOpen,
   fading,
   suppressed,
 }: {
   text: string;
-  textKey: number;
   showHarakat: boolean;
-  onClose: () => void;
+  onOpen: () => void;
   /** The sheet is opening. Hidden before paint, still mounted so the floor height holds. */
   fading?: boolean;
   /** Whole scrub. One fade, not a new one each time the sung line changes. */
   suppressed?: boolean;
 }) {
   const ref = useRef<HTMLElement>(null);
-  const drag = useRef<{ y: number; id: number } | null>(null);
+  const preview = (showHarakat ? text : stripHarakat(text)).replace(/\*+/g, '').replace(/\s+/g, ' ').trim();
   useLayoutEffect(() => {
     const card = ref.current;
     const root = document.documentElement;
@@ -191,47 +190,11 @@ function NoteCard({
       if (raf) cancelAnimationFrame(raf);
     };
   }, [suppressed, fading]);
-  const move = (clientY: number) => {
-    const card = ref.current;
-    const d = drag.current;
-    if (!card || !d) return;
-    const dy = Math.max(0, clientY - d.y);
-    card.style.transform = dy > 0 ? `translate3d(0, ${dy.toFixed(1)}px, 0)` : '';
-  };
   return (
-    <aside
-      ref={ref}
-      className="note-card"
-      role="region"
-      aria-label="Пояснение"
-      onPointerDown={(e) => {
-        const t = e.target as HTMLElement;
-        if (t.closest('button, a, .comment-body')) return;
-        drag.current = { y: e.clientY, id: e.pointerId };
-        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-      }}
-      onPointerMove={(e) => {
-        if (!drag.current || e.pointerId !== drag.current.id) return;
-        move(e.clientY);
-      }}
-      onPointerUp={(e) => {
-        const d = drag.current;
-        if (!d || e.pointerId !== d.id) return;
-        drag.current = null;
-        if (e.clientY - d.y > 48) onClose();
-        else if (ref.current) ref.current.style.transform = '';
-      }}
-      onPointerCancel={() => {
-        drag.current = null;
-        if (ref.current) ref.current.style.transform = '';
-      }}
-    >
-      <div className="note-grab" aria-hidden="true" />
-      <div className="note-card-head">
-        <span className="comment-kicker">Пояснение</span>
-        <CloseDisc label="Закрыть пояснение" onClick={onClose} />
-      </div>
-      <RichText key={textKey} text={text} showHarakat={showHarakat} className="comment-body" />
+    <aside ref={ref} className="note-card" role="region" aria-label="Пояснение">
+      <button type="button" className="note-line" onClick={onOpen}>
+        <span className="note-line-text">{preview}</span>
+      </button>
     </aside>
   );
 }
@@ -382,7 +345,7 @@ function PortraitNote({
   shortLand,
   sheet,
   scrubbing,
-  onClose,
+  onOpen,
 }: {
   songRef: RefObject<HTMLDivElement | null>;
   topRef: RefObject<HTMLElement | null>;
@@ -394,7 +357,7 @@ function PortraitNote({
   shortLand: boolean;
   sheet: boolean;
   scrubbing: boolean;
-  onClose: () => void;
+  onOpen: () => void;
 }) {
   const noteText = useNoteSnapshot(store, timeline);
   const margin = !!noteText && stageFrame(window.innerWidth, window.innerHeight, true).marginNote;
@@ -420,9 +383,8 @@ function PortraitNote({
   return (
     <NoteCard
       text={shown.text}
-      textKey={shown.from.idx}
       showHarakat={showHarakat}
-      onClose={onClose}
+      onOpen={onOpen}
       fading={sheet}
       suppressed={scrubbing}
     />
@@ -504,6 +466,7 @@ function ExplainButton({
   commentOpen,
   shortLand,
   onToggle,
+  live,
 }: {
   store: OwnerStore;
   timeline: Timeline | null;
@@ -511,11 +474,12 @@ function ExplainButton({
   commentOpen: boolean;
   shortLand: boolean;
   onToggle: () => void;
+  live: boolean;
 }) {
   const noteText = useNoteSnapshot(store, timeline);
   return (
     <button
-      className={`util${noteText && !showComment ? ' has-note' : ''}`}
+      className={`util${live ? ' is-live-task' : ''}${noteText && !showComment ? ' has-note' : ''}`}
       aria-label={noteText ? 'Пояснение к этой строке' : 'Пояснение'}
       aria-pressed={shortLand ? commentOpen : showComment}
       aria-keyshortcuts="K"
@@ -525,6 +489,25 @@ function ExplainButton({
       <span className="util-label">Пояснение</span>
     </button>
   );
+}
+
+function OwnedNote({
+  store,
+  open,
+  onClose,
+  timeline,
+  showHarakat,
+}: {
+  store: OwnerStore;
+  open: boolean;
+  onClose: () => void;
+  timeline: Timeline | null;
+  showHarakat: boolean;
+}) {
+  const note = useNoteSnapshot(store, timeline);
+  const last = useRef('');
+  if (note?.text) last.current = note.text;
+  return <NoteSheet open={open} onClose={onClose} text={note?.text || last.current} showHarakat={showHarakat} />;
 }
 
 function OwnedText({
@@ -704,7 +687,8 @@ function measureChrome(root: HTMLElement, top: HTMLElement, floor: HTMLElement) 
   const card = root.querySelector('.note-card');
   if (card instanceof HTMLElement && getComputedStyle(card).display !== 'none') {
     const box = card.getBoundingClientRect();
-    if (box.height > 8) coverTop = Math.min(coverTop, box.top);
+    // A one-line footnote lives in the stage. Only a card sitting on the floor shortens it.
+    if (box.height > 80 && box.top > floorBox.top - 80) coverTop = Math.min(coverTop, box.top);
   }
   const note = floor.querySelector('.comment');
   if (note) {
@@ -995,6 +979,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const settingsHeld = useHeld(sheet === 'settings');
   const infoHeld = useHeld(sheet === 'info');
   const textHeld = useHeld(sheet === 'text');
+  const noteHeld = useHeld(sheet === 'note');
   const shortLand = useShortLandscape();
   const toggleComment = useCallback(() => {
     const note = noteAt(timeline, ownerStore.get());
@@ -1314,7 +1299,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         shortLand={shortLand}
         sheet={sheet != null}
         scrubbing={scrubbing}
-        onClose={() => setSettings({ showComment: false })}
+        onOpen={() => openSheet('note')}
       />
 
       <EngineAlerts
@@ -1392,11 +1377,11 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         <div className="player-row">
           <div className="transport">
             <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)">
-              <Icon name="backward" size={24} />
+              <Icon name="backward" size={28} />
             </button>
             <PlayButton engine={engine} playRef={playRef} onToggle={togglePlay} />
             <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)">
-              <Icon name="forward" size={24} />
+              <Icon name="forward" size={28} />
             </button>
           </div>
           <div className="utility" role="group" aria-label="Действия с песней">
@@ -1411,12 +1396,13 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               commentOpen={settings.commentOpen}
               shortLand={shortLand}
               onToggle={toggleComment}
+              live={sheet === 'note'}
             />
-            <button className="util" aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={() => openSheet('text')}>
+            <button className={`util${sheet === 'text' ? ' is-live-task' : ''}`} aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={() => openSheet('text')}>
               <Icon name="list.bullet" size={24} />
               <span className="util-label">Весь текст</span>
             </button>
-            <button className="util" aria-label="Настройки" aria-pressed={sheet === 'settings'} onClick={() => openSheet('settings')}>
+            <button className={`util${sheet === 'settings' ? ' is-live-task' : ''}`} aria-label="Настройки" aria-pressed={sheet === 'settings'} onClick={() => openSheet('settings')}>
               <Icon name="slider.horizontal.3" size={24} />
               <span className="util-label">Настройки</span>
             </button>
@@ -1449,6 +1435,15 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               engine.seek(t);
               setSheet(null);
             }}
+          />
+        )}
+        {noteHeld && (
+          <OwnedNote
+            store={ownerStore}
+            open={sheet === 'note'}
+            onClose={() => setSheet(null)}
+            timeline={timeline}
+            showHarakat={settings.showHarakat}
           />
         )}
         {textHeld && (

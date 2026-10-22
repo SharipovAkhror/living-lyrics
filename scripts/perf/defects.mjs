@@ -865,6 +865,123 @@ async function runDisc(browser) {
   await context.close();
 }
 
+function parseHex(hex) {
+  const match = /^#([0-9a-fA-F]{6})$/.exec(String(hex || '').trim());
+  if (!match) return null;
+  const n = parseInt(match[1], 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+async function runAccentRest(browser) {
+  const context = await browser.newContext({ ...phone(), colorScheme: 'dark' });
+  await installSilence(context, 'chromium');
+  const page = await context.newPage();
+  await openSong(page);
+  const spots = await page.evaluate(() => {
+    const hex = getComputedStyle(document.documentElement).getPropertyValue('--song-accent-dark').trim();
+    const box = (el) => {
+      if (!(el instanceof HTMLElement)) return null;
+      const r = el.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2) return null;
+      return { x: r.x, y: r.y, w: r.width, h: r.height };
+    };
+    const word = document.querySelector('.fb--line.is-current .w:not(.is-filling)');
+    return {
+      hex,
+      disc: box(document.querySelector('.player .btn-ring')),
+      rail: box(document.querySelector('.scrub-rail')),
+      label: box(document.querySelector('.player .util-label')),
+      title: box(document.querySelector('.topbar-song')),
+      word: box(word),
+    };
+  });
+  const accent = parseHex(spots && spots.hex);
+  if (!accent || !spots?.disc) {
+    note('chromium D26 play-disc-only-accent', false, 'no disc or accent');
+  } else {
+    const discShot = await page.locator('.player .btn-ring').first().screenshot();
+    const discMeta = await sharp(discShot).metadata();
+    const dw = discMeta.width || 1;
+    const dh = discMeta.height || 1;
+    const discPixel = async (x, y) => {
+      const left = Math.max(0, Math.min(dw - 1, Math.round(x)));
+      const top = Math.max(0, Math.min(dh - 1, Math.round(y)));
+      const { data } = await sharp(discShot).extract({ left, top, width: 1, height: 1 }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+      return [data[0], data[1], data[2]];
+    };
+    const discPoints = [
+      [dw * 0.5, dh * 0.18],
+      [dw * 0.5, dh * 0.82],
+      [dw * 0.18, dh * 0.5],
+      [dw * 0.82, dh * 0.5],
+    ];
+    let discHits = 0;
+    for (const [x, y] of discPoints) {
+      if (near(await discPixel(x, y), accent) < 40) discHits += 1;
+    }
+    const pageShot = await page.screenshot({ type: 'png' });
+    const scale = await page.evaluate(() => window.devicePixelRatio || 1);
+    const pagePixel = async (x, y) => {
+      const left = Math.max(0, Math.round(x * scale));
+      const top = Math.max(0, Math.round(y * scale));
+      const { data } = await sharp(pageShot).extract({ left, top, width: 1, height: 1 }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+      return [data[0], data[1], data[2]];
+    };
+    const quiet = [];
+    for (const key of ['rail', 'label', 'title', 'word']) {
+      const b = spots[key];
+      if (!b) continue;
+      quiet.push(near(await pagePixel(b.x + b.w / 2, b.y + b.h / 2), accent));
+    }
+    const leaked = quiet.filter((d) => d < 48).length;
+    note(
+      'chromium D26 play-disc-only-accent',
+      discHits >= 3 && leaked === 0 && quiet.length >= 3,
+      `disc ${discHits}/4 quiet ${quiet.map((d) => Math.round(d)).join(',')}`,
+    );
+  }
+  await context.close();
+}
+
+async function runFootnote(browser) {
+  for (const width of [320, 375, 393]) {
+    const height = width === 320 ? 568 : width === 375 ? 667 : 852;
+    const context = await browser.newContext({ ...phone(width, height), colorScheme: 'dark' });
+    await installSilence(context, 'chromium');
+    const page = await context.newPage();
+    await openSong(page);
+    await page.waitForFunction(() => {
+      const song = document.querySelector('.song');
+      const foot = song ? getComputedStyle(song).getPropertyValue('--note-foot').trim() : '';
+      return foot.length > 0 && document.querySelector('.note-card');
+    }, { timeout: 8000 }).catch(() => {});
+    const gap = await page.evaluate(() => {
+      const card = document.querySelector('.note-card');
+      const line = document.querySelector('.fb--line.is-current');
+      if (!(card instanceof HTMLElement) || !(line instanceof HTMLElement)) return null;
+      const c = card.getBoundingClientRect();
+      const l = line.getBoundingClientRect();
+      const overlapX = Math.min(c.right, l.right) - Math.max(c.left, l.left);
+      const overlapY = Math.min(c.bottom, l.bottom) - Math.max(c.top, l.top);
+      const overlap = overlapX > 0 && overlapY > 0 ? overlapY : 0;
+      return {
+        overlap: Math.round(overlap * 10) / 10,
+        top: Math.round(c.top),
+        lineBottom: Math.round(l.bottom),
+        h: Math.round(c.height),
+        w: Math.round(c.width),
+        ok: overlap <= 2 && c.top >= l.bottom - 2 && c.height > 32 && c.height <= 52 && c.width > 40,
+      };
+    });
+    note(
+      'chromium D27 phone-note-clear',
+      !!gap && gap.ok,
+      gap ? `${width} overlap ${gap.overlap} top ${gap.top} line ${gap.lineBottom} h ${gap.h}` : `${width} missing`,
+    );
+    await context.close();
+  }
+}
+
 const chrome = await chromium.launch();
 const kit = await webkit.launch();
 try {
@@ -895,6 +1012,8 @@ try {
   await runIntro(chrome);
   await runLandscape(chrome);
   await runDisc(chrome);
+  await runAccentRest(chrome);
+  await runFootnote(chrome);
 } catch (err) {
   console.error(err && err.stack ? err.stack : err);
   note('D-gate crash', false, String(err && err.stack ? err.stack : err).split('\n')[0]);
