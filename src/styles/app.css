@@ -1067,14 +1067,15 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
     color var(--dur-1),
     background-color var(--dur-1);
 }
+/* Apple's weight: 11 px regular, second ink. Opacity, so a live task still takes the accent. */
 .util-label {
   max-width: 100%;
   text-align: center;
   white-space: nowrap;
-  font-size: 0.8125rem;
-  font-weight: 500;
+  font-size: 0.6875rem;
+  font-weight: 400;
   letter-spacing: 0;
-  color: inherit;
+  opacity: 0.72;
 }
 .util.has-note::after {
   content: '';
@@ -1226,10 +1227,10 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 }
 .scrub-now,
 .scrub-remain {
-  /* Full ink, 13 px, weight 600. On the floor glass this clears AA; 72 % did not. */
-  color: var(--ink);
-  font-size: var(--t-footnote);
-  font-weight: 600;
+  /* 12 px, second ink, as Apple. On the round-20 floor (30 % lens) this clears AA in both themes. */
+  color: var(--ink-2);
+  font-size: 0.75rem;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 .scrub-track {
@@ -4080,7 +4081,6 @@ html[data-sheet='1'] .song {
     clip: auto;
     white-space: nowrap;
     border: 0;
-    font-size: 0.8125rem;
   }
 }
 

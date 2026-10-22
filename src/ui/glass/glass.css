@@ -123,6 +123,7 @@ html[data-glass='lens'] .lg-host--card .lg-edge {
 /* No sheen of its own: the floor is a pane over the song, not a second picture. */
 .lg-host--floor .lg-edge {
   background: none;
+  box-shadow: none;
 }
 
 .lg-host--note .lg-lens {
