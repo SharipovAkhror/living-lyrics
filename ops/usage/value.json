@@ -1,0 +1,9 @@
+{
+  "weekTokens": 1958.4,
+  "tokensInMain": 1270.5,
+  "tokensNotInMain": 687.9,
+  "mergedTasks": 44,
+  "mTokPerMergedTask": 28.9,
+  "source": "ops/usage/review.py + git: w43 Grok, not in main = studio-pass, t28-icons, icons-a/b/c (docs/research/spend-2026-w43.md)",
+  "at": "2026-10-22T16:30:00Z"
+}
