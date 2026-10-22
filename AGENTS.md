@@ -31,8 +31,8 @@
 **Кто на какой модели** (обязательно с 2026-10-22, решение владельца; полная таблица и шаблоны брифов — `docs/process/executors-guide.md`, раздел 4):
 - Менеджеры (Main, Site, Tech, Ops, Business) — Opus 5.5; Main — усилие xhigh, остальные — high. Задаётся в карточке `.claude/agents/ll-*.md` (`model:`, `effort:`).
 - Код (основной) — Grok `grok-4.7`, high, через `GROK_BINARY=ops/agents/grok_exec.mjs`; 30 млн / 2 ч на сессию, 3 круга на бриф.
-- Мелкая правка кода — agy `claude-sonnet-4-6`, medium, 900 с; трудная, или Grok исчерпан — agy `claude-opus-4-6-thinking`, high, 1800 с.
-- Видео и кадры — agy `gemini-3.8-flash-high` (да/нет — `flash-low`); суждение о дизайне и переводе — agy `claude-opus-4-6-thinking`, high. Flash не судит и не пишет код. GPT-OSS не брать.
+- Мелкая правка кода — agy `claude-sonnet-4-6`, medium, 900 с; трудная, или Grok исчерпан — agy `claude-opus-4-6-thinking`, 1800 с (усилие у этой модели не задаётся: agy отклоняет `--effort`, в `agy_run.py` — `-`).
+- Видео и кадры — agy `gemini-3.8-flash-high` (да/нет — `flash-low`); суждение о дизайне и переводе — agy `claude-opus-4-6-thinking`. Flash не судит и не пишет код. GPT-OSS не брать.
 - Субагенты Claude: поиск — haiku, low; исследование и проверка кода — sonnet, medium.
 - agy — решение владельца 2026-10-22: правила Google о сторонних обёртках он принимает на себя. Каждый запуск: cwd и `--add-dir` = worktree задачи, `--dangerously-skip-permissions`, `--output-format json --json-schema`, запись в учёт.
 - **Приёмка — отдельный проверяющий `ll-judge`** (sonnet, low, ≤ 10 мин, только чтение): вердикт по списку «Готово, когда» с доказательствами. Исполнитель сам себя не принимает.
