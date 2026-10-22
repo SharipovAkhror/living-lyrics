@@ -413,39 +413,6 @@ async function videosOf(browserName, browser, device) {
   }
 }
 
-async function sampleFlightClock(page) {
-  const frames = [];
-  const shot = () => page.screenshot({ type: 'jpeg', quality: 35, animations: 'allow' });
-  await page.waitForTimeout(500);
-  const now = await page.evaluate(() => Date.now());
-  await page.clock.pauseAt(now);
-  frames.push(await shot());
-  await page.evaluate(() => {
-    const el = document.querySelector('.lib-hero');
-    if (el instanceof HTMLElement) el.click();
-  });
-  let settled = 0;
-  // 50 ms on the same spring. 100 ms stepped across the flight in one or two frames.
-  for (let i = 0; i < 80; i++) {
-    await page.clock.runFor(50);
-    frames.push(await shot());
-    const state = await page.evaluate(() => {
-      const cover = document.querySelector('.morph-cover');
-      const song = document.querySelector('.song');
-      const box = cover ? cover.getBoundingClientRect() : null;
-      return {
-        cover: box ? Math.round(box.width) : 0,
-        flying: !!(song && song.classList.contains('is-flying')),
-        song: !!song,
-      };
-    });
-    if (state.song && !state.flying && state.cover === 0) settled += 1;
-    else settled = 0;
-    if (settled >= 8 && i > 14) break;
-  }
-  return frames;
-}
-
 function writeScrubViews(browserName, notes) {
   writeFileSync(`${videoDir}/${browserName}-scrub-frames.json`, JSON.stringify(notes, null, 2));
   const changes = [];
@@ -513,6 +480,57 @@ async function sampleScrubClock(page) {
   return { frames, notes };
 }
 
+/**
+ * Round 21: the engine's own screencast, one cell per drawn frame, in real time.
+ * The 100 ms screenshot pump held a second before the tap and WebKit's screenshots
+ * were slower than its frames, so "frames 1-11 identical" was the recorder's clock.
+ * Each cell is stamped with its time from the tap, the same clock as D28.
+ */
+async function castSample(page, body) {
+  await page.evaluate(() => {
+    window.__tapAt = null;
+    addEventListener('pointerdown', () => {
+      if (window.__tapAt == null) window.__tapAt = performance.timeOrigin + performance.now();
+    }, { capture: true });
+  });
+  const impl = page._connection.toImpl(page);
+  const frames = [];
+  const onFrame = (f) => frames.push({ t: f.frameSwapWallTime || Date.now(), buf: f.buffer });
+  impl.on('screencastframe', onFrame);
+  await impl.delegate.setScreencastOptions({ width: 393, height: 852, quality: 80 });
+  await page.waitForTimeout(300);
+  await body();
+  await impl.delegate.setScreencastOptions(null).catch(() => {});
+  impl.off('screencastframe', onFrame);
+  const tapAt = await page.evaluate(() => window.__tapAt);
+  // From the last frame before the tap; nothing before it moves.
+  const first = Math.max(0, frames.findIndex((f) => tapAt != null && f.t >= tapAt) - 1);
+  return { frames: frames.slice(first), tapAt };
+}
+
+async function stampedSheet(cast, dest) {
+  const { frames, tapAt } = cast;
+  if (!frames.length) throw new Error(`no frames for ${dest}`);
+  const cols = 10;
+  const cellW = 180;
+  const cellH = Math.round((cellW * 852) / 393);
+  const tiles = [];
+  for (let i = 0; i < frames.length; i++) {
+    const ms = tapAt == null ? 0 : Math.round(frames[i].t - tapAt);
+    const label = ms < 0 ? 'до касания' : `+${ms} мс`;
+    const svg = Buffer.from(
+      `<svg width="${cellW}" height="22" xmlns="http://www.w3.org/2000/svg"><rect width="${cellW}" height="22" fill="rgba(0,0,0,0.72)"/><text x="6" y="16" fill="#fff" font-family="Segoe UI, sans-serif" font-size="13">${i + 1} · ${label}</text></svg>`,
+    );
+    const cell = await sharp(frames[i].buf).resize(cellW, cellH, { fit: 'fill' }).composite([{ input: svg, left: 0, top: cellH - 22 }]).png().toBuffer();
+    tiles.push({ input: cell, left: (i % cols) * cellW, top: Math.floor(i / cols) * cellH });
+  }
+  await sharp({ create: { width: cols * cellW, height: Math.ceil(frames.length / cols) * cellH, channels: 3, background: { r: 7, g: 6, b: 12 } } })
+    .composite(tiles)
+    .png()
+    .toFile(dest);
+  console.log(dest, `${frames.length} frames, tap stamped`);
+}
+
 async function contactsOf(browserName, browser, device) {
   for (const step of clips('plain')) {
     if (only && step.name !== only) continue;
@@ -523,10 +541,7 @@ async function contactsOf(browserName, browser, device) {
     // Real time. No slowmo, no CDP. The sheet is one frame per 100 ms around the action.
     // Chromium's screenshot gap is longer than the flight, so that one sheet steps the same spring by 100 ms.
     // WebKit's screenshot gap is longer than a dwell, so the scrub sheet steps the finger on the clock.
-    if (
-      (browserName === 'chromium' && step.name === 'library-song') ||
-      (browserName === 'webkit' && step.name === 'scrub')
-    ) {
+    if (browserName === 'webkit' && step.name === 'scrub') {
       await page.clock.install({ time: Date.now() });
     }
     await step.prepare(page);
@@ -537,9 +552,11 @@ async function contactsOf(browserName, browser, device) {
       await context.close();
       continue;
     }
-    if (browserName === 'chromium' && step.name === 'library-song') {
-      const frames = await sampleFlightClock(page);
-      await contactSheet(frames, `${videoDir}/${browserName}-${step.name}-contact.png`);
+    if (step.name === 'library-song' || step.name === 'settings') {
+      const cast = await castSample(page, async () => {
+        await step.go(page);
+      });
+      await stampedSheet(cast, `${videoDir}/${browserName}-${step.name}-contact.png`);
       await context.close();
       continue;
     }
