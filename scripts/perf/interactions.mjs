@@ -1155,7 +1155,7 @@ async function runDesign(browser) {
   const widePage = await wide.newPage();
   await openSong(widePage);
   const margin = await widePage.evaluate(columnNote);
-  note('wide-note', columnOk(margin, 1400), margin ? JSON.stringify(margin) : 'missing');
+  note('wide-note', columnOk(margin, 800) && !!margin && margin.stageW <= 920, margin ? JSON.stringify(margin) : 'missing');
   await wide.close();
   return out;
 }

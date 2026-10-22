@@ -332,8 +332,9 @@ const wideGroup = stageFrame(2560, 1440, true);
   if (wideGroup.panelInset !== 16) fail('2560 group', `panel inset ${wideGroup.panelInset}`);
   if (wideGroup.colLeft + wideGroup.stageW + wideGroup.colRight !== 2560) fail('2560 group', 'columns do not add up');
   if (gap > 28 || gap < 12) fail('2560 group', `note gap ${gap}`);
-  if (group < 1800 || group > 2560 * 0.86) fail('2560 group', `group ${group} does not fill the frame`);
-  if (wideGroup.lyricW < 1400) fail('2560 group', `measure ${wideGroup.lyricW} stayed desk-sized`);
+  if (wideGroup.stageW > 920) fail('2560 group', `stage ${wideGroup.stageW} wider than the 920 column`);
+  if (wideGroup.lyricW > 820) fail('2560 group', `measure ${wideGroup.lyricW} grew past the desk spread`);
+  if (group < 1100 || group > 1400) fail('2560 group', `group ${group} is not the desk column`);
   if (Math.abs(wideGroup.colLeft - wideGroup.noteRight) > 2) fail('2560 group', 'the group is not centred');
 }
 const at1920 = stageFrame(1920, 1080, true);

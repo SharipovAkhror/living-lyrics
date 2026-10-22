@@ -62,12 +62,11 @@ function frame(
 const NOTE_W = 320;
 
 /**
- * Desk keeps the 820 spread. A large display grows it with the column so the
- * line, the header and the floor fill the frame. 4rem type still wraps.
+ * One spread on the desk and on a large display. Growing it past 2000 stretched
+ * the header and the floor past the 920 column (round 18). 4rem type still wraps.
  */
-function measureFor(vw: number): number {
-  if (vw < 2000) return MEASURE;
-  return Math.round(Math.min(1680, MEASURE + (vw - 2000) * 1.4));
+function measureFor(_vw: number): number {
+  return MEASURE;
 }
 
 /**
