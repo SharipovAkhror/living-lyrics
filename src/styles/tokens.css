@@ -64,13 +64,13 @@
   --t-caption2: 0.8125rem;
   /* Library title. Serif, weight 600. 3.5rem from 800 px wide. */
   --t-display: 2.5rem;
-  /* Sung line on an 852 px-tall phone. The desktop scale is a separate block
-     below, not this fraction on a tall window. Registered so viewport units
-     compute to a length. An unregistered max() stays a token and font-size
-     falls back to the body size. */
-  --lyric-latin: clamp(0.8125rem, calc(2.65rem * 100dvh / 852), 3.25rem);
-  --lyric-arab: clamp(0.8125rem, calc(3rem * 100dvh / 852), 3.75rem);
-  --lyric-tr: clamp(0.8125rem, calc(1.0625rem * 100dvh / 852), 1.375rem);
+  /* Sung line on an 852 px-tall phone: 33 / 40 / 17. The desktop scale is a
+     separate block below. The middle term is a number times 100dvh. A rem
+     there is a length times a length, the property is invalid, and font-size
+     stays at the registered initial value on every window. */
+  --lyric-latin: clamp(0.8125rem, calc(33 * 100dvh / 852), 3.25rem);
+  --lyric-arab: clamp(0.8125rem, calc(40 * 100dvh / 852), 3.75rem);
+  --lyric-tr: clamp(0.8125rem, calc(17 * 100dvh / 852), 1.375rem);
   --lyric-note: clamp(0.8125rem, calc(1.0625rem * 100dvh / 852), 1.5rem);
 
   /* Thick sheet. 80 % white still left the player labels readable, so the light

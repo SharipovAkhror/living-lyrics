@@ -4273,12 +4273,6 @@ html[data-sheet='1'] .song {
   white-space: nowrap;
   min-width: 0;
 }
-@media (max-width: 389px) and (max-height: 640px) {
-  .scene-stage {
-    bottom: calc(var(--player-h) + 8px);
-  }
-}
-
 /* Round 14. Phone play disc: smaller, a material, an ink glyph.
    Desktop from 768 / 1100 keeps 56 and 64. */
 @media (max-width: 699px) and (min-height: 521px),

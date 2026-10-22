@@ -802,7 +802,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       ? ({
           '--lyric-latin': `max(13px, calc(33 * 100dvh / 852 * ${settings.textScale}))`,
           '--lyric-arab': `max(13px, calc(40 * 100dvh / 852 * ${settings.textScale}))`,
-          '--lyric-tr': `max(13px, calc(20 * 100dvh / 852 * ${settings.textScale}))`,
+          '--lyric-tr': `max(13px, calc(17 * 100dvh / 852 * ${settings.textScale}))`,
         } as CSSProperties)
       : undefined;
 
