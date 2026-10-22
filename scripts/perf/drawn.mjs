@@ -319,7 +319,13 @@ export function sampleInPage(corpus) {
       }
     }
   }
-  if (textBoxes.length === 0 && artBoxes.length === 0) bad.push('empty');
+  // A passage whose engraving is still loading shows its caption. That frame is
+  // not empty; it only does not count for the engraving × text overlap.
+  let captions = 0;
+  if (textBoxes.length === 0 && artBoxes.length === 0) {
+    for (const el of stage.querySelectorAll('.fb-inst-note')) if (chainShown(el)) captions += 1;
+  }
+  if (textBoxes.length === 0 && artBoxes.length === 0 && captions === 0) bad.push('empty');
   return {
     ok: bad.length === 0 && overlap.length === 0,
     texts,
