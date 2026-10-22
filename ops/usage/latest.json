@@ -1,32 +1,22 @@
 {
-  "updated": "2026-10-21T13:24:01Z",
+  "updated": "2026-10-22T20:50:49Z",
   "grok": {
-    "today": 579288326,
+    "today": 0,
     "todaySource": "grok usage",
-    "todayAt": "2026-10-21T13:24:01Z",
-    "week": 1456095577,
+    "todayAt": "2026-10-22T20:50:49Z",
+    "week": 1958395627,
     "weekSource": "grok usage",
-    "weekAt": "2026-10-21T13:24:01Z",
-    "todayByTask": {
-      "studio-pass": 127868830,
-      "t1-sync90": 192600696,
-      "t10-small": 16642755,
-      "t27-iphone": 116407712,
-      "t28-icons": 87985597,
-      "t29b-text": 11421673,
-      "t31-audit": 7665432,
-      "t31-fixes": 9614079,
-      "t32-limits": 9081552
-    },
+    "weekAt": "2026-10-22T20:50:49Z",
+    "todayByTask": {},
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-10-21T13:24:01Z",
+    "todayByTaskAt": "2026-10-22T20:50:49Z",
     "plan": "SuperGrok Heavy",
     "planSource": "grok /usage",
-    "planAt": "2026-10-21T13:24:01Z",
+    "planAt": "2026-10-22T20:50:49Z",
     "weekly": {
-      "percentUsed": 76,
+      "percentUsed": 100,
       "source": "grok /usage",
-      "at": "2026-10-21T13:24:01Z",
+      "at": "2026-10-22T20:50:49Z",
       "timezoneLabeled": false,
       "resetsAt": "October 23, 21:08"
     }
@@ -35,38 +25,70 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-10-21T13:24:01Z",
-        "weeklyRemaining": 87.9,
-        "fiveHourRemaining": 95.93,
-        "weeklyResetIn": "73h 23m",
-        "fiveHourResetIn": "2h 48m"
+        "at": "2026-10-22T20:50:49Z",
+        "weeklyRemaining": 84.1,
+        "fiveHourRemaining": 100,
+        "weeklyResetIn": "41h 56m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-10-21T13:24:01Z",
-        "weeklyRemaining": 100,
-        "fiveHourRemaining": 100
+        "at": "2026-10-22T20:50:49Z",
+        "weeklyRemaining": 49.49,
+        "fiveHourRemaining": 0,
+        "weeklyResetIn": "163h 18m",
+        "fiveHourResetIn": "18m"
       }
     },
+    "conversationsToday": 0,
+    "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
+    "conversationsTodayAt": "2026-10-22T20:50:49Z",
     "runsToday": 0,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-10-21T13:24:01Z",
+    "runsTodayAt": "2026-10-22T20:50:49Z",
     "secondsToday": 0,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-10-21T13:24:01Z",
+    "secondsTodayAt": "2026-10-22T20:50:49Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
-    "at": "2026-10-21T13:24:01Z",
+    "at": "2026-10-22T20:50:49Z",
     "claudeGpt": {
       "source": "agy /usage",
-      "at": "2026-10-21T13:24:01Z",
-      "weeklyRemaining": 100,
-      "fiveHourRemaining": 100
+      "at": "2026-10-22T20:50:49Z",
+      "weeklyRemaining": 49.49,
+      "fiveHourRemaining": 0,
+      "weeklyResetIn": "163h 18m",
+      "fiveHourResetIn": "18m"
     }
+  },
+  "alerts": [],
+  "value": {
+    "weekTokens": 1958.4,
+    "tokensInMain": 1270.5,
+    "tokensNotInMain": 687.9,
+    "mergedTasks": 44,
+    "mTokPerMergedTask": 28.9,
+    "source": "ops/usage/review.py + git: w43 Grok, not in main = studio-pass, t28-icons, icons-a/b/c (docs/research/spend-2026-w43.md)",
+    "at": "2026-10-22T16:30:00Z"
   },
   "claude": {
     "plan": "Claude Pro",
     "planSource": "claude auth status --json",
-    "at": "2026-10-21T13:24:01Z"
+    "at": "2026-10-22T20:50:49Z",
+    "windows": [
+      {
+        "kind": "five_hour",
+        "percentUsed": 2,
+        "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
+        "at": "2026-10-22T20:48:21Z",
+        "resetsAt": "2026-10-23T01:20:00.000Z"
+      },
+      {
+        "kind": "seven_day",
+        "percentUsed": 75,
+        "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
+        "at": "2026-10-22T20:48:21Z",
+        "resetsAt": "2026-10-23T04:00:00.000Z"
+      }
+    ]
   }
 }
