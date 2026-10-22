@@ -245,6 +245,11 @@ setInterval(() => render(last), 30000);
 (async () => {
   const db = window.claude && await claude.use('db');
   if (!db) { document.getElementById('live').textContent = 'войдите в claude.ai'; return; }
+  // Visual tweaks arrive as data, not as a publish: `dashboard/ui` = {css}, styles only (never code or
+  // markup), appended after the built-in sheet. Layout changes still need one publish.
+  const sheet = document.createElement('style');
+  document.head.appendChild(sheet);
+  db.doc('dashboard/ui').onSnapshot(s => { const ui = s && s.exists ? s.data() : null; sheet.textContent = ui && typeof ui.css === 'string' ? ui.css : ''; }, () => {});
   db.doc('dashboard/now').onSnapshot(snap => render(snap && snap.exists ? snap.data() : null), () => { document.getElementById('live').textContent = 'нет связи'; });
 })();
 </script>
