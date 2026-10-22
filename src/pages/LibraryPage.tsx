@@ -10,7 +10,7 @@ import { enableSongFonts, loadSelectedFonts } from '@/app/fontCatalog';
 import { useAppliedTheme } from '@/app/theme';
 import { Icon } from '@/ui/icons';
 import { Glass, GlassLayers } from '@/ui/glass/Glass';
-import { armLibraryExit, armMorph, motionBlocked } from '@/app/morph';
+import { armLibraryExit, armMorph, exitDecoded, motionBlocked, warmCover } from '@/app/morph';
 import { Field } from '@/scene/Field';
 import { Status } from '@/components/Status';
 
@@ -40,7 +40,7 @@ function openSong(event: MouseEvent<HTMLAnchorElement>, slug: string) {
   // spilled the song commit across an extra phone frame.
   armLibraryExit(card);
   armMorph(card);
-  requestAnimationFrame(() => navigate(to));
+  void exitDecoded().then(() => requestAnimationFrame(() => navigate(to)));
 }
 
 export function LibraryPage() {
@@ -196,6 +196,7 @@ function Cover({
       srcSet={`${coverUrl(song.slug, 512, ext)} 512w, ${coverUrl(song.slug, 1024, ext)} 1024w`}
       sizes={sizes}
       alt=""
+      onLoad={poster ? (e) => warmCover(e.currentTarget.currentSrc) : undefined}
     />
   );
 }

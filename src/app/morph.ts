@@ -46,9 +46,16 @@ interface ExitNode {
   el: HTMLElement;
   delay: number;
   dist: number;
+  /** The shelf: it lies where the floor arrives, so the floor waits for it. */
+  under?: boolean;
 }
 
+/** Opacity of the library copy that lies under the arriving floor. 0 when gone. */
+let underOpacity = 0;
+
 let node: HTMLImageElement | null = null;
+/** The card's own image. It stays drawn until the flyer has a decoded picture to show. */
+let parked: HTMLElement | null = null;
 let fromBox: MorphBox | null = null;
 let destGet: (() => MorphBox | null) | null = null;
 let arrive: (() => void) | null = null;
@@ -80,21 +87,19 @@ export function flightProgress(): number {
  * contact sheet fast-forwards that transition to the end. The copy is
  * opacity and translate only, on the same spring as the flight.
  */
-function pinExit(source: HTMLElement, delay: number, dist: number, flat = false): ExitNode | null {
+/** Images inside the exit copies. The route waits for them, see exitDecoded. */
+let copyImages: HTMLImageElement[] = [];
+
+function pinExit(source: HTMLElement, delay: number, dist: number): ExitNode | null {
   const rect = source.getBoundingClientRect();
   if (rect.width < 2 || rect.height < 2) return null;
   const el = source.cloneNode(true) as HTMLElement;
   el.classList.add('lib-exit');
   el.setAttribute('aria-hidden', 'true');
   // Filters and motion are killed by .lib-exit. Walking every node to set
-  // inline styles was itself the long frame. Shelf covers are already on
-  // screen; painting them again inside the clone decoded a second time.
-  if (flat) {
-    el.querySelectorAll('img').forEach((img) => {
-      img.removeAttribute('src');
-      img.style.background = '#3a322c';
-    });
-  }
+  // inline styles was itself the long frame. The shelf covers keep their
+  // pictures: a flat brown stand-in flashed on a 60 fps sheet.
+  copyImages.push(...el.querySelectorAll('img'));
   el.style.position = 'fixed';
   el.style.left = `${rect.left.toFixed(2)}px`;
   el.style.top = `${rect.top.toFixed(2)}px`;
@@ -128,10 +133,12 @@ function runExit(nodes: ExitNode[]) {
       springs[i] = stepSpring(springs[i], 1, dt, EXIT);
       const t = Math.max(0, Math.min(1, springs[i].x));
       item.el.style.opacity = (1 - t).toFixed(3);
+      if (item.under) underOpacity = t > 0.95 ? 0 : 1 - t;
       if (item.dist) item.el.style.transform = `translate3d(0, ${(item.dist * t).toFixed(2)}px, 0)`;
       if (t < 0.985 || Math.abs(springs[i].v) > 0.04) alive = true;
     });
     if (!alive || elapsed > 1.5) {
+      underOpacity = 0;
       nodes.forEach((item) => item.el.remove());
       return;
     }
@@ -151,8 +158,13 @@ function armExit(library: HTMLElement, chosen: HTMLElement) {
     if (pinned) nodes.push(pinned);
   }
   if (shelf) {
-    const pinned = pinExit(shelf, 0.09, 8, true);
-    if (pinned) nodes.push(pinned);
+    // No delay: the floor rises only once this copy is gone, so two transport rows never share a frame.
+    const pinned = pinExit(shelf, 0, 8);
+    if (pinned) {
+      pinned.under = true;
+      underOpacity = 1;
+      nodes.push(pinned);
+    }
   }
   if (copy) {
     const pinned = pinExit(copy, 0, 0);
@@ -196,6 +208,7 @@ function finish() {
   const el = node;
   node = null;
   fromBox = null;
+  parked = null;
   destGet = null;
   el?.remove();
   if (!arrived) {
@@ -212,6 +225,16 @@ function frame(now: number) {
   }
   const dt = last ? Math.min(0.032, (now - last) / 1000) : 0.016;
   last = now;
+  // A flyer that has not loaded paints nothing: on a 60 fps sheet the cover
+  // vanished for a frame (+60 ms) and came back in the air. Hold until it is drawable.
+  if (parked) {
+    if (!node.complete || !node.naturalWidth) {
+      raf = requestAnimationFrame(frame);
+      return;
+    }
+    parked.style.visibility = 'hidden';
+    parked = null;
+  }
   const to = destGet?.() ?? null;
   if (!to) {
     place(node, fromBox, fromBox, 0);
@@ -296,6 +319,22 @@ function predictHeader(): MorphBox {
   };
 }
 
+/** Decoded copies of the library covers, made while the library is idle. */
+const warmed = new Map<string, HTMLImageElement>();
+
+/**
+ * Decode the flyer before the tap. A new image born on the click was not drawn on
+ * the first frames (Chromium +64 ms: no cover at all) even when it was in the cache.
+ */
+export function warmCover(src: string): void {
+  if (!src || warmed.has(src) || typeof Image === 'undefined') return;
+  const img = new Image();
+  img.decoding = 'sync';
+  img.src = src;
+  warmed.set(src, img);
+  img.decode().catch(() => warmed.delete(src));
+}
+
 /** Hide the card image and put the one flyer on the body, at the card's rect. */
 export function armMorph(card: HTMLElement): void {
   const cover = card.querySelector<HTMLElement>('[data-poster]');
@@ -304,6 +343,7 @@ export function armMorph(card: HTMLElement): void {
     node = null;
   }
   fromBox = null;
+  parked = null;
   arrived = false;
   state = { x: 0, v: 0 };
   if (!cover) return;
@@ -316,12 +356,13 @@ export function armMorph(card: HTMLElement): void {
   // Labels stay on the card until the exit copies exist. Hiding them here
   // left a blank frame before the route changed.
   if (motionBlocked() || !src || box.width < 2) return;
-  cover.style.visibility = 'hidden';
-  const el = document.createElement('img');
+  const ready = warmed.get(src);
+  warmed.delete(src);
+  const el = ready ?? document.createElement('img');
   el.className = 'morph-cover';
   el.alt = '';
   el.decoding = 'sync';
-  el.src = src;
+  if (el.src !== src) el.src = src;
   el.style.position = 'fixed';
   el.style.left = '0';
   el.style.top = '0';
@@ -333,6 +374,8 @@ export function armMorph(card: HTMLElement): void {
   place(el, box, box, 0);
   node = el;
   fromBox = box;
+  if (el.complete && el.naturalWidth) cover.style.visibility = 'hidden';
+  else parked = cover;
   // A destination on the tap. The song page has not committed yet, and WebKit
   // does not deliver the next frame until that first layout has painted.
   if (!destGet) {
@@ -360,7 +403,20 @@ export function armMorph(card: HTMLElement): void {
 export function armLibraryExit(card: HTMLElement): void {
   const library = card.closest('.library');
   if (!(library instanceof HTMLElement) || motionBlocked()) return;
+  copyImages = [];
   armExit(library, card);
+}
+
+/**
+ * The library may unmount once the copies can draw their covers. A fresh copy of
+ * an image paints nothing until it decodes; the live cover under it hid that only
+ * while the library was still there. At most 120 ms.
+ */
+export function exitDecoded(): Promise<void> {
+  const list = copyImages;
+  copyImages = [];
+  const decoded = Promise.all(list.map((img) => img.decode().catch(() => {}))).then(() => {});
+  return Promise.race([decoded, new Promise<void>((resolve) => setTimeout(resolve, 120))]);
 }
 
 /**
@@ -445,7 +501,7 @@ export function playRise(root: HTMLElement, done: () => void): () => void {
     const sinceClick = started ? (now - started) / 1000 : elapsed;
     let quiet = true;
     RISES.forEach((group, i) => {
-      if (group.sel === '.player' && sinceClick < FLOOR_DELAY) {
+      if (group.sel === '.player' && (sinceClick < FLOOR_DELAY || underOpacity > 0)) {
         paint(group.sel, group.dist, 0);
         quiet = false;
         return;
