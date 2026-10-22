@@ -110,11 +110,14 @@ function NoteCard({
     }
     root.dataset.noteFade = '1';
     const home = card.getBoundingClientRect();
-    const started = performance.now();
+    // One clock. A recording slows the frame timestamp and leaves performance.now()
+    // alone; mixing them kept this flag set and the sheet off-screen.
+    let started = -1;
     let raf = 0;
     let alive = true;
     const paint = (now: number) => {
       if (!alive) return;
+      if (started < 0) started = now;
       const sheet = document.querySelector('.sheet');
       const sheetTop = sheet instanceof HTMLElement ? sheet.getBoundingClientRect().top : window.innerHeight + 80;
       const elapsed = now - started;
