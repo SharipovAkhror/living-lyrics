@@ -21,6 +21,7 @@ import { RESUME_AUTO_MS, readResume, writeResume } from '@/player/resume';
 import { Scrubber } from '@/player/Scrubber';
 import { Scene } from '@/scene/Scene';
 import { coverStage } from '@/scene/cover';
+import { fitNote } from '@/scene/noteFit';
 import { Field } from '@/scene/Field';
 import { LEAD, flowPosition, planFlow } from '@/scene/flow';
 import { Icon } from '@/ui/icons';
@@ -89,6 +90,10 @@ function NoteCard({
 }) {
   const ref = useRef<HTMLElement>(null);
   const preview = (showHarakat ? text : stripHarakat(text)).replace(/\*+/g, '').replace(/\s+/g, ' ').trim();
+  useLayoutEffect(() => {
+    const host = ref.current?.closest('.song');
+    if (host instanceof HTMLElement) fitNote(host);
+  }, [preview]);
   useLayoutEffect(() => {
     const card = ref.current;
     const root = document.documentElement;
@@ -193,7 +198,10 @@ function NoteCard({
   return (
     <aside ref={ref} className="note-card" role="region" aria-label="Пояснение">
       <button type="button" className="note-line" onClick={onOpen}>
-        <span className="note-line-text">{preview}</span>
+        {/* Keyed: fitNote rewrites the text to a whole clause, a new note is a new node. */}
+        <span key={preview} className="note-line-text" data-full={preview}>
+          {preview}
+        </span>
       </button>
     </aside>
   );

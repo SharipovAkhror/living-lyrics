@@ -1,3 +1,4 @@
+import { fitNote } from './noteFit';
 import { memo, useEffect, useLayoutEffect, useRef } from 'react';
 import type { LineCue } from '@/data/timeline';
 import type { LineEntrance, MotionPref, Settings } from '@/app/settings';
@@ -70,6 +71,7 @@ export function syncNoteFoot(line: HTMLElement): void {
   if (lineBox.height < 8) return;
   const foot = `${(stage.offsetTop + (lineBox.bottom - stageBox.top) + 4).toFixed(1)}px`;
   if (host.style.getPropertyValue('--note-foot') !== foot) host.style.setProperty('--note-foot', foot);
+  fitNote(host);
 }
 
 /** Light markup in translations: **key word** (the counterpart of the accented original word), *nuance*. */
