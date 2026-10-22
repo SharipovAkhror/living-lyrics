@@ -7,7 +7,7 @@
       "section": "you",
       "status": "waiting",
       "title": "Нажать «Resume» в чате LL · Ops",
-      "what": "LL · Ops стоит на вопросе «Resume this conversation?». Открыть LL · Ops (приложение Claude или claude.ai/code/session_018z7LQwc1tm8QKr1tXuHBsV; на Станции — claude agents → LL · Ops → Enter) и выбрать «1. Resume». Не «новый разговор»: он потеряет дела без сдачи.",
+      "what": "LL · Ops стоит на вопросе «Resume this conversation?». С телефона вопрос может быть не виден: на Станции открыть приложение Claude → чат LL · Ops, или в терминале claude agents → LL · Ops → Enter, и выбрать «1. Resume». Не «новый разговор»: он потеряет дела без сдачи.",
       "date": "2026-10-23"
     },
     {
