@@ -1,4 +1,4 @@
-# T30: a status view the owner can open in the web version
+# T30: a status view the owner can open in the web version — сделано (2026-10-23): версия 3 по ссылке, проверена глазами, принята LL · Main
 
 Owner: LL · Tech. Report to `LL · Main` in short English; screenshots go to the owner through `LL · Main`.
 
