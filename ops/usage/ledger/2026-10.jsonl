@@ -20242,5 +20242,25 @@
 {"ts": "2026-10-22T16:23:54Z", "agent": "gemini", "kind": "run", "task": "T34 panel compat", "model": "claude-opus-4-6-thinking", "seconds": 257.4, "tokens": 116497, "status": "ERROR"}
 {"ts": "2026-10-22T16:26:42Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "claude-gpt", "weeklyRemaining": 49.49, "weeklyResetIn": "167h 42m", "fiveHourRemaining": 0, "fiveHourResetIn": "4h 42m"}
 {"ts": "2026-10-22T20:50:49Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "gemini", "weeklyRemaining": 84.1, "weeklyResetIn": "41h 56m", "fiveHourRemaining": 100}
+{"ts": "2026-10-22T20:58:11Z", "agent": "gemini", "kind": "run", "task": "T37 chat lines", "model": "claude-sonnet-4-6", "seconds": 0.0, "tokens": 0, "status": "ERROR"}
+{"ts": "2026-10-22T20:58:51Z", "agent": "gemini", "kind": "run", "task": "T37 chat lines", "model": "claude-sonnet-4-6", "seconds": 0.0, "tokens": 0, "status": "ERROR"}
+{"ts": "2026-10-22T20:58:17Z", "agent": "gemini", "kind": "quota", "plan": "", "group": "gemini", "weeklyRemaining": 84.04, "weeklyResetIn": "41h 48m", "fiveHourRemaining": 99.79, "fiveHourResetIn": "4h 51m"}
+{"ts": "2026-10-22T20:58:17Z", "agent": "gemini", "kind": "quota", "plan": "", "group": "claude-gpt", "weeklyRemaining": 49.49, "weeklyResetIn": "163h 11m", "fiveHourRemaining": 0, "fiveHourResetIn": "11m"}
+{"ts": "2026-10-22T20:58:51Z", "agent": "gemini", "kind": "quota", "plan": "", "group": "gemini", "weeklyRemaining": 84.03, "weeklyResetIn": "41h 48m", "fiveHourRemaining": 99.74, "fiveHourResetIn": "4h 51m"}
+{"ts": "2026-10-22T21:00:08Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "gemini", "weeklyRemaining": 84.01, "weeklyResetIn": "41h 46m", "fiveHourRemaining": 99.67, "fiveHourResetIn": "4h 50m"}
+{"ts": "2026-10-22T21:00:08Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "claude-gpt", "weeklyRemaining": 49.49, "weeklyResetIn": "163h 9m", "fiveHourRemaining": 0, "fiveHourResetIn": "9m"}
+{"ts": "2026-10-22T21:00:50Z", "agent": "gemini", "kind": "quota", "plan": "", "group": "gemini", "weeklyRemaining": 83.99, "weeklyResetIn": "41h 46m", "fiveHourRemaining": 99.61, "fiveHourResetIn": "4h 49m"}
+{"ts": "2026-10-22T21:00:50Z", "agent": "gemini", "kind": "quota", "plan": "", "group": "claude-gpt", "weeklyRemaining": 49.49, "weeklyResetIn": "163h 8m", "fiveHourRemaining": 0, "fiveHourResetIn": "8m"}
+{"ts": "2026-10-22T21:08:17Z", "agent": "gemini", "kind": "quota", "plan": "", "group": "gemini", "weeklyRemaining": 83.86, "weeklyResetIn": "41h 38m", "fiveHourRemaining": 99.13, "fiveHourResetIn": "4h 41m"}
+{"ts": "2026-10-22T21:08:51Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "gemini", "weeklyRemaining": 83.85, "weeklyResetIn": "41h 38m", "fiveHourRemaining": 99.1, "fiveHourResetIn": "4h 41m"}
+{"ts": "2026-10-22T21:08:51Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "claude-gpt", "weeklyRemaining": 49.49, "weeklyResetIn": "163h 0m", "fiveHourRemaining": 0, "fiveHourResetIn": "0m"}
+{"ts": "2026-10-22T21:10:08Z", "agent": "gemini", "kind": "quota", "plan": "", "group": "gemini", "weeklyRemaining": 83.81, "weeklyResetIn": "41h 36m", "fiveHourRemaining": 98.95, "fiveHourResetIn": "4h 40m"}
+{"ts": "2026-10-22T21:10:08Z", "agent": "gemini", "kind": "quota", "plan": "", "group": "claude-gpt", "weeklyRemaining": 49.49, "weeklyResetIn": "162h 59m", "fiveHourRemaining": 100}
+{"ts": "2026-10-22T21:13:11Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "gemini", "weeklyRemaining": 83.77, "weeklyResetIn": "41h 33m", "fiveHourRemaining": 98.84, "fiveHourResetIn": "4h 36m"}
+{"ts": "2026-10-22T21:13:11Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "claude-gpt", "weeklyRemaining": 49.49, "weeklyResetIn": "162h 56m", "fiveHourRemaining": 100}
+{"ts": "2026-10-22T21:26:02Z", "agent": "gemini", "kind": "run", "task": "T36-r1", "model": "claude-opus-4-6-thinking", "seconds": 0.5, "tokens": 0, "status": "SUCCESS"}
+{"ts": "2026-10-22T21:26:47Z", "agent": "gemini", "kind": "run", "task": "T36-r1-sonnet", "model": "claude-sonnet-4-6", "seconds": 0.4, "tokens": 0, "status": "SUCCESS"}
+{"ts": "2026-10-22T21:29:21Z", "agent": "gemini", "kind": "run", "task": "agy model probe", "model": "claude-opus-4-6-thinking", "seconds": 2.5, "tokens": 7899, "status": "SUCCESS"}
+{"ts": "2026-10-22T21:29:30Z", "agent": "gemini", "kind": "run", "task": "agy model probe", "model": "claude-sonnet-4-6", "seconds": 1.8, "tokens": 4044, "status": "SUCCESS"}
 {"ts": "2026-10-22T21:29:42Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "gemini", "weeklyRemaining": 83.65, "weeklyResetIn": "41h 17m", "fiveHourRemaining": 98.42, "fiveHourResetIn": "4h 20m"}
 {"ts": "2026-10-22T21:29:42Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "claude-gpt", "weeklyRemaining": 47.6, "weeklyResetIn": "162h 39m", "fiveHourRemaining": 96.22, "fiveHourResetIn": "4h 39m"}
