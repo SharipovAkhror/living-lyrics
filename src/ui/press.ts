@@ -71,6 +71,10 @@ export function bindPress(el: HTMLElement): () => void {
     if (event.button !== 0) return;
     mode = 'down';
     target = PRESSED;
+    // One step before yielding, so the first frame after the touch already shows the press.
+    // A first tick a few ms after the event moved the disc by a pixel; WebKit's next frame was 80 ms later.
+    state = stepSpring(state, PRESSED, 0.032, PRESS_SPRING);
+    paint();
     try {
       el.setPointerCapture(event.pointerId);
     } catch {

@@ -4292,6 +4292,7 @@ html[data-sheet='1'] .song {
 .player .util.is-live-task {
   color: var(--accent);
   font-weight: 600;
+  transition: none;
 }
 
 /* From 1280 the floor and the top bar stay inside a dock on the stage column.

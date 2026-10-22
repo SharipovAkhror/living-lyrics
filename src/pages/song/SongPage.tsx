@@ -1078,12 +1078,19 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
 
   const togglePlay = useCallback(() => engine?.toggle(), [engine]);
   const openSheet = useCallback(
-    (name: SheetName) => {
+    (name: SheetName, tab?: HTMLElement) => {
       if (shortLand && settings.commentOpen) setSettings({ commentOpen: false });
       // The note stays mounted and hides in the same commit as the sheet.
       // Unmounting first collapsed --player-h and the lyrics jumped.
       coverStage();
-      setSheet(name);
+      if (!tab) {
+        setSheet(name);
+        return;
+      }
+      // The tab lights on the next painted frame and the sheet mounts after it.
+      // Mounting inside the tap held that frame in WebKit.
+      tab.classList.add('is-live-task');
+      requestAnimationFrame(() => setTimeout(() => setSheet(name), 0));
     },
     [shortLand, settings.commentOpen],
   );
@@ -1404,11 +1411,11 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               onToggle={toggleComment}
               live={sheet === 'note'}
             />
-            <button className={`util${sheet === 'text' ? ' is-live-task' : ''}`} aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={() => openSheet('text')}>
+            <button className={`util${sheet === 'text' ? ' is-live-task' : ''}`} aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={(e) => openSheet('text', e.currentTarget)}>
               <Icon name="list.bullet" size={24} />
               <span className="util-label">Весь текст</span>
             </button>
-            <button className={`util${sheet === 'settings' ? ' is-live-task' : ''}`} aria-label="Настройки" aria-pressed={sheet === 'settings'} onClick={() => openSheet('settings')}>
+            <button className={`util${sheet === 'settings' ? ' is-live-task' : ''}`} aria-label="Настройки" aria-pressed={sheet === 'settings'} onClick={(e) => openSheet('settings', e.currentTarget)}>
               <Icon name="slider.horizontal.3" size={24} />
               <span className="util-label">Настройки</span>
             </button>
