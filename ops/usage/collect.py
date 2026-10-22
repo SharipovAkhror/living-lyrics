@@ -800,6 +800,14 @@ def grok_alerts(rows, stamp, weekly=None, commits=worktree_commits_since):
     return alerts
 
 
+def read_value():
+    try:
+        value = json.loads((OUT / 'value.json').read_text(encoding='utf-8'))
+    except Exception:
+        return None
+    return value if isinstance(value, dict) and value.get('weekTokens') else None
+
+
 def build_latest(rows, stamp, *, claude=None, gemini_live=None, grok_live=None, prev=None, settings_plan=('', '')):
     """The summary dict. Missing measurements are omitted. Nothing is guessed."""
     prev = prev or {}
@@ -886,9 +894,11 @@ def build_latest(rows, stamp, *, claude=None, gemini_live=None, grok_live=None, 
         gemini['claudeGpt'] = quota['claude-gpt']
 
     latest = {'updated': stamp, 'grok': grok, 'gemini': gemini, 'alerts': grok_alerts(rows, stamp, grok.get('weekly'))}
-    # Filled by LL · Ops (ops/usage/review.py), weekly or on demand; carried over untouched.
-    if prev.get('value'):
-        latest['value'] = prev['value']
+    # Filled by LL · Ops (ops/usage/review.py) and committed as ops/usage/value.json, weekly or on
+    # demand; the file wins over a value carried over from the last latest.json.
+    value = read_value() or prev.get('value')
+    if value:
+        latest['value'] = value
     if claude and claude.get('plan'):
         latest['claude'] = {
             'plan': claude['plan'],
