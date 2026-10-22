@@ -92,6 +92,16 @@ def parse(text: str, kind: str) -> dict | None:
     return None
 
 
+def _log_agy(stdout: str, task: str) -> None:
+    """Log a finished agy run in the usage ledger (ops/usage/collect.py --run -); never fails the caller."""
+    collect = Path(__file__).resolve().parents[2] / 'ops' / 'usage' / 'collect.py'
+    try:
+        subprocess.run([sys.executable, str(collect), '--run', '-', '--task', task], input=stdout,
+                       capture_output=True, text=True, encoding='utf-8', timeout=60)
+    except Exception:
+        pass
+
+
 def gemini(p: str, dest: Path, kind: str) -> str:
     pf = dest / f'{kind}-gemini-prompt.txt'
     pf.write_text(p, encoding='utf-8')
@@ -100,6 +110,7 @@ def gemini(p: str, dest: Path, kind: str) -> str:
                         '--print-timeout', '1200s'], cwd=MAIN, capture_output=True, text=True, encoding='utf-8')
     if not r.stdout.strip():
         return r.stderr[-2000:]
+    _log_agy(r.stdout, f'critique {kind}')
     try:
         return json.loads(r.stdout).get('response', '')
     except json.JSONDecodeError:

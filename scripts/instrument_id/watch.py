@@ -16,6 +16,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import time
 import urllib.request
 from pathlib import Path
@@ -220,6 +221,16 @@ def ask_sheet(sheet: Path, times: list[float], backend: str = "agy") -> dict:
     return payload
 
 
+def _log_agy(stdout: str, task: str) -> None:
+    """Log a finished agy run in the usage ledger (ops/usage/collect.py --run -); never fails the caller."""
+    collect = Path(__file__).resolve().parents[2] / 'ops' / 'usage' / 'collect.py'
+    try:
+        subprocess.run([sys.executable, str(collect), '--run', '-', '--task', task], input=stdout,
+                       capture_output=True, text=True, encoding='utf-8', timeout=60)
+    except Exception:
+        pass
+
+
 def _ask_agy(sheet: Path, prompt: str) -> dict:
     base = [
         _agy_bin(), "-p", prompt,
@@ -238,6 +249,8 @@ def _ask_agy(sheet: Path, prompt: str) -> dict:
             encoding="utf-8", errors="replace", timeout=360,
         )
         last = (proc.stdout or "") + "\n" + (proc.stderr or "")
+        if proc.stdout.strip():
+            _log_agy(proc.stdout, f"instrument-id {sheet.parent.name}")
         if proc.returncode == 0 and proc.stdout.strip():
             try:
                 parsed = _parse_stdout(proc.stdout)

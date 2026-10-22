@@ -645,7 +645,9 @@ def gemini_rows(ts, live):
 
 
 def record_run(path, task):
-    data = json.loads(Path(path).read_text(encoding='utf-8'))
+    """One finished agy job from its `--output-format json` output: a file path, or '-' for stdin."""
+    text = sys.stdin.read() if path == '-' else Path(path).read_text(encoding='utf-8')
+    data = json.loads(text)
     usage = data.get('usage') or {}
     tokens = 0
     for key in ('total_tokens', 'totalTokens'):
@@ -809,6 +811,18 @@ def read_value():
     return value if isinstance(value, dict) and value.get('weekTokens') else None
 
 
+AGY_CONVERSATIONS = Path.home() / '.gemini' / 'antigravity-cli' / 'conversations'
+
+
+def agy_conversations_since(start, folder=AGY_CONVERSATIONS):
+    """agy conversations started since `start`, counted from the files' creation time only (no content is
+    read). Catches the runs nobody logged with `collect.py --run` (LL · Ops audit A1)."""
+    try:
+        return sum(1 for f in folder.glob('*.db') if dt.datetime.fromtimestamp(f.stat().st_ctime, dt.timezone.utc) >= start)
+    except OSError:
+        return None
+
+
 def build_latest(rows, stamp, *, claude=None, gemini_live=None, grok_live=None, prev=None, settings_plan=('', ''), claude_windows=None):
     """The summary dict. Missing measurements are omitted. Nothing is guessed."""
     prev = prev or {}
@@ -877,8 +891,10 @@ def build_latest(rows, stamp, *, claude=None, gemini_live=None, grok_live=None, 
         r for r in rows
         if r.get('agent') == 'gemini' and r.get('kind') == 'run' and r['ts'] >= iso(day_start)
     ]
+    started = agy_conversations_since(day_start)
     gemini = {
         'quota': quota,
+        **({'conversationsToday': started, 'conversationsTodaySource': str(AGY_CONVERSATIONS), 'conversationsTodayAt': stamp} if started is not None else {}),
         'runsToday': len(gem_runs),
         'runsTodaySource': SOURCE_AGY_RUN,
         'runsTodayAt': stamp,
@@ -973,7 +989,7 @@ def main():
     sys.stdout.reconfigure(encoding='utf-8')
     ap = argparse.ArgumentParser()
     ap.add_argument('--no-gemini', action='store_true')
-    ap.add_argument('--run', help='agy JSON output of a finished Gemini job')
+    ap.add_argument('--run', help="agy JSON output of a finished Gemini job: a file, or '-' for stdin")
     ap.add_argument('--task', default='', help='what the Gemini job was, for --run')
     ap.add_argument('--claude-windows', default='', help="Claude's rate-limit windows as JSON, from the Dashboard mod")
     args = ap.parse_args()
