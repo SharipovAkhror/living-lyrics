@@ -1,0 +1,399 @@
+{
+  "tolerances": {
+    "positionPx": 4,
+    "sizeRatio": 0.04
+  },
+  "sheets": {
+    "iphone-dark-song": {
+      "viewport": [
+        393,
+        852
+      ],
+      "header": {
+        "x": 10,
+        "y": 8,
+        "w": 373,
+        "h": 60
+      },
+      "line": {
+        "x": 24,
+        "y": 103,
+        "w": 345,
+        "h": 163
+      },
+      "translation": {
+        "x": 24,
+        "y": 283,
+        "w": 345,
+        "h": 56
+      },
+      "note": {
+        "x": 10,
+        "y": 460,
+        "w": 373,
+        "h": 196
+      },
+      "player": {
+        "x": 10,
+        "y": 664,
+        "w": 373,
+        "h": 180
+      },
+      "sheet": null,
+      "shelf": null
+    },
+    "iphone-light-song": {
+      "viewport": [
+        393,
+        852
+      ],
+      "header": {
+        "x": 10,
+        "y": 8,
+        "w": 373,
+        "h": 60
+      },
+      "line": {
+        "x": 24,
+        "y": 103,
+        "w": 345,
+        "h": 163
+      },
+      "translation": {
+        "x": 24,
+        "y": 283,
+        "w": 345,
+        "h": 56
+      },
+      "note": {
+        "x": 10,
+        "y": 460,
+        "w": 373,
+        "h": 196
+      },
+      "player": {
+        "x": 10,
+        "y": 664,
+        "w": 373,
+        "h": 180
+      },
+      "sheet": null,
+      "shelf": null
+    },
+    "iphone-dark-library": {
+      "viewport": [
+        393,
+        852
+      ],
+      "header": {
+        "x": 16,
+        "y": 12,
+        "w": 361,
+        "h": 104
+      },
+      "line": null,
+      "translation": null,
+      "note": null,
+      "player": null,
+      "sheet": null,
+      "shelf": {
+        "x": 16,
+        "y": 709,
+        "w": 361,
+        "h": 244
+      }
+    },
+    "iphone-light-library": {
+      "viewport": [
+        393,
+        852
+      ],
+      "header": {
+        "x": 16,
+        "y": 12,
+        "w": 361,
+        "h": 104
+      },
+      "line": null,
+      "translation": null,
+      "note": null,
+      "player": null,
+      "sheet": null,
+      "shelf": {
+        "x": 16,
+        "y": 709,
+        "w": 361,
+        "h": 244
+      }
+    },
+    "se-light-song": {
+      "viewport": [
+        320,
+        568
+      ],
+      "header": {
+        "x": 10,
+        "y": 2,
+        "w": 300,
+        "h": 52
+      },
+      "line": {
+        "x": 24,
+        "y": 72,
+        "w": 272,
+        "h": 63
+      },
+      "translation": {
+        "x": 24,
+        "y": 146,
+        "w": 272,
+        "h": 56
+      },
+      "note": {
+        "x": 10,
+        "y": 273,
+        "w": 300,
+        "h": 91
+      },
+      "player": {
+        "x": 10,
+        "y": 372,
+        "w": 300,
+        "h": 188
+      },
+      "sheet": null,
+      "shelf": null
+    },
+    "se375-dark-song": {
+      "viewport": [
+        375,
+        667
+      ],
+      "header": {
+        "x": 10,
+        "y": 2,
+        "w": 355,
+        "h": 52
+      },
+      "line": {
+        "x": 24,
+        "y": 72,
+        "w": 327,
+        "h": 73
+      },
+      "translation": {
+        "x": 24,
+        "y": 158,
+        "w": 327,
+        "h": 56
+      },
+      "note": {
+        "x": 10,
+        "y": 303,
+        "w": 355,
+        "h": 160
+      },
+      "player": {
+        "x": 10,
+        "y": 471,
+        "w": 355,
+        "h": 188
+      },
+      "sheet": null,
+      "shelf": null
+    },
+    "land-15-dark-song": {
+      "viewport": [
+        852,
+        393
+      ],
+      "header": {
+        "x": 12,
+        "y": 4,
+        "w": 828,
+        "h": 48
+      },
+      "line": {
+        "x": 36,
+        "y": 74,
+        "w": 780,
+        "h": 99
+      },
+      "translation": {
+        "x": 233,
+        "y": 183,
+        "w": 386,
+        "h": 25
+      },
+      "note": null,
+      "player": {
+        "x": 12,
+        "y": 319,
+        "w": 828,
+        "h": 64
+      },
+      "sheet": null,
+      "shelf": null
+    },
+    "ipad-light-song": {
+      "viewport": [
+        820,
+        1180
+      ],
+      "header": {
+        "x": 0,
+        "y": 16,
+        "w": 820,
+        "h": 74
+      },
+      "line": {
+        "x": 24,
+        "y": 227,
+        "w": 772,
+        "h": 109
+      },
+      "translation": {
+        "x": 195,
+        "y": 354,
+        "w": 429,
+        "h": 28
+      },
+      "note": {
+        "x": 10,
+        "y": 783,
+        "w": 800,
+        "h": 196
+      },
+      "player": {
+        "x": 0,
+        "y": 987,
+        "w": 820,
+        "h": 175
+      },
+      "sheet": null,
+      "shelf": null
+    },
+    "desk-dark-song": {
+      "viewport": [
+        1440,
+        900
+      ],
+      "header": {
+        "x": 116,
+        "y": 16,
+        "w": 868,
+        "h": 74
+      },
+      "line": {
+        "x": 140,
+        "y": 235,
+        "w": 820,
+        "h": 165
+      },
+      "translation": {
+        "x": 312,
+        "y": 418,
+        "w": 477,
+        "h": 31
+      },
+      "note": {
+        "x": 1004,
+        "y": 16,
+        "w": 320,
+        "h": 343
+      },
+      "player": {
+        "x": 116,
+        "y": 718,
+        "w": 868,
+        "h": 164
+      },
+      "sheet": null,
+      "shelf": null
+    },
+    "desk-light-library": {
+      "viewport": [
+        1440,
+        900
+      ],
+      "header": {
+        "x": 16,
+        "y": 12,
+        "w": 1408,
+        "h": 59
+      },
+      "line": null,
+      "translation": null,
+      "note": null,
+      "player": null,
+      "sheet": null,
+      "shelf": {
+        "x": 16,
+        "y": 499,
+        "w": 1408,
+        "h": 361
+      }
+    },
+    "wide-dark-library": {
+      "viewport": [
+        2560,
+        1440
+      ],
+      "header": {
+        "x": 416,
+        "y": 12,
+        "w": 1728,
+        "h": 59
+      },
+      "line": null,
+      "translation": null,
+      "note": null,
+      "player": null,
+      "sheet": null,
+      "shelf": {
+        "x": 416,
+        "y": 615,
+        "w": 1728,
+        "h": 785
+      }
+    },
+    "wide-light-song": {
+      "viewport": [
+        2560,
+        1440
+      ],
+      "header": {
+        "x": 676,
+        "y": 16,
+        "w": 868,
+        "h": 74
+      },
+      "line": {
+        "x": 700,
+        "y": 438,
+        "w": 820,
+        "h": 165
+      },
+      "translation": {
+        "x": 821,
+        "y": 621,
+        "w": 578,
+        "h": 78
+      },
+      "note": {
+        "x": 1564,
+        "y": 16,
+        "w": 320,
+        "h": 343
+      },
+      "player": {
+        "x": 676,
+        "y": 1258,
+        "w": 868,
+        "h": 164
+      },
+      "sheet": null,
+      "shelf": null
+    }
+  }
+}
