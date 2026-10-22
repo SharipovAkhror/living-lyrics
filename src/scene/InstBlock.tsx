@@ -175,7 +175,10 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     const r = root.current;
     if (!r || bisect('placement')) return;
     const s = blockState(d);
-    const p = s.presence;
+    // At t = 0 the title card still shares the stage, so this block's distance is not 0.
+    // The opening roster is already playing: keep the full engraving, not the empty cascade.
+    const opening = earlier.length === 0 && t >= section.start && t < section.end && d < 1.05;
+    const p = opening ? Math.max(s.presence, 0.92) : s.presence;
     const z = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
     const transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
     const opacity = entranceOpacity(d, entrance, s.opacity).toFixed(3);

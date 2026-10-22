@@ -12,8 +12,10 @@ export interface StageFrame {
   colRight: number;
   /** Width of the margin panel. Zero when the note is not a side column. */
   noteW: number;
-  /** Distance from the window edge to the note panel. */
+  /** Top and bottom inset of the note panel. Stays small on every width. */
   panelInset: number;
+  /** Distance from the window's right edge to the note. Matches panelInset until the centred group. */
+  noteRight: number;
   /** Clear gap between the stage and the note panel. */
   gap: number;
   stageW: number;
@@ -37,13 +39,16 @@ function frame(
   stageW: number,
   marginNote: boolean,
   padX = LYRIC_PAD,
+  panelInset = marginNote ? PANEL_INSET : 0,
+  noteRight = panelInset,
 ): StageFrame {
   const lyricW = Math.max(0, Math.min(MEASURE, stageW - padX * 2));
   return {
     colLeft,
     colRight,
     noteW,
-    panelInset: marginNote ? PANEL_INSET : 0,
+    panelInset,
+    noteRight,
     gap: marginNote ? NOTE_GAP : 0,
     stageW,
     lyricW,
@@ -76,6 +81,18 @@ export function stageFrame(vw: number, vh: number, noteOpen: boolean): StageFram
     const remaining = Math.max(0, vw - reserved);
     const cap = MEASURE + LYRIC_PAD * 2;
     const stageW = Math.min(cap, Math.max(0, remaining - 28));
+    // From 2000 the lyric column and the note share one centred group (~1400).
+    // Narrower desktop widths keep the note on the window edge, which the 800–1920 checks cover.
+    if (vw >= 2000) {
+      const span = Math.min(1400, stageW + NOTE_GAP + noteW);
+      const stageUsed = Math.min(stageW, Math.max(0, span - NOTE_GAP - noteW));
+      const group = stageUsed + NOTE_GAP + noteW;
+      const colLeft = Math.max(28, Math.round((vw - group) / 2));
+      const inset = Math.max(PANEL_INSET, vw - colLeft - group);
+      const colRight = vw - colLeft - stageUsed;
+      // panelInset stays the vertical inset. The large number is only the right edge.
+      return frame(colLeft, colRight, noteW, stageUsed, true, LYRIC_PAD, PANEL_INSET, inset);
+    }
     const colLeft = Math.max(28, Math.round((remaining - stageW) / 2));
     const colRight = vw - colLeft - stageW;
     return frame(colLeft, colRight, noteW, stageW, true);

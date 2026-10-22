@@ -62,6 +62,8 @@ const args = Object.fromEntries(
 
 const base = args.base || 'http://127.0.0.1:4176';
 const tag = args.tag || 'round9';
+const only = args.only && args.only !== 'true' ? args.only : '';
+const engineOnly = args.engine && args.engine !== 'true' ? args.engine : '';
 const sheetDir = args.sheets && args.sheets !== 'true' ? args.sheets : '';
 const videoDir = args.videos && args.videos !== 'true' ? args.videos : '';
 
@@ -200,7 +202,13 @@ function stageProbe() {
   const dragging = !!document.querySelector('.song.is-scrubbing');
   const time = document.querySelector('.scrub-now')?.textContent?.trim() || '';
   const kind = arts > 0 ? 'art' : lines > 0 ? 'line' : 'empty';
-  return { kind, lines, arts, dragging, time, play: play?.getAttribute('aria-label') || '' };
+  let views = 0;
+  for (const el of stage.querySelectorAll('.stage-view')) {
+    const style = getComputedStyle(el);
+    if (style.display === 'none' || style.visibility === 'hidden') continue;
+    if (Number(style.opacity) > 0.05) views += 1;
+  }
+  return { kind, lines, arts, views, dragging, time, play: play?.getAttribute('aria-label') || '' };
 }
 
 async function sample(page, body, watch) {
@@ -354,6 +362,8 @@ function clips(browserName) {
         for (let i = 1; i <= steps; i++) {
           await page.mouse.move(x0 + ((x1 - x0) * i) / steps, y);
           await page.waitForTimeout(50);
+          // One dwell, so the sheet can show a single crossfade. The other steps stay faster than 250 ms.
+          if (i === 8) await page.waitForTimeout(420);
         }
         await page.waitForTimeout(80);
         await page.mouse.move(x1 + 1, y);
@@ -383,6 +393,7 @@ function clips(browserName) {
 
 async function videosOf(browserName, browser, device) {
   for (const clip of clips(browserName)) {
+    if (only && clip.name !== only) continue;
     await record(browserName, browser, device, clip.name, async (page) => {
       await clip.prepare(page);
       await page.waitForTimeout(1000);
@@ -392,14 +403,135 @@ async function videosOf(browserName, browser, device) {
   }
 }
 
+async function sampleFlightClock(page) {
+  const frames = [];
+  const shot = () => page.screenshot({ type: 'jpeg', quality: 35, animations: 'allow' });
+  await page.waitForTimeout(500);
+  const now = await page.evaluate(() => Date.now());
+  await page.clock.pauseAt(now);
+  frames.push(await shot());
+  await page.evaluate(() => {
+    const el = document.querySelector('.lib-hero');
+    if (el instanceof HTMLElement) el.click();
+  });
+  let settled = 0;
+  for (let i = 0; i < 45; i++) {
+    await page.clock.runFor(100);
+    frames.push(await shot());
+    const state = await page.evaluate(() => {
+      const cover = document.querySelector('.morph-cover');
+      const song = document.querySelector('.song');
+      const box = cover ? cover.getBoundingClientRect() : null;
+      return {
+        cover: box ? Math.round(box.width) : 0,
+        flying: !!(song && song.classList.contains('is-flying')),
+        song: !!song,
+      };
+    });
+    if (state.song && !state.flying && state.cover === 0) settled += 1;
+    else settled = 0;
+    if (settled >= 8 && i > 14) break;
+  }
+  return frames;
+}
+
+function writeScrubViews(browserName, notes) {
+  writeFileSync(`${videoDir}/${browserName}-scrub-frames.json`, JSON.stringify(notes, null, 2));
+  const changes = [];
+  let released = null;
+  let wasDragging = false;
+  notes.forEach((note, i) => {
+    const prev = notes[i - 1];
+    if (prev && note.kind !== prev.kind) changes.push({ frame: i + 1, from: prev.kind, to: note.kind, time: note.time });
+    if (wasDragging && note && !note.dragging && released == null) released = { frame: i + 1, ...note };
+    if (note?.dragging) wasDragging = true;
+  });
+  const empty = notes.map((note, i) => (note?.kind === 'empty' ? i + 1 : 0)).filter(Boolean);
+  const crossfade = notes.map((note, i) => (note?.views > 1 ? i + 1 : 0)).filter(Boolean);
+  const stacked = notes.map((note, i) => (note?.views > 2 ? i + 1 : 0)).filter(Boolean);
+  writeFileSync(
+    `${videoDir}/${browserName}-scrub-views.json`,
+    JSON.stringify({ changes, released, empty, crossfade, stacked, frames: notes.length }, null, 2),
+  );
+  console.log(`${browserName} scrub views`, JSON.stringify({ changes, released, emptyCount: empty.length, crossfade, stacked }));
+}
+
+/** WebKit screenshots stall the frame clock, so a 50 ms step looks like a dwell. Step the same gesture on the clock. */
+async function sampleScrubClock(page) {
+  const frames = [];
+  const notes = [];
+  const shot = async () => {
+    frames.push(await page.screenshot({ type: 'jpeg', quality: 35, animations: 'allow' }));
+    notes.push(await page.evaluate(stageProbe));
+  };
+  const track = page.locator('.scrub-track').first();
+  const box = await track.boundingBox();
+  if (!box) return { frames, notes };
+  const y = box.y + box.height / 2;
+  const x0 = box.x + 8;
+  const x1 = box.x + box.width * (705 / 977);
+  const now = await page.evaluate(() => Date.now());
+  await page.clock.pauseAt(now);
+  await shot();
+  await page.mouse.move(x0, y);
+  await page.mouse.down();
+  await page.clock.runFor(40);
+  await shot();
+  const steps = 24;
+  for (let i = 1; i <= steps; i++) {
+    await page.mouse.move(x0 + ((x1 - x0) * i) / steps, y);
+    if (i === 8) {
+      await page.clock.runFor(420);
+      await shot();
+    } else if (i === 9) {
+      // The depart is created on the frame after the move. The second shot is the crossfade.
+      await page.clock.runFor(16);
+      await shot();
+      await page.clock.runFor(80);
+      await shot();
+    } else {
+      await page.clock.runFor(40);
+      await shot();
+    }
+  }
+  await page.mouse.up();
+  await page.clock.runFor(240);
+  await shot();
+  await page.clock.runFor(400);
+  await shot();
+  return { frames, notes };
+}
+
 async function contactsOf(browserName, browser, device) {
   for (const step of clips('plain')) {
+    if (only && step.name !== only) continue;
     const context = await browser.newContext({ ...device, colorScheme: 'dark' });
     await installSilence(context);
     const page = await context.newPage();
     page.on('pageerror', (err) => console.error('pageerror', step.name, err.message));
     // Real time. No slowmo, no CDP. The sheet is one frame per 100 ms around the action.
+    // Chromium's screenshot gap is longer than the flight, so that one sheet steps the same spring by 100 ms.
+    // WebKit's screenshot gap is longer than a dwell, so the scrub sheet steps the finger on the clock.
+    if (
+      (browserName === 'chromium' && step.name === 'library-song') ||
+      (browserName === 'webkit' && step.name === 'scrub')
+    ) {
+      await page.clock.install({ time: Date.now() });
+    }
     await step.prepare(page);
+    if (browserName === 'webkit' && step.name === 'scrub') {
+      const { frames, notes } = await sampleScrubClock(page);
+      await contactSheet(frames, `${videoDir}/${browserName}-${step.name}-contact.png`);
+      writeScrubViews(browserName, notes);
+      await context.close();
+      continue;
+    }
+    if (browserName === 'chromium' && step.name === 'library-song') {
+      const frames = await sampleFlightClock(page);
+      await contactSheet(frames, `${videoDir}/${browserName}-${step.name}-contact.png`);
+      await context.close();
+      continue;
+    }
     const watch = step.name === 'scrub' || step.name === 'play' ? stageProbe : null;
     const { frames, notes } = await sample(page, async () => {
       await page.waitForTimeout(1000);
@@ -408,22 +540,7 @@ async function contactsOf(browserName, browser, device) {
     }, watch);
     await contactSheet(frames, `${videoDir}/${browserName}-${step.name}-contact.png`);
     if (step.name === 'scrub') {
-      writeFileSync(`${videoDir}/${browserName}-scrub-frames.json`, JSON.stringify(notes, null, 2));
-      const changes = [];
-      let released = null;
-      let wasDragging = false;
-      notes.forEach((note, i) => {
-        const prev = notes[i - 1];
-        if (prev && note.kind !== prev.kind) changes.push({ frame: i + 1, from: prev.kind, to: note.kind, time: note.time });
-        if (wasDragging && note && !note.dragging && released == null) released = { frame: i + 1, ...note };
-        if (note?.dragging) wasDragging = true;
-      });
-      const empty = notes.map((note, i) => (note?.kind === 'empty' ? i + 1 : 0)).filter(Boolean);
-      writeFileSync(
-        `${videoDir}/${browserName}-scrub-views.json`,
-        JSON.stringify({ changes, released, empty, frames: notes.length }, null, 2),
-      );
-      console.log(`${browserName} scrub views`, JSON.stringify({ changes, released, emptyCount: empty.length }));
+      writeScrubViews(browserName, notes);
       await compareSeek(page, browserName);
     }
     if (step.name === 'play') {
@@ -433,7 +550,7 @@ async function contactsOf(browserName, browser, device) {
   }
 }
 
-if (sheetDir) {
+if (sheetDir && !only) {
   mkdirSync(sheetDir, { recursive: true });
   const browser = await chromium.launch();
   for (const device of devices) await shoot(browser, device);
@@ -452,14 +569,18 @@ if (videoDir) {
     userAgent: IPHONE_UA,
   };
   if (standIn) console.log('AUDIO_KEY missing: recorder serves silent audio of each song length');
-  const chrome = await chromium.launch();
-  await videosOf('chromium', chrome, phone);
-  await contactsOf('chromium', chrome, phone);
-  await chrome.close();
-  const kit = await webkit.launch();
-  await videosOf('webkit', kit, phone);
-  await contactsOf('webkit', kit, phone);
-  await kit.close();
+  if (!engineOnly || engineOnly === 'chromium') {
+    const chrome = await chromium.launch();
+    if (args.skipvideo !== 'true') await videosOf('chromium', chrome, phone);
+    await contactsOf('chromium', chrome, phone);
+    await chrome.close();
+  }
+  if (!engineOnly || engineOnly === 'webkit') {
+    const kit = await webkit.launch();
+    if (args.skipvideo !== 'true') await videosOf('webkit', kit, phone);
+    await contactsOf('webkit', kit, phone);
+    await kit.close();
+  }
   dropHashVideos(videoDir);
 }
 

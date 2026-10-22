@@ -8,9 +8,8 @@
  * top bar and the player. Dropping the player blur as well left the slope at
  * 10.7 MB/min against 11.6 with it on, so the player stays glass. The comment,
  * the error banner, the sheet and the instrument plates use a dense fill. The
- * sheet stays on that fill so it can open and scroll on the CPU. The edge mask
- * stays off: a steady vocal band grew about 10 MB/min with the mask and held
- * flat for three minutes without it.
+ * sheet stays on that fill so it can open and scroll on the CPU. The stage
+ * keeps the 32 px top fade from the shared sheet and clips paint above it.
  *
  * The two blocks are the same paint: the media query covers the first frame,
  * and html[data-phone] covers an iPhone user agent whose media features were
@@ -46,13 +45,6 @@
     inset: 0;
     width: 100%;
     height: 100%;
-  }
-  /* A masked stage is one layer. Moving a line under it allocated a new
-     buffer on this WebKit and the previous buffer stayed. Lines already
-     fade by their own opacity, so the edge gradient is not required here. */
-  .scene-stage {
-    -webkit-mask-image: none;
-    mask-image: none;
   }
   .set-page.is-enter,
   .set-page.is-leave,
@@ -107,16 +99,6 @@ html[data-phone='1'] .ist-art-mount > .ist-art {
   inset: 0;
   width: 100%;
   height: 100%;
-}
-
-html[data-phone='1'] .scene-stage {
-  -webkit-mask-image: none;
-  mask-image: none;
-}
-/* Only while the finger drags. A steady mask grew the working set; 28 px covers the 12 px shift. */
-html[data-phone='1'] .song.is-scrubbing .scene-stage {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 28px, #000 92%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 28px, #000 92%, transparent 100%);
 }
 
 html[data-phone='1'] .set-page.is-enter,

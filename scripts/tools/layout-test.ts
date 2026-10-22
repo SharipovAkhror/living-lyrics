@@ -323,6 +323,20 @@ for (let vw = 800; vw <= 1920; vw++) {
     }
   }
 }
+const wideGroup = stageFrame(2560, 1440, true);
+{
+  const noteLeft = 2560 - wideGroup.noteRight - wideGroup.noteW;
+  const stageRight = wideGroup.colLeft + wideGroup.stageW;
+  const gap = noteLeft - stageRight;
+  const group = wideGroup.stageW + gap + wideGroup.noteW;
+  if (wideGroup.panelInset !== 16) fail('2560 group', `panel inset ${wideGroup.panelInset}`);
+  if (wideGroup.colLeft + wideGroup.stageW + wideGroup.colRight !== 2560) fail('2560 group', 'columns do not add up');
+  if (gap > 28 || gap < 12) fail('2560 group', `note gap ${gap}`);
+  if (group > 1400) fail('2560 group', `group ${group} wider than 1400`);
+  if (Math.abs(wideGroup.colLeft - wideGroup.noteRight) > 2) fail('2560 group', 'the group is not centred');
+}
+const at1920 = stageFrame(1920, 1080, true);
+if (at1920.panelInset !== 16) fail('1920 note', `inset ${at1920.panelInset}`);
 for (const [vw, vh] of [[390, 852], [320, 700], [800, 480], [1280, 480]] as const) {
   const f = stageFrame(vw, vh, true);
   if (f.marginNote) fail(`${vw}×${vh}`, 'a short or narrow window opened the margin note');

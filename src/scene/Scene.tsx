@@ -190,7 +190,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     const fn: BlockUpdater = (_t, d, top) => {
       const s = blockState(d);
       const transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
-      const opacity = (d < 0 ? s.opacity * Math.max(0, 1 + d * 1.4) : s.opacity).toFixed(3);
+      // The extra fade used to start on the first step below 0 and left the title grey
+      // on the frame the song opens (distance about −0.5). It leaves only once the card is off stage.
+      const leave = d < -0.85 ? Math.max(0, Math.min(1, 1 + (d + 0.85) * 2.2)) : 1;
+      const opacity = (s.opacity * leave).toFixed(3);
       const visibility = s.opacity < 0.01 ? 'hidden' : 'visible';
       const key = `${transform}|${opacity}|${visibility}`;
       if (key === lastIntro) return;
@@ -220,12 +223,16 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let pendingOwner: number | null = null;
     let ownerWait = false;
     let scrubWas = false;
-    // One departing clone while a scrub crosses from lines to an engraving, or back.
-    // A second boundary during the 120 ms updates the live view and does not stack another ghost.
+    // One departing picture. A finger faster than one view per 250 ms swaps with no fade,
+    // so the stage never holds an outgoing frame plus the next one plus another.
+    // A dwell of 250 ms may crossfade that one picture. The clone is opacity and a shift, never a scale.
+    const DWELL_MS = 250;
+    const FADE_MS = 240;
     let depart: HTMLElement | null = null;
     let fadeStart = 0;
     let fadeDir = 1;
-    let shownKind = '';
+    let viewKey = '';
+    let viewAt = 0;
     const dropDepart = () => {
       depart?.remove();
       depart = null;
@@ -238,7 +245,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     };
     const applyFade = (nowMs: number) => {
       if (!depart || fadeStart === 0) return;
-      const u = Math.min(1, (nowMs - fadeStart) / 120);
+      const u = Math.min(1, (nowMs - fadeStart) / FADE_MS);
       const eased = u * u * (3 - 2 * u);
       const shift = (1 - eased) * 12 * fadeDir;
       const live = liveView.current;
@@ -262,9 +269,14 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       });
       if (!nodes.length) return false;
       const layer = document.createElement('div');
-      layer.className = 'scene-depart';
+      layer.className = 'scene-depart stage-view';
       layer.setAttribute('aria-hidden', 'true');
-      for (const el of nodes) layer.appendChild(cloneBlock(el));
+      for (const el of nodes) {
+        const clone = cloneBlock(el);
+        // The leave is opacity and a shift of the layer. A scale on the clone would shrink the outgoing picture.
+        clone.style.transform = clone.style.transform.replace(/scale3d\([^)]*\)|scale[XY]?\([^)]*\)/g, '').replace(/\s{2,}/g, ' ').trim();
+        layer.appendChild(clone);
+      }
       stageEl.appendChild(layer);
       depart = layer;
       fadeStart = performance.now();
@@ -415,12 +427,26 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const measuresMoved = measureGen.current !== placedGen.current;
       const liveKey = `${Math.round(liveW)}x${Math.round(liveH)}`;
       if (depart) applyFade(now);
-      const kind = kindAt(t);
-      if (scrubbingNow && shownKind && kind !== shownKind && !depart && motion !== 'off') {
-        const dir = Number.isFinite(lastT) && t < lastT ? -1 : 1;
-        if (takeDepart(dir)) applyFade(performance.now());
+      if (scrubbingNow && motion !== 'off') {
+        const key = String(Math.round(flowPosition(plan, t)));
+        if (!viewKey) {
+          viewKey = key;
+          viewAt = now;
+        } else if (key !== viewKey) {
+          const held = now - viewAt;
+          const dir = Number.isFinite(lastT) && t < lastT ? -1 : 1;
+          // Faster than one view per dwell: drop any ghost and draw only the live picture.
+          dropDepart();
+          if (held >= DWELL_MS) {
+            if (takeDepart(dir)) applyFade(now);
+          }
+          viewKey = key;
+          viewAt = now;
+        }
+      } else if (viewKey) {
+        viewKey = '';
+        viewAt = 0;
       }
-      shownKind = kind;
       if (t === lastT && !measuresMoved && liveKey === lastLive && pendingOwner == null && !depart) return;
       lastT = t;
       lastLive = liveKey;
@@ -493,6 +519,25 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       for (const k of list) {
         const b = blocks.current.get(k);
         if (b) measures.set(k, b.m);
+      }
+      // The opening engraving is drawn near full height while the title still
+      // shares the stage. Reserve that height so the next chip does not land
+      // on the plate. Later cues keep the ordinary presence curve.
+      const openingCue = timeline.cues[0];
+      if (
+        openingCue &&
+        openingCue.kind === 'inst' &&
+        openingCue.start <= 0.05 &&
+        t >= openingCue.start &&
+        t < openingCue.end &&
+        Math.abs(pos) < 1.05
+      ) {
+        const opening = measures.get(0);
+        if (opening && opening.full != null) {
+          const base = blockHeight(opening, -pos);
+          const reserved = Math.max(base, opening.full * 0.92);
+          measures.set(0, { ...opening, compact: reserved, full: reserved });
+        }
       }
       const a = Math.floor(pos);
       const f = pos - a;
@@ -662,7 +707,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     <div className="scene" data-align={settings.textAlign} data-enter={entrance} style={phoneLyric}>
       <div ref={stageRef} className="scene-stage">
         <div ref={plate} className="flow-plate" aria-hidden style={{ visibility: 'hidden' }} />
-        <div ref={liveView} className="scene-live">
+        <div ref={liveView} className="scene-live stage-view">
         <div className="scene-view scene-view--lyric">
         <div ref={intro} className="fb fb--intro" style={{ visibility: 'hidden' }}>
           <div className="intro-title">{song.title}</div>

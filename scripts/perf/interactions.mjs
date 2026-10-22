@@ -234,6 +234,89 @@ async function stageView(page) {
   });
 }
 
+async function stageViewCount(page) {
+  return page.evaluate(() => {
+    let count = 0;
+    for (const el of document.querySelectorAll('.stage-view')) {
+      const style = getComputedStyle(el);
+      if (style.display === 'none' || style.visibility === 'hidden') continue;
+      if (Number(style.opacity) > 0.05) count += 1;
+    }
+    return count;
+  });
+}
+
+/** Settled opening of I Have Come Alive: title contrast and whether an engraving is drawn. */
+async function introStage(page) {
+  await page.goto(base + '/song/i-have-come-alive', { waitUntil: 'networkidle' });
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForFunction(
+    () => {
+      const song = document.querySelector('.song');
+      const title = document.querySelector('.intro-title');
+      if (!song || !title) return false;
+      if (song.classList.contains('is-arriving') || document.querySelector('.morph-cover')) return false;
+      return title.getBoundingClientRect().height > 8;
+    },
+    { timeout: 8000 },
+  );
+  await page.waitForTimeout(400);
+  return page.evaluate(() => {
+    const parse = (c) => {
+      const m = String(c).match(/rgba?\(([^)]+)\)/);
+      if (!m) return [244, 241, 234, 1];
+      const p = m[1].split(',').map((s) => Number(s.trim()));
+      return [p[0] || 0, p[1] || 0, p[2] || 0, p.length > 3 ? p[3] : 1];
+    };
+    const lin = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+    const lum = (rgb) => 0.2126 * lin(rgb[0] / 255) + 0.7152 * lin(rgb[1] / 255) + 0.0722 * lin(rgb[2] / 255);
+    const title = document.querySelector('.intro-title');
+    const song = document.querySelector('.song');
+    if (!title || !song) return { ratio: 0, arts: 0, why: 'missing' };
+    let opacity = 1;
+    let node = title;
+    while (node && node !== document.documentElement) {
+      const o = Number(getComputedStyle(node).opacity);
+      if (Number.isFinite(o)) opacity *= o;
+      node = node.parentElement;
+    }
+    const fg = parse(getComputedStyle(title).color);
+    const bg = parse(getComputedStyle(song).backgroundColor);
+    const mixed = [0, 1, 2].map((i) => Math.round(fg[i] * opacity + bg[i] * (1 - opacity)));
+    const hi = Math.max(lum(mixed), lum(bg));
+    const lo = Math.min(lum(mixed), lum(bg));
+    const stage = document.querySelector('.scene-stage');
+    let arts = 0;
+    const seen = (el) => {
+      let current = el;
+      while (current && current !== document.documentElement) {
+        const style = getComputedStyle(current);
+        if (style.display === 'none' || style.visibility === 'hidden') return false;
+        if (!(Number(style.opacity) > 0.04)) return false;
+        const root = current.getRootNode();
+        const next = current.parentElement || (root instanceof ShadowRoot ? root.host : null);
+        if (!next || next === current) break;
+        current = next;
+      }
+      const rect = el.getBoundingClientRect();
+      return rect.width > 8 && rect.height > 8;
+    };
+    const walk = (root) => {
+      if (!root) return;
+      for (const el of root.querySelectorAll('.ist-art, .ist-art-mount')) {
+        if (el.classList.contains('ist-art') && seen(el)) arts += 1;
+        if (el.shadowRoot) walk(el.shadowRoot);
+      }
+    };
+    if (stage) walk(stage);
+    return {
+      ratio: Math.round(((hi + 0.05) / (lo + 0.05)) * 100) / 100,
+      opacity: Math.round(opacity * 1000) / 1000,
+      arts,
+    };
+  });
+}
+
 async function runCore(page, label) {
   const out = [];
   const note = (name, ok, detail) => {
@@ -404,6 +487,7 @@ async function runCore(page, label) {
     note('scrub-mid', false, 'track has no box');
     note('scrub-inst', false, 'track has no box');
     note('scrub-lyric', false, 'track has no box');
+    note('scrub-views', false, 'track has no box');
   } else {
     await page.mouse.move(trackBox.x + 8, trackBox.y + trackBox.height / 2);
     await page.mouse.down();
@@ -489,6 +573,19 @@ async function runCore(page, label) {
     const lyric = await stageView(page);
     const lyricAt = Number(await page.locator('.scrub-track[role="slider"]').getAttribute('aria-valuenow'));
     note('scrub-lyric', !!lyric && lyric.lines > 0 && lyricAt > 20 && lyricAt < 80, JSON.stringify({ ...lyric, lyricAt }));
+    const counts = [];
+    const yFast = lyricBox.y + lyricBox.height / 2;
+    const xA = lyricBox.x + 10;
+    const xB = lyricBox.x + lyricBox.width * 0.9;
+    await page.mouse.move(xA, yFast);
+    await page.mouse.down();
+    for (let i = 1; i <= 14; i++) {
+      await page.mouse.move(xA + ((xB - xA) * i) / 14, yFast);
+      counts.push(await stageViewCount(page));
+    }
+    await page.mouse.up();
+    const maxViews = counts.length ? Math.max(...counts) : 0;
+    note('scrub-views', maxViews >= 1 && maxViews <= 2, JSON.stringify(counts));
   }
 
   const play = page.locator('button.btn-xl').first();
@@ -530,6 +627,10 @@ async function runCore(page, label) {
     const known = (value) => value === 'Пауза' || value === 'Воспроизвести';
     note('play-toggle', known(first) && known(mid) && mid !== first && end === first, `${first} -> ${mid} -> ${end}`);
   }
+
+  const intro = await introStage(page);
+  note('intro-contrast', intro.ratio >= 4.5, JSON.stringify(intro));
+  note('intro-engraving', intro.arts >= 1, JSON.stringify(intro));
 
   return out;
 }

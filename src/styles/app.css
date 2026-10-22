@@ -190,14 +190,13 @@
   touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
+  /* 32 px under the top bar. Anything translated above the stage is clipped, so it cannot sit in the bar. */
+  overflow: clip;
+  -webkit-mask-image: linear-gradient(#0000, #000 32px);
+  mask-image: linear-gradient(#0000, #000 32px);
 }
 
 /* ----- Lyrics flow ----- */
-/* Lines fade out under the bars instead of being cut, as in Apple Music. */
-.scene-stage {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 90%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 90%, transparent 100%);
-}
 /* The two views share one box. A scrub fades the live view over a single departing clone. */
 .scene-live,
 .scene-view,
@@ -1621,7 +1620,7 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   position: fixed;
   z-index: 5;
   top: var(--note-inset, 16px);
-  right: var(--note-inset, 16px);
+  right: var(--note-right, var(--note-inset, 16px));
   bottom: var(--note-inset, 16px);
   left: auto;
   width: var(--note-w);
@@ -4114,8 +4113,12 @@ html[data-sheet='1'] .song {
     flex-direction: column;
     align-items: stretch;
     gap: 28px;
+    box-sizing: border-box;
+    height: 100dvh;
+    max-height: 100dvh;
     max-width: 1760px;
     margin-inline: auto;
+    overflow: hidden;
   }
   .lib-head {
     display: grid;
@@ -4142,16 +4145,19 @@ html[data-sheet='1'] .song {
     justify-self: end;
   }
   .lib-hero {
+    flex: none;
     flex-direction: row;
     align-items: center;
     width: 100%;
+    max-width: none;
     margin-top: 0;
     gap: 40px;
     padding: 24px;
   }
   .lib-hero-cover {
-    width: min(46%, 680px);
+    width: min(34%, 440px);
     height: auto;
+    max-height: 440px;
     aspect-ratio: 1;
   }
   .lib-hero-title {
@@ -4161,7 +4167,29 @@ html[data-sheet='1'] .song {
     max-width: 40rem;
   }
   .lib-shelf {
+    flex: 1 1 auto;
+    min-height: 0;
     margin-top: 0;
+    overflow: hidden;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .lib-shelf > li {
+    display: flex;
+    min-height: 0;
+  }
+  .lib-row {
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+  .lib-row-cover {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: cover;
   }
 }
 
@@ -4183,6 +4211,7 @@ html[data-sheet='1'] .song {
   bottom: var(--floor-h, 210px);
   display: flex;
   flex-direction: column;
+  height: min(24dvh, 196px);
   max-height: min(24dvh, 196px);
   margin: 0;
   padding: 4px 14px 0;
@@ -4203,9 +4232,8 @@ html[data-sheet='1'] .song {
 }
 .note-card-head { display: flex; align-items: center; min-height: 44px; }
 .note-card .comment-body {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-height: 0;
-  max-height: none;
   margin: 0;
   padding: 0 0 24px;
   overflow-x: hidden;
@@ -4220,6 +4248,7 @@ html[data-sheet='1'] .song {
 }
 @media (max-height: 640px) {
   .note-card {
+    height: min(28dvh, 168px);
     max-height: min(28dvh, 168px);
   }
 }

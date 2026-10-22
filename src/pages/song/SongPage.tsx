@@ -231,6 +231,7 @@ function sameStageBox(
     left.colRight === right.colRight &&
     left.noteW === right.noteW &&
     left.panelInset === right.panelInset &&
+    left.noteRight === right.noteRight &&
     left.gap === right.gap &&
     left.stageW === right.stageW &&
     left.lyricW === right.lyricW &&
@@ -327,6 +328,7 @@ function StageVars({
     root.style.setProperty('--note-w', `${frame.noteW}px`);
     root.style.setProperty('--lyric-w', `${frame.lyricW}px`);
     root.style.setProperty('--note-inset', `${frame.panelInset}px`);
+    root.style.setProperty('--note-right', `${frame.noteRight}px`);
   }, [frame, songRef]);
   return null;
 }

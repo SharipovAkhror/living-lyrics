@@ -241,7 +241,10 @@ export function castAt(
     const source = listed.indexOf(key);
     // Past the end of this section the block is no longer the current one. Inside it, a plate
     // only fades in (the cascade). It does not fade out while its neighbours are still playing.
-    const presence = t >= section.end ? 0 : smooth((t - joined - slot * stagger) / enter);
+    // The opening section is already the picture at t = 0. A cascade that starts at section.start
+    // is still 0 on that frame, so the first engraving never appeared. Later sections keep the cascade.
+    const lead = earlier.length === 0 ? enter + slot * stagger : 0;
+    const presence = t >= section.end ? 0 : smooth((t - joined - slot * stagger + lead) / enter);
     return {
       key,
       source,
