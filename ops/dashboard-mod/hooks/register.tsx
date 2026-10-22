@@ -103,13 +103,20 @@ export function codename(worktree?: string) {
 
 const STALE_REVIEW_MIN = 6 * 60
 
-/** Claude first, then each Grok executor with its live state, then Gemini. */
+const STATUS: Record<string, string> = { running: 'идёт', review: 'на проверке', blocked: 'стоит', waiting: 'ждёт' }
+
+/**
+ * Every board "now" task, live process or not: the chats' own tasks first (status, now, next from the
+ * board), then each Grok executor with its live state, then Gemini.
+ */
 export function agentRows(b: Board | null, l: Live): Row[] {
   if (!b) return []
-  const rows: Row[] = [
-    { agent: 'claude', name: 'Claude · Lead', task: b.claude ?? 'оркестрирует', state: '', tone: 'working', detail: '', model: b.models?.claude ?? '' },
-  ]
   const now = b.tasks.filter(t => t.section === 'now')
+  const rows: Row[] = now.filter(t => t.agent !== 'grok' && t.agent !== 'gemini').map(t => ({
+    agent: 'claude', name: t.who || 'Claude', task: t.title,
+    state: t.chip ?? STATUS[t.status ?? ''] ?? t.status ?? '', tone: t.status === 'blocked' ? 'stalled' : t.status === 'review' ? 'review' : 'working',
+    detail: [t.now, t.next ? `дальше: ${t.next}` : ''].filter(Boolean).join(' · '), model: b.models?.claude ?? '',
+  }))
   // A finished Grok session older than STALE_REVIEW_MIN was reviewed long ago: drop its row.
   const stale = (r?: Live['grok'][number]) => r?.state === 'finished' && r.minutes > STALE_REVIEW_MIN
   const grokTasks = now.filter(t => t.agent === 'grok' && !stale(t.worktree ? l.grok.find(r => r.name === t.worktree) : undefined))
@@ -203,7 +210,7 @@ export function summaryText(b: Board | null, l: Live, lim: Limit[], u: Usage | n
   if (chats.length) {
     out.push('', '**Чаты**', ...chats.map((c: ChatRow) => `- ✻ ${c.name.replace(/^LL · /, '')} — ${CHAT_STATE[c.state] ?? c.state}`))
   }
-  const rows = agentRows(b, l).filter(r => r.agent !== 'claude')
+  const rows = agentRows(b, l)
   const runs = l.pipeline ?? []
   if (rows.length || runs.length) {
     out.push('', '**Исполнители**')
@@ -232,7 +239,7 @@ export function summaryText(b: Board | null, l: Live, lim: Limit[], u: Usage | n
 
 export function bandLine(b: Board | null, l: Live) {
   if (!b) return null
-  return { rows: agentRows(b, l).filter(r => r.agent !== 'claude'), you: b.tasks.filter(t => t.section === 'you').length }
+  return { rows: agentRows(b, l), you: b.tasks.filter(t => t.section === 'you').length }
 }
 
 function agentsScript($: EngineInterface) {
@@ -834,11 +841,14 @@ export function panelDoc(
   const work = b.tasks.filter(t => t.section === 'now').map(t => {
     const run = t.worktree ? l.grok.find(r => r.name === t.worktree) : undefined
     const gem = t.agent === 'gemini' ? l.gemini[0] : undefined
-    const state = run ? run.state : gem ? 'working' : t.agent === 'claude' ? 'working' : 'none'
+    // A chat's task has no process to watch: its board status says where it is.
+    const chat = t.agent !== 'grok' && t.agent !== 'gemini'
+    const state = run ? run.state : gem ? 'working' : chat ? (t.status === 'blocked' ? 'stalled' : t.status === 'review' ? 'finished' : 'working') : 'none'
+    const plan = [t.now, t.next ? `дальше: ${t.next}` : ''].filter(Boolean).join(' · ')
     return {
       id: t.id, title: t.title, agent: t.agent ?? '',
-      who: t.agent === 'grok' ? `Grok · ${codename(t.worktree) || 'Task'}` : t.agent === 'gemini' ? 'Gemini' : t.agent === 'claude' ? (t.who || 'Claude') : '',
-      state, idle: run ? run.minutes : null, session: run?.age ?? null, step: run?.step || t.now || '',
+      who: t.agent === 'grok' ? `Grok · ${codename(t.worktree) || 'Task'}` : t.agent === 'gemini' ? 'Gemini' : t.who || 'Claude',
+      state, idle: run ? run.minutes : null, session: run?.age ?? null, step: run?.step || plan,
       open: mins(tasksAt[t.id]),
     }
   })

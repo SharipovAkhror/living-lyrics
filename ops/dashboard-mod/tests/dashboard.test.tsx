@@ -9,6 +9,7 @@ const BOARD: Board = {
   models: { claude: 'Opus 5.5', grok: 'grok-4.7', gemini: 'gemini-3.8-flash-high' },
   tasks: [
     { id: 'you-video', section: 'you', title: 'Видео концертов', how: 'Прислать ботом.' },
+    { id: 't30', section: 'now', status: 'running', agent: 'claude', who: 'LL · Tech', title: 'Панель', now: 'Собираю', next: 'Показать' },
     { id: 't1', section: 'now', agent: 'grok', worktree: 't1-sync', title: 'Подсветка по словам' },
     { id: 'g', section: 'now', agent: 'gemini', title: 'Видео концертов' },
     { id: 'd1', section: 'done', date: '18 окт', title: 'Сцена инструментов' },
@@ -44,15 +45,15 @@ test('a long-finished Grok drops off; a running folder no task names still shows
     gemini: [],
   }
   const rows = agentRows(BOARD, live)
-  expect(rows.map(r => r.name)).toEqual(['Claude · Lead', 'Grok · Icons', 'Gemini · Watch'])
+  expect(rows.map(r => r.name)).toEqual(['LL · Tech', 'Grok · Icons', 'Gemini · Watch'])
   expect(rows[1]?.state).toBe('работает · 2 мин')
   const fresh = agentRows(BOARD, { grok: [{ name: 't1-sync', state: 'finished', minutes: 30, step: '' }], gemini: [] })
   expect(fresh[1]?.state).toBe('готово · Claude проверяет')
 })
 
-test('the band leaves Claude out and counts what waits on the owner', async () => {
+test('the band lists every task at work and counts what waits on the owner', async () => {
   const line = bandLine(BOARD, LIVE)
-  expect(line?.rows.map(r => r.agent)).toEqual(['grok', 'gemini'])
+  expect(line?.rows.map(r => r.agent)).toEqual(['claude', 'grok', 'gemini'])
   expect(line?.you).toBe(1)
   expect(bandLine(null, LIVE)).toBe(null)
 })
@@ -256,7 +257,7 @@ test('the panel document adds trend, durations, tasks and roadmap steps to the c
   const doc = panelDoc(BOARD, live, [], null, [{ t: 1, c5: 5 }], { 'LL · Main': { state: 'working', at: 0 } }, 30 * 60_000)
   expect(doc?.chats[0]).toMatchObject({ name: 'LL · Main', state: 'working', minutes: 30 })
   expect(doc?.agents.find(a => a.agent === 'grok')?.age).toBe(95)
-  expect(doc?.work.map(t => [t.id, t.who, t.state, t.session])).toEqual([['t1', 'Grok · Sync', 'stalled', 95], ['g', 'Gemini', 'working', null]])
+  expect(doc?.work.map(t => [t.id, t.who, t.state, t.session])).toEqual([['t30', 'LL · Tech', 'working', null], ['t1', 'Grok · Sync', 'stalled', 95], ['g', 'Gemini', 'working', null]])
   expect(doc?.trend).toEqual([{ t: 1, c5: 5 }])
   expect(panelDoc(null, live, [], null, [], {}, 0)).toBe(null)
 })
