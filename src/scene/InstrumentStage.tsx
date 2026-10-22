@@ -625,8 +625,19 @@ function Plate({
  * Rasterizing into a canvas was measured and reverted: the copy still climbed,
  * and the drawing went soft.
  */
+/** The static engraving rules of instruments.css, for the phone's shadow roots. Pose rules stay out. */
+const SHADOW_ART_CSS =
+  '.ist-art .h{opacity:var(--hatch,1)}.ist-art .fillin{opacity:calc(var(--hatch,1)*.12)}.ist-art .frame{opacity:calc(var(--hatch,1)*.3)}';
+
 function keepArt(mount: HTMLElement, key: string, svg: string) {
   const root = mount.shadowRoot ?? mount.attachShadow({ mode: 'open' });
+  // The page stylesheet does not reach a shadow root. Without these rules the
+  // fill-in plate painted at full ink and the qanun read as a flat white slab.
+  if (!root.querySelector('style')) {
+    const style = document.createElement('style');
+    style.textContent = SHADOW_ART_CSS;
+    root.appendChild(style);
+  }
   let node = root.querySelector<HTMLElement>(`[data-instrument="${key.replace(/"/g, '')}"]`);
   if (!node) {
     node = document.createElement('div');
