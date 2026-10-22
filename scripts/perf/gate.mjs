@@ -10,6 +10,7 @@ const gateStart = Date.now();
 const base = `http://127.0.0.1:${PORT}`;
 
 function run(command, args, capture = false) {
+  const t0 = Date.now();
   return new Promise((resolve) => {
     const child = spawn(command, args, { shell: true, stdio: capture ? ['ignore', 'pipe', 'pipe'] : 'inherit' });
     let out = '';
@@ -23,7 +24,10 @@ function run(command, args, capture = false) {
         out += chunk;
       });
     }
-    child.on('exit', (code) => resolve({ code: code ?? 1, out }));
+    child.on('exit', (code) => {
+      console.log(`gate step ${args.find((a) => a.endsWith('.mjs')) || args.join(' ')} ${((Date.now() - t0) / 1000).toFixed(0)} s`);
+      resolve({ code: code ?? 1, out });
+    });
   });
 }
 
@@ -77,9 +81,13 @@ try {
   await waitForPreview();
   const defects = await run('node', ['scripts/perf/defects.mjs', '--base', base]);
   if (defects.code !== 0) failed = true;
-  const geometry = await run('node', ['scripts/perf/geometry.mjs', '--base', base]);
+  // Geometry reads still sheets, so it shares the machine with the motion rows.
+  // The motion rows judge each frame against the stream it came in, not a wall clock.
+  const [geometry, motion] = await Promise.all([
+    run('node', ['scripts/perf/geometry.mjs', '--base', base], true),
+    run('node', ['scripts/perf/motion.mjs', '--base', base], true),
+  ]);
   if (geometry.code !== 0) failed = true;
-  const motion = await run('node', ['scripts/perf/motion.mjs', '--base', base]);
   if (motion.code !== 0) failed = true;
 } catch (err) {
   console.error(err instanceof Error ? err.message : err);

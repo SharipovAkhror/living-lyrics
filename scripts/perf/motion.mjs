@@ -110,6 +110,16 @@ async function newPhone(browser, browserName) {
     );
     addEventListener('pointerup', () => window.__ups.push(performance.timeOrigin + performance.now()), { capture: true });
   });
+  if (process.env.MOTION_CSS) {
+    // Debug only: a style injected on every page, to bisect a cost.
+    await context.addInitScript((css) => {
+      addEventListener('DOMContentLoaded', () => {
+        const st = document.createElement('style');
+        st.textContent = css;
+        document.head.append(st);
+      });
+    }, process.env.MOTION_CSS);
+  }
   if (inject) {
     await context.addInitScript((kind) => {
       addEventListener(
@@ -407,10 +417,14 @@ async function continuity(frames) {
   const limit = Math.max(LIMIT.stallFloorMs, LIMIT.stallGaps * out.gap);
   // A stall is a hole inside motion: the picture moved visibly into the frame before
   // the hole and out of it. A late single change after the picture had stopped is not one.
+  // The cast can hold a drawn frame and send it with the next one (a gap, then < 8 ms):
+  // the page drew it on time, the cast delivered it late. That pair counts one frame less.
   gaps.forEach((g, i) => {
     const before = i === 0 ? true : steps[i - 1] > 1;
     const after = steps[i] > 1;
-    if (g > limit && before && after) out.stalls.push({ frame: i + 1, ms: Math.round(g) });
+    const burst = i + 1 < gaps.length && gaps[i + 1] < 8;
+    const held = burst ? g - out.gap : g;
+    if (held > limit && before && after) out.stalls.push({ frame: i + 1, ms: Math.round(held) });
   });
   out.limit = Math.round(limit);
   if (process.env.MOTION_DEBUG) console.log('steps', steps.map((v) => v.toFixed(1)).join(','), 'gaps', gaps.map(Math.round).join(','));
@@ -455,7 +469,10 @@ async function tapRow(browserName, label, frames, tap, box) {
   }
   const firstMs = first.t - tap.at;
   const app = Math.max(0, hit.ms - firstMs);
-  note(`${browserName} D28 tap-to-motion`, app <= LIMIT.tapMs, `${label} ${Math.round(app)} ms after the first frame (moved at ${Math.round(hit.ms)} ms, first frame at ${Math.round(firstMs)} ms of wall time)`);
+  // Chromium delivers a frame 2-25 ms after a change, so its wall time is judged too:
+  // heavy work inside the tap would delay the first frame itself.
+  const wallOk = browserName !== 'chromium' || hit.ms <= LIMIT.tapMs;
+  note(`${browserName} D28 tap-to-motion`, app <= LIMIT.tapMs && wallOk, `${label} ${Math.round(app)} ms after the first frame (moved at ${Math.round(hit.ms)} ms, first frame at ${Math.round(firstMs)} ms of wall time)`);
   return { hit, app, firstMs };
 }
 
