@@ -176,3 +176,9 @@ mkdirSync(outDir, { recursive: true });
 const file = `${outDir}/frames8.json`;
 writeFileSync(file, JSON.stringify(rows, null, 2));
 console.log(file);
+const phoneRows = rows.filter((row) => row.browser === 'chromium' && row.device === 'phone');
+const hot = phoneRows.filter((row) => !(typeof row.p95 === 'number' && row.p95 <= 16.8));
+if (hot.length) {
+  console.error(`phone p95 over 16.8: ${hot.map((row) => `${row.flow} ${row.p95}`).join(', ')}`);
+  process.exit(1);
+}

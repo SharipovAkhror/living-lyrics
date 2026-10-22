@@ -1,8 +1,13 @@
 // Library → song, settings, full text, scrub, and play. Chromium and WebKit, phone and desktop.
 // A black frame is a screenshot whose pixels are almost all near black, sampled while the route changes.
 // node scripts/perf/interactions.mjs --base http://127.0.0.1:4176
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { chromium, webkit } from 'playwright';
 import sharp from 'sharp';
+import { corpusFor, noteCardInPage, sampleInPage } from './drawn.mjs';
+import { installResolvedAudio, installWebKitClock, prepareAudio } from './lib.mjs';
+
+const karitasCorpus = corpusFor('karitas');
 
 const args = Object.fromEntries(
   process.argv.slice(2).reduce((pairs, token, i, all) => {
@@ -234,6 +239,106 @@ async function stageView(page) {
   });
 }
 
+async function readDrawn(page) {
+  return page.evaluate(sampleInPage, karitasCorpus);
+}
+
+async function burstDrawn(page, count) {
+  const rows = [];
+  for (let i = 0; i < count; i++) {
+    rows.push(await readDrawn(page));
+    if (i + 1 < count) {
+      await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    }
+  }
+  return rows;
+}
+
+function judgeDrawn(rows) {
+  const bad = rows.filter((row) => !row?.ok);
+  const texts = rows.reduce((sum, row) => sum + (row?.texts || 0), 0);
+  const sample = bad[0];
+  const detail = sample ? JSON.stringify({ bad: sample.bad, overlap: sample.overlap, texts: sample.texts }) : `frames ${rows.length} texts ${texts}`;
+  return { ok: rows.length >= 20 && bad.length === 0 && texts > 0, detail };
+}
+
+async function meanDiff(a, b, box, scale) {
+  if (!box) return 99;
+  const left = Math.max(0, Math.round(box.x * scale));
+  const top = Math.max(0, Math.round(box.y * scale));
+  const width = Math.max(1, Math.round(box.width * scale));
+  const height = Math.max(1, Math.round(box.height * scale));
+  const cut = async (buf) => {
+    const meta = await sharp(buf).metadata();
+    const w = Math.min(width, (meta.width || width) - left);
+    const h = Math.min(height, (meta.height || height) - top);
+    return sharp(buf)
+      .extract({ left, top, width: Math.max(1, w), height: Math.max(1, h) })
+      .removeAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+  };
+  const leftShot = await cut(a);
+  const rightShot = await cut(b);
+  const n = Math.min(leftShot.data.length, rightShot.data.length);
+  let sum = 0;
+  for (let i = 0; i < n; i++) sum += Math.abs(leftShot.data[i] - rightShot.data[i]);
+  return n ? sum / n : 99;
+}
+
+/** The feature file starts a second after the song mounts. Wait until that pose exists. */
+async function featuresSettled(page) {
+  await page
+    .waitForFunction(
+      () => performance.getEntriesByType('resource').some((entry) => entry.name.includes('/features.json') && entry.responseEnd > 0),
+      { timeout: 8000 },
+    )
+    .catch(() => {});
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  await page.waitForTimeout(150);
+}
+
+async function seekMatch(page) {
+  await page.evaluate(() => {
+    const field = document.querySelector('.field');
+    if (field instanceof HTMLElement) field.style.visibility = 'hidden';
+  });
+  await page.waitForTimeout(80);
+  const box = await page.locator('.scene-stage').boundingBox();
+  const scale = await page.evaluate(() => window.devicePixelRatio || 1);
+  const seconds = await page.evaluate(() => {
+    const track = document.querySelector('.scrub-track');
+    const exact = Number(track?.getAttribute('data-t'));
+    const rounded = Number(track?.getAttribute('aria-valuenow'));
+    return Number.isFinite(exact) ? exact : rounded;
+  });
+  const released = await page.screenshot({ type: 'png', animations: 'disabled' });
+  await page.goto(`${base}/song/karitas?t=${seconds}`, { waitUntil: 'networkidle' });
+  await page.evaluate(() => document.fonts.ready);
+  await featuresSettled(page);
+  await page.evaluate(() => {
+    const field = document.querySelector('.field');
+    if (field instanceof HTMLElement) field.style.visibility = 'hidden';
+  });
+  await page.waitForTimeout(80);
+  const sought = await page.screenshot({ type: 'png', animations: 'disabled' });
+  const mean = await meanDiff(released, sought, box, scale);
+  if (mean >= 2) {
+    mkdirSync('work/studio/seek-debug', { recursive: true });
+    const id = `${Date.now()}`;
+    writeFileSync(`work/studio/seek-debug/${id}-released.png`, released);
+    writeFileSync(`work/studio/seek-debug/${id}-seek.png`, sought);
+    writeFileSync('work/studio/seek-debug/last.json', JSON.stringify({ id, seconds, mean }));
+  }
+  return { seconds, mean, width: box ? Math.round(box.width) : 0, height: box ? Math.round(box.height) : 0 };
+}
+
+function clockSeconds(text) {
+  const hit = /(\d+):(\d{2})/.exec(text || '');
+  if (!hit) return Number.NaN;
+  return Number(hit[1]) * 60 + Number(hit[2]);
+}
+
 async function stageViewCount(page) {
   return page.evaluate(() => {
     let count = 0;
@@ -374,6 +479,8 @@ async function runCore(page, label) {
       };
     });
     note('phone-no-blur', phoneBlur.phone === '1' && !String(phoneBlur.filter).includes('blur'), JSON.stringify(phoneBlur));
+    const card = await page.evaluate(noteCardInPage);
+    note('note-card', !!card && card.ok, card ? card.why : 'missing');
   }
 
   const reading = await page.evaluate(() => {
@@ -552,6 +659,8 @@ async function runCore(page, label) {
       !!inst && inst.arts > 0 && after > 680 && after < 730,
       JSON.stringify({ ...inst, after }),
     );
+    const sought = await seekMatch(page);
+    note('scrub-seek', sought.mean < 2, `t=${sought.seconds} mean=${sought.mean.toFixed(3)} ${sought.width}x${sought.height}`);
     // The margin note closes on an instrumental cue and the dock recentres.
     const lyricBox = (await track.boundingBox()) || trackBox;
     const yLyric = lyricBox.y + lyricBox.height / 2;
@@ -574,6 +683,7 @@ async function runCore(page, label) {
     const lyricAt = Number(await page.locator('.scrub-track[role="slider"]').getAttribute('aria-valuenow'));
     note('scrub-lyric', !!lyric && lyric.lines > 0 && lyricAt > 20 && lyricAt < 80, JSON.stringify({ ...lyric, lyricAt }));
     const counts = [];
+    const fastDrawn = [];
     const yFast = lyricBox.y + lyricBox.height / 2;
     const xA = lyricBox.x + 10;
     const xB = lyricBox.x + lyricBox.width * 0.9;
@@ -582,10 +692,22 @@ async function runCore(page, label) {
     for (let i = 1; i <= 14; i++) {
       await page.mouse.move(xA + ((xB - xA) * i) / 14, yFast);
       counts.push(await stageViewCount(page));
+      fastDrawn.push(await readDrawn(page));
     }
+    if (fastDrawn.length < 20) fastDrawn.push(...(await burstDrawn(page, 20 - fastDrawn.length)));
     await page.mouse.up();
     const maxViews = counts.length ? Math.max(...counts) : 0;
     note('scrub-views', maxViews >= 1 && maxViews <= 2, JSON.stringify(counts));
+    const fastJudge = judgeDrawn(fastDrawn);
+    note('drawn-fast', fastJudge.ok, fastJudge.detail);
+    await page.mouse.move(xA, yFast);
+    await page.mouse.down();
+    await page.mouse.move(xA + (xB - xA) * 0.35, yFast);
+    await page.waitForTimeout(320);
+    const slowDrawn = await burstDrawn(page, 20);
+    await page.mouse.up();
+    const slowJudge = judgeDrawn(slowDrawn);
+    note('drawn-slow', slowJudge.ok, slowJudge.detail);
   }
 
   const play = page.locator('button.btn-xl').first();
@@ -594,13 +716,37 @@ async function runCore(page, label) {
     note('press', false, 'play button has no box');
     note('play-toggle', false, 'play button has no box');
   } else {
-    await page.mouse.move(playBox.x + playBox.width / 2, playBox.y + playBox.height / 2);
+    // A scrub that still holds the pointer would eat this press. Release it, then
+    // press a point on the button that is actually the hit target.
+    await page.mouse.up();
+    await page.waitForTimeout(150);
+    const spot = await play.evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      const spots = [
+        [box.left + box.width / 2, box.top + box.height / 2],
+        [box.left + box.width / 2, box.top + 8],
+        [box.left + 8, box.top + box.height / 2],
+        [box.right - 8, box.top + box.height / 2],
+        [box.left + box.width / 2, box.bottom - 8],
+      ];
+      for (const [x, y] of spots) {
+        const hit = document.elementFromPoint(x, y);
+        if (hit && (hit === el || el.contains(hit))) return { x, y, hit: '' };
+      }
+      const mid = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+      return {
+        x: box.left + box.width / 2,
+        y: box.top + box.height / 2,
+        hit: mid ? `${mid.tagName}.${String(mid.className).slice(0, 80)}` : 'none',
+      };
+    });
+    await page.mouse.move(spot.x, spot.y);
     await page.mouse.down();
     await page.waitForTimeout(450);
     const held = await play.evaluate((el) => `${getComputedStyle(el).transform} inline=${el.style.transform}`);
     await page.mouse.up();
     const heldScale = matrixOf(held);
-    note('press', !!heldScale && heldScale.a <= 0.94, held);
+    note('press', !!heldScale && heldScale.a <= 0.94, spot.hit ? `${held} hit=${spot.hit}` : held);
     await page.waitForTimeout(250);
     const first = (await play.getAttribute('aria-label')) || '';
     await play.click();
@@ -653,6 +799,8 @@ async function runDesign(browser) {
   await se.addInitScript(stubMedia);
   const sePage = await se.newPage();
   await openSong(sePage);
+  const seCard = await sePage.evaluate(noteCardInPage);
+  note('se-note-card', !!seCard && seCard.ok, seCard ? seCard.why : 'missing');
   const title = await sePage.evaluate(() => {
     const song = document.querySelector('.topbar-song');
     const version = document.querySelector('.topbar-version');
@@ -732,7 +880,141 @@ async function runDesign(browser) {
     drawer ? JSON.stringify(drawer) : 'missing',
   );
   await land.close();
+
+  const se375 = await browser.newContext({
+    viewport: { width: 375, height: 667 },
+    deviceScaleFactor: 2,
+    isMobile: true,
+    hasTouch: true,
+    userAgent: iphoneUa,
+    colorScheme: 'dark',
+  });
+  await se375.addInitScript(stubMedia);
+  const se375Page = await se375.newPage();
+  await openSong(se375Page);
+  const se375Card = await se375Page.evaluate(noteCardInPage);
+  note('se375-note-card', !!se375Card && se375Card.ok, se375Card ? se375Card.why : 'missing');
+  await se375.close();
+
+  const deskLib = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'light' });
+  const deskLibPage = await deskLib.newPage();
+  await deskLibPage.goto(base + '/', { waitUntil: 'networkidle' });
+  await deskLibPage.evaluate(() => document.fonts.ready);
+  const shelf = await deskLibPage.evaluate(() => {
+    const row = document.querySelector('.lib-shelf');
+    const cover = document.querySelector('.lib-row-cover');
+    if (!row || !cover) return null;
+    const box = row.getBoundingClientRect();
+    const art = cover.getBoundingClientRect();
+    return { bottom: Math.round(window.innerHeight - box.bottom), cover: Math.round(art.height) };
+  });
+  note('desk-posters', !!shelf && shelf.bottom < 48 && shelf.cover >= 180, shelf ? JSON.stringify(shelf) : 'missing');
+  await deskLib.close();
+
+  const wide = await browser.newContext({ viewport: { width: 2560, height: 1440 }, colorScheme: 'light' });
+  const widePage = await wide.newPage();
+  await openSong(widePage);
+  const margin = await widePage.evaluate(() => {
+    const noteEl = document.querySelector('.comment.is-margin');
+    const player = document.querySelector('.player');
+    if (!noteEl || !player) return null;
+    const n = noteEl.getBoundingClientRect();
+    const p = player.getBoundingClientRect();
+    return { noteH: Math.round(n.height), noteBottom: Math.round(n.bottom), playerBottom: Math.round(p.bottom), vh: window.innerHeight };
+  });
+  note(
+    'wide-note',
+    !!margin && margin.noteH < margin.vh * 0.72 && Math.abs(margin.noteBottom - margin.playerBottom) < 8,
+    margin ? JSON.stringify(margin) : 'missing',
+  );
+  await wide.close();
   return out;
+}
+
+function songDurations() {
+  const map = {};
+  for (const slug of readdirSync('content/songs')) {
+    const file = `content/songs/${slug}/song.json`;
+    if (!existsSync(file)) continue;
+    const song = JSON.parse(readFileSync(file, 'utf8'));
+    if (typeof song.duration === 'number' && song.duration > 1) map[slug] = song.duration;
+  }
+  return map;
+}
+
+async function installStandIn(context, browserName) {
+  const durations = songDurations();
+  const cache = new Map();
+  await installResolvedAudio(context, (url) => {
+    const slug = /\/audio\/([^/]+)\//.exec(url)?.[1] || '';
+    const seconds = durations[slug];
+    if (!seconds) return null;
+    const key = String(seconds);
+    if (!cache.has(key)) cache.set(key, prepareAudio(seconds, 'work/studio/silence'));
+    return cache.get(key);
+  });
+  if (browserName === 'webkit') await installWebKitClock(context, durations);
+}
+
+async function runPlayback(browser, browserName) {
+  const out = [];
+  const note = (name, ok, detail) => {
+    out.push({ name, ok, detail });
+    console.log(`${ok ? 'PASS' : 'FAIL'} ${name} ${detail}`);
+  };
+  for (const [deviceName, device] of [
+    ['phone', phone],
+    ['desktop', desk],
+  ]) {
+    const context = await browser.newContext({ ...device, colorScheme: 'dark' });
+    await installStandIn(context, browserName);
+    const page = await context.newPage();
+    page.on('pageerror', (err) => console.error('pageerror', browserName, deviceName, 'play', err.message));
+    const prefix = `${browserName} ${deviceName}`;
+    try {
+      await openSong(page);
+      const before = await page.evaluate(() => ({
+        clock: document.querySelector('.scrub-now')?.textContent || '',
+        line: [...document.querySelectorAll('.fb--line.is-current .w')].map((el) => (el.textContent || '').replace(/\u200b/g, '')).join(' '),
+      }));
+      await page.locator('button.btn-xl').first().click();
+      const playing = await page
+        .waitForFunction(() => document.querySelector('button.btn-xl')?.getAttribute('aria-label') === 'Пауза', null, { timeout: 4000 })
+        .then(() => true)
+        .catch(() => false);
+      const drawn = await burstDrawn(page, 20);
+      await page.waitForTimeout(5600);
+      const after = await page.evaluate(() => {
+        const audio = document.querySelector('audio');
+        const err = audio?.error;
+        return {
+          clock: document.querySelector('.scrub-now')?.textContent || '',
+          line: [...document.querySelectorAll('.fb--line.is-current .w')].map((el) => (el.textContent || '').replace(/\u200b/g, '')).join(' '),
+          label: document.querySelector('button.btn-xl')?.getAttribute('aria-label') || '',
+          paused: audio?.paused ?? null,
+          time: audio ? audio.currentTime : null,
+          error: err ? err.code : 0,
+        };
+      });
+      const clock = clockSeconds(after.clock) - clockSeconds(before.clock);
+      const moved = normLine(after.line) !== normLine(before.line) && normLine(after.line).length > 0;
+      const judge = judgeDrawn(drawn);
+      note(
+        `${prefix} play-advance`,
+        playing && after.label === 'Пауза' && clock >= 3 && moved,
+        `clock ${before.clock}->${after.clock} (${clock}) line ${moved} paused=${after.paused} t=${after.time} error=${after.error} glyph=${after.label}`,
+      );
+      note(`${prefix} drawn-play`, judge.ok, judge.detail);
+    } catch (err) {
+      note(`${prefix} play-advance`, false, String(err && err.message ? err.message : err).split('\n')[0]);
+    }
+    await context.close();
+  }
+  return out;
+}
+
+function normLine(value) {
+  return String(value || '').replace(/\u200b/g, '').replace(/\s+/g, ' ').trim();
 }
 
 const results = [];
@@ -786,6 +1068,10 @@ async function runFirstPaint(browser, browserName) {
 
 try {
   if (!only) results.push(...(await runDesign(chrome)));
+  if (!only) {
+    results.push(...(await runPlayback(chrome, 'chromium')));
+    results.push(...(await runPlayback(kit, 'webkit')));
+  }
 } catch (err) {
   const detail = String(err && err.stack ? err.stack : err);
   results.push({ name: 'design crash', ok: false, detail });

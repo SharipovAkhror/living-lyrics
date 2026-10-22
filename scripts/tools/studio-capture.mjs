@@ -275,7 +275,15 @@ async function compareSeek(page, browserName) {
   const seconds = Number.isFinite(released.now) ? released.now : 705;
   await page.goto(`${base}/song/karitas?t=${seconds}`, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(900);
+  // The halo arrives with features.json, about a second after the page mounts.
+  await page
+    .waitForFunction(
+      () => performance.getEntriesByType('resource').some((entry) => entry.name.includes('/features.json') && entry.responseEnd > 0),
+      { timeout: 8000 },
+    )
+    .catch(() => {});
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  await page.waitForTimeout(200);
   await page.evaluate(() => {
     const field = document.querySelector('.field');
     if (field instanceof HTMLElement) field.style.visibility = 'hidden';
@@ -383,9 +391,11 @@ function clips(browserName) {
       go: async (page) => {
         const button = page.locator('button.btn-xl').first();
         await button.click();
-        await page.waitForTimeout(1500);
+        // Hold play long enough for the clock and the next line. The old 1.5 s
+        // second click was the pause the sheet read as the song stopping.
+        await page.waitForTimeout(5600);
         await button.click();
-        await page.waitForTimeout(1500);
+        await page.waitForTimeout(400);
       },
     },
   ];
@@ -415,8 +425,9 @@ async function sampleFlightClock(page) {
     if (el instanceof HTMLElement) el.click();
   });
   let settled = 0;
-  for (let i = 0; i < 45; i++) {
-    await page.clock.runFor(100);
+  // 50 ms on the same spring. 100 ms stepped across the flight in one or two frames.
+  for (let i = 0; i < 80; i++) {
+    await page.clock.runFor(50);
     frames.push(await shot());
     const state = await page.evaluate(() => {
       const cover = document.querySelector('.morph-cover');
