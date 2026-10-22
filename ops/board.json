@@ -1,7 +1,15 @@
 {
-  "updated": "2026-10-22T21:05:00Z",
+  "updated": "2026-10-22T21:15:00Z",
   "headline": "Дизайн сайта: круги 19–21 в ветке studio-pass, круг 22 (большие экраны) — после сброса Grok в пт 21:08. Панель по ссылке готова.",
   "tasks": [
+    {
+      "id": "you-ops-resume",
+      "section": "you",
+      "status": "waiting",
+      "title": "Нажать «Resume» в чате LL · Ops",
+      "what": "LL · Ops стоит на вопросе «Resume this conversation?». Открыть LL · Ops (приложение Claude или claude.ai/code/session_018z7LQwc1tm8QKr1tXuHBsV; на Станции — claude agents → LL · Ops → Enter) и выбрать «1. Resume». Не «новый разговор»: он потеряет дела без сдачи.",
+      "date": "2026-10-23"
+    },
     {
       "id": "you-drive",
       "section": "you",
