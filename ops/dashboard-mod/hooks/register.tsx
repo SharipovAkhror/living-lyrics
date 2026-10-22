@@ -760,11 +760,17 @@ export function cardDoc(b: Board | null, l: Live, lim: Limit[], u: Usage | null)
     limits: {
       claude: claudeWindows(lim).map((w, i) => ({ label: w.label, used: Math.round(w.used), reset: w.reset, resetAt: lim[i]?.resetsAt ?? null })),
       gemini: geminiWindows(u?.gemini?.quota?.gemini).map(w => ({ label: w.label, used: Math.round(w.used), reset: w.reset })),
-      grok: u?.grok ? {
+      // Short string for the old live page (esc(L.grok)); absent without data.
+      grok: u?.grok ? [
+        u.grok.today !== undefined ? `сутки ${tokens(u.grok.today)} ток.` : '',
+        u.grok.weekly ? `неделя ${Math.round(u.grok.weekly.percentUsed)} %` : '',
+      ].filter(Boolean).join(' · ') || undefined : undefined,
+      // Full object for panel.html and card/render.mjs (was `grok` before rev 2).
+      grokInfo: u?.grok ? {
         today: tokens(u.grok.today), week: u.grok.week ? tokens(u.grok.week) : '', plan: u.grok.plan ?? '',
         // The reset line is copied from Grok's screen without a timezone: shown as is, never converted.
         weekly: u.grok.weekly ? { label: 'неделя', used: Math.round(u.grok.weekly.percentUsed), reset: u.grok.weekly.resetsAt ?? '', tz: u.grok.weekly.timezoneLabeled } : null,
-      } : null,
+      } : undefined,
       plans: { claude: u?.claude?.plan ?? '', gemini: u?.gemini?.plan ?? '' },
     },
     spend: {
@@ -784,6 +790,8 @@ export function cardDoc(b: Board | null, l: Live, lim: Limit[], u: Usage | null)
  * the tool.check hook below lets exactly these calls through (the owner allows it once).
  */
 export const PANEL_URL = 'https://claude.ai/artifact/UxZtjaBuWo2eDXW3fSC6tp'
+/** Document revision: a chat with a lower rev does not overwrite a higher one (see shouldWritePanel). */
+export const PANEL_REV = 2
 const PANEL_HEARTBEAT_MS = 10 * 60_000
 const TREND_EVERY_MS = 15 * 60_000
 const TREND_KEEP_MS = 7 * 86_400_000
@@ -863,6 +871,7 @@ export function panelDoc(
   })
   return {
     ...base,
+    rev: PANEL_REV,
     chats: (l.chats ?? []).map(c => ({ name: c.name, state: c.state, minutes: mins(since[c.name]?.at), waiting: c.waiting_for ?? '', last: c.last ?? '', lastMin: iso(c.last_at) })),
     agents: agentRows(b, l).map(r => ({ agent: r.agent, name: r.name, task: r.task, state: r.state, tone: r.tone, detail: r.detail, age: r.age ?? null })),
     work,
@@ -877,6 +886,15 @@ let panel = { key: '', at: 0, version: 0 }
 function versionIn(text: string) {
   const m = text.match(/"version":\s*(\d+)|version (\d+)/)
   return m ? Number(m[1] ?? m[2]) : 0
+}
+
+/**
+ * Whether to write the panel document: our rev must be >= the stored one.
+ * A chat running older code (lower PANEL_REV) must not overwrite a newer writer's data.
+ */
+export function shouldWritePanel(ownRev: number, storedRev: number | undefined): boolean {
+  if (storedRev === undefined) return true
+  return ownRev >= storedRev
 }
 
 /** The owner said yes (2026-10-21) to the mod writing its panel unattended (the tool.check hook below). */
@@ -905,7 +923,11 @@ async function writePanel($: EngineInterface) {
   try {
     if (!panel.version) {
       const got = await $.tool.call({ tool: 'ArtifactData', action: 'get', ...where })
-      panel.version = versionIn(String(got.text ?? ''))
+      const gotText = String(got.text ?? '')
+      panel.version = versionIn(gotText)
+      // Check rev: if the stored document was written by a newer mod, do not overwrite.
+      const storedRev = (gotText.match(/"rev":\s*(\d+)/) ?? [])[1]
+      if (!shouldWritePanel(PANEL_REV, storedRev !== undefined ? Number(storedRev) : undefined)) return
     }
     const set = () => $.tool.call({ tool: 'ArtifactData', action: 'set', ...where, data: doc, ...(panel.version ? { if_version: panel.version } : {}) })
     let res = await set()

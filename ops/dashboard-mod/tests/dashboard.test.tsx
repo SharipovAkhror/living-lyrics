@@ -1,6 +1,6 @@
 import { expect, mock, test } from 'claude-code/testing'
 
-import { syncDelta, syncNext, taskSince, newFailures, waitPushes, agentRows, bandLine, cardContext, cardDoc, chatSince, codename, PANEL_URL, panelDoc, trendNext, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
+import { syncDelta, syncNext, taskSince, newFailures, waitPushes, agentRows, bandLine, cardContext, cardDoc, chatSince, codename, PANEL_REV, PANEL_URL, panelDoc, shouldWritePanel, trendNext, dashboardContext, geminiWindows, isDashboardAsk, limitPush, remoteLive, rotationNote, settingsPatch, songRows, stateKey, summaryText, tokens, USER_SETTINGS } from '../hooks/register'
 import type { Board, Live } from '../types'
 
 const BOARD: Board = {
@@ -210,7 +210,7 @@ test('user settings: a missing or different key is written, the rest stays, a ke
 test('the image card state carries every block, and its reply sends the PNG with the text as fallback', async () => {
   const doc = cardDoc(BOARD, LIVE, [{ kind: 'five_hour', percentUsed: 23, resetsAt: '2026-10-21T04:00:00Z' }], { grok: { plan: 'SuperGrok Heavy', today: 38_000_000 } })
   expect(doc?.limits.claude[0]).toEqual({ label: '5 ч', used: 23, reset: expect.stringContaining('сброс'), resetAt: '2026-10-21T04:00:00Z' })
-  expect(doc?.limits.grok?.today).toBe('38 М')
+  expect(doc?.limits.grokInfo?.today).toBe('38 М')
   expect(doc?.you.map(t => t.title)).toEqual(['Видео концертов'])
   expect(doc?.agents.map(a => a.agent)).toEqual(['claude', 'grok', 'gemini'])
   expect(cardDoc(null, LIVE, [], null)).toBe(null)
@@ -306,4 +306,49 @@ test('the card carries cap alerts and what the spend bought', async () => {
   expect(doc?.spend.alerts).toEqual([{ kind: 'no-commit', task: codename('t9-comment'), value: 52_000_000 }])
   expect(doc?.spend.value).toEqual({ perTask: 32, inMain: 65, tasks: 40, at: '2026-10-22T09:00:00Z' })
   expect(cardDoc(BOARD, LIVE, [], null)?.spend).toEqual({ alerts: [], value: null })
+})
+
+test('cardDoc.limits.grok is a string (or absent), grokInfo is the full object', async () => {
+  const u = {
+    grok: { today: 38_000_000, week: 120_000_000, plan: 'SuperGrok', weekly: { percentUsed: 76, resetsAt: 'October 25, 12:00', timezoneLabeled: false, source: 'screen', at: '2026-10-22T10:00:00Z' } },
+  }
+  const doc = cardDoc(BOARD, LIVE, [], u)
+  // limits.grok must be a string the old page can esc() safely
+  expect(typeof doc?.limits.grok).toBe('string')
+  expect(doc?.limits.grok).toContain('38')
+  expect(doc?.limits.grok).toContain('76 %')
+  // limits.grokInfo must be the detailed object
+  expect(doc?.limits.grokInfo).toBeDefined()
+  expect(doc?.limits.grokInfo?.today).toBe('38 М')
+  expect(doc?.limits.grokInfo?.weekly?.used).toBe(76)
+  // Without grok data, both are absent
+  const noGrok = cardDoc(BOARD, LIVE, [], null)
+  expect(noGrok?.limits.grok).toBeUndefined()
+  expect(noGrok?.limits.grokInfo).toBeUndefined()
+})
+
+test('cardDoc.limits.grok is absent (not null or empty) when grok data is missing', async () => {
+  const doc = cardDoc(BOARD, LIVE, [], { grok: { today: undefined } })
+  // today is undefined, weekly is missing, so the string parts are both empty → undefined
+  expect(doc?.limits.grok).toBeUndefined()
+})
+
+test('panelDoc includes rev equal to PANEL_REV', async () => {
+  const live: Live = { ...LIVE, chats: [] }
+  const doc = panelDoc(BOARD, live, [], null, [], {}, 60_000)
+  expect(doc?.rev).toBe(PANEL_REV)
+  expect(typeof doc?.rev).toBe('number')
+  expect(doc?.rev).toBeGreaterThanOrEqual(2)
+})
+
+test('shouldWritePanel: write when stored rev is absent, equal or lower; skip when higher', async () => {
+  // No stored rev: always write
+  expect(shouldWritePanel(2, undefined)).toBe(true)
+  // Same rev: write
+  expect(shouldWritePanel(2, 2)).toBe(true)
+  // Stored rev lower: write
+  expect(shouldWritePanel(3, 2)).toBe(true)
+  // Stored rev higher: do NOT write
+  expect(shouldWritePanel(2, 3)).toBe(false)
+  expect(shouldWritePanel(1, 2)).toBe(false)
 })

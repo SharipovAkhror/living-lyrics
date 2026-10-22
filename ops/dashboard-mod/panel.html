@@ -200,7 +200,7 @@ function render(d) {
   const you = d.you || [];
   if (you.length) out.push(`<section class="you"><h2>Нужно от вас · ${you.length}</h2><ul>${you.map(t => `<li><b>${esc(t.title)}</b>${t.how ? `<span class="sub">${esc(t.how)}</span>` : ''}</li>`).join('')}</ul></section>`);
 
-  const g = L.grok;
+  const g = L.grokInfo || (typeof L.grok === 'object' && L.grok !== null ? L.grok : null);
   const gw = g && g.weekly;
   const months = { January: '01', February: '02', March: '03', April: '04', May: '05', June: '06', July: '07', August: '08', September: '09', October: '10', November: '11', December: '12' };
   const grokReset = r => (r || '').replace(/^(\w+) (\d+), (\d+:\d+)$/, (_, mo, d, hm) => `${d.padStart(2, '0')}.${months[mo] || mo} ${hm}`);
