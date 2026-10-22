@@ -308,7 +308,9 @@ function judgeDrawn(rows) {
   const bad = rows.filter((row) => !row?.ok);
   const texts = rows.reduce((sum, row) => sum + (row?.texts || 0), 0);
   const sample = bad[0];
-  const detail = sample ? JSON.stringify({ bad: sample.bad, overlap: sample.overlap, texts: sample.texts }) : `frames ${rows.length} texts ${texts}`;
+  const detail = sample
+    ? JSON.stringify({ bad: sample.bad, overlap: sample.overlap, texts: sample.texts, frame: rows.indexOf(sample), of: rows.length })
+    : `frames ${rows.length} texts ${texts}`;
   return { ok: rows.length >= 20 && bad.length === 0 && texts > 0, detail };
 }
 
@@ -847,9 +849,12 @@ async function runCore(page, label) {
     note('scrub-lyric', !!lyric && lyric.lines > 0 && lyricAt > 20 && lyricAt < 80, JSON.stringify({ ...lyric, lyricAt }));
     const counts = [];
     const fastDrawn = [];
-    const yFast = lyricBox.y + lyricBox.height / 2;
-    const xA = lyricBox.x + 10;
-    const xB = lyricBox.x + lyricBox.width * 0.9;
+    // Measure again: the margin note came back on release and the column, with the
+    // phone-width dock, re-centred. The box from before that is a stale target.
+    const fastBox = (await track.boundingBox()) || lyricBox;
+    const yFast = fastBox.y + fastBox.height / 2;
+    const xA = fastBox.x + 10;
+    const xB = fastBox.x + fastBox.width * 0.9;
     await page.mouse.move(xA, yFast);
     await page.mouse.down();
     for (let i = 1; i <= 14; i++) {

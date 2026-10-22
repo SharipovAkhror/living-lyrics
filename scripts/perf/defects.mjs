@@ -23,7 +23,7 @@ const iphoneUa =
 
 const results = [];
 function note(name, ok, detail = '') {
-  if (only && !name.includes(only)) return;
+  if (only && only !== 'R20' && !name.includes(only)) return;
   results.push({ name, ok, detail });
   console.log(`${ok ? 'PASS' : 'FAIL'} ${name} ${detail}`);
 }
@@ -270,7 +270,9 @@ async function scrubClock(page) {
     const facts = await page.evaluate(frameFacts);
     frames.push({ drawn, facts });
   };
-  const now = await page.evaluate(() => Date.now());
+  // A little ahead: the installed clock keeps running between this read and the pause,
+  // and pausing at a moment already passed throws.
+  const now = await page.evaluate(() => Date.now() + 250);
   await page.clock.pauseAt(now);
   await read();
   await page.mouse.move(x0, y);
@@ -375,10 +377,14 @@ async function releaseMatch(context, page, browserName) {
       data: document.querySelector('.scrub-track')?.getAttribute('data-t') || '',
       line: [...document.querySelectorAll('.fb--line.is-current .w')].map((el) => (el.textContent || '').replace(/\u200b/g, '')).join(' ').slice(0, 80),
       depart: document.querySelectorAll('.scene-depart').length,
+      foot: !!document.querySelector('.song.has-foot'),
+      card: !!document.querySelector('.note-card'),
     }));
     const held = await page.evaluate(() => ({
       line: [...document.querySelectorAll('.fb--line.is-current .w')].map((el) => (el.textContent || '').replace(/\u200b/g, '')).join(' ').slice(0, 80),
       depart: document.querySelectorAll('.scene-depart').length,
+      foot: !!document.querySelector('.song.has-foot'),
+      card: !!document.querySelector('.note-card'),
     }));
     mkdirSync('work/studio/r19-debug', { recursive: true });
     writeFileSync('work/studio/r19-debug/d15-released.png', released);
@@ -971,12 +977,38 @@ async function runFootnote(browser) {
         h: Math.round(c.height),
         w: Math.round(c.width),
         ok: overlap <= 2 && c.top >= l.bottom - 2 && c.height > 32 && c.height <= 52 && c.width > 40,
+        clip: { x: c.left, y: c.top, width: c.width, height: c.height },
       };
     });
+    // Drawn: hide the footnote and look at its band. Only the field may be there,
+    // no ink of the current line or of the next one.
+    let ink = -1;
+    if (gap) {
+      await page.evaluate(() => {
+        const card = document.querySelector('.note-card');
+        if (card instanceof HTMLElement) card.style.visibility = 'hidden';
+      });
+      await page.waitForTimeout(120);
+      const band = await page.screenshot({ clip: gap.clip });
+      const { data, info } = await sharp(band).removeAlpha().greyscale().raw().toBuffer({ resolveWithObject: true });
+      // Per row, the spread of luminance. The field is a smooth gradient; a glyph is a jump.
+      let worst = 0;
+      for (let y = 0; y < info.height; y++) {
+        let lo = 255;
+        let hi = 0;
+        for (let x = 0; x < info.width; x++) {
+          const v = data[y * info.width + x];
+          if (v < lo) lo = v;
+          if (v > hi) hi = v;
+        }
+        worst = Math.max(worst, hi - lo);
+      }
+      ink = worst;
+    }
     note(
       'chromium D27 phone-note-clear',
-      !!gap && gap.ok,
-      gap ? `${width} overlap ${gap.overlap} top ${gap.top} line ${gap.lineBottom} h ${gap.h}` : `${width} missing`,
+      !!gap && gap.ok && ink >= 0 && ink <= 24,
+      gap ? `${width} overlap ${gap.overlap} top ${gap.top} line ${gap.lineBottom} h ${gap.h} ink ${ink}` : `${width} missing`,
     );
     await context.close();
   }
@@ -985,7 +1017,16 @@ async function runFootnote(browser) {
 const chrome = await chromium.launch();
 const kit = await webkit.launch();
 try {
-  if (only !== 'D15') {
+  // Round 20 rows alone, for a quick look while working: --only R20.
+  if (only === 'R20') {
+    await runAccentRest(chrome);
+    await runFootnote(chrome);
+    await runNoteClearance(chrome);
+    await runColumn(chrome);
+    await runLandscape(chrome);
+    await runDisc(chrome);
+  }
+  if (only !== 'D15' && only !== 'R20') {
     await runFirstPaint(chrome, 'chromium');
     await runFirstPaint(kit, 'webkit');
     await runFlight(chrome, 'chromium');
@@ -993,9 +1034,9 @@ try {
     await runPress(chrome, 'chromium');
     await runPress(kit, 'webkit');
   }
-  await runScrub(chrome, 'chromium');
-  await runScrub(kit, 'webkit');
-  if (only === 'D15') {
+  if (only !== 'R20') await runScrub(chrome, 'chromium');
+  if (only !== 'R20') await runScrub(kit, 'webkit');
+  if (only === 'D15' || only === 'R20') {
     const failedEarly = results.some((row) => !row.ok);
     console.log(`${results.filter((row) => row.ok).length}/${results.length} defect checks passed`);
     await chrome.close();
