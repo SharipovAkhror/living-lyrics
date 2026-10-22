@@ -764,6 +764,12 @@ export function cardDoc(b: Board | null, l: Live, lim: Limit[], u: Usage | null)
       } : null,
       plans: { claude: u?.claude?.plan ?? '', gemini: u?.gemini?.plan ?? '' },
     },
+    spend: {
+      alerts: (u?.alerts ?? []).map(a => ({ kind: a.kind, task: codename(a.task) || a.task, value: a.value })),
+      value: u?.value && u.value.weekTokens > 0
+        ? { perTask: u.value.mTokPerMergedTask, inMain: Math.round((u.value.tokensInMain / u.value.weekTokens) * 100), tasks: u.value.mergedTasks, at: u.value.at }
+        : null,
+    },
   }
 }
 

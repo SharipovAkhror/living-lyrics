@@ -297,3 +297,13 @@ test('sync shows the change since yesterday; tasks keep the time they first show
   expect(syncDelta(h, 'Karitas', 26, 3_600_000)).toBe(null)
   expect(taskSince({ t1: 5 }, ['t1', 't2'], 99)).toEqual({ t1: 5, t2: 99 })
 })
+
+test('the card carries cap alerts and what the spend bought', async () => {
+  const doc = cardDoc(BOARD, LIVE, [], {
+    alerts: [{ kind: 'no-commit', task: 't9-comment', session: 's', value: 52_000_000, at: '2026-10-22T10:00:00Z' }],
+    value: { weekTokens: 1958.4, tokensInMain: 1270, tokensNotInMain: 688, mergedTasks: 40, mTokPerMergedTask: 32, source: 'ops/usage/review.py', at: '2026-10-22T09:00:00Z' },
+  })
+  expect(doc?.spend.alerts).toEqual([{ kind: 'no-commit', task: codename('t9-comment'), value: 52_000_000 }])
+  expect(doc?.spend.value).toEqual({ perTask: 32, inMain: 65, tasks: 40, at: '2026-10-22T09:00:00Z' })
+  expect(cardDoc(BOARD, LIVE, [], null)?.spend).toEqual({ alerts: [], value: null })
+})

@@ -136,7 +136,22 @@ export type Usage = {
     secondsTodaySource?: string
     secondsTodayAt?: string
   }
+  /** Waste caps crossed (ops/usage/collect.py, docs/process/executor-budget.md R2/R4): flags, never kills. */
+  alerts?: UsageAlert[]
+  /** What the spend bought (LL · Ops, ops/usage/review.py), weekly or on demand. Tokens in millions. */
+  value?: {
+    weekTokens: number
+    tokensInMain: number
+    tokensNotInMain: number
+    mergedTasks: number
+    mTokPerMergedTask: number
+    source: string
+    at: string
+  }
 }
+
+/** `value`: tokens for kind tokens and no-commit, seconds for wall, percent for weekly. */
+export type UsageAlert = { kind: 'tokens' | 'wall' | 'no-commit' | 'weekly'; task: string; session: string; value: number; at: string }
 
 declare module 'claude-code' {
   interface PluginState {

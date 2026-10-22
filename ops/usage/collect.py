@@ -722,6 +722,84 @@ def _gemini_from_rows(rows):
     return plan, quota_rows, at
 
 
+# Waste caps (docs/process/executor-budget.md, rules R2 and R4; LL · Ops). Flag only, never kill.
+CAP_TOKENS = 30_000_000
+CAP_TOKENS_NO_COMMIT = 50_000_000
+CAP_WALL_S = 2 * 3600
+ACTIVE_S = 30 * 60          # a session not updated for this long is over: no alert
+WEEKLY_ALERT_PCT = 70
+WEEKLY_ALERT_EARLY_S = 24 * 3600
+WORKTREES = ROOT.parent / 'living-lyrics-wt'
+
+
+def _parse_ts(value):
+    try:
+        t = dt.datetime.fromisoformat(str(value).replace('Z', '+00:00'))
+    except ValueError:
+        return None
+    return t if t.tzinfo else t.replace(tzinfo=dt.timezone.utc)
+
+
+def _reset_time(label, at):
+    """'October 23, 21:08' (local time, no year, as the Grok modal prints it) → aware datetime, or None."""
+    try:
+        t = dt.datetime.strptime(f'{label} {at.year}', '%B %d, %H:%M %Y')
+    except (ValueError, TypeError):
+        return None
+    t = t.replace(tzinfo=dt.datetime.now().astimezone().tzinfo)
+    return t.replace(year=t.year + 1) if t < at - dt.timedelta(days=1) else t
+
+
+def worktree_commits_since(task, since):
+    """Commits made in the executor's worktree since `since`; None when it can't be read."""
+    folder = WORKTREES / task
+    if not folder.is_dir():
+        return None
+    try:
+        out = subprocess.run(['git', '-C', str(folder), 'log', f'--since={iso(since)}', '--format=%H'],
+                             capture_output=True, encoding='utf-8', errors='replace', timeout=20)
+    except Exception:
+        return None
+    return len(out.stdout.split()) if out.returncode == 0 else None
+
+
+def grok_alerts(rows, stamp, weekly=None, commits=worktree_commits_since):
+    """Cap alerts {kind, task, session, value, at}. Wall time runs from the session's first ledger snapshot
+    (so it can be up to one collection interval short) to its own last update."""
+    t = _parse_ts(stamp)
+    first, last = {}, {}
+    for r in rows:
+        if r.get('agent') != 'grok' or r.get('kind') != 'session':
+            continue
+        key = (r.get('task', ''), r.get('session', ''))
+        first[key] = min(first.get(key, r['ts']), r['ts'])
+        if key not in last or r['ts'] >= last[key]['ts']:
+            last[key] = r
+    alerts = []
+    for key, r in sorted(last.items()):
+        start = _parse_ts(first[key])
+        updated = _parse_ts(r.get('sessionUpdated') or r['ts']) or _parse_ts(r['ts'])
+        if not (t and start and updated) or (t - updated).total_seconds() > ACTIVE_S:
+            continue
+        wall = max(0, round((updated - start).total_seconds()))
+        tokens = int(r.get('totalTokens') or 0)
+        base = {'task': key[0], 'session': key[1], 'at': stamp}
+        if tokens > CAP_TOKENS:
+            alerts.append({'kind': 'tokens', 'value': tokens, **base})
+        if wall > CAP_WALL_S:
+            alerts.append({'kind': 'wall', 'value': wall, **base})
+        if tokens > CAP_TOKENS_NO_COMMIT or wall > CAP_WALL_S:
+            made = commits(key[0], start)
+            if made == 0:
+                alerts.append({'kind': 'no-commit', 'value': tokens, **base})
+    if weekly and weekly.get('percentUsed') is not None and weekly['percentUsed'] >= WEEKLY_ALERT_PCT:
+        at = _parse_ts(weekly.get('at') or stamp)
+        reset = _reset_time(weekly.get('resetsAt'), at) if at else None
+        if reset and (reset - at).total_seconds() > WEEKLY_ALERT_EARLY_S:
+            alerts.append({'kind': 'weekly', 'task': '', 'session': '', 'value': weekly['percentUsed'], 'at': stamp})
+    return alerts
+
+
 def build_latest(rows, stamp, *, claude=None, gemini_live=None, grok_live=None, prev=None, settings_plan=('', '')):
     """The summary dict. Missing measurements are omitted. Nothing is guessed."""
     prev = prev or {}
@@ -807,7 +885,10 @@ def build_latest(rows, stamp, *, claude=None, gemini_live=None, grok_live=None, 
     if 'claude-gpt' in quota:
         gemini['claudeGpt'] = quota['claude-gpt']
 
-    latest = {'updated': stamp, 'grok': grok, 'gemini': gemini}
+    latest = {'updated': stamp, 'grok': grok, 'gemini': gemini, 'alerts': grok_alerts(rows, stamp, grok.get('weekly'))}
+    # Filled by LL · Ops (ops/usage/review.py), weekly or on demand; carried over untouched.
+    if prev.get('value'):
+        latest['value'] = prev['value']
     if claude and claude.get('plan'):
         latest['claude'] = {
             'plan': claude['plan'],

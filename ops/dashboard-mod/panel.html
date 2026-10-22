@@ -213,6 +213,15 @@ function render(d) {
     ${limitRows('gemini', 'Gemini', P.gemini, L.gemini, trend, ['g5', 'gw'], d.at)}<span class="rule"></span>
     ${grok}</div></section>`);
 
+  // Spend: waste caps crossed (flags only) and what last week's tokens bought (LL · Ops).
+  const sp = d.spend || {}, alerts = sp.alerts || [], val = sp.value;
+  const mtok = n => `${group(Math.round(n / 1e6))} М`;
+  const alertText = a => a.kind === 'weekly' ? `Grok: неделя ${a.value} %, а до сброса больше суток`
+    : a.kind === 'wall' ? `Grok · ${a.task}: сессия идёт ${dur(Math.round(a.value / 60))}, порог 2 ч`
+    : a.kind === 'no-commit' ? `Grok · ${a.task}: ${mtok(a.value)} ток. и ни одного коммита`
+    : `Grok · ${a.task}: ${mtok(a.value)} ток. в сессии, порог 30 М`;
+  if (alerts.length || val) out.push(`<section><h2>Расход</h2>${val ? `<div class="sub">${esc(String(val.perTask))} М ток. на влитую задачу · в main ушло ${val.inMain} % · задач ${val.tasks}</div>` : ''}${alerts.map(a => `<div style="color:var(--warn)">${esc(alertText(a))}</div>`).join('')}</section>`);
+
   const work = d.work || [];
   out.push(`<section><h2>В работе <span><span class="dot working"></span> идёт · <span class="dot finished"></span> на проверке</span></h2>${work.length ? `<div class="rows">${work.map(w => `<div class="row">
       <span class="dot ${esc(w.state)}"></span><span class="t wt"><span class="id">${esc(w.id.toUpperCase())}</span><b>${esc(w.title)}</b></span>

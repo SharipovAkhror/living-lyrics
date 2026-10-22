@@ -155,3 +155,30 @@ def test_week_total_still_subtracts_the_peak_from_before_the_window():
     ]
     start = dt.datetime(2026, 10, 18, tzinfo=dt.timezone.utc)
     assert collect.grok_window(rows, start) == (50, {'t': 50})
+
+
+def _row(ts, tokens, updated, task='t9-x', session='s1'):
+    return {'ts': ts, 'agent': 'grok', 'kind': 'session', 'task': task, 'session': session,
+            'totalTokens': tokens, 'sessionUpdated': updated}
+
+
+def test_caps_flag_tokens_wall_and_no_commit_on_a_live_session():
+    rows = [_row('2026-10-22T08:00:00Z', 1_000_000, '2026-10-22T08:00:00Z'),
+            _row('2026-10-22T10:30:00Z', 55_000_000, '2026-10-22T10:29:00Z')]
+    alerts = collect.grok_alerts(rows, '2026-10-22T10:35:00Z', commits=lambda task, since: 0)
+    assert [a['kind'] for a in alerts] == ['tokens', 'wall', 'no-commit']
+    assert alerts[0] == {'kind': 'tokens', 'value': 55_000_000, 'task': 't9-x', 'session': 's1', 'at': '2026-10-22T10:35:00Z'}
+    assert alerts[1]['value'] == 2 * 3600 + 29 * 60
+
+
+def test_caps_skip_finished_sessions_and_sessions_with_commits():
+    rows = [_row('2026-10-22T08:00:00Z', 1, '2026-10-22T08:00:00Z'), _row('2026-10-22T10:30:00Z', 40_000_000, '2026-10-22T10:30:00Z')]
+    assert [a['kind'] for a in collect.grok_alerts(rows, '2026-10-22T10:35:00Z', commits=lambda t, s: 3)] == ['tokens', 'wall']
+    assert collect.grok_alerts(rows, '2026-10-22T12:00:00Z', commits=lambda t, s: 0) == []
+
+
+def test_weekly_alert_only_when_the_reset_is_more_than_a_day_away():
+    weekly = {'percentUsed': 76, 'at': '2026-10-21T13:24:01Z', 'resetsAt': 'October 23, 21:08'}
+    assert [a['kind'] for a in collect.grok_alerts([], '2026-10-21T13:30:00Z', weekly)] == ['weekly']
+    assert collect.grok_alerts([], '2026-10-23T13:30:00Z', {**weekly, 'at': '2026-10-23T13:24:01Z'}) == []
+    assert collect.grok_alerts([], '2026-10-21T13:30:00Z', {**weekly, 'percentUsed': 50}) == []
