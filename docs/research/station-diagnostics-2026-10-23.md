@@ -101,3 +101,20 @@
 - **копии от синхронизации** (`* (1).*` в `.git`) — уже ловит.
 
 Стоимость — доли секунды, вывод — одна строка в существующем отчёте. Сделаю после «да» LL · Main.
+
+## Чистка безопасности: порядок шагов (подготовлено, не выполнялось)
+
+Выполнять только после «да» владельца, по порядку. «Агент» — можно из чата без прав администратора. «Владелец» — нужны права администратора (окно UAC): вставить строку в PowerShell, открытый **от имени администратора** (Пуск → PowerShell → правой кнопкой → «Запуск от имени администратора»). Перед шагами 3–5 закрыть MediaGet и PixelSee, если они открыты.
+
+| # | Шаг | Кто | Команда | Проверка |
+|---|---|---|---|---|
+| 1 | Удалить задачу Планировщика `User`, которая возвращает автозапуск | агент (задача пользователя, RunLevel Limited) | `schtasks /Delete /TN "\User" /F` | `schtasks /Query /TN "\User"` → «не найдена» |
+| 2 | Удалить запись автозапуска `User` (`bongbonger.org`) | агент | `reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v User /f` | в `Run` нет `User` |
+| 3 | Удалить PixelSee вместе со службой Luminati | владелец | `sc.exe stop luminati_net_updater_win_pixelsee_app; & "C:\Users\Sherzod Sharipov\PixelSee\pixelsee-uninstaller.exe"`; если служба осталась — `sc.exe delete luminati_net_updater_win_pixelsee_app`; затем удалить папку `C:\Users\Sherzod Sharipov\PixelSee` | `Get-Service luminati*` пусто, процесса `net_updater32` нет |
+| 4 | Убрать `highsocks` | агент: остановить процесс и убрать автозапуск. Владелец: удалить папку (агенту удаление папок вне git запрещено) | `Stop-Process -Name highsocks -Force; reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v highsocks /f`, затем папка `%LOCALAPPDATA%\highsocks` | процесса и записи нет |
+| 5 | Удалить MediaGet (тот же производитель, что у PixelSee) | агент запускает деинсталлятор, владелец нажимает кнопки в его окне | `& "C:\Users\User\MediaGet2\mediaget-uninstaller.exe"`; автозапуск `MediaGet2` в `HKCU\...\Run` уходит вместе с ним (если нет — `reg delete … /v MediaGet2 /f`, агент) | записи `MediaGet2` нет |
+| 6 | Включить Защитник Windows | владелец | служба выключена типом запуска (`WinDefend` Start = 4, политик нет): `Set-ItemProperty HKLM:\SYSTEM\CurrentControlSet\Services\WinDefend -Name Start -Value 2`, перезагрузка, затем «Безопасность Windows» → «Защита от вирусов и угроз» → включить. Если Windows не даёт изменить службу — тоже через «Безопасность Windows» | `Get-MpComputerStatus` отвечает, `RealTimeProtectionEnabled = True` |
+| 7 | Полная проверка | агент запускает, когда Защитник включён | `& "$env:ProgramFiles\Windows Defender\MpCmdRun.exe" -Scan -ScanType 2` (час-два) | `Get-MpThreatDetection`; найденное — владельцу списком |
+| 8 | Включить Центр обновления без перезапуска, пока вы вошли | владелец | `Set-Service wuauserv -StartupType Manual; New-Item HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Force; Set-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name NoAutoRebootWithLoggedOnUsers -Value 1 -Type DWord; Start-Service wuauserv` | «Параметры → Обновление» открывается и ищет обновления |
+
+Шаги 1–2 и 4–5 не мешают чатам и запускам Grok. Шаги 6 и 8 требуют перезагрузки; её делать не в 21:10–21:30 (запуски Grok в пятницу) и после неё — `/recover`. Перезапуск после первых обновлений может занять полчаса.
