@@ -60,6 +60,15 @@ def test_record_run_status_model_and_repeat():
     assert not collect.repeated_run(a, [dict(a, tokens=1)])
 
 
+def test_gemini_poll_throttle():
+    import datetime as dt
+    t = dt.datetime(2026, 10, 23, 12, 0, tzinfo=dt.timezone.utc)
+    q = lambda m: {'agent': 'gemini', 'kind': 'quota', 'ts': collect.iso(t - dt.timedelta(minutes=m))}
+    assert collect.gemini_polled_recently([q(40), q(10)], t)
+    assert not collect.gemini_polled_recently([q(10), q(40)], t)
+    assert not collect.gemini_polled_recently([], t)
+
+
 if __name__ == '__main__':
     for name, fn in list(globals().items()):
         if name.startswith('test_'):
