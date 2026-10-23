@@ -46,6 +46,20 @@ def test_record_run_keeps_quota():
     assert 'quotaGroup' not in collect.record_run(str(f), 'x')
 
 
+def test_record_run_status_model_and_repeat():
+    f = Path(tempfile.mkdtemp()) / 'run.json'
+    f.write_text(json.dumps({'status': 'SUCCESS', 'usage': {'total_tokens': 0}}), encoding='utf-8')
+    row = collect.record_run(str(f), 'T36-r1')
+    assert row['status'] == 'REFUSED' and row['model'] == 'unknown'
+    f.write_text(json.dumps({'status': 'SUCCESS', 'model': 'claude-sonnet-5-5-medium', 'duration_seconds': 61,
+                             'usage': {'total_tokens': 27433}}), encoding='utf-8')
+    a = collect.record_run(str(f), 'A2')
+    b = dict(a, ts='2000-01-01T00:00:00Z')
+    assert collect.repeated_run(a, [a])
+    assert not collect.repeated_run(a, [b])
+    assert not collect.repeated_run(a, [dict(a, tokens=1)])
+
+
 if __name__ == '__main__':
     for name, fn in list(globals().items()):
         if name.startswith('test_'):

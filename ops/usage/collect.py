@@ -647,6 +647,26 @@ def gemini_rows(ts, live):
 QUOTA_RUN_KEYS = ('quotaGroup', 'weeklyBefore', 'weeklyAfter', 'fiveHourBefore', 'fiveHourAfter')
 
 
+RUN_SAME = ('task', 'model', 'seconds', 'tokens', 'status')
+RUN_REPEAT_S = 3600
+
+
+def repeated_run(row, rows):
+    """True when the same run (task, model, seconds, tokens, status) was already logged within an hour:
+    the same agy output recorded twice."""
+    t = dt.datetime.fromisoformat(row['ts'].replace('Z', '+00:00'))
+    for r in rows:
+        if r.get('agent') != row['agent'] or r.get('kind') != 'run':
+            continue
+        if all(r.get(k) == row.get(k) for k in RUN_SAME):
+            try:
+                if abs((t - dt.datetime.fromisoformat(r['ts'].replace('Z', '+00:00'))).total_seconds()) <= RUN_REPEAT_S:
+                    return True
+            except (KeyError, ValueError):
+                continue
+    return False
+
+
 def record_run(path, task):
     """One finished agy job from its `--output-format json` output: a file path, or '-' for stdin."""
     text = sys.stdin.read() if path == '-' else Path(path).read_text(encoding='utf-8')
@@ -661,11 +681,14 @@ def record_run(path, task):
             int(v or 0) for k, v in usage.items()
             if isinstance(v, (int, float)) and 'token' in k.lower() and 'cache' not in k.lower()
         )
+    status = str(data.get('status') or '')
+    if status.upper() == 'SUCCESS' and not tokens:
+        status = 'REFUSED'  # agy says SUCCESS but no turn ran: unknown model id or a denied start
     return {
         'ts': iso(now()), 'agent': 'gemini', 'kind': 'run', 'task': task,
-        'model': data.get('model') or 'gemini-3.8-flash-high',
+        'model': data.get('model') or 'unknown',  # never guessed; agy_run.py always adds it
         'seconds': round(float(data.get('duration_seconds') or 0), 1),
-        'tokens': tokens, 'status': data.get('status') or '',
+        'tokens': tokens, 'status': status,
         # Quota of the model's agy group around the run (agy_run.py, budget rule 6a); only when measured.
         **{k: data[k] for k in QUOTA_RUN_KEYS if data.get(k) is not None},
     }
@@ -1008,7 +1031,11 @@ def main():
     gemini_live = None
     grok_live = None
     if args.run:
-        rows.append(record_run(args.run, args.task))
+        row = record_run(args.run, args.task)
+        if repeated_run(row, read_ledger(days=1)):
+            print('collect: this run is already in the ledger, not added again', file=sys.stderr)
+        else:
+            rows.append(row)
     else:
         rows += collect_grok(ts)
         if not args.no_gemini:
