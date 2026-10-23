@@ -190,11 +190,13 @@ export class AudioEngine {
       this.resync();
       this.patch({ playing: true });
       this.syncBuffering();
+      this.onTransport?.();
     });
     this.listen(el, 'pause', () => {
       this.pendingPlay = false;
       this.resync();
       this.patch({ playing: false, buffering: false });
+      this.onTransport?.();
     });
     this.listen(el, 'seeked', () => this.resync());
     this.listen(el, 'timeupdate', () => this.resync());
@@ -220,7 +222,10 @@ export class AudioEngine {
       if (this.state.source === 'silent') return;
       this.patch({ error: this.audioErrorMessage(), ready: false, buffering: false, canPlay: false });
     });
-    this.listen(el, 'ended', () => this.patch({ playing: false, buffering: false }));
+    this.listen(el, 'ended', () => {
+      this.patch({ playing: false, buffering: false });
+      this.onTransport?.();
+    });
     this.mount(el);
     return el;
   }
@@ -501,6 +506,7 @@ export class AudioEngine {
       if (this.silentTime >= this.state.duration - 0.05) this.silentTime = 0;
       this.anchorPerf = performance.now();
       this.patch({ playing: true, buffering: false });
+      this.onTransport?.();
       this.tickSilent();
       return;
     }
@@ -515,6 +521,7 @@ export class AudioEngine {
       this.pendingPlay = false;
       this.syncBuffering();
       this.patch({ playing: false });
+      this.onTransport?.();
     }
   }
 
@@ -526,6 +533,7 @@ export class AudioEngine {
       if (this.currentTime() >= this.state.duration) {
         this.silentTime = this.state.duration;
         this.patch({ playing: false });
+        this.onTransport?.();
         return;
       }
       this.silentTimer = requestAnimationFrame(loop);
@@ -537,6 +545,7 @@ export class AudioEngine {
     if (this.state.source === 'silent') {
       this.silentTime = this.rawTime();
       this.patch({ playing: false });
+      this.onTransport?.();
       return;
     }
     this.el.pause();
@@ -555,7 +564,15 @@ export class AudioEngine {
       this.pendingSeek = null;
       this.silentTime = clamped;
       this.anchorPerf = performance.now();
+      // The element may already accept a seek (or a test clock may). The silent
+      // clock holds the time either way, so a later source still restores it.
+      try {
+        this.el.currentTime = clamped;
+      } catch {
+        /* no metadata yet */
+      }
       this.listeners.forEach((l) => l());
+      this.onTransport?.();
       return;
     }
     this.pendingSeek = clamped;
@@ -574,6 +591,7 @@ export class AudioEngine {
     }
     this.resync();
     this.syncBuffering();
+    this.onTransport?.();
   }
 
   skip(delta: number) {
@@ -698,6 +716,8 @@ export class AudioEngine {
   // ---------- Media Session (lock screen, CarPlay, headphones, Control Center) ----------
 
   onLineNav: ((dir: -1 | 1) => void) | null = null;
+  /** Set by the song page to store the position after a seek, play, or pause. */
+  onTransport: (() => void) | null = null;
 
   private artwork(): MediaImage[] {
     const origin = typeof location !== 'undefined' && location.origin && location.origin !== 'null' ? location.origin : '';

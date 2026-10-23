@@ -51,9 +51,35 @@ function point(value: unknown): ResumePoint | null {
   };
 }
 
-export function readResume(slug: string): ResumePoint | null {
+export interface ReadResumeOpts {
+  /** A point past the song is discarded. Omit when the duration is not known yet. */
+  duration?: number;
+  /** Clock for the future-timestamp check. Defaults to Date.now(). */
+  now?: number;
+}
+
+/**
+ * The stored point, or null when the record is missing or unusable.
+ * Malformed JSON, wrong types, NaN, a time past `duration`, and a `savedAt`
+ * in the future are ignored. Nothing here throws.
+ */
+export function readResume(slug: string, opts: ReadResumeOpts = {}): ResumePoint | null {
   if (!slug) return null;
-  return point(readAll()[slug]);
+  const row = point(readAll()[slug]);
+  if (!row) return null;
+  const now = opts.now ?? Date.now();
+  if (row.savedAt > now) return null;
+  const duration = opts.duration;
+  if (typeof duration === 'number' && Number.isFinite(duration) && duration > 0 && row.t > duration) return null;
+  return row;
+}
+
+/** A point the page may seek to and offer. Stale, tiny, and future points are not. */
+export function usableResume(slug: string, duration: number, now = Date.now()): ResumePoint | null {
+  const saved = readResume(slug, { duration, now });
+  if (!saved || saved.t < 1) return null;
+  if (now - saved.savedAt > RESUME_AUTO_MS) return null;
+  return saved;
 }
 
 export function writeResume(slug: string, next: ResumePoint): void {
