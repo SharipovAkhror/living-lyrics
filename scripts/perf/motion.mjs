@@ -54,7 +54,7 @@ const LIMIT = {
 
 const results = [];
 function note(name, ok, detail = '') {
-  if (only && !name.includes(only)) return;
+  if (only && !`${name} ${detail}`.includes(only)) return;
   results.push({ name, ok, detail });
   console.log(`${ok ? 'PASS' : 'FAIL'} ${name} ${detail}`);
 }
@@ -378,13 +378,13 @@ async function saveStrip(frames, name, from = 0) {
 }
 
 /** The first frame after the tap that moved in the region, in ms after the tap. */
-async function firstMoved(frames, tapAt, box) {
+async function firstMoved(frames, tapAt, box, minPixels = LIMIT.regionPixels) {
   const before = frames.filter((f) => f.t < tapAt).pop();
   if (!before) return { ms: null, why: 'no frame before the tap' };
   const ref = await rgbOf(before);
   for (const f of frames.filter((fr) => fr.t >= tapAt)) {
     const share = movedShare(ref, await rgbOf(f), box);
-    if (share * clampBox(box).n >= LIMIT.regionPixels) return { ms: f.t - tapAt, share, frame: f };
+    if (share * clampBox(box).n >= minPixels) return { ms: f.t - tapAt, share, frame: f };
   }
   return { ms: null, why: 'nothing moved' };
 }
@@ -460,8 +460,8 @@ async function markFrame(frames, tapAt, color) {
  * after the tap. The row is the time from that frame to the first moved frame.
  * Both wall times are printed.
  */
-async function tapRow(browserName, label, frames, tap, box) {
-  const hit = await firstMoved(frames, tap.at, box);
+async function tapRow(browserName, label, frames, tap, box, minPixels) {
+  const hit = await firstMoved(frames, tap.at, box, minPixels);
   const first = await markFrame(frames, tap.at, tap.mark);
   if (hit.ms == null || !first) {
     note(`${browserName} D28 tap-to-motion`, false, `${label} ${hit.ms == null ? hit.why : 'no frame with the tap mark'}`);
@@ -602,29 +602,17 @@ async function runSettings(browser, browserName) {
   const context = await newPhone(browser, browserName);
   const page = await context.newPage();
   await openSong(page);
-  const player = await boxOf(page, '.player');
   const cast = await startCast(page);
   await page.waitForTimeout(400);
   const tap = await tapCenter(page, 'button[aria-label="Настройки"]');
   await page.waitForTimeout(1400);
   await cast.stop();
   const frames = cast.frames;
-  const region = { x: 0, y: H * 0.35, w: W, h: H * 0.65 };
-  // The sheet is up when a quarter of the band over the floor has changed.
-  const pre = frames.filter((f) => f.t < tap.at).pop();
-  let up = null;
-  if (pre && player) {
-    const band = { x: 0, y: H * 0.45, w: W, h: Math.max(40, player.y - H * 0.45) };
-    const ref = await rgbOf(pre);
-    for (const f of frames.filter((fr) => fr.t >= tap.at)) {
-      if (movedShare(ref, await rgbOf(f), band) >= 0.25) {
-        up = f.t - tap.at;
-        break;
-      }
-    }
-  }
-  const row = await tapRow(browserName, `settings (sheet up at ${up == null ? 'never' : Math.round(up) + ' ms'} of wall time)`, frames, tap, region);
-  report[`${browserName}-settings`] = { tap: row.hit.ms, first: row.firstMs, app: row.app, sheetUp: up };
+  // The sheet's first pixels, along the bottom edge. The lit tab is a few
+  // hundred pixels; the sheet is a full-width edge, so 2800 px ignores the tab.
+  const edge = { x: 0, y: H - 72, w: W, h: 64 };
+  const row = await tapRow(browserName, 'settings-sheet', frames, tap, edge, 2800);
+  report[`${browserName}-settings`] = { tap: row.hit.ms, first: row.firstMs, app: row.app, sheetUp: row.hit.ms };
   await saveStrip(frames.filter((f) => f.t >= tap.at), `${browserName}-settings`);
   await context.close();
 }
@@ -815,6 +803,8 @@ for (const [name, type] of engines) {
       }
     } else if (only === 'D29') {
       await runScrub(browser, name);
+    } else if (only === 'settings') {
+      await runSettings(browser, name);
     }
     if (!only || only === 'D32') edgesBy[name] = await engravingEdges(browser, name);
   } catch (err) {

@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from './icons';
 import { GlassLayers } from './glass/Glass';
@@ -13,6 +13,35 @@ function clearSheetChrome() {
   delete document.documentElement.dataset.sheet;
   document.documentElement.classList.remove('is-sheet-drag');
   document.documentElement.style.removeProperty('--sheet-p');
+}
+
+/** The translate already painted on the sheet, in CSS px. The next spring step is not on the element yet. */
+function paintedY(el: HTMLElement): number {
+  const m = /translate3d\(\s*0(?:px)?\s*,\s*(-?[\d.]+)px/.exec(el.style.transform);
+  return m ? Number(m[1]) : 0;
+}
+
+/**
+ * Translate that keeps the sheet top 16 px under the fading note card.
+ * Null when the card is not fading. The first paint uses it, so the bottom
+ * edge is already drawn while the card is still on its way out (D22).
+ */
+function parkBelowCard(el: HTMLElement): number | null {
+  if (document.documentElement.dataset.noteFade !== '1') return null;
+  const card = document.querySelector('.note-card');
+  if (!(card instanceof HTMLElement)) return null;
+  const cardBox = card.getBoundingClientRect();
+  if (cardBox.height < 8) return null;
+  // The rest pose is translate 110%. paintedY only reads a px offset, so a
+  // percent transform would be measured as the visual top and the park would
+  // come out negative, throwing the sheet over the card.
+  const prev = el.style.transform;
+  const px = /translate3d\(\s*0(?:px)?\s*,\s*-?[\d.]+px/.test(prev);
+  if (!px) el.style.transform = 'translate3d(0, 0px, 0)';
+  const layoutTop = el.getBoundingClientRect().top - (px ? paintedY(el) : 0);
+  if (!px) el.style.transform = prev;
+  const minY = cardBox.bottom + 16 - layoutTop;
+  return Number.isFinite(minY) ? minY : null;
 }
 
 /* ---------- Sheet: glass panel, spring in, drag down to dismiss ---------- */
@@ -91,20 +120,19 @@ export function Sheet({
     let last = performance.now();
     const tick = (now: number) => {
       if (drag.current?.active) return;
-      // The note card fades on its own clock. Hold the sheet below it so the
-      // card is gone before the sheet's top can pass the card.
-      if (document.documentElement.dataset.noteFade === '1' && target.current <= 1 && openRef.current) {
-        const awayY = height.current + 48;
-        state.current = { x: awayY, v: 0 };
-        paint(awayY);
-        last = now;
-        raf.current = requestAnimationFrame(tick);
-        return;
-      }
-      const dt = Math.min(0.032, (now - last) / 1000);
+      // The closed form is exact, so a slow WebKit frame may take its whole gap.
+      // Capping at 32 ms made the sheet wait out the cast instead of the spring.
+      const dt = Math.min(0.1, (now - last) / 1000);
       last = now;
       const spec = target.current > 1 ? SHEET_CLOSE : SHEET_OPEN;
       state.current = stepSpring(state.current, target.current, dt, spec);
+      // The note fades on its own clock. The sheet may already be on screen
+      // below the card; its top stays there until the fade ends (D22).
+      const el = panel.current;
+      if (el && target.current <= 1 && openRef.current) {
+        const minY = parkBelowCard(el);
+        if (minY != null && state.current.x < minY) state.current = { x: minY, v: 0 };
+      }
       paint(state.current.x);
       if (springSettled(state.current, target.current)) {
         state.current = { x: target.current, v: 0 };
@@ -127,7 +155,7 @@ export function Sheet({
     setRender(true);
   }, [open]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!render || !panel.current) return;
     const el = panel.current;
     remember();
@@ -154,7 +182,11 @@ export function Sheet({
     }
     if (open) {
       if (!shown) {
-        const from = away();
+        // CSS parks the sheet at 110%. Painting here, before the browser frame,
+        // puts the bottom edge on that first frame instead of springing up to it.
+        const awayFrom = away();
+        const parked = height.current > 80 ? parkBelowCard(el) : null;
+        const from = parked != null && parked >= 0 && parked < awayFrom ? parked : awayFrom;
         state.current = { x: from, v: 0 };
         paint(from);
       }

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type RefObject } from 'react';
+import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type RefObject } from 'react';
 import { formatTime, getSong, loadLyrics, loadPeaks, peekLyrics } from '@/data/library';
 import { coverExt, coverUrl } from '@/data/covers';
 import { rememberSong } from '@/app/continue';
@@ -32,10 +32,37 @@ import { stageFrame, type StageFrame } from '@/scene/columns';
 import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
 import { headerLine } from './parts';
 
-const SettingsSheet = lazy(() => import('./SettingsSheet').then((m) => ({ default: m.SettingsSheet })));
-const TextSheet = lazy(() => import('./TextSheet').then((m) => ({ default: m.TextSheet })));
-const InfoSheet = lazy(() => import('./InfoSheet').then((m) => ({ default: m.InfoSheet })));
-const NoteSheet = lazy(() => import('./NoteSheet').then((m) => ({ default: m.NoteSheet })));
+type LoadedSheets = {
+  Settings: typeof import('./SettingsSheet').SettingsSheet;
+  Text: typeof import('./TextSheet').TextSheet;
+  Info: typeof import('./InfoSheet').InfoSheet;
+  Note: typeof import('./NoteSheet').NoteSheet;
+};
+
+/**
+ * The sheets stay in their own chunks. React.lazy still suspends on the first
+ * render, and React then holds that reveal for 300 ms (FALLBACK_THROTTLE_MS),
+ * so the glass did not exist until well after the tap. The import is started
+ * with the page and the component rendered is the function itself.
+ */
+function useSheets(): LoadedSheets | null {
+  const [sheets, setSheets] = useState<LoadedSheets | null>(null);
+  useEffect(() => {
+    let alive = true;
+    void Promise.all([
+      import('./SettingsSheet').then((m) => m.SettingsSheet),
+      import('./TextSheet').then((m) => m.TextSheet),
+      import('./InfoSheet').then((m) => m.InfoSheet),
+      import('./NoteSheet').then((m) => m.NoteSheet),
+    ]).then(([Settings, Text, Info, Note]) => {
+      if (alive) setSheets({ Settings, Text, Info, Note });
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return sheets;
+}
 
 /** Keep a sheet mounted after its first open so the close spring can finish. */
 function useHeld(open: boolean) {
@@ -506,12 +533,14 @@ function ExplainButton({
 }
 
 function OwnedNote({
+  View,
   store,
   open,
   onClose,
   timeline,
   showHarakat,
 }: {
+  View: LoadedSheets['Note'];
   store: OwnerStore;
   open: boolean;
   onClose: () => void;
@@ -521,10 +550,11 @@ function OwnedNote({
   const note = useNoteSnapshot(store, timeline);
   const last = useRef('');
   if (note?.text) last.current = note.text;
-  return <NoteSheet open={open} onClose={onClose} text={note?.text || last.current} showHarakat={showHarakat} />;
+  return <View open={open} onClose={onClose} text={note?.text || last.current} showHarakat={showHarakat} />;
 }
 
 function OwnedText({
+  View,
   store,
   open,
   onClose,
@@ -534,6 +564,7 @@ function OwnedText({
   onRetry,
   onPick,
 }: {
+  View: LoadedSheets['Text'];
   store: OwnerStore;
   open: boolean;
   onClose: () => void;
@@ -545,7 +576,7 @@ function OwnedText({
 }) {
   const owner = useOwner(store);
   return (
-    <TextSheet
+    <View
       open={open}
       onClose={onClose}
       timeline={timeline}
@@ -667,6 +698,7 @@ function EngineAlerts({
 }
 
 function LiveSettings({
+  View,
   engine,
   open,
   onClose,
@@ -674,6 +706,7 @@ function LiveSettings({
   settings,
   has,
 }: {
+  View: LoadedSheets['Settings'];
   engine: AudioEngine;
   open: boolean;
   onClose: () => void;
@@ -685,7 +718,7 @@ function LiveSettings({
     useCallback((fn: () => void) => engine.subscribe(fn), [engine]),
     () => engine.state,
   );
-  return <SettingsSheet open={open} onClose={onClose} song={song} engine={engine} state={state} settings={settings} has={has} />;
+  return <View open={open} onClose={onClose} song={song} engine={engine} state={state} settings={settings} has={has} />;
 }
 
 function measureChrome(root: HTMLElement, top: HTMLElement, floor: HTMLElement) {
@@ -990,6 +1023,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     ownerStore.set(next);
   }, [timeline, deepLink, ownerStore]);
   const [sheet, setSheet] = useState<SheetName>(null);
+  const sheets = useSheets();
   const settingsHeld = useHeld(sheet === 'settings');
   const infoHeld = useHeld(sheet === 'info');
   const textHeld = useHeld(sheet === 'text');
@@ -1095,10 +1129,11 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         setSheet(name);
         return;
       }
-      // The tab lights on the next painted frame and the sheet mounts after it.
-      // Mounting inside the tap held that frame in WebKit.
+      // The tab and the sheet commit in this same turn. Waiting one frame for the
+      // sheet left WebKit's next delivered frame more than 100 ms later, so the
+      // bottom edge was late even though the glass was already parked.
       tab.classList.add('is-live-task');
-      requestAnimationFrame(() => setTimeout(() => setSheet(name), 0));
+      setSheet(name);
     },
     [shortLand, settings.commentOpen],
   );
@@ -1439,11 +1474,11 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       />
 
       <Suspense fallback={null}>
-        {settingsHeld && (
-          <LiveSettings engine={engine} open={sheet === 'settings'} onClose={() => setSheet(null)} song={song} settings={settings} has={has} />
+        {sheets && settingsHeld && (
+          <LiveSettings View={sheets.Settings} engine={engine} open={sheet === 'settings'} onClose={() => setSheet(null)} song={song} settings={settings} has={has} />
         )}
-        {infoHeld && (
-          <InfoSheet
+        {sheets && infoHeld && (
+          <sheets.Info
             open={sheet === 'info'}
             onClose={() => setSheet(null)}
             song={song}
@@ -1458,8 +1493,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             }}
           />
         )}
-        {noteHeld && (
+        {sheets && noteHeld && (
           <OwnedNote
+            View={sheets.Note}
             store={ownerStore}
             open={sheet === 'note'}
             onClose={() => setSheet(null)}
@@ -1467,8 +1503,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             showHarakat={settings.showHarakat}
           />
         )}
-        {textHeld && (
+        {sheets && textHeld && (
           <OwnedText
+            View={sheets.Text}
             store={ownerStore}
             open={sheet === 'text'}
             onClose={() => setSheet(null)}
