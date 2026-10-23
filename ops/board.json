@@ -7,7 +7,7 @@
       "section": "you",
       "status": "waiting",
       "title": "Снять синхронизацию «Документов» в Google Drive",
-      "what": "На Станции: значок Google Drive в трее → шестерёнка → Настройки → Мой компьютер → Документы → снять «Синхронизировать с Google Диском» → Готово. Когда удобно. Потом в Проводнике удалить 16 старых папок в C:\\Users\\User\\Documents\\GitHub\\living-lyrics-wt: apple-watch, critique, critique-ref, handoff-1022, ll-site-1022, r19-check, t1-sync, t1-sync90, t10-small, t20-route, t27-iphone, t29-text, t29b-text, t31-audit, t31-fixes, t32-limits (все влиты; остальные папки там не трогать). Агентам удалять их не даёт автопроверка."
+      "what": "На Станции: значок Google Drive в трее → шестерёнка → Настройки → Мой компьютер → Документы → снять «Синхронизировать с Google Диском» → Готово. Когда удобно. Потом в Проводнике удалить 16 старых папок в C:\\Users\\User\\Documents\\GitHub\\living-lyrics-wt: apple-watch, critique, critique-ref, handoff-1022, ll-site-1022, r19-check, t1-sync, t1-sync90, t10-small, t20-route, t27-iphone, t29-text, t29b-text, t31-audit, t31-fixes, t32-limits, ll-site-handoff-1023, а также living-lyrics\\.claude\\worktrees\u0007gy-chat-lines (все влиты; остальные папки там не трогать). Агентам удалять их не даёт автопроверка."
     },
     {
       "id": "you-iphone",
