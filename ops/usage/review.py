@@ -100,6 +100,9 @@ def main():
                          api_h=g.get('api_ms', 0) / 3.6e6, segments=g.get('segments', 0),
                          reads=sum(g.get('reads', {}).values()), rereads=sum(v - 1 for v in g.get('reads', {}).values()),
                          start=(g.get('turns') or [('',)])[0][0], hooks_failed=g.get('hooks_failed', 0)))
+    if not rows:
+        print('sessions 0: no Grok sessions in the ledger for this window')
+        return 0
     T = sum(r['tok'] for r in rows)
     I = sum(r['inp'] for r in rows)
     C = sum(r['calls'] for r in rows)

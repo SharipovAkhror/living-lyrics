@@ -3,9 +3,11 @@
 Read-only. One API call = one assistant message id (a message split over several lines counts once).
 Context per call = input + cache write + cache read tokens.
 
-    python ops/usage/claude_review.py [--since 2026-10-16T16:08]
+    python ops/usage/claude_review.py [--since 2026-10-16T16:08] [--by-chat]
+
+--by-chat adds tokens per chat name (customTitle; archive suffixes folded, subagents under their parent chat).
 """
-import argparse, collections, glob, json, os
+import argparse, collections, glob, json, os, re
 
 BASE = os.path.expanduser('~/.claude/projects')
 
@@ -13,7 +15,9 @@ BASE = os.path.expanduser('~/.claude/projects')
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--since', default='2026-10-16T16:08')
+    ap.add_argument('--by-chat', action='store_true')
     a = ap.parse_args()
+    title = {}
     seen = set()
     S = collections.defaultdict(collections.Counter)
     meta, day, over, model = {}, collections.Counter(), collections.Counter(), collections.Counter()
@@ -24,6 +28,8 @@ def main():
                 j = json.loads(line)
             except ValueError:
                 continue
+            if j.get('customTitle'):
+                title[f] = j['customTitle']
             ts = j.get('timestamp', '')
             if j.get('type') != 'assistant' or ts < a.since:
                 continue
@@ -53,6 +59,16 @@ def main():
         first, last, mdl = meta[f]
         print(f"{c['tok']/1e6:6.0f}M calls {c['calls']:5d} avg ctx {c['tok']/c['calls']/1e3:4.0f}k max {c['maxctx']/1e3:4.0f}k "
               f"{mdl} {first[5:16]}..{last[5:16]} {os.path.basename(f)[:8]}{' (subagent)' if 'subagents' in f else ''}")
+    if a.by_chat:
+        chat = collections.Counter()
+        for f, c in S.items():
+            sub = os.sep + 'subagents' + os.sep in os.path.normpath(f)
+            owner = os.path.dirname(os.path.dirname(f)) + '.jsonl' if sub else f
+            name = re.sub(r' \(Main\)| · архив.*', '', title.get(owner, '(untitled)'))
+            chat[name + (' / subagents' if sub else '')] += c['tok']
+        print('by chat, M:')
+        for k, v in chat.most_common():
+            print(f'{v/1e6:7.0f}  {v/T:5.1%}  {k}')
 
 
 if __name__ == '__main__':
