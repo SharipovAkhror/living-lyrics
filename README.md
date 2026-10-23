@@ -36,15 +36,9 @@ npm run build        # validate + typecheck + сборка в dist/
 
 `Karitas`, `I Have Come Alive`, `ONE` перенесены из прототипа: тексты, переводы и пояснения переписаны, но **аудио нет, а тайм-коды черновые** (`timing.status = draft`) — нужен файл записи и выравнивание. Что именно не подтверждено, перечислено в `content/songs/<slug>/sources.md` и в `review` каждой песни.
 
-## Ход работы в Claude Code
+## Ход работы
 
-Мод Dashboard (`ops/dashboard-mod/`) показывает, что делают агенты, лимиты и готовность. Поставить на любой компьютер:
-
-```
-/plugin install ll-dashboard --marketplace SharipovAkhror/living-lyrics
-```
-
-Подробно — `ops/README.md`.
+Доска — `ops/board.json` (подробно — `ops/README.md`). Мод Dashboard, который её показывает, и всё об устройстве работы с агентами — в настройке владельца `agentic-os-live`.
 
 ## Устройство
 

@@ -1,28 +1,20 @@
-"""Hygiene of the Living Lyrics repo and its chats: delete what is safe, report the rest.
+"""Repo hygiene of Living Lyrics on GitHub: delete merged branches, report what drifts.
 
-Safe, deleted with --apply (each one fully merged into origin/main and clean):
-- a remote branch (not main, live or a protected one);
-- an executor worktree in ../living-lyrics-wt whose Grok session has finished, and its branch;
-- a local branch no worktree has checked out.
-Reported, never deleted: unmerged branches older than STALE_DAYS, worktrees with uncommitted work,
-archived chats still running, two running chats under one name, tasks in progress with nobody on
-them, paths in the docs that point to nothing, a done card still marked running, sync
-counts that drift from the table in docs/tasks/T1-sync.md (section «Счёт синхронизации»),
-a done or rejected card tN whose brief exists but does not say «сделано» or «отклонено» on line 1,
-and on the Station: folders with the read-only flag and a sync tool (OneDrive, Google Drive) over the repo.
+Safe, deleted with --apply: a remote branch (not main, live or a protected one) fully merged into
+origin/main, older than a day, with commits of its own and not tied to a card on the board.
+Reported, never deleted: unmerged branches older than STALE_DAYS, a running card with nobody on it,
+a done card still marked running, sync counts that drift from the table in docs/tasks/T1-sync.md
+(section «Счёт синхронизации»), a done or rejected card tN whose brief does not say «сделано» or
+«отклонено» on line 1, and paths in the standing docs that point to nothing.
 
-    python ops/agents/hygiene.py [<repo>] [--apply] [--repo-only] [--json]
+    python scripts/tools/repo_hygiene.py [<repo>] [--apply] [--json]
 
---repo-only skips what lives on the Station (worktrees, local branches, chats): the GitHub workflow
-.github/workflows/cleanup.yml runs it that way after every update of main. Every chat runs it at the end of a step (AGENTS.md); the Dashboard mod
-runs it hourly on the Station (station_tick.py) and shows the result.
+.github/workflows/cleanup.yml runs it with --apply after every update of main. Chats and machines are
+checked by the owner's setup (agentic-os-live, ops/agents/hygiene.py), not here.
 """
 import datetime
 import json
-import os
 import re
-import sqlite3
-import stat
 import subprocess
 import sys
 from pathlib import Path
@@ -31,6 +23,10 @@ PROTECTED = {'main', 'live', 'll-business', 'HEAD'}
 STALE_DAYS = 7
 ON_OTHER_BRANCHES = {'ops/live.json'}  # lives on the `live` branch
 DOC_PATH = re.compile(r'`((?:docs|ops|src|scripts|content|\.claude|\.github)/[A-Za-z0-9_./-]+)`')
+# A group of the table is named «<song title>, <group>» (e.g. «ONE, хор»); its board copy is the song
+# with that title and the group with that name, so a new song needs no change here.
+SYNC_FRACTION = re.compile(r'(\d+)\s*/\s*(\d+)|(\d+)\s+из\s+(\d+)')
+BRIEF_ID = re.compile(r'^t(\d+)$')
 
 
 def git(repo: Path, *args: str) -> subprocess.CompletedProcess:
@@ -67,32 +63,6 @@ def age_days(repo: Path, ref: str) -> float:
     return (datetime.datetime.now().timestamp() - int(out)) / 86400 if out else 0
 
 
-def worktrees(repo: Path) -> list[dict]:
-    rows, cur = [], {}
-    for line in git(repo, 'worktree', 'list', '--porcelain').stdout.splitlines() + ['']:
-        if not line:
-            if cur:
-                rows.append(cur)
-            cur = {}
-        elif line.startswith('worktree '):
-            cur['path'] = Path(line[9:])
-        elif line.startswith('branch '):
-            cur['branch'] = line[7:].removeprefix('refs/heads/')
-        elif line.startswith('HEAD '):
-            cur['head'] = line[5:]
-    return rows
-
-
-def grok_states(main: Path) -> dict[str, str]:
-    """Each executor folder's Grok state (agents_live.py): working, stalled, finished or none."""
-    script = main / 'ops' / 'dashboard-mod' / 'hooks' / 'agents_live.py'
-    out = subprocess.run([sys.executable, str(script), str(main)], capture_output=True, encoding='utf-8', errors='replace')
-    try:
-        return {r['name']: r.get('state', '') for r in json.loads(out.stdout).get('grok', [])}
-    except (ValueError, KeyError):
-        return {}
-
-
 def check_branches(repo: Path, apply: bool, fixed: list, issues: list) -> None:
     on_board = board_worktrees(repo)
     for line in git(repo, 'branch', '-r', '--format=%(refname:short)').stdout.split():
@@ -108,60 +78,6 @@ def check_branches(repo: Path, apply: bool, fixed: list, issues: list) -> None:
             issues.append(f'ветка {name} не влита и не менялась {int(age_days(repo, line))} дн.')
 
 
-def check_local(repo: Path, apply: bool, fixed: list, issues: list) -> None:
-    trees = worktrees(repo)
-    main = trees[0]['path']
-    states = grok_states(main)
-    on_board = board_worktrees(repo)
-    wt_root = (main.parent / 'living-lyrics-wt').resolve()
-    for t in trees[1:]:
-        path, branch = t['path'], t.get('branch', '')
-        if branch in PROTECTED or not path.is_dir():
-            continue
-        dirty = bool(git(path, 'status', '--porcelain').stdout.strip())
-        done = bool(branch) and merged(repo, branch)
-        if path.parent.resolve() == wt_root:
-            # An executor's folder: its Grok session must have finished, not merely never started,
-            # and its task must be off the board (a task waiting on the owner comes back to it).
-            if path.name in on_board:
-                continue
-            if done and not dirty and states.get(path.name) == 'finished':
-                if apply and git(repo, 'worktree', 'remove', str(path)).returncode == 0:
-                    git(repo, 'branch', '-d', branch)
-                    fixed.append(f'убрана папка исполнителя {path.name} и ветка {branch} (влиты)')
-                else:
-                    issues.append(f'папка исполнителя {path.name} влита, но не убрана')
-            elif dirty and age_days(repo, branch or 'HEAD') > STALE_DAYS:
-                issues.append(f'в папке {path.name} несохранённая работа, последняя запись {int(age_days(repo, branch))} дн. назад')
-        elif done and not dirty and age_days(repo, branch) > 1:
-            issues.append(f'рабочая копия чата {path.name} влита и стоит больше суток — её уберёт сам чат или `claude rm`')
-    checked_out = {t.get('branch') for t in trees}
-    for name in git(repo, 'branch', '--format=%(refname:short)').stdout.split():
-        if name in PROTECTED or name in checked_out:
-            continue
-        if safe_to_delete(repo, name, on_board):
-            if apply and git(repo, 'branch', '-d', name).returncode == 0:
-                fixed.append(f'удалена влитая локальная ветка {name}')
-            else:
-                issues.append(f'влитая локальная ветка {name} не удалена')
-
-
-def check_chats(repo: Path, issues: list) -> None:
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    try:
-        from registry import cards, sessions
-        running = sessions()
-    except Exception:
-        return
-    for s in running:
-        if 'архив' in (s.get('name') or '') and s.get('pid'):
-            issues.append(f'архивный чат «{s["name"]}» ещё работает (pid {s["pid"]})')
-    for card in cards(repo):
-        live = [s for s in running if s.get('name') == card['chat'] and s.get('pid')]
-        if len(live) > 1:
-            issues.append(f'«{card["chat"]}» запущен дважды: ' + ', '.join((s.get('id') or s.get('sessionId', ''))[:8] for s in live))
-
-
 def check_board(repo: Path, issues: list) -> None:
     try:
         board = json.loads((repo / 'ops' / 'board.json').read_text(encoding='utf-8'))
@@ -173,11 +89,6 @@ def check_board(repo: Path, issues: list) -> None:
             issues.append(f'на доске задача без исполнителя: {t.get("title")}')
         if t.get('section') == 'done' and t.get('status') == 'running':
             issues.append(f'сделанная карточка всё ещё «идёт»: {t.get("id")}')
-
-
-# A group of the table is named «<song title>, <group>» (e.g. «ONE, хор»); its board copy is the song
-# with that title and the group with that name, so a new song needs no change here.
-SYNC_FRACTION = re.compile(r'(\d+)\s*/\s*(\d+)|(\d+)\s+из\s+(\d+)')
 
 
 def parse_sync_table(repo: Path) -> tuple[list[dict], str | None]:
@@ -257,9 +168,6 @@ def check_sync(repo: Path, issues: list) -> None:
                 issues.append(f'другой счёт синхронизации в {label}: {proven}/{total}')
 
 
-BRIEF_ID = re.compile(r'^t(\d+)$')
-
-
 def check_brief_marks(repo: Path, issues: list) -> None:
     """A finished card tN with a brief must say so on the brief's first line.
 
@@ -294,74 +202,9 @@ def check_brief_marks(repo: Path, issues: list) -> None:
                 )
 
 
-CONFLICT_COPY = re.compile(r' \(\d+\)(\.\w+)?$')
-
-
-def check_sync_copies(repo: Path, issues: list) -> None:
-    """Copies named «name (1)» inside .git: a sync tool (Google Drive syncs Documents on the Station)
-    duplicated a ref or a stamp while git wrote it. A copied ref breaks fetch ("bad object"). Reported only:
-    the owner stops the sync; the copies are removed by hand after checking."""
-    git_dir = Path(git(repo, 'rev-parse', '--absolute-git-dir').stdout.strip() or repo / '.git')
-    found = [p for p in git_dir.rglob('*') if CONFLICT_COPY.search(p.name) and 'objects' not in p.parts]
-    for path in found[:5]:
-        issues.append(f'копия от синхронизации в .git: {path.relative_to(git_dir)} — Google Drive синхронизирует папку с репозиторием')
-    if len(found) > 5:
-        issues.append(f'… ещё копий в .git: {len(found) - 5}')
-
-
-def readonly_dirs(roots: list[Path]) -> list[Path]:
-    """Folders among `roots` and their first level that carry the Windows read-only flag. A sync tool
-    (Google Drive on 2026-10-22) sets it and then git and Python cannot remove worktrees."""
-    flag = getattr(stat, 'FILE_ATTRIBUTE_READONLY', 0)
-    out = []
-    for root in roots:
-        if not root.is_dir():
-            continue
-        for d in [root, *(c for c in root.iterdir() if c.is_dir())]:
-            try:
-                if flag and os.stat(d).st_file_attributes & flag:
-                    out.append(d)
-            except (OSError, AttributeError):
-                continue
-    return out
-
-
-def sync_roots_over(repo: Path) -> list[str]:
-    """Names of sync roots that hold the repo: Documents redirected into OneDrive, or a Google Drive
-    mirror root whose folder name is one of the repo path's folders (read-only read of its local DB)."""
-    found = []
-    onedrive = os.environ.get('OneDrive')
-    if onedrive and Path(onedrive).resolve() in [repo, *repo.parents]:
-        found.append(f'OneDrive ({onedrive})')
-    parts = {part.lower() for part in repo.parts}
-    drive = Path(os.environ.get('LOCALAPPDATA', '')) / 'Google' / 'DriveFS'
-    for db in drive.glob('*/mirror_sqlite.db') if drive.is_dir() else []:
-        try:
-            con = sqlite3.connect(f'file:{db}?mode=ro', uri=True, timeout=2)
-            names = con.execute('select m.local_filename from root_config r join mirror_item m '
-                                'on m.local_stable_id = r.local_stable_id').fetchall()
-            con.close()
-        except sqlite3.Error:
-            continue
-        found += [f'Google Drive ({n})' for (n,) in names if n and n.lower() in parts]
-    return found
-
-
-def check_station_sync(repo: Path, issues: list) -> None:
-    """Station only: read-only folders and sync tools over the repo (LL · Tech diagnostics 2026-10-23)."""
-    if os.name != 'nt':
-        return
-    flagged = readonly_dirs([repo, repo.parent / 'living-lyrics-wt', repo / '.claude' / 'worktrees'])
-    if flagged:
-        issues.append(f'папки только для чтения: {len(flagged)} (например {flagged[0]}) — '
-                      f'снять: attrib -R "{repo.parent}" /S /D')
-    for name in sync_roots_over(repo):
-        issues.append(f'папку репозитория синхронизирует {name} — отключить для неё синхронизацию')
-
-
 def check_docs(repo: Path, issues: list) -> None:
     # The standing docs only: task briefs and research name files that are still to be made.
-    files = [repo / 'AGENTS.md', repo / 'docs' / 'STATUS.md', *repo.glob('docs/process/*.md'), *repo.glob('docs/methodology/*.md'),
+    files = [repo / 'AGENTS.md', repo / 'docs' / 'STATUS.md', *repo.glob('docs/methodology/*.md'),
              *repo.glob('ops/*.md'), *repo.glob('.claude/agents/*.md')]
     missing = []
     for f in files:
@@ -383,16 +226,10 @@ def main() -> None:
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
     flags = {a for a in sys.argv[1:] if a.startswith('--')}
     repo = Path(args[0]).resolve() if args else Path(__file__).resolve().parents[2]
-    apply = '--apply' in flags
     fixed, issues = [], []
     git(repo, 'fetch', '-q', '--prune', 'origin')
-    check_branches(repo, apply, fixed, issues)
-    if '--repo-only' not in flags:
-        check_local(repo, apply, fixed, issues)
-        check_chats(repo, issues)
-        check_station_sync(repo, issues)
+    check_branches(repo, '--apply' in flags, fixed, issues)
     check_board(repo, issues)
-    check_sync_copies(repo, issues)
     check_sync(repo, issues)
     check_brief_marks(repo, issues)
     check_docs(repo, issues)
