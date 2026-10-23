@@ -16,6 +16,15 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 
+# Service replies that say nothing; last_said skips them (compared lowercase, without the final dot).
+FILLER_LINES = {'no response requested', 'no response needed', 'acknowledged', 'noted', 'ok', 'ок', 'принято'}
+
+# What `claude agents --json` reports in `waitingFor` when there is no open tool call, in the panel's words.
+WAITING_TEXT = {
+    'dialog open': 'открыт диалог Claude Code — откройте чат и ответьте',
+    'permission prompt': 'ждёт разрешения — откройте чат',
+}
+
 
 def claude_bin() -> str:
     """claude.exe behind npm's claude.cmd shim (cmd.exe would mangle the Cyrillic names)."""
@@ -70,6 +79,8 @@ def last_said(session_id: str) -> dict:
         text = ' '.join(b.get('text', '') for b in msg['content'] if b.get('type') == 'text').strip()
         if text:
             text = ' '.join(text.replace('*', '').replace('`', '').split())
+            if len(text) < 40 and text.rstrip('.').strip().lower() in FILLER_LINES:
+                continue
             return {'text': text[:400], 'at': row.get('timestamp', '')}
     return {}
 
@@ -111,6 +122,9 @@ def live_chats(repo: Path = REPO, running: list[dict] | None = None) -> list[dic
         row = {'name': card['chat'], 'role': card['name'], 'reports_to': card.get('reports_to', ''), 'state': state}
         if state == 'waiting':
             row['waiting_for'] = pending_tool(s.get('sessionId', ''))
+            if not row['waiting_for']:
+                why = str(s.get('waitingFor') or '').strip()
+                row['waiting_for'] = WAITING_TEXT.get(why.lower(), why)
         if s.get('sessionId'):
             last = last_said(s['sessionId'])
             if last:
