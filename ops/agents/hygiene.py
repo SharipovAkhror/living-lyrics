@@ -8,7 +8,8 @@ Reported, never deleted: unmerged branches older than STALE_DAYS, worktrees with
 archived chats still running, two running chats under one name, tasks in progress with nobody on
 them, paths in the docs that point to nothing, a done card still marked running, sync
 counts that drift from the table in docs/tasks/T1-sync.md (section «Счёт синхронизации»),
-and a done or rejected card tN whose brief exists but does not say «сделано» or «отклонено» on line 1.
+a done or rejected card tN whose brief exists but does not say «сделано» or «отклонено» on line 1,
+and on the Station: folders with the read-only flag and a sync tool (OneDrive, Google Drive) over the repo.
 
     python ops/agents/hygiene.py [<repo>] [--apply] [--repo-only] [--json]
 
@@ -18,7 +19,10 @@ runs it hourly on the Station (station_tick.py) and shows the result.
 """
 import datetime
 import json
+import os
 import re
+import sqlite3
+import stat
 import subprocess
 import sys
 from pathlib import Path
@@ -305,6 +309,56 @@ def check_sync_copies(repo: Path, issues: list) -> None:
         issues.append(f'… ещё копий в .git: {len(found) - 5}')
 
 
+def readonly_dirs(roots: list[Path]) -> list[Path]:
+    """Folders among `roots` and their first level that carry the Windows read-only flag. A sync tool
+    (Google Drive on 2026-10-22) sets it and then git and Python cannot remove worktrees."""
+    flag = getattr(stat, 'FILE_ATTRIBUTE_READONLY', 0)
+    out = []
+    for root in roots:
+        if not root.is_dir():
+            continue
+        for d in [root, *(c for c in root.iterdir() if c.is_dir())]:
+            try:
+                if flag and os.stat(d).st_file_attributes & flag:
+                    out.append(d)
+            except (OSError, AttributeError):
+                continue
+    return out
+
+
+def sync_roots_over(repo: Path) -> list[str]:
+    """Names of sync roots that hold the repo: Documents redirected into OneDrive, or a Google Drive
+    mirror root whose folder name is one of the repo path's folders (read-only read of its local DB)."""
+    found = []
+    onedrive = os.environ.get('OneDrive')
+    if onedrive and Path(onedrive).resolve() in [repo, *repo.parents]:
+        found.append(f'OneDrive ({onedrive})')
+    parts = {part.lower() for part in repo.parts}
+    drive = Path(os.environ.get('LOCALAPPDATA', '')) / 'Google' / 'DriveFS'
+    for db in drive.glob('*/mirror_sqlite.db') if drive.is_dir() else []:
+        try:
+            con = sqlite3.connect(f'file:{db}?mode=ro', uri=True, timeout=2)
+            names = con.execute('select m.local_filename from root_config r join mirror_item m '
+                                'on m.local_stable_id = r.local_stable_id').fetchall()
+            con.close()
+        except sqlite3.Error:
+            continue
+        found += [f'Google Drive ({n})' for (n,) in names if n and n.lower() in parts]
+    return found
+
+
+def check_station_sync(repo: Path, issues: list) -> None:
+    """Station only: read-only folders and sync tools over the repo (LL · Tech diagnostics 2026-10-23)."""
+    if os.name != 'nt':
+        return
+    flagged = readonly_dirs([repo, repo.parent / 'living-lyrics-wt', repo / '.claude' / 'worktrees'])
+    if flagged:
+        issues.append(f'папки только для чтения: {len(flagged)} (например {flagged[0]}) — '
+                      f'снять: attrib -R "{repo.parent}" /S /D')
+    for name in sync_roots_over(repo):
+        issues.append(f'папку репозитория синхронизирует {name} — отключить для неё синхронизацию')
+
+
 def check_docs(repo: Path, issues: list) -> None:
     # The standing docs only: task briefs and research name files that are still to be made.
     files = [repo / 'AGENTS.md', repo / 'docs' / 'STATUS.md', *repo.glob('docs/process/*.md'), *repo.glob('docs/methodology/*.md'),
@@ -336,6 +390,7 @@ def main() -> None:
     if '--repo-only' not in flags:
         check_local(repo, apply, fixed, issues)
         check_chats(repo, issues)
+        check_station_sync(repo, issues)
     check_board(repo, issues)
     check_sync_copies(repo, issues)
     check_sync(repo, issues)

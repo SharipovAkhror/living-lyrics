@@ -1,13 +1,57 @@
 /** Audio files the reader attaches on their own device, kept in IndexedDB so they survive reloads. */
 const DB = 'living-lyrics';
 const STORE = 'audio';
+/** A stuck open must not hold playback. Callers fall back to the network file. */
+const OPEN_MS = 3000;
 
 function open(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB, 1);
-    req.onupgradeneeded = () => req.result.createObjectStore(STORE);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+    let req: IDBOpenDBRequest;
+    try {
+      req = indexedDB.open(DB, 1);
+    } catch (err) {
+      reject(err instanceof Error ? err : new Error('indexedDB open failed'));
+      return;
+    }
+    let settled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const finish = (fn: () => void) => {
+      if (settled) return;
+      settled = true;
+      if (timer !== undefined) globalThis.clearTimeout(timer);
+      fn();
+    };
+    timer = globalThis.setTimeout(() => {
+      finish(() => reject(new Error('indexedDB open timed out')));
+    }, OPEN_MS);
+    const closeLate = () => {
+      try {
+        req.result?.close();
+      } catch {
+        /* the request never opened a database */
+      }
+    };
+    try {
+      req.onupgradeneeded = () => {
+        try {
+          if (!req.result.objectStoreNames.contains(STORE)) req.result.createObjectStore(STORE);
+        } catch {
+          /* the store already exists */
+        }
+      };
+      req.onsuccess = () => {
+        if (settled) {
+          closeLate();
+          return;
+        }
+        finish(() => resolve(req.result));
+      };
+      req.onerror = () => finish(() => reject(req.error ?? new Error('indexedDB open failed')));
+      // Another tab is holding an old version. Waiting here is the stall we are avoiding.
+      req.onblocked = () => finish(() => reject(new Error('indexedDB open blocked')));
+    } catch (err) {
+      finish(() => reject(err instanceof Error ? err : new Error('indexedDB open failed')));
+    }
   });
 }
 

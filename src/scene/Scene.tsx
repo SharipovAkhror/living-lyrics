@@ -11,6 +11,10 @@ import { InstBlock } from './InstBlock';
 import { stageCovered, watchCover } from './cover';
 import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
+import { sceneProbeArmed } from './probe';
+
+/** False in the Vercel production build, so `?ll-render-error=1` is compiled out. See vite.config.ts. */
+declare const __SCENE_PROBE__: boolean | undefined;
 import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, sameSlots, type PhoneSlot } from './slots';
 import { WAIT_ROOM, blockHeight, blockState, compressStack, flowPosition, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
 
@@ -304,6 +308,12 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
           '--lyric-tr': `max(13px, calc(20 * 100dvh / 852 * ${settings.textScale}))`,
         } as CSSProperties)
       : undefined;
+
+  // After every hook. The production build constant-folds this away.
+  // Stays armed across React's retry so the boundary, not the retry, records it.
+  if (typeof __SCENE_PROBE__ !== 'undefined' && __SCENE_PROBE__ && sceneProbeArmed(search)) {
+    throw new Error('ll-render-error');
+  }
 
   return (
     <div className="scene" data-align={settings.textAlign} data-enter={entrance} style={phoneLyric}>

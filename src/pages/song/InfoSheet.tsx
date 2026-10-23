@@ -1,9 +1,11 @@
+import { useEffect, useState } from 'react';
 import type { FontPersian } from '@/app/settings';
 import { Group, Row, Sheet } from '@/ui/controls';
 import { LANG_NAMES, formatTime } from '@/data/library';
 import { linkHandler } from '@/app/router';
 import type { Lyrics, Song } from '@/data/schema';
 import { instrument } from '@/instruments/catalog';
+import { formatErrorTime, formatLastError, readLastError, type LastError } from '@/player/lastError';
 import { MarksSection } from './MarksSection';
 import { PartsSection } from './PartsSection';
 
@@ -17,6 +19,23 @@ function recordingDetail(song: Song): string | undefined {
     .join(', ');
   const text = [place, issued ? `релиз ${issued}` : ''].filter(Boolean).join('; ');
   return text || undefined;
+}
+
+function fallbackCopy(text: string) {
+  try {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.style.position = 'fixed';
+    area.style.left = '-9999px';
+    document.body.appendChild(area);
+    area.select();
+    const ok = document.execCommand('copy');
+    area.remove();
+    return ok;
+  } catch {
+    return false;
+  }
 }
 
 const TIMING: Record<Song['timing']['status'], string> = {
@@ -47,6 +66,18 @@ export function InfoSheet({
   /** Shown while the line list is still on its way, or when it failed. */
   pendingNote?: string | null;
 }) {
+  const [diag, setDiag] = useState<LastError | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    setDiag(readLastError());
+  }, [open]);
+  const copyDiag = () => {
+    if (!diag) return;
+    const text = formatLastError(diag);
+    const write = navigator.clipboard?.writeText(text);
+    if (write) void write.catch(() => fallbackCopy(text));
+    else fallbackCopy(text);
+  };
   const voices = new Set<string>();
   const players = new Map<string, Set<string>>();
   for (const s of lyrics?.sections ?? []) {
@@ -77,6 +108,17 @@ export function InfoSheet({
           {song.featuring?.length ? ` · ${song.featuring.join(', ')}` : ''}
         </div>
       </div>
+
+      {diag && (
+        <p className="info-diag t-footnote secondary">
+          <span className="info-diag-text">
+            {formatErrorTime(diag.time)} — {diag.message}
+          </span>
+          <button type="button" className="btn btn-plain info-diag-copy" onClick={copyDiag}>
+            Скопировать
+          </button>
+        </p>
+      )}
 
       {pendingNote && <p className="sheet-wait t-footnote secondary">{pendingNote}</p>}
 

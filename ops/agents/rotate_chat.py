@@ -120,12 +120,17 @@ def main() -> None:
         cmd += ['--model', model]
     if effort:
         cmd += ['--effort', effort]
+    old = [] if dry else [s for s in sessions() if s.get('name') == name]
+    if old:
+        # T40: the new chat reads how the old one's conversation ended (a question the owner was answering).
+        ids = ', '.join(s.get('sessionId', '') for s in old)
+        prompt += (f' Прежний чат: {ids}. Прочитай конец его разговора — '
+                   f'`python ops/agents/old_tail.py <id>` — и ответь на то, что там осталось без ответа.')
     cmd.append(prompt)
     if dry:
         print(json.dumps({'cwd': str(cwd), 'cmd': cmd}, ensure_ascii=False, indent=2))
         return
 
-    old = [s for s in sessions() if s.get('name') == name]
     before = {s.get('sessionId') for s in old}
     out = run(cmd, cwd)
     print(out.splitlines()[0] if out else '')

@@ -4,7 +4,7 @@ Appends a row to ops/usage/ledger/<YYYY-MM>.jsonl only when the measured tuple c
 and writes ops/usage/latest.json. The in-app dashboard reads that summary. Run on the
 owner's machine (Grok, Claude Code and Antigravity are signed in there):
 
-    python ops/usage/collect.py            # tokens, Grok weekly window, Gemini quota, Claude plan
+    python ops/usage/collect.py            # tokens, Grok weekly window, Gemini quota (at most every 30 min), Claude plan
     python ops/usage/collect.py --no-gemini
     python ops/usage/collect.py --run <agy-output.json> --task "watch-video karitas"
 
@@ -635,6 +635,20 @@ def collect_gemini_live(ts):
     return {'plan': plan, 'groups': groups, 'at': ts}
 
 
+GEMINI_POLL_S = 30 * 60  # each /usage read starts agy and writes its logs; the mod calls collect.py every 10 min
+
+
+def gemini_polled_recently(rows, now_t=None, every=GEMINI_POLL_S):
+    """True when an agy /usage reading is younger than `every`: the 10-minute tick then skips agy
+    (Grok and Claude are still collected). agy_run.py reads the quota around its runs on its own."""
+    now_t = now_t or now()
+    for r in reversed(rows):
+        if r.get('agent') == 'gemini' and r.get('kind') == 'quota':
+            t = _parse_ts(r.get('ts'))
+            return bool(t) and (now_t - t).total_seconds() < every
+    return False
+
+
 def gemini_rows(ts, live):
     rows = []
     for name, values in live['groups'].items():
@@ -1038,7 +1052,7 @@ def main():
             rows.append(row)
     else:
         rows += collect_grok(ts)
-        if not args.no_gemini:
+        if not args.no_gemini and not gemini_polled_recently(read_ledger(days=1)):
             gemini_live = collect_gemini_live(ts)
             if gemini_live:
                 rows += gemini_rows(ts, gemini_live)
