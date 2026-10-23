@@ -33,8 +33,8 @@
 **Кто на какой модели** (обязательно с 2026-10-22, решение владельца; полная таблица и шаблоны брифов — `docs/process/executors-guide.md`, раздел 4):
 - Менеджеры (Main, Site, Tech, Ops, Business) — Opus 5.5; Main — усилие xhigh, остальные — high. Задаётся в карточке `.claude/agents/ll-*.md` (`model:`, `effort:`).
 - Код (основной) — Grok `grok-4.7`, high, через `GROK_BINARY=ops/agents/grok_exec.mjs`; 30 млн / 2 ч на сессию, 3 круга на бриф.
-- Мелкая правка кода — agy `claude-sonnet-4-6`, 900 с; трудная, или Grok исчерпан — agy `claude-opus-4-6-thinking`, 1800 с. Усилие моделям Claude в agy не задаётся: agy отклоняет `--effort` (в `agy_run.py` — `-`; с флагом он повторит запуск без него). Отказ «… is no longer available, switch to Claude … 5.5» 2026-10-23 совпал с исчерпанной квотой agy (429); после неё обе модели 4.6 снова отвечают, моделей 5.5 в agy 1.4.5 нет. Повторится — точный текст ошибки в LL · Tech.
-- Видео и кадры — agy `gemini-3.8-flash-high` (да/нет — `flash-low`); суждение о дизайне и переводе — agy `claude-opus-4-6-thinking`. Flash не судит и не пишет код. GPT-OSS не брать.
+- Мелкая правка кода — agy `claude-sonnet-5-5-medium`, 900 с; трудная, или Grok исчерпан — agy `claude-opus-5-5-high`, 1800 с. Усилие — в имени модели (`-low`/`-medium`/`-high`, у Opus ещё `-max`); флаг `--effort` agy не принимает (в `agy_run.py` — `-`). С 2026-10-23 Claude 4.6 в agy выключены, 5.5 — замена один к одному (LL · Main); имена и пробы — `docs/process/executors-guide.md`.
+- Видео и кадры — agy `gemini-3.8-flash-high` (да/нет — `flash-low`); суждение о дизайне и переводе — agy `claude-opus-5-5-high`. Flash не судит и не пишет код. GPT-OSS не брать.
 - Субагенты Claude: поиск — haiku, low; исследование и проверка кода — sonnet, medium.
 - agy — решение владельца 2026-10-22: правила Google о сторонних обёртках он принимает на себя. Каждый запуск: cwd и `--add-dir` = worktree задачи, `--dangerously-skip-permissions`, `--output-format json --json-schema`, запись в учёт.
 - **Приёмка — отдельный проверяющий `ll-judge`** (sonnet, low, ≤ 10 мин, только чтение): вердикт по списку «Готово, когда» с доказательствами. Исполнитель сам себя не принимает.
