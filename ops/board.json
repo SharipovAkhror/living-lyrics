@@ -1,13 +1,13 @@
 {
-  "updated": "2026-10-23T02:20:00Z",
+  "updated": "2026-10-23T03:00:00Z",
   "headline": "Дизайн сайта: круги 19–21 в ветке studio-pass, круг 22 (большие экраны) — после сброса Grok в пт 21:08. Панель по ссылке готова.",
   "tasks": [
     {
       "id": "you-site-resume",
       "section": "you",
       "status": "waiting",
-      "title": "Нажать «Resume» в чате LL · Site",
-      "what": "LL · Site после перезапуска стоит на вопросе «Resume this conversation?». На Станции в терминале: claude attach 11b14ae6 → «1. Resume» (или claude agents → Needs input → Enter → «1. Resume»). После этого Site сам передаст дела новому чату.",
+      "title": "Разрешить шаг в чате LL · Site",
+      "what": "LL · Site передаёт дела новому чату и ждёт вашего разрешения на переход в рабочую папку (EnterWorktree). Открыть LL · Site и нажать «разрешить». Если до 13:00 не получится, LL · Tech перезапустит Site сам.",
       "date": "2026-10-23"
     },
     {
