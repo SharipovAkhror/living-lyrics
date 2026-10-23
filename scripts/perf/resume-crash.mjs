@@ -14,6 +14,11 @@
  *   wait-then-kill  — seek to ~1:30, play past the save interval, then kill
  *   idb-stall       — as wait-then-kill, but on the reopened page indexedDB.open never answers
  *                     (restore must not depend on the attached-file store)
+ *   render-error    — seek, then throw once inside the scene (`?ll-render-error=1`, stripped
+ *                     from the Vercel production build). The scene remounts, the position stays,
+ *                     and «О песне» shows the error with «Скопировать».
+ *   bad-storage     — write garbage into the resume key, reload. No crash, time stays at 0,
+ *                     no «Продолжить» button.
  *
  * WebKit on Windows cannot decode the fixture, so the stand-in clock from lib.mjs plays it
  * (--native-audio turns it off), and play() without a trusted gesture is refused, as on iOS.
@@ -38,6 +43,7 @@ const songSeconds = Number(flag(args, '--song-seconds', '977'));
 const target = Number(flag(args, '--target', '90'));
 const only = flag(args, '--case', '');
 const KEY = 'living-lyrics.resume.v1';
+const ERROR_KEY = 'living-lyrics.lastError.v1';
 const TOLERANCE = 2;
 // The page saves about every 2 s (SongPage.tsx). Wait clearly past one interval.
 const SAVE_WAIT_MS = 3500;
@@ -218,24 +224,117 @@ async function runCase(context, url, name, waitAfterSeek, stallIdb = false) {
   return row;
 }
 
+/** Seek, force one scene throw, expect the stage back at the same time and the error in «О песне». */
+async function runRenderError(context, url) {
+  const song = `${url}/song/${slug}`;
+  const row = { case: 'render-error', pass: false };
+  const page = await context.newPage();
+  const pageErrors = [];
+  page.on('pageerror', (err) => pageErrors.push(String(err).slice(0, 240)));
+  try {
+    await page.goto(song, { waitUntil: 'domcontentloaded', timeout: 45000 });
+    await page.waitForSelector('.scrub-track', { timeout: 30000 });
+    const play = page.getByRole('button', { name: 'Воспроизвести' });
+    if (await play.count()) await play.first().click();
+    await page.waitForTimeout(1500);
+    await seekTo(page, target);
+    const pause = page.getByRole('button', { name: 'Пауза' });
+    if (await pause.count()) await pause.first().click();
+    await page.waitForTimeout(200);
+    const before = await readState(page);
+    row.beforeThrow = { clock: before.clock, audioTime: before.audioTime, paused: before.paused };
+    await page.evaluate(() => {
+      const next = new URL(location.href);
+      next.searchParams.set('ll-render-error', '1');
+      history.replaceState(null, '', next.pathname + next.search);
+    });
+    // The scene reads the query on its next render. Toggling the translation does that.
+    await page.getByRole('button', { name: 'Перевод' }).click();
+    await page.locator('.scene').waitFor({ timeout: 10000 });
+    const after = await readState(page);
+    const shown = after.audioTime ?? parseClock(after.clock);
+    const expected = before.audioTime ?? parseClock(before.clock);
+    await page.getByRole('button', { name: 'О песне' }).click();
+    const diag = page.locator('.info-diag');
+    await diag.waitFor({ timeout: 10000 });
+    const diagText = ((await diag.innerText()) ?? '').replace(/\s+/g, ' ').trim();
+    const storedError = await page.evaluate((key) => localStorage.getItem(key), ERROR_KEY);
+    row.after = { clock: after.clock, audioTime: after.audioTime, diag: diagText, storedError, pageErrors };
+    row.expected = expected != null ? Math.round(expected * 10) / 10 : null;
+    row.got = shown != null ? Math.round(shown * 10) / 10 : null;
+    const checks = {
+      recovered: (await page.locator('.scene').count()) > 0 && (await page.locator('.scrub-track').count()) > 0,
+      position: expected != null && shown != null && Math.abs(shown - expected) <= TOLERANCE,
+      errorVisible: /ll-render-error/.test(diagText),
+      copyVisible: (await page.getByRole('button', { name: 'Скопировать' }).count()) > 0,
+    };
+    row.checks = checks;
+    row.pass = Object.values(checks).every(Boolean);
+  } catch (err) {
+    row.error = String(err?.stack || err).slice(0, 500);
+    row.pageErrors = pageErrors;
+  } finally {
+    if (!page.isClosed()) await page.close().catch(() => {});
+  }
+  return row;
+}
+
+/** Garbage in the resume key must not throw, must not offer a button, and must start at 0. */
+async function runBadStorage(context, url) {
+  const song = `${url}/song/${slug}`;
+  const row = { case: 'bad-storage', pass: false, expected: 0 };
+  const page = await context.newPage();
+  const pageErrors = [];
+  page.on('pageerror', (err) => pageErrors.push(String(err).slice(0, 240)));
+  try {
+    await page.goto(song, { waitUntil: 'domcontentloaded', timeout: 45000 });
+    await page.waitForSelector('.scrub-track', { timeout: 30000 });
+    await page.evaluate((key) => localStorage.setItem(key, '{'), KEY);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('.scrub-track', { timeout: 30000 });
+    await page.waitForTimeout(1500);
+    const after = await readState(page);
+    const shown = after.audioTime ?? parseClock(after.clock);
+    row.after = { clock: after.clock, audioTime: after.audioTime, offer: after.offer, pageErrors };
+    row.got = shown != null ? Math.round(shown * 10) / 10 : null;
+    const checks = {
+      noCrash: pageErrors.length === 0 && (await page.locator('.scrub-track').count()) > 0,
+      position: shown != null && shown < 1.5,
+      noOffer: after.offer == null,
+    };
+    row.checks = checks;
+    row.pass = Object.values(checks).every(Boolean);
+  } catch (err) {
+    row.error = String(err?.stack || err).slice(0, 500);
+    row.pageErrors = pageErrors;
+  } finally {
+    if (!page.isClosed()) await page.close().catch(() => {});
+  }
+  return row;
+}
+
 const server = await serve();
 const browser = await webkit.launch();
 const report = { url: server.url, audio: audio.label, tolerance: TOLERANCE, cases: [], pass: false };
 try {
   const cases = [
-    ['seek-then-kill', 0],
-    ['wait-then-kill', SAVE_WAIT_MS],
-    ['idb-stall', SAVE_WAIT_MS, true],
-  ].filter(([name]) => !only || only === name);
+    { name: 'seek-then-kill', kind: 'kill', wait: 0 },
+    { name: 'wait-then-kill', kind: 'kill', wait: SAVE_WAIT_MS },
+    { name: 'idb-stall', kind: 'kill', wait: SAVE_WAIT_MS, stall: true },
+    { name: 'render-error', kind: 'render-error' },
+    { name: 'bad-storage', kind: 'bad-storage' },
+  ].filter((item) => !only || only === item.name);
   // One context per case: fresh storage, and both pages of a case share it.
-  for (const [name, wait, stall] of cases) {
+  for (const item of cases) {
     const context = await browser.newContext(phoneContext());
     await context.addInitScript(harness, KEY);
     // WebKit on Windows rejects the fixture (media error 4); the stand-in clock plays it.
     if (!args.includes('--native-audio')) await installStandInClock(context, songSeconds);
     await context.addInitScript(autoplayPolicy);
     await installAudioRoute(context, audio.body, audio.type);
-    report.cases.push(await runCase(context, server.url, name, wait, stall === true));
+    if (item.kind === 'render-error') report.cases.push(await runRenderError(context, server.url));
+    else if (item.kind === 'bad-storage') report.cases.push(await runBadStorage(context, server.url));
+    else report.cases.push(await runCase(context, server.url, item.name, item.wait, item.stall === true));
     await context.close().catch(() => {});
   }
   report.pass = report.cases.length > 0 && report.cases.every((c) => c.pass);

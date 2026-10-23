@@ -77,7 +77,11 @@ function speedBudget(): Plugin {
 export default defineConfig({
   plugins: [react(), speedBudget()],
   // `?fill=1` shows unproven word fill for checks; the production site must never honour it.
-  define: { __FILL_QUERY__: JSON.stringify(process.env.VERCEL_ENV !== 'production') },
+  define: {
+    __FILL_QUERY__: JSON.stringify(process.env.VERCEL_ENV !== 'production'),
+    // `?ll-render-error=1` throws once inside the scene. The production site never contains it.
+    __SCENE_PROBE__: JSON.stringify(process.env.VERCEL_ENV !== 'production'),
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
