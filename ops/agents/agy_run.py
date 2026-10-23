@@ -10,7 +10,10 @@ practice means a denied tool or a failed turn ("empty = denied/failed"). Policy:
 docs/process/executors-guide.md §4. Models: `agy models`.
 """
 import json
+import os
 import shutil
+import tempfile
+import time
 import subprocess
 import sys
 from pathlib import Path
@@ -19,6 +22,63 @@ ROOT = Path(__file__).resolve().parents[2]
 COLLECT = ROOT / 'ops' / 'usage' / 'collect.py'
 FALLBACK = Path.home() / 'AppData' / 'Local' / 'agy' / 'bin' / 'agy.exe'
 EFFORT_REJECTED = '--effort is not supported for model'
+LOCK = Path(tempfile.gettempdir()) / 'll-agy-claude-gpt.lock'
+LOCK_STALE_S = 3 * 3600  # longer than any allowed run (rule 2: 2 h)
+
+
+def quota_group(model: str) -> str:
+    """agy /usage group of a model id: 'claude-gpt' for Claude and GPT models, '' otherwise."""
+    m = model.lower()
+    return 'claude-gpt' if m.startswith(('claude', 'gpt')) else ''
+
+
+def take_lock() -> bool:
+    """True when this process now holds the Claude/GPT run lock. A lock older than LOCK_STALE_S is dropped."""
+    try:
+        if LOCK.exists() and time.time() - LOCK.stat().st_mtime > LOCK_STALE_S:
+            LOCK.unlink()
+    except OSError:
+        pass
+    try:
+        fd = os.open(LOCK, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        return False
+    with os.fdopen(fd, 'w') as fh:
+        fh.write(str(os.getpid()))
+    return True
+
+
+def drop_lock() -> None:
+    try:
+        LOCK.unlink()
+    except OSError:
+        pass
+
+
+def quota_now(group: str) -> dict:
+    """{'weekly': %, 'fiveHour': %} remaining for `group` from agy /usage; {} when it can't be read."""
+    try:
+        sys.path.insert(0, str(COLLECT.parent))
+        import collect  # noqa: PLC0415 - heavy (pty), only for Claude/GPT runs
+        live = collect.collect_gemini_live(collect.iso(collect.now()))
+        values = (live or {}).get('groups', {}).get(group) or {}
+        return {k: values[k + 'Remaining'] for k in ('weekly', 'fiveHour') if values.get(k + 'Remaining') is not None}
+    except Exception as e:  # noqa: BLE001 - a missing reading must not block the run
+        print(f'agy_run: quota not read: {e}', file=sys.stderr)
+        return {}
+
+
+def quota_fields(group: str, before: dict, after: dict) -> dict:
+    """Ledger fields for the run row; only what was measured."""
+    if not group or not (before or after):
+        return {}
+    out = {'quotaGroup': group}
+    for k in ('weekly', 'fiveHour'):
+        if k in before:
+            out[k + 'Before'] = before[k]
+        if k in after:
+            out[k + 'After'] = after[k]
+    return out
 
 
 def agy_bin() -> str:
@@ -30,11 +90,12 @@ def agy_bin() -> str:
     raise SystemExit('agy_run: agy not found on PATH')
 
 
-def log(out: str, model: str, task: str) -> None:
+def log(out: str, model: str, task: str, extra: dict | None = None) -> None:
     """Ledger row for this run; agy's JSON has no model field, so it is added here. Never fails the run."""
     try:
         data = json.loads(out)
         data.setdefault('model', model)
+        data.update(extra or {})
         subprocess.run([sys.executable, str(COLLECT), '--run', '-', '--task', task], input=json.dumps(data),
                        capture_output=True, text=True, encoding='utf-8', timeout=120)
     except Exception as e:  # noqa: BLE001 - logging must not break the caller
@@ -43,6 +104,20 @@ def log(out: str, model: str, task: str) -> None:
 
 def run(worktree, model, effort, timeout, schema, prompt, task) -> tuple[int, str, dict | None]:
     """(exit code, raw stdout, parsed JSON or None). `prompt` is the prompt text."""
+    group = quota_group(model)
+    if not group:
+        return _run(worktree, model, effort, timeout, schema, prompt, task, group)
+    if not take_lock():
+        print(f'agy_run: another Claude/GPT run holds {LOCK} (rule 6a: one at a time)', file=sys.stderr)
+        return 5, '', None
+    try:
+        return _run(worktree, model, effort, timeout, schema, prompt, task, group)
+    finally:
+        drop_lock()
+
+
+def _run(worktree, model, effort, timeout, schema, prompt, task, group) -> tuple[int, str, dict | None]:
+    before = quota_now(group) if group else {}
     wt = str(Path(worktree).resolve())
     cmd = [agy_bin(), '-p', prompt, '--model', model, '--add-dir', wt, '--dangerously-skip-permissions',
            '--output-format', 'json', '--print-timeout', timeout]
@@ -59,7 +134,8 @@ def run(worktree, model, effort, timeout, schema, prompt, task) -> tuple[int, st
         proc = subprocess.run(cmd, cwd=wt, capture_output=True, text=True, encoding='utf-8', errors='replace')
     out = proc.stdout or ''
     if out.strip():
-        log(out, model, task)
+        after = quota_now(group) if group else {}
+        log(out, model, task, quota_fields(group, before, after))
     try:
         data = json.loads(out)
     except ValueError:

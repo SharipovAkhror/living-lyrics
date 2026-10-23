@@ -644,6 +644,9 @@ def gemini_rows(ts, live):
     return rows
 
 
+QUOTA_RUN_KEYS = ('quotaGroup', 'weeklyBefore', 'weeklyAfter', 'fiveHourBefore', 'fiveHourAfter')
+
+
 def record_run(path, task):
     """One finished agy job from its `--output-format json` output: a file path, or '-' for stdin."""
     text = sys.stdin.read() if path == '-' else Path(path).read_text(encoding='utf-8')
@@ -663,6 +666,8 @@ def record_run(path, task):
         'model': data.get('model') or 'gemini-3.8-flash-high',
         'seconds': round(float(data.get('duration_seconds') or 0), 1),
         'tokens': tokens, 'status': data.get('status') or '',
+        # Quota of the model's agy group around the run (agy_run.py, budget rule 6a); only when measured.
+        **{k: data[k] for k in QUOTA_RUN_KEYS if data.get(k) is not None},
     }
 
 
