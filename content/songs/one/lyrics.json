@@ -1238,7 +1238,7 @@
       "id": "voice-1",
       "kind": "instrumental",
       "start": 246.4,
-      "end": 250,
+      "end": 248.0,
       "label": "Голос",
       "instruments": [
         "voice"
@@ -1246,6 +1246,14 @@
       "flags": [
         "text-unverified"
       ]
+    },
+    {
+      "id": "voice-1-inst",
+      "kind": "instrumental",
+      "start": 248.0,
+      "end": 250,
+      "label": "Проигрыш",
+      "instruments": []
     },
     {
       "id": "inst-1",
@@ -1623,13 +1631,11 @@
       "id": "voice-3",
       "kind": "instrumental",
       "start": 355,
-      "end": 367.051,
+      "end": 356.0,
       "label": "Голос",
       "instruments": [
-        "voice",
-        "violin"
+        "voice"
       ],
-      "note": "Голос со скрипкой; скрипка на второй секунде.",
       "flags": [
         "text-unverified"
       ],
@@ -1637,11 +1643,39 @@
         {
           "key": "voice",
           "at": 355.0
-        },
+        }
+      ]
+    },
+    {
+      "id": "voice-3-inst",
+      "kind": "instrumental",
+      "start": 356.0,
+      "end": 361.0,
+      "label": "Проигрыш",
+      "instruments": [
+        "violin"
+      ],
+      "note": "Проигрыш без пения.",
+      "entries": [
         {
           "key": "violin",
           "at": 356.45
         }
+      ]
+    },
+    {
+      "id": "voice-3-2",
+      "kind": "instrumental",
+      "start": 361.0,
+      "end": 367.051,
+      "label": "Голос",
+      "instruments": [
+        "voice",
+        "violin"
+      ],
+      "note": "Голос и скрипка.",
+      "flags": [
+        "text-unverified"
       ]
     },
     {
@@ -2376,7 +2410,7 @@
       "id": "voice-4",
       "kind": "instrumental",
       "start": 622,
-      "end": 632,
+      "end": 630.0,
       "label": "Голос",
       "instruments": [
         "voice",
@@ -2401,6 +2435,18 @@
           "at": 626.0
         }
       ]
+    },
+    {
+      "id": "voice-4-inst",
+      "kind": "instrumental",
+      "start": 630.0,
+      "end": 632,
+      "label": "Проигрыш",
+      "instruments": [
+        "daf",
+        "darbuka"
+      ],
+      "note": "Проигрыш без пения."
     },
     {
       "id": "inst-6",
@@ -2485,22 +2531,14 @@
       "kind": "instrumental",
       "start": 714,
       "end": 721,
-      "label": "Голос",
+      "label": "Проигрыш",
       "instruments": [
-        "voice",
         "flute",
         "ney",
         "darbuka"
       ],
-      "note": "Голос и поперечная флейта вместе, най следом, дарбука ближе к концу.",
-      "flags": [
-        "text-unverified"
-      ],
+      "note": "Поперечная флейта с начала, най следом, дарбука ближе к концу.",
       "entries": [
-        {
-          "key": "voice",
-          "at": 714.0
-        },
         {
           "key": "flute",
           "at": 714.0
@@ -2987,13 +3025,34 @@
       "id": "voice-8",
       "kind": "instrumental",
       "start": 793,
-      "end": 828.05,
+      "end": 810.0,
       "label": "Аплодисменты",
       "instruments": [],
+      "note": "Аплодисменты и поклоны, пения нет.",
       "flags": [
         "text-unverified"
+      ]
+    },
+    {
+      "id": "voice-8-choir",
+      "kind": "instrumental",
+      "start": 810.0,
+      "end": 826.0,
+      "label": "Хор",
+      "instruments": [
+        "choir"
       ],
-      "note": "Аплодисменты и поклоны, пения нет."
+      "flags": [
+        "text-unverified"
+      ]
+    },
+    {
+      "id": "voice-8-inst",
+      "kind": "instrumental",
+      "start": 826.0,
+      "end": 828.05,
+      "label": "Тишина",
+      "instruments": []
     }
   ]
 }
