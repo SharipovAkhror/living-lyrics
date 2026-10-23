@@ -1,0 +1,504 @@
+{
+  "clips": [
+    {
+      "clip": "p1.wav",
+      "segments": [
+        {
+          "confidence": "medium",
+          "end_s": 2.8,
+          "lang": "fa",
+          "latin": "...va nām-o kherad...",
+          "start_s": 0,
+          "text": "...وَ نام و خِرَد...",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 6.6,
+          "lang": "fa",
+          "latin": "Goft ke sheykhī yā sarī",
+          "start_s": 2.8,
+          "text": "گُفْتْ کِه شِیْخی یا سَری",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 10.8,
+          "lang": "fa",
+          "latin": "Pīshrow-o rāhbarī",
+          "start_s": 7.2,
+          "text": "پیشْرُو و راهْبَری",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 14.5,
+          "lang": "fa",
+          "latin": "Sheykh nayam, pīr...",
+          "start_s": 11.4,
+          "text": "شِیْخْ نَیَم، پیر...",
+          "times_sung": 1,
+          "voice": "solo"
+        }
+      ]
+    },
+    {
+      "clip": "p2.wav",
+      "segments": [
+        {
+          "confidence": "high",
+          "end_s": 4.3,
+          "lang": "ar",
+          "latin": "Lastu kallan bal khādimun mutī‘",
+          "start_s": 0,
+          "text": "لَسْتُ كَلّاً بَلْ خَادِمٌ مُطِيعْ",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 6.6,
+          "lang": "ar",
+          "latin": "Bal khādimun mutī‘",
+          "start_s": 4.3,
+          "text": "بَلْ خَادِمٌ مُطِيعْ",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 9,
+          "lang": "ar",
+          "latin": "Bal khādimun mutī‘",
+          "start_s": 6.6,
+          "text": "بَلْ خَادِمٌ مُطِيعْ",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 15.2,
+          "lang": "ar",
+          "latin": "Qad tuqām",
+          "start_s": 9,
+          "text": "قَدْ تُقَامْ",
+          "times_sung": 1,
+          "voice": "solo"
+        }
+      ]
+    },
+    {
+      "clip": "p3.wav",
+      "segments": [
+        {
+          "confidence": "low",
+          "end_s": 2.8,
+          "lang": "unclear",
+          "latin": "Oooo",
+          "start_s": 0,
+          "text": "اوووو",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 8.5,
+          "lang": "tr",
+          "latin": "Ah, dövləti-yar gəlincə",
+          "start_s": 2.8,
+          "text": "آه، دَوْلَتِ يارْ گَلِينْجَه",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "low",
+          "end_s": 11.2,
+          "lang": "unclear",
+          "latin": "Ah...",
+          "start_s": 8.5,
+          "text": "آه...",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 14.8,
+          "lang": "fa",
+          "latin": "Shokr konad kāghaz-e to",
+          "start_s": 11.2,
+          "text": "شُکْرْ کُنَدْ کاغَذِ تُو",
+          "times_sung": 1,
+          "voice": "solo"
+        }
+      ]
+    },
+    {
+      "clip": "p4.wav",
+      "segments": [
+        {
+          "confidence": "high",
+          "end_s": 4.2,
+          "lang": "fa",
+          "latin": "Az nazar-o gardesh-e oo",
+          "start_s": 1,
+          "text": "از نَظَر و گَرْدِشِ او",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 6.8,
+          "lang": "fa",
+          "latin": "Noor pazīrande shodam",
+          "start_s": 4.2,
+          "text": "نورْپَذیرَنْدِه شُدَم",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 9.6,
+          "lang": "fa",
+          "latin": "Noor pazīrande shodam",
+          "start_s": 6.8,
+          "text": "نورْپَذیرَنْدِه شُدَم",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 12.8,
+          "lang": "fa",
+          "latin": "Shokr konad charkh-e falak",
+          "start_s": 9.6,
+          "text": "شُکْرْ کُنَدْ چَرْخِ فَلَکْ",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 15,
+          "lang": "fa",
+          "latin": "Az malak-o...",
+          "start_s": 12.8,
+          "text": "از مَلَک و...",
+          "times_sung": 1,
+          "voice": "solo"
+        }
+      ]
+    },
+    {
+      "clip": "p5.wav",
+      "segments": [
+        {
+          "confidence": "medium",
+          "end_s": 2.8,
+          "lang": "fa",
+          "latin": "...nām-o kherad...",
+          "start_s": 0,
+          "text": "...نام و خِرَد...",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 8.2,
+          "lang": "tr",
+          "latin": "Dirildim can oldum, ağlayırdım gülüş oldum",
+          "start_s": 2.8,
+          "text": "Dirildim can oldum, ağlayırdım gülüş oldum",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 13.8,
+          "lang": "tr",
+          "latin": "Aşiqiyyəti gəlincə mən sonsuz dövləti buldum",
+          "start_s": 8.2,
+          "text": "Aşiqiyyəti gəlincə mən sonsuz dövləti buldum",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 19.5,
+          "lang": "tr",
+          "latin": "Aşiqiyyəti gəlincə mən sonsuz dövləti buldum",
+          "start_s": 13.8,
+          "text": "Aşiqiyyəti gəlincə mən sonsuz dövləti buldum",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 25.5,
+          "lang": "fa",
+          "latin": "Dolat-e ‘eshq āmad-o man dolat-e pāyande shodam",
+          "start_s": 19.5,
+          "text": "دَوْلَتِ عِشْقْ آمَد و مَنْ دَوْلَتِ پایَنْدِه شُدَم",
+          "times_sung": 1,
+          "voice": "solo+choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 31.5,
+          "lang": "fa",
+          "latin": "Dolat-e ‘eshq āmad-o man dolat-e pāyande shodam",
+          "start_s": 25.5,
+          "text": "دَوْلَتِ عِشْقْ آمَد و مَنْ دَوْلَتِ پایَنْدِه شُدَم",
+          "times_sung": 1,
+          "voice": "solo+choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 36,
+          "lang": "fa",
+          "latin": "Dolat-e pāyande shodam",
+          "start_s": 31.5,
+          "text": "دَوْلَتِ پایَنْدِه شُدَم",
+          "times_sung": 1,
+          "voice": "solo+choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 41.5,
+          "lang": "fa",
+          "latin": "Dolat-e pāyande shodam",
+          "start_s": 36,
+          "text": "دَوْلَتِ پایَنْدِه شُدَم",
+          "times_sung": 1,
+          "voice": "solo+choir"
+        }
+      ]
+    },
+    {
+      "clip": "p6a.wav",
+      "segments": [
+        {
+          "confidence": "low",
+          "end_s": 1.8,
+          "lang": "la",
+          "latin": "...tis",
+          "start_s": 0,
+          "text": "...tis",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 6.5,
+          "lang": "la",
+          "latin": "Caritas abundat in omnia",
+          "start_s": 1.8,
+          "text": "Caritas abundat in omnia",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 9,
+          "lang": "la",
+          "latin": "omnia",
+          "start_s": 6.5,
+          "text": "omnia",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 13.5,
+          "lang": "la",
+          "latin": "de imis excellenti...",
+          "start_s": 9,
+          "text": "de imis excellenti...",
+          "times_sung": 1,
+          "voice": "solo"
+        }
+      ]
+    },
+    {
+      "clip": "p6b.wav",
+      "segments": [
+        {
+          "confidence": "high",
+          "end_s": 6.5,
+          "lang": "la",
+          "latin": "Caritas abundat in omnia",
+          "start_s": 0,
+          "text": "Caritas abundat in omnia",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 9,
+          "lang": "la",
+          "latin": "omnia",
+          "start_s": 6.5,
+          "text": "omnia",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 13.5,
+          "lang": "la",
+          "latin": "de imis excellenti...",
+          "start_s": 9,
+          "text": "de imis excellenti...",
+          "times_sung": 1,
+          "voice": "choir"
+        }
+      ]
+    },
+    {
+      "clip": "p7.wav",
+      "segments": [
+        {
+          "confidence": "high",
+          "end_s": 2.8,
+          "lang": "ar",
+          "latin": "Sharibnā",
+          "start_s": 0,
+          "text": "شَرِبْنَا",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 8.5,
+          "lang": "ar",
+          "latin": "Al-kullu lammā saqayta ṭāb",
+          "start_s": 2.8,
+          "text": "الْكُلُّ لَمَّا سَقَيْتَ طَابْ",
+          "times_sung": 1,
+          "voice": "solo"
+        },
+        {
+          "confidence": "high",
+          "end_s": 15,
+          "lang": "ar",
+          "latin": "Al-kullu lammā saqayta ṭāb",
+          "start_s": 8.5,
+          "text": "الْكُلُّ لَمَّا سَقَيْتَ طَابْ",
+          "times_sung": 1,
+          "voice": "choir"
+        }
+      ]
+    },
+    {
+      "clip": "p8.wav",
+      "segments": [
+        {
+          "confidence": "high",
+          "end_s": 3.2,
+          "lang": "la",
+          "latin": "...in omnia, omnia",
+          "start_s": 0,
+          "text": "...in omnia, omnia",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 6.8,
+          "lang": "la",
+          "latin": "de imis excellentissima",
+          "start_s": 3.2,
+          "text": "de imis excellentissima",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 9.8,
+          "lang": "la",
+          "latin": "super sidera",
+          "start_s": 6.8,
+          "text": "super sidera",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 14.5,
+          "lang": "la",
+          "latin": "Caritas abundat in omnia",
+          "start_s": 9.8,
+          "text": "Caritas abundat in omnia",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 17.5,
+          "lang": "la",
+          "latin": "omnia",
+          "start_s": 14.5,
+          "text": "omnia",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 20,
+          "lang": "la",
+          "latin": "de imis...",
+          "start_s": 17.5,
+          "text": "de imis...",
+          "times_sung": 1,
+          "voice": "choir"
+        }
+      ]
+    },
+    {
+      "clip": "p9.wav",
+      "segments": [
+        {
+          "confidence": "high",
+          "end_s": 4.5,
+          "lang": "la",
+          "latin": "Paraclitus",
+          "start_s": 0,
+          "text": "Paraclitus",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 8.5,
+          "lang": "la",
+          "latin": "Fons vivus",
+          "start_s": 4.5,
+          "text": "Fons vivus",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 12,
+          "lang": "la",
+          "latin": "Ignis, caritas",
+          "start_s": 8.5,
+          "text": "Ignis, caritas",
+          "times_sung": 1,
+          "voice": "choir"
+        },
+        {
+          "confidence": "high",
+          "end_s": 16.5,
+          "lang": "la",
+          "latin": "Et spiritalis unctio",
+          "start_s": 12,
+          "text": "Et spiritalis unctio",
+          "times_sung": 1,
+          "voice": "choir"
+        }
+      ]
+    }
+  ]
+}
