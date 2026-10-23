@@ -877,7 +877,17 @@ async function runCore(page, label) {
     const slowJudge = judgeDrawn(slowDrawn);
     note('drawn-slow', slowJudge.ok, slowJudge.detail);
     const max = Number(await track.getAttribute('aria-valuemax'));
-    const handRail = (await track.boundingBox()) || trackBox;
+    // Release recentres the dock when the margin note opens or closes. The box
+    // from that same turn is the previous column, and 30 s lands on the intro.
+    let handRail = (await track.boundingBox()) || trackBox;
+    for (let i = 0; i < 10 && handRail; i++) {
+      await page.waitForTimeout(40);
+      const next = await track.boundingBox();
+      if (!next) break;
+      const still = Math.abs(next.x - handRail.x) < 0.5 && Math.abs(next.y - handRail.y) < 0.5 && Math.abs(next.width - handRail.width) < 0.5;
+      handRail = next;
+      if (still) break;
+    }
     if (handRail && max > 40) {
       const yRail = handRail.y + handRail.height / 2;
       const xAt = (sec) => handRail.x + (sec / max) * handRail.width;
