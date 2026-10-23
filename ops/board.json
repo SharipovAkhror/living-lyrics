@@ -1,13 +1,13 @@
 {
-  "updated": "2026-10-23T08:45:00Z",
+  "updated": "2026-10-23T09:30:00Z",
   "headline": "Дизайн сайта: круги 19–21 в ветке studio-pass, круг 22 (большие экраны) — после сброса Grok в пт 21:08. Панель по ссылке готова.",
   "tasks": [
     {
       "id": "you-drive",
       "section": "you",
       "status": "waiting",
-      "title": "Снять синхронизацию «Документов» в Google Drive",
-      "what": "На Станции: значок Google Drive в трее → шестерёнка → Настройки → Мой компьютер → Документы → снять «Синхронизировать с Google Диском» → Готово. Когда удобно. Потом в Проводнике удалить 16 старых папок в C:\\Users\\User\\Documents\\GitHub\\living-lyrics-wt: apple-watch, critique, critique-ref, handoff-1022, ll-site-1022, r19-check, t1-sync, t1-sync90, t10-small, t20-route, t27-iphone, t29-text, t29b-text, t31-audit, t31-fixes, t32-limits, ll-site-handoff-1023, а также living-lyrics\\.claude\\worktrees\\agy-chat-lines (все влиты; остальные папки там не трогать). Агентам удалять их не даёт автопроверка."
+      "title": "Google Drive и папка GitHub — ваш вариант",
+      "what": "Drive держит файлы репозиториев (ошибки удаления, копии в .git). Варианты: вынести папку GitHub из «Документов» или снять синхронизацию «Документов». Вы выбрали «другое» — напишите LL · Main, что имели в виду. Пока ничего не меняем."
     },
     {
       "id": "you-iphone",
@@ -36,14 +36,6 @@
       "status": "waiting",
       "title": "Войти в Antigravity заново (не срочно)",
       "what": "Antigravity на Станции пишет «You are not logged into Antigravity», из-за этого список моделей устаревает и запуски иногда отказывают. Открыть приложение Antigravity (или agy в терминале) и войти своим аккаунтом Google.",
-      "date": "2026-10-23"
-    },
-    {
-      "id": "you-rc-records",
-      "section": "you",
-      "status": "waiting",
-      "title": "Убрать две мёртвые записи чатов (не срочно)",
-      "what": "В боковой панели приложения Claude остались старые записи «LL · Ops» и «LL · Site» с перечёркнутым значком (Remote Control, неактивны). Правый клик → «Archive». Убрать их можете только вы; живые копии этих чатов работают.",
       "date": "2026-10-23"
     },
     {
