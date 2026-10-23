@@ -6,7 +6,7 @@
 - LL · Main: [2026-10-23-ll-main.md](2026-10-23-ll-main.md)
 - LL · Site: [2026-10-22-ll-site.md](2026-10-22-ll-site.md)
 - LL · Tech: [2026-10-23-ll-tech.md](2026-10-23-ll-tech.md)
-- LL · Ops: [2026-10-22-ll-ops.md](2026-10-22-ll-ops.md)
+- LL · Ops: [2026-10-23-ll-ops.md](2026-10-23-ll-ops.md)
 - LL · Business: —
 
 Разовые записки:
