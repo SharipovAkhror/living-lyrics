@@ -166,7 +166,7 @@
 
 ## hildegard-h5-1
 
-Строки: hildegard-h5-1, hildegard-h5-2, hildegard-h5-3, hildegard-h5-4
+Строки: hildegard-h5-1, hildegard-h5-2, hildegard-h5-3, hildegard-h5-4, hildegard-h1-1e
 
 Оригинал: in omnia
 
@@ -278,7 +278,7 @@
 
 ## shushtari-s2
 
-Строки: shushtari-s2
+Строки: shushtari-s2, shushtari-s2b
 
 Оригинал: اَلْكُلُّ لَمَّا سَقَيْتَ تَاهُوا
 
@@ -377,6 +377,7 @@
 | fuzuli-f5-2 | hikmet-i dünyâ vü mâfiha bilen arif degil | Знающий мудрость мира и всего, что в нём, — не **ариф**; |
 | fuzuli-f6-2 | arif oldur bilmeye dünyâ vü mâfiha nedir | ариф — тот, кто не ведает, что такое мир и всё, что в нём. |
 | hildegard-h1-1 | Karitas habundat in omnia | **Любовь** изобилует во всём |
+| hildegard-h1-1e | in omnia | во всём |
 | hildegard-h2-1 | de imis excellentissima | из глубин, высшая |
 | hildegard-h3-1 | super sidera | над звёздами |
 | hildegard-h4-1 | atque amantissima | и больше всех любит |
@@ -408,6 +409,7 @@
 | shushtari-s1-1 | يَا سَاقِيَ الْقَوْمِ مِنْ شَذَاهُ | О кравчий собрания, от его аромата |
 | shushtari-s1-2 | يَا سَاقِيَ الْقَوْمِ مِنْ شَذَاهُ | О кравчий собрания, от его аромата |
 | shushtari-s2 | اَلْكُلُّ لَمَّا سَقَيْتَ تَاهُوا | Ты напоил — и все **забылись**. |
+| shushtari-s2b | اَلْكُلُّ لَمَّا سَقَيْتَ تَاهُوا | Ты напоил — и все **забылись**. |
 | nabulsi-n1 | عَيْنِي لِغَيْرِ جَمَالِكُمْ لَا تَنْظُرُ | Мой взор, кроме вашей красоты, не смотрит никуда, |
 | nabulsi-n2 | وَ سِوَاكُمْ فِي خَاطِرِي لَا يَخْطُرُ | и, кроме вас, ничто на ум мне не приходит. |
 | sabr-p1a | صَبَّرْتُ قَلْبِي | Я велел сердцу терпеть |
