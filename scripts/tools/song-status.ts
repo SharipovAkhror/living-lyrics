@@ -740,7 +740,7 @@ function videoNext(): Next {
       row: '9б',
       file: 'docs/methodology/09-instruments.md',
       command: `npm run song-status -- ${slug}`,
-      because: `Видео лежит в work/${slug}. Просмотр запускает Claude · Lead, не Grok. Задание — scripts/instrument_id/prompts/watch-video.md: скопируйте его в work/${slug}/watch-prompt.md, путь видео подставьте вместо {{VIDEO}}, запустите из корня репозитория (agy только через agy_run.py настройки владельца, он же пишет расход):\n  python ../agentic-os-live/ops/agents/agy_run.py . gemini-3.8-flash-high - 2350s scripts/instrument_id/schema/vision.json work/${slug}/watch-prompt.md --task "watch-video ${slug}"\nОтвет structured_output запишите в docs/analysis/${slug}/vision.json. Если вы не Claude · Lead, напишите в отчёте, что видео ждёт просмотра, и agy не вызывайте.`,
+      because: `Видео лежит в work/${slug}. Просмотр запускает Claude · Lead, не Grok. Задание — scripts/instrument_id/prompts/watch-video.md: скопируйте его в work/${slug}/watch-prompt.md, путь видео подставьте вместо {{VIDEO}}, запустите из корня репозитория (agy только через agy_run.py настройки владельца, он же пишет расход):\n  python "$(python -c "import sys; sys.path.insert(0, 'scripts/tools'); from aos_home import aos_home; print(aos_home(), end='')")/ops/agents/agy_run.py" . gemini-3.8-flash-high - 2350s scripts/instrument_id/schema/vision.json work/${slug}/watch-prompt.md --task "watch-video ${slug}"\nОтвет structured_output запишите в docs/analysis/${slug}/vision.json. Если вы не Claude · Lead, напишите в отчёте, что видео ждёт просмотра, и agy не вызывайте.`,
     };
   }
   if (!visionFrames && officialUrl && !videoStopped) {
