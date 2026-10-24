@@ -10,8 +10,10 @@ It needs no Claude session, so it survives chat rotation.
   and starts Grok on work/review/round<N>-brief.md.
 Briefs live in this checkout's work/review (not in git). The studio worktree defaults to
 ../living-lyrics-wt/studio-pass beside this repo. Every outcome is one line in
-work/review/launch_round.log. Never touches main. --dry-run fetches and runs the checks, then
-logs what it would do: no checkout, no brief written, nothing started.
+work/review/launch_round.log. Never touches main. GROK_BINARY must point to the compiled Grok
+executable (set it in the task that runs this script); without it a real run stops with exit 2.
+--dry-run runs the checks on the refs already fetched and prints what it would do: no fetch, no
+checkout, no log line, no brief written, nothing started.
 """
 import datetime
 import os
@@ -41,26 +43,25 @@ def git(*args: str) -> subprocess.CompletedProcess:
     return subprocess.run(['git', *args], cwd=WT, capture_output=True, text=True, encoding='utf-8')
 
 
+DRY = False
+
+
 def log(msg: str) -> None:
     line = f'{datetime.datetime.now().isoformat(timespec="seconds")} {msg}'
     print(line)
+    if DRY:
+        return
     LOG.parent.mkdir(parents=True, exist_ok=True)
     with LOG.open('a', encoding='utf-8') as f:
         f.write(line + '\n')
 
 
-def grok_env() -> dict[str, str]:
-    """GROK_BINARY from the environment, else the compiled trimmer, else leave it unset."""
+def grok_env() -> dict[str, str] | None:
+    """The environment for the bridge; GROK_BINARY must be set (a compiled .exe, forward slashes)."""
     env = dict(os.environ)
-    if env.get('GROK_BINARY'):
-        return env
-    local = os.environ.get('LOCALAPPDATA')
-    exe = Path(local) / 'aos' / 'bin' / 'grok_exec.exe' if local else None
-    if exe is not None and exe.is_file():
-        # The bridge spawns this with no shell and rejects backslashes.
-        env['GROK_BINARY'] = exe.as_posix()
-        return env
-    log('starting Grok without the tool trimming')
+    if not env.get('GROK_BINARY'):
+        return None
+    env['GROK_BINARY'] = env['GROK_BINARY'].replace('\\', '/')  # the bridge rejects backslashes
     return env
 
 
@@ -69,9 +70,14 @@ def start(brief: Path, dry: bool = False) -> None:
         log(f'brief missing: {brief}')
         return
     if dry:
-        log(f'would start Grok on {brief}')
+        note = '' if os.environ.get('GROK_BINARY') else ' (GROK_BINARY is not set: a real run would stop here)'
+        log(f'would start Grok on {brief}{note}')
         return
     env = grok_env()
+    if env is None:
+        log(f'GROK_BINARY is not set, Grok not started on {brief.name}; set it to the compiled Grok '
+            'executable (forward slashes) in the task that runs this script')
+        raise SystemExit(2)
     r = subprocess.run(['node', str(BRIDGE), 'run', '--background', '--write', '--model', 'grok-4.7',
                         '--effort', 'high', '--cwd', str(WT), '--prompt-file', str(brief)],
                        capture_output=True, text=True, encoding='utf-8', env=env)
@@ -104,13 +110,19 @@ def parse_args(argv: list[str]) -> tuple[int, Path, bool]:
 
 
 def main() -> int:
-    global WT
+    global WT, DRY
     n, WT, dry = parse_args(sys.argv)
+    DRY = dry
+    if not dry and grok_env() is None:
+        log(f'round {n}: GROK_BINARY is not set, nothing launched; set it to the compiled Grok '
+            'executable (forward slashes) in the task that runs this script')
+        return 2
     prev = n - 1
     if not WT.is_dir():
         log(f'round {n}: worktree {WT} is missing, nothing launched')
         return 1
-    git('fetch', '-q', 'origin')
+    if not dry:
+        git('fetch', '-q', 'origin')
     if git('status', '--porcelain').stdout.strip():
         log(f'round {n}: worktree {WT} has uncommitted changes, nothing launched')
         return 1
