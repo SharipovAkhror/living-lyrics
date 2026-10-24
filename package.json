@@ -21,6 +21,7 @@
     "audio:encrypt": "node scripts/tools/audio-crypt.mjs encrypt",
     "perf:iphone": "node scripts/perf/long-run.mjs",
     "perf:settings": "node scripts/perf/settings-trace.mjs",
+    "test:resume": "tsx src/player/resume.test.ts",
     "test:interactions": "node scripts/perf/interactions.mjs",
     "perf:frames": "node scripts/perf/frames.mjs",
     "gate": "node scripts/perf/gate.mjs",

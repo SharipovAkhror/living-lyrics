@@ -151,7 +151,10 @@ const browsers = { chromium: chrome, webkit: kit };
 const rows = [];
 
 for (const [browserName, deviceName, device] of profiles) {
+  if (args.browser && args.browser !== browserName) continue;
+  if (args.device && args.device !== deviceName) continue;
   for (const name of flows) {
+    if (args.flow && args.flow !== name) continue;
     const context = await browsers[browserName].newContext({ ...device, colorScheme: 'dark' });
     const page = await context.newPage();
     page.on('pageerror', (err) => console.error('pageerror', browserName, deviceName, name, err.message));
@@ -177,8 +180,11 @@ const file = `${outDir}/frames8.json`;
 writeFileSync(file, JSON.stringify(rows, null, 2));
 console.log(file);
 const phoneRows = rows.filter((row) => row.browser === 'chromium' && row.device === 'phone');
+const deskRows = rows.filter((row) => row.browser === 'chromium' && row.device === 'desktop');
 const hot = phoneRows.filter((row) => !(typeof row.p95 === 'number' && row.p95 <= 16.8));
-if (hot.length) {
-  console.error(`phone p95 over 16.8: ${hot.map((row) => `${row.flow} ${row.p95}`).join(', ')}`);
+const deskHot = deskRows.filter((row) => !(typeof row.p95 === 'number' && row.p95 <= 16.8));
+if (hot.length || deskHot.length) {
+  if (hot.length) console.error(`phone p95 over 16.8: ${hot.map((row) => `${row.flow} ${row.p95}`).join(', ')}`);
+  if (deskHot.length) console.error(`desktop p95 over 16.8: ${deskHot.map((row) => `${row.flow} ${row.p95}`).join(', ')}`);
   process.exit(1);
 }

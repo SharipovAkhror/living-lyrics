@@ -1,6 +1,7 @@
 // Library → song, settings, full text, scrub, and play. Chromium and WebKit, phone and desktop.
 // A black frame is a screenshot whose pixels are almost all near black, sampled while the route changes.
 // node scripts/perf/interactions.mjs --base http://127.0.0.1:4176
+import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { chromium, webkit } from 'playwright';
 import sharp from 'sharp';
@@ -812,7 +813,10 @@ async function runCore(page, label) {
         Number.isFinite(after) &&
         Math.abs(after - before) > 20 &&
         !!rail &&
-        (rail.d >= 1.7 || bloom.railH >= 7) &&
+        bloom.railH >= 5.5 &&
+        bloom.railH <= 8 &&
+        rail.d < 1.4 &&
+        bloom.dragging &&
         !!head &&
         head.a >= 1.2 &&
         bloom.previewAbove,
@@ -1262,6 +1266,17 @@ function normLine(value) {
 }
 
 const results = [];
+
+// T36. Five unit checks, named, so a miss is its own row.
+const resume = spawnSync('npx', ['tsx', 'src/player/resume.test.ts'], { encoding: 'utf8', shell: true });
+const resumeText = `${resume.stdout || ''}\n${resume.stderr || ''}`;
+for (const name of ['round-trip', 'rejects NaN', 'corrupt json', 'clear', 'storage throws']) {
+  const line = resumeText.split(/\r?\n/).find((row) => row.includes(`resume ${name}`));
+  const ok = !!line && line.startsWith('PASS ');
+  results.push({ name: `resume ${name}`, ok, detail: line || `missing (exit ${resume.status})` });
+  console.log(`${ok ? 'PASS' : 'FAIL'} resume ${name}${line ? '' : ' missing'}`);
+}
+
 const chrome = await chromium.launch();
 const kit = await webkit.launch();
 

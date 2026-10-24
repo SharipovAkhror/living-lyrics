@@ -76,6 +76,9 @@ const devices = [
   { name: 'ipad', viewport: { width: 820, height: 1180 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
   { name: 'desk', viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 },
   { name: 'wide', viewport: { width: 2560, height: 1440 }, deviceScaleFactor: 1 },
+  { name: 'w1680', viewport: { width: 1680, height: 1050 }, deviceScaleFactor: 1 },
+  { name: 'fhd', viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 },
+  { name: 'ultra', viewport: { width: 3440, height: 1440 }, deviceScaleFactor: 1 },
 ];
 
 const pages = [
@@ -585,6 +588,39 @@ if (sheetDir && !only) {
   await browser.close();
 }
 
+async function deskClips(browserName, browser) {
+  const desk = { name: 'desk', viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 };
+  const open = async (page) => {
+    await page.goto(`${base}/song/karitas?t=42`, { waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
+    await page.locator('.scrub-now').waitFor({ timeout: 8000 });
+  };
+  await record(browserName, browser, desk, 'desk-keys', async (page) => {
+    await open(page);
+    for (const key of ['Space', 'ArrowRight', 'ArrowLeft', 'KeyJ', 'KeyL', 'Home', 'Digit5', 'KeyC', 'KeyT', 'Shift+Slash', 'Escape']) {
+      await page.keyboard.press(key);
+      await page.waitForTimeout(280);
+    }
+  });
+  await record(browserName, browser, desk, 'desk-hover', async (page) => {
+    await open(page);
+    const box = await page.locator('.scrub-track').boundingBox();
+    if (!box) return;
+    for (let i = 0; i <= 8; i += 1) {
+      await page.mouse.move(box.x + box.width * (0.12 + i * 0.08), box.y + box.height / 2);
+      await page.waitForTimeout(220);
+    }
+  });
+  await record(browserName, browser, { name: 'resize', viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 }, 'desk-resize', async (page) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await open(page);
+    for (const [width, height] of [[1440, 900], [1680, 1050], [1920, 1080], [2560, 1440], [3440, 1440], [1440, 900]]) {
+      await page.setViewportSize({ width, height });
+      await page.waitForTimeout(450);
+    }
+  });
+}
+
 if (videoDir) {
   mkdirSync(videoDir, { recursive: true });
   // Both engines, phone 393×852, density 2. A desktop Chromium pass was the round-13 mismatch.
@@ -599,13 +635,19 @@ if (videoDir) {
   if (standIn) console.log('AUDIO_KEY missing: recorder serves silent audio of each song length');
   if (!engineOnly || engineOnly === 'chromium') {
     const chrome = await chromium.launch();
-    if (args.skipvideo !== 'true') await videosOf('chromium', chrome, phone);
+    if (args.skipvideo !== 'true') {
+      await videosOf('chromium', chrome, phone);
+      await deskClips('chromium', chrome);
+    }
     await contactsOf('chromium', chrome, phone);
     await chrome.close();
   }
   if (!engineOnly || engineOnly === 'webkit') {
     const kit = await webkit.launch();
-    if (args.skipvideo !== 'true') await videosOf('webkit', kit, phone);
+    if (args.skipvideo !== 'true') {
+      await videosOf('webkit', kit, phone);
+      await deskClips('webkit', kit);
+    }
     await contactsOf('webkit', kit, phone);
     await kit.close();
   }

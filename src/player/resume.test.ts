@@ -1,54 +1,74 @@
 /**
- * Run: npx tsx src/player/resume.test.ts
+ * Run: npm run test:resume
+ * Five named checks. test:interactions spawns this file and counts the lines.
  */
 import assert from 'node:assert/strict';
 import { clearResume, readResume, writeResume } from './resume';
 
+function install(storage: { getItem: (key: string) => string | null; setItem: (key: string, value: string) => void; removeItem: (key: string) => void }) {
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: storage });
+}
+
 const mem = new Map<string, string>();
-Object.defineProperty(globalThis, 'localStorage', {
-  configurable: true,
-  value: {
-    getItem: (key: string) => mem.get(key) ?? null,
-    setItem: (key: string, value: string) => {
-      mem.set(key, value);
-    },
-    removeItem: (key: string) => {
-      mem.delete(key);
-    },
+install({
+  getItem: (key) => mem.get(key) ?? null,
+  setItem: (key, value) => {
+    mem.set(key, value);
+  },
+  removeItem: (key) => {
+    mem.delete(key);
   },
 });
 
-writeResume('karitas', { t: 12.5, playing: true, savedAt: 100 });
-const got = readResume('karitas');
-assert.equal(got?.t, 12.5);
-assert.equal(got?.playing, true);
-assert.equal(got?.savedAt, 100);
+function check(name: string, fn: () => void) {
+  try {
+    fn();
+    console.log(`PASS resume ${name}`);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.log(`FAIL resume ${name} ${message}`);
+    process.exitCode = 1;
+  }
+}
 
-writeResume('one', { t: Number.NaN, playing: false, savedAt: 1 });
-assert.equal(readResume('one'), null);
-assert.equal(readResume('karitas')?.t, 12.5);
+check('round-trip', () => {
+  writeResume('karitas', { t: 12.5, playing: true, savedAt: 100 });
+  const got = readResume('karitas');
+  assert.equal(got?.t, 12.5);
+  assert.equal(got?.playing, true);
+  assert.equal(got?.savedAt, 100);
+});
 
-mem.set('living-lyrics.resume.v1', '{');
-assert.equal(readResume('karitas'), null);
+check('rejects NaN', () => {
+  writeResume('one', { t: Number.NaN, playing: false, savedAt: 1 });
+  assert.equal(readResume('one'), null);
+  assert.equal(readResume('karitas')?.t, 12.5);
+});
 
-writeResume('karitas', { t: 4, playing: false, savedAt: 8 });
-clearResume('karitas');
-assert.equal(readResume('karitas'), null);
+check('corrupt json', () => {
+  mem.set('living-lyrics.resume.v1', '{');
+  assert.equal(readResume('karitas'), null);
+});
 
-const throwing = {
-  getItem: () => {
-    throw new Error('denied');
-  },
-  setItem: () => {
-    throw new Error('quota');
-  },
-  removeItem: () => {
-    throw new Error('denied');
-  },
-};
-Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: throwing });
-assert.equal(readResume('karitas'), null);
-writeResume('karitas', { t: 3, playing: true, savedAt: 1 });
-clearResume('karitas');
+check('clear', () => {
+  writeResume('karitas', { t: 4, playing: false, savedAt: 8 });
+  clearResume('karitas');
+  assert.equal(readResume('karitas'), null);
+});
 
-console.log('resume ok');
+check('storage throws', () => {
+  install({
+    getItem: () => {
+      throw new Error('denied');
+    },
+    setItem: () => {
+      throw new Error('quota');
+    },
+    removeItem: () => {
+      throw new Error('denied');
+    },
+  });
+  assert.equal(readResume('karitas'), null);
+  writeResume('karitas', { t: 3, playing: true, savedAt: 1 });
+  clearResume('karitas');
+});

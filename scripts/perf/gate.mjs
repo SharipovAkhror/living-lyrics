@@ -89,6 +89,9 @@ try {
   ]);
   if (geometry.code !== 0) failed = true;
   if (motion.code !== 0) failed = true;
+  // After motion, so a desktop row cannot share the machine with D30.
+  const desktop = await run('node', ['scripts/perf/desktop.mjs', '--base', base], true);
+  if (desktop.code !== 0) failed = true;
 } catch (err) {
   console.error(err instanceof Error ? err.message : err);
   failed = true;

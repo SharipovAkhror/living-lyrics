@@ -32,7 +32,7 @@ const phone = (width, height, dsf) => ({
   userAgent: IPHONE_UA,
 });
 
-/** The 12 sheets named DESIGN_SHEETS. Theme is the one in the name. */
+/** Contact sheets plus the round-22 desktop sizes. Theme is the one in the name. */
 const SHEETS = [
   { id: 'iphone-dark-song', scheme: 'dark', path: '/song/karitas?t=42', device: phone(393, 852, 3), page: 'song' },
   { id: 'iphone-light-song', scheme: 'light', path: '/song/karitas?t=42', device: phone(393, 852, 3), page: 'song' },
@@ -52,6 +52,13 @@ const SHEETS = [
   { id: 'desk-light-library', scheme: 'light', path: '/', device: { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 }, page: 'library' },
   { id: 'wide-dark-library', scheme: 'dark', path: '/', device: { viewport: { width: 2560, height: 1440 }, deviceScaleFactor: 1 }, page: 'library' },
   { id: 'wide-light-song', scheme: 'light', path: '/song/karitas?t=42', device: { viewport: { width: 2560, height: 1440 }, deviceScaleFactor: 1 }, page: 'song' },
+  { id: 'w1680-dark-song', scheme: 'dark', path: '/song/karitas?t=42', device: { viewport: { width: 1680, height: 1050 }, deviceScaleFactor: 1 }, page: 'song' },
+  { id: 'w1680-light-song', scheme: 'light', path: '/song/karitas?t=42', device: { viewport: { width: 1680, height: 1050 }, deviceScaleFactor: 1 }, page: 'song' },
+  { id: 'fhd-dark-song', scheme: 'dark', path: '/song/karitas?t=42', device: { viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 }, page: 'song' },
+  { id: 'fhd-light-song', scheme: 'light', path: '/song/karitas?t=42', device: { viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 }, page: 'song' },
+  { id: 'wide-dark-song', scheme: 'dark', path: '/song/karitas?t=42', device: { viewport: { width: 2560, height: 1440 }, deviceScaleFactor: 1 }, page: 'song' },
+  { id: 'ultra-dark-song', scheme: 'dark', path: '/song/karitas?t=42', device: { viewport: { width: 3440, height: 1440 }, deviceScaleFactor: 1 }, page: 'song' },
+  { id: 'ultra-light-song', scheme: 'light', path: '/song/karitas?t=42', device: { viewport: { width: 3440, height: 1440 }, deviceScaleFactor: 1 }, page: 'song' },
 ];
 
 function measureInPage() {
@@ -161,7 +168,7 @@ if (write || !existsSync(baselinePath)) {
   }
   mkdirSync('tests/baselines', { recursive: true });
   const body = { tolerances: { positionPx: POS, sizeRatio: SIZE }, sheets };
-  writeFileSync(baselinePath, JSON.stringify(body));
+  writeFileSync(baselinePath, `${JSON.stringify(body, null, 2)}\n`);
   console.log(`\nwrote ${baselinePath}`);
   if (write) process.exit(0);
 }
