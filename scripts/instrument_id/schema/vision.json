@@ -4,6 +4,10 @@
   "additionalProperties": false,
   "required": ["frames"],
   "properties": {
+    "video_type": {
+      "type": "string",
+      "enum": ["concert", "lyric_video", "static", "other"]
+    },
     "frames": {
       "type": "array",
       "items": {

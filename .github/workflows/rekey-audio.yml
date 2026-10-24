@@ -1,0 +1,71 @@
+# Re-encrypt content/audio-enc with the secret AUDIO_KEY_NEW and push branch rekey/audio.
+# Plaintext is written only under the runner temp directory and deleted before commit.
+# Nothing is uploaded as an artifact. The old ciphertext stays on main for rollback.
+# workflow_dispatch is available only after this file is on the default branch.
+name: rekey-audio
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: rekey-audio
+  cancel-in-progress: false
+jobs:
+  rekey:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Re-encrypt and verify sha256
+        env:
+          AUDIO_KEY: ${{ secrets.AUDIO_KEY }}
+          AUDIO_KEY_NEW: ${{ secrets.AUDIO_KEY_NEW }}
+        run: node scripts/tools/rotate-audio-key.mjs --rekey-runner
+      - name: Commit and push rekey/audio
+        run: |
+          set -euo pipefail
+          export GIT_TERMINAL_PROMPT=0
+          git config user.name "living-lyrics-actions"
+          git config user.email "actions@users.noreply.github.com"
+          status=$(git status --porcelain --untracked-files=all)
+          if printf '%s\n' "$status" | grep -E '\.(m4a|mp3|flac|wav|ogg|aac)$'; then
+            echo "В дереве есть открытая запись. Коммит отменён."
+            exit 1
+          fi
+          git checkout -B rekey/audio
+          git add -- content/audio-enc
+          staged=$(git diff --cached --name-only)
+          if [ -z "$staged" ]; then
+            echo "Шифр не изменился. Коммит отменён."
+            exit 1
+          fi
+          # A pipe, not a heredoc: YAML indentation must not become part of the path.
+          printf '%s\n' "$staged" | while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            case "$f" in
+              content/audio-enc/*.enc|content/audio-enc/*/*.enc) ;;
+              *)
+                echo "В индекс попал путь не из шифра. Коммит отменён."
+                exit 1
+                ;;
+            esac
+          done || exit 1
+          git commit -m "Re-encrypt recordings with the new audio key"
+          if git push origin HEAD:rekey/audio; then
+            exit 0
+          fi
+          echo "Не удалось отправить ветку rekey/audio обычным push."
+          echo "Историю main не переписываю. Если ветка осталась от старой попытки, её удаляет LL · Main, затем команду запускают снова."
+          exit 1
