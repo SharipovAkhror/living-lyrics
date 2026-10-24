@@ -1,14 +1,15 @@
-"""Lyrics burned into an official video: save one frame per caption, with its time.
+"""Cheap check of on-screen captions: save one frame per change, with its time.
 
     python3 scripts/pipeline/lyric_frames.py <slug> [--video path] [--band 0.62] [--threshold 0.06]
 
-Many official videos show the original text and an English translation on screen. That text comes
-from the artist, so it is the best source for what is sung, and the moment each caption appears is
-a good first guess for when the line starts. The script watches the lower part of the picture
+Many official videos show the original text and a translation on screen. The moment each caption
+appears is a first guess for when the line starts. The script watches the lower part of the picture
 (from --band of the height down), keeps a frame whenever that part changes (ffmpeg scene score
 above --threshold), and writes work/<slug>/lyric-frames/<seconds>.jpg plus index.json.
-The agent then reads the frames (they are images: look at them) and copies the text into canon.md.
-The video comes from the owner as a file, like the audio (cloud servers cannot download from YouTube).
+
+Any video file is enough. The default is work/<slug>/video.* (the file the route downloaded).
+Pass --video for a file under another name. The frames are not committed. This script does not
+read letters: the agent looks at the images, and Gemini copies the text with read-captions.md.
 """
 from __future__ import annotations
 
@@ -21,10 +22,28 @@ from pathlib import Path
 from common import work_dir
 
 
+VIDEO_EXTS = {'.mp4', '.mkv', '.webm', '.mov', '.m4v'}
+
+
+def find_video(slug: str, explicit: Path | None) -> Path | None:
+    """A video.* download, or any video file in the song's work folder, or --video."""
+    if explicit is not None:
+        return explicit if explicit.is_file() else None
+    folder = work_dir(slug)
+    named = [path for path in sorted(folder.glob('video.*')) if path.is_file() and path.suffix.lower() != '.json']
+    if named:
+        return named[0]
+    others = [path for path in sorted(folder.iterdir()) if path.is_file() and path.suffix.lower() in VIDEO_EXTS]
+    return others[0] if others else None
+
+
 def main(slug: str, video: Path | None, band: float, threshold: float) -> None:
-    video = video or next(iter(sorted(work_dir(slug).glob('video.*'))), None)
-    if not video or not Path(video).exists():
-        raise SystemExit('No video: pass --video <file> (the owner sends it like the audio).')
+    video = find_video(slug, video)
+    if video is None:
+        raise SystemExit(
+            'No video file. Use work/<slug>/video.* from the route download, '
+            'or pass --video <file>. Any video file is enough.'
+        )
     out = work_dir(slug) / 'lyric-frames'
     out.mkdir(parents=True, exist_ok=True)
     for old in out.glob('*.jpg'):
