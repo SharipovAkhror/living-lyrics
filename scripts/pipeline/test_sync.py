@@ -256,6 +256,43 @@ def test_second_span() -> None:
     check('a phrase outside its section is not dragged back', abs(t0 - 124.54) < 1e-6 and abs(t1 - 130.47) < 1e-6, f'{t0:.2f}–{t1:.2f}')
 
 
+def test_witness_window() -> None:
+    # The same numbers second_span pads by 2 s. Cue mode must stay on the subtitle.
+    phrase = align.line_witness_window(
+        'phrase', 108.87, 112.78, None, None, 100.0, 140.0, 580.0,
+        108.87, 112.78, 100.0, 120.0, 120.0, True)
+    padded = align.second_span(108.87, 112.78, 100.0, 140.0, 580.0, 100.0, 120.0)
+    check('phrase mode still keeps the 2 s pad', phrase == padded, str(phrase))
+    cue = align.line_witness_window(
+        'cue', 108.87, 112.78, None, None, 100.0, 140.0, 580.0,
+        108.87, 112.78, 100.0, 120.0, 120.0, True)
+    check('cue mode does not start 2 s before the subtitle',
+          cue is not None and abs(cue[0] - (108.87 - align.CUE_LEAD)) < 1e-9 and cue[0] > 106.87, f'{cue}')
+    check('cue mode ends on the subtitle tail',
+          cue is not None and abs(cue[1] - (112.78 + align.CUE_TAIL)) < 1e-9, f'{cue}')
+    # An open line. Phrase mode runs to the next cue. Cue mode stops at the tail.
+    wide = align.line_witness_window(
+        'phrase', 10.0, 12.0, None, (25.0, 28.0), 0.0, 40.0, 580.0,
+        10.0, 12.0, None, None, 25.0, False)
+    tight = align.line_witness_window(
+        'cue', 10.0, 12.0, None, (25.0, 28.0), 0.0, 40.0, 580.0,
+        10.0, 12.0, None, None, 25.0, False)
+    check('an open line in phrase mode hears up to the next cue',
+          wide is not None and abs(wide[1] - 25.0) < 1e-9, str(wide))
+    check('an open line in cue mode does not hear up to the next cue',
+          tight is not None and abs(tight[1] - (12.0 + align.CUE_TAIL)) < 1e-9 and tight[1] < 25.0, str(tight))
+    back = align.line_witness_window(
+        'cue', 108.87, 112.78, (106.0, 108.87), (112.78, 116.0), 100.0, 140.0, 580.0,
+        108.87, 112.78, 108.87, 112.78, 112.78, True)
+    check('back-to-back cue mode stays within the neighbour overlap',
+          back is not None and back[0] >= 108.87 - align.CUE_OVERLAP - 1e-9
+          and back[1] <= 112.78 + align.CUE_OVERLAP + 1e-9, str(back))
+    missing = align.line_witness_window(
+        'cue', None, None, None, None, 0.0, 10.0, 580.0,
+        1.0, 2.0, None, None, None, False)
+    check('an open line with no cue has no witness window', missing is None, str(missing))
+
+
 def test_cue_window() -> None:
     # Back-to-back cues. The window may enter a neighbour by the overlap and no further.
     # Draft s/e are not an argument: the cue, its neighbours and the section fence are.
@@ -2388,6 +2425,7 @@ def main() -> int:
     test_song_status()
     test_build_proof_independent()
     test_second_span()
+    test_witness_window()
     test_cue_window()
     test_cue_times_stay()
     test_placement_and_cue_lock()
