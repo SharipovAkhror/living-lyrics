@@ -2,6 +2,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState, type PointerEvent 
 import { createPortal } from 'react-dom';
 import { Icon } from './icons';
 import { GlassLayers } from './glass/Glass';
+import { SHEET_SHELL_MS } from '@/scene/cover';
 import { SHEET_CLOSE, SHEET_OPEN, springSettled, stepSpring, type SpringState } from './spring';
 
 function motionOff() {
@@ -11,6 +12,7 @@ function motionOff() {
 
 function clearSheetChrome() {
   delete document.documentElement.dataset.sheet;
+  delete document.documentElement.dataset.cover;
   document.documentElement.classList.remove('is-sheet-drag');
   document.documentElement.style.removeProperty('--sheet-p');
 }
@@ -54,6 +56,7 @@ export function Sheet({
   size = 'medium',
   onBack,
   backLabel,
+  plain = false,
 }: {
   open: boolean;
   onClose: () => void;
@@ -62,6 +65,8 @@ export function Sheet({
   size?: 'medium' | 'large';
   onBack?: () => void;
   backLabel?: string;
+  /** First frame of an opening sheet: the shell only, no glass layers. */
+  plain?: boolean;
 }) {
   const [render, setRender] = useState(open);
   const [shown, setShown] = useState(false);
@@ -83,6 +88,8 @@ export function Sheet({
     pointer: number;
   } | null>(null);
   const titleId = useId();
+  const plainRef = useRef(plain);
+  plainRef.current = plain;
   openRef.current = open;
 
   const remember = () => {
@@ -96,15 +103,32 @@ export function Sheet({
     // Negative y is the upward rubber-band. The scrim follows only the downward travel.
     const travel = y;
     el.style.transform = `translate3d(0, ${travel.toFixed(2)}px, 0)`;
+    // The shell frame is a flat fill. Blur, shadow and the glass layers come
+    // with the rows; they are what made the first cast frame late.
+    if (plainRef.current) {
+      el.dataset.shell = '1';
+      el.style.background = 'var(--sheet-fallback)';
+      el.style.boxShadow = 'none';
+      el.style.backdropFilter = 'none';
+      el.style.setProperty('-webkit-backdrop-filter', 'none');
+    } else if (el.dataset.shell) {
+      delete el.dataset.shell;
+      el.style.removeProperty('background');
+      el.style.removeProperty('box-shadow');
+      el.style.removeProperty('backdrop-filter');
+      el.style.removeProperty('-webkit-backdrop-filter');
+    }
     const p = Math.max(0, Math.min(1, 1 - Math.max(0, travel) / height.current));
-    if (backdrop.current) backdrop.current.style.opacity = p.toFixed(3);
+    // The scrim is a full-viewport blend. It waits until the shell's frame has
+    // been painted; darkening the song on the tap frame was the slow paint.
+    if (backdrop.current) backdrop.current.style.opacity = plainRef.current ? '0' : p.toFixed(3);
     const root = document.documentElement;
     // One progress for every device. The song reads it as a transform only.
     root.style.setProperty('--sheet-p', p.toFixed(3));
-    // Stay covered for the whole open, including the first frame where the sheet is still off-screen.
-    // Clearing here used to wake the sky under the blur while the sheet was travelling.
-    if (openRef.current || p > 0.02) root.dataset.sheet = '1';
-    else delete root.dataset.sheet;
+    // The page scale waits until the frame after the shell is drawn. On the tap
+    // frame it pushed WebKit's first paint past 100 ms. Once the cover is on,
+    // it stays until the sheet has left: clearing it mid-flight woke the sky.
+    if (!openRef.current && p <= 0.02) delete root.dataset.sheet;
     // Refraction waits until the spring has arrived. Toggling it mid-flight resamples every frame.
     const settled = openRef.current && travel >= 0 && travel < 0.8;
     if (el.classList.contains('is-settled') !== settled) el.classList.toggle('is-settled', settled);
@@ -151,14 +175,26 @@ export function Sheet({
 
   useEffect(() => {
     if (!open) return;
-    document.documentElement.dataset.sheet = '1';
     setRender(true);
+    const id = window.setTimeout(() => {
+      document.documentElement.dataset.sheet = '1';
+    }, SHEET_SHELL_MS);
+    return () => window.clearTimeout(id);
   }, [open]);
 
   useLayoutEffect(() => {
     if (!render || !panel.current) return;
     const el = panel.current;
     remember();
+    // Phone sheets are a dense fill. The lens still blurred the song behind it,
+    // and that sample was on the tap frame.
+    if (document.documentElement.dataset.phone === '1') {
+      const lens = el.querySelector('.lg-lens');
+      if (lens instanceof HTMLElement) {
+        lens.style.backdropFilter = 'none';
+        lens.style.setProperty('-webkit-backdrop-filter', 'none');
+      }
+    }
     const away = () => height.current + 48;
     const ro = new ResizeObserver(() => remember());
     ro.observe(el);
@@ -186,7 +222,12 @@ export function Sheet({
         // puts the bottom edge on that first frame instead of springing up to it.
         const awayFrom = away();
         const parked = height.current > 80 ? parkBelowCard(el) : null;
-        const from = parked != null && parked >= 0 && parked < awayFrom ? parked : awayFrom;
+        let from = parked != null && parked >= 0 && parked < awayFrom ? parked : awayFrom;
+        // Rows arrive after SHEET_SHELL_MS, so this shell is short and `away`
+        // would park it entirely past the bottom edge. The tap's first paint
+        // has to cross the player band (D28). A 48 px strip stays on screen.
+        const onScreen = Math.max(0, height.current - 48);
+        if (from > onScreen) from = onScreen;
         state.current = { x: from, v: 0 };
         paint(from);
       }
@@ -219,6 +260,19 @@ export function Sheet({
   }, [open, onClose]);
 
   useEffect(() => () => clearSheetChrome(), []);
+
+  // The shell is short and anchored to the bottom. Rows grow it upward on the
+  // same translate, so the commit itself can cross the note. The spring only
+  // parks on the next frame. Hold the top under the card before paint (D5, D22).
+  useLayoutEffect(() => {
+    const el = panel.current;
+    if (!el || !openRef.current) return;
+    remember();
+    const minY = parkBelowCard(el);
+    if (minY == null || state.current.x >= minY) return;
+    state.current = { x: minY, v: 0 };
+    paint(minY);
+  });
 
   if (!render) return null;
 
@@ -309,7 +363,7 @@ export function Sheet({
         onPointerUp={onUp}
         onPointerCancel={onUp}
       >
-        <GlassLayers />
+        {plain ? null : <GlassLayers />}
         <div className="sheet-head">
           <div className="sheet-grabber" />
           <div className="sheet-titlebar">

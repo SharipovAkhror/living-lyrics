@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Group, Row, Segmented, Sheet, Slider, Switch } from '@/ui/controls';
+import { SHEET_SHELL_MS } from '@/scene/cover';
 import { Icon } from '@/ui/icons';
 import { loadFontLabels, ORIGINAL_FONTS, PERSIAN_FONTS, TRANSLATION_FONTS, type FontFace } from '@/app/fontCatalog';
 import { effectiveMotion, setSettings, type InstrumentStyle, type LineEntrance, type MotionPref, type Settings, type TextAlign, type ThemePref } from '@/app/settings';
@@ -55,6 +56,18 @@ export function SettingsSheet({
   has: { translit: boolean; alt: boolean; persian: boolean; arab: boolean };
 }) {
   const [page, setPage] = useState<Page>('home');
+  // Rows and glass wait one frame so the tap paints the shell only.
+  // The sheet stays mounted after it closes, so a later open has to drop
+  // back to the shell in the same render that `open` turns true.
+  const [full, setFull] = useState(false);
+  const wasOpen = useRef(false);
+  if (open && !wasOpen.current && full) setFull(false);
+  else wasOpen.current = open;
+  useEffect(() => {
+    if (!open) return;
+    const id = window.setTimeout(() => setFull(true), SHEET_SHELL_MS);
+    return () => window.clearTimeout(id);
+  }, [open]);
   const [leaving, setLeaving] = useState<Page | null>(null);
   const [dir, setDir] = useState<1 | -1>(1);
   const input = useRef<HTMLInputElement>(null);
@@ -134,8 +147,8 @@ export function SettingsSheet({
   const fontLine = fontSummary(settings, has.persian);
 
   return (
-    <Sheet open={open} onClose={close} title={PAGE_TITLE[page]} size="large" onBack={back} backLabel={page === 'eq' ? 'Звук' : 'Настройки'}>
-      <div className={`set-stage${dir < 0 ? ' is-back' : ''}`}>
+    <Sheet open={open} plain={!full} onClose={close} title={PAGE_TITLE[page]} size="large" onBack={back} backLabel={page === 'eq' ? 'Звук' : 'Настройки'}>
+      {full && <div className={`set-stage${dir < 0 ? ' is-back' : ''}`}>
         {shown.map((p) => (
           <div key={p} className={`set-page${p === page ? ' is-enter' : ' is-leave'}`}>
       {p === 'home' && (
@@ -467,7 +480,7 @@ export function SettingsSheet({
       )}
           </div>
         ))}
-      </div>
+      </div>}
     </Sheet>
   );
 }

@@ -20,7 +20,7 @@ import { preloadMode, readNetHint } from '@/player/preload';
 import { RESUME_AUTO_MS, readResume, writeResume } from '@/player/resume';
 import { Scrubber } from '@/player/Scrubber';
 import { Scene } from '@/scene/Scene';
-import { coverStage } from '@/scene/cover';
+import { SHEET_SHELL_MS, coverStage } from '@/scene/cover';
 import { fitNote } from '@/scene/noteFit';
 import { Field } from '@/scene/Field';
 import { LEAD, flowPosition, planFlow } from '@/scene/flow';
@@ -1124,7 +1124,12 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       if (shortLand && settings.commentOpen) setSettings({ commentOpen: false });
       // The note stays mounted and hides in the same commit as the sheet.
       // Unmounting first collapsed --player-h and the lyrics jumped.
-      coverStage();
+      // The sky stops with the rows. Stopping it on the tap repainted the
+      // stage into the shell's cast frame and that frame arrived later.
+      window.setTimeout(() => {
+        if (!document.querySelector('.sheet')) return;
+        coverStage();
+      }, SHEET_SHELL_MS);
       if (!tab) {
         setSheet(name);
         return;
@@ -1458,7 +1463,19 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               <Icon name="list.bullet" size={24} />
               <span className="util-label">Весь текст</span>
             </button>
-            <button className={`util${sheet === 'settings' ? ' is-live-task' : ''}`} aria-label="Настройки" aria-pressed={sheet === 'settings'} onClick={(e) => openSheet('settings', e.currentTarget)}>
+            <button
+              className={`util${sheet === 'settings' ? ' is-live-task' : ''}`}
+              aria-label="Настройки"
+              aria-pressed={sheet === 'settings'}
+              onPointerDown={(e) => {
+                // The press, not the click that follows it. A frame can be
+                // committed between the two, and on WebKit that frame was the
+                // one that arrived inside 100 ms — without the sheet.
+                if (e.button !== 0) return;
+                openSheet('settings', e.currentTarget);
+              }}
+              onClick={(e) => openSheet('settings', e.currentTarget)}
+            >
               <Icon name="slider.horizontal.3" size={24} />
               <span className="util-label">Настройки</span>
             </button>
