@@ -3,21 +3,53 @@
   "slug": "alive",
   "title": "Alive",
   "artist": "Sami Yusuf",
-  "featuring": ["Homayoun Shajarian"],
-  "release": { "year": 2025, "label": "Andante Records", "album": "Alive" },
-  "version": { "kind": "single", "label": "Сингл Alive, 2025" },
-  "languages": ["fa", "en", "tr"],
-  "poets": [{ "name": "Rumi", "lang": "fa" }],
-  "credits": [
-    { "role": "композитор", "name": "Sami Yusuf" },
-    { "role": "продюсер", "name": "Sami Yusuf" },
-    { "role": "слова", "name": "Rumi" }
+  "featuring": [
+    "Homayoun Shajarian"
   ],
-  "duration": 1,
+  "release": {
+    "year": 2025,
+    "label": "Andante Records",
+    "album": "Alive"
+  },
+  "version": {
+    "kind": "single",
+    "label": "Сингл Alive, 2025"
+  },
+  "languages": [
+    "fa",
+    "en",
+    "tr"
+  ],
+  "poets": [
+    {
+      "name": "Rumi",
+      "lang": "fa"
+    }
+  ],
+  "credits": [
+    {
+      "role": "композитор",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "продюсер",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "слова",
+      "name": "Rumi"
+    }
+  ],
+  "duration": 686.34,
   "palette": {
     "accent": "#032845",
     "accentDark": "#97BBD8",
-    "field": ["#032845", "#5FD1D9", "#14694D", "#B2804E"]
+    "field": [
+      "#032845",
+      "#5FD1D9",
+      "#14694D",
+      "#B2804E"
+    ]
   },
   "cover": {
     "kind": "official",
@@ -26,8 +58,22 @@
     "retrieved": "2026-10-24",
     "releaseTitle": "Alive - EP"
   },
-  "audio": { "status": "missing" },
-  "timing": { "status": "draft", "method": "none" },
+  "audio": {
+    "status": "ready",
+    "high": "/audio/alive/high.m4a",
+    "peaks": "/audio/alive/peaks.json",
+    "gainDb": -4.4,
+    "provenance": {
+      "kind": "file",
+      "ref": "https://www.youtube.com/watch?v=okICm2EWb7U",
+      "retrieved": "2026-10-24",
+      "sha256": "8aab11e1450edffd37b51af56b5340ab29557b1dde1992dc2a184e0f3c3a0dfe"
+    }
+  },
+  "timing": {
+    "status": "draft",
+    "method": "none"
+  },
   "review": [
     "официальные субтитры: пусто",
     "Языки fa, en и tr записаны по объявлению автора: персидский оригинал и рядом турецкий и английский переводы. Что из этого поётся, а что только на экране, не установлено. В lyrics.json вокальных строк нет.",
