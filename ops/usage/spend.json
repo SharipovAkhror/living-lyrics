@@ -1,0 +1,492 @@
+{
+  "at": "2026-10-24T15:35:54Z",
+  "unit": "Claude cost = API-price-weighted tokens, Opus-input units (see claude_review.py)",
+  "calibration": {
+    "proWeek": 100915099.74,
+    "pro5h": 11748854.52,
+    "source": "proWeek = claude cost since 2026-10-23T04:00:00 / (seven_day 54% / 100); pro5h = claude cost since 2026-10-24T15:00:00 / (five_hour 33% / 100)"
+  },
+  "claude": {
+    "week": {
+      "since": "2026-10-23T04:00:00",
+      "cost": 54494153.86,
+      "tokens": 376482988,
+      "calls": 2300,
+      "pctOfWeek": 54.0,
+      "byProject": {
+        "agentic-os-live": {
+          "cost": 30322631.89,
+          "tokens": 208083370,
+          "calls": 1381,
+          "pct": 55.64
+        },
+        "living-lyrics": {
+          "cost": 23776469.07,
+          "tokens": 166188214,
+          "calls": 899,
+          "pct": 43.63
+        },
+        "other": {
+          "cost": 395052.9,
+          "tokens": 2211404,
+          "calls": 20,
+          "pct": 0.72
+        }
+      },
+      "byChat": {
+        "AOS · Main": {
+          "project": "agentic-os-live",
+          "cost": 9485550.73,
+          "tokens": 63014760,
+          "pct": 17.41,
+          "tokensPct": 16.74,
+          "calls": 408,
+          "sessions": 4
+        },
+        "AOS · Ops": {
+          "project": "agentic-os-live",
+          "cost": 6108044.06,
+          "tokens": 42228634,
+          "pct": 11.21,
+          "tokensPct": 11.22,
+          "calls": 272,
+          "sessions": 2
+        },
+        "AOS · PC": {
+          "project": "agentic-os-live",
+          "cost": 1067291.8,
+          "tokens": 5590757,
+          "pct": 1.96,
+          "tokensPct": 1.48,
+          "calls": 53,
+          "sessions": 2
+        },
+        "AOS · Tech": {
+          "project": "agentic-os-live",
+          "cost": 13661745.3,
+          "tokens": 97249219,
+          "pct": 25.07,
+          "tokensPct": 25.83,
+          "calls": 648,
+          "sessions": 5
+        },
+        "LL · Business": {
+          "project": "living-lyrics",
+          "cost": 234225.6,
+          "tokens": 6632193,
+          "pct": 0.43,
+          "tokensPct": 1.76,
+          "calls": 22,
+          "sessions": 1
+        },
+        "LL · Main": {
+          "project": "living-lyrics",
+          "cost": 8718136.77,
+          "tokens": 57100125,
+          "pct": 16.0,
+          "tokensPct": 15.17,
+          "calls": 324,
+          "sessions": 4
+        },
+        "LL · Ops": {
+          "project": "living-lyrics",
+          "cost": 803930.8,
+          "tokens": 4231291,
+          "pct": 1.48,
+          "tokensPct": 1.12,
+          "calls": 26,
+          "sessions": 1
+        },
+        "LL · Probe": {
+          "project": "living-lyrics",
+          "cost": 19729.87,
+          "tokens": 108713,
+          "pct": 0.04,
+          "tokensPct": 0.03,
+          "calls": 2,
+          "sessions": 2
+        },
+        "LL · Site": {
+          "project": "living-lyrics",
+          "cost": 5166216.73,
+          "tokens": 32067201,
+          "pct": 9.48,
+          "tokensPct": 8.52,
+          "calls": 233,
+          "sessions": 2
+        },
+        "LL · Tech": {
+          "project": "living-lyrics",
+          "cost": 8834229.3,
+          "tokens": 66048691,
+          "pct": 16.21,
+          "tokensPct": 17.54,
+          "calls": 292,
+          "sessions": 2
+        },
+        "Восстановление чатов после перезагрузки": {
+          "project": "other",
+          "cost": 395052.9,
+          "tokens": 2211404,
+          "pct": 0.72,
+          "tokensPct": 0.59,
+          "calls": 20,
+          "sessions": 1
+        }
+      },
+      "manager": {
+        "AOS · Main": {
+          "project": "agentic-os-live",
+          "cost": 9485550.73,
+          "tokens": 63014760,
+          "pct": 17.41,
+          "tokensPct": 16.74,
+          "calls": 408,
+          "sessions": 4
+        },
+        "LL · Main": {
+          "project": "living-lyrics",
+          "cost": 8718136.77,
+          "tokens": 57100125,
+          "pct": 16.0,
+          "tokensPct": 15.17,
+          "calls": 324,
+          "sessions": 4
+        }
+      },
+      "overhead": {
+        "sessionStarts": {
+          "cost": 878752.75,
+          "calls": 9
+        },
+        "idleWakes": {
+          "cost": 4645687.5,
+          "calls": 22
+        }
+      }
+    },
+    "day": {
+      "since": "2026-10-23T15:35:54",
+      "cost": 32969004.76,
+      "tokens": 220334101,
+      "calls": 1467,
+      "pctOfWeek": 32.67,
+      "byProject": {
+        "agentic-os-live": {
+          "cost": 25664951.59,
+          "tokens": 174822703,
+          "calls": 1144,
+          "pct": 77.85
+        },
+        "living-lyrics": {
+          "cost": 6909000.27,
+          "tokens": 43299994,
+          "calls": 303,
+          "pct": 20.96
+        },
+        "other": {
+          "cost": 395052.9,
+          "tokens": 2211404,
+          "calls": 20,
+          "pct": 1.2
+        }
+      },
+      "byChat": {
+        "AOS · Main": {
+          "project": "agentic-os-live",
+          "cost": 8530670.18,
+          "tokens": 56491860,
+          "pct": 25.87,
+          "tokensPct": 25.64,
+          "calls": 351,
+          "sessions": 4
+        },
+        "AOS · Ops": {
+          "project": "agentic-os-live",
+          "cost": 5393042.06,
+          "tokens": 37482880,
+          "pct": 16.36,
+          "tokensPct": 17.01,
+          "calls": 230,
+          "sessions": 2
+        },
+        "AOS · PC": {
+          "project": "agentic-os-live",
+          "cost": 755453.4,
+          "tokens": 4201160,
+          "pct": 2.29,
+          "tokensPct": 1.91,
+          "calls": 37,
+          "sessions": 2
+        },
+        "AOS · Tech": {
+          "project": "agentic-os-live",
+          "cost": 10985785.95,
+          "tokens": 76646803,
+          "pct": 33.32,
+          "tokensPct": 34.79,
+          "calls": 526,
+          "sessions": 5
+        },
+        "LL · Main": {
+          "project": "living-lyrics",
+          "cost": 2935915.47,
+          "tokens": 18596361,
+          "pct": 8.91,
+          "tokensPct": 8.44,
+          "calls": 136,
+          "sessions": 2
+        },
+        "LL · Site": {
+          "project": "living-lyrics",
+          "cost": 3973084.8,
+          "tokens": 24703633,
+          "pct": 12.05,
+          "tokensPct": 11.21,
+          "calls": 167,
+          "sessions": 2
+        },
+        "Восстановление чатов после перезагрузки": {
+          "project": "other",
+          "cost": 395052.9,
+          "tokens": 2211404,
+          "pct": 1.2,
+          "tokensPct": 1.0,
+          "calls": 20,
+          "sessions": 1
+        }
+      },
+      "manager": {
+        "AOS · Main": {
+          "project": "agentic-os-live",
+          "cost": 8530670.18,
+          "tokens": 56491860,
+          "pct": 25.87,
+          "tokensPct": 25.64,
+          "calls": 351,
+          "sessions": 4
+        },
+        "LL · Main": {
+          "project": "living-lyrics",
+          "cost": 2935915.47,
+          "tokens": 18596361,
+          "pct": 8.91,
+          "tokensPct": 8.44,
+          "calls": 136,
+          "sessions": 2
+        }
+      },
+      "overhead": {
+        "sessionStarts": {
+          "cost": 1135829.5,
+          "calls": 9
+        },
+        "idleWakes": {
+          "cost": 2856025.0,
+          "calls": 13
+        }
+      }
+    }
+  },
+  "grok": {
+    "week": {
+      "since": "2026-10-23T16:08:00",
+      "tokens": 92192751,
+      "pctUsed": 9,
+      "byTask": {
+        "studio-pass": 61529767,
+        "t35": 6757832,
+        "t36": 9350526,
+        "t48": 10682673,
+        "t48s1": 3871953
+      },
+      "byProject": {
+        "living-lyrics": 68287599,
+        "other": 23905152
+      }
+    },
+    "day": {
+      "since": "2026-10-23T15:35:54",
+      "tokens": 92192751,
+      "pctUsed": 9.0,
+      "byTask": {
+        "studio-pass": 61529767,
+        "t35": 6757832,
+        "t36": 9350526,
+        "t48": 10682673,
+        "t48s1": 3871953
+      },
+      "byProject": {
+        "living-lyrics": 68287599,
+        "other": 23905152
+      }
+    }
+  },
+  "agy": {
+    "quota": {
+      "gemini": {
+        "source": "agy /usage",
+        "at": "2026-10-24T15:22:39Z",
+        "weeklyRemaining": 100,
+        "fiveHourRemaining": 99.88,
+        "fiveHourResetIn": "1h 9m"
+      },
+      "claude-gpt": {
+        "source": "agy /usage",
+        "at": "2026-10-24T15:22:39Z",
+        "weeklyRemaining": 0,
+        "fiveHourRemaining": 100,
+        "weeklyResetIn": "120h 46m"
+      }
+    },
+    "runs": {
+      "day": [
+        {
+          "ts": "2026-10-23T19:00:19Z",
+          "task": "listen9-witness",
+          "model": "gemini-3.8-flash-high",
+          "seconds": 291.8,
+          "tokens": 130397,
+          "status": "SUCCESS",
+          "runId": "79b27b629f23",
+          "worktree": "C:\\Users\\User\\Documents\\GitHub\\living-lyrics\\.claude\\worktrees\\listen9"
+        },
+        {
+          "ts": "2026-10-23T19:04:52Z",
+          "task": "listen9-r1",
+          "model": "claude-sonnet-5-5-medium",
+          "seconds": 63.2,
+          "tokens": 66507,
+          "status": "ERROR",
+          "runId": "6d276c7cb538",
+          "worktree": "C:\\Users\\User\\Documents\\GitHub\\living-lyrics\\.claude\\worktrees\\listen9",
+          "quotaGroup": "claude-gpt",
+          "weeklyBefore": 5.28,
+          "weeklyAfter": 0.26,
+          "fiveHourBefore": 100,
+          "fiveHourAfter": 90.03
+        },
+        {
+          "ts": "2026-10-24T11:32:26Z",
+          "task": "B3 r2 screenshots yes/no",
+          "model": "gemini-3.8-flash-low",
+          "seconds": 8.9,
+          "tokens": 23009,
+          "status": "SUCCESS",
+          "runId": "db0e16df5152",
+          "worktree": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\.claude\\worktrees\\tech-b3"
+        },
+        {
+          "ts": "2026-10-24T12:02:05Z",
+          "task": "B3 r3 screenshots yes/no",
+          "model": "gemini-3.8-flash-low",
+          "seconds": 7.4,
+          "tokens": 23370,
+          "status": "SUCCESS",
+          "runId": "cb8b41e643e9",
+          "worktree": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\.claude\\worktrees\\tech-b3"
+        },
+        {
+          "ts": "2026-10-24T12:04:04Z",
+          "task": "B3 pass 4: spend.json via live branch",
+          "model": "claude-sonnet-5-5-medium",
+          "seconds": 3.5,
+          "tokens": 16531,
+          "status": "ERROR",
+          "runId": "6bd6b88de836",
+          "worktree": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\.claude\\worktrees\\tech-b3",
+          "quotaGroup": "claude-gpt",
+          "weeklyBefore": 0.79,
+          "weeklyAfter": 0,
+          "fiveHourBefore": 100,
+          "fiveHourAfter": 100
+        }
+      ],
+      "week": [
+        {
+          "ts": "2026-10-23T08:13:13Z",
+          "task": "T36-r1",
+          "model": "claude-opus-5-5-high",
+          "seconds": 443.3,
+          "tokens": 155538,
+          "status": "SUCCESS",
+          "quotaGroup": "claude-gpt",
+          "weeklyBefore": 44.03,
+          "weeklyAfter": 5.2,
+          "fiveHourBefore": 100,
+          "fiveHourAfter": 22.5
+        },
+        {
+          "ts": "2026-10-23T19:00:19Z",
+          "task": "listen9-witness",
+          "model": "gemini-3.8-flash-high",
+          "seconds": 291.8,
+          "tokens": 130397,
+          "status": "SUCCESS",
+          "runId": "79b27b629f23",
+          "worktree": "C:\\Users\\User\\Documents\\GitHub\\living-lyrics\\.claude\\worktrees\\listen9"
+        },
+        {
+          "ts": "2026-10-23T19:04:52Z",
+          "task": "listen9-r1",
+          "model": "claude-sonnet-5-5-medium",
+          "seconds": 63.2,
+          "tokens": 66507,
+          "status": "ERROR",
+          "runId": "6d276c7cb538",
+          "worktree": "C:\\Users\\User\\Documents\\GitHub\\living-lyrics\\.claude\\worktrees\\listen9",
+          "quotaGroup": "claude-gpt",
+          "weeklyBefore": 5.28,
+          "weeklyAfter": 0.26,
+          "fiveHourBefore": 100,
+          "fiveHourAfter": 90.03
+        },
+        {
+          "ts": "2026-10-24T11:32:26Z",
+          "task": "B3 r2 screenshots yes/no",
+          "model": "gemini-3.8-flash-low",
+          "seconds": 8.9,
+          "tokens": 23009,
+          "status": "SUCCESS",
+          "runId": "db0e16df5152",
+          "worktree": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\.claude\\worktrees\\tech-b3"
+        },
+        {
+          "ts": "2026-10-24T12:02:05Z",
+          "task": "B3 r3 screenshots yes/no",
+          "model": "gemini-3.8-flash-low",
+          "seconds": 7.4,
+          "tokens": 23370,
+          "status": "SUCCESS",
+          "runId": "cb8b41e643e9",
+          "worktree": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\.claude\\worktrees\\tech-b3"
+        },
+        {
+          "ts": "2026-10-24T12:04:04Z",
+          "task": "B3 pass 4: spend.json via live branch",
+          "model": "claude-sonnet-5-5-medium",
+          "seconds": 3.5,
+          "tokens": 16531,
+          "status": "ERROR",
+          "runId": "6bd6b88de836",
+          "worktree": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\.claude\\worktrees\\tech-b3",
+          "quotaGroup": "claude-gpt",
+          "weeklyBefore": 0.79,
+          "weeklyAfter": 0,
+          "fiveHourBefore": 100,
+          "fiveHourAfter": 100
+        }
+      ]
+    }
+  },
+  "sources": {
+    "claude.week": "python ops/usage/claude_review.py --since 2026-10-23T04:00:00 --by-chat",
+    "claude.week.overhead": "python ops/usage/claude_cache.py --since 2026-10-23T04:00:00",
+    "claude.day": "python ops/usage/claude_review.py --since 2026-10-23T15:35:54 --by-chat",
+    "calibration": "proWeek = claude cost since 2026-10-23T04:00:00 / (seven_day 54% / 100); pro5h = claude cost since 2026-10-24T15:00:00 / (five_hour 33% / 100)",
+    "grok.week": "ops/usage/ledger/*.jsonl kind=session since 2026-10-23T16:08:00 (grok.weekly.resetsAt minus 7d)",
+    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-10-23T15:35:54",
+    "agy.quota": "ops/usage/latest.json gemini.quota",
+    "agy.runs": "ops/usage/ledger/*.jsonl kind=run"
+  }
+}
