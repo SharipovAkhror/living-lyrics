@@ -14,7 +14,7 @@ git add content/songs/<slug> content/audio-enc/<slug> docs/analysis/<slug> docs/
 git commit -m "Add <Title>: text, translation, commentary, timing (<status>)"
 ```
 
-Шифрование `song-status` просит ещё на стадии 2, пока открытый `high.m4a` есть, а шифра нет. Здесь его повторяют, только если шифр так и не появился. Ключ `AUDIO_KEY` (64 шестнадцатеричных знака) берётся из `.env.local`. В git ключ не кладите.
+Шифр стадию 2 не держит. Пока ключа нет, таблица показывает «шифр: ждёт ключа», и текст с видео идут дальше. Здесь, перед коммитом, шифр обязателен. Если открытый `high.m4a` есть, а `content/audio-enc/<slug>/high.m4a.enc` нет, `song-status` печатает `npm run audio:encrypt -- <slug>` — когда `AUDIO_KEY` уже в `.env.local` (64 шестнадцатеричных знака). Без ключа коммит записи не начинается: открытый файл в команду `git add` не попадает. В git ключ не кладите.
 
 Команда `git add`, которую печатает `song-status`, называет только существующие пути: папка песни, шифр, и если они есть — `docs/analysis/<slug>` и `docs/analysis/translation/<slug>.md`. Несуществующий путь в команду не попадает.
 
