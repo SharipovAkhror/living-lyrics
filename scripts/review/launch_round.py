@@ -19,7 +19,19 @@ import subprocess
 import sys
 from pathlib import Path
 
-MAIN = Path(__file__).resolve().parents[2]
+USAGE = 'usage: launch_round.py <round> [--wt <studio worktree>] [--dry-run]'
+
+
+def main_checkout() -> Path:
+    """The repo's main checkout, also when this file runs from a linked worktree."""
+    here = Path(__file__).resolve().parents[2]
+    r = subprocess.run(['git', 'rev-parse', '--path-format=absolute', '--git-common-dir'],
+                       cwd=here, capture_output=True, text=True, encoding='utf-8')
+    common = Path(r.stdout.strip()) if r.returncode == 0 and r.stdout.strip() else None
+    return common.parent if common is not None and common.name == '.git' else here
+
+
+MAIN = main_checkout()
 WT = MAIN.parent / 'living-lyrics-wt' / 'studio-pass'
 BRIDGE = Path.home() / '.claude/plugins/cache/xai-grok-build/grok-build/0.2.1/scripts/grok-bridge.mjs'
 LOG = MAIN / 'work' / 'review' / 'launch_round.log'
@@ -73,21 +85,22 @@ def parse_args(argv: list[str]) -> tuple[int, Path, bool]:
     i = 1
     while i < len(argv):
         arg = argv[i]
+        if arg in ('-h', '--help'):
+            print(USAGE)
+            raise SystemExit(0)
         if arg == '--dry-run':
             dry = True
         elif arg == '--wt':
             i += 1
             if i >= len(argv):
-                raise SystemExit('usage: launch_round.py <round> [--wt <studio worktree>] [--dry-run]')
+                raise SystemExit(USAGE)
             wt = Path(argv[i])
         else:
             numbers.append(arg)
         i += 1
-    if len(numbers) != 1:
-        raise SystemExit('usage: launch_round.py <round> [--wt <studio worktree>] [--dry-run]')
-    if wt is None:
-        wt = MAIN.parent / 'living-lyrics-wt' / 'studio-pass'
-    return int(numbers[0]), wt, dry
+    if len(numbers) != 1 or not numbers[0].isdigit():
+        raise SystemExit(USAGE)
+    return int(numbers[0]), wt or WT, dry
 
 
 def main() -> int:
