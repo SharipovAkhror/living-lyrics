@@ -117,6 +117,12 @@ export const Field = memo(function Field({
     const tick = () => {
       timer = 0;
       if (stageCovered() || !seen) return;
+      // The cover is a full-size layer. Star writes under it missed a desktop
+      // frame every tenth of a second. The sky catches up once the cover lands.
+      if (document.querySelector('.morph-cover, .song.is-flying')) {
+        if (!still && clock) timer = window.setTimeout(tick, 120);
+        return;
+      }
       const time = clock ? clock() : t;
       if (lastT < 0 || Math.abs(time - lastT) >= 0.01) {
         lastT = time;

@@ -1,8 +1,9 @@
 /**
  * Library → song. One artwork travels the whole path.
  * The flyer is born on the click, before the route changes, and the card's
- * own image is hidden, so the eye never swaps objects. Width and a translation
- * only: a scaled, clipped layer the size of the stage paints black in WebKit.
+ * own image is hidden, so the eye never swaps objects. The flyer keeps the
+ * card's layout size and scales; writing its width each frame resampled it.
+ * A stage-sized clipped layer still paints black in WebKit.
  * The loop lives here, not in an effect, so a strict remount cannot eat it.
  */
 import { noteFlightFrame } from '@/app/mutate';
@@ -112,34 +113,73 @@ function pinExit(source: HTMLElement, delay: number, dist: number): ExitNode | n
   el.style.transition = 'none';
   el.style.opacity = '1';
   el.style.transform = 'translate3d(0, 0, 0)';
+  // The glass layers are a second snapshot. The fade only has to carry the
+  // type and the covers; the rims made the layer too heavy to cache.
+  el.querySelectorAll('.lg').forEach((node) => node.remove());
+  el.style.contain = 'paint';
+  el.style.willChange = 'opacity, transform';
   document.body.append(el);
   return { el, delay, dist };
 }
 
+/** Spring baked into keyframes so the fade runs on the compositor, not a style write per frame. */
+const exitCache = new Map<number, { frames: Keyframe[]; ms: number }>();
+
+function exitClip(dist: number): { frames: Keyframe[]; ms: number } {
+  const key = Math.round(dist);
+  const hit = exitCache.get(key);
+  if (hit) return hit;
+  let state: SpringState = { x: 0, v: 0 };
+  const samples: { t: number; p: number }[] = [{ t: 0, p: 0 }];
+  let t = 0;
+  const dt = 1 / 60;
+  while (t < 1.4) {
+    t += dt;
+    state = stepSpring(state, 1, dt, EXIT);
+    const p = Math.max(0, Math.min(1, state.x));
+    samples.push({ t, p });
+    if (t > 0.2 && p > 0.985 && Math.abs(state.v) < 0.04) break;
+  }
+  const end = samples[samples.length - 1]?.t || dt;
+  const frames: Keyframe[] = samples.map((sample, i) => ({
+    offset: i === 0 ? 0 : i === samples.length - 1 ? 1 : sample.t / end,
+    opacity: 1 - sample.p,
+    transform: `translate3d(0, ${(dist * sample.p).toFixed(2)}px, 0)`,
+  }));
+  const clip = { frames, ms: Math.round(end * 1000) };
+  exitCache.set(key, clip);
+  return clip;
+}
+
 function runExit(nodes: ExitNode[]) {
   if (!nodes.length) return;
-  const springs: SpringState[] = nodes.map(() => ({ x: 0, v: 0 }));
-  let last = 0;
-  const start = performance.now();
-  const tick = (now: number) => {
-    const dt = Math.min(0.032, last ? (now - last) / 1000 : 0.016);
-    last = now;
-    const elapsed = (now - start) / 1000;
-    let alive = false;
-    nodes.forEach((item, i) => {
-      if (elapsed < item.delay) {
-        alive = true;
-        return;
-      }
-      springs[i] = stepSpring(springs[i], 1, dt, EXIT);
-      const t = Math.max(0, Math.min(1, springs[i].x));
-      item.el.style.opacity = (1 - t).toFixed(3);
-      if (item.under) underOpacity = t > 0.95 ? 0 : 1 - t;
-      if (item.dist) item.el.style.transform = `translate3d(0, ${(item.dist * t).toFixed(2)}px, 0)`;
-      if (t < 0.985 || Math.abs(springs[i].v) > 0.04) alive = true;
+  // One cached texture per copy. Writing opacity from the spring re-rastered
+  // the shelf over the arriving page and the desktop flight sat at 30 fps.
+  const animations: Animation[] = [];
+  let shelf: Animation | null = null;
+  for (const item of nodes) {
+    const clip = exitClip(item.dist);
+    const anim = item.el.animate(clip.frames, {
+      duration: clip.ms,
+      delay: item.delay * 1000,
+      easing: 'linear',
+      fill: 'forwards',
     });
-    if (!alive || elapsed > 1.5) {
+    animations.push(anim);
+    if (item.under) shelf = anim;
+  }
+  const start = performance.now();
+  const tick = () => {
+    const elapsed = (performance.now() - start) / 1000;
+    if (shelf) {
+      const progress = shelf.effect?.getComputedTiming().progress;
+      const p = typeof progress === 'number' && Number.isFinite(progress) ? progress : 0;
+      underOpacity = p > 0.95 ? 0 : 1 - p;
+    }
+    const alive = elapsed < 1.5 && animations.some((anim) => anim.playState !== 'finished');
+    if (!alive) {
       underOpacity = 0;
+      animations.forEach((anim) => anim.cancel());
       nodes.forEach((item) => item.el.remove());
       return;
     }
@@ -189,11 +229,18 @@ function place(el: HTMLImageElement, from: MorphBox, to: MorphBox, t: number) {
   const top = lerp(from.top, to.top, t);
   const w = Math.max(1, lerp(from.width, to.width, t));
   const h = Math.max(1, lerp(from.height, to.height, t));
-  const radius = lerp(from.radius, to.radius, t);
-  el.style.width = `${w.toFixed(2)}px`;
-  el.style.height = `${h.toFixed(2)}px`;
-  el.style.transform = `translate3d(${left.toFixed(2)}px, ${top.toFixed(2)}px, 0)`;
-  el.style.borderRadius = `${radius.toFixed(2)}px`;
+  // Layout width stays the card. A width write resampled the bitmap every
+  // frame and the desktop flight dropped to 30 fps. Scale is the compositor.
+  // The old black frame was a stage-sized clipped layer, not this image.
+  if (!el.style.width) {
+    el.style.width = `${from.width.toFixed(2)}px`;
+    el.style.height = `${from.height.toFixed(2)}px`;
+    el.style.transformOrigin = '0 0';
+    el.style.borderRadius = `${from.radius.toFixed(2)}px`;
+  }
+  const sx = w / Math.max(1, from.width);
+  const sy = h / Math.max(1, from.height);
+  el.style.transform = `translate3d(${left.toFixed(2)}px, ${top.toFixed(2)}px, 0) scale(${sx.toFixed(4)}, ${sy.toFixed(4)})`;
 }
 
 function stopLoop() {

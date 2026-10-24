@@ -2,7 +2,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState, type PointerEvent 
 import { createPortal } from 'react-dom';
 import { Icon } from './icons';
 import { GlassLayers } from './glass/Glass';
-import { SHEET_SHELL_MS } from '@/scene/cover';
+import { SHEET_GLASS_MS, SHEET_SHELL_MS } from '@/scene/cover';
 import { SHEET_CLOSE, SHEET_OPEN, springSettled, stepSpring, type SpringState } from './spring';
 
 function motionOff() {
@@ -15,6 +15,19 @@ function clearSheetChrome() {
   delete document.documentElement.dataset.cover;
   document.documentElement.classList.remove('is-sheet-drag');
   document.documentElement.style.removeProperty('--sheet-p');
+  document.querySelectorAll<HTMLElement>('.song').forEach((node) => {
+    node.style.transform = '';
+  });
+  document.getElementById('ll-sheet-flat')?.remove();
+}
+
+/** While the page is scaling, live blur resamples every frame. Thick fills until the sheet has gone. */
+function flattenSheetFilters() {
+  if (document.getElementById('ll-sheet-flat')) return;
+  const style = document.createElement('style');
+  style.id = 'll-sheet-flat';
+  style.textContent = 'html[data-sheet="1"],html[data-sheet="1"] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}';
+  document.head.append(style);
 }
 
 /** The translate already painted on the sheet, in CSS px. The next spring step is not on the element yet. */
@@ -93,7 +106,13 @@ export function Sheet({
   openRef.current = open;
   // Last painted top of the shell, so the row commit can put the top back.
   const shellTop = useRef<number | null>(null);
+  // Layout top without the spring's translate. Later frames add the travel
+  // instead of measuring the sheet while it moves.
+  const shellBase = useRef<number | null>(null);
+  const songScale = useRef('');
   const lockedTop = useRef<number | null>(null);
+  const openedAt = useRef(0);
+  const glassTimer = useRef(0);
   const prevHeight = useRef(0);
   const rowHeld = useRef(false);
 
@@ -128,15 +147,52 @@ export function Sheet({
     // been painted; darkening the song on the tap frame was the slow paint.
     if (backdrop.current) backdrop.current.style.opacity = plainRef.current ? '0' : p.toFixed(3);
     const root = document.documentElement;
-    // One progress for every device. The song reads it as a transform only.
-    root.style.setProperty('--sheet-p', p.toFixed(3));
+    // The scale is an inline transform on the song. A root custom property
+    // inherits, so writing it every frame restyled the whole page.
+    const song = document.querySelector('.song');
+    if (!plainRef.current && song instanceof HTMLElement) {
+      const next = p <= 0.02 ? '' : `scale(${(1 - 0.08 * p).toFixed(4)})`;
+      if (songScale.current !== next) {
+        songScale.current = next;
+        song.style.transform = next;
+      }
+      if (p > 0.02) {
+        if (root.style.getPropertyValue('--sheet-p') !== '1') root.style.setProperty('--sheet-p', '1');
+      } else root.style.removeProperty('--sheet-p');
+    } else if (!(song instanceof HTMLElement)) {
+      root.style.setProperty('--sheet-p', p.toFixed(3));
+    }
     // The page scale waits until the frame after the shell is drawn. On the tap
     // frame it pushed WebKit's first paint past 100 ms. Once the cover is on,
     // it stays until the sheet has left: clearing it mid-flight woke the sky.
     if (!openRef.current && p <= 0.02) delete root.dataset.sheet;
     // Refraction waits until the spring has arrived. Toggling it mid-flight resamples every frame.
-    const settled = openRef.current && travel >= 0 && travel < 0.8;
-    if (el.classList.contains('is-settled') !== settled) el.classList.toggle('is-settled', settled);
+    // The lens is armed after the row entrance, not on this frame. A filter
+    // while the rows still move resamples the page on every desktop frame.
+    const moving = !(openRef.current && travel >= 0 && travel < 0.8);
+    if (moving && el.classList.contains('is-settled')) el.classList.remove('is-settled');
+  };
+
+  const clearGlassTimer = () => {
+    if (glassTimer.current) window.clearTimeout(glassTimer.current);
+    glassTimer.current = 0;
+  };
+
+  const armGlass = () => {
+    clearGlassTimer();
+    const el = panel.current;
+    if (!el || !openRef.current) return;
+    if (motionOff()) {
+      el.classList.add('is-settled');
+      return;
+    }
+    const wait = Math.max(0, SHEET_GLASS_MS - (performance.now() - openedAt.current));
+    glassTimer.current = window.setTimeout(() => {
+      glassTimer.current = 0;
+      const node = panel.current;
+      if (!node || !openRef.current || state.current.x > 0.8) return;
+      node.classList.add('is-settled');
+    }, wait);
   };
 
   const stop = () => {
@@ -150,16 +206,16 @@ export function Sheet({
     const tick = (now: number) => {
       if (drag.current?.active) return;
       const elNow = panel.current;
-      // Remember the shell's top on the frames before the rows exist. One read
-      // per frame, and only after the tap's own paint: the first frame is the
-      // layout effect below, not this tick.
-      if (elNow && plainRef.current) shellTop.current = elNow.getBoundingClientRect().top;
-      // Rows fade in over the next frames. Hold the top until that fade clears
-      // the flag, so the spring does not walk the edge while they appear (D33).
+      // The shell's top before the rows exist. Measured once; the spring's
+      // own translate updates it. A read on every frame laid the song out again.
+      if (elNow && plainRef.current) {
+        if (shellBase.current == null) shellBase.current = elNow.getBoundingClientRect().top - state.current.x;
+        shellTop.current = shellBase.current + state.current.x;
+      } else shellBase.current = null;
+      // Rows fade in over the next frames. The growth was already pinned.
+      // Opacity does not move the box, so the spring just holds (D33).
       if (elNow && elNow.dataset.rowLock === '1' && lockedTop.current != null) {
-        const dy = elNow.getBoundingClientRect().top - lockedTop.current;
-        if (Math.abs(dy) > 0.25) state.current = { x: state.current.x - dy, v: 0 };
-        else state.current.v = 0;
+        state.current.v = 0;
         last = now;
         paint(state.current.x);
         raf.current = requestAnimationFrame(tick);
@@ -183,10 +239,11 @@ export function Sheet({
         state.current = { x: target.current, v: 0 };
         paint(target.current);
         if (!openRef.current && target.current > 1) {
+          clearGlassTimer();
           setShown(false);
           setRender(false);
           clearSheetChrome();
-        }
+        } else if (openRef.current) armGlass();
         return;
       }
       raf.current = requestAnimationFrame(tick);
@@ -199,6 +256,7 @@ export function Sheet({
     setRender(true);
     const id = window.setTimeout(() => {
       document.documentElement.dataset.sheet = '1';
+      flattenSheetFilters();
     }, SHEET_SHELL_MS);
     return () => window.clearTimeout(id);
   }, [open]);
@@ -223,8 +281,12 @@ export function Sheet({
       stop();
       state.current = { x: 0, v: 0 };
       paint(0);
-      if (open) setShown(true);
-      else {
+      if (open) {
+        if (!shown) openedAt.current = performance.now();
+        setShown(true);
+        armGlass();
+      } else {
+        clearGlassTimer();
         setShown(false);
         const timer = window.setTimeout(() => {
           setRender(false);
@@ -233,12 +295,19 @@ export function Sheet({
         return () => {
           window.clearTimeout(timer);
           ro.disconnect();
+          clearGlassTimer();
         };
       }
-      return () => ro.disconnect();
+      return () => {
+        ro.disconnect();
+        clearGlassTimer();
+      };
     }
     if (open) {
       if (!shown) {
+        openedAt.current = performance.now();
+        clearGlassTimer();
+        el.classList.remove('is-settled');
         // CSS parks the sheet at 110%. Painting here, before the browser frame,
         // puts the bottom edge on that first frame instead of springing up to it.
         const awayFrom = away();
@@ -255,12 +324,15 @@ export function Sheet({
       target.current = 0;
       setShown(true);
     } else {
+      clearGlassTimer();
+      el.classList.remove('is-settled');
       target.current = away();
     }
     loop();
     return () => {
       ro.disconnect();
       stop();
+      clearGlassTimer();
     };
     // `shown` is intentionally read once per open, not a dependency: including it restarts the spring.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -280,7 +352,10 @@ export function Sheet({
     };
   }, [open, onClose]);
 
-  useEffect(() => () => clearSheetChrome(), []);
+  useEffect(() => () => {
+    clearGlassTimer();
+    clearSheetChrome();
+  }, []);
 
   // The shell is short and anchored to the bottom. Rows grow it upward on the
   // same translate, so the commit itself can cross the note. The spring only

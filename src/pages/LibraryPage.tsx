@@ -13,6 +13,7 @@ import { Glass, GlassLayers } from '@/ui/glass/Glass';
 import { armLibraryExit, armMorph, exitDecoded, motionBlocked, warmCover } from '@/app/morph';
 import { Field } from '@/scene/Field';
 import { Status } from '@/components/Status';
+import { KeysHelp } from '@/ui/KeysHelp';
 
 function statusOf(song: Song) {
   if (song.audio.status === 'missing') return { text: 'Без аудио', tone: 'muted' as const };
@@ -47,6 +48,7 @@ export function LibraryPage() {
   const dark = useAppliedTheme(useSettings().theme);
   const [q, setQ] = useState('');
   const [remembered, setRemembered] = useState<string | null>(null);
+  const [help, setHelp] = useState(false);
   const wash = useMemo(() => {
     const colors = songs.flatMap((s) => s.palette.field).filter((c): c is string => !!c);
     return [0, 1, 2, 3].map((i) => colors[i % Math.max(colors.length, 1)] ?? '#3a2a22');
@@ -83,6 +85,37 @@ export function LibraryPage() {
     void loadSelectedFonts(getSettings());
     if (featured) prefetchLyrics(featured.slug);
   }, [featured]);
+
+  // Arrows move among the cards. Space stays with the focused link. ? opens the key list.
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const active = document.activeElement;
+      const typing = active instanceof HTMLElement && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
+      if (event.code === 'Escape') {
+        if (!help) return;
+        setHelp(false);
+        event.preventDefault();
+        return;
+      }
+      if (typing || help) return;
+      if ((event.code === 'Slash' && event.shiftKey) || event.key === '?') {
+        setHelp(true);
+        event.preventDefault();
+        return;
+      }
+      if (event.code !== 'ArrowDown' && event.code !== 'ArrowUp' && event.code !== 'ArrowLeft' && event.code !== 'ArrowRight') return;
+      const links = [...document.querySelectorAll<HTMLElement>('a.lib-hero, a.lib-row')];
+      if (!links.length) return;
+      const index = links.indexOf(active as HTMLElement);
+      const dir = event.code === 'ArrowDown' || event.code === 'ArrowRight' ? 1 : -1;
+      const next = links[Math.max(0, Math.min(links.length - 1, index < 0 ? 0 : index + dir))];
+      next?.focus();
+      event.preventDefault();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [help]);
 
   return (
     <div className="library">
@@ -140,6 +173,7 @@ export function LibraryPage() {
           По этому запросу песен нет.
         </Status>
       )}
+      <KeysHelp open={help} onClose={() => setHelp(false)} />
     </div>
   );
 }

@@ -106,6 +106,19 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
   const widths = useRef<number[]>([]);
   const fontPx = useRef(40);
   const fitSig = useRef('');
+  // The first desktop read can be a narrower parent (max-width: 100%). The
+  // signature does not change when that parent later grows, so the line stayed
+  // centred on the tall box. Content-box sizes only: mixing in offsetHeight
+  // never matched and forced a layout on every notice.
+  const deskW = useRef(-1);
+  const deskH = useRef(-1);
+  const deskObs = useRef<ResizeObserver | null>(null);
+  const deskRead = useRef<() => void>(() => {});
+  // The first observer notice is the box just measured. A later one is the
+  // real wrap (the parent was still narrow). Reading that during a flight or
+  // a sheet is a layout on the animation clock.
+  const deskPrimed = useRef(false);
+  const deskTimer = useRef(0);
   const wordPool = useRef(PHONE_WORD_POOL);
   const filterRef = useRef('');
   // Last strings actually written. WebKit grows its working set on a repeated write even when the pixels match.
@@ -123,7 +136,13 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       syncNoteFoot(el);
     });
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      deskObs.current?.disconnect();
+      deskObs.current = null;
+      window.clearTimeout(deskTimer.current);
+      deskTimer.current = 0;
+    };
   }, []);
   // A scrub writes the next lyric here and skips React. The render keeps that
   // cue until the release commit matches it.
@@ -242,6 +261,73 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
     el.style.width = `${width}px`;
     el.style.maxWidth = `${width}px`;
     el.style.minWidth = '0';
+    if (desk) {
+      // The steps live on --lyric-*. An inline pixel size froze the 50px cap
+      // and a resize could not move it. Word widths are not read here: one
+      // line per later frame missed the desktop p95.
+      const sig = `desk|${Math.round(width)}|${vw}|${scale.toFixed(3)}|${arab ? 1 : 0}|${hasSubs ? 1 : 0}`;
+      const readDesk = () => {
+        const mainEl = main.current;
+        const rootEl = root.current;
+        if (!mainEl || !rootEl) return;
+        const mainH = mainEl.offsetHeight || (arab ? 140 : 110);
+        const subH = subs.current ? Math.max(0, rootEl.offsetHeight - mainH) : 0;
+        register(cueRef.current.idx, call, { main: mainH, sub: subH });
+      };
+      // Cover rise, sheet scale, and the page spring all write style every
+      // frame. A box read in that window is a long frame. --sheet-p is set
+      // before data-sheet, and is-arriving outlives is-flying.
+      const pageBusy = () =>
+        document.documentElement.dataset.sheet === '1' ||
+        parseFloat(document.documentElement.style.getPropertyValue('--sheet-p') || '0') > 0.02 ||
+        !!document.querySelector('.morph-cover, .song.is-flying, .song.is-arriving, .song.is-scrubbing');
+      const scheduleRead = () => {
+        window.clearTimeout(deskTimer.current);
+        const attempt = () => {
+          if (pageBusy()) {
+            deskTimer.current = window.setTimeout(attempt, 180);
+            return;
+          }
+          deskTimer.current = 0;
+          deskRead.current();
+        };
+        deskTimer.current = window.setTimeout(attempt, 32);
+      };
+      deskRead.current = readDesk;
+      if (fitSig.current !== sig) {
+        const prop = arab ? '--lyric-arab' : '--lyric-latin';
+        el.style.fontSize = scale === 1 ? '' : `calc(var(${prop}) * ${scale})`;
+        if (subs.current) subs.current.style.fontSize = scale === 1 ? '' : `calc(var(--lyric-tr) * ${scale})`;
+        fitSig.current = sig;
+        // One block read in this commit. A later queue measured one line per
+        // frame of the flight, and each of those frames missed 16 ms. Word
+        // widths wait until a word is actually filling.
+        readDesk();
+        // The notice for this write is the box we just read. The next notice,
+        // when the wrap actually changes, is the one that may correct it.
+        deskPrimed.current = false;
+      }
+      if (!deskObs.current && typeof ResizeObserver !== 'undefined') {
+        deskObs.current = new ResizeObserver((entries) => {
+          const rect = entries[0]?.contentRect;
+          if (!rect) return;
+          const w = Math.round(rect.width);
+          const h = Math.round(rect.height);
+          if (!deskPrimed.current) {
+            deskPrimed.current = true;
+            deskW.current = w;
+            deskH.current = h;
+            return;
+          }
+          if (Math.abs(w - deskW.current) <= 1 && Math.abs(h - deskH.current) <= 1) return;
+          deskW.current = w;
+          deskH.current = h;
+          scheduleRead();
+        });
+      }
+      if (deskObs.current) deskObs.current.observe(r);
+      return;
+    }
     if (isPhone() && !car && !short) {
       // The stylesheet already holds the design size, including the text-scale
       // variables below. Walking font-size (eight tries per line, every seek)

@@ -118,7 +118,7 @@ html[data-glass='lens'] .lg-host--card .lg-edge {
   background: var(--lg-fill-thick);
 }
 .lg-host--floor .lg-lens {
-  background: color-mix(in srgb, var(--bg-elevated) 30%, transparent);
+  background: none;
 }
 /* No sheen of its own: the floor is a pane over the song, not a second picture. */
 .lg-host--floor .lg-edge {
@@ -189,7 +189,8 @@ html[data-glass='solid'] .lg-spec {
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .lg-lens {
+  .lg-lens,
+  .lg-host--floor .lg-lens {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     background: var(--lg-solid);
@@ -236,7 +237,11 @@ html[data-glass='solid'] .lg-spec {
   background: transparent;
 }
 
-.player.lg-host,
+.player.lg-host {
+  background: none;
+  box-shadow: none;
+  border-color: transparent;
+}
 .comment.is-margin.lg-host {
   border-color: transparent;
 }
@@ -266,8 +271,11 @@ html[data-glass='lens'] .lg-host--note .lg-lens {
   background: radial-gradient(130% 120% at 50% 40%, var(--lg-fill) 46%, transparent 78%);
 }
 
-html[data-glass='lens'] .lg-host--floor .lg-lens {
-  background: radial-gradient(120% 140% at 50% 55%, color-mix(in srgb, var(--bg-elevated) 34%, transparent) 62%, transparent 100%);
+html[data-glass='lens'] .lg-host--floor .lg-lens,
+html[data-glass='solid'] .lg-host--floor .lg-lens {
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 /* The sheet moves every spring frame. A filter on that element would resample
@@ -276,6 +284,15 @@ html[data-glass='lens'] .sheet.glass.lg-host {
   background: var(--lg-fill-thick);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
+}
+
+/* Less transparency asks for an opaque floor, after the clear-floor rules above. */
+@media (prefers-reduced-transparency: reduce) {
+  .lg-host--floor .lg-lens,
+  html[data-glass='solid'] .lg-host--floor .lg-lens,
+  html[data-glass='lens'] .lg-host--floor .lg-lens {
+    background: var(--lg-solid);
+  }
 }
 
 html[data-glass='lens'] .sheet.glass.lg-host.is-settled {

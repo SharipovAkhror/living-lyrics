@@ -31,6 +31,8 @@ import { showHarakatText, stripHarakat } from '@/data/harakat';
 import { stageFrame, type StageFrame } from '@/scene/columns';
 import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
 import { headerLine } from './parts';
+import { keyAction } from '@/app/keys';
+import { KeysHelp } from '@/ui/KeysHelp';
 
 type LoadedSheets = {
   Settings: typeof import('./SettingsSheet').SettingsSheet;
@@ -523,7 +525,8 @@ function ExplainButton({
       className={`util${live ? ' is-live-task' : ''}${noteText && !showComment ? ' has-note' : ''}`}
       aria-label={noteText ? 'Пояснение к этой строке' : 'Пояснение'}
       aria-pressed={shortLand ? commentOpen : showComment}
-      aria-keyshortcuts="K"
+      aria-keyshortcuts="C"
+      data-tip="Пояснение · C"
       onClick={onToggle}
     >
       <Icon name="book.closed" size={24} />
@@ -622,6 +625,12 @@ function useEngineView(engine: AudioEngine, keyOf: (s: EngineState) => string) {
   return useSyncExternalStore(subscribe, get, get);
 }
 
+/** The time label, ahead of the scrubber frame. A heavy seek must not leave 0:42 up for 100 ms. */
+function paintClock(t: number) {
+  const node = document.querySelector('.scrub-now');
+  if (node) node.textContent = formatTime(Math.max(0, t));
+}
+
 function playKey(s: EngineState) {
   return `${s.playing ? 1 : 0}|${s.buffering ? 1 : 0}|${s.error ?? ''}`;
 }
@@ -650,6 +659,7 @@ const PlayButton = function PlayButton({
       onClick={onToggle}
       aria-label={playLabel}
       aria-busy={buffering}
+      data-tip="Пуск и пауза · Пробел"
     >
       {buffering && !playing ? <span className="btn-buffer" aria-hidden="true" /> : <PlayPause playing={playing} size={28} />}
     </button>
@@ -1023,6 +1033,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     ownerStore.set(next);
   }, [timeline, deepLink, ownerStore]);
   const [sheet, setSheet] = useState<SheetName>(null);
+  const [help, setHelp] = useState(false);
   const sheets = useSheets();
   const settingsHeld = useHeld(sheet === 'settings');
   const infoHeld = useHeld(sheet === 'info');
@@ -1048,7 +1059,9 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   const seekToCue = useCallback(
     (c: Cue) => {
       if (!engine) return;
-      engine.seek(Math.max(0, c.start - (c.kind === 'line' ? LEAD : 0)));
+      // Land inside the cue. A lead before the start still belongs to the previous
+      // line, so the drawn row would not move.
+      engine.seek(Math.max(0, c.kind === 'line' ? c.start + 0.05 : c.start));
     },
     [engine],
   );
@@ -1126,6 +1139,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       // Unmounting first collapsed --player-h and the lyrics jumped.
       // The sky stops with the rows. Stopping it on the tap repainted the
       // stage into the shell's cast frame and that frame arrived later.
+      document.getElementById('ll-sheet-off')?.remove();
       window.setTimeout(() => {
         if (!document.querySelector('.sheet')) return;
         coverStage();
@@ -1142,6 +1156,14 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     },
     [shortLand, settings.commentOpen],
   );
+
+  // The sheet scales the song. A layer from the tap keeps that scale on the
+  // compositor; restyling the tree each frame dropped the entrance.
+  useEffect(() => {
+    const root = songRef.current;
+    if (!root) return;
+    root.style.willChange = sheet ? 'transform' : '';
+  }, [sheet]);
 
   // A mismatch mark records the clock and the line on stage. It does not pause, seek, or open a sheet.
   const [toast, setToast] = useState<{ id: string; t: number } | null>(null);
@@ -1161,30 +1183,89 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     return () => clearTimeout(id);
   }, [toast]);
 
-  // Keyboard: Space play/pause, ←/→ lines, Shift+←/→ ±10 s, T translation, K commentary.
-  // M (same physical key as ь) drops a mismatch mark. Repeat is ignored so a held key is one mark.
+  // Space and K play, J/L and Shift+arrows ±10 s, arrows change line, Home and 0
+  // restart, 1–9 jump by tenths. T translation, C commentary, M a mismatch mark.
+  // Physical codes, so йцукен hits the same keys. A focused button keeps Space.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      // Keys wait until a sheet is gone, so a letter does not also hit a focused control underneath.
-      if (sheet) return;
-      const tag = (e.target as HTMLElement).tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON') {
-        if (e.code === 'Space') return; // let the focused control handle it
+      const action = keyAction(e, help || sheet != null);
+      if (!action) return;
+      if (action.type === 'escape') {
+        e.preventDefault();
+        if (help) {
+          setHelp(false);
+          e.stopImmediatePropagation();
+          return;
+        }
+        if (sheet) {
+          // The sheet springs shut and React may rebuild the node in this same
+          // turn. A style rule outlives that node, so the drawn frame is gone now.
+          let tag = document.getElementById('ll-sheet-off');
+          if (!tag) {
+            tag = document.createElement('style');
+            tag.id = 'll-sheet-off';
+            tag.textContent = '.sheet-root{display:none!important}';
+            document.head.appendChild(tag);
+          }
+          setSheet(null);
+          e.stopImmediatePropagation();
+          return;
+        }
+        const doc = document as Document & { webkitFullscreenElement?: Element | null; webkitExitFullscreen?: () => void };
+        if (document.fullscreenElement || doc.webkitFullscreenElement) {
+          e.stopImmediatePropagation();
+          void document.exitFullscreen?.().catch(() => {});
+          doc.webkitExitFullscreen?.();
+        }
+        return;
       }
-      if (e.code === 'Space') togglePlay();
-      else if (e.key === 'ArrowRight') (e.shiftKey ? engine?.skip(10) : nav(1));
-      else if (e.key === 'ArrowLeft') (e.shiftKey ? engine?.skip(-10) : nav(-1));
-      else if (e.key === 't' || e.key === 'е') setSettings({ showTranslation: !settings.showTranslation });
-      else if (e.key === 'k' || e.key === 'л') toggleComment();
-      else if (e.code === 'KeyM') {
-        if (!e.repeat) placeMark();
-      } else return;
       e.preventDefault();
+      if (action.type === 'play') togglePlay();
+      else if (action.type === 'skip') {
+        const t = Math.max(0, (engine?.currentTime() ?? 0) + action.by);
+        paintClock(t);
+        engine?.skip(action.by);
+      } else if (action.type === 'start') {
+        paintClock(0);
+        engine?.seek(0);
+      } else if (action.type === 'fraction') {
+        const d = engine?.state.duration || 0;
+        if (d > 0) {
+          paintClock((d * action.n) / 10);
+          engine?.seek((d * action.n) / 10);
+        }
+      } else if (action.type === 'line') nav(action.dir);
+      else if (action.type === 'translation') setSettings({ showTranslation: !settings.showTranslation });
+      else if (action.type === 'comment') toggleComment();
+      else if (action.type === 'mark') placeMark();
+      else if (action.type === 'help') setHelp(true);
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [sheet, togglePlay, nav, engine, settings.showTranslation, toggleComment, placeMark]);
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
+  }, [help, sheet, togglePlay, nav, engine, settings.showTranslation, toggleComment, placeMark]);
+
+  // One notch over the stage is one line. The scrubber has its own wheel.
+  useEffect(() => {
+    const stage = songRef.current?.querySelector('.scene');
+    if (!(stage instanceof HTMLElement)) return;
+    let locked = 0;
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+      const size = Math.abs(event.deltaY);
+      const big = event.deltaMode === 1 || size >= 50;
+      if (!big && size < 8) return;
+      const now = performance.now();
+      if (now < locked) {
+        event.preventDefault();
+        return;
+      }
+      locked = now + (big ? 450 : 280);
+      event.preventDefault();
+      nav(event.deltaY > 0 ? 1 : -1);
+    };
+    stage.addEventListener('wheel', onWheel, { passive: false });
+    return () => stage.removeEventListener('wheel', onWheel);
+  }, [nav, timeline]);
 
   const back = useHold(
     () => nav(-1),
@@ -1228,7 +1309,11 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     // forced a style pass on top of the scene.
     let radius = 0;
     let radiusReady = false;
+    // One box for the whole rise. Reading the header on every flight frame
+    // forced a layout of the page the cover was crossing.
+    let cached: { left: number; top: number; width: number; height: number; radius: number } | null = null;
     const dest = () => {
+      if (cached) return cached;
       const art = img.getBoundingClientRect();
       if (art.width < 1 || art.height < 1) return null;
       if (!radiusReady) {
@@ -1237,7 +1322,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         if (raw.trim().endsWith('%')) radius = (radius / 100) * Math.min(art.width, art.height);
         radiusReady = true;
       }
-      return { left: art.left, top: art.top, width: art.width, height: art.height, radius };
+      cached = { left: art.left, top: art.top, width: art.width, height: art.height, radius };
+      return cached;
     };
     const reveal = () => {
       img.style.opacity = '';
@@ -1323,7 +1409,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
 
       {/* One thin layer on the field: no glass plate of its own. */}
       <header className="topbar lg-host" ref={topbarRef}>
-        <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен">
+        <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен" data-tip="К списку песен">
           <Icon name="chevron.left" size={22} />
         </a>
         <img
@@ -1344,7 +1430,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             </div>
           </div>
         </div>
-        <button className="btn btn-circle btn-plain" onClick={() => openSheet('info')} aria-label="О песне">
+        <button className="btn btn-circle btn-plain" onClick={() => openSheet('info')} aria-label="О песне" data-tip="О песне">
           <Icon name="info.circle" size={22} />
         </button>
       </header>
@@ -1404,8 +1490,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
                   className="mark-btn"
                   onClick={placeMark}
                   aria-label="Не совпадает"
-                  title="Не совпадает"
                   aria-keyshortcuts="M"
+                  data-tip="Не совпадает · M"
                 >
                   <Icon name="flag" size={20} />
                 </button>
@@ -1437,16 +1523,16 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         )}
         <div className="player-row">
           <div className="transport">
-            <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)">
+            <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)" data-tip="Предыдущая строка · ←">
               <Icon name="backward" size={28} />
             </button>
             <PlayButton engine={engine} playRef={playRef} onToggle={togglePlay} />
-            <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)">
+            <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)" data-tip="Следующая строка · →">
               <Icon name="forward" size={28} />
             </button>
           </div>
           <div className="utility" role="group" aria-label="Действия с песней">
-            <button className="util" aria-label="Перевод" aria-pressed={settings.showTranslation} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
+            <button className="util" aria-label="Перевод" aria-pressed={settings.showTranslation} aria-keyshortcuts="T" data-tip="Перевод · T" onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
               <Icon name="character.bubble" size={24} />
               <span className="util-label">Перевод</span>
             </button>
@@ -1459,7 +1545,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               onToggle={toggleComment}
               live={sheet === 'note'}
             />
-            <button className={`util${sheet === 'text' ? ' is-live-task' : ''}`} aria-label="Весь текст" aria-pressed={sheet === 'text'} onClick={(e) => openSheet('text', e.currentTarget)}>
+            <button className={`util${sheet === 'text' ? ' is-live-task' : ''}`} aria-label="Весь текст" aria-pressed={sheet === 'text'} data-tip="Весь текст" onClick={(e) => openSheet('text', e.currentTarget)}>
               <Icon name="list.bullet" size={24} />
               <span className="util-label">Весь текст</span>
             </button>
@@ -1467,6 +1553,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               className={`util${sheet === 'settings' ? ' is-live-task' : ''}`}
               aria-label="Настройки"
               aria-pressed={sheet === 'settings'}
+              data-tip="Настройки"
               onPointerDown={(e) => {
                 // The press, not the click that follows it. A frame can be
                 // committed between the two, and on WebKit that frame was the
@@ -1537,6 +1624,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           />
         )}
       </Suspense>
+      <KeysHelp open={help} onClose={() => setHelp(false)} />
     </div>
   );
 }

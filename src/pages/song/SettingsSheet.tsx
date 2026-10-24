@@ -107,18 +107,10 @@ export function SettingsSheet({
 
   useEffect(() => {
     if (!open) return;
-    // Names of the faces are not needed for the first frame of the sheet.
-    const host = window as Window & {
-      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
-      cancelIdleCallback?: (id: number) => void;
-    };
-    let idle = 0;
-    if (typeof host.requestIdleCallback === 'function') idle = host.requestIdleCallback(() => void loadFontLabels(), { timeout: 800 });
-    else idle = window.setTimeout(() => void loadFontLabels(), 450);
-    return () => {
-      if (typeof host.cancelIdleCallback === 'function') host.cancelIdleCallback(idle);
-      else window.clearTimeout(idle);
-    };
+    // Names of the faces are not needed while the sheet is still arriving.
+    // Loading them on those frames dropped one.
+    const idle = window.setTimeout(() => void loadFontLabels(), 1200);
+    return () => window.clearTimeout(idle);
   }, [open]);
 
   // Samples need the faces themselves, not only the latin names. Loaded when this page opens.

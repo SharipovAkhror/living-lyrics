@@ -7,6 +7,14 @@
 export const SHEET_SHELL_MS = 120;
 
 /**
+ * Desktop lens on the sheet. Rows at ≥800 px fade for 340 ms, the last one
+ * delayed 210 ms, and they mount only after the shell. 120+210+340 = 670.
+ * The filter waits past that: on the sheet itself it resamples every frame
+ * the rows are still moving, and the desktop frame budget misses.
+ */
+export const SHEET_GLASS_MS = 760;
+
+/**
  * The stage is covered by a sheet, or the tab is hidden.
  * Callers stop their frame loops. A sheet over a moving sky is what makes Safari
  * rebuild backdrop layers, and it is what makes the sheet itself drop frames.

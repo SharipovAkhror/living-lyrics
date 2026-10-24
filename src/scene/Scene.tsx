@@ -508,10 +508,13 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       }
       // A drag does not resize the stage. Reading the box here forced layout on
       // every finger frame and pushed the phone scrub past the frame budget.
+      // The sheet scales the song with a transform. That box changes every
+      // spring frame and is not a layout change, so the cached size stands.
       let liveW = cachedW;
       let liveH = cachedH;
       let liveTop = cachedTop;
-      if (!scrubbingNow) {
+      const sheetScale = parseFloat(document.documentElement.style.getPropertyValue('--sheet-p') || '0') > 0.02;
+      if (!scrubbingNow && !sheetScale) {
         const live = stageRef.current?.getBoundingClientRect();
         if (live) {
           liveW = live.width;
