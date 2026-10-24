@@ -22,7 +22,7 @@
 
 Перед коммитом открытый m4a шифруется: `npm run audio:encrypt -- <slug>`. В git попадает `content/audio-enc/<slug>/*.m4a.enc`. Каталог `public/audio/` и `work/` не коммитятся. Репозиторий публичный. Ключ `AUDIO_KEY` живёт в `.env.local`, в git его нет.
 
-Расход исполнителей после просмотра видео: `python ops/usage/collect.py --run <json> --task "watch-video <slug>"`. Сводка сама по себе песню не закрывает. Как устроен журнал — `ops/usage/README.md`.
+Расход исполнителей учитывает настройка владельца (`agentic-os-live/ops/usage/`): просмотр видео через `agy_run.py` записывается сам. Сводка сама по себе песню не закрывает.
 
 Шаблоны папки — `docs/methodology/templates/` (в приложении на `/method` их нет, это файлы репозитория). `npm run new-song` копирует их в `content/songs/<slug>/`.
 

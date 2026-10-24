@@ -1,5 +1,5 @@
 # Repo hygiene on GitHub, by event: after every update of main, delete the branches merged into it
-# and list the rest in the run summary. No Claude session, no Station. Rules: ops/agents/hygiene.py
+# and list the rest in the run summary. No Claude session, no Station. Rules: scripts/tools/repo_hygiene.py
 # (branches cut from main with no work yet, younger than a day or tied to a board task are kept).
 name: cleanup
 on:
@@ -18,5 +18,5 @@ jobs:
         with: { fetch-depth: 0 }
       - name: Delete merged branches, report the rest
         run: |
-          python3 ops/agents/hygiene.py --repo-only --apply | tee hygiene.txt
+          python3 scripts/tools/repo_hygiene.py --apply | tee hygiene.txt
           { echo '### Порядок'; echo; sed 's/^/    /' hygiene.txt; } >> "$GITHUB_STEP_SUMMARY"
