@@ -49,6 +49,7 @@ npm run song-status -- <slug>       # где песня на маршруте и
 npm run art [-- <key>]              # пересобрать гравюры инструментов
 npm run shots -- <url> <dir> <paths…>   # скриншоты iPhone/десктоп, светлая/тёмная
 npm run audio:encrypt -- <slug>     # зашифровать запись перед коммитом (репозиторий публичный)
+python scripts/review/launch_round.py <round> [--wt <папка>] [--dry-run]  # круг студии Гроком без чата; журнал work/review/launch_round.log
 ```
 
 Аудиоконвейер (Python, `scripts/pipeline/requirements.txt`): `decrypt_audio.py`, `process_audio.py`, `separate.py`, `sections.py`, `transcribe.py`, `align.py`, `qa_sync.py`. Нужны `ffmpeg` и сеть (модели Whisper, Demucs, MMS). В облачной среде Claude Code сеть закрыта — пользуйтесь GitHub Actions или песочницей.
