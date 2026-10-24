@@ -1,5 +1,5 @@
 # "Станция не отвечает": the Station's dashboard mod heartbeats ops/live.json on branch `live` every
-# 10 min (ops/agents/publish_live.py). When `at` is older than 30 min this opens ONE issue labelled
+# 10 min (agentic-os-live ops/agents/publish_live.py). When `at` is older than 30 min this opens ONE issue labelled
 # station-down and assigns the owner (mail + GitHub push); when fresh again it comments and closes it.
 # One notice per outage. GitHub's cron lags 5-20 min. Docs: ops/README.md.
 name: station-watch

@@ -27,25 +27,19 @@
       "kind": "instrumental",
       "start": 10.6,
       "end": 23.7,
-      "label": "Голос",
+      "label": "Продолжение вступления",
       "instruments": [
-        "voice",
         "tanbur",
         "bendir",
         "baglama",
         "oud",
         "qanun"
       ],
-      "note": "Голос и танбур почти вместе. Затем бендир и баглама Kutay Ozcan, под конец уд Selim Boyaci и канун Onur Cicin.",
+      "note": "Танбур с начала. Затем бендир и баглама, под конец уд и канун.",
       "flags": [
-        "timing-draft",
-        "text-unverified"
+        "timing-draft"
       ],
       "entries": [
-        {
-          "key": "voice",
-          "at": 10.6
-        },
         {
           "key": "tanbur",
           "at": 10.95
@@ -1004,13 +998,10 @@
       "kind": "instrumental",
       "start": 172,
       "end": 174,
-      "label": "Голос",
-      "instruments": [
-        "voice"
-      ],
+      "label": "Проигрыш",
+      "instruments": [],
       "flags": [
-        "timing-draft",
-        "text-unverified"
+        "timing-draft"
       ]
     },
     {
@@ -2678,9 +2669,23 @@
       ]
     },
     {
-      "id": "inst-before-mawwal",
+      "id": "voice-before-mawwal",
       "kind": "instrumental",
       "start": 385.887,
+      "end": 387.0,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "inst-before-mawwal",
+      "kind": "instrumental",
+      "start": 387.0,
       "end": 404.084,
       "label": "Проигрыш",
       "instruments": [
@@ -4452,11 +4457,9 @@
       "kind": "instrumental",
       "start": 565.09,
       "end": 580.06,
-      "label": "Окончание",
-      "instruments": [
-        "ensemble"
-      ],
-      "note": "Инструменты после последнего голоса.",
+      "label": "Аплодисменты",
+      "instruments": [],
+      "note": "Аплодисменты и поклоны, пения нет.",
       "flags": [
         "timing-draft",
         "attribution-unverified"

@@ -740,7 +740,7 @@ function videoNext(): Next {
       row: '9б',
       file: 'docs/methodology/09-instruments.md',
       command: `npm run song-status -- ${slug}`,
-      because: `Видео лежит в work/${slug}. Просмотр запускает Claude · Lead, не Grok. Задание — scripts/instrument_id/prompts/watch-video.md, путь видео подставьте вместо {{VIDEO}}:\n  agy -p "<текст watch-video.md>" --model gemini-3.8-flash-high --output-format json --json-schema scripts/instrument_id/schema/vision.json --print-timeout 2350s\nОтвет structured_output запишите в docs/analysis/${slug}/vision.json. Расход: python ops/usage/collect.py --run <json agy> --task "watch-video ${slug}". Если вы не Claude · Lead, напишите в отчёте, что видео ждёт просмотра, и agy не вызывайте.`,
+      because: `Видео лежит в work/${slug}. Просмотр запускает Claude · Lead, не Grok. Задание — scripts/instrument_id/prompts/watch-video.md: скопируйте его в work/${slug}/watch-prompt.md, путь видео подставьте вместо {{VIDEO}}, запустите из корня репозитория (agy только через agy_run.py настройки владельца, он же пишет расход):\n  python ../agentic-os-live/ops/agents/agy_run.py . gemini-3.8-flash-high - 2350s scripts/instrument_id/schema/vision.json work/${slug}/watch-prompt.md --task "watch-video ${slug}"\nОтвет structured_output запишите в docs/analysis/${slug}/vision.json. Если вы не Claude · Lead, напишите в отчёте, что видео ждёт просмотра, и agy не вызывайте.`,
     };
   }
   if (!visionFrames && officialUrl && !videoStopped) {

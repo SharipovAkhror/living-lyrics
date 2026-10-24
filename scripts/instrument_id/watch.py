@@ -221,9 +221,11 @@ def ask_sheet(sheet: Path, times: list[float], backend: str = "agy") -> dict:
     return payload
 
 
-# Every agy run goes through ops/agents/agy_run.py: one folder, logged in the usage ledger.
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'ops' / 'agents'))
-import agy_run  # noqa: E402
+# Every agy run goes through agentic-os-live/ops/agents/agy_run.py (scripts/tools/aos_home.py).
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts' / 'tools'))
+from aos_home import import_agy_run  # noqa: E402
+
+agy_run = import_agy_run()
 
 
 def _ask_agy(sheet: Path, prompt: str) -> dict:

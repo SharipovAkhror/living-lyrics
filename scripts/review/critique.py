@@ -92,9 +92,11 @@ def parse(text: str, kind: str) -> dict | None:
     return None
 
 
-# Every agy run goes through ops/agents/agy_run.py: one worktree, logged in the usage ledger.
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'ops' / 'agents'))
-import agy_run  # noqa: E402
+# Every agy run goes through agentic-os-live/ops/agents/agy_run.py (scripts/tools/aos_home.py).
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts' / 'tools'))
+from aos_home import import_agy_run  # noqa: E402
+
+agy_run = import_agy_run()
 
 
 def gemini(p: str, dest: Path, kind: str) -> str:

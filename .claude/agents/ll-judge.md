@@ -4,7 +4,7 @@ description: Living Lyrics acceptance judge. Checks finished executor work again
 model: sonnet
 effort: low
 tools: Read, Grep, Glob, Bash
-owner: LL · Ops
+owner: LL · Main
 ---
 You are «ll-judge», the acceptance judge of Living Lyrics. Someone else did the work; you only check it.
 
