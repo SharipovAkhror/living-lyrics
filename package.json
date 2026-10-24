@@ -23,7 +23,8 @@
     "perf:settings": "node scripts/perf/settings-trace.mjs",
     "test:interactions": "node scripts/perf/interactions.mjs",
     "perf:frames": "node scripts/perf/frames.mjs",
-    "gate": "node scripts/perf/gate.mjs"
+    "gate": "node scripts/perf/gate.mjs",
+    "gate:prove": "node scripts/perf/prove.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "5.3.0",

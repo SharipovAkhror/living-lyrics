@@ -5,6 +5,7 @@
  * only: a scaled, clipped layer the size of the stage paints black in WebKit.
  * The loop lives here, not in an effect, so a strict remount cannot eat it.
  */
+import { noteFlightFrame } from '@/app/mutate';
 import { stageFrame } from '@/scene/columns';
 import { FLIGHT_SPRING, getMotionScale, stepSpring, type SpringState } from '@/ui/spring';
 
@@ -240,6 +241,11 @@ function frame(now: number) {
     place(node, fromBox, fromBox, 0);
     if (now - started > 1400) finish();
     else raf = requestAnimationFrame(frame);
+    return;
+  }
+  // A planted fault (preview only) holds this frame or skips the step.
+  if (noteFlightFrame(now) === 'skip') {
+    raf = requestAnimationFrame(frame);
     return;
   }
   state = stepSpring(state, 1, dt, FLIGHT_SPRING);

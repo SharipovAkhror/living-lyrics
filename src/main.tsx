@@ -8,9 +8,11 @@ import './ui/glass/glass.css';
 import './styles/phone.css';
 import { installPhoneBudget } from './ui/phone';
 import { setMotionScale } from './ui/spring';
+import { installMutations } from './app/mutate';
 import { App } from './app/App';
 
 installPhoneBudget();
+installMutations();
 
 // Recording only. Springs follow `slowmo`. WebKit has no CDP playback rate,
 // so `anims` slows CSS animations the same way. Chromium recordings use CDP
