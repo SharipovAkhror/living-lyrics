@@ -3,435 +3,435 @@
     "line": "en1-01",
     "cue": 1,
     "lang": "en",
-    "start": 101.0,
-    "end": 103.0
+    "start": 101.24,
+    "end": 102.68
   },
   {
     "line": "en2-01",
     "cue": 2,
     "lang": "en",
-    "start": 103.02,
-    "end": 104.0
+    "start": 102.68,
+    "end": 103.66
   },
   {
     "line": "en3-01",
     "cue": 3,
     "lang": "en",
-    "start": 105.0,
-    "end": 107.0
+    "start": 104.84,
+    "end": 106.56
   },
   {
     "line": "en4-01",
     "cue": 4,
     "lang": "en",
-    "start": 107.02,
-    "end": 108.0
+    "start": 106.56,
+    "end": 107.54
   },
   {
     "line": "en5-01",
     "cue": 5,
     "lang": "en",
-    "start": 109.0,
-    "end": 110.0
+    "start": 108.76,
+    "end": 109.76
   },
   {
     "line": "en6-01",
     "cue": 6,
     "lang": "en",
-    "start": 111.0,
-    "end": 112.0
+    "start": 110.84,
+    "end": 111.84
   },
   {
     "line": "en7-01",
     "cue": 7,
     "lang": "en",
-    "start": 113.0,
-    "end": 114.0
+    "start": 112.72,
+    "end": 113.72
   },
   {
     "line": "en6-02",
     "cue": 8,
     "lang": "en",
-    "start": 115.0,
-    "end": 116.0
+    "start": 114.76,
+    "end": 115.76
   },
   {
     "line": "en8-01",
     "cue": 9,
     "lang": "en",
-    "start": 117.0,
-    "end": 118.0
+    "start": 116.64,
+    "end": 118.32
   },
   {
     "line": "en9-01",
     "cue": 10,
     "lang": "en",
-    "start": 118.02,
-    "end": 119.0
+    "start": 118.32,
+    "end": 119.3
   },
   {
     "line": "en10-01",
     "cue": 11,
     "lang": "en",
-    "start": 120.0,
-    "end": 122.0
+    "start": 120.52,
+    "end": 122.24
   },
   {
     "line": "en11-01",
     "cue": 12,
     "lang": "en",
-    "start": 122.02,
-    "end": 123.0
+    "start": 122.24,
+    "end": 123.22
   },
   {
     "line": "en5-02",
     "cue": 13,
     "lang": "en",
-    "start": 124.0,
-    "end": 125.0
+    "start": 124.44,
+    "end": 125.44
   },
   {
     "line": "en6-03",
     "cue": 14,
     "lang": "en",
-    "start": 126.0,
-    "end": 127.0
+    "start": 126.52,
+    "end": 127.52
   },
   {
     "line": "en7-02",
     "cue": 15,
     "lang": "en",
-    "start": 128.0,
-    "end": 129.0
+    "start": 128.36,
+    "end": 129.36
   },
   {
     "line": "en6-04",
     "cue": 16,
     "lang": "en",
-    "start": 130.0,
-    "end": 132.0
+    "start": 130.44,
+    "end": 132.44
   },
   {
     "line": "b1q1-01",
     "cue": 17,
     "lang": "fa",
-    "start": 133.0,
-    "end": 140.5
+    "start": 133.16,
+    "end": 140.68
   },
   {
     "line": "b1q2-01",
     "cue": 18,
     "lang": "fa",
-    "start": 140.52,
-    "end": 148.0
+    "start": 140.68,
+    "end": 148.18
   },
   {
     "line": "b1q3-01",
     "cue": 19,
     "lang": "fa",
-    "start": 148.02,
-    "end": 155.5
+    "start": 148.18,
+    "end": 155.68
   },
   {
     "line": "b1q4-01",
     "cue": 20,
     "lang": "fa",
-    "start": 155.52,
-    "end": 163.0
+    "start": 155.68,
+    "end": 163.16
   },
   {
     "line": "b2q1-01",
     "cue": 21,
     "lang": "fa",
-    "start": 180.25,
-    "end": 181.9
+    "start": 180.36,
+    "end": 182.28
   },
   {
     "line": "b2q2-01",
     "cue": 22,
     "lang": "fa",
-    "start": 182.0,
-    "end": 183.9
+    "start": 182.28,
+    "end": 184.28
   },
   {
     "line": "b2q3-01",
     "cue": 23,
     "lang": "fa",
-    "start": 184.0,
-    "end": 185.9
+    "start": 184.28,
+    "end": 186.28
   },
   {
     "line": "b2q4-01",
     "cue": 24,
     "lang": "fa",
-    "start": 186.0,
-    "end": 187.9
+    "start": 186.28,
+    "end": 188.28
   },
   {
     "line": "b3q1-01",
     "cue": 25,
     "lang": "fa",
-    "start": 188.0,
-    "end": 189.9
+    "start": 188.28,
+    "end": 190.28
   },
   {
     "line": "b3q2-01",
     "cue": 26,
     "lang": "fa",
-    "start": 190.0,
-    "end": 191.9
+    "start": 190.28,
+    "end": 192.28
   },
   {
     "line": "b3q3-01",
     "cue": 27,
     "lang": "fa",
-    "start": 192.0,
-    "end": 193.9
+    "start": 192.28,
+    "end": 194.28
   },
   {
     "line": "b3q4-01",
     "cue": 28,
     "lang": "fa",
-    "start": 194.01,
-    "end": 196.05
+    "start": 194.28,
+    "end": 196.35
   },
   {
     "line": "b3q4-02",
     "cue": 29,
     "lang": "fa",
-    "start": 196.07,
-    "end": 197.95
+    "start": 196.35,
+    "end": 198.28
   },
   {
     "line": "b4q1-01",
     "cue": 30,
     "lang": "fa",
-    "start": 198.0,
-    "end": 199.9
+    "start": 198.28,
+    "end": 200.28
   },
   {
     "line": "b4q2-01",
     "cue": 31,
     "lang": "fa",
-    "start": 200.0,
-    "end": 201.9
+    "start": 200.28,
+    "end": 202.28
   },
   {
     "line": "b4q3-01",
     "cue": 32,
     "lang": "fa",
-    "start": 202.0,
-    "end": 203.9
+    "start": 202.28,
+    "end": 204.28
   },
   {
     "line": "b4q4-01",
     "cue": 33,
     "lang": "fa",
-    "start": 204.0,
-    "end": 205.9
+    "start": 204.28,
+    "end": 206.28
   },
   {
     "line": "b5q1-01",
     "cue": 34,
     "lang": "fa",
-    "start": 206.0,
-    "end": 207.9
+    "start": 206.28,
+    "end": 208.28
   },
   {
     "line": "b5q2-01",
     "cue": 35,
     "lang": "fa",
-    "start": 208.0,
-    "end": 209.9
+    "start": 208.28,
+    "end": 210.28
   },
   {
     "line": "b5q3-01",
     "cue": 36,
     "lang": "fa",
-    "start": 210.0,
-    "end": 211.9
+    "start": 210.28,
+    "end": 212.18
   },
   {
     "line": "b5q4-01",
     "cue": 37,
     "lang": "fa",
-    "start": 212.25,
-    "end": 213.95
+    "start": 212.28,
+    "end": 214.25
   },
   {
     "line": "b5q4-02",
     "cue": 38,
     "lang": "fa",
-    "start": 213.97,
-    "end": 216.0
+    "start": 214.25,
+    "end": 216.28
   },
   {
     "line": "b6q1-01",
     "cue": 39,
     "lang": "fa",
-    "start": 216.02,
-    "end": 217.9
+    "start": 216.28,
+    "end": 218.28
   },
   {
     "line": "b6q2-01",
     "cue": 40,
     "lang": "fa",
-    "start": 218.0,
-    "end": 219.9
+    "start": 218.28,
+    "end": 220.4
   },
   {
     "line": "b6q3-01",
     "cue": 41,
     "lang": "fa",
-    "start": 220.0,
-    "end": 221.9
+    "start": 220.4,
+    "end": 222.4
   },
   {
     "line": "b6q4-01",
     "cue": 42,
     "lang": "fa",
-    "start": 222.0,
-    "end": 223.9
+    "start": 222.4,
+    "end": 224.28
   },
   {
     "line": "b7q1-01",
     "cue": 43,
     "lang": "fa",
-    "start": 224.0,
-    "end": 225.9
+    "start": 224.28,
+    "end": 226.56
   },
   {
     "line": "b7q2-01",
     "cue": 44,
     "lang": "fa",
-    "start": 226.0,
-    "end": 227.9
+    "start": 226.56,
+    "end": 228.4
   },
   {
     "line": "b7q3-01",
     "cue": 45,
     "lang": "fa",
-    "start": 228.0,
-    "end": 230.9
+    "start": 228.4,
+    "end": 230.84
   },
   {
     "line": "b7q4-01",
     "cue": 46,
     "lang": "fa",
-    "start": 230.92,
-    "end": 232.17
+    "start": 230.84,
+    "end": 232.03
   },
   {
     "line": "b7q4-02",
     "cue": 47,
     "lang": "fa",
-    "start": 232.19,
-    "end": 234.29
+    "start": 232.03,
+    "end": 234.15
   },
   {
     "line": "b7q4-03",
     "cue": 48,
     "lang": "fa",
-    "start": 234.31,
-    "end": 236.15
+    "start": 234.15,
+    "end": 235.99
   },
   {
     "line": "b1q1-02",
     "cue": 49,
     "lang": "fa",
     "start": 236.92,
-    "end": 241.6
+    "end": 241.7
   },
   {
     "line": "b1q2-02",
     "cue": 50,
     "lang": "fa",
-    "start": 241.62,
-    "end": 246.28
+    "start": 241.7,
+    "end": 246.38
   },
   {
     "line": "b1q3-02",
     "cue": 51,
     "lang": "fa",
-    "start": 246.3,
-    "end": 250.1
+    "start": 246.38,
+    "end": 250.2
   },
   {
     "line": "b1q4-02",
     "cue": 52,
     "lang": "fa",
-    "start": 250.12,
-    "end": 253.92
+    "start": 250.2,
+    "end": 254.02
   },
   {
     "line": "b1q1-03",
     "cue": 53,
     "lang": "fa",
-    "start": 253.94,
-    "end": 257.77
+    "start": 254.02,
+    "end": 257.87
   },
   {
     "line": "b1q2-03",
     "cue": 54,
     "lang": "fa",
-    "start": 257.79,
-    "end": 261.62
+    "start": 257.87,
+    "end": 261.72
   },
   {
     "line": "b1q3-03",
     "cue": 55,
     "lang": "fa",
-    "start": 261.64,
-    "end": 265.81
+    "start": 261.72,
+    "end": 265.91
   },
   {
     "line": "b1q4-03",
     "cue": 56,
     "lang": "fa",
-    "start": 265.83,
-    "end": 269.98
+    "start": 265.91,
+    "end": 270.48
   },
   {
     "line": "b8q1-01",
     "cue": 57,
     "lang": "fa",
-    "start": 270.0,
-    "end": 275.0
+    "start": 270.48,
+    "end": 275.48
   },
   {
     "line": "b8q2-01",
     "cue": 58,
     "lang": "fa",
-    "start": 276.0,
-    "end": 281.0
+    "start": 276.24,
+    "end": 281.24
   },
   {
     "line": "b8q3-01",
     "cue": 59,
     "lang": "fa",
-    "start": 282.0,
-    "end": 285.0
+    "start": 282.12,
+    "end": 285.12
   },
   {
     "line": "b8q4-01",
     "cue": 60,
     "lang": "fa",
-    "start": 286.0,
-    "end": 295.0
+    "start": 286.08,
+    "end": 295.08
   },
   {
     "line": "tr1-01",
     "cue": 61,
     "lang": "tr",
-    "start": 315.0,
-    "end": 318.0
+    "start": 315.24,
+    "end": 318.24
   },
   {
     "line": "tr2-01",
     "cue": 62,
     "lang": "tr",
-    "start": 319.0,
-    "end": 322.0
+    "start": 318.84,
+    "end": 321.84
   },
   {
     "line": "tr3-01",
@@ -444,43 +444,43 @@
     "line": "tr4-01",
     "cue": 64,
     "lang": "tr",
-    "start": 327.0,
-    "end": 330.0
+    "start": 327.08,
+    "end": 330.08
   },
   {
     "line": "tr5-01",
     "cue": 65,
     "lang": "tr",
-    "start": 331.0,
-    "end": 334.0
+    "start": 330.96,
+    "end": 333.96
   },
   {
     "line": "tr6-01",
     "cue": 66,
     "lang": "tr",
-    "start": 335.0,
-    "end": 337.0
+    "start": 334.84,
+    "end": 336.84
   },
   {
     "line": "tr7-01",
     "cue": 67,
     "lang": "tr",
-    "start": 338.0,
-    "end": 342.0
+    "start": 338.72,
+    "end": 342.72
   },
   {
     "line": "tr8-01",
     "cue": 68,
     "lang": "tr",
-    "start": 343.0,
-    "end": 346.0
+    "start": 343.16,
+    "end": 346.16
   },
   {
     "line": "tr9-01",
     "cue": 69,
     "lang": "tr",
-    "start": 347.0,
-    "end": 350.0
+    "start": 347.12,
+    "end": 350.12
   },
   {
     "line": "tr10-01",
@@ -500,36 +500,36 @@
     "line": "tr12-01",
     "cue": 72,
     "lang": "tr",
-    "start": 359.0,
-    "end": 362.0
+    "start": 358.88,
+    "end": 361.88
   },
   {
     "line": "tr9-02",
     "cue": 73,
     "lang": "tr",
-    "start": 363.0,
-    "end": 366.0
+    "start": 362.84,
+    "end": 365.84
   },
   {
     "line": "tr10-02",
     "cue": 74,
     "lang": "tr",
-    "start": 367.0,
-    "end": 370.0
+    "start": 367.16,
+    "end": 370.16
   },
   {
     "line": "tr11-02",
     "cue": 75,
     "lang": "tr",
-    "start": 371.0,
-    "end": 374.0
+    "start": 371.16,
+    "end": 374.16
   },
   {
     "line": "tr12-02",
     "cue": 76,
     "lang": "tr",
-    "start": 375.0,
-    "end": 377.99
+    "start": 375.04,
+    "end": 378.03
   },
   {
     "line": "b1q1-04",
@@ -550,7 +550,7 @@
     "cue": 79,
     "lang": "fa",
     "start": 393.48,
-    "end": 399.04
+    "end": 399.06
   },
   {
     "line": "b1q4-04",
@@ -563,512 +563,512 @@
     "line": "b9q1-01",
     "cue": 81,
     "lang": "fa",
-    "start": 412.0,
-    "end": 413.9
+    "start": 412.36,
+    "end": 414.12
   },
   {
     "line": "b9q2-01",
     "cue": 82,
     "lang": "fa",
-    "start": 414.0,
-    "end": 415.9
+    "start": 414.12,
+    "end": 416.12
   },
   {
     "line": "b9q3-01",
     "cue": 83,
     "lang": "fa",
-    "start": 416.0,
-    "end": 417.9
+    "start": 416.12,
+    "end": 418.12
   },
   {
     "line": "b9q4-01",
     "cue": 84,
     "lang": "fa",
-    "start": 418.0,
-    "end": 419.9
+    "start": 418.12,
+    "end": 420.12
   },
   {
     "line": "b10q1-01",
     "cue": 85,
     "lang": "fa",
-    "start": 420.0,
-    "end": 421.9
+    "start": 420.12,
+    "end": 422.12
   },
   {
     "line": "b10q2-01",
     "cue": 86,
     "lang": "fa",
-    "start": 422.0,
-    "end": 423.9
+    "start": 422.12,
+    "end": 424.12
   },
   {
     "line": "b10q3-01",
     "cue": 87,
     "lang": "fa",
-    "start": 424.0,
-    "end": 425.9
+    "start": 424.12,
+    "end": 426.12
   },
   {
     "line": "b10q4-01",
     "cue": 88,
     "lang": "fa",
-    "start": 426.0,
-    "end": 429.9
+    "start": 426.12,
+    "end": 430.28
   },
   {
     "line": "b11q1-01",
     "cue": 89,
     "lang": "fa",
-    "start": 430.0,
-    "end": 431.9
+    "start": 430.28,
+    "end": 432.32
   },
   {
     "line": "b11q2-01",
     "cue": 90,
     "lang": "fa",
-    "start": 432.0,
-    "end": 433.9
+    "start": 432.32,
+    "end": 434.28
   },
   {
     "line": "b11q3-01",
     "cue": 91,
     "lang": "fa",
-    "start": 434.0,
-    "end": 435.9
+    "start": 434.28,
+    "end": 436.2
   },
   {
     "line": "b11q4-01",
     "cue": 92,
     "lang": "fa",
-    "start": 436.0,
-    "end": 437.9
+    "start": 436.2,
+    "end": 438.24
   },
   {
     "line": "b12q1-01",
     "cue": 93,
     "lang": "fa",
-    "start": 438.0,
-    "end": 439.9
+    "start": 438.24,
+    "end": 440.2
   },
   {
     "line": "b12q2-01",
     "cue": 94,
     "lang": "fa",
-    "start": 440.0,
-    "end": 441.9
+    "start": 440.2,
+    "end": 442.16
   },
   {
     "line": "b12q3-01",
     "cue": 95,
     "lang": "fa",
-    "start": 442.0,
-    "end": 443.9
+    "start": 442.16,
+    "end": 444.36
   },
   {
     "line": "b12q4-01",
     "cue": 96,
     "lang": "fa",
-    "start": 444.0,
-    "end": 445.9
+    "start": 444.36,
+    "end": 446.24
   },
   {
     "line": "b13q1-01",
     "cue": 97,
     "lang": "fa",
-    "start": 446.0,
-    "end": 447.9
+    "start": 446.24,
+    "end": 448.32
   },
   {
     "line": "b13q2-01",
     "cue": 98,
     "lang": "fa",
-    "start": 448.0,
-    "end": 449.9
+    "start": 448.32,
+    "end": 450.12
   },
   {
     "line": "b13q3-01",
     "cue": 99,
     "lang": "fa",
-    "start": 450.0,
-    "end": 451.9
+    "start": 450.12,
+    "end": 452.24
   },
   {
     "line": "b13q4-01",
     "cue": 100,
     "lang": "fa",
-    "start": 452.0,
-    "end": 453.9
+    "start": 452.24,
+    "end": 454.24
   },
   {
     "line": "b14q1-01",
     "cue": 101,
     "lang": "fa",
-    "start": 454.0,
-    "end": 455.9
+    "start": 454.24,
+    "end": 456.36
   },
   {
     "line": "b14q2-01",
     "cue": 102,
     "lang": "fa",
-    "start": 456.0,
-    "end": 457.9
+    "start": 456.36,
+    "end": 458.24
   },
   {
     "line": "b14q3-01",
     "cue": 103,
     "lang": "fa",
-    "start": 458.0,
-    "end": 459.9
+    "start": 458.24,
+    "end": 460.14
   },
   {
     "line": "b14q4-01",
     "cue": 104,
     "lang": "fa",
-    "start": 462.05,
-    "end": 464.11
+    "start": 462.41,
+    "end": 464.49
   },
   {
     "line": "b14q4-02",
     "cue": 105,
     "lang": "fa",
-    "start": 464.13,
-    "end": 466.9
+    "start": 464.49,
+    "end": 467.26
   },
   {
     "line": "b1q1-05",
     "cue": 106,
     "lang": "fa",
-    "start": 467.83,
-    "end": 471.85
+    "start": 468.84,
+    "end": 472.23
   },
   {
     "line": "b1q2-05",
     "cue": 107,
     "lang": "fa",
-    "start": 472.39,
-    "end": 476.05
+    "start": 472.23,
+    "end": 475.91
   },
   {
     "line": "b1q3-05",
     "cue": 108,
     "lang": "fa",
-    "start": 476.07,
-    "end": 479.91
+    "start": 475.91,
+    "end": 479.77
   },
   {
     "line": "b1q4-05",
     "cue": 109,
     "lang": "fa",
-    "start": 479.93,
-    "end": 484.03
+    "start": 479.77,
+    "end": 483.89
   },
   {
     "line": "b1q1-06",
     "cue": 110,
     "lang": "fa",
-    "start": 484.05,
-    "end": 487.71
+    "start": 483.89,
+    "end": 487.57
   },
   {
     "line": "b1q2-06",
     "cue": 111,
     "lang": "fa",
-    "start": 487.73,
-    "end": 491.51
+    "start": 487.57,
+    "end": 491.37
   },
   {
     "line": "b1q3-06",
     "cue": 112,
     "lang": "fa",
-    "start": 491.53,
-    "end": 495.29
+    "start": 491.37,
+    "end": 495.15
   },
   {
     "line": "b1q4-06",
     "cue": 113,
     "lang": "fa",
-    "start": 495.31,
-    "end": 499.97
+    "start": 495.15,
+    "end": 499.81
   },
   {
     "line": "b15q1-01",
     "cue": 114,
     "lang": "fa",
-    "start": 540.0,
-    "end": 541.9
+    "start": 540.12,
+    "end": 542.2
   },
   {
     "line": "b15q2-01",
     "cue": 115,
     "lang": "fa",
-    "start": 542.0,
-    "end": 543.9
+    "start": 542.2,
+    "end": 544.2
   },
   {
     "line": "b15q3-01",
     "cue": 116,
     "lang": "fa",
-    "start": 544.0,
-    "end": 545.9
+    "start": 544.2,
+    "end": 546.2
   },
   {
     "line": "b15q4-01",
     "cue": 117,
     "lang": "fa",
-    "start": 546.0,
-    "end": 547.9
+    "start": 546.2,
+    "end": 548.2
   },
   {
     "line": "b16q1-01",
     "cue": 118,
     "lang": "fa",
-    "start": 548.0,
-    "end": 549.9
+    "start": 548.2,
+    "end": 550.2
   },
   {
     "line": "b16q2-01",
     "cue": 119,
     "lang": "fa",
-    "start": 550.0,
-    "end": 551.9
+    "start": 550.2,
+    "end": 552.2
   },
   {
     "line": "b16q3-01",
     "cue": 120,
     "lang": "fa",
-    "start": 552.0,
-    "end": 553.9
+    "start": 552.2,
+    "end": 554.2
   },
   {
     "line": "b16q4-01",
     "cue": 121,
     "lang": "fa",
-    "start": 554.0,
-    "end": 557.9
+    "start": 554.2,
+    "end": 558.2
   },
   {
     "line": "b17q1-01",
     "cue": 122,
     "lang": "fa",
-    "start": 558.0,
-    "end": 559.9
+    "start": 558.2,
+    "end": 559.96
   },
   {
     "line": "b17q2-01",
     "cue": 123,
     "lang": "fa",
-    "start": 560.0,
-    "end": 561.9
+    "start": 559.96,
+    "end": 561.92
   },
   {
     "line": "b17q3-01",
     "cue": 124,
     "lang": "fa",
-    "start": 562.0,
-    "end": 563.9
+    "start": 561.92,
+    "end": 563.84
   },
   {
     "line": "b17q4-01",
     "cue": 125,
     "lang": "fa",
-    "start": 564.0,
-    "end": 565.9
+    "start": 563.84,
+    "end": 565.88
   },
   {
     "line": "b18q1-01",
     "cue": 126,
     "lang": "fa",
-    "start": 566.0,
-    "end": 567.9
+    "start": 565.88,
+    "end": 567.84
   },
   {
     "line": "b18q2-01",
     "cue": 127,
     "lang": "fa",
-    "start": 568.0,
-    "end": 569.9
+    "start": 567.84,
+    "end": 569.8
   },
   {
     "line": "b18q3-01",
     "cue": 128,
     "lang": "fa",
-    "start": 570.0,
-    "end": 571.9
+    "start": 569.8,
+    "end": 572.2
   },
   {
     "line": "b18q4-01",
     "cue": 129,
     "lang": "fa",
-    "start": 572.0,
-    "end": 576.9
+    "start": 572.2,
+    "end": 577.1
   },
   {
     "line": "b19q1-01",
     "cue": 130,
     "lang": "fa",
-    "start": 578.0,
-    "end": 579.9
+    "start": 577.84,
+    "end": 579.88
   },
   {
     "line": "b19q2-01",
     "cue": 131,
     "lang": "fa",
-    "start": 580.0,
-    "end": 585.9
+    "start": 579.88,
+    "end": 586.12
   },
   {
     "line": "b19q3-01",
     "cue": 132,
     "lang": "fa",
-    "start": 586.0,
-    "end": 587.9
+    "start": 586.12,
+    "end": 588.0
   },
   {
     "line": "b19q4-01",
     "cue": 133,
     "lang": "fa",
     "start": 588.0,
-    "end": 589.9
+    "end": 590.12
   },
   {
     "line": "b20q1-01",
     "cue": 134,
     "lang": "fa",
-    "start": 590.0,
-    "end": 591.9
+    "start": 590.12,
+    "end": 592.16
   },
   {
     "line": "b20q2-01",
     "cue": 135,
     "lang": "fa",
-    "start": 592.0,
-    "end": 593.9
+    "start": 592.16,
+    "end": 594.16
   },
   {
     "line": "b20q3-01",
     "cue": 136,
     "lang": "fa",
-    "start": 594.0,
-    "end": 595.9
+    "start": 594.16,
+    "end": 596.24
   },
   {
     "line": "b20q4-01",
     "cue": 137,
     "lang": "fa",
-    "start": 596.0,
-    "end": 597.9
+    "start": 596.24,
+    "end": 598.2
   },
   {
     "line": "b21q1-01",
     "cue": 138,
     "lang": "fa",
-    "start": 598.0,
-    "end": 599.9
+    "start": 598.2,
+    "end": 600.24
   },
   {
     "line": "b21q2-01",
     "cue": 139,
     "lang": "fa",
-    "start": 600.0,
-    "end": 601.9
+    "start": 600.24,
+    "end": 602.2
   },
   {
     "line": "b21q3-01",
     "cue": 140,
     "lang": "fa",
-    "start": 602.0,
-    "end": 603.9
+    "start": 602.2,
+    "end": 604.2
   },
   {
     "line": "b21q4-01",
     "cue": 141,
     "lang": "fa",
-    "start": 604.0,
-    "end": 609.9
+    "start": 604.2,
+    "end": 610.1
   },
   {
     "line": "b1q1-07",
     "cue": 142,
     "lang": "fa",
-    "start": 611.73,
-    "end": 615.45
+    "start": 612.88,
+    "end": 616.35
   },
   {
     "line": "b1q2-07",
     "cue": 143,
     "lang": "fa",
-    "start": 615.47,
-    "end": 619.53
+    "start": 616.35,
+    "end": 620.43
   },
   {
     "line": "b1q3-07",
     "cue": 144,
     "lang": "fa",
-    "start": 619.55,
-    "end": 623.56
+    "start": 620.43,
+    "end": 624.46
   },
   {
     "line": "b1q4-07",
     "cue": 145,
     "lang": "fa",
-    "start": 623.58,
-    "end": 627.59
+    "start": 624.46,
+    "end": 627.84
   },
   {
     "line": "tr9-03",
     "cue": 146,
     "lang": "tr",
-    "start": 628.0,
-    "end": 631.0
+    "start": 627.84,
+    "end": 630.84
   },
   {
     "line": "tr10-03",
     "cue": 147,
     "lang": "tr",
-    "start": 632.0,
-    "end": 635.0
+    "start": 632.16,
+    "end": 635.16
   },
   {
     "line": "tr11-03",
     "cue": 148,
     "lang": "tr",
-    "start": 636.0,
-    "end": 638.0
+    "start": 636.04,
+    "end": 638.04
   },
   {
     "line": "tr12-03",
     "cue": 149,
     "lang": "tr",
-    "start": 639.0,
-    "end": 642.0
+    "start": 639.4,
+    "end": 642.4
   },
   {
     "line": "b1q3-08",
     "cue": 150,
     "lang": "fa",
-    "start": 643.0,
-    "end": 646.0
+    "start": 643.4,
+    "end": 646.4
   },
   {
     "line": "b1q4-08",
     "cue": 151,
     "lang": "fa",
-    "start": 647.0,
-    "end": 650.0
+    "start": 647.08,
+    "end": 650.08
   },
   {
     "line": "b1q3-09",
     "cue": 152,
     "lang": "fa",
-    "start": 651.0,
-    "end": 654.0
+    "start": 650.96,
+    "end": 653.96
   },
   {
     "line": "b1q4-09",
     "cue": 153,
     "lang": "fa",
-    "start": 655.0,
-    "end": 658.0
+    "start": 654.52,
+    "end": 657.52
   },
   {
     "line": "b1q3-10",
@@ -1081,7 +1081,7 @@
     "line": "b1q4-10",
     "cue": 155,
     "lang": "fa",
-    "start": 661.0,
-    "end": 669.0
+    "start": 661.04,
+    "end": 669.04
   }
 ]

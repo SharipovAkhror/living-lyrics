@@ -2413,6 +2413,47 @@ def test_lang_ctc() -> None:
           and stamped[0].get('lang_role') is None, str(stamped[0]))
 
 
+def test_lyric_frame_rises() -> None:
+    """A caption onset is the first frame of a held rise, not a flicker."""
+    import lyric_frames as LF
+
+    flat = [10] * 40
+    check('a flat crop has no onset', LF.rise_onsets(flat, 25) == [])
+    step = [10] * 10 + [90] * 30
+    got = LF.rise_onsets(step, 25, rise=60, hold=8, step=8, debounce_s=0.40)
+    check('a held step starts on its first bright frame',
+          len(got) == 1 and got[0]['frame'] == 10 and got[0]['t'] == 0.4, str(got))
+    # 0.20 s later is inside the debounce. 1.00 s later is a second caption.
+    two = [10] * 10 + [90] * 5 + [10] * 5 + [100] * 40
+    # frames: 0-9 dark, 10-14 bright, 15-19 dark, 20-59 bright. 10/25=0.40, 20/25=0.80.
+    close = LF.rise_onsets(two, 25, rise=60, hold=4, step=8, debounce_s=0.40)
+    check('a second rise inside the debounce is the same appearance',
+          len(close) == 1 and close[0]['frame'] == 10, str(close))
+    far = [10] * 10 + [90] * 20 + [10] * 10 + [100] * 20
+    # 10/25=0.40 and 40/25=1.60, gap 1.20 s.
+    apart = LF.rise_onsets(far, 25, rise=60, hold=8, step=8, debounce_s=0.40)
+    check('a later caption is its own onset',
+          [row['frame'] for row in apart] == [10, 40], str(apart))
+    starts = [1.0, 3.0, 5.0]
+    onsets = [1.2, 2.7, 5.4]
+    assigned = LF.assign_nearest(starts, onsets, 0.9)
+    check('the closer line keeps the onset between two starts',
+          assigned == [0, 1, 2], str(assigned))
+    stolen = LF.assign_nearest([1.0, 1.3], [1.2], 0.9)
+    check('one onset is not given to both lines',
+          stolen == [None, 0] or stolen == [0, None], str(stolen))
+    check('the nearer of the two lines wins that onset', stolen[1] == 0 and stolen[0] is None, str(stolen))
+    cues = [
+        {'start': 1.0, 'end': 3.0},
+        {'start': 3.02, 'end': 5.0},
+    ]
+    spans = LF.retimed_span(cues, [1.24, 3.28])
+    check('a cue that ended on the next start follows the new neighbour',
+          spans == [(1.24, 3.28), (3.28, 5.26)], str(spans))
+    kept = LF.retimed_span([{'start': 10.0, 'end': 12.0}], [None])
+    check('an unmatched cue keeps its span', kept == [(10.0, 12.0)], str(kept))
+
+
 def main() -> int:
     test_viterbi()
     test_star_absorbs_a_hold()
@@ -2447,6 +2488,7 @@ def main() -> int:
     test_harakat()
     test_cue_in_build_proof()
     test_anchor_fence()
+    test_lyric_frame_rises()
     print('FAIL' if PASS else 'all checks passed')
     return PASS
 
