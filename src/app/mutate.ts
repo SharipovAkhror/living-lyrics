@@ -1,12 +1,13 @@
 /**
  * Test-only faults for the motion rows. The dev and preview builds honour
- * `?ll-mutate=a|b|c`. The production build defines the flag false and the
+ * `?ll-mutate=a|b|c|d`. The production build defines the flag false and the
  * bundler drops every branch below, the same way as `?fill=1`.
  *
  * a — the first drawn answer to a tap waits 300 ms (D28).
  * b — during a scrub, one beat with the stage and the player undrawn, then
  *     one beat with a black rectangle over the player (D29).
  * c — the cover flight freezes, then one frame is a full white field (D30).
+ * d — settings rows appear at full opacity on one frame and drop 6 px (D33).
  */
 declare const __MUTATE_QUERY__: boolean | undefined;
 
@@ -16,12 +17,12 @@ declare const __MUTATE_QUERY__: boolean | undefined;
  */
 const MUTATE = typeof __MUTATE_QUERY__ === 'undefined' || __MUTATE_QUERY__;
 
-export type MutateKind = 'a' | 'b' | 'c';
+export type MutateKind = 'a' | 'b' | 'c' | 'd';
 
 function readKind(): MutateKind | '' {
   if (typeof location === 'undefined') return '';
   const v = new URLSearchParams(location.search).get('ll-mutate');
-  return v === 'a' || v === 'b' || v === 'c' ? v : '';
+  return v === 'a' || v === 'b' || v === 'c' || v === 'd' ? v : '';
 }
 
 type FlightFault = 'run' | 'skip';
@@ -253,6 +254,35 @@ function installFlightFault(): void {
   };
 }
 
+/** Settings rows at full opacity, 6 px lower, on the frame they mount (D33). */
+function installRowPop(): void {
+  const mark = (stage: HTMLElement) => {
+    if (stage.dataset.llPop === '1' || !stage.querySelector('.row')) return;
+    stage.dataset.llPop = '1';
+    for (const node of stage.querySelectorAll('.group')) {
+      if (!(node instanceof HTMLElement)) continue;
+      node.style.setProperty('animation', 'none', 'important');
+      node.style.setProperty('opacity', '1', 'important');
+    }
+    // One frame later, so the arrival check sees the 6 px against the frame
+    // the row popped in on. A margin collapses inside the group; a transform
+    // moves the painted box.
+    requestAnimationFrame(() => {
+      const row = stage.querySelector('.row');
+      if (!(row instanceof HTMLElement)) return;
+      // .row--button transitions transform over 320 ms, so a bare write is
+      // still under 1 px on the next Chromium frame. Snap the whole 6 px.
+      row.style.setProperty('transition', 'none', 'important');
+      row.style.setProperty('transform', 'translate3d(0, 6px, 0)', 'important');
+    });
+  };
+  const scan = () => {
+    const stage = document.querySelector('.set-stage');
+    if (stage instanceof HTMLElement) mark(stage);
+  };
+  new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true });
+}
+
 /** Read the query once, at startup. No effect when the build stripped the flag. */
 export function installMutations(): void {
   if (!MUTATE) return;
@@ -260,4 +290,5 @@ export function installMutations(): void {
   if (kind === 'a') installDelay();
   else if (kind === 'b') installScrubFault();
   else if (kind === 'c') installFlightFault();
+  else if (kind === 'd') installRowPop();
 }

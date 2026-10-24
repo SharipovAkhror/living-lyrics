@@ -1,5 +1,5 @@
-// Proves D28–D30 bite. Each planted fault must FAIL on the live preview, in both
-// engines. Exit 0 only when all three do. Not part of `npm run gate`.
+// Proves D28–D30 and D33 bite. Each planted fault must FAIL on the live preview,
+// in both engines. Exit 0 only when all four do. Not part of `npm run gate`.
 // node scripts/perf/prove.mjs
 import { spawn } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -101,10 +101,21 @@ function expectFreeze(out) {
   return problems;
 }
 
+/** D33: both engines fail the row-arrival check on the planted pop. */
+function expectRowPop(out) {
+  const problems = [];
+  for (const engine of ['chromium', 'webkit']) {
+    const rows = linesOf(out, engine, 'D33 rows-arrive-still').filter((line) => line.startsWith('FAIL'));
+    if (!rows.length) problems.push(`${engine} D33 did not fail`);
+  }
+  return problems;
+}
+
 const checks = [
   ['a', expectDelay],
   ['b', expectBlank],
   ['c', expectFreeze],
+  ['d', expectRowPop],
 ];
 
 const built = await run('npx', ['vite', 'build']);

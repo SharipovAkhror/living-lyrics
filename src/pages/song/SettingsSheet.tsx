@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Group, Row, Segmented, Sheet, Slider, Switch } from '@/ui/controls';
 import { SHEET_SHELL_MS } from '@/scene/cover';
 import { Icon } from '@/ui/icons';
@@ -68,6 +68,38 @@ export function SettingsSheet({
     const id = window.setTimeout(() => setFull(true), SHEET_SHELL_MS);
     return () => window.clearTimeout(id);
   }, [open]);
+  // Phone CSS draws these rows at full opacity with no animation. A fade of
+  // two frames keeps the arrival from popping, and the sheet holds its top
+  // until the flag drops (D33). Desktop already fades; an inline opacity
+  // loses to that animation, so this only changes the phone.
+  useLayoutEffect(() => {
+    if (!full) return;
+    const sheet = document.querySelector('.sheet');
+    const stage = document.querySelector('.set-stage');
+    if (!(sheet instanceof HTMLElement) || !(stage instanceof HTMLElement)) return;
+    const nodes = [...stage.querySelectorAll('.group')].filter((node): node is HTMLElement => node instanceof HTMLElement);
+    for (const node of nodes) node.style.opacity = '0';
+    sheet.dataset.rowLock = '1';
+    const steps = [0.34, 0.67, 1];
+    let i = 0;
+    let raf = 0;
+    const tick = () => {
+      const value = steps[i];
+      i += 1;
+      for (const node of nodes) node.style.opacity = String(value);
+      if (i < steps.length) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      for (const node of nodes) node.style.removeProperty('opacity');
+      delete sheet.dataset.rowLock;
+    };
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf);
+      delete sheet.dataset.rowLock;
+    };
+  }, [full]);
   const [leaving, setLeaving] = useState<Page | null>(null);
   const [dir, setDir] = useState<1 | -1>(1);
   const input = useRef<HTMLInputElement>(null);

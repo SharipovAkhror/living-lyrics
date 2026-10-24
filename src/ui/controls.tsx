@@ -91,6 +91,11 @@ export function Sheet({
   const plainRef = useRef(plain);
   plainRef.current = plain;
   openRef.current = open;
+  // Last painted top of the shell, so the row commit can put the top back.
+  const shellTop = useRef<number | null>(null);
+  const lockedTop = useRef<number | null>(null);
+  const prevHeight = useRef(0);
+  const rowHeld = useRef(false);
 
   const remember = () => {
     const el = panel.current;
@@ -144,6 +149,22 @@ export function Sheet({
     let last = performance.now();
     const tick = (now: number) => {
       if (drag.current?.active) return;
+      const elNow = panel.current;
+      // Remember the shell's top on the frames before the rows exist. One read
+      // per frame, and only after the tap's own paint: the first frame is the
+      // layout effect below, not this tick.
+      if (elNow && plainRef.current) shellTop.current = elNow.getBoundingClientRect().top;
+      // Rows fade in over the next frames. Hold the top until that fade clears
+      // the flag, so the spring does not walk the edge while they appear (D33).
+      if (elNow && elNow.dataset.rowLock === '1' && lockedTop.current != null) {
+        const dy = elNow.getBoundingClientRect().top - lockedTop.current;
+        if (Math.abs(dy) > 0.25) state.current = { x: state.current.x - dy, v: 0 };
+        else state.current.v = 0;
+        last = now;
+        paint(state.current.x);
+        raf.current = requestAnimationFrame(tick);
+        return;
+      }
       // The closed form is exact, so a slow WebKit frame may take its whole gap.
       // Capping at 32 ms made the sheet wait out the cast instead of the spring.
       const dt = Math.min(0.1, (now - last) / 1000);
@@ -264,14 +285,37 @@ export function Sheet({
   // The shell is short and anchored to the bottom. Rows grow it upward on the
   // same translate, so the commit itself can cross the note. The spring only
   // parks on the next frame. Hold the top under the card before paint (D5, D22).
+  // The same commit pins the top to the shell's last frame, so the rows do not
+  // move the edge (D33). The fade that follows holds it from the spring tick.
   useLayoutEffect(() => {
     const el = panel.current;
-    if (!el || !openRef.current) return;
+    if (!el || !openRef.current) {
+      rowHeld.current = false;
+      prevHeight.current = 0;
+      lockedTop.current = null;
+      return;
+    }
+    const beforeH = prevHeight.current;
+    const beforeTop = shellTop.current;
     remember();
     const minY = parkBelowCard(el);
-    if (minY == null || state.current.x >= minY) return;
-    state.current = { x: minY, v: 0 };
-    paint(minY);
+    if (minY != null && state.current.x < minY) {
+      state.current = { x: minY, v: 0 };
+      paint(minY);
+    }
+    const grew = !rowHeld.current && beforeH > 40 && el.offsetHeight - beforeH > 8 && !!el.querySelector('.row');
+    if (grew) {
+      if (beforeTop != null) {
+        const dy = el.getBoundingClientRect().top - beforeTop;
+        if (Math.abs(dy) > 0.5) {
+          state.current = { x: state.current.x - dy, v: 0 };
+          paint(state.current.x);
+        }
+      }
+      rowHeld.current = true;
+      lockedTop.current = el.getBoundingClientRect().top;
+    }
+    prevHeight.current = el.offsetHeight;
   });
 
   if (!render) return null;

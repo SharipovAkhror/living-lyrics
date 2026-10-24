@@ -1,7 +1,9 @@
-// Motion rows of docs/design/fixed-defects.md (D28–D32). Every number is read from drawn frames:
+// Motion rows of docs/design/fixed-defects.md (D28–D33). D28–D32 read drawn frames:
 // the engine's own screencast (Chromium Page.startScreencast, WebKit Screencast.startScreencast),
-// one frame per composited frame, in real time. No page clock, no DOM state, no schedules.
-// The DOM is used only to find where a region is before the gesture.
+// one frame per composited frame, in real time. The settings tap also records the page clock:
+// WebKit sends no frame timestamp, so "visible" is the first animation frame on the page.
+// D33 reads that same page clock (opacity and box), not the cast. The DOM is otherwise
+// used only to find where a region is before the gesture.
 // node scripts/perf/motion.mjs --base http://127.0.0.1:4176 [--engine webkit] [--only D28] [--dump dir]
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { chromium, webkit } from 'playwright';
@@ -26,7 +28,7 @@ const engineOnly = args.engine && args.engine !== 'true' ? args.engine : '';
 const dump = args.dump && args.dump !== 'true' ? args.dump : '';
 // Self-test faults, to see the rows bite: --inject stall (a 400 ms block 150 ms into each tap)
 // or --inject blank (the floor undrawn for 150 ms, 700 ms into the scrub).
-// --mutate a|b|c loads the preview with ?ll-mutate=, which plants the fault in the page.
+// --mutate a|b|c|d loads the preview with ?ll-mutate=, which plants the fault in the page.
 const inject = args.inject && args.inject !== 'true' ? args.inject : '';
 const mutate = args.mutate && args.mutate !== 'true' ? args.mutate : '';
 if (dump) mkdirSync(dump, { recursive: true });
@@ -57,6 +59,8 @@ const LIMIT = {
   /** Engraving: internal edge share of the plate box, floor and engine ratio. */
   edgeFloor: 0.3,
   edgeRatio: 1.5,
+  /** D33: the sheet top and the top row may not jump by more than this when rows arrive. */
+  rowJumpPx: 1,
 };
 
 const results = [];
@@ -492,7 +496,15 @@ async function tapRow(browserName, label, frames, tap, box, minPixels) {
   // Chromium delivers a frame 2-25 ms after a change, so its wall time is judged too:
   // heavy work inside the tap would delay the first frame itself.
   const wallOk = browserName !== 'chromium' || hit.ms <= LIMIT.tapMs;
-  note(`${browserName} D28 tap-to-motion`, app <= LIMIT.tapMs && wallOk, `${label} ${Math.round(app)} ms after the first frame (moved at ${Math.round(hit.ms)} ms, first frame at ${Math.round(firstMs)} ms of wall time)`);
+  // Settings names the cast clock. Chromium stamps the swap; WebKit has no stamp, so the
+  // number is when the frame arrived. Other gestures keep the old wording.
+  const clock =
+    label !== 'settings-sheet'
+      ? 'wall time'
+      : browserName === 'webkit'
+        ? 'wall time, clock frame arrival Date.now()'
+        : 'wall time, clock frameSwapWallTime';
+  note(`${browserName} D28 tap-to-motion`, app <= LIMIT.tapMs && wallOk, `${label} ${Math.round(app)} ms after the first frame (moved at ${Math.round(hit.ms)} ms, first frame at ${Math.round(firstMs)} ms of ${clock})`);
   return { hit, app, firstMs };
 }
 
@@ -618,12 +630,129 @@ async function runPlayAndLine(browser, browserName) {
   return c;
 }
 
+/**
+ * On the page: the settings tap's timeStamp, then the first animation frame where
+ * the sheet is visible. Visible: in the document, opacity > 0, not visibility:hidden,
+ * a box that meets the viewport with area > 0, and elementFromPoint at the sheet's
+ * centre hitting the sheet or a child. Also samples the row arrival for D33.
+ * Runs in the page, so it closes over nothing from Node.
+ */
+function installSettingsProbe() {
+  const bag = { tap: null, visibleMs: null, samples: [] };
+  window.__llSettings = bag;
+  const composed = (el) => {
+    let o = 1;
+    for (let node = el; node instanceof Element && node !== document.documentElement; node = node.parentElement) {
+      const style = getComputedStyle(node);
+      if (style.display === 'none' || style.visibility === 'hidden') return 0;
+      const v = parseFloat(style.opacity);
+      if (Number.isFinite(v)) o *= v;
+      if (o <= 0.001) return 0;
+    }
+    return o;
+  };
+  const sheetVisible = (el) => {
+    if (!(el instanceof Element) || !el.isConnected) return false;
+    const style = getComputedStyle(el);
+    if (!(parseFloat(style.opacity) > 0) || style.visibility === 'hidden') return false;
+    const r = el.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const width = Math.min(r.right, vw) - Math.max(r.left, 0);
+    const height = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+    if (!(width > 0 && height > 0)) return false;
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    if (!(cx >= 0 && cy >= 0 && cx < vw && cy < vh)) return false;
+    const hit = document.elementFromPoint(cx, cy);
+    return hit instanceof Element && (hit === el || el.contains(hit));
+  };
+  const sample = (now) => {
+    const sheet = document.querySelector('.sheet');
+    const row = sheet instanceof Element ? sheet.querySelector('.row') : null;
+    const sheetBox = sheet instanceof Element ? sheet.getBoundingClientRect() : null;
+    const rowBox = row instanceof Element ? row.getBoundingClientRect() : null;
+    bag.samples.push({
+      now,
+      sheetTop: sheetBox ? sheetBox.top : null,
+      rowTop: rowBox ? rowBox.top : null,
+      rowOp: row instanceof Element ? composed(row) : null,
+    });
+  };
+  addEventListener(
+    'pointerdown',
+    (event) => {
+      if (bag.tap != null) return;
+      const target = event.target instanceof Element ? event.target : null;
+      if (!target || !target.closest('button[aria-label="Настройки"]')) return;
+      const t0 = event.timeStamp;
+      bag.tap = t0;
+      const tick = (now) => {
+        sample(now);
+        if (bag.visibleMs == null) {
+          const sheet = document.querySelector('.sheet');
+          if (sheet instanceof Element && sheetVisible(sheet)) bag.visibleMs = now - t0;
+        }
+        if (now - t0 < 900) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    },
+    true,
+  );
+}
+
+/**
+ * D33. The arrival is the frame the first row exists, plus later frames while that
+ * row's opacity is still at most 0.5 (the sheet is held there; the spring after
+ * the fade is a different motion). A pop is a row that is already at full opacity
+ * on the frame it appears, or that jumps from 0 to 1 in one frame.
+ */
+function judgeRowArrival(samples) {
+  let sheetJump = 0;
+  let rowJump = 0;
+  let fade = 0;
+  let sawZero = false;
+  let popped = false;
+  let seen = false;
+  let showed = false;
+  let first = true;
+  let rowSamples = 0;
+  for (let i = 0; i < samples.length; i++) {
+    const s = samples[i];
+    if (s.rowOp == null) continue;
+    seen = true;
+    rowSamples += 1;
+    if (s.rowOp >= 0.95) showed = true;
+    const prev = i > 0 ? samples[i - 1] : null;
+    if (s.rowOp <= 0.02) sawZero = true;
+    if (s.rowOp > 0.05 && s.rowOp < 0.95) fade += 1;
+    const prevOp = prev && prev.rowOp != null ? prev.rowOp : null;
+    if (s.rowOp >= 0.95 && (prevOp == null || prevOp <= 0.05)) popped = true;
+    if (first && prev && prev.sheetTop != null && s.sheetTop != null) {
+      sheetJump = Math.max(sheetJump, Math.abs(s.sheetTop - prev.sheetTop));
+    }
+    // The frame after the row appears counts even at full opacity, so a planted
+    // 6 px drop on that frame is visible. While the fade is still under 0.5 the
+    // held sheet is checked too.
+    const early = !first && s.rowOp <= 0.5 && prevOp != null && prevOp <= 0.5;
+    if ((rowSamples === 2 || early) && prev) {
+      if (prev.sheetTop != null && s.sheetTop != null) sheetJump = Math.max(sheetJump, Math.abs(s.sheetTop - prev.sheetTop));
+      if (prev.rowTop != null && s.rowTop != null) rowJump = Math.max(rowJump, Math.abs(s.rowTop - prev.rowTop));
+    }
+    first = false;
+  }
+  const appearOk = showed && !popped && (fade >= 2 || sawZero);
+  const posOk = sheetJump <= LIMIT.rowJumpPx && rowJump <= LIMIT.rowJumpPx;
+  return { ok: seen && appearOk && posOk, sheetJump, rowJump, fade, sawZero, popped, seen, showed };
+}
+
 async function runSettings(browser, browserName) {
   const context = await newPhone(browser, browserName);
   const page = await context.newPage();
   await openSong(page);
   const cast = await startCast(page);
   await page.waitForTimeout(400);
+  await page.evaluate(installSettingsProbe);
   const tap = await tapCenter(page, 'button[aria-label="Настройки"]');
   await page.waitForTimeout(1400);
   await cast.stop();
@@ -632,7 +761,32 @@ async function runSettings(browser, browserName) {
   // hundred pixels; the sheet is a full-width edge, so 2800 px ignores the tab.
   const edge = { x: 0, y: H - 72, w: W, h: 64 };
   const row = await tapRow(browserName, 'settings-sheet', frames, tap, edge, 2800);
-  report[`${browserName}-settings`] = { tap: row.hit.ms, first: row.firstMs, app: row.app, sheetUp: row.hit.ms };
+  const probe = await page.evaluate(() => window.__llSettings || null);
+  const pageMs = probe && typeof probe.visibleMs === 'number' ? probe.visibleMs : null;
+  const pageShown = pageMs == null ? null : Math.round(pageMs);
+  note(
+    `${browserName} settings tap→visible (page clock)`,
+    pageShown != null && pageShown <= LIMIT.tapMs,
+    pageShown == null ? 'sheet never visible' : `${pageShown} ms`,
+  );
+  const arrival = judgeRowArrival(probe && Array.isArray(probe.samples) ? probe.samples : []);
+  note(
+    `${browserName} D33 rows-arrive-still`,
+    arrival.ok,
+    `settings-sheet ${arrival.sheetJump.toFixed(1)} px row ${arrival.rowJump.toFixed(1)} px fade ${arrival.fade} zero ${arrival.sawZero ? 1 : 0} pop ${arrival.popped ? 1 : 0}${arrival.seen ? '' : ' rows never arrived'}`,
+  );
+  if (process.env.MOTION_DEBUG && probe) {
+    const rows = (probe.samples || []).filter((s) => s.rowOp != null).slice(0, 8);
+    console.log(browserName, 'page clock', pageMs, 'arrival', rows);
+  }
+  report[`${browserName}-settings`] = {
+    tap: row.hit.ms,
+    first: row.firstMs,
+    app: row.app,
+    sheetUp: row.hit.ms,
+    pageClock: pageShown,
+    rows: arrival,
+  };
   await saveStrip(frames.filter((f) => f.t >= tap.at), `${browserName}-settings`);
   await context.close();
 }
@@ -831,7 +985,7 @@ for (const [name, type] of engines) {
       }
     } else if (only === 'D29') {
       await runScrub(browser, name);
-    } else if (only === 'settings') {
+    } else if (only === 'settings' || only === 'D33') {
       await runSettings(browser, name);
     }
     if (!only || only === 'D32') edgesBy[name] = await engravingEdges(browser, name);
