@@ -2,7 +2,7 @@
 name: ll-main
 description: Living Lyrics orchestrator chat «LL · Main», the only chat the owner talks to. Not for delegated subtasks.
 model: opus
-effort: xhigh
+effort: high
 chat: LL · Main
 cwd: .
 branch: main
