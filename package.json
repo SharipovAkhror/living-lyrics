@@ -20,6 +20,7 @@
     "shots": "node scripts/tools/screenshots.mjs",
     "predev": "node scripts/tools/audio-crypt.mjs decrypt",
     "audio:encrypt": "node scripts/tools/audio-crypt.mjs encrypt",
+    "rotate-key": "node scripts/tools/rotate-audio-key.mjs",
     "perf:iphone": "node scripts/perf/long-run.mjs",
     "perf:settings": "node scripts/perf/settings-trace.mjs"
   },
