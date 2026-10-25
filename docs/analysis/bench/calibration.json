@@ -1,104 +1,78 @@
 {
  "metric": "word_mean",
- "threshold": 0.289866,
+ "threshold": 0.550936,
  "cap_met": true,
- "accepted": 108,
- "near": 90,
- "mid": 16,
- "false": 2,
- "false_share": 0.0185,
- "structure_fail": 22,
- "placed": 73,
- "rows": 249,
- "cued": 249,
+ "accepted": 19,
+ "near": 15,
+ "mid": 4,
+ "false": 0,
+ "false_share": 0.0,
+ "structure_fail": 6,
+ "placed": 9,
+ "rows": 155,
+ "cued": 155,
  "by_metric": [
   {
-   "accepted": 101,
-   "near": 86,
-   "mid": 13,
-   "false": 2,
-   "false_share": 0.0198,
-   "structure_fail": 18,
-   "placed": 72,
-   "cap_ok": true,
-   "metric": "letter",
-   "threshold": 0.314546,
-   "cap_met": true
-  },
-  {
-   "accepted": 108,
-   "near": 90,
-   "mid": 16,
-   "false": 2,
-   "false_share": 0.0185,
-   "structure_fail": 22,
-   "placed": 73,
-   "cap_ok": true,
-   "metric": "word_mean",
-   "threshold": 0.289866,
-   "cap_met": true
-  },
-  {
-   "accepted": 21,
-   "near": 19,
-   "mid": 2,
+   "accepted": 17,
+   "near": 12,
+   "mid": 5,
    "false": 0,
    "false_share": 0.0,
-   "structure_fail": 3,
-   "placed": 16,
+   "structure_fail": 6,
+   "placed": 6,
+   "cap_ok": true,
+   "metric": "letter",
+   "threshold": 0.562653,
+   "cap_met": true
+  },
+  {
+   "accepted": 19,
+   "near": 15,
+   "mid": 4,
+   "false": 0,
+   "false_share": 0.0,
+   "structure_fail": 6,
+   "placed": 9,
+   "cap_ok": true,
+   "metric": "word_mean",
+   "threshold": 0.550936,
+   "cap_met": true
+  },
+  {
+   "accepted": 13,
+   "near": 9,
+   "mid": 4,
+   "false": 0,
+   "false_share": 0.0,
+   "structure_fail": 2,
+   "placed": 7,
    "cap_ok": true,
    "metric": "word_min",
-   "threshold": 0.433978,
+   "threshold": 0.475435,
    "cap_met": true
   }
  ],
  "by_lang": {
   "en": {
-   "cued_accepted": 15,
-   "near": 12,
-   "placed": 11,
-   "false": 0
-  },
-  "fa": {
-   "cued_accepted": 27,
-   "near": 24,
-   "placed": 19,
-   "false": 1
-  },
-  "tr": {
    "cued_accepted": 8,
-   "near": 8,
-   "placed": 8,
-   "false": 0
-  },
-  "ar": {
-   "cued_accepted": 40,
-   "near": 33,
-   "placed": 25,
-   "false": 1
-  },
-  "az": {
-   "cued_accepted": 7,
-   "near": 4,
-   "placed": 3,
-   "false": 0
-  },
-  "la": {
-   "cued_accepted": 7,
    "near": 6,
    "placed": 5,
    "false": 0
   },
-  "de": {
-   "cued_accepted": 4,
-   "near": 3,
+  "fa": {
+   "cued_accepted": 9,
+   "near": 7,
+   "placed": 2,
+   "false": 0
+  },
+  "tr": {
+   "cued_accepted": 2,
+   "near": 2,
    "placed": 2,
    "false": 0
   }
  },
  "sources": [
-  "/home/runner/work/living-lyrics/living-lyrics/work/i-have-come-alive/score-rows.json",
-  "/home/runner/work/living-lyrics/living-lyrics/work/karitas/score-rows.json",
-  "/home/runner/work/living-lyrics/living-lyrics/work/one/score-rows.json"
+  "/home/runner/work/living-lyrics/living-lyrics/work/alive/score-rows.json"
  ]
 }

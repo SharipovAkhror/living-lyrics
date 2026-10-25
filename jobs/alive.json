@@ -1,5 +1,0 @@
-{
-  "slug": "alive",
-  "stages": ["align", "qa"],
-  "align": ["--witness-window", "cue"]
-}

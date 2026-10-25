@@ -1,31 +1,31 @@
 [
  {
-  "slug": "i-have-come-alive",
+  "slug": "alive",
   "onset": {
-   "chosen": "htdemucs_ft",
-   "reason": "база",
+   "chosen": "mdx_extra",
+   "reason": "атака у слова сильнее, контроль не сильнее",
    "license": "MIT",
-   "note": "Demucs v4, набор из четырёх дообученных моделей. Веса не коммитятся. Сдвиги 1, перекрытие 0,1 — как у текущего отрезка.",
+   "note": "Demucs mdx_extra, тот же репозиторий и MIT. README: обучение включало тест MUSDB. Веса не коммитятся.",
    "spec": {
-    "name": "htdemucs_ft",
-    "model": "htdemucs_ft",
+    "name": "mdx_extra",
+    "model": "mdx_extra",
     "shifts": 1,
-    "overlap": 0.1,
+    "overlap": 0.25,
     "ensemble": false,
     "license": "MIT",
-    "note": "Demucs v4, набор из четырёх дообученных моделей. Веса не коммитятся. Сдвиги 1, перекрытие 0,1 — как у текущего отрезка.",
-    "role": "baseline",
-    "reason": "база",
+    "note": "Demucs mdx_extra, тот же репозиторий и MIT. README: обучение включало тест MUSDB. Веса не коммитятся.",
+    "role": "second",
+    "reason": "атака у слова сильнее, контроль не сильнее",
     "summary": {
      "n": 12,
-     "med_at": 1.0113,
-     "med_off": 0.3276,
-     "ratio": 3.0872
+     "med_at": 0.7947,
+     "med_off": 0.2942,
+     "ratio": 2.7011
     }
    },
    "words": 12,
-   "clips": 12,
-   "elapsed_s": 480.3,
+   "clips": 11,
+   "elapsed_s": 390.6,
    "budget_s": 600,
    "rows": [
     {
@@ -40,11 +40,11 @@
      "error": null,
      "summary": {
       "n": 12,
-      "med_at": 1.0113,
-      "med_off": 0.3276,
-      "ratio": 3.0872
+      "med_at": 0.6981,
+      "med_off": 0.2619,
+      "ratio": 2.6657
      },
-     "elapsed_s": 108.7,
+     "elapsed_s": 83.6,
      "ran": true
     },
     {
@@ -59,11 +59,11 @@
      "error": null,
      "summary": {
       "n": 12,
-      "med_at": 0.8527,
-      "med_off": 0.3013,
-      "ratio": 2.8299
+      "med_at": 0.6169,
+      "med_off": 0.3413,
+      "ratio": 1.8073
      },
-     "elapsed_s": 25.1,
+     "elapsed_s": 19.4,
      "ran": true
     },
     {
@@ -78,11 +78,11 @@
      "error": null,
      "summary": {
       "n": 12,
-      "med_at": 0.9766,
-      "med_off": 0.3312,
-      "ratio": 2.9484
+      "med_at": 0.6691,
+      "med_off": 0.2632,
+      "ratio": 2.5422
      },
-     "elapsed_s": 102.0,
+     "elapsed_s": 81.1,
      "ran": true
     },
     {
@@ -97,11 +97,11 @@
      "error": null,
      "summary": {
       "n": 12,
-      "med_at": 0.9521,
-      "med_off": 0.3149,
-      "ratio": 3.0233
+      "med_at": 0.6921,
+      "med_off": 0.2655,
+      "ratio": 2.6067
      },
-     "elapsed_s": 206.4,
+     "elapsed_s": 174.8,
      "ran": true
     },
     {
@@ -116,11 +116,11 @@
      "error": null,
      "summary": {
       "n": 12,
-      "med_at": 1.0103,
-      "med_off": 0.2648,
-      "ratio": 3.8153
+      "med_at": 0.7947,
+      "med_off": 0.2942,
+      "ratio": 2.7011
      },
-     "elapsed_s": 37.7,
+     "elapsed_s": 31.6,
      "ran": true
     },
     {
@@ -135,305 +135,9 @@
      "error": null,
      "summary": {
       "n": 12,
-      "med_at": 0.9351,
-      "med_off": 0.3253,
-      "ratio": 2.8749
-     },
-     "elapsed_s": 0.0,
-     "ran": true
-    }
-   ],
-   "gain": 1.05,
-   "shifts_s": [
-    -0.4,
-    -0.25,
-    0.25,
-    0.4
-   ]
-  }
- },
- {
-  "slug": "karitas",
-  "onset": {
-   "chosen": "htdemucs_ft",
-   "reason": "база",
-   "license": "MIT",
-   "note": "Demucs v4, набор из четырёх дообученных моделей. Веса не коммитятся. Сдвиги 1, перекрытие 0,1 — как у текущего отрезка.",
-   "spec": {
-    "name": "htdemucs_ft",
-    "model": "htdemucs_ft",
-    "shifts": 1,
-    "overlap": 0.1,
-    "ensemble": false,
-    "license": "MIT",
-    "note": "Demucs v4, набор из четырёх дообученных моделей. Веса не коммитятся. Сдвиги 1, перекрытие 0,1 — как у текущего отрезка.",
-    "role": "baseline",
-    "reason": "база",
-    "summary": {
-     "n": 12,
-     "med_at": 1.1068,
-     "med_off": 0.2773,
-     "ratio": 3.9916
-    }
-   },
-   "words": 12,
-   "clips": 12,
-   "elapsed_s": 604.1,
-   "budget_s": 600,
-   "rows": [
-    {
-     "name": "htdemucs_ft",
-     "role": "baseline",
-     "license": "MIT",
-     "note": "Demucs v4, набор из четырёх дообученных моделей. Веса не коммитятся. Сдвиги 1, перекрытие 0,1 — как у текущего отрезка.",
-     "model": "htdemucs_ft",
-     "shifts": 1,
-     "overlap": 0.1,
-     "ensemble": false,
-     "error": null,
-     "summary": {
-      "n": 12,
-      "med_at": 1.1068,
-      "med_off": 0.2773,
-      "ratio": 3.9916
-     },
-     "elapsed_s": 144.8,
-     "ran": true
-    },
-    {
-     "name": "htdemucs",
-     "role": "ingredient",
-     "license": "MIT",
-     "note": "Demucs v4, четыре стема. Нужен как вторая дорожка среднего. Сам отрезок им не заменяется: первый проход уже на нём.",
-     "model": "htdemucs",
-     "shifts": 1,
-     "overlap": 0.25,
-     "ensemble": false,
-     "error": null,
-     "summary": {
-      "n": 12,
-      "med_at": 0.7256,
-      "med_off": 0.2885,
-      "ratio": 2.5149
-     },
-     "elapsed_s": 36.1,
-     "ran": true
-    },
-    {
-     "name": "htdemucs_ft-overlap",
-     "role": "raised",
-     "license": "MIT",
-     "note": "Те же веса htdemucs_ft. Перекрытие 0,25 — значение библиотеки, не новый файл весов.",
-     "model": "htdemucs_ft",
-     "shifts": 1,
-     "overlap": 0.25,
-     "ensemble": false,
-     "error": null,
-     "summary": {
-      "n": 12,
-      "med_at": 1.1053,
-      "med_off": 0.2644,
-      "ratio": 4.1809
-     },
-     "elapsed_s": 142.5,
-     "ran": true
-    },
-    {
-     "name": "htdemucs_ft-shifts2",
-     "role": "raised",
-     "license": "MIT",
-     "note": "Те же веса htdemucs_ft. Два сдвига и перекрытие 0,5. Новых весов нет.",
-     "model": "htdemucs_ft",
-     "shifts": 2,
-     "overlap": 0.5,
-     "ensemble": false,
-     "error": null,
-     "summary": {
-      "n": 12,
-      "med_at": 1.1214,
-      "med_off": 0.2767,
-      "ratio": 4.0524
-     },
-     "elapsed_s": 280.3,
-     "ran": true
-    },
-    {
-     "name": "mdx_extra",
-     "role": "second",
-     "license": "MIT",
-     "note": "Demucs mdx_extra, тот же репозиторий и MIT. README: обучение включало тест MUSDB. Веса не коммитятся.",
-     "model": "mdx_extra",
-     "shifts": 1,
-     "overlap": 0.25,
-     "ensemble": false,
-     "error": "бюджет",
-     "summary": null,
-     "elapsed_s": 0.0,
-     "ran": false
-    },
-    {
-     "name": "ensemble-htdemucs-ft",
-     "role": "ensemble",
-     "license": "MIT",
-     "note": "Среднее по сэмплам вокала htdemucs и htdemucs_ft. Обе модели MIT, веса не коммитятся.",
-     "model": "htdemucs+htdemucs_ft",
-     "shifts": 1,
-     "overlap": 0.1,
-     "ensemble": true,
-     "error": null,
-     "summary": {
-      "n": 12,
-      "med_at": 0.8812,
-      "med_off": 0.3065,
-      "ratio": 2.8753
-     },
-     "elapsed_s": 0.0,
-     "ran": true
-    }
-   ],
-   "gain": 1.05,
-   "shifts_s": [
-    -0.4,
-    -0.25,
-    0.25,
-    0.4
-   ]
-  }
- },
- {
-  "slug": "one",
-  "onset": {
-   "chosen": "htdemucs_ft",
-   "reason": "база",
-   "license": "MIT",
-   "note": "Demucs v4, набор из четырёх дообученных моделей. Веса не коммитятся. Сдвиги 1, перекрытие 0,1 — как у текущего отрезка.",
-   "spec": {
-    "name": "htdemucs_ft",
-    "model": "htdemucs_ft",
-    "shifts": 1,
-    "overlap": 0.1,
-    "ensemble": false,
-    "license": "MIT",
-    "note": "Demucs v4, набор из четырёх дообученных моделей. Веса не коммитятся. Сдвиги 1, перекрытие 0,1 — как у текущего отрезка.",
-    "role": "baseline",
-    "reason": "база",
-    "summary": {
-     "n": 12,
-     "med_at": 1.0013,
-     "med_off": 0.456,
-     "ratio": 2.196
-    }
-   },
-   "words": 12,
-   "clips": 12,
-   "elapsed_s": 626.2,
-   "budget_s": 600,
-   "rows": [
-    {
-     "name": "htdemucs_ft",
-     "role": "baseline",
-     "license": "MIT",
-     "note": "Demucs v4, набор из четырёх дообученных моделей. Веса не коммитятся. Сдвиги 1, перекрытие 0,1 — как у текущего отрезка.",
-     "model": "htdemucs_ft",
-     "shifts": 1,
-     "overlap": 0.1,
-     "ensemble": false,
-     "error": null,
-     "summary": {
-      "n": 12,
-      "med_at": 1.0013,
-      "med_off": 0.456,
-      "ratio": 2.196
-     },
-     "elapsed_s": 165.9,
-     "ran": true
-    },
-    {
-     "name": "htdemucs",
-     "role": "ingredient",
-     "license": "MIT",
-     "note": "Demucs v4, четыре стема. Нужен как вторая дорожка среднего. Сам отрезок им не заменяется: первый проход уже на нём.",
-     "model": "htdemucs",
-     "shifts": 1,
-     "overlap": 0.25,
-     "ensemble": false,
-     "error": null,
-     "summary": {
-      "n": 12,
-      "med_at": 0.9389,
-      "med_off": 0.4122,
-      "ratio": 2.2779
-     },
-     "elapsed_s": 37.5,
-     "ran": true
-    },
-    {
-     "name": "htdemucs_ft-overlap",
-     "role": "raised",
-     "license": "MIT",
-     "note": "Те же веса htdemucs_ft. Перекрытие 0,25 — значение библиотеки, не новый файл весов.",
-     "model": "htdemucs_ft",
-     "shifts": 1,
-     "overlap": 0.25,
-     "ensemble": false,
-     "error": null,
-     "summary": {
-      "n": 12,
-      "med_at": 0.9829,
-      "med_off": 0.4128,
-      "ratio": 2.3811
-     },
-     "elapsed_s": 158.5,
-     "ran": true
-    },
-    {
-     "name": "htdemucs_ft-shifts2",
-     "role": "raised",
-     "license": "MIT",
-     "note": "Те же веса htdemucs_ft. Два сдвига и перекрытие 0,5. Новых весов нет.",
-     "model": "htdemucs_ft",
-     "shifts": 2,
-     "overlap": 0.5,
-     "ensemble": false,
-     "error": null,
-     "summary": {
-      "n": 10,
-      "med_at": 0.9667,
-      "med_off": 0.4753,
-      "ratio": 2.0339
-     },
-     "elapsed_s": 263.8,
-     "ran": true
-    },
-    {
-     "name": "mdx_extra",
-     "role": "second",
-     "license": "MIT",
-     "note": "Demucs mdx_extra, тот же репозиторий и MIT. README: обучение включало тест MUSDB. Веса не коммитятся.",
-     "model": "mdx_extra",
-     "shifts": 1,
-     "overlap": 0.25,
-     "ensemble": false,
-     "error": "бюджет",
-     "summary": null,
-     "elapsed_s": 0.0,
-     "ran": false
-    },
-    {
-     "name": "ensemble-htdemucs-ft",
-     "role": "ensemble",
-     "license": "MIT",
-     "note": "Среднее по сэмплам вокала htdemucs и htdemucs_ft. Обе модели MIT, веса не коммитятся.",
-     "model": "htdemucs+htdemucs_ft",
-     "shifts": 1,
-     "overlap": 0.1,
-     "ensemble": true,
-     "error": null,
-     "summary": {
-      "n": 12,
-      "med_at": 0.9881,
-      "med_off": 0.4178,
-      "ratio": 2.3647
+      "med_at": 0.6645,
+      "med_off": 0.2826,
+      "ratio": 2.3516
      },
      "elapsed_s": 0.0,
      "ran": true
