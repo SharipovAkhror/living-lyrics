@@ -1,0 +1,65 @@
+{
+  "run": 40144966993,
+  "commit": "a92582f715b6c73d4565e2a84b2e8f8470379db4",
+  "note": "Фонемный свидетель посчитан на раннере Ubuntu в прогоне 40144966993, espeak-ng ставился там, на Станцию не ставился. Замер одной песни переписал docs/analysis/bench/attack-chance.json: в songs осталась только alive, baseline_kept ложь (базовая строка потеряна). Этот файл замера возвращён к трём песням стенда. Сводка ниже — что раннер насчитал для Alive, в правило слова она не вносилась. У английского и персидского случайный проход слова выше 5 %, турецкий выключен.",
+  "phoneme": {
+    "admitted": true,
+    "kept": true,
+    "search": "exact",
+    "k": 0.25,
+    "chance": 0.008264462809917356,
+    "proved": 74,
+    "pairs": [
+      {
+        "song": "alive",
+        "lang": "*",
+        "model": "lv-60-espeak",
+        "role": "off",
+        "word_chance": null,
+        "only_chance": 0.0199203187250996,
+        "or_chance": 0.0647410358565737,
+        "agreement": 390
+      },
+      {
+        "song": "alive",
+        "lang": "en",
+        "model": "lv-60-espeak",
+        "role": "only",
+        "word_chance": 0.06363636363636363,
+        "only_chance": 0.06363636363636363,
+        "or_chance": 0.16363636363636364,
+        "agreement": 51
+      },
+      {
+        "song": "alive",
+        "lang": "fa",
+        "model": "xlsr-53-espeak",
+        "role": "or",
+        "word_chance": 0.0546875,
+        "only_chance": 0.016927083333333332,
+        "or_chance": 0.0546875,
+        "agreement": 293
+      },
+      {
+        "song": "alive",
+        "lang": "tr",
+        "model": "lv-60-espeak",
+        "role": "off",
+        "word_chance": null,
+        "only_chance": 0.023809523809523808,
+        "or_chance": 0.03968253968253968,
+        "agreement": 51
+      }
+    ]
+  },
+  "chosen_on_runner": {
+    "name": "line-0.25",
+    "chance": 0.0043,
+    "within_limit": true,
+    "baseline_kept": false,
+    "baseline_reason": "базовая строка потеряна без прохода выше 5 %",
+    "songs": [
+      "alive"
+    ]
+  }
+}

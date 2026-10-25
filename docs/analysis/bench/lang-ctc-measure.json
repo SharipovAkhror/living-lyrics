@@ -9,11 +9,11 @@
       "license": "Apache-2.0",
       "noncommercial": false,
       "note": "XLSR-53 on Arabic Common Voice, Arabic script. Not the WhisperX Arabic checkpoint. elgeish/wav2vec2-large-xlsr-53-arabic is Buckwalter and was not used: Arabic letters did not encode, so every clock was empty.",
-      "elapsed_s": 0.0,
-      "lines": 0,
-      "words": 0,
-      "error": "поставленных строк этого языка нет",
-      "ran": false,
+      "elapsed_s": 204.5,
+      "lines": 83,
+      "words": 316,
+      "error": null,
+      "ran": true,
       "complete": true
     },
     {
@@ -24,9 +24,9 @@
       "license": "Apache-2.0",
       "noncommercial": false,
       "note": "XLSR-53 on Persian Common Voice. Not the WhisperX Persian checkpoint.",
-      "elapsed_s": 89.2,
-      "lines": 93,
-      "words": 384,
+      "elapsed_s": 77.3,
+      "lines": 54,
+      "words": 224,
       "error": null,
       "ran": true,
       "complete": true
@@ -39,11 +39,11 @@
       "license": "Apache-2.0",
       "noncommercial": false,
       "note": "XLSR-53 on German Common Voice 6.1. The second aligner for German is VoxPopuli base.",
-      "elapsed_s": 0.0,
-      "lines": 0,
-      "words": 0,
-      "error": "поставленных строк этого языка нет",
-      "ran": false,
+      "elapsed_s": 57.5,
+      "lines": 26,
+      "words": 150,
+      "error": null,
+      "ran": true,
       "complete": true
     },
     {
@@ -54,9 +54,9 @@
       "license": "Apache-2.0",
       "noncommercial": false,
       "note": "XLSR-53 on Turkish Common Voice. Not the WhisperX Turkish XLS-R 300M checkpoint.",
-      "elapsed_s": 25.5,
-      "lines": 18,
-      "words": 63,
+      "elapsed_s": 31.5,
+      "lines": 16,
+      "words": 55,
       "error": null,
       "ran": true,
       "complete": true
@@ -69,9 +69,9 @@
       "license": "Apache-2.0",
       "noncommercial": false,
       "note": "XLSR-53 on English Common Voice. The second aligner for English is LibriSpeech base 960h.",
-      "elapsed_s": 16.2,
-      "lines": 15,
-      "words": 55,
+      "elapsed_s": 16.8,
+      "lines": 14,
+      "words": 52,
       "error": null,
       "ran": true,
       "complete": true
@@ -89,6 +89,8 @@
   ],
   "mms_adapters": "Адаптеры facebook/mms-1b-all делят акустический контур с постановщиком MMS и не измерялись.",
   "songs": [
-    "alive"
+    "i-have-come-alive",
+    "karitas",
+    "one"
   ]
 }

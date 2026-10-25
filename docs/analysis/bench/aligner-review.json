@@ -1,36 +1,38 @@
 {
  "songs": [
-  "alive"
+  "i-have-come-alive",
+  "karitas",
+  "one"
  ],
  "strong_height": 0.7,
  "agree_tol": 0.1,
  "closer": {
   "words": {
-   "n": 106,
-   "mms": 43,
-   "second": 60,
-   "tie": 3,
+   "n": 313,
+   "mms": 163,
+   "second": 140,
+   "tie": 10,
    "no_peak": 0
   },
   "lines": {
-   "n": 43,
-   "mms": 16,
-   "second": 26,
-   "tie": 1,
+   "n": 81,
+   "mms": 47,
+   "second": 30,
+   "tie": 4,
    "no_peak": 0
   },
   "by_lang": {
    "en": {
     "words": {
-     "n": 11,
-     "mms": 10,
+     "n": 4,
+     "mms": 3,
      "second": 1,
      "tie": 0,
      "no_peak": 0
     },
     "lines": {
-     "n": 6,
-     "mms": 6,
+     "n": 2,
+     "mms": 2,
      "second": 0,
      "tie": 0,
      "no_peak": 0
@@ -38,31 +40,95 @@
    },
    "fa": {
     "words": {
-     "n": 84,
-     "mms": 31,
-     "second": 50,
-     "tie": 3,
+     "n": 75,
+     "mms": 34,
+     "second": 39,
+     "tie": 2,
      "no_peak": 0
     },
     "lines": {
-     "n": 31,
-     "mms": 8,
-     "second": 22,
+     "n": 22,
+     "mms": 11,
+     "second": 10,
      "tie": 1,
      "no_peak": 0
     }
    },
    "tr": {
     "words": {
-     "n": 11,
-     "mms": 2,
-     "second": 9,
+     "n": 7,
+     "mms": 5,
+     "second": 2,
      "tie": 0,
      "no_peak": 0
     },
     "lines": {
-     "n": 6,
+     "n": 1,
+     "mms": 1,
+     "second": 0,
+     "tie": 0,
+     "no_peak": 0
+    }
+   },
+   "ar": {
+    "words": {
+     "n": 111,
+     "mms": 61,
+     "second": 44,
+     "tie": 6,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 32,
+     "mms": 13,
+     "second": 16,
+     "tie": 3,
+     "no_peak": 0
+    }
+   },
+   "az": {
+    "words": {
+     "n": 9,
+     "mms": 4,
+     "second": 4,
+     "tie": 1,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 1,
+     "mms": 1,
+     "second": 0,
+     "tie": 0,
+     "no_peak": 0
+    }
+   },
+   "la": {
+    "words": {
+     "n": 2,
      "mms": 2,
+     "second": 0,
+     "tie": 0,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 1,
+     "mms": 1,
+     "second": 0,
+     "tie": 0,
+     "no_peak": 0
+    }
+   },
+   "de": {
+    "words": {
+     "n": 105,
+     "mms": 54,
+     "second": 50,
+     "tie": 1,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 22,
+     "mms": 18,
      "second": 4,
      "tie": 0,
      "no_peak": 0
@@ -70,19 +136,51 @@
    }
   },
   "by_song": {
-   "alive": {
+   "i-have-come-alive": {
     "words": {
-     "n": 106,
-     "mms": 43,
-     "second": 60,
+     "n": 103,
+     "mms": 53,
+     "second": 47,
      "tie": 3,
      "no_peak": 0
     },
     "lines": {
-     "n": 43,
-     "mms": 16,
-     "second": 26,
+     "n": 35,
+     "mms": 21,
+     "second": 13,
      "tie": 1,
+     "no_peak": 0
+    }
+   },
+   "karitas": {
+    "words": {
+     "n": 16,
+     "mms": 9,
+     "second": 6,
+     "tie": 1,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 3,
+     "mms": 2,
+     "second": 1,
+     "tie": 0,
+     "no_peak": 0
+    }
+   },
+   "one": {
+    "words": {
+     "n": 194,
+     "mms": 101,
+     "second": 87,
+     "tie": 6,
+     "no_peak": 0
+    },
+    "lines": {
+     "n": 43,
+     "mms": 24,
+     "second": 16,
+     "tie": 3,
      "no_peak": 0
     }
    }
@@ -90,102 +188,260 @@
  },
  "third": {
   "en": {
-   "words": 55,
-   "third": 55,
-   "within_0_10": 10
+   "words": 52,
+   "third": 52,
+   "within_0_10": 12
   },
   "fa": {
-   "words": 384,
-   "third": 384,
-   "within_0_10": 127
+   "words": 224,
+   "third": 224,
+   "within_0_10": 64
   },
   "tr": {
-   "words": 63,
-   "third": 63,
+   "words": 55,
+   "third": 55,
+   "within_0_10": 2
+  },
+  "ar": {
+   "words": 316,
+   "third": 316,
+   "within_0_10": 41
+  },
+  "az": {
+   "words": 177,
+   "third": 168,
+   "within_0_10": 25
+  },
+  "la": {
+   "words": 76,
+   "third": 74,
    "within_0_10": 4
+  },
+  "de": {
+   "words": 150,
+   "third": 150,
+   "within_0_10": 11
   }
  },
  "stable_models": [
   {
-   "song": "alive",
+   "song": "i-have-come-alive",
+   "model": "large-v3"
+  },
+  {
+   "song": "karitas",
+   "model": "large-v3"
+  },
+  {
+   "song": "one",
    "model": "large-v3"
   }
  ],
  "groups": [
+  {
+   "consonant_lines": 14,
+   "train_lines": 7,
+   "hold_lines": 7,
+   "train_words": 43,
+   "hold_words": 41,
+   "median_train": -0.001,
+   "median_hold": 0.002,
+   "line_median_train": -0.004,
+   "line_median_hold": 0.005,
+   "iqr_train": 0.056,
+   "offset": 0.0,
+   "applied": false,
+   "reason": "shift-under-0.02",
+   "hold_agree_before": 0.8868,
+   "hold_agree_before_n": [
+    47,
+    53
+   ],
+   "hold_agree_if_train_offset": 0.8868,
+   "hold_agree_if_train_offset_n": [
+    47,
+    53
+   ],
+   "key": "borrow-tr|az"
+  },
+  {
+   "consonant_lines": 56,
+   "train_lines": 28,
+   "hold_lines": 28,
+   "train_words": 70,
+   "hold_words": 85,
+   "median_train": 0.02,
+   "median_hold": 0.05,
+   "line_median_train": 0.0125,
+   "line_median_hold": 0.06,
+   "iqr_train": 0.03,
+   "offset": 0.0,
+   "applied": false,
+   "reason": "shift-under-0.02",
+   "hold_agree_before": 0.5692,
+   "hold_agree_before_n": [
+    74,
+    130
+   ],
+   "hold_agree_if_train_offset": 0.5769,
+   "hold_agree_if_train_offset_n": [
+    75,
+    130
+   ],
+   "key": "whisperx|ar"
+  },
+  {
+   "consonant_lines": 1,
+   "train_lines": 0,
+   "hold_lines": 1,
+   "train_words": 0,
+   "hold_words": 7,
+   "median_train": null,
+   "median_hold": 0.358,
+   "line_median_train": null,
+   "line_median_hold": 0.358,
+   "iqr_train": null,
+   "offset": null,
+   "applied": false,
+   "reason": "too-few-words",
+   "hold_agree_before": 0.0,
+   "hold_agree_before_n": [
+    0,
+    9
+   ],
+   "hold_agree_if_train_offset": 0.0,
+   "hold_agree_if_train_offset_n": [
+    0,
+    9
+   ],
+   "key": "whisperx|az"
+  },
+  {
+   "consonant_lines": 16,
+   "train_lines": 8,
+   "hold_lines": 8,
+   "train_words": 39,
+   "hold_words": 21,
+   "median_train": 0.1,
+   "median_hold": 0.13,
+   "line_median_train": 0.1025,
+   "line_median_hold": -0.2365,
+   "iqr_train": 0.125,
+   "offset": null,
+   "applied": false,
+   "reason": "wide-spread",
+   "hold_agree_before": 0.2549,
+   "hold_agree_before_n": [
+    13,
+    51
+   ],
+   "hold_agree_if_train_offset": 0.3725,
+   "hold_agree_if_train_offset_n": [
+    19,
+    51
+   ],
+   "key": "whisperx|de"
+  },
   {
    "consonant_lines": 3,
    "train_lines": 1,
    "hold_lines": 2,
    "train_words": 2,
    "hold_words": 6,
-   "median_train": 0.025,
-   "median_hold": 0.03,
-   "line_median_train": 0.025,
-   "line_median_hold": 0.03,
+   "median_train": 0.04,
+   "median_hold": 0.01,
+   "line_median_train": 0.04,
+   "line_median_hold": 0.02,
    "iqr_train": null,
    "offset": null,
    "applied": false,
    "reason": "too-few-words",
-   "hold_agree_before": 0.5,
+   "hold_agree_before": 0.875,
    "hold_agree_before_n": [
-    4,
+    7,
     8
    ],
-   "hold_agree_if_train_offset": 0.75,
+   "hold_agree_if_train_offset": 0.875,
    "hold_agree_if_train_offset_n": [
-    6,
+    7,
     8
    ],
    "key": "whisperx|en"
   },
   {
-   "consonant_lines": 84,
-   "train_lines": 42,
-   "hold_lines": 42,
-   "train_words": 156,
-   "hold_words": 153,
+   "consonant_lines": 45,
+   "train_lines": 22,
+   "hold_lines": 23,
+   "train_words": 77,
+   "hold_words": 87,
    "median_train": 0.01,
    "median_hold": 0.01,
-   "line_median_train": 0.01,
+   "line_median_train": 0.015,
    "line_median_hold": 0.01,
-   "iqr_train": 0.02,
+   "iqr_train": 0.03,
    "offset": 0.0,
    "applied": false,
    "reason": "shift-under-0.02",
-   "hold_agree_before": 0.7193,
+   "hold_agree_before": 0.602,
    "hold_agree_before_n": [
-    123,
-    171
+    59,
+    98
    ],
-   "hold_agree_if_train_offset": 0.7251,
+   "hold_agree_if_train_offset": 0.6122,
    "hold_agree_if_train_offset_n": [
-    124,
-    171
+    60,
+    98
    ],
    "key": "whisperx|fa"
+  },
+  {
+   "consonant_lines": 0,
+   "train_lines": 0,
+   "hold_lines": 0,
+   "train_words": 0,
+   "hold_words": 0,
+   "median_train": null,
+   "median_hold": null,
+   "line_median_train": null,
+   "line_median_hold": null,
+   "iqr_train": null,
+   "offset": null,
+   "applied": false,
+   "reason": "too-few-words",
+   "hold_agree_before": null,
+   "hold_agree_before_n": [
+    0,
+    0
+   ],
+   "hold_agree_if_train_offset": null,
+   "hold_agree_if_train_offset_n": [
+    0,
+    0
+   ],
+   "key": "whisperx|la"
   },
   {
    "consonant_lines": 11,
    "train_lines": 5,
    "hold_lines": 6,
-   "train_words": 14,
-   "hold_words": 17,
+   "train_words": 15,
+   "hold_words": 16,
    "median_train": 0.0,
-   "median_hold": 0.0,
+   "median_hold": 0.005,
    "line_median_train": 0.0,
-   "line_median_hold": 0.005,
-   "iqr_train": 0.02,
+   "line_median_hold": 0.0025,
+   "iqr_train": 0.025,
    "offset": 0.0,
    "applied": false,
    "reason": "shift-under-0.02",
-   "hold_agree_before": 0.8947,
+   "hold_agree_before": 0.7895,
    "hold_agree_before_n": [
-    17,
+    15,
     19
    ],
-   "hold_agree_if_train_offset": 0.8947,
+   "hold_agree_if_train_offset": 0.7895,
    "hold_agree_if_train_offset_n": [
-    17,
+    15,
     19
    ],
    "key": "whisperx|tr"
@@ -200,39 +456,39 @@
    "la-es": "æ/œ→e, k→c, w→u, y→i. Латинское y — гласная."
   },
   "tr_native": {
-   "n": 20,
-   "within_0_30": 14,
-   "fraction": 0.7,
-   "median": 0.104,
+   "n": 16,
+   "within_0_30": 16,
+   "fraction": 1.0,
+   "median": 0.1415,
    "model": "mpoyraz/wav2vec2-xls-r-300m-cv7-turkish",
    "license": "CC-BY-4.0",
    "card": "Common Voice 7, Turkish"
   },
   "az_tr": {
-   "n": 0,
-   "within_0_30": 0,
-   "fraction": null,
-   "median": null,
+   "n": 26,
+   "within_0_30": 23,
+   "fraction": 0.8846,
+   "median": 0.2015,
    "model": "mpoyraz/wav2vec2-xls-r-300m-cv7-turkish",
    "license": "CC-BY-4.0",
    "card": "Common Voice 7, Turkish",
-   "decision": "azerbaijani-under-8"
+   "decision": "worse-fraction"
   },
   "la_it": {
-   "n": 0,
-   "within_0_30": 0,
-   "fraction": null,
-   "median": null,
+   "n": 24,
+   "within_0_30": 7,
+   "fraction": 0.2917,
+   "median": 0.4515,
    "model": "jonatasgrosman/wav2vec2-large-xlsr-53-italian",
    "license": "Apache-2.0",
    "card": "Common Voice 6.1, Italian",
    "decision": "not-adopted-no-native-singing"
   },
   "la_es": {
-   "n": 0,
-   "within_0_30": 0,
-   "fraction": null,
-   "median": null,
+   "n": 24,
+   "within_0_30": 5,
+   "fraction": 0.2083,
+   "median": 0.502,
    "model": "jonatasgrosman/wav2vec2-large-xlsr-53-spanish",
    "license": "Apache-2.0",
    "card": "Common Voice 6.1, Spanish",
