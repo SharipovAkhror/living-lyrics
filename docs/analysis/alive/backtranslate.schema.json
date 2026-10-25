@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["issues"],
+  "properties": {
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ids", "gloss", "back", "note", "proposal"],
+        "properties": {
+          "ids": {"type": "array", "items": {"type": "string"}},
+          "gloss": {"type": "string"},
+          "back": {"type": "string"},
+          "note": {"type": "string"},
+          "proposal": {"type": "string"}
+        }
+      }
+    }
+  }
+}
