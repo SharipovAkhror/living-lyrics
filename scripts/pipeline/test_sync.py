@@ -2488,6 +2488,28 @@ def test_bench_commit_gate() -> None:
           "steps.run.outputs.worst == '2'" in prove)
 
 
+def test_align_from_run_per_song() -> None:
+    """One prove pass may reuse a different finished alignment for each song.
+
+    The three bench songs were aligned in run 39548436423 and Alive in
+    40144966993. A single run id cannot carry both artifacts.
+    """
+    root = Path(__file__).resolve().parents[2]
+    workflow = (root / '.github' / 'workflows' / 'pipeline.yml').read_text(encoding='utf-8')
+    prepare = workflow.split('\n  prepare:\n', 1)[1].split('\n  run:\n', 1)[0]
+    prove = workflow.split('\n  prove:\n', 1)[1]
+    check('different alignment runs are not rejected',
+          'разные align_from_run' not in prepare and "reuse_run = 'multi'" in prepare
+          and 'reuse_pairs' in prepare)
+    check('align and align_from_run still cannot share a run',
+          'align_from_run и стадия align в одном запуске' in prepare)
+    check('prove downloads each song from its own run',
+          "reuse_run == 'multi'" in prove and 'gh run download' in prove
+          and 'align-$slug' in prove)
+    check('a single reused run still downloads that run only',
+          "reuse_run != 'multi'" in prove)
+
+
 def test_lyric_frame_rises() -> None:
     """A caption onset is the first frame of a held rise, not a flicker."""
     import lyric_frames as LF
@@ -2552,6 +2574,7 @@ def main() -> int:
     test_bias_and_witnesses()
     test_attack_chance()
     test_bench_commit_gate()
+    test_align_from_run_per_song()
     test_line_rule()
     test_placement_chain()
     test_whisper_witness()
