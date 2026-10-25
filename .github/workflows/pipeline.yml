@@ -36,7 +36,10 @@
 # hearing agree against it and the shifted-label gates still rise
 # (docs/analysis/bench/refuter.md). The published join must keep
 # docs/analysis/bench/baseline-155.json unless holding a lost line would push the line
-# pass over 5 %. Line chance is measured
+# pass over 5 %. The prove job commits docs/analysis/bench only when this
+# measurement chose a rule and baseline_kept is true. A refused rule leaves
+# the published bench untouched and the run still fails. Run 40144966993
+# committed a one-song bench after that refusal. Line chance is measured
 # per placer. A placer still over 5 % at K = 1 is excluded from proof; the run continues
 # when the others fit. qa reads that rule and does not prove an excluded placer.
 # A word start must sit inside the line's section (0.05 s), or that chain step
@@ -831,6 +834,8 @@ jobs:
         run: |
           set +e
           worst=0
+          # yes only when attack_chance chose a rule and baseline_kept is true.
+          commit_bench=no
           : > /tmp/summary.txt
           src=incoming
           if [ -d incoming/pipeline-pack ]; then src=incoming/pipeline-pack; fi
@@ -923,31 +928,38 @@ jobs:
             rc=$?
             echo "::endgroup::"
             echo "attack-chance: код $rc" >> /tmp/summary.txt
-            if [ $rc -ne 0 ]; then
+            # commit_gate refuses a missing rule, a lost baseline, and a bench
+            # that does not cover this run. A non-zero exit with a still-valid
+            # published file is also a refusal: the script died before writing.
+            ATTACK_RC="$rc" python3 - <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, 'scripts/pipeline')
+          import attack_chance as A
+          slugs = [s for s in Path('/tmp/calibrate.txt').read_text(encoding='utf-8').split() if s]
+          path = Path('docs/analysis/bench/attack-chance.json')
+          rc = int(os.environ.get('ATTACK_RC') or '1')
+          data = {}
+          if path.is_file():
+              try:
+                  data = json.loads(path.read_text(encoding='utf-8'))
+              except json.JSONDecodeError:
+                  data = {}
+          ok, detail = A.commit_gate(data, slugs, rc)
+          print(detail)
+          Path('/tmp/commit-bench.txt').write_text(('yes' if ok else 'no') + '\n' + detail + '\n', encoding='utf-8')
+          raise SystemExit(0 if ok else 2)
+          PY
+            gate_rc=$?
+            if [ "$gate_rc" -ne 0 ]; then
               align_rc=2
               worst=2
-              echo "::error::замер атак не выбрал правило"
+              detail=$(sed -n '2p' /tmp/commit-bench.txt 2>/dev/null || true)
+              if [ -z "$detail" ]; then detail='замер атак не выбрал правило'; fi
+              echo "::error::$detail"
+              echo "attack-chance: $detail" >> /tmp/summary.txt
             else
-              python3 - <<'PY'
-          import json
-          from pathlib import Path
-          want = [s for s in Path('/tmp/calibrate.txt').read_text(encoding='utf-8').split() if s]
-          data = json.loads(Path('docs/analysis/bench/attack-chance.json').read_text(encoding='utf-8'))
-          have = set(data.get('songs') or [])
-          missing = [s for s in want if s not in have]
-          if missing:
-              raise SystemExit('нет замера атак: ' + ', '.join(missing))
-          chosen = data.get('chosen') or {}
-          if not chosen.get('within_limit'):
-              raise SystemExit('случайный проход выше предела: ' + str(chosen.get('chance')))
-          print('правило слова: ' + str(chosen.get('name')) + ' случайный проход ' + str(chosen.get('chance')))
-          PY
-              rc=$?
-              if [ $rc -ne 0 ]; then
-                align_rc=2
-                worst=2
-                echo "::error::замер атак не покрыл песни или не уложился в 15 %"
-              fi
+              commit_bench=yes
             fi
           fi
           if [ $align_rc -eq 0 ]; then
@@ -966,6 +978,7 @@ jobs:
             done < /tmp/calibrate.txt
           fi
           echo "worst=$worst" >> "$GITHUB_OUTPUT"
+          echo "commit_bench=$commit_bench" >> "$GITHUB_OUTPUT"
           cat /tmp/summary.txt >> "$GITHUB_STEP_SUMMARY"
           exit 0
       - name: Commit results and remove the job files
@@ -974,13 +987,22 @@ jobs:
           rm -rf pipeline-pack incoming incoming-cal
           git config user.name 'github-actions[bot]'
           git config user.email '41898283+github-actions[bot]@users.noreply.github.com'
+          # A refused measurement must not replace the published bench, the
+          # clocks it wrote, or the song files it copied off the align artifact.
+          if [ "${{ steps.run.outputs.commit_bench }}" != "yes" ]; then
+            echo "стенд не коммитится: замер не выбрал правило или база не удержана"
+            git checkout -- content/songs docs/analysis
+            git clean -fd -- content/songs docs/analysis
+          fi
           for slug in ${{ needs.prepare.outputs.prove_slugs }}; do
             git add "content/songs/$slug/lyrics.json" "content/songs/$slug/song.json" 2>/dev/null || true
             [ -f "docs/analysis/$slug-qa.md" ] && git add "docs/analysis/$slug-qa.md"
             [ -f "docs/analysis/$slug-pipeline.md" ] && git add "docs/analysis/$slug-pipeline.md"
             [ -d "docs/analysis/$slug" ] && git add "docs/analysis/$slug"
           done
-          if [ -d docs/analysis/bench ]; then git add docs/analysis/bench; fi
+          if [ "${{ steps.run.outputs.commit_bench }}" = "yes" ] && [ -d docs/analysis/bench ]; then
+            git add docs/analysis/bench
+          fi
           for f in ${{ needs.prepare.outputs.prove_files }}; do
             git rm -q --ignore-unmatch "$f"
           done

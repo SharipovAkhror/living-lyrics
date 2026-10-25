@@ -2413,6 +2413,81 @@ def test_lang_ctc() -> None:
           and stamped[0].get('lang_role') is None, str(stamped[0]))
 
 
+def test_bench_commit_gate() -> None:
+    """A refused attack measurement must not replace the published bench.
+
+    Run 40144966993 measured one song, lost the 158-line baseline, and the
+    prove step committed that bench anyway. The gate refuses that file. The
+    prove commit in pipeline.yml adds docs/analysis/bench only when the gate
+    says yes, and the run still fails.
+    """
+    import attack_chance as A
+
+    good = {
+        'songs': ['i-have-come-alive', 'karitas', 'one', 'alive'],
+        'chosen': {
+            'name': 'line-0.25', 'within_limit': True, 'baseline_kept': True,
+            'baseline_n': 158, 'baseline_reason': 'удержано', 'chance': 0.04,
+        },
+    }
+    slugs = ['i-have-come-alive', 'karitas', 'one', 'alive']
+    ok, detail = A.commit_gate(good, slugs, 0)
+    check('a chosen rule with the baseline kept may commit the bench',
+          ok and '158' in detail, detail)
+    lost = {
+        'songs': ['alive'],
+        'chosen': {
+            'name': 'line-0.25', 'within_limit': True, 'baseline_kept': False,
+            'baseline_n': 158, 'baseline_reason': 'базовая строка потеряна без прохода выше 5 %',
+            'chance': 0.04,
+        },
+    }
+    ok, detail = A.commit_gate(lost, ['alive'], 2)
+    check('a lost baseline does not commit the bench',
+          not ok and 'база не удержана' in detail and 'базовая строка потеряна' in detail, detail)
+    unmeasured = {'songs': slugs, 'chosen': {'name': 'unmeasured', 'within_limit': False, 'baseline_kept': False}}
+    ok, detail = A.commit_gate(unmeasured, slugs, 2)
+    check('a measurement that chose no rule does not commit the bench',
+          not ok and 'не выбрал правило' in detail, detail)
+    over = {
+        'songs': slugs,
+        'chosen': {'name': 'line-0.25', 'within_limit': False, 'baseline_kept': True, 'chance': 0.2},
+    }
+    ok, detail = A.commit_gate(over, slugs, 2)
+    check('a rule over the line limit does not commit the bench',
+          not ok and 'не выбрал правило' in detail, detail)
+    no_join = {
+        'songs': slugs,
+        'chosen': {
+            'name': 'line-0.25', 'within_limit': True, 'baseline_kept': False,
+            'baseline_reason': 'объединение не собрано',
+        },
+    }
+    ok, detail = A.commit_gate(no_join, slugs, 0)
+    check('a missing join with baseline_kept false does not commit the bench',
+          not ok and 'объединение не собрано' in detail, detail)
+    ok, detail = A.commit_gate(good, slugs, 2)
+    check('a non-zero exit does not commit the previous bench',
+          not ok and detail == 'замер атак не выбрал правило', detail)
+    short = dict(good)
+    short['songs'] = ['alive']
+    ok, detail = A.commit_gate(short, slugs, 0)
+    check('a bench that missed a song does not commit',
+          not ok and 'нет песен' in detail and 'karitas' in detail, detail)
+    root = Path(__file__).resolve().parents[2]
+    workflow = (root / '.github' / 'workflows' / 'pipeline.yml').read_text(encoding='utf-8')
+    prove = workflow.split('\n  prove:\n', 1)[1]
+    measure, commit = prove.split('Commit results and remove the job files', 1)
+    check('prove calls the bench commit gate',
+          'commit_gate' in measure and 'commit_bench=no' in measure and 'commit_bench=yes' in measure)
+    check('prove adds the bench only when the gate allows it',
+          'commit_bench' in commit and 'git add docs/analysis/bench' in commit
+          and '!= "yes"' in commit
+          and commit.index('git checkout -- content/songs docs/analysis') < commit.index('git add docs/analysis/bench'))
+    check('a refused bench still fails the prove job',
+          "steps.run.outputs.worst == '2'" in prove)
+
+
 def test_lyric_frame_rises() -> None:
     """A caption onset is the first frame of a held rise, not a flicker."""
     import lyric_frames as LF
@@ -2476,6 +2551,7 @@ def main() -> int:
     test_section_edges()
     test_bias_and_witnesses()
     test_attack_chance()
+    test_bench_commit_gate()
     test_line_rule()
     test_placement_chain()
     test_whisper_witness()
