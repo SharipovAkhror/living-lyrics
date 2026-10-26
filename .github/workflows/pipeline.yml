@@ -36,7 +36,10 @@
 # hearing agree against it and the shifted-label gates still rise
 # (docs/analysis/bench/refuter.md). The published join must keep
 # docs/analysis/bench/baseline-155.json unless holding a lost line would push the line
-# pass over 5 %. Line chance is measured
+# pass over 5 %. The prove job commits docs/analysis/bench only when this
+# measurement chose a rule and baseline_kept is true. A refused rule leaves
+# the published bench untouched and the run still fails. Run 40144966993
+# committed a one-song bench after that refusal. Line chance is measured
 # per placer. A placer still over 5 % at K = 1 is excluded from proof; the run continues
 # when the others fit. qa reads that rule and does not prove an excluded placer.
 # A word start must sit inside the line's section (0.05 s), or that chain step
@@ -60,8 +63,9 @@
 # missing, prove separates the recording and does not skip the review.
 # Run 39332050100 saved large per-song model caches and the stem cache was
 # gone by the time prove started. A qa job may set "align_from_run" to a
-# finished run id: prove downloads that run's align artifacts and does not
-# align again. Do not combine align_from_run with an align stage.
+# finished run id: prove downloads that run's align-<slug> artifact and does
+# not align again. Jobs in one run may name different runs. Each song is
+# downloaded from its own run. Do not combine align_from_run with an align stage.
 # An align job is one song. Run 39102852010 put three ladders in one 150 minute
 # job and was cancelled at the limit (I Have Come Alive and Karitas had aligned,
 # ONE was still inside large-v3, qa had not started). The commit step still
@@ -107,6 +111,7 @@ jobs:
       prove_slugs: ${{ steps.jobs.outputs.prove_slugs }}
       prove_files: ${{ steps.jobs.outputs.prove_files }}
       reuse_run: ${{ steps.jobs.outputs.reuse_run }}
+      reuse_pairs: ${{ steps.jobs.outputs.reuse_pairs }}
     steps:
       - uses: actions/checkout@v4
       - name: Collect jobs
@@ -153,9 +158,15 @@ jobs:
               print('::error::align_from_run и стадия align в одном запуске')
               raise SystemExit(1)
           if len(reuse_ids) > 1:
-              print('::error::разные align_from_run')
-              raise SystemExit(1)
-          reuse_run = next(iter(reuse_ids)) if reuse_ids else ''
+              # One prove pass can reuse a different finished alignment per song.
+              # The three bench songs and Alive were aligned in different runs.
+              reuse_run = 'multi'
+          elif reuse_ids:
+              reuse_run = next(iter(reuse_ids))
+          else:
+              reuse_run = ''
+          reuse_pairs = ','.join(
+              f"{j['slug']}={str(j.get('align_from_run')).strip()}" for j in reuse_jobs)
           prove_jobs = align_jobs or reuse_jobs
           include = []
           for j in align_jobs:
@@ -171,8 +182,9 @@ jobs:
               f.write(f"prove_slugs={' '.join(j['slug'] for j in prove_jobs)}\n")
               f.write(f"prove_files={' '.join(j['file'] for j in prove_jobs if j['file'])}\n")
               f.write(f"reuse_run={reuse_run}\n")
+              f.write(f"reuse_pairs={reuse_pairs}\n")
               f.write('align_matrix=' + json.dumps({'include': include}, separators=(',', ':')) + '\n')
-          print(json.dumps({'align': include, 'reuse_run': reuse_run,
+          print(json.dumps({'align': include, 'reuse_run': reuse_run, 'reuse_pairs': reuse_pairs,
                             'prove': [j['slug'] for j in prove_jobs]}, ensure_ascii=False, indent=1))
           EOF
 
@@ -810,7 +822,7 @@ jobs:
           name: calibration
           path: incoming-cal
       - name: Download an earlier alignment
-        if: needs.prepare.outputs.reuse_run != ''
+        if: needs.prepare.outputs.reuse_run != '' && needs.prepare.outputs.reuse_run != 'multi'
         uses: actions/download-artifact@v4
         with:
           pattern: 'align-*'
@@ -819,26 +831,70 @@ jobs:
           run-id: ${{ needs.prepare.outputs.reuse_run }}
           github-token: ${{ github.token }}
       - name: Download that run's calibration
-        if: needs.prepare.outputs.reuse_run != ''
+        if: needs.prepare.outputs.reuse_run != '' && needs.prepare.outputs.reuse_run != 'multi'
         uses: actions/download-artifact@v4
         with:
           name: calibration
           path: incoming-cal
           run-id: ${{ needs.prepare.outputs.reuse_run }}
           github-token: ${{ github.token }}
+      - name: Download alignments from each earlier run
+        if: needs.prepare.outputs.reuse_run == 'multi'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REUSE_PAIRS: ${{ needs.prepare.outputs.reuse_pairs }}
+        run: |
+          set -euo pipefail
+          mkdir -p incoming
+          IFS=',' read -ra pairs <<< "$REUSE_PAIRS"
+          if [ "${#pairs[@]}" -eq 0 ]; then
+            echo "::error::нет пар align_from_run"
+            exit 1
+          fi
+          for pair in "${pairs[@]}"; do
+            slug="${pair%%=*}"
+            run_id="${pair#*=}"
+            if ! [[ "$slug" =~ ^[a-z0-9-]+$ ]] || ! [[ "$run_id" =~ ^[0-9]+$ ]]; then
+              echo "::error::плохая пара align_from_run: $pair"
+              exit 1
+            fi
+            tmp="$(mktemp -d)"
+            echo "скачиваю align-$slug из $run_id"
+            gh run download "$run_id" --repo "$GITHUB_REPOSITORY" -n "align-$slug" -D "$tmp"
+            if [ -d "$tmp/pipeline-pack" ]; then
+              cp -a "$tmp/pipeline-pack/." incoming/
+            else
+              cp -a "$tmp/." incoming/
+            fi
+            rm -rf "$tmp"
+            if [ ! -f "incoming/report/$slug/align-report.json" ] && [ ! -f "incoming/pipeline-pack/report/$slug/align-report.json" ]; then
+              echo "::error::в артефакте align-$slug нет отчёта"
+              exit 1
+            fi
+          done
       - name: Measure the rule and check the songs
         id: run
         run: |
           set +e
           worst=0
+          # yes only when attack_chance chose a rule and baseline_kept is true.
+          commit_bench=no
           : > /tmp/summary.txt
           src=incoming
           if [ -d incoming/pipeline-pack ]; then src=incoming/pipeline-pack; fi
           cal=incoming-cal
           if [ -d incoming-cal/pipeline-pack ]; then cal=incoming-cal/pipeline-pack; fi
           mkdir -p docs/analysis/bench work
-          cp "$cal/docs/analysis/bench/calibration.json" docs/analysis/bench/calibration.json
-          cp "$cal/docs/analysis/bench/calibration.md" docs/analysis/bench/calibration.md
+          # Several alignment runs do not share one calibration file. Copying
+          # one of them would replace the published threshold. Attack measurement
+          # does not read it. A single reused run still brings its own file.
+          if [ -f "$cal/docs/analysis/bench/calibration.json" ]; then
+            cp "$cal/docs/analysis/bench/calibration.json" docs/analysis/bench/calibration.json
+            cp "$cal/docs/analysis/bench/calibration.md" docs/analysis/bench/calibration.md
+          else
+            echo "калибровка артефакта не подставлена, остаётся файл репозитория"
+            test -s docs/analysis/bench/calibration.json
+          fi
           cp -a "$src/content/songs/." content/songs/
           cp -a "$src/docs/analysis/." docs/analysis/
           if [ -d "$src/report" ]; then
@@ -923,31 +979,38 @@ jobs:
             rc=$?
             echo "::endgroup::"
             echo "attack-chance: код $rc" >> /tmp/summary.txt
-            if [ $rc -ne 0 ]; then
+            # commit_gate refuses a missing rule, a lost baseline, and a bench
+            # that does not cover this run. A non-zero exit with a still-valid
+            # published file is also a refusal: the script died before writing.
+            ATTACK_RC="$rc" python3 - <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, 'scripts/pipeline')
+          import attack_chance as A
+          slugs = [s for s in Path('/tmp/calibrate.txt').read_text(encoding='utf-8').split() if s]
+          path = Path('docs/analysis/bench/attack-chance.json')
+          rc = int(os.environ.get('ATTACK_RC') or '1')
+          data = {}
+          if path.is_file():
+              try:
+                  data = json.loads(path.read_text(encoding='utf-8'))
+              except json.JSONDecodeError:
+                  data = {}
+          ok, detail = A.commit_gate(data, slugs, rc)
+          print(detail)
+          Path('/tmp/commit-bench.txt').write_text(('yes' if ok else 'no') + '\n' + detail + '\n', encoding='utf-8')
+          raise SystemExit(0 if ok else 2)
+          PY
+            gate_rc=$?
+            if [ "$gate_rc" -ne 0 ]; then
               align_rc=2
               worst=2
-              echo "::error::замер атак не выбрал правило"
+              detail=$(sed -n '2p' /tmp/commit-bench.txt 2>/dev/null || true)
+              if [ -z "$detail" ]; then detail='замер атак не выбрал правило'; fi
+              echo "::error::$detail"
+              echo "attack-chance: $detail" >> /tmp/summary.txt
             else
-              python3 - <<'PY'
-          import json
-          from pathlib import Path
-          want = [s for s in Path('/tmp/calibrate.txt').read_text(encoding='utf-8').split() if s]
-          data = json.loads(Path('docs/analysis/bench/attack-chance.json').read_text(encoding='utf-8'))
-          have = set(data.get('songs') or [])
-          missing = [s for s in want if s not in have]
-          if missing:
-              raise SystemExit('нет замера атак: ' + ', '.join(missing))
-          chosen = data.get('chosen') or {}
-          if not chosen.get('within_limit'):
-              raise SystemExit('случайный проход выше предела: ' + str(chosen.get('chance')))
-          print('правило слова: ' + str(chosen.get('name')) + ' случайный проход ' + str(chosen.get('chance')))
-          PY
-              rc=$?
-              if [ $rc -ne 0 ]; then
-                align_rc=2
-                worst=2
-                echo "::error::замер атак не покрыл песни или не уложился в 15 %"
-              fi
+              commit_bench=yes
             fi
           fi
           if [ $align_rc -eq 0 ]; then
@@ -966,6 +1029,7 @@ jobs:
             done < /tmp/calibrate.txt
           fi
           echo "worst=$worst" >> "$GITHUB_OUTPUT"
+          echo "commit_bench=$commit_bench" >> "$GITHUB_OUTPUT"
           cat /tmp/summary.txt >> "$GITHUB_STEP_SUMMARY"
           exit 0
       - name: Commit results and remove the job files
@@ -974,13 +1038,22 @@ jobs:
           rm -rf pipeline-pack incoming incoming-cal
           git config user.name 'github-actions[bot]'
           git config user.email '41898283+github-actions[bot]@users.noreply.github.com'
+          # A refused measurement must not replace the published bench, the
+          # clocks it wrote, or the song files it copied off the align artifact.
+          if [ "${{ steps.run.outputs.commit_bench }}" != "yes" ]; then
+            echo "стенд не коммитится: замер не выбрал правило или база не удержана"
+            git checkout -- content/songs docs/analysis
+            git clean -fd -- content/songs docs/analysis
+          fi
           for slug in ${{ needs.prepare.outputs.prove_slugs }}; do
             git add "content/songs/$slug/lyrics.json" "content/songs/$slug/song.json" 2>/dev/null || true
             [ -f "docs/analysis/$slug-qa.md" ] && git add "docs/analysis/$slug-qa.md"
             [ -f "docs/analysis/$slug-pipeline.md" ] && git add "docs/analysis/$slug-pipeline.md"
             [ -d "docs/analysis/$slug" ] && git add "docs/analysis/$slug"
           done
-          if [ -d docs/analysis/bench ]; then git add docs/analysis/bench; fi
+          if [ "${{ steps.run.outputs.commit_bench }}" = "yes" ] && [ -d docs/analysis/bench ]; then
+            git add docs/analysis/bench
+          fi
           for f in ${{ needs.prepare.outputs.prove_files }}; do
             git rm -q --ignore-unmatch "$f"
           done
