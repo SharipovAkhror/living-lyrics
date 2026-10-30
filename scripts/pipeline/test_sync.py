@@ -2488,6 +2488,34 @@ def test_bench_commit_gate() -> None:
           "steps.run.outputs.worst == '2'" in prove)
 
 
+def test_run_job_commit_gate() -> None:
+    """The align path in the run job must use the same bench gate as prove.
+
+    prove already refuses a lost baseline. The run job added
+    docs/analysis/bench on every commit, including a measurement that had
+    not passed commit_gate. A job that did not measure attacks still commits
+    its own song files and does not restore them.
+    """
+    root = Path(__file__).resolve().parents[2]
+    workflow = (root / '.github' / 'workflows' / 'pipeline.yml').read_text(encoding='utf-8')
+    run_job = workflow.split('\n  run:\n', 1)[1].split('\n  calibrate:\n', 1)[0]
+    measure, commit = run_job.split('Commit results and remove the job files', 1)
+    check('the run job calls the bench commit gate',
+          'commit_gate' in measure and 'commit_bench=no' in measure and 'commit_bench=yes' in measure
+          and 'commit_bench=skip' in measure)
+    check('the run job adds the bench only when the gate allows it',
+          'commit_bench' in commit and 'git add docs/analysis/bench' in commit
+          and '= "yes"' in commit
+          and '= "no"' in commit
+          and commit.index('git checkout -- content/songs docs/analysis') < commit.index('git add docs/analysis/bench'))
+    check('a job that did not measure attacks still commits its bench',
+          '= "skip"' in commit)
+    check('a refused run-job bench still fails the job',
+          "steps.run.outputs.worst == '2'" in run_job)
+    check('the unconditional bench add is gone from the run job',
+          'if [ -d docs/analysis/bench ]; then git add docs/analysis/bench; fi' not in run_job)
+
+
 def test_align_from_run_per_song() -> None:
     """One prove pass may reuse a different finished alignment for each song.
 
@@ -2574,6 +2602,7 @@ def main() -> int:
     test_bias_and_witnesses()
     test_attack_chance()
     test_bench_commit_gate()
+    test_run_job_commit_gate()
     test_align_from_run_per_song()
     test_line_rule()
     test_placement_chain()
