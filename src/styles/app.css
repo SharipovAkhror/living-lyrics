@@ -82,6 +82,10 @@
   position: absolute;
   inset: 0;
 }
+/* The error boundary's element. It must not become the scene's containing block. */
+.scene-boundary {
+  display: contents;
+}
 .scene {
   z-index: 2;
 }
@@ -2064,6 +2068,26 @@ html.is-sheet-drag .sheet-grabber {
 .info-version {
   max-width: 36em;
   color: color-mix(in srgb, var(--ink) 82%, transparent);
+}
+.info-diag {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin: 2px 8px 8px;
+  text-align: start;
+}
+.info-diag-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.info-diag-copy {
+  flex: none;
+  min-height: 44px;
+  padding: 0;
+  color: var(--accent);
+  font: 500 13px/1.2 var(--font-ui);
 }
 
 /* Composition cards in «О песне». Paper, same radius as a group. */

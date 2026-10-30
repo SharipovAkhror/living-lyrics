@@ -2,7 +2,7 @@
 
     python3 scripts/pipeline/align.py <slug> [--anchors global|sections|draft] [--margin 6]
                                        [--lines id,id…] [--audio PATH] [--move-sections]
-                                       [--dry-run] [--force]
+                                       [--dry-run] [--force] [--witness-window phrase|cue]
 
 Engine: torchaudio MMS_FA (wav2vec2 CTC aligner trained on 1100+ languages). Its alphabet is Latin
 letters, so Arabic-script words are romanised with uroman, and Latin-script words lose their
@@ -816,6 +816,34 @@ def second_span(phrase_start: float, phrase_end: float, sec_start: float, sec_en
     return t0, t1
 
 
+def line_witness_window(mode: str, cue_start: float | None, cue_end: float | None,
+                        prev_cue: tuple[float, float] | None, next_cue: tuple[float, float] | None,
+                        sec_start: float, sec_end: float, duration: float,
+                        phrase_start: float, phrase_end: float,
+                        prev_fence: float | None, next_fence: float | None,
+                        next_cue_start: float | None, phrase_placed: bool) -> tuple[float, float] | None:
+    """Audio the second and third aligners hear for one line.
+
+    `phrase` is the historical split. A line the first pass already placed hears
+    the measured phrase plus up to 2 s, stopped at a neighbour. A cued line that
+    is still open hears the span from this cue to the next cue. `cue` hears the
+    official subtitle window for every cued line: the same lead, tail, neighbour
+    overlap and section fence as the first MMS pass. That window does not include
+    two seconds of the previous line, and it does not run on to the next cue.
+    A line with no cue stays on the phrase window. An open line with no cue has
+    no witness window.
+    """
+    cued = cue_start is not None and cue_end is not None
+    if mode == 'cue' and cued:
+        return cue_window(float(cue_start), float(cue_end), prev_cue, next_cue,
+                          float(sec_start), float(sec_end), float(duration))
+    if phrase_placed:
+        return second_span(phrase_start, phrase_end, sec_start, sec_end, duration, prev_fence, next_fence)
+    if not cued:
+        return None
+    return P.span_to_next(float(cue_start), float(cue_end), next_cue_start, duration, CUE_LEAD, 0.0)
+
+
 def snap_onsets(sig, times: list[list], units: list[Unit], measured: list[bool]) -> list[list[float | None]]:
     """Move a measured word start onto a clear vocal attack within SNAP_WIN.
 
@@ -1558,6 +1586,9 @@ def main() -> None:
     ap.add_argument('--second', default='auto', help='second aligner: auto | whisperx | none (default auto)')
     ap.add_argument('--proof', choices=['agree', 'strict'], default='agree',
                     help='agree: two aligners within 100 ms + line on the voice; strict: also a clear onset at every word')
+    ap.add_argument('--witness-window', choices=['phrase', 'cue'], default='phrase',
+                    help='phrase: measured phrase plus 2 s, or the span to the next cue when the line is still open (default). '
+                         'cue: official subtitle window for every cued line, same fence as the first pass')
     args = ap.parse_args()
     slug = args.slug
     margin = args.margin if args.margin is not None else (10.0 if args.anchors == 'draft' else 6.0)
@@ -1665,8 +1696,9 @@ def main() -> None:
             _note_wide(conf[-1], u, mms_seconds, cue, _prev_cue_end(units, cues, i), next_cue, 'mms')
 
     # Lines the first MMS pass already placed keep that pass. The chain runs only
-    # where it did not. Their witness window stays the pre-snap phrase, so a line
-    # that was already placed is not re-measured on a wider span.
+    # where it did not. In phrase mode their witness window stays the pre-snap
+    # phrase, so a line that was already placed is not re-measured on a wider span.
+    # Cue mode gives every cued line the subtitle window instead.
     orig_good = {u.id for u, c in zip(units, conf) if c['status'] == 'good'}
     n_window = rescue_mms_windows(lp, units, conf, passes, cues, duration)
     ft_info = rescue_ft(slug, units, conf, cues, duration, lyrics)
@@ -1695,17 +1727,25 @@ def main() -> None:
         if T.group(u.sec, u.line) == 'other':
             continue
         cue = cues.get(u.id)
-        if u.id in orig_good or (cue is None and conf[i]['status'] == 'good'):
-            span = phrase[i]
-            prev_end = next((fence_end[j] for j in range(i - 1, -1, -1) if fence_end[j] is not None), None)
-            next_start = next((fence_start[j] for j in range(i + 1, len(fence_start)) if fence_start[j] is not None), None)
-            t0, t1 = second_span(span[0], span[1], float(u.sec['start']), float(u.sec['end']), duration,
-                                 prev_end, next_start)
-        elif cue is not None:
-            t0, t1 = P.span_to_next(float(cue['start']), float(cue['end']), _next_cue_start(units, cues, i),
-                                    duration, CUE_LEAD, 0.0)
-        else:
+        span = phrase[i]
+        prev_fence = next((fence_end[j] for j in range(i - 1, -1, -1) if fence_end[j] is not None), None)
+        next_fence = next((fence_start[j] for j in range(i + 1, len(fence_start)) if fence_start[j] is not None), None)
+        prev_row = cues.get(units[i - 1].id) if i else None
+        next_row = cues.get(units[i + 1].id) if i + 1 < len(units) else None
+        prev_cue = (float(prev_row['start']), float(prev_row['end'])) if prev_row else None
+        next_cue_pair = (float(next_row['start']), float(next_row['end'])) if next_row else None
+        phrase_placed = u.id in orig_good or (cue is None and conf[i]['status'] == 'good')
+        window = line_witness_window(
+            args.witness_window,
+            None if cue is None else float(cue['start']),
+            None if cue is None else float(cue['end']),
+            prev_cue, next_cue_pair,
+            float(u.sec['start']), float(u.sec['end']), duration,
+            span[0], span[1], prev_fence, next_fence,
+            _next_cue_start(units, cues, i), phrase_placed)
+        if window is None:
             continue
+        t0, t1 = window
         second_window[u.id] = (t0, t1)
         jobs.append({'id': u.id, 'lang': u.line['lang'], 'script': u.line['script'],
                      'words': [w['w'] for w in u.line['words']], 't0': t0, 't1': t1})
@@ -1931,6 +1971,7 @@ def main() -> None:
         'words_in_good_lines': len(ws_good),
         'words_proven': sum(w['proven'] for w in ws_good),
         'second_engine': args.second,
+        'witness_window': args.witness_window,
         'second_engines_used': sorted(set(second_name.values())),
         'second_compared': int(len(pair)),
         'second_within_100ms': int((pair <= ENGINE_AGREE).sum()) if len(pair) else 0,
@@ -1959,6 +2000,7 @@ def main() -> None:
         'slug': slug, 'created': t_start.isoformat(timespec='seconds'), 'audio': audio.name, 'stem': is_stem,
         'engine': 'torchaudio MMS_FA + uroman, CTC Viterbi', 'second': summary['second_engine'],
         'anchors': 'cue' if cues else 'section', 'margin': CUE_LEAD if cues else margin,
+        'witness_window': args.witness_window,
         'thresholds': {'metric': metric_name, 'score': threshold, 'fallback_score': GOOD_SCORE,
                        'gap_recorded': GOOD_GAP, 'agree': GOOD_AGREE, 'keep_score': KEEP_SCORE,
                        'keep_agree': KEEP_AGREE, 'snap_win': SNAP_WIN, 'snap_min': Q.PEAK_HEIGHT, 'engine_agree': ENGINE_AGREE,

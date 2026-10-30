@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["video_type", "captions"],
+  "properties": {
+    "video_type": {"type": "string", "enum": ["concert", "lyric_video", "static", "other"]},
+    "video_type_note": {"type": "string"},
+    "captions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["first_s", "last_s", "script", "role", "text", "confidence"],
+        "properties": {
+          "first_s": {"type": "number"},
+          "last_s": {"type": "number"},
+          "script": {"type": "string", "enum": ["Arabic", "Latin", "other"]},
+          "language_guess": {"type": "string"},
+          "role": {"type": "string", "enum": ["original", "translation", "title", "credit", "other"]},
+          "text": {"type": "string"},
+          "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+          "unreadable_parts": {"type": "string"}
+        }
+      }
+    }
+  }
+}

@@ -17,10 +17,13 @@ python -m yt_dlp --no-playlist --js-runtimes node --extractor-args "youtube:play
 2. Видео лежит, кадров нет. Просмотр запускает Claude · Lead, не Grok. Задание — `scripts/instrument_id/prompts/watch-video.md`, путь видео подставляют вместо `{{VIDEO}}`. `song-status` в строке команды оставляет `npm run song-status -- <slug>`, а вызов пишет в абзаце:
 
 ```bash
-agy -p "<текст scripts/instrument_id/prompts/watch-video.md>" --model gemini-3.8-flash-high --output-format json --json-schema scripts/instrument_id/schema/vision.json --print-timeout 2350s
+python "$(python -c "import sys; sys.path.insert(0, 'scripts/tools'); from aos_home import aos_home; print(aos_home(), end='')")/ops/agents/agy_run.py" . gemini-3.8-flash-high - 2350s scripts/instrument_id/schema/vision.json work/<slug>/watch-prompt.md --task "watch-video <slug>"
+# work/<slug>/watch-prompt.md — копия scripts/instrument_id/prompts/watch-video.md с путём видео вместо {{VIDEO}}
 ```
 
-Поле `structured_output` записывают в `docs/analysis/<slug>/vision.json`. Расход: `python ops/usage/collect.py --run <json agy> --task "watch-video <slug>"`. Журнал сам песню не закрывает. Если это не Claude · Lead, в отчёте пишут, что видео ждёт просмотра, и `agy` не вызывают.
+Задание начинается с вида ролика: концерт, лирик-видео, статичная картинка или другое. В ответ это поле `video_type` (`concert`, `lyric_video`, `static`, `other`). Поле необязательное: старый `vision.json` без него проходит `npm run validate`. У лирик-видео в заметке кадра пишут, что титры есть и где они на экране; буквы титров — стадия 4, задание `scripts/instrument_id/prompts/read-captions.md`, не этот просмотр. У концерта собирают инструменты, как раньше.
+
+Поле `structured_output` записывают в `docs/analysis/<slug>/vision.json`. `agy_run.py` (настройка владельца `agentic-os-live`) сам пишет расход в журнал; `agy` напрямую не вызывают. Журнал сам песню не закрывает. Если это не Claude · Lead, в отчёте пишут, что видео ждёт просмотра, и `agy` не вызывают.
 
 3. Кадры есть, нет `fusion.json`: `python scripts/instrument_id/run.py fuse <slug>`. Сведение титров, кадров и звука, если звук уже распознан. Одного звука для инструмента недостаточно.
 4. Сведение есть, нет `entries.md`: `python scripts/instrument_id/run.py entries <slug> --write`. Пишет отчёт и поля `instruments`, `entries`, `performers`. Правило — «титры и чёткий кадр» или «три плана», оно ниже. Строки и время слов не трогает. Флаг `--write` не добавляют, когда `entries.md` уже есть: строка «видео» к этому моменту уже «да».

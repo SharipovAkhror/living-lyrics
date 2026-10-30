@@ -21,7 +21,7 @@
       "id": "voice-1",
       "kind": "instrumental",
       "start": 2,
-      "end": 37.39,
+      "end": 35.0,
       "label": "Хор",
       "instruments": [
         "choir"
@@ -30,6 +30,18 @@
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ]
+    },
+    {
+      "id": "voice-1-inst",
+      "kind": "instrumental",
+      "start": 35.0,
+      "end": 37.39,
+      "label": "Проигрыш",
+      "instruments": [],
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
       ]
     },
     {
@@ -1584,7 +1596,7 @@
       "id": "voice-4",
       "kind": "instrumental",
       "start": 305,
-      "end": 319,
+      "end": 311.0,
       "label": "Голос",
       "instruments": [
         "voice",
@@ -1613,17 +1625,30 @@
       ]
     },
     {
+      "id": "voice-4-inst",
+      "kind": "instrumental",
+      "start": 311.0,
+      "end": 319,
+      "label": "Инструментальный проигрыш",
+      "instruments": [
+        "qanun",
+        "ney"
+      ],
+      "note": "Проигрыш без пения.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
+      ]
+    },
+    {
       "id": "voice-5",
       "kind": "instrumental",
       "start": 319,
-      "end": 328,
+      "end": 325.0,
       "label": "Голос",
       "instruments": [
-        "voice",
-        "ney",
-        "qanun"
+        "voice"
       ],
-      "note": "Голос; най и канун входят вместе только с шестой секунды.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -1633,7 +1658,25 @@
         {
           "key": "voice",
           "at": 319.0
-        },
+        }
+      ]
+    },
+    {
+      "id": "voice-5-inst",
+      "kind": "instrumental",
+      "start": 325.0,
+      "end": 328,
+      "label": "Инструментальный проигрыш",
+      "instruments": [
+        "ney",
+        "qanun"
+      ],
+      "note": "Проигрыш без пения.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
+      ],
+      "entries": [
         {
           "key": "ney",
           "at": 325.0
@@ -1648,15 +1691,14 @@
       "id": "voice-6",
       "kind": "instrumental",
       "start": 328,
-      "end": 355,
+      "end": 341.0,
       "label": "Голос",
       "instruments": [
         "voice",
         "ney",
-        "qanun",
-        "violin"
+        "qanun"
       ],
-      "note": "Най и канун почти сразу за голосом. Скрипка — в последние секунды секции.",
+      "note": "Голос, най и канун.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -1674,7 +1716,26 @@
         {
           "key": "qanun",
           "at": 329.0
-        },
+        }
+      ]
+    },
+    {
+      "id": "voice-6-inst",
+      "kind": "instrumental",
+      "start": 341.0,
+      "end": 355,
+      "label": "Инструментальный проигрыш",
+      "instruments": [
+        "ney",
+        "qanun",
+        "violin"
+      ],
+      "note": "Проигрыш без пения.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
+      ],
+      "entries": [
         {
           "key": "violin",
           "at": 350.0
@@ -1744,14 +1805,11 @@
       "kind": "instrumental",
       "start": 403,
       "end": 405,
-      "label": "Голос",
-      "instruments": [
-        "voice"
-      ],
+      "label": "Проигрыш",
+      "instruments": [],
       "flags": [
         "attribution-unverified",
-        "timing-draft",
-        "text-unverified"
+        "timing-draft"
       ]
     },
     {
@@ -2306,19 +2364,14 @@
       "id": "voice-9",
       "kind": "instrumental",
       "start": 550.27,
-      "end": 632,
+      "end": 559.0,
       "label": "Голос",
       "instruments": [
         "voice",
         "darbuka",
-        "qanun",
-        "ney",
-        "violin",
-        "baglama",
-        "riq",
-        "oud"
+        "qanun"
       ],
-      "note": "За голосом по очереди дарбука, канун, най, скрипка, баглама, рик и уд.",
+      "note": "Голос, дарбука и канун.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -2336,7 +2389,48 @@
         {
           "key": "qanun",
           "at": 558.0
-        },
+        }
+      ]
+    },
+    {
+      "id": "voice-9-inst",
+      "kind": "instrumental",
+      "start": 559.0,
+      "end": 563.0,
+      "label": "Инструментальный проигрыш",
+      "instruments": [
+        "darbuka",
+        "qanun"
+      ],
+      "note": "Проигрыш без пения.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "voice-9-2",
+      "kind": "instrumental",
+      "start": 563.0,
+      "end": 592.0,
+      "label": "Голос",
+      "instruments": [
+        "voice",
+        "darbuka",
+        "qanun",
+        "ney",
+        "violin",
+        "baglama",
+        "riq",
+        "oud"
+      ],
+      "note": "Голос, дарбука, канун, най, скрипка, баглама, рик и уд.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft",
+        "text-unverified"
+      ],
+      "entries": [
         {
           "key": "ney",
           "at": 563.0
@@ -2357,6 +2451,115 @@
           "key": "oud",
           "at": 573.0
         }
+      ]
+    },
+    {
+      "id": "voice-9-inst-2",
+      "kind": "instrumental",
+      "start": 592.0,
+      "end": 604.0,
+      "label": "Инструментальный проигрыш",
+      "instruments": [
+        "darbuka",
+        "qanun",
+        "ney",
+        "violin",
+        "baglama",
+        "riq",
+        "oud"
+      ],
+      "note": "Проигрыш без пения.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "voice-9-3",
+      "kind": "instrumental",
+      "start": 604.0,
+      "end": 609.0,
+      "label": "Голос",
+      "instruments": [
+        "voice",
+        "darbuka",
+        "qanun",
+        "ney",
+        "violin",
+        "baglama",
+        "riq",
+        "oud"
+      ],
+      "note": "Голос, дарбука, канун, най, скрипка, баглама, рик и уд.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft",
+        "text-unverified"
+      ]
+    },
+    {
+      "id": "voice-9-inst-3",
+      "kind": "instrumental",
+      "start": 609.0,
+      "end": 615.0,
+      "label": "Инструментальный проигрыш",
+      "instruments": [
+        "darbuka",
+        "qanun",
+        "ney",
+        "violin",
+        "baglama",
+        "riq",
+        "oud"
+      ],
+      "note": "Проигрыш без пения.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "voice-9-4",
+      "kind": "instrumental",
+      "start": 615.0,
+      "end": 630.0,
+      "label": "Голос",
+      "instruments": [
+        "voice",
+        "darbuka",
+        "qanun",
+        "ney",
+        "violin",
+        "baglama",
+        "riq",
+        "oud"
+      ],
+      "note": "Голос, дарбука, канун, най, скрипка, баглама, рик и уд.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft",
+        "text-unverified"
+      ]
+    },
+    {
+      "id": "voice-9-inst-4",
+      "kind": "instrumental",
+      "start": 630.0,
+      "end": 632,
+      "label": "Инструментальный проигрыш",
+      "instruments": [
+        "darbuka",
+        "qanun",
+        "ney",
+        "violin",
+        "baglama",
+        "riq",
+        "oud"
+      ],
+      "note": "Проигрыш без пения.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
       ]
     },
     {
@@ -2439,30 +2642,56 @@
       ]
     },
     {
-      "id": "voice-11",
+      "id": "voice-11-inst",
       "kind": "instrumental",
       "start": 714,
-      "end": 721,
+      "end": 719.0,
+      "label": "Инструментальный проигрыш",
+      "instruments": [
+        "qanun"
+      ],
+      "note": "Проигрыш без пения.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
+      ],
+      "entries": [
+        {
+          "key": "qanun",
+          "at": 715.05
+        }
+      ]
+    },
+    {
+      "id": "voice-11",
+      "kind": "instrumental",
+      "start": 719.0,
+      "end": 720.0,
       "label": "Голос",
       "instruments": [
         "voice",
         "qanun"
       ],
-      "note": "Голос, и через секунду канун.",
+      "note": "Голос и канун.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ]
+    },
+    {
+      "id": "voice-11-inst-2",
+      "kind": "instrumental",
+      "start": 720.0,
+      "end": 721,
+      "label": "Инструментальный проигрыш",
+      "instruments": [
+        "qanun"
       ],
-      "entries": [
-        {
-          "key": "voice",
-          "at": 714.0
-        },
-        {
-          "key": "qanun",
-          "at": 715.05
-        }
+      "note": "Проигрыш без пения.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
       ]
     },
     {
@@ -2492,10 +2721,22 @@
       ]
     },
     {
-      "id": "voice-12",
+      "id": "voice-12-inst",
       "kind": "instrumental",
       "start": 733,
-      "end": 750,
+      "end": 737.0,
+      "label": "Проигрыш",
+      "instruments": [],
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "voice-12",
+      "kind": "instrumental",
+      "start": 737.0,
+      "end": 747.0,
       "label": "Голос",
       "instruments": [
         "voice",
@@ -2503,17 +2744,13 @@
         "qanun",
         "violin"
       ],
-      "note": "Голос, через пять секунд най и канун, ещё через четыре — скрипка.",
+      "note": "Голос, най, канун и скрипка.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
       ],
       "entries": [
-        {
-          "key": "voice",
-          "at": 733.0
-        },
         {
           "key": "ney",
           "at": 738.0
@@ -2526,6 +2763,23 @@
           "key": "violin",
           "at": 742.05
         }
+      ]
+    },
+    {
+      "id": "voice-12-inst-2",
+      "kind": "instrumental",
+      "start": 747.0,
+      "end": 750,
+      "label": "Инструментальный проигрыш",
+      "instruments": [
+        "ney",
+        "qanun",
+        "violin"
+      ],
+      "note": "Проигрыш без пения.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
       ]
     },
     {
@@ -2555,28 +2809,21 @@
       ]
     },
     {
-      "id": "voice-13",
+      "id": "voice-13-inst",
       "kind": "instrumental",
       "start": 760,
-      "end": 813,
-      "label": "Хор",
+      "end": 766.0,
+      "label": "Инструментальный проигрыш",
       "instruments": [
-        "choir",
         "darbuka",
-        "riq",
-        "violin"
+        "riq"
       ],
-      "note": "Хор, с первых секунд дарбука и рик. Скрипка входит много позже, уже к концу.",
+      "note": "Проигрыш без пения.",
       "flags": [
         "attribution-unverified",
-        "timing-draft",
-        "text-unverified"
+        "timing-draft"
       ],
       "entries": [
-        {
-          "key": "choir",
-          "at": 760.0
-        },
         {
           "key": "darbuka",
           "at": 761.7
@@ -2584,11 +2831,83 @@
         {
           "key": "riq",
           "at": 761.7
-        },
+        }
+      ]
+    },
+    {
+      "id": "voice-13",
+      "kind": "instrumental",
+      "start": 766.0,
+      "end": 768.0,
+      "label": "Хор",
+      "instruments": [
+        "choir",
+        "darbuka",
+        "riq"
+      ],
+      "note": "Хор, дарбука и рик.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft",
+        "text-unverified"
+      ]
+    },
+    {
+      "id": "voice-13-inst-2",
+      "kind": "instrumental",
+      "start": 768.0,
+      "end": 770.0,
+      "label": "Инструментальный проигрыш",
+      "instruments": [
+        "darbuka",
+        "riq"
+      ],
+      "note": "Проигрыш без пения.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "voice-13-2",
+      "kind": "instrumental",
+      "start": 770.0,
+      "end": 812.0,
+      "label": "Хор",
+      "instruments": [
+        "choir",
+        "darbuka",
+        "riq",
+        "violin"
+      ],
+      "note": "Хор, дарбука, рик и скрипка.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft",
+        "text-unverified"
+      ],
+      "entries": [
         {
           "key": "violin",
           "at": 805.0
         }
+      ]
+    },
+    {
+      "id": "voice-13-inst-3",
+      "kind": "instrumental",
+      "start": 812.0,
+      "end": 813,
+      "label": "Инструментальный проигрыш",
+      "instruments": [
+        "darbuka",
+        "riq",
+        "violin"
+      ],
+      "note": "Проигрыш без пения.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
       ]
     },
     {
@@ -2621,16 +2940,14 @@
       "id": "voice-14",
       "kind": "instrumental",
       "start": 835,
-      "end": 861,
+      "end": 854.0,
       "label": "Голос",
       "instruments": [
         "voice",
         "erhu",
-        "darbuka",
-        "guitar-classical",
-        "violin"
+        "darbuka"
       ],
-      "note": "Голос и почти сразу эрху. Дарбука позже; классическая гитара и скрипка — в последние две секунды.",
+      "note": "Голос, эрху и дарбука.",
       "flags": [
         "attribution-unverified",
         "timing-draft",
@@ -2648,7 +2965,27 @@
         {
           "key": "darbuka",
           "at": 853.95
-        },
+        }
+      ]
+    },
+    {
+      "id": "voice-14-inst",
+      "kind": "instrumental",
+      "start": 854.0,
+      "end": 861,
+      "label": "Инструментальный проигрыш",
+      "instruments": [
+        "erhu",
+        "darbuka",
+        "guitar-classical",
+        "violin"
+      ],
+      "note": "Проигрыш без пения.",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
+      ],
+      "entries": [
         {
           "key": "guitar-classical",
           "at": 859.0
@@ -2684,7 +3021,7 @@
       "id": "voice-15",
       "kind": "instrumental",
       "start": 872,
-      "end": 879.04,
+      "end": 877.0,
       "label": "Голос",
       "instruments": [
         "voice"
@@ -2693,6 +3030,18 @@
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ]
+    },
+    {
+      "id": "voice-15-inst",
+      "kind": "instrumental",
+      "start": 877.0,
+      "end": 879.04,
+      "label": "Проигрыш",
+      "instruments": [],
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
       ]
     },
     {
@@ -3332,7 +3681,7 @@
       "id": "voice-17",
       "kind": "instrumental",
       "start": 961,
-      "end": 977.05,
+      "end": 976.0,
       "label": "Хор",
       "instruments": [
         "choir"
@@ -3341,6 +3690,18 @@
         "attribution-unverified",
         "timing-draft",
         "text-unverified"
+      ]
+    },
+    {
+      "id": "voice-17-inst",
+      "kind": "instrumental",
+      "start": 976.0,
+      "end": 977.05,
+      "label": "Тишина",
+      "instruments": [],
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
       ]
     }
   ]

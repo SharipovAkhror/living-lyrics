@@ -7,11 +7,10 @@ Gemini 3.8 Flash работает через Antigravity CLI владельца 
 1. Видео: `work/<slug>/video.mp4`, 360p со звуком, в git не попадает. Источник — официальное видео той же записи, что и аудио: тогда время видео совпадает со временем файла. Скачать на машине владельца:
    `python -m yt_dlp --no-update --no-playlist --js-runtimes node --extractor-args "youtube:player_client=tv,web_embedded" -f 18 -o work/<slug>/video.mp4 <url>`.
    Если YouTube просит войти — не обходить: владелец присылает файл своим ботом.
-2. Запуск из корня репозитория (подставить путь вместо `{{VIDEO}}`):
-   `agy -p "<текст watch-video.md>" --model gemini-3.8-flash-high --output-format json --json-schema scripts/instrument_id/schema/vision.json --print-timeout 2350s`.
+2. Копия `watch-video.md` с путём вместо `{{VIDEO}}` → `work/<slug>/watch-prompt.md`. Запуск из корня репозитория — только через `agy_run.py` настройки владельца (он же пишет расход):
+   `python "$(python -c "import sys; sys.path.insert(0, 'scripts/tools'); from aos_home import aos_home; print(aos_home(), end='')")/ops/agents/agy_run.py" . gemini-3.8-flash-high - 2350s scripts/instrument_id/schema/vision.json work/<slug>/watch-prompt.md --task "watch-video <slug>"`.
    Ответ — поле `structured_output` (или строка `response`) → `docs/analysis/<slug>/vision.json`. На 10 минут видео уходит около 6–7 минут.
    Видео длиннее ~8 минут даёт ответ больше предела вывода модели: `agy` сам продолжает с места обрыва, но помечает запуск `status: ERROR`. Проверяйте, что кадры идут до конца без провалов, а длинные видео давайте частями (два запуска с указанием «от … до … секунды»).
-   Расход записать: `python ops/usage/collect.py --run <вывод agy> --task "watch-video <slug>"`.
 3. Проверка оркестратором до сведения: 8–12 кадров в моментах, где Gemini назвал разные инструменты, вырезать (OpenCV) и сравнить глазами; отдельно — общие планы (там ошибок больше всего). Опыт трёх концертов (2026-10-18): на крупных и средних планах почти всё верно; ошибки одиночные (назван инструмент, которого в кадре нет) — поэтому инструмент по одному видео принимается, только если он виден в игре на нескольких разных планах.
 4. Сведение: `python scripts/instrument_id/run.py fuse <slug>`.
 

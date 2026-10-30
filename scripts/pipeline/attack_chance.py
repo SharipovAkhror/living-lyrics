@@ -4000,6 +4000,35 @@ def render_witness(slugs: list[str]) -> str:
     return W.render_witness(songs)
 
 
+def commit_gate(payload: dict | None, slugs: list[str], exit_code: int = 0) -> tuple[bool, str]:
+    """Whether prove may commit docs/analysis/bench.
+
+    The measurement writes the bench even when it refuses the rule. Run
+    40144966993 committed that one-song file after baseline_kept came back
+    false. A refused rule or a lost baseline must leave the published bench.
+    A non-zero exit whose file still looks publishable means the script died
+    before it wrote: the checkout's old bench must not be committed again as
+    if this run had measured it, and the run still fails.
+    """
+    chosen = (payload or {}).get('chosen') or {}
+    name = chosen.get('name')
+    if not chosen.get('within_limit') or name in (None, '', 'unmeasured'):
+        ok, detail = False, f'замер не выбрал правило ({name}, проход {chosen.get("chance")})'
+    elif not chosen.get('baseline_kept'):
+        reason = chosen.get('baseline_reason') or 'baseline_kept ложь'
+        ok, detail = False, f'база не удержана: {reason}'
+    else:
+        have = set((payload or {}).get('songs') or [])
+        missing = [slug for slug in slugs if slug not in have]
+        if missing:
+            ok, detail = False, 'нет песен: ' + ', '.join(missing)
+        else:
+            ok, detail = True, f"правило {name}, база {chosen.get('baseline_n')}"
+    if exit_code != 0 and ok:
+        return False, 'замер атак не выбрал правило'
+    return ok, detail
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     ap.add_argument('--choose', action='store_true', help='measure and write the bench table')

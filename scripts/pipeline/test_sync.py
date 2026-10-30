@@ -256,6 +256,43 @@ def test_second_span() -> None:
     check('a phrase outside its section is not dragged back', abs(t0 - 124.54) < 1e-6 and abs(t1 - 130.47) < 1e-6, f'{t0:.2f}–{t1:.2f}')
 
 
+def test_witness_window() -> None:
+    # The same numbers second_span pads by 2 s. Cue mode must stay on the subtitle.
+    phrase = align.line_witness_window(
+        'phrase', 108.87, 112.78, None, None, 100.0, 140.0, 580.0,
+        108.87, 112.78, 100.0, 120.0, 120.0, True)
+    padded = align.second_span(108.87, 112.78, 100.0, 140.0, 580.0, 100.0, 120.0)
+    check('phrase mode still keeps the 2 s pad', phrase == padded, str(phrase))
+    cue = align.line_witness_window(
+        'cue', 108.87, 112.78, None, None, 100.0, 140.0, 580.0,
+        108.87, 112.78, 100.0, 120.0, 120.0, True)
+    check('cue mode does not start 2 s before the subtitle',
+          cue is not None and abs(cue[0] - (108.87 - align.CUE_LEAD)) < 1e-9 and cue[0] > 106.87, f'{cue}')
+    check('cue mode ends on the subtitle tail',
+          cue is not None and abs(cue[1] - (112.78 + align.CUE_TAIL)) < 1e-9, f'{cue}')
+    # An open line. Phrase mode runs to the next cue. Cue mode stops at the tail.
+    wide = align.line_witness_window(
+        'phrase', 10.0, 12.0, None, (25.0, 28.0), 0.0, 40.0, 580.0,
+        10.0, 12.0, None, None, 25.0, False)
+    tight = align.line_witness_window(
+        'cue', 10.0, 12.0, None, (25.0, 28.0), 0.0, 40.0, 580.0,
+        10.0, 12.0, None, None, 25.0, False)
+    check('an open line in phrase mode hears up to the next cue',
+          wide is not None and abs(wide[1] - 25.0) < 1e-9, str(wide))
+    check('an open line in cue mode does not hear up to the next cue',
+          tight is not None and abs(tight[1] - (12.0 + align.CUE_TAIL)) < 1e-9 and tight[1] < 25.0, str(tight))
+    back = align.line_witness_window(
+        'cue', 108.87, 112.78, (106.0, 108.87), (112.78, 116.0), 100.0, 140.0, 580.0,
+        108.87, 112.78, 108.87, 112.78, 112.78, True)
+    check('back-to-back cue mode stays within the neighbour overlap',
+          back is not None and back[0] >= 108.87 - align.CUE_OVERLAP - 1e-9
+          and back[1] <= 112.78 + align.CUE_OVERLAP + 1e-9, str(back))
+    missing = align.line_witness_window(
+        'cue', None, None, None, None, 0.0, 10.0, 580.0,
+        1.0, 2.0, None, None, None, False)
+    check('an open line with no cue has no witness window', missing is None, str(missing))
+
+
 def test_cue_window() -> None:
     # Back-to-back cues. The window may enter a neighbour by the overlap and no further.
     # Draft s/e are not an argument: the cue, its neighbours and the section fence are.
@@ -2376,6 +2413,144 @@ def test_lang_ctc() -> None:
           and stamped[0].get('lang_role') is None, str(stamped[0]))
 
 
+def test_bench_commit_gate() -> None:
+    """A refused attack measurement must not replace the published bench.
+
+    Run 40144966993 measured one song, lost the 158-line baseline, and the
+    prove step committed that bench anyway. The gate refuses that file. The
+    prove commit in pipeline.yml adds docs/analysis/bench only when the gate
+    says yes, and the run still fails.
+    """
+    import attack_chance as A
+
+    good = {
+        'songs': ['i-have-come-alive', 'karitas', 'one', 'alive'],
+        'chosen': {
+            'name': 'line-0.25', 'within_limit': True, 'baseline_kept': True,
+            'baseline_n': 158, 'baseline_reason': 'удержано', 'chance': 0.04,
+        },
+    }
+    slugs = ['i-have-come-alive', 'karitas', 'one', 'alive']
+    ok, detail = A.commit_gate(good, slugs, 0)
+    check('a chosen rule with the baseline kept may commit the bench',
+          ok and '158' in detail, detail)
+    lost = {
+        'songs': ['alive'],
+        'chosen': {
+            'name': 'line-0.25', 'within_limit': True, 'baseline_kept': False,
+            'baseline_n': 158, 'baseline_reason': 'базовая строка потеряна без прохода выше 5 %',
+            'chance': 0.04,
+        },
+    }
+    ok, detail = A.commit_gate(lost, ['alive'], 2)
+    check('a lost baseline does not commit the bench',
+          not ok and 'база не удержана' in detail and 'базовая строка потеряна' in detail, detail)
+    unmeasured = {'songs': slugs, 'chosen': {'name': 'unmeasured', 'within_limit': False, 'baseline_kept': False}}
+    ok, detail = A.commit_gate(unmeasured, slugs, 2)
+    check('a measurement that chose no rule does not commit the bench',
+          not ok and 'не выбрал правило' in detail, detail)
+    over = {
+        'songs': slugs,
+        'chosen': {'name': 'line-0.25', 'within_limit': False, 'baseline_kept': True, 'chance': 0.2},
+    }
+    ok, detail = A.commit_gate(over, slugs, 2)
+    check('a rule over the line limit does not commit the bench',
+          not ok and 'не выбрал правило' in detail, detail)
+    no_join = {
+        'songs': slugs,
+        'chosen': {
+            'name': 'line-0.25', 'within_limit': True, 'baseline_kept': False,
+            'baseline_reason': 'объединение не собрано',
+        },
+    }
+    ok, detail = A.commit_gate(no_join, slugs, 0)
+    check('a missing join with baseline_kept false does not commit the bench',
+          not ok and 'объединение не собрано' in detail, detail)
+    ok, detail = A.commit_gate(good, slugs, 2)
+    check('a non-zero exit does not commit the previous bench',
+          not ok and detail == 'замер атак не выбрал правило', detail)
+    short = dict(good)
+    short['songs'] = ['alive']
+    ok, detail = A.commit_gate(short, slugs, 0)
+    check('a bench that missed a song does not commit',
+          not ok and 'нет песен' in detail and 'karitas' in detail, detail)
+    root = Path(__file__).resolve().parents[2]
+    workflow = (root / '.github' / 'workflows' / 'pipeline.yml').read_text(encoding='utf-8')
+    prove = workflow.split('\n  prove:\n', 1)[1]
+    measure, commit = prove.split('Commit results and remove the job files', 1)
+    check('prove calls the bench commit gate',
+          'commit_gate' in measure and 'commit_bench=no' in measure and 'commit_bench=yes' in measure)
+    check('prove adds the bench only when the gate allows it',
+          'commit_bench' in commit and 'git add docs/analysis/bench' in commit
+          and '!= "yes"' in commit
+          and commit.index('git checkout -- content/songs docs/analysis') < commit.index('git add docs/analysis/bench'))
+    check('a refused bench still fails the prove job',
+          "steps.run.outputs.worst == '2'" in prove)
+
+
+def test_align_from_run_per_song() -> None:
+    """One prove pass may reuse a different finished alignment for each song.
+
+    The three bench songs were aligned in run 39548436423 and Alive in
+    40144966993. A single run id cannot carry both artifacts.
+    """
+    root = Path(__file__).resolve().parents[2]
+    workflow = (root / '.github' / 'workflows' / 'pipeline.yml').read_text(encoding='utf-8')
+    prepare = workflow.split('\n  prepare:\n', 1)[1].split('\n  run:\n', 1)[0]
+    prove = workflow.split('\n  prove:\n', 1)[1]
+    check('different alignment runs are not rejected',
+          'разные align_from_run' not in prepare and "reuse_run = 'multi'" in prepare
+          and 'reuse_pairs' in prepare)
+    check('align and align_from_run still cannot share a run',
+          'align_from_run и стадия align в одном запуске' in prepare)
+    check('prove downloads each song from its own run',
+          "reuse_run == 'multi'" in prove and 'gh run download' in prove
+          and 'align-$slug' in prove)
+    check('a single reused run still downloads that run only',
+          "reuse_run != 'multi'" in prove)
+
+
+def test_lyric_frame_rises() -> None:
+    """A caption onset is the first frame of a held rise, not a flicker."""
+    import lyric_frames as LF
+
+    flat = [10] * 40
+    check('a flat crop has no onset', LF.rise_onsets(flat, 25) == [])
+    step = [10] * 10 + [90] * 30
+    got = LF.rise_onsets(step, 25, rise=60, hold=8, step=8, debounce_s=0.40)
+    check('a held step starts on its first bright frame',
+          len(got) == 1 and got[0]['frame'] == 10 and got[0]['t'] == 0.4, str(got))
+    # 0.20 s later is inside the debounce. 1.00 s later is a second caption.
+    two = [10] * 10 + [90] * 5 + [10] * 5 + [100] * 40
+    # frames: 0-9 dark, 10-14 bright, 15-19 dark, 20-59 bright. 10/25=0.40, 20/25=0.80.
+    close = LF.rise_onsets(two, 25, rise=60, hold=4, step=8, debounce_s=0.40)
+    check('a second rise inside the debounce is the same appearance',
+          len(close) == 1 and close[0]['frame'] == 10, str(close))
+    far = [10] * 10 + [90] * 20 + [10] * 10 + [100] * 20
+    # 10/25=0.40 and 40/25=1.60, gap 1.20 s.
+    apart = LF.rise_onsets(far, 25, rise=60, hold=8, step=8, debounce_s=0.40)
+    check('a later caption is its own onset',
+          [row['frame'] for row in apart] == [10, 40], str(apart))
+    starts = [1.0, 3.0, 5.0]
+    onsets = [1.2, 2.7, 5.4]
+    assigned = LF.assign_nearest(starts, onsets, 0.9)
+    check('the closer line keeps the onset between two starts',
+          assigned == [0, 1, 2], str(assigned))
+    stolen = LF.assign_nearest([1.0, 1.3], [1.2], 0.9)
+    check('one onset is not given to both lines',
+          stolen == [None, 0] or stolen == [0, None], str(stolen))
+    check('the nearer of the two lines wins that onset', stolen[1] == 0 and stolen[0] is None, str(stolen))
+    cues = [
+        {'start': 1.0, 'end': 3.0},
+        {'start': 3.02, 'end': 5.0},
+    ]
+    spans = LF.retimed_span(cues, [1.24, 3.28])
+    check('a cue that ended on the next start follows the new neighbour',
+          spans == [(1.24, 3.28), (3.28, 5.26)], str(spans))
+    kept = LF.retimed_span([{'start': 10.0, 'end': 12.0}], [None])
+    check('an unmatched cue keeps its span', kept == [(10.0, 12.0)], str(kept))
+
+
 def main() -> int:
     test_viterbi()
     test_star_absorbs_a_hold()
@@ -2388,6 +2563,7 @@ def main() -> int:
     test_song_status()
     test_build_proof_independent()
     test_second_span()
+    test_witness_window()
     test_cue_window()
     test_cue_times_stay()
     test_placement_and_cue_lock()
@@ -2397,6 +2573,8 @@ def main() -> int:
     test_section_edges()
     test_bias_and_witnesses()
     test_attack_chance()
+    test_bench_commit_gate()
+    test_align_from_run_per_song()
     test_line_rule()
     test_placement_chain()
     test_whisper_witness()
@@ -2409,6 +2587,7 @@ def main() -> int:
     test_harakat()
     test_cue_in_build_proof()
     test_anchor_fence()
+    test_lyric_frame_rises()
     print('FAIL' if PASS else 'all checks passed')
     return PASS
 

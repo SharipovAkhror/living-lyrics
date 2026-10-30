@@ -50,6 +50,46 @@ function cueProblem(json: unknown) {
   return '';
 }
 
+/** Cipher is a table row. It blocks only the commit at stage 12, never the stages before it. */
+function cipherRow(hasEnc: boolean, hasPlain: boolean, hasKey: boolean): { state: string; detail: string } {
+  if (hasEnc) return { state: 'да', detail: 'шифр есть' };
+  if (hasPlain && !hasKey) return { state: 'ждёт ключа', detail: 'шифр: ждёт ключа' };
+  if (hasPlain) return { state: 'нет', detail: 'ключ есть; шифр перед коммитом на стадии 12' };
+  return { state: 'рано', detail: 'открытого файла ещё нет' };
+}
+
+/** True only when stage 12 encrypts a measured open file and the key is already here. */
+function encryptIsNext(atPublish: boolean, hasEnc: boolean, hasPlain: boolean, hasKey: boolean): boolean {
+  return atPublish && !hasEnc && hasPlain && hasKey;
+}
+
+type WitnessStep = 'download-video' | 'lyric-frames' | 'read-captions' | 'whisper' | 'done';
+
+/** What to do once official subtitles are known to be missing. */
+function witnessStep(input: {
+  subsUnavailable: boolean;
+  videoOnDisk: boolean;
+  canDownloadVideo: boolean;
+  framesIndex: boolean;
+  captionsOk: boolean;
+  ffmpeg: boolean;
+  vocalStem: boolean;
+  transcript: boolean;
+  python: boolean;
+}): WitnessStep {
+  if (!input.subsUnavailable) return 'done';
+  if (!input.videoOnDisk && input.canDownloadVideo) return 'download-video';
+  if (input.videoOnDisk && !input.framesIndex && input.ffmpeg && input.python) return 'lyric-frames';
+  if (input.videoOnDisk && !input.captionsOk) return 'read-captions';
+  if (input.vocalStem && !input.transcript && input.python) return 'whisper';
+  return 'done';
+}
+
+/** The agy line song-status prints. Grok does not run it; Claude · Lead does. */
+function agyInvoke(slugName: string, schema: string, promptFile: string, task: string) {
+  return `python "$(python -c "import sys; sys.path.insert(0, 'scripts/tools'); from aos_home import aos_home; print(aos_home(), end='')")/ops/agents/agy_run.py" . gemini-3.8-flash-high - 2350s scripts/instrument_id/schema/${schema} work/${slugName}/${promptFile} --task "${task}"`;
+}
+
 function selfCheck() {
   const failures: string[] = [];
   const check = (ok: boolean, message: string) => {
@@ -66,6 +106,64 @@ function selfCheck() {
   check(cueProblem([{ line: 'a', cue: 1, lang: 'en', start: 0, end: 1, text: 'нет' }]).includes('лишние'), 'cue text');
   check(cueProblem([{ line: 'a', cue: 1, lang: 'en', start: 0, end: 1 }]) === '', 'cue ok');
   check(cueProblem([{ line: 'a', cue: 1, lang: 'en', start: 2, end: 1 }]).includes('start'), 'cue order');
+  check(cipherRow(false, true, false).detail === 'шифр: ждёт ключа', 'cipher waits');
+  check(cipherRow(false, true, false).state === 'ждёт ключа', 'cipher state');
+  check(cipherRow(true, true, false).state === 'да', 'cipher done');
+  check(cipherRow(false, true, true).state === 'нет', 'cipher key present');
+  check(cipherRow(false, false, false).state === 'рано', 'cipher early');
+  check(encryptIsNext(false, false, true, false) === false, 'cipher does not block the route');
+  check(encryptIsNext(true, false, true, true) === true, 'encrypt at publish when the key is here');
+  check(encryptIsNext(true, false, true, false) === false, 'publish waits without a key');
+  check(encryptIsNext(true, true, true, true) === false, 'encrypted file is not encrypted again');
+  const witnessBase = {
+    subsUnavailable: true,
+    videoOnDisk: false,
+    canDownloadVideo: true,
+    framesIndex: false,
+    captionsOk: false,
+    ffmpeg: true,
+    vocalStem: false,
+    transcript: false,
+    python: true,
+  };
+  check(witnessStep({ ...witnessBase, subsUnavailable: false }) === 'done', 'subs still in play');
+  check(witnessStep(witnessBase) === 'download-video', 'video before captions');
+  check(witnessStep({ ...witnessBase, videoOnDisk: true, canDownloadVideo: false }) === 'lyric-frames', 'cheap frames');
+  check(witnessStep({ ...witnessBase, videoOnDisk: true, framesIndex: true }) === 'read-captions', 'read captions');
+  check(witnessStep({ ...witnessBase, videoOnDisk: true, ffmpeg: false }) === 'read-captions', 'no ffmpeg still reads');
+  check(
+    witnessStep({ ...witnessBase, videoOnDisk: true, framesIndex: true, captionsOk: true, vocalStem: true }) === 'whisper',
+    'whisper on the stem',
+  );
+  check(witnessStep({ ...witnessBase, videoOnDisk: false, canDownloadVideo: false, vocalStem: true }) === 'whisper', 'whisper without video');
+  check(witnessStep({ ...witnessBase, videoOnDisk: false, canDownloadVideo: false }) === 'done', 'no witness left');
+  const agy = agyInvoke('demo', 'captions.json', 'captions-prompt.md', 'read-captions demo');
+  check(agy.includes('gemini-3.8-flash-high'), 'agy model');
+  check(agy.includes('scripts/instrument_id/schema/captions.json'), 'agy captions schema');
+  check(agy.includes('read-captions demo'), 'agy captions task');
+  const visionSchema = JSON.parse(readFileSync(join(root, 'scripts/instrument_id/schema/vision.json'), 'utf8')) as {
+    required?: string[];
+    properties?: { video_type?: { enum?: string[] } };
+  };
+  check(!visionSchema.required?.includes('video_type'), 'video_type is optional');
+  check(visionSchema.properties?.video_type?.enum?.join(',') === 'concert,lyric_video,static,other', 'video_type enum');
+  const captionSchema = JSON.parse(readFileSync(join(root, 'scripts/instrument_id/schema/captions.json'), 'utf8')) as {
+    required?: string[];
+    properties?: { captions?: { items?: { required?: string[] } } };
+  };
+  check(captionSchema.required?.includes('video_type') === true, 'captions require a video type');
+  const captionFields = captionSchema.properties?.captions?.items?.required ?? [];
+  for (const key of ['first_s', 'last_s', 'script', 'role', 'text', 'confidence']) {
+    check(captionFields.includes(key), `caption field ${key}`);
+  }
+  for (const name of ['karitas', 'one', 'i-have-come-alive']) {
+    const vision = JSON.parse(readFileSync(join(root, 'docs/analysis', name, 'vision.json'), 'utf8')) as {
+      frames?: unknown;
+      video_type?: string;
+    };
+    check(Array.isArray(vision.frames) && vision.frames.length > 0, `${name} vision frames`);
+    check(vision.video_type === undefined, `${name} old vision has no video_type`);
+  }
   if (failures.length) {
     console.error(failures.join('\n'));
     process.exit(1);
@@ -195,6 +293,25 @@ function walkFiles(dir: string, depth: number, hit: (name: string) => boolean): 
 const workDir = join(root, 'work', slug);
 const subsOnDisk = walkFiles(workDir, 3, (name) => /\.(vtt|srt|json3)$/i.test(name));
 const videoOnDisk = walkFiles(workDir, 1, (name) => /^video\./i.test(name) && !name.endsWith('.json'));
+const videoName = existsSync(workDir)
+  ? (readdirSync(workDir).find((name) => /^video\./i.test(name) && !name.endsWith('.json')) ?? '')
+  : '';
+const videoRel = videoName ? `work/${slug}/${videoName}` : '';
+const lyricFramesIndex = existsSync(join(workDir, 'lyric-frames', 'index.json'));
+const transcriptOnDisk = existsSync(join(workDir, 'transcript.json'));
+const vocalStem = existsSync(join(workDir, 'stems', 'vocals.wav'));
+const subsUnavailable = subsStopped || (!officialUrl && !subsOnDisk);
+
+/** 64 hex characters in the environment or in .env.local. The key itself is never printed. */
+function hasAudioKey() {
+  const fromEnv = process.env.AUDIO_KEY?.trim() ?? '';
+  if (/^[0-9a-f]{64}$/i.test(fromEnv)) return true;
+  const envFile = join(root, '.env.local');
+  if (!existsSync(envFile)) return false;
+  return Boolean(readFileSync(envFile, 'utf8').match(/^AUDIO_KEY=([0-9a-f]{64})\s*$/m));
+}
+
+const audioKey = hasAudioKey();
 
 function loadCues(): { rows: { line: string }[] | null; problem: string } {
   const path = join(root, 'docs/analysis', slug, 'cues.json');
@@ -209,10 +326,39 @@ function loadCues(): { rows: { line: string }[] | null; problem: string } {
   }
 }
 
+function loadCaptions(): { ok: boolean; count: number; problem: string } {
+  const path = join(root, 'docs/analysis', slug, 'captions.json');
+  if (!existsSync(path)) return { ok: false, count: 0, problem: '' };
+  try {
+    const json = JSON.parse(readText(path)) as { captions?: unknown };
+    if (!json || typeof json !== 'object' || !Array.isArray(json.captions)) {
+      return { ok: false, count: 0, problem: 'captions.json без массива captions' };
+    }
+    return { ok: true, count: json.captions.length, problem: '' };
+  } catch {
+    return { ok: false, count: 0, problem: 'captions.json не читается' };
+  }
+}
+
 const cuesLoaded = loadCues();
+const captionsLoaded = loadCaptions();
 const cueIds = new Set((cuesLoaded.rows ?? []).map((row) => row.line));
 const missingCues = lineIds.filter((id) => !cueIds.has(id));
 const extraCues = [...cueIds].filter((id) => !lineIds.includes(id));
+
+function currentWitness(): WitnessStep {
+  return witnessStep({
+    subsUnavailable,
+    videoOnDisk,
+    canDownloadVideo: Boolean(officialUrl) && !videoStopped,
+    framesIndex: lyricFramesIndex,
+    captionsOk: captionsLoaded.ok,
+    ffmpeg,
+    vocalStem,
+    transcript: transcriptOnDisk,
+    python: Boolean(python),
+  });
+}
 
 let cuesState = 'нет';
 let cuesDetail = '';
@@ -222,11 +368,21 @@ if (lines.length === 0) {
 } else if (cuesLoaded.problem) {
   cuesDetail = cuesLoaded.problem;
 } else if (!cuesLoaded.rows) {
-  if (subsStopped) {
-    cuesState = 'отложено';
-    cuesDetail = 'в review отмечено, что официальные субтитры не скачались; повторно yt-dlp не запускать';
+  if (subsOnDisk) {
+    cuesDetail = 'субтитры лежат в work, cues.json ещё нет';
+  } else if (!subsUnavailable && officialUrl) {
+    cuesDetail = `нет docs/analysis/${slug}/cues.json`;
+  } else if (currentWitness() !== 'done') {
+    cuesDetail = 'официальных субтитров нет; дальше титры экрана и Whisper';
+  } else if (!subsStopped) {
+    cuesDetail = 'в review ещё нет фразы «официальные субтитры: пусто»';
   } else {
-    cuesDetail = subsOnDisk ? 'субтитры лежат в work, cues.json ещё нет' : `нет docs/analysis/${slug}/cues.json`;
+    cuesState = 'отложено';
+    const heard = [
+      captionsLoaded.ok ? `титров экрана ${captionsLoaded.count}` : videoOnDisk ? 'титры экрана не прочитались' : 'видео для титров нет',
+      transcriptOnDisk ? 'Whisper есть' : vocalStem ? 'Whisper ещё не снят' : 'вокального стема для Whisper нет',
+    ].join(', ');
+    cuesDetail = `официальных субтитров нет (${heard}); повторно yt-dlp не запускать`;
   }
 } else if (extraCues.length || missingCues.length) {
   cuesDetail = [missingCues.length ? `нет реплики: ${missingCues.length}` : '', extraCues.length ? `чужие id: ${extraCues.length}` : '']
@@ -492,6 +648,12 @@ const rows: Row[] = [
         : 'файла записи нет',
   },
   {
+    n: '2б',
+    name: 'шифр',
+    state: cipherRow(enc, plain, audioKey).state,
+    detail: enc ? `content/audio-enc/${slug}/high.m4a.enc` : cipherRow(enc, plain, audioKey).detail,
+  },
+  {
     n: '3',
     name: 'структура',
     state: structureReady ? 'да' : 'нет',
@@ -588,15 +750,19 @@ function audioNext(): Next {
       row: '2',
       file: 'docs/methodology/02-audio.md',
       command: `${python} scripts/pipeline/process_audio.py ${slug}`,
-      because: 'Исходник уже лежит в work/' + slug + '/source.*. Скрипт соберёт high.m4a, saver.m4a и peaks.json. Потом снова song-status: следующая команда будет шифрование.',
+      because:
+        'Исходник уже лежит в work/' +
+        slug +
+        '/source.*. Скрипт соберёт high.m4a, saver.m4a и peaks.json. Потом снова song-status. Шифр — отдельная строка таблицы: без AUDIO_KEY она «шифр: ждёт ключа», и команда идёт на следующую стадию. Шифр нужен только к коммиту на стадии 12. Открытый m4a в git не класть.',
     };
   }
   if (plain && !enc) {
     return {
       row: '2',
       file: 'docs/methodology/02-audio.md',
-      command: `npm run audio:encrypt -- ${slug}`,
-      because: 'Открытый m4a в репозиторий не коммитится. Нужен AUDIO_KEY в .env.local (64 шестнадцатеричных знака).',
+      command: `npm run song-status -- ${slug}`,
+      because:
+        'Открытый high.m4a уже лежит в public/audio. Шифр маршрут не держит: строка «шифр» в таблице, команда шифрования — только на стадии 12. Пока audio.status, provenance или duration не закрыты, запись не «да». Числа пишет process_audio.py; если файл уже измерен, повторно его не запускать, а поправить song.json по 02-audio.md. Открытый m4a в git не класть.',
     };
   }
   if (python && ffmpeg) {
@@ -620,14 +786,83 @@ function audioNext(): Next {
   };
 }
 
+function witnessNext(): Next | null {
+  const step = currentWitness();
+  if (step === 'done') return null;
+  const videoPath = videoRel || `work/${slug}/video.mp4`;
+  const agy = agyInvoke(slug, 'captions.json', 'captions-prompt.md', `read-captions ${slug}`);
+  const agyHow = `Титры на экране читает Gemini, не Grok. Скопируйте scripts/instrument_id/prompts/read-captions.md в work/${slug}/captions-prompt.md и подставьте путь видео вместо {{VIDEO}} (${videoPath}). Запуск из корня репозитория (agy только через agy_run.py настройки владельца):\n  ${agy}\nОтвет structured_output запишите в docs/analysis/${slug}/captions.json. Если вы не Claude · Lead, напишите в отчёте, что титры ждут просмотра, и agy не вызывайте.`;
+  const letters =
+    'Буквы строк — из canon.md. Порядок и время — по этим свидетелям. Расхождения — в review и в «Расхождения и вопросы». В lyrics.json текст распознавания не копировать.';
+  if (step === 'download-video') {
+    return {
+      row: '4в',
+      file: 'docs/methodology/04-text.md',
+      command: ytInvoke('18', `work/${slug}/video.mp4`, officialUrl),
+      because: `Официальных субтитров нет. Для текста на экране нужен тот же ролик, формат 18 (360p), одна попытка. Если 429 или вход — те же фразы review, что у записи. Когда файл лежит, song-status напечатает команду чтения титров. ${letters}`,
+    };
+  }
+  if (step === 'lyric-frames') {
+    return {
+      row: '4в',
+      file: 'docs/methodology/04-text.md',
+      command: `${python} scripts/pipeline/lyric_frames.py ${slug}`,
+      because: `Дешёвая проверка кадров любого видеофайла. По умолчанию work/${slug}/video.*; другой файл — тот же скрипт с --video <путь>. Кадры лягут в work/${slug}/lyric-frames/ и в git не входят. Буквы скрипт не читает.\n${agyHow}\n${letters}`,
+    };
+  }
+  if (step === 'read-captions') {
+    const problem = captionsLoaded.problem ? `${captionsLoaded.problem}. ` : '';
+    const frames = ffmpeg ? '' : ' ffmpeg нет, lyric_frames.py в этой среде не запускается.';
+    return {
+      row: '4в',
+      file: 'docs/methodology/04-text.md',
+      command: `npm run song-status -- ${slug}`,
+      because: `${problem}${agyHow}\n${letters}${frames}`,
+    };
+  }
+  return {
+    row: '4в',
+    file: 'docs/methodology/04-text.md',
+    command: `${python} scripts/pipeline/transcribe.py ${slug}`,
+    because: `Whisper по вокальному стему work/${slug}/stems/vocals.wav пишет work/${slug}/transcript.json. Это свидетель порядка и времени, не эталон букв. ${letters} transcript.json в git не класть.`,
+  };
+}
+
 function textNext(prefix = ''): Next {
+  if (canonReady && lines.length === 0 && !subsOnDisk && !subsUnavailable && officialUrl) {
+    return {
+      row: '4',
+      file: 'docs/methodology/04-text.md',
+      command: `yt-dlp --skip-download --write-subs --sub-langs "ar,fa,tr,az,he,hi,la,de,en" --convert-subs vtt -o "work/${slug}/subs" "${officialUrl}"`,
+      because:
+        prefix +
+        'Вокальных строк ещё нет. Одна попытка официальных субтитров, звук не качается. Пустой ответ, 429 или страница с проверкой — одна фраза в review: официальные субтитры: пусто или официальные субтитры: yt-dlp 429. Повторять не нужно. Дальше song-status даст титры экрана и Whisper. Буквы строк — из canon.md.',
+    };
+  }
+  if (canonReady && lines.length === 0 && subsUnavailable) {
+    const witness = witnessNext();
+    if (witness) {
+      witness.row = '4';
+      witness.file = 'docs/methodology/04-text.md';
+      witness.because =
+        prefix +
+        'Официальных субтитров нет. Файл субтитров у владельца не ждут. Буквы — из canon.md. Порядок и время — по свидетелям ниже. Расхождения — в review и в «Расхождения и вопросы».\n' +
+        witness.because;
+      return witness;
+    }
+  }
   const shown = missingCanon.slice(0, 8);
   const more = missingCanon.length - shown.length;
   const sample = shown.map((line) => `  ${line.id} — ${short(line.words.map((w) => w.w).join(' '))}`).join('\n');
   const because = !canonReady
-    ? 'Соберите canon.md по шаблону docs/methodology/templates/canon.md: фрагмент, источник, пометка «Подтверждено: 1 источник» или «Подтверждено: 2 источника», затем «Последовательность в записи» и «Расхождения и вопросы». Строку «пустой шаблон» удалите. Секунды не выдумывайте: в столбце «с» ставьте «?».'
+    ? 'Соберите canon.md по шаблону docs/methodology/templates/canon.md: фрагмент, источник, пометка «Подтверждено: 1 источник» или «Подтверждено: 2 источника», затем «Последовательность в записи» и «Расхождения и вопросы». Строку «пустой шаблон» удалите. Секунды не выдумывайте: в столбце «с» ставьте «?».' +
+      (subsUnavailable ? ' Официальных субтитров нет: после канона свидетели — титры экрана и Whisper, не файл от владельца.' : '')
     : lines.length === 0
-      ? 'Ссылки в canon.md мало: в lyrics.json ещё нет вокальных строк. Допишите цитату, «Как поётся» и последовательность. Строки в lyrics.json переносите, когда есть карта записи или официальные титры с порядком. Границы секций и секунды не выдумывайте.'
+      ? subsOnDisk
+        ? `Субтитры уже лежат в work/${slug}. Буквы строк — из canon.md, порядок — по репликам. Границы секций не выдумывайте.`
+        : subsUnavailable
+          ? 'Свидетели, которые удалось снять, уже есть либо их нечем снять. Буквы — из canon.md. Порядок и время — по ним. Чего нет — флаг text-unverified и пункт в review. Если в review ещё нет фразы «официальные субтитры: пусто», допишите её. В столбце «с» ставьте «?», секунды не выдумывайте.'
+          : 'Ссылки в canon.md мало: в lyrics.json ещё нет вокальных строк. Допишите цитату, «Как поётся» и последовательность. Строки в lyrics.json переносите, когда есть карта записи или официальные титры с порядком. Границы секций и секунды не выдумывайте.'
       : `Эти строки не найдены в canon.md:\n${sample}${more > 0 ? `\n  … и ещё ${more}` : ''}\nПриведите lyrics.json к эталону или объясните расхождение в разделе «Расхождения и вопросы». Канон не переписывайте по слуху.`;
   return {
     row: '4',
@@ -649,7 +884,8 @@ function timingNext(): Next {
 
 function publishNext(): Next {
   const status = song.timing.status;
-  const paths = [`content/songs/${slug}`, `content/audio-enc/${slug}`];
+  const paths = [`content/songs/${slug}`];
+  if (enc) paths.push(`content/audio-enc/${slug}`);
   if (existsSync(join(root, 'docs/analysis', slug))) paths.push(`docs/analysis/${slug}`);
   if (existsSync(dossierPath)) paths.push(`docs/analysis/translation/${slug}.md`);
   return {
@@ -675,7 +911,7 @@ function partsNext(): Next {
 }
 
 function cuesNext(): Next {
-  if (cuesLoaded.problem || extraCues.length || missingCues.length) {
+  if (cuesLoaded.problem || (cuesLoaded.rows && (extraCues.length || missingCues.length))) {
     const sample = missingCues.slice(0, 8).map((id) => `  ${id}`).join('\n');
     return {
       row: '4в',
@@ -692,13 +928,17 @@ function cuesNext(): Next {
       because: `Субтитры уже лежат в work/${slug}. В git их не кладите. Напишите docs/analysis/${slug}/cues.json по разделу «Если официальные субтитры уже лежат» в 04-text.md: время и id, без текста. timing.status остаётся draft. npm run draft-timing не запускайте.`,
     };
   }
-  if (officialUrl) {
+  if (subsUnavailable) {
+    const witness = witnessNext();
+    if (witness) return witness;
+  }
+  if (officialUrl && !subsStopped) {
     return {
       row: '4в',
       file: 'docs/methodology/04-text.md',
       command: `yt-dlp --skip-download --write-subs --sub-langs "ar,fa,tr,az,he,hi,la,de,en" --convert-subs vtt -o "work/${slug}/subs" "${officialUrl}"`,
       because:
-        'Одна попытка, звук не качается. Если ответ пустой, 429 или страница с проверкой, остановитесь и допишите в review ровно одну фразу: официальные субтитры: yt-dlp 429 или официальные субтитры: пусто. Повторять команду не нужно. Автосубтитры в эталон не идут.',
+        'Одна попытка, звук не качается. Если ответ пустой, 429 или страница с проверкой, допишите в review ровно одну фразу: официальные субтитры: yt-dlp 429 или официальные субтитры: пусто. Повторять команду не нужно. Следующий song-status даст титры экрана и Whisper. Файл субтитров у владельца не ждут. Автосубтитры в эталон не идут.',
     };
   }
   return {
@@ -706,9 +946,7 @@ function cuesNext(): Next {
     file: 'docs/methodology/04-text.md',
     command: `npm run song-status -- ${slug}`,
     because:
-      'Ссылки на официальное видео в sources.md нет, поэтому субтитры скачать нечем. Допишите в review ровно: официальные субтитры: пусто. Либо положите файл субтитров от владельца в work/' +
-      slug +
-      '/subs и соберите cues.json.',
+      'Ссылки на официальное видео в sources.md нет, поэтому субтитры скачать нечем. Допишите в review ровно: официальные субтитры: пусто. Следующий song-status перейдёт к титрам экрана, если видеофайл уже есть, и к Whisper по вокальному стему.',
   };
 }
 
@@ -740,7 +978,7 @@ function videoNext(): Next {
       row: '9б',
       file: 'docs/methodology/09-instruments.md',
       command: `npm run song-status -- ${slug}`,
-      because: `Видео лежит в work/${slug}. Просмотр запускает Claude · Lead, не Grok. Задание — scripts/instrument_id/prompts/watch-video.md, путь видео подставьте вместо {{VIDEO}}:\n  agy -p "<текст watch-video.md>" --model gemini-3.8-flash-high --output-format json --json-schema scripts/instrument_id/schema/vision.json --print-timeout 2350s\nОтвет structured_output запишите в docs/analysis/${slug}/vision.json. Расход: python ops/usage/collect.py --run <json agy> --task "watch-video ${slug}". Если вы не Claude · Lead, напишите в отчёте, что видео ждёт просмотра, и agy не вызывайте.`,
+      because: `Видео лежит в work/${slug}. Просмотр запускает Claude · Lead, не Grok. Задание — scripts/instrument_id/prompts/watch-video.md: сначала вид ролика (concert, lyric_video, static, other) в поле video_type. У лирик-видео в заметке кадра — что титры есть и где; буквы титров читает отдельное задание read-captions.md. У концерта — инструменты, как раньше. Скопируйте задание в work/${slug}/watch-prompt.md, путь видео подставьте вместо {{VIDEO}}, запустите из корня репозитория (agy только через agy_run.py настройки владельца, он же пишет расход):\n  ${agyInvoke(slug, 'vision.json', 'watch-prompt.md', `watch-video ${slug}`)}\nОтвет structured_output запишите в docs/analysis/${slug}/vision.json. Поле video_type можно не присылать: старый файл без него проходит проверку. Если вы не Claude · Lead, напишите в отчёте, что видео ждёт просмотра, и agy не вызывайте.`,
     };
   }
   if (!visionFrames && officialUrl && !videoStopped) {
@@ -778,14 +1016,6 @@ if (!sourcesReady) {
       languageStub && !!sources && !sources.includes(TEMPLATE) && citesWork(sources)
         ? 'В song.json замените язык-заглушку en на языки, которые реально поются. Когда код уже верный, пункт review про заглушку перепишите. Ссылку на официальное видео запишите в sources.md целиком: скачивание печатает стадия записи, одну попытку, тот же ролик.'
         : 'Заполните sources.md: адрес https:// официального видео или строка «Файл: имя.расширение» (например «Файл: recording.m4a»). «Файл: нет» источником не считается. Строку «пустой шаблон» удалите. В song.json замените язык-заглушку en на языки, которые реально поются. Чужой ролик не записывайте.',
-  };
-} else if (plain && !enc) {
-  next = {
-    row: '2',
-    file: 'docs/methodology/02-audio.md',
-    command: `npm run audio:encrypt -- ${slug}`,
-    because:
-      'Открытый high.m4a уже лежит в public/audio, шифра content/audio-enc ещё нет. В репозиторий коммитится только шифр. Нужен AUDIO_KEY в .env.local (64 шестнадцатеричных знака). Пока шифра нет, к тексту и остальным стадиям эта команда не переходит. Повторно process_audio.py не запускать.',
   };
 } else if (!audioReady && (Boolean(python && ffmpeg) || (Boolean(officialUrl) && !videoStopped && !sourceFile))) {
   next = audioNext();
@@ -894,6 +1124,27 @@ if (!sourcesReady) {
         ? `Официальная обложка${song.cover.releaseTitle ? ` «${song.cover.releaseTitle}»` : ''}. Нужны public/covers/${slug}/source.jpg и jpg 96, 192, 512, 1024. Команда уменьшает исходник и не рисует вместо него цветовое поле.`
         : `Официального файла нет: квадрат цвета из palette.field, без букв. Нужны public/covers/${slug}/96.png, 192.png, 512.png и 1024.png. Команда рисует поле только для таких песен.`,
   };
+} else if (!enc) {
+  const publish = rows.find((row) => row.name === 'публикация');
+  if (publish) {
+    publish.state = 'рано';
+    publish.detail = audioKey ? 'перед коммитом нужен шифр: ключ есть' : 'шифр: ждёт ключа; открытый файл в git не входит';
+  }
+  next = encryptIsNext(true, enc, plain, audioKey)
+    ? {
+        row: '12',
+        file: 'docs/methodology/12-publish.md',
+        command: `npm run audio:encrypt -- ${slug}`,
+        because:
+          'Строки маршрута закрыты. В git коммитится только шифр. Ключ уже есть: npm run audio:encrypt, затем снова song-status. Открытый m4a не добавлять.',
+      }
+    : {
+        row: '12',
+        file: 'docs/methodology/12-publish.md',
+        command: `npm run song-status -- ${slug}`,
+        because:
+          'Строки маршрута закрыты. Шифр — условие коммита записи. Ключа AUDIO_KEY нет: строка «шифр» — «шифр: ждёт ключа». Открытый файл в git не класть. Коммит записи ждёт ключ. Это место, где нужен человек; остальные стадии от ключа не зависят.',
+      };
 } else {
   const publish = rows.find((row) => row.name === 'публикация');
   if (publish) {

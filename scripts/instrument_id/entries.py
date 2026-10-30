@@ -1412,7 +1412,9 @@ def main(args) -> None:
             return
     slugs = list(SONGS) if getattr(args, "all", False) or not getattr(args, "slug", None) else [args.slug]
     for slug in slugs:
-        if slug not in SONGS:
+        # SONGS is the benchmark trio. A song folder is enough for this command.
+        on_disk = (ROOT / "content" / "songs" / slug / "lyrics.json").is_file()
+        if slug not in SONGS and not on_disk:
             raise SystemExit(f"неизвестная песня: {slug}")
         lyrics = json.loads((ROOT / "content" / "songs" / slug / "lyrics.json").read_text(encoding="utf-8"))
         result = load_song(slug)

@@ -17,7 +17,8 @@ import { PlayPause } from '@/ui/playglyph';
 import { GlassLayers } from '@/ui/glass/Glass';
 import { AudioEngine, type EngineState } from '@/player/engine';
 import { preloadMode, readNetHint } from '@/player/preload';
-import { RESUME_AUTO_MS, readResume, writeResume } from '@/player/resume';
+import { writeResume, usableResume } from '@/player/resume';
+import { recordLastError } from '@/player/lastError';
 import { Scrubber } from '@/player/Scrubber';
 import { Scene } from '@/scene/Scene';
 import { SHEET_SHELL_MS, coverStage } from '@/scene/cover';
@@ -30,6 +31,7 @@ import { Status } from '@/components/Status';
 import { showHarakatText, stripHarakat } from '@/data/harakat';
 import { stageFrame, type StageFrame } from '@/scene/columns';
 import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
+import { SceneBoundary } from './SceneBoundary';
 import { headerLine } from './parts';
 import { keyAction } from '@/app/keys';
 import { KeysHelp } from '@/ui/KeysHelp';
@@ -758,6 +760,15 @@ function measureChrome(root: HTMLElement, top: HTMLElement, floor: HTMLElement) 
   root.style.setProperty('--banner-h', `${bannerH}px`);
 }
 
+/** Where to put the playhead on open. A `?t=` link wins over the saved point. */
+function restorePlan(slug: string, duration: number, search: string): { seek: number; offer: number | null; playing: boolean } | null {
+  const deep = parseFloat(new URLSearchParams(search).get('t') ?? '');
+  if (Number.isFinite(deep)) return { seek: deep, offer: null, playing: false };
+  const saved = usableResume(slug, duration);
+  if (!saved) return null;
+  return { seek: saved.t, offer: saved.t, playing: saved.playing };
+}
+
 /** Press-and-hold repeats an action (seek) while a tap does something else (go to a line), as on iOS. */
 function useHold(onTap: () => void, onHold: () => void) {
   const timer = useRef<number | null>(null);
@@ -809,8 +820,11 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   // A ref, not state: arming the clock used to render the whole page again
   // while the cover was still in the air.
   const clockArmed = useRef(false);
-  // Set when a reload restored a playing point and the browser refused play().
-  const [resumeAt, setResumeAt] = useState<number | null>(null);
+  // Shown on the first paint when a point is already in localStorage. Init must not gate it.
+  const [resumeAt, setResumeAt] = useState<number | null>(() => {
+    if (!song || typeof location === 'undefined') return null;
+    return restorePlan(song.slug, song.duration, location.search)?.offer ?? null;
+  });
 
   const engine = useMemo(
     () =>
@@ -875,29 +889,32 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       });
     });
     const s = settings;
-    void engine.init({ quality: s.quality, rate: s.rate, volume: s.volume, normalize: s.normalize }).then(() => {
-      if (!alive) return;
-      if (s.eqEnabled) engine.setEffects(true, s.eqBands, s.eqPreamp);
-      // Deep link to a moment: /song/<slug>?t=95. It wins over the saved position.
-      const deep = parseFloat(new URLSearchParams(location.search).get('t') ?? '');
-      if (Number.isFinite(deep)) {
-        engine.seek(deep);
-      } else {
-        const saved = readResume(song.slug);
-        const fresh = saved != null && Date.now() - saved.savedAt <= RESUME_AUTO_MS;
-        if (saved && fresh && saved.t >= 1) {
-          engine.seek(saved.t);
+    // The point is in localStorage. Seek before init: IndexedDB must not gate it.
+    // The offer button was already set while rendering, from the same plan.
+    const plan = restorePlan(song.slug, song.duration, location.search);
+    if (plan) engine.seek(plan.seek);
+    void engine
+      .init({ quality: s.quality, rate: s.rate, volume: s.volume, normalize: s.normalize })
+      .then(() => {
+        if (!alive) return;
+        if (s.eqEnabled) engine.setEffects(true, s.eqBands, s.eqPreamp);
+        if (plan) {
+          // The element may have ignored the early seek until it had a source.
+          engine.seek(plan.seek);
           // A reload may block play() until the next tap. Stay paused on that second
-          // and offer the button. Do not leave a failed play() looking like silence.
-          if (saved.playing) {
+          // and keep the button. Do not leave a failed play() looking like silence.
+          if (plan.playing) {
             void engine.play().then(() => {
-              if (alive && !engine.playing) setResumeAt(saved.t);
+              if (alive && !engine.playing) setResumeAt(plan.seek);
             });
           }
         }
-      }
-      if (alive) clockArmed.current = true;
-    });
+        if (alive) clockArmed.current = true;
+      })
+      .catch(() => {
+        // init failed or the file store hung. The scene and the saved point stay.
+        if (alive) clockArmed.current = true;
+      });
     return () => {
       alive = false;
       cancelAnimationFrame(outer);
@@ -908,17 +925,24 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [song, engine]);
 
+  const savePoint = useCallback(() => {
+    if (!song || !engine) return;
+    const dur = engine.state.duration || song.duration;
+    let t = engine.currentTime();
+    if (engine.state.error && t < 1) return;
+    if (dur > 1 && t > dur - 1.5) t = 0;
+    if (!Number.isFinite(t) || t < 0) return;
+    writeResume(song.slug, { t, playing: engine.playing, savedAt: Date.now() });
+  }, [song, engine]);
+
   // Registered after init: React runs this cleanup first, while the element still exists.
   useEffect(() => {
     if (!song || !engine) return;
     const save = () => {
       if (!clockArmed.current) return;
-      const dur = engine.state.duration || song.duration;
-      let t = engine.currentTime();
-      if (engine.state.error && t < 1) return;
-      if (dur > 1 && t > dur - 1.5) t = 0;
-      writeResume(song.slug, { t, playing: engine.playing, savedAt: Date.now() });
+      savePoint();
     };
+    engine.onTransport = save;
     const onHide = () => {
       if (document.visibilityState === 'hidden') save();
     };
@@ -926,12 +950,13 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     window.addEventListener('pagehide', save);
     document.addEventListener('visibilitychange', onHide);
     return () => {
+      if (engine.onTransport === save) engine.onTransport = null;
       window.clearInterval(id);
       window.removeEventListener('pagehide', save);
       document.removeEventListener('visibilitychange', onHide);
       save();
     };
-  }, [song, engine]);
+  }, [song, engine, savePoint]);
 
   // Peaks and the feature file wait out the opening second. Loading them in
   // the idle gap re-rendered the page while the cover was still in the air.
@@ -1374,7 +1399,14 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       )}
       <StageVars songRef={songRef} store={ownerStore} timeline={timeline} showComment={settings.showComment} />
       {timeline ? (
-        <Scene song={song} timeline={timeline} settings={settings} features={features} clock={clock} onOwnerChange={ownerStore.set} onPick={pick} />
+        <SceneBoundary
+          onCrash={(error) => {
+            if (clockArmed.current) savePoint();
+            recordLastError(error, song.slug);
+          }}
+        >
+          <Scene song={song} timeline={timeline} settings={settings} features={features} clock={clock} onOwnerChange={ownerStore.set} onPick={pick} />
+        </SceneBoundary>
       ) : (
         <div className="scene scene--hold">
           <div className="scene-stage">

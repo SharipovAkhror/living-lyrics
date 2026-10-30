@@ -96,10 +96,12 @@ function firstPaint(): Plugin {
 export default defineConfig({
   plugins: [react(), speedBudget(), firstPaint()],
   // `?fill=1` shows unproven word fill for checks; `?ll-mutate=` plants a motion
-  // fault for the gate proof. The production site must never honour either.
+  // fault for the gate proof; `?ll-render-error=1` throws once inside the scene.
+  // The production site must never honour any of them.
   define: {
     __FILL_QUERY__: JSON.stringify(process.env.VERCEL_ENV !== 'production'),
     __MUTATE_QUERY__: JSON.stringify(process.env.VERCEL_ENV !== 'production'),
+    __SCENE_PROBE__: JSON.stringify(process.env.VERCEL_ENV !== 'production'),
   },
   resolve: {
     alias: {
