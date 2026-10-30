@@ -3,8 +3,8 @@
 Когда чат разрастается (порог — 30 % контекста), он записывает сюда, что в движении, и передаёт работу новому чату с тем же именем; старый уходит в архив. Процедура — `agentic-os-live/docs/process/chat-rotation.md`. Файл: `<ГГГГ-ММ-ДД>-<чат>.md`, где чат — `ll-main`, `ll-site` или `ll-business`. Новый чат начинает с последнего файла своего имени.
 
 Последние:
-- LL · Main: [2026-10-24-ll-main.md](2026-10-24-ll-main.md)
-- LL · Site: [2026-10-23-ll-site.md](2026-10-23-ll-site.md)
+- LL · Main: [2026-10-25-ll-main.md](2026-10-25-ll-main.md)
+- LL · Site: [2026-10-24-ll-site.md](2026-10-24-ll-site.md)
 - LL · Business: —
 
 Сдачи дел LL · Tech и LL · Ops (до 2026-10-23) — в `agentic-os-live/ops/handoff/archive/`.

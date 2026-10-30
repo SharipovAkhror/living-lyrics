@@ -17,9 +17,11 @@ python -m yt_dlp --no-playlist --js-runtimes node --extractor-args "youtube:play
 2. Видео лежит, кадров нет. Просмотр запускает Claude · Lead, не Grok. Задание — `scripts/instrument_id/prompts/watch-video.md`, путь видео подставляют вместо `{{VIDEO}}`. `song-status` в строке команды оставляет `npm run song-status -- <slug>`, а вызов пишет в абзаце:
 
 ```bash
-python ../agentic-os-live/ops/agents/agy_run.py . gemini-3.8-flash-high - 2350s scripts/instrument_id/schema/vision.json work/<slug>/watch-prompt.md --task "watch-video <slug>"
+python "$(python -c "import sys; sys.path.insert(0, 'scripts/tools'); from aos_home import aos_home; print(aos_home(), end='')")/ops/agents/agy_run.py" . gemini-3.8-flash-high - 2350s scripts/instrument_id/schema/vision.json work/<slug>/watch-prompt.md --task "watch-video <slug>"
 # work/<slug>/watch-prompt.md — копия scripts/instrument_id/prompts/watch-video.md с путём видео вместо {{VIDEO}}
 ```
+
+Задание начинается с вида ролика: концерт, лирик-видео, статичная картинка или другое. В ответ это поле `video_type` (`concert`, `lyric_video`, `static`, `other`). Поле необязательное: старый `vision.json` без него проходит `npm run validate`. У лирик-видео в заметке кадра пишут, что титры есть и где они на экране; буквы титров — стадия 4, задание `scripts/instrument_id/prompts/read-captions.md`, не этот просмотр. У концерта собирают инструменты, как раньше.
 
 Поле `structured_output` записывают в `docs/analysis/<slug>/vision.json`. `agy_run.py` (настройка владельца `agentic-os-live`) сам пишет расход в журнал; `agy` напрямую не вызывают. Журнал сам песню не закрывает. Если это не Claude · Lead, в отчёте пишут, что видео ждёт просмотра, и `agy` не вызывают.
 

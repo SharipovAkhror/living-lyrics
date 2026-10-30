@@ -1,0 +1,2555 @@
+{
+  "captions": [
+    {
+      "confidence": "high",
+      "first_s": 48,
+      "language_guess": "English",
+      "last_s": 98,
+      "role": "credit",
+      "script": "Latin",
+      "text": "SAMI YUSUF"
+    },
+    {
+      "confidence": "high",
+      "first_s": 48,
+      "language_guess": "English",
+      "last_s": 98,
+      "role": "credit",
+      "script": "Latin",
+      "text": "HOMAYOUN SHAJARIAN"
+    },
+    {
+      "confidence": "high",
+      "first_s": 50,
+      "language_guess": "English",
+      "last_s": 98,
+      "role": "title",
+      "script": "Latin",
+      "text": "ALIVE"
+    },
+    {
+      "confidence": "high",
+      "first_s": 101,
+      "language_guess": "English",
+      "last_s": 104,
+      "role": "original",
+      "script": "Latin",
+      "text": "I was dead"
+    },
+    {
+      "confidence": "high",
+      "first_s": 103,
+      "language_guess": "English",
+      "last_s": 104,
+      "role": "original",
+      "script": "Latin",
+      "text": "I came alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 105,
+      "language_guess": "English",
+      "last_s": 108,
+      "role": "original",
+      "script": "Latin",
+      "text": "I once wept"
+    },
+    {
+      "confidence": "high",
+      "first_s": 107,
+      "language_guess": "English",
+      "last_s": 108,
+      "role": "original",
+      "script": "Latin",
+      "text": "Now I smile"
+    },
+    {
+      "confidence": "high",
+      "first_s": 109,
+      "language_guess": "English",
+      "last_s": 110,
+      "role": "original",
+      "script": "Latin",
+      "text": "You have lit the fire"
+    },
+    {
+      "confidence": "high",
+      "first_s": 111,
+      "language_guess": "English",
+      "last_s": 112,
+      "role": "original",
+      "script": "Latin",
+      "text": "I have come alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 113,
+      "language_guess": "English",
+      "last_s": 114,
+      "role": "original",
+      "script": "Latin",
+      "text": "Lift me ever higher"
+    },
+    {
+      "confidence": "high",
+      "first_s": 115,
+      "language_guess": "English",
+      "last_s": 116,
+      "role": "original",
+      "script": "Latin",
+      "text": "I have come alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 117,
+      "language_guess": "English",
+      "last_s": 119,
+      "role": "original",
+      "script": "Latin",
+      "text": "I was sane\nYou drove me mad"
+    },
+    {
+      "confidence": "high",
+      "first_s": 120,
+      "language_guess": "English",
+      "last_s": 123,
+      "role": "original",
+      "script": "Latin",
+      "text": "You put chains"
+    },
+    {
+      "confidence": "high",
+      "first_s": 122,
+      "language_guess": "English",
+      "last_s": 123,
+      "role": "original",
+      "script": "Latin",
+      "text": "On my hands"
+    },
+    {
+      "confidence": "high",
+      "first_s": 124,
+      "language_guess": "English",
+      "last_s": 125,
+      "role": "original",
+      "script": "Latin",
+      "text": "You have lit the fire"
+    },
+    {
+      "confidence": "high",
+      "first_s": 126,
+      "language_guess": "English",
+      "last_s": 127,
+      "role": "original",
+      "script": "Latin",
+      "text": "I have come alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 128,
+      "language_guess": "English",
+      "last_s": 129,
+      "role": "original",
+      "script": "Latin",
+      "text": "Lift me ever higher"
+    },
+    {
+      "confidence": "high",
+      "first_s": 130,
+      "language_guess": "English",
+      "last_s": 132,
+      "role": "original",
+      "script": "Latin",
+      "text": "I have come alive"
+    },
+    {
+      "confidence": "low",
+      "first_s": 133,
+      "language_guess": "Persian",
+      "last_s": 163,
+      "role": "original",
+      "script": "Arabic",
+      "text": "مرده بدم زنده شدم گریه بدم خنده شدم",
+      "unreadable_parts": "decorative Nasta'liq calligraphy curved on upper and right petals"
+    },
+    {
+      "confidence": "low",
+      "first_s": 133,
+      "language_guess": "Persian",
+      "last_s": 163,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دولت عشق آمد و من دولت پاینده شدم",
+      "unreadable_parts": "decorative Nasta'liq calligraphy curved on lower and left petals"
+    },
+    {
+      "confidence": "high",
+      "first_s": 133,
+      "language_guess": "English",
+      "last_s": 136,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was dead\nI came alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 137,
+      "language_guess": "English",
+      "last_s": 140,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was weeping\nI became laughter"
+    },
+    {
+      "confidence": "high",
+      "first_s": 141,
+      "language_guess": "English",
+      "last_s": 144,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The Kingdom of\nLove came"
+    },
+    {
+      "confidence": "high",
+      "first_s": 145,
+      "language_guess": "English",
+      "last_s": 147,
+      "role": "translation",
+      "script": "Latin",
+      "text": "and I became the\nEternal Kingdom"
+    },
+    {
+      "confidence": "high",
+      "first_s": 148,
+      "language_guess": "English",
+      "last_s": 151,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was dead\nI came alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 152,
+      "language_guess": "English",
+      "last_s": 155,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was weeping\nI became laughter"
+    },
+    {
+      "confidence": "high",
+      "first_s": 156,
+      "language_guess": "English",
+      "last_s": 158,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The Kingdom of\nLove came"
+    },
+    {
+      "confidence": "high",
+      "first_s": 159,
+      "language_guess": "English",
+      "last_s": 163,
+      "role": "translation",
+      "script": "Latin",
+      "text": "and I became the\nEternal Kingdom"
+    },
+    {
+      "confidence": "high",
+      "first_s": 164,
+      "language_guess": "English",
+      "last_s": 179,
+      "role": "credit",
+      "script": "Latin",
+      "text": "SAMI YUSUF"
+    },
+    {
+      "confidence": "high",
+      "first_s": 164,
+      "language_guess": "English",
+      "last_s": 179,
+      "role": "credit",
+      "script": "Latin",
+      "text": "HOMAYOUN SHAJARIAN"
+    },
+    {
+      "confidence": "high",
+      "first_s": 164,
+      "language_guess": "English",
+      "last_s": 179,
+      "role": "title",
+      "script": "Latin",
+      "text": "ALIVE"
+    },
+    {
+      "confidence": "high",
+      "first_s": 180,
+      "language_guess": "Persian",
+      "last_s": 181.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دیده سیر است مرا"
+    },
+    {
+      "confidence": "high",
+      "first_s": 180,
+      "language_guess": "English",
+      "last_s": 181.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "My eyes are full"
+    },
+    {
+      "confidence": "high",
+      "first_s": 182,
+      "language_guess": "Persian",
+      "last_s": 183.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "جان دلیر است مرا"
+    },
+    {
+      "confidence": "high",
+      "first_s": 182,
+      "language_guess": "English",
+      "last_s": 183.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "My soul is courageous"
+    },
+    {
+      "confidence": "high",
+      "first_s": 184,
+      "language_guess": "Persian",
+      "last_s": 185.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "زهره شیر است مرا"
+    },
+    {
+      "confidence": "high",
+      "first_s": 184,
+      "language_guess": "English",
+      "last_s": 185.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I have the brashness of a lion"
+    },
+    {
+      "confidence": "high",
+      "first_s": 186,
+      "language_guess": "Persian",
+      "last_s": 187.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "زهره تابنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 186,
+      "language_guess": "English",
+      "last_s": 187.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I have become shining Venus"
+    },
+    {
+      "confidence": "high",
+      "first_s": 188,
+      "language_guess": "Persian",
+      "last_s": 189.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "گفت که دیوانه نه‌ای"
+    },
+    {
+      "confidence": "high",
+      "first_s": 188,
+      "language_guess": "English",
+      "last_s": 189.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "He said, 'You're not insane,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 190,
+      "language_guess": "Persian",
+      "last_s": 191.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "لایق این خانه نه‌ای"
+    },
+    {
+      "confidence": "high",
+      "first_s": 190,
+      "language_guess": "English",
+      "last_s": 191.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "You're not worthy of this home.'"
+    },
+    {
+      "confidence": "high",
+      "first_s": 192,
+      "language_guess": "Persian",
+      "last_s": 193.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "رفتم و دیوانه شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 192,
+      "language_guess": "English",
+      "last_s": 193.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I left and went insane"
+    },
+    {
+      "confidence": "high",
+      "first_s": 194,
+      "language_guess": "Persian",
+      "last_s": 197.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "سلسله بندنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 194,
+      "language_guess": "English",
+      "last_s": 197.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "And became tied up in chains"
+    },
+    {
+      "confidence": "high",
+      "first_s": 198,
+      "language_guess": "Persian",
+      "last_s": 199.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "گفت که سرمست نه‌ای"
+    },
+    {
+      "confidence": "high",
+      "first_s": 198,
+      "language_guess": "English",
+      "last_s": 199.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "He said, 'You're not drunk,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 200,
+      "language_guess": "Persian",
+      "last_s": 201.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "رو که از این دست نه‌ای"
+    },
+    {
+      "confidence": "high",
+      "first_s": 200,
+      "language_guess": "English",
+      "last_s": 201.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "Go, for you're not of this group.'"
+    },
+    {
+      "confidence": "high",
+      "first_s": 202,
+      "language_guess": "Persian",
+      "last_s": 203.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "رفتم و سرمست شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 202,
+      "language_guess": "English",
+      "last_s": 203.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I left and became drunk"
+    },
+    {
+      "confidence": "high",
+      "first_s": 204,
+      "language_guess": "Persian",
+      "last_s": 205.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "وز طرب آکنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 204,
+      "language_guess": "English",
+      "last_s": 205.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "And became filled with bliss,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 206,
+      "language_guess": "Persian",
+      "last_s": 207.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "گفت که تو کشته نه‌ای"
+    },
+    {
+      "confidence": "high",
+      "first_s": 206,
+      "language_guess": "English",
+      "last_s": 207.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "He said, 'You've not been killed,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 208,
+      "language_guess": "Persian",
+      "last_s": 209.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "در طرب آغشته نه‌ای"
+    },
+    {
+      "confidence": "high",
+      "first_s": 208,
+      "language_guess": "English",
+      "last_s": 209.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "You're not saturated with bliss.'"
+    },
+    {
+      "confidence": "high",
+      "first_s": 210,
+      "language_guess": "Persian",
+      "last_s": 211.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "پیش رخ زنده کنش"
+    },
+    {
+      "confidence": "high",
+      "first_s": 210,
+      "language_guess": "English",
+      "last_s": 211.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "Before his exhilarating face"
+    },
+    {
+      "confidence": "high",
+      "first_s": 212,
+      "language_guess": "Persian",
+      "last_s": 215.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "کشته و افکنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 212,
+      "language_guess": "English",
+      "last_s": 215.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was killed and laid low,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 216,
+      "language_guess": "Persian",
+      "last_s": 217.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "گفت که تو زیرککی"
+    },
+    {
+      "confidence": "high",
+      "first_s": 216,
+      "language_guess": "English",
+      "last_s": 217.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "He said, 'You're a little clever one,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 218,
+      "language_guess": "Persian",
+      "last_s": 219.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "مست خیالی و شکی"
+    },
+    {
+      "confidence": "high",
+      "first_s": 218,
+      "language_guess": "English",
+      "last_s": 219.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "Drunk in imagination and doubt.'"
+    },
+    {
+      "confidence": "high",
+      "first_s": 220,
+      "language_guess": "Persian",
+      "last_s": 221.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "گول شدم هول شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 220,
+      "language_guess": "English",
+      "last_s": 221.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I became a fool, I became anxious"
+    },
+    {
+      "confidence": "high",
+      "first_s": 222,
+      "language_guess": "Persian",
+      "last_s": 223.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "وز همه برکنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 222,
+      "language_guess": "English",
+      "last_s": 223.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "And became detached\nfrom everything,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 224,
+      "language_guess": "Persian",
+      "last_s": 225.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "گفت که تو شمع شدی"
+    },
+    {
+      "confidence": "high",
+      "first_s": 224,
+      "language_guess": "English",
+      "last_s": 225.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "He said, 'You've become a candle,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 226,
+      "language_guess": "Persian",
+      "last_s": 227.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "قبله این جمع شدی"
+    },
+    {
+      "confidence": "high",
+      "first_s": 226,
+      "language_guess": "English",
+      "last_s": 227.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The qibla of this gathering.'"
+    },
+    {
+      "confidence": "high",
+      "first_s": 228,
+      "language_guess": "Persian",
+      "last_s": 230.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "جمع نیم شمع نیم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 228,
+      "language_guess": "English",
+      "last_s": 230.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I'm past the state of gathering\nand I'm not a candle"
+    },
+    {
+      "confidence": "high",
+      "first_s": 231,
+      "language_guess": "Persian",
+      "last_s": 235.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دود پراکنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 231,
+      "language_guess": "English",
+      "last_s": 235.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I am but scattered smoke"
+    },
+    {
+      "confidence": "high",
+      "first_s": 236,
+      "language_guess": "Persian",
+      "last_s": 236.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دود پراکنده شدم"
+    },
+    {
+      "confidence": "low",
+      "first_s": 239,
+      "language_guess": "Persian",
+      "last_s": 269,
+      "role": "original",
+      "script": "Arabic",
+      "text": "مرده بدم زنده شدم گریه بدم خنده شدم",
+      "unreadable_parts": "decorative Nasta'liq calligraphy curved on upper and right petals"
+    },
+    {
+      "confidence": "low",
+      "first_s": 239,
+      "language_guess": "Persian",
+      "last_s": 269,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دولت عشق آمد و من دولت پاینده شدم",
+      "unreadable_parts": "decorative Nasta'liq calligraphy curved on lower and left petals"
+    },
+    {
+      "confidence": "high",
+      "first_s": 239,
+      "language_guess": "English",
+      "last_s": 242,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was dead\nI came alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 243,
+      "language_guess": "English",
+      "last_s": 246,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was weeping\nI became laughter"
+    },
+    {
+      "confidence": "high",
+      "first_s": 247,
+      "language_guess": "English",
+      "last_s": 250,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The Kingdom of\nLove came"
+    },
+    {
+      "confidence": "high",
+      "first_s": 251,
+      "language_guess": "English",
+      "last_s": 254,
+      "role": "translation",
+      "script": "Latin",
+      "text": "and I became the\nEternal Kingdom"
+    },
+    {
+      "confidence": "high",
+      "first_s": 255,
+      "language_guess": "English",
+      "last_s": 257,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was dead\nI came alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 258,
+      "language_guess": "English",
+      "last_s": 261,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was weeping\nI became laughter"
+    },
+    {
+      "confidence": "high",
+      "first_s": 262,
+      "language_guess": "English",
+      "last_s": 265,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The Kingdom of\nLove came"
+    },
+    {
+      "confidence": "high",
+      "first_s": 266,
+      "language_guess": "English",
+      "last_s": 269,
+      "role": "translation",
+      "script": "Latin",
+      "text": "and I became the\nEternal Kingdom"
+    },
+    {
+      "confidence": "high",
+      "first_s": 270,
+      "language_guess": "Persian",
+      "last_s": 275,
+      "role": "original",
+      "script": "Arabic",
+      "text": "گفت که شیخی و سری"
+    },
+    {
+      "confidence": "high",
+      "first_s": 270,
+      "language_guess": "English",
+      "last_s": 275,
+      "role": "translation",
+      "script": "Latin",
+      "text": "He said, 'You're a master, a leader,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 276,
+      "language_guess": "Persian",
+      "last_s": 281,
+      "role": "original",
+      "script": "Arabic",
+      "text": "پیشرو و راهبری"
+    },
+    {
+      "confidence": "high",
+      "first_s": 276,
+      "language_guess": "English",
+      "last_s": 281,
+      "role": "translation",
+      "script": "Latin",
+      "text": "Go ahead and lead the way.'"
+    },
+    {
+      "confidence": "high",
+      "first_s": 282,
+      "language_guess": "Persian",
+      "last_s": 285,
+      "role": "original",
+      "script": "Arabic",
+      "text": "شیخ نیم پیش نیم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 282,
+      "language_guess": "English",
+      "last_s": 285,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I'm not a master, I'm not ahead"
+    },
+    {
+      "confidence": "high",
+      "first_s": 286,
+      "language_guess": "Persian",
+      "last_s": 295,
+      "role": "original",
+      "script": "Arabic",
+      "text": "امر تو را بنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 286,
+      "language_guess": "English",
+      "last_s": 295,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I'm a servant at your command"
+    },
+    {
+      "confidence": "high",
+      "first_s": 296,
+      "language_guess": "English",
+      "last_s": 314,
+      "role": "credit",
+      "script": "Latin",
+      "text": "SAMI YUSUF"
+    },
+    {
+      "confidence": "high",
+      "first_s": 296,
+      "language_guess": "English",
+      "last_s": 314,
+      "role": "credit",
+      "script": "Latin",
+      "text": "HOMAYOUN SHAJARIAN"
+    },
+    {
+      "confidence": "high",
+      "first_s": 296,
+      "language_guess": "English",
+      "last_s": 314,
+      "role": "title",
+      "script": "Latin",
+      "text": "ALIVE"
+    },
+    {
+      "confidence": "high",
+      "first_s": 315,
+      "language_guess": "Turkish",
+      "last_s": 318,
+      "role": "original",
+      "script": "Latin",
+      "text": "Gözüm Toktur Benim,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 315,
+      "language_guess": "English",
+      "last_s": 318,
+      "role": "translation",
+      "script": "Latin",
+      "text": "My eyes are full"
+    },
+    {
+      "confidence": "high",
+      "first_s": 319,
+      "language_guess": "Turkish",
+      "last_s": 322,
+      "role": "original",
+      "script": "Latin",
+      "text": "Canım Pektir Benim,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 319,
+      "language_guess": "English",
+      "last_s": 322,
+      "role": "translation",
+      "script": "Latin",
+      "text": "My soul is courageous"
+    },
+    {
+      "confidence": "high",
+      "first_s": 323,
+      "language_guess": "Turkish",
+      "last_s": 326,
+      "role": "original",
+      "script": "Latin",
+      "text": "Aslan Gibi Ödüm Var,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 323,
+      "language_guess": "English",
+      "last_s": 326,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I have the brashness of a lion"
+    },
+    {
+      "confidence": "high",
+      "first_s": 327,
+      "language_guess": "Turkish",
+      "last_s": 330,
+      "role": "original",
+      "script": "Latin",
+      "text": "Parlayan Zühreyim,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 327,
+      "language_guess": "English",
+      "last_s": 330,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I have become shining Venus"
+    },
+    {
+      "confidence": "high",
+      "first_s": 331,
+      "language_guess": "Turkish",
+      "last_s": 334,
+      "role": "original",
+      "script": "Latin",
+      "text": "Dedi Değilsin, Sen Divane,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 331,
+      "language_guess": "English",
+      "last_s": 334,
+      "role": "translation",
+      "script": "Latin",
+      "text": "He said, 'You're not insane,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 335,
+      "language_guess": "Turkish",
+      "last_s": 337,
+      "role": "original",
+      "script": "Latin",
+      "text": "Layik Değilsin, Bu Eve,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 335,
+      "language_guess": "English",
+      "last_s": 337,
+      "role": "translation",
+      "script": "Latin",
+      "text": "You're not worthy of this home.'"
+    },
+    {
+      "confidence": "high",
+      "first_s": 338,
+      "language_guess": "Turkish",
+      "last_s": 342,
+      "role": "original",
+      "script": "Latin",
+      "text": "Gittim Divane Oldum,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 338,
+      "language_guess": "English",
+      "last_s": 342,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I left and went insane"
+    },
+    {
+      "confidence": "high",
+      "first_s": 343,
+      "language_guess": "Turkish",
+      "last_s": 346,
+      "role": "original",
+      "script": "Latin",
+      "text": "Bağlandım Zincirlere,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 343,
+      "language_guess": "English",
+      "last_s": 346,
+      "role": "translation",
+      "script": "Latin",
+      "text": "And became tied up in chains"
+    },
+    {
+      "confidence": "high",
+      "first_s": 347,
+      "language_guess": "Turkish",
+      "last_s": 350,
+      "role": "original",
+      "script": "Latin",
+      "text": "Bir Ölüydüm, Canla Doldum,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 347,
+      "language_guess": "English",
+      "last_s": 350,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was dead, I came alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 351,
+      "language_guess": "Turkish",
+      "last_s": 354,
+      "role": "original",
+      "script": "Latin",
+      "text": "Ağlar idim, Gülüş oldum,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 351,
+      "language_guess": "English",
+      "last_s": 354,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I once wept, now I smile"
+    },
+    {
+      "confidence": "high",
+      "first_s": 355,
+      "language_guess": "Turkish",
+      "last_s": 358,
+      "role": "original",
+      "script": "Latin",
+      "text": "Aşk Devleti, Gelince Ben,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 355,
+      "language_guess": "English",
+      "last_s": 358,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The Kingdom of Love came"
+    },
+    {
+      "confidence": "high",
+      "first_s": 359,
+      "language_guess": "Turkish",
+      "last_s": 362,
+      "role": "original",
+      "script": "Latin",
+      "text": "Sonsuzluk Devleti Buldum,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 359,
+      "language_guess": "English",
+      "last_s": 362,
+      "role": "translation",
+      "script": "Latin",
+      "text": "and I became the Eternal Kingdom"
+    },
+    {
+      "confidence": "high",
+      "first_s": 363,
+      "language_guess": "Turkish",
+      "last_s": 366,
+      "role": "original",
+      "script": "Latin",
+      "text": "Bir Ölüydüm, Canla Doldum,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 363,
+      "language_guess": "English",
+      "last_s": 366,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was dead, I came alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 367,
+      "language_guess": "Turkish",
+      "last_s": 370,
+      "role": "original",
+      "script": "Latin",
+      "text": "Ağlar idim, Gülüş oldum,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 367,
+      "language_guess": "English",
+      "last_s": 370,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I once wept, now I smile"
+    },
+    {
+      "confidence": "high",
+      "first_s": 371,
+      "language_guess": "Turkish",
+      "last_s": 374,
+      "role": "original",
+      "script": "Latin",
+      "text": "Aşk Devleti, Gelince Ben,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 371,
+      "language_guess": "English",
+      "last_s": 374,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The Kingdom of Love came"
+    },
+    {
+      "confidence": "high",
+      "first_s": 375,
+      "language_guess": "Turkish",
+      "last_s": 378,
+      "role": "original",
+      "script": "Latin",
+      "text": "Sonsuzluk Devleti Buldum,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 375,
+      "language_guess": "English",
+      "last_s": 378,
+      "role": "translation",
+      "script": "Latin",
+      "text": "and I became the Eternal Kingdom"
+    },
+    {
+      "confidence": "low",
+      "first_s": 379,
+      "language_guess": "Persian",
+      "last_s": 411,
+      "role": "original",
+      "script": "Arabic",
+      "text": "مرده بدم زنده شدم گریه بدم خنده شدم دولت عشق آمد و من دولت پاینده شدم",
+      "unreadable_parts": "circular wrapping and motion blur in animated mandala outer ring"
+    },
+    {
+      "confidence": "low",
+      "first_s": 379,
+      "language_guess": "Turkish",
+      "last_s": 411,
+      "role": "original",
+      "script": "Latin",
+      "text": "Bir ölüydüm canla doldum; ağlar idim gülüş oldum. Aşk devleti gelince ben, sonsuzluk devleti buldum",
+      "unreadable_parts": "circular wrapping and motion blur in animated mandala middle ring"
+    },
+    {
+      "confidence": "low",
+      "first_s": 379,
+      "language_guess": "English",
+      "last_s": 411,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was dead, I came alive. I once wept, now I smile. The Kingdom of love has come, And I have become eternal bounty",
+      "unreadable_parts": "circular wrapping and motion blur in animated mandala inner rings"
+    },
+    {
+      "confidence": "high",
+      "first_s": 412,
+      "language_guess": "Persian",
+      "last_s": 413.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "گفت که با بال و پری"
+    },
+    {
+      "confidence": "high",
+      "first_s": 412,
+      "language_guess": "English",
+      "last_s": 413.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "He said, 'You've got\nfeathers and wings,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 414,
+      "language_guess": "Persian",
+      "last_s": 415.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "من پر و بالت ندهم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 414,
+      "language_guess": "English",
+      "last_s": 415.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I won't give you\nfeathers and wings.'"
+    },
+    {
+      "confidence": "high",
+      "first_s": 416,
+      "language_guess": "Persian",
+      "last_s": 417.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "در هوس بال و پرش"
+    },
+    {
+      "confidence": "high",
+      "first_s": 416,
+      "language_guess": "English",
+      "last_s": 417.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "In desire of his\nfeathers and wings"
+    },
+    {
+      "confidence": "high",
+      "first_s": 418,
+      "language_guess": "Persian",
+      "last_s": 419.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "بی‌پر و پرکنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 418,
+      "language_guess": "English",
+      "last_s": 419.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I have become wingless,\nmy feathers plucked."
+    },
+    {
+      "confidence": "high",
+      "first_s": 420,
+      "language_guess": "Persian",
+      "last_s": 421.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "گفت مرا دولت نو"
+    },
+    {
+      "confidence": "high",
+      "first_s": 420,
+      "language_guess": "English",
+      "last_s": 421.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "That New Bounty said to me:"
+    },
+    {
+      "confidence": "high",
+      "first_s": 422,
+      "language_guess": "Persian",
+      "last_s": 423.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "راه مرو رنجه مشو"
+    },
+    {
+      "confidence": "high",
+      "first_s": 422,
+      "language_guess": "English",
+      "last_s": 423.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "Don't travel the way,\ndon't be at pains"
+    },
+    {
+      "confidence": "high",
+      "first_s": 424,
+      "language_guess": "Persian",
+      "last_s": 425.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "زانک من از لطف و کرم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 424,
+      "language_guess": "English",
+      "last_s": 425.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "For with kindness\nand with generosity"
+    },
+    {
+      "confidence": "high",
+      "first_s": 426,
+      "language_guess": "Persian",
+      "last_s": 429.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "سوی تو آینده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 426,
+      "language_guess": "English",
+      "last_s": 429.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I am now coming to you"
+    },
+    {
+      "confidence": "high",
+      "first_s": 430,
+      "language_guess": "Persian",
+      "last_s": 431.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "گفت مرا عشق کهن"
+    },
+    {
+      "confidence": "high",
+      "first_s": 430,
+      "language_guess": "English",
+      "last_s": 431.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "He said, 'Of ancient love"
+    },
+    {
+      "confidence": "high",
+      "first_s": 432,
+      "language_guess": "Persian",
+      "last_s": 433.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "از بر ما نقل مکن"
+    },
+    {
+      "confidence": "high",
+      "first_s": 432,
+      "language_guess": "English",
+      "last_s": 433.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "Don't weave tales for us.'"
+    },
+    {
+      "confidence": "high",
+      "first_s": 434,
+      "language_guess": "Persian",
+      "last_s": 435.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "گفتم آری نکنم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 434,
+      "language_guess": "English",
+      "last_s": 435.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I said, 'Alright, I won't'"
+    },
+    {
+      "confidence": "high",
+      "first_s": 436,
+      "language_guess": "Persian",
+      "last_s": 437.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "ساکن و باشنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 436,
+      "language_guess": "English",
+      "last_s": 437.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I became still and fully present."
+    },
+    {
+      "confidence": "high",
+      "first_s": 438,
+      "language_guess": "Persian",
+      "last_s": 439.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "چشمه خورشید تویی"
+    },
+    {
+      "confidence": "high",
+      "first_s": 438,
+      "language_guess": "English",
+      "last_s": 439.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The fountain of the Sun is you"
+    },
+    {
+      "confidence": "high",
+      "first_s": 440,
+      "language_guess": "Persian",
+      "last_s": 441.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "سایه گه بید منم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 440,
+      "language_guess": "English",
+      "last_s": 441.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I am the shadow of the willow"
+    },
+    {
+      "confidence": "high",
+      "first_s": 442,
+      "language_guess": "Persian",
+      "last_s": 443.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "چونک زدی بر سر من"
+    },
+    {
+      "confidence": "high",
+      "first_s": 442,
+      "language_guess": "English",
+      "last_s": 443.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "Since you struck me upon my head"
+    },
+    {
+      "confidence": "high",
+      "first_s": 444,
+      "language_guess": "Persian",
+      "last_s": 445.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "پست و گدازنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 444,
+      "language_guess": "English",
+      "last_s": 445.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I became lowly and began to melt"
+    },
+    {
+      "confidence": "high",
+      "first_s": 446,
+      "language_guess": "Persian",
+      "last_s": 447.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "تابش جان یافت دلم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 446,
+      "language_guess": "English",
+      "last_s": 447.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "My heart received the\nshining of the Spirit"
+    },
+    {
+      "confidence": "high",
+      "first_s": 448,
+      "language_guess": "Persian",
+      "last_s": 449.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "وا شد و بشکافت دلم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 448,
+      "language_guess": "English",
+      "last_s": 449.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "My heart opened and blossomed"
+    },
+    {
+      "confidence": "high",
+      "first_s": 450,
+      "language_guess": "Persian",
+      "last_s": 451.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "اتلس نو بافت دلم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 450,
+      "language_guess": "English",
+      "last_s": 451.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "My heart wove new silken fabric"
+    },
+    {
+      "confidence": "high",
+      "first_s": 452,
+      "language_guess": "Persian",
+      "last_s": 453.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دشمن این ژنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 452,
+      "language_guess": "English",
+      "last_s": 453.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "And I became the enemy\nof these tatters"
+    },
+    {
+      "confidence": "high",
+      "first_s": 454,
+      "language_guess": "Persian",
+      "last_s": 455.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "صورت جان وقت سحر"
+    },
+    {
+      "confidence": "high",
+      "first_s": 454,
+      "language_guess": "English",
+      "last_s": 455.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "At dawn the form of the Spirit"
+    },
+    {
+      "confidence": "high",
+      "first_s": 456,
+      "language_guess": "Persian",
+      "last_s": 457.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "لاف همی‌زد ز بطر"
+    },
+    {
+      "confidence": "high",
+      "first_s": 456,
+      "language_guess": "English",
+      "last_s": 457.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "Was insolently bragging:"
+    },
+    {
+      "confidence": "high",
+      "first_s": 458,
+      "language_guess": "Persian",
+      "last_s": 459.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "بنده و خربنده بدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 458,
+      "language_guess": "English",
+      "last_s": 459.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I have become the servant,\nthe donkey-keeper"
+    },
+    {
+      "confidence": "high",
+      "first_s": 460,
+      "language_guess": "Persian",
+      "last_s": 466.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "شاه خداونده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 460,
+      "language_guess": "English",
+      "last_s": 466.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I have become the lordly king"
+    },
+    {
+      "confidence": "low",
+      "first_s": 469,
+      "language_guess": "Persian",
+      "last_s": 499,
+      "role": "original",
+      "script": "Arabic",
+      "text": "مرده بدم زنده شدم گریه بدم خنده شدم",
+      "unreadable_parts": "decorative Nasta'liq calligraphy curved on upper and right petals"
+    },
+    {
+      "confidence": "low",
+      "first_s": 469,
+      "language_guess": "Persian",
+      "last_s": 499,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دولت عشق آمد و من دولت پاینده شدم",
+      "unreadable_parts": "decorative Nasta'liq calligraphy curved on lower and left petals"
+    },
+    {
+      "confidence": "high",
+      "first_s": 469,
+      "language_guess": "English",
+      "last_s": 472,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was dead\nI came alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 473,
+      "language_guess": "English",
+      "last_s": 476,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was weeping\nI became laughter"
+    },
+    {
+      "confidence": "high",
+      "first_s": 477,
+      "language_guess": "English",
+      "last_s": 480,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The Kingdom of\nLove came"
+    },
+    {
+      "confidence": "high",
+      "first_s": 481,
+      "language_guess": "English",
+      "last_s": 484,
+      "role": "translation",
+      "script": "Latin",
+      "text": "and I became the\nEternal Kingdom"
+    },
+    {
+      "confidence": "high",
+      "first_s": 485,
+      "language_guess": "English",
+      "last_s": 487,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was dead\nI came alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 488,
+      "language_guess": "English",
+      "last_s": 491,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was weeping\nI became laughter"
+    },
+    {
+      "confidence": "high",
+      "first_s": 492,
+      "language_guess": "English",
+      "last_s": 495,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The Kingdom of\nLove came"
+    },
+    {
+      "confidence": "high",
+      "first_s": 496,
+      "language_guess": "English",
+      "last_s": 499,
+      "role": "translation",
+      "script": "Latin",
+      "text": "and I became the\nEternal Kingdom"
+    },
+    {
+      "confidence": "high",
+      "first_s": 500,
+      "language_guess": "English",
+      "last_s": 539,
+      "role": "credit",
+      "script": "Latin",
+      "text": "SAMI YUSUF"
+    },
+    {
+      "confidence": "high",
+      "first_s": 500,
+      "language_guess": "English",
+      "last_s": 539,
+      "role": "credit",
+      "script": "Latin",
+      "text": "HOMAYOUN SHAJARIAN"
+    },
+    {
+      "confidence": "high",
+      "first_s": 500,
+      "language_guess": "English",
+      "last_s": 539,
+      "role": "title",
+      "script": "Latin",
+      "text": "ALIVE"
+    },
+    {
+      "confidence": "high",
+      "first_s": 540,
+      "language_guess": "Persian",
+      "last_s": 541.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "شکر کند کاغذ تو"
+    },
+    {
+      "confidence": "high",
+      "first_s": 540,
+      "language_guess": "English",
+      "last_s": 541.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "Your created form is giving thanks"
+    },
+    {
+      "confidence": "high",
+      "first_s": 542,
+      "language_guess": "Persian",
+      "last_s": 543.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "از شکر بی‌حد تو"
+    },
+    {
+      "confidence": "high",
+      "first_s": 542,
+      "language_guess": "English",
+      "last_s": 543.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "For your limitless sweetness"
+    },
+    {
+      "confidence": "high",
+      "first_s": 544,
+      "language_guess": "Persian",
+      "last_s": 545.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "کآمد او در بر من"
+    },
+    {
+      "confidence": "high",
+      "first_s": 544,
+      "language_guess": "English",
+      "last_s": 545.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "For he has come in my embrace"
+    },
+    {
+      "confidence": "high",
+      "first_s": 546,
+      "language_guess": "Persian",
+      "last_s": 547.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "با وی ماننده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 546,
+      "language_guess": "English",
+      "last_s": 547.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "With him I have become everlasting"
+    },
+    {
+      "confidence": "high",
+      "first_s": 548,
+      "language_guess": "Persian",
+      "last_s": 549.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "شکر کند خاک دژم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 548,
+      "language_guess": "English",
+      "last_s": 549.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The worthless dust is giving thanks"
+    },
+    {
+      "confidence": "high",
+      "first_s": 550,
+      "language_guess": "Persian",
+      "last_s": 551.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "از فلک و چرخ به خم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 550,
+      "language_guess": "English",
+      "last_s": 551.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "For the celestial\nsphere and curved sky"
+    },
+    {
+      "confidence": "high",
+      "first_s": 552,
+      "language_guess": "Persian",
+      "last_s": 553.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "کز نظر و گردش او"
+    },
+    {
+      "confidence": "high",
+      "first_s": 552,
+      "language_guess": "English",
+      "last_s": 553.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "For from its gaze and its turning"
+    },
+    {
+      "confidence": "high",
+      "first_s": 554,
+      "language_guess": "Persian",
+      "last_s": 557.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "نورپذیرنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 554,
+      "language_guess": "English",
+      "last_s": 557.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I have become the recipient of light"
+    },
+    {
+      "confidence": "high",
+      "first_s": 558,
+      "language_guess": "Persian",
+      "last_s": 559.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "شکر کند چرخ فلک"
+    },
+    {
+      "confidence": "high",
+      "first_s": 558,
+      "language_guess": "English",
+      "last_s": 559.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The celestial wheel is giving thanks"
+    },
+    {
+      "confidence": "high",
+      "first_s": 560,
+      "language_guess": "Persian",
+      "last_s": 561.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "از مَلِک و مُلْک و مَلَک"
+    },
+    {
+      "confidence": "high",
+      "first_s": 560,
+      "language_guess": "English",
+      "last_s": 561.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "For the kingdom,\nthe King and the angels"
+    },
+    {
+      "confidence": "high",
+      "first_s": 562,
+      "language_guess": "Persian",
+      "last_s": 563.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "کز کرم و بخشش او"
+    },
+    {
+      "confidence": "high",
+      "first_s": 562,
+      "language_guess": "English",
+      "last_s": 563.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "For from His\nGenerosity and Largesse"
+    },
+    {
+      "confidence": "high",
+      "first_s": 564,
+      "language_guess": "Persian",
+      "last_s": 565.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "روشن و بخشنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 564,
+      "language_guess": "English",
+      "last_s": 565.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I have become\nluminous and giving"
+    },
+    {
+      "confidence": "high",
+      "first_s": 566,
+      "language_guess": "Persian",
+      "last_s": 567.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "شکر کند عارف حق"
+    },
+    {
+      "confidence": "high",
+      "first_s": 566,
+      "language_guess": "English",
+      "last_s": 567.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The knower of\nthe Real is giving thanks"
+    },
+    {
+      "confidence": "high",
+      "first_s": 568,
+      "language_guess": "Persian",
+      "last_s": 569.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "کز همه بردیم سبق"
+    },
+    {
+      "confidence": "high",
+      "first_s": 568,
+      "language_guess": "English",
+      "last_s": 569.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "For we have overtaken them all"
+    },
+    {
+      "confidence": "high",
+      "first_s": 570,
+      "language_guess": "Persian",
+      "last_s": 571.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "بر زبر هفت طبق"
+    },
+    {
+      "confidence": "high",
+      "first_s": 570,
+      "language_guess": "English",
+      "last_s": 571.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "Out beyond the seven spheres"
+    },
+    {
+      "confidence": "high",
+      "first_s": 572,
+      "language_guess": "Persian",
+      "last_s": 576.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "اختر رخشنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 572,
+      "language_guess": "English",
+      "last_s": 576.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I have become a shining star"
+    },
+    {
+      "confidence": "high",
+      "first_s": 578,
+      "language_guess": "Persian",
+      "last_s": 579.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "زهره بدم ماه شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 578,
+      "language_guess": "English",
+      "last_s": 579.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was Venus, I became the Moon"
+    },
+    {
+      "confidence": "high",
+      "first_s": 580,
+      "language_guess": "Persian",
+      "last_s": 585.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "چرخ دو صد تاه شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 580,
+      "language_guess": "English",
+      "last_s": 585.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I became a wheel\nwith two hundred layers"
+    },
+    {
+      "confidence": "high",
+      "first_s": 586,
+      "language_guess": "Persian",
+      "last_s": 587.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "یوسف بودم ز کنون"
+    },
+    {
+      "confidence": "high",
+      "first_s": 586,
+      "language_guess": "English",
+      "last_s": 587.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was Joseph and from now on"
+    },
+    {
+      "confidence": "high",
+      "first_s": 588,
+      "language_guess": "Persian",
+      "last_s": 589.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "یوسف زاینده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 588,
+      "language_guess": "English",
+      "last_s": 589.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I am a Joseph who\ngives birth to Josephs"
+    },
+    {
+      "confidence": "high",
+      "first_s": 590,
+      "language_guess": "Persian",
+      "last_s": 591.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "از توام ای شهره قمر"
+    },
+    {
+      "confidence": "high",
+      "first_s": 590,
+      "language_guess": "English",
+      "last_s": 591.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I am of you,\nO glory of the Moon"
+    },
+    {
+      "confidence": "high",
+      "first_s": 592,
+      "language_guess": "Persian",
+      "last_s": 593.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "در من و در خود بنگر"
+    },
+    {
+      "confidence": "high",
+      "first_s": 592,
+      "language_guess": "English",
+      "last_s": 593.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "Look upon me and\nupon yourself"
+    },
+    {
+      "confidence": "high",
+      "first_s": 594,
+      "language_guess": "Persian",
+      "last_s": 595.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "کز اثر خنده تو"
+    },
+    {
+      "confidence": "high",
+      "first_s": 594,
+      "language_guess": "English",
+      "last_s": 595.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "For from the\neffect of your smile"
+    },
+    {
+      "confidence": "high",
+      "first_s": 596,
+      "language_guess": "Persian",
+      "last_s": 597.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "گلشن خندنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 596,
+      "language_guess": "English",
+      "last_s": 597.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I have become a\nlaughing rose-garden"
+    },
+    {
+      "confidence": "high",
+      "first_s": 598,
+      "language_guess": "Persian",
+      "last_s": 599.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "باش چو شطرنج روان"
+    },
+    {
+      "confidence": "high",
+      "first_s": 598,
+      "language_guess": "English",
+      "last_s": 599.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "Be fluid, like a game of chess"
+    },
+    {
+      "confidence": "high",
+      "first_s": 600,
+      "language_guess": "Persian",
+      "last_s": 601.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "خامش و خود جمله زبان"
+    },
+    {
+      "confidence": "high",
+      "first_s": 600,
+      "language_guess": "English",
+      "last_s": 601.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "Silent, yet all tongue"
+    },
+    {
+      "confidence": "high",
+      "first_s": 602,
+      "language_guess": "Persian",
+      "last_s": 603.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "کز رخ آن شاه جهان"
+    },
+    {
+      "confidence": "high",
+      "first_s": 602,
+      "language_guess": "English",
+      "last_s": 603.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "For from the face\nof that King of the world"
+    },
+    {
+      "confidence": "high",
+      "first_s": 604,
+      "language_guess": "Persian",
+      "last_s": 609.9,
+      "role": "original",
+      "script": "Arabic",
+      "text": "فرخ و فرخنده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 604,
+      "language_guess": "English",
+      "last_s": 609.9,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I have become\nglorious and blessed"
+    },
+    {
+      "confidence": "low",
+      "first_s": 612,
+      "language_guess": "Persian",
+      "last_s": 627,
+      "role": "original",
+      "script": "Arabic",
+      "text": "مرده بدم زنده شدم گریه بدم خنده شدم",
+      "unreadable_parts": "decorative Nasta'liq calligraphy curved on upper and right petals"
+    },
+    {
+      "confidence": "low",
+      "first_s": 612,
+      "language_guess": "Persian",
+      "last_s": 627,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دولت عشق آمد و من دولت پاینده شدم",
+      "unreadable_parts": "decorative Nasta'liq calligraphy curved on lower and left petals"
+    },
+    {
+      "confidence": "high",
+      "first_s": 612,
+      "language_guess": "English",
+      "last_s": 615,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was dead\nI came alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 616,
+      "language_guess": "English",
+      "last_s": 619,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was weeping\nI became laughter"
+    },
+    {
+      "confidence": "high",
+      "first_s": 620,
+      "language_guess": "English",
+      "last_s": 623,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The Kingdom of\nLove came"
+    },
+    {
+      "confidence": "high",
+      "first_s": 624,
+      "language_guess": "English",
+      "last_s": 627,
+      "role": "translation",
+      "script": "Latin",
+      "text": "and I became the\nEternal Kingdom"
+    },
+    {
+      "confidence": "high",
+      "first_s": 628,
+      "language_guess": "Turkish",
+      "last_s": 631,
+      "role": "original",
+      "script": "Latin",
+      "text": "Bir Ölüydüm,\nCanla Doldum,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 628,
+      "language_guess": "English",
+      "last_s": 631,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I was dead,\nI came alive"
+    },
+    {
+      "confidence": "high",
+      "first_s": 632,
+      "language_guess": "Turkish",
+      "last_s": 635,
+      "role": "original",
+      "script": "Latin",
+      "text": "Ağlar idim,\nGülüş oldum,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 632,
+      "language_guess": "English",
+      "last_s": 635,
+      "role": "translation",
+      "script": "Latin",
+      "text": "I once wept,\nnow I smile"
+    },
+    {
+      "confidence": "high",
+      "first_s": 636,
+      "language_guess": "Turkish",
+      "last_s": 638,
+      "role": "original",
+      "script": "Latin",
+      "text": "Aşk Devleti,\nGelince Ben,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 636,
+      "language_guess": "English",
+      "last_s": 638,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The Kingdom of Love\ncame and I"
+    },
+    {
+      "confidence": "high",
+      "first_s": 639,
+      "language_guess": "Turkish",
+      "last_s": 642,
+      "role": "original",
+      "script": "Latin",
+      "text": "Sonsuzluk\nDevleti Buldum,"
+    },
+    {
+      "confidence": "high",
+      "first_s": 639,
+      "language_guess": "English",
+      "last_s": 642,
+      "role": "translation",
+      "script": "Latin",
+      "text": "became\nthe Eternal Kingdom"
+    },
+    {
+      "confidence": "high",
+      "first_s": 643,
+      "language_guess": "Persian",
+      "last_s": 646,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دولت عشق آمد و من"
+    },
+    {
+      "confidence": "high",
+      "first_s": 643,
+      "language_guess": "English",
+      "last_s": 646,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The Kingdom of Love came"
+    },
+    {
+      "confidence": "high",
+      "first_s": 647,
+      "language_guess": "Persian",
+      "last_s": 650,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دولت پاینده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 647,
+      "language_guess": "English",
+      "last_s": 650,
+      "role": "translation",
+      "script": "Latin",
+      "text": "and I became the Eternal Kingdom"
+    },
+    {
+      "confidence": "high",
+      "first_s": 651,
+      "language_guess": "Persian",
+      "last_s": 654,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دولت عشق آمد و من"
+    },
+    {
+      "confidence": "high",
+      "first_s": 651,
+      "language_guess": "English",
+      "last_s": 654,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The Kingdom of Love came"
+    },
+    {
+      "confidence": "high",
+      "first_s": 655,
+      "language_guess": "Persian",
+      "last_s": 658,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دولت پاینده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 655,
+      "language_guess": "English",
+      "last_s": 658,
+      "role": "translation",
+      "script": "Latin",
+      "text": "and I became the Eternal Kingdom"
+    },
+    {
+      "confidence": "high",
+      "first_s": 659,
+      "language_guess": "Persian",
+      "last_s": 660,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دولت عشق آمد و من"
+    },
+    {
+      "confidence": "high",
+      "first_s": 659,
+      "language_guess": "English",
+      "last_s": 660,
+      "role": "translation",
+      "script": "Latin",
+      "text": "The Kingdom of Love came"
+    },
+    {
+      "confidence": "high",
+      "first_s": 661,
+      "language_guess": "Persian",
+      "last_s": 669,
+      "role": "original",
+      "script": "Arabic",
+      "text": "دولت پاینده شدم"
+    },
+    {
+      "confidence": "high",
+      "first_s": 661,
+      "language_guess": "English",
+      "last_s": 669,
+      "role": "translation",
+      "script": "Latin",
+      "text": "and I became the Eternal Kingdom"
+    },
+    {
+      "confidence": "high",
+      "first_s": 670,
+      "language_guess": "English",
+      "last_s": 675,
+      "role": "credit",
+      "script": "Latin",
+      "text": "SAMI YUSUF"
+    },
+    {
+      "confidence": "high",
+      "first_s": 670,
+      "language_guess": "English",
+      "last_s": 675,
+      "role": "credit",
+      "script": "Latin",
+      "text": "HOMAYOUN SHAJARIAN"
+    },
+    {
+      "confidence": "high",
+      "first_s": 670,
+      "language_guess": "English",
+      "last_s": 675,
+      "role": "title",
+      "script": "Latin",
+      "text": "ALIVE"
+    }
+  ],
+  "video_type": "lyric_video",
+  "video_type_note": "The video is an official animated lyric video featuring kaleidoscope mandala visual artwork with synchronized text in English, Persian (Arabic script), and Turkish (Latin script), alongside English translations."
+}
