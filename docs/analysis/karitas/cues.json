@@ -60,6 +60,13 @@
     "cue": 9,
     "lang": "en-GB",
     "start": 104.147,
+    "end": 109.9
+  },
+  {
+    "line": "hildegard-h1-1e",
+    "cue": 9,
+    "lang": "en-GB",
+    "start": 109.9,
     "end": 112.252
   },
   {
@@ -277,6 +284,13 @@
     "cue": 40,
     "lang": "ar",
     "start": 486.296,
+    "end": 494.9
+  },
+  {
+    "line": "shushtari-s2b",
+    "cue": 40,
+    "lang": "ar",
+    "start": 494.9,
     "end": 509.8
   },
   {
