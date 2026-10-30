@@ -93,3 +93,14 @@
 Ответ — JPEG 3000×3000. Он лежит как `public/covers/one/source.jpg`. Размеры 96, 192, 512 и 1024 — уменьшение этого файла.
 
 Альбом из `song.json`, When Paths Meet (Live at The Holland Festival), collectionId 1661656156, дата альбома 2023-01-13. Дорожка там называется One (Live at The Holland Festival), trackId 1661657172, те же 775500 мс и та же дата, общая обложка альбома `fdc5ba6b-1052-ddc5-7b11-0e9129411e7a`. На плитку положена обложка отдельного EP, чтобы ONE и Karitas отличались. Файл проекта — дорожка YouTube, 828,05 с: это длиннее карточки потока.
+
+## Пояснения
+
+Открыто для пояснений строк.
+
+- Пфайффер, Deutsche Mystiker des vierzehnten Jahrhunderts, т. II, Leipzig, 1857. Проповедь XCVI «Qui audit me»: заголовок на с. 309, https://archive.org/download/deutschemystiker02pfei/page/n324_w1000.jpg. Фраза о глазе и ряд ein ouge, ein gesiht, ein bekennen, ein minnen — с. 312, https://archive.org/download/deutschemystiker02pfei/page/n327_w1400.jpg. На с. 312 выше этой фразы зрение ока названо gesiht в сравнении с цветом. Следующая фраза той же страницы: кто стоит в любви Бога, мёртв для себя и для сотворённого.
+- Лингс, Sufi Poems, № 58. Английский с. 88: https://archive.org/download/sufi-poems-a-mediaeval-anthology-martin-lings/page/n98_w1000.jpg. Арабский с. 89: https://archive.org/download/sufi-poems-a-mediaeval-anthology-martin-lings/page/n99_w1000.jpg. Примечание 97 стоит на с. 101, не на с. 100: https://archive.org/download/sufi-poems-a-mediaeval-anthology-martin-lings/page/n111_w1000.jpg. Стихотворения нет в диване; шейх аль-Алави приписывает его Шуштари. Книга A Sufi Saint, с. 127, не открыта. Примечание 99 на той же с. 101 относится к № 59, не к этим трём строкам.
+- Диван аш-Шуштари, изд. ал-Адуни, с. 28: https://ablibrary.net/book_content/8758/28. Примечание издателя: чаша изображает знание и вино божественной любви, древнее, как азал; виноград не вырастила земля, корни не полило небо. Те же пять бейтов: https://www.aldiwan.net/poem69371.html. Песенные замены (فيه, بالحسن, تمنوا, أرض и سماء без йа, местоимения без конечного вава) разобраны в пояснениях как разница записи и дивана.
+- Lane, статья الهوى: https://www.arabic-english-dictionary.com/content/26_h/159_hwe. Страница Book I для جميل заново не открыта, номером в пояснениях не названа. Статья غير не открыта.
+- Неджд: https://ru.wikipedia.org/wiki/Неджд. Слово значит «возвышенность», это центр Аравии. Что в этой касыде Неджд — родина возлюбленной, открытые страницы не говорят; в пояснении этого нет.
+- Коран 7:172 в примечании ал-Адуни не назван. Прежняя связка чаши с днём Завета в новые пояснения не перенесена.
