@@ -17,6 +17,7 @@
     "art3d": "node scripts/art3d/build.mjs",
     "test:layout": "tsx scripts/tools/layout-test.ts",
     "test:resume": "node scripts/perf/resume-crash.mjs",
+    "test:soak": "node scripts/perf/soak.mjs",
     "shots": "node scripts/tools/screenshots.mjs",
     "predev": "node scripts/tools/audio-crypt.mjs decrypt",
     "audio:encrypt": "node scripts/tools/audio-crypt.mjs encrypt",

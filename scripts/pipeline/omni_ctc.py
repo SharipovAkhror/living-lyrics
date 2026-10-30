@@ -6,7 +6,7 @@ not a recognition. A language missing from lang_ids.py on the day of the run
 is skipped. Windows of 40 seconds or longer are skipped, not split.
 
 The five XLS-R languages are not measured again. Weights are not committed.
-Lyrics change only when the published line count rises and the 158-line
+Lyrics change only when the published line count rises and the held
 baseline is kept. Otherwise the bench files this pass rewrote are put back.
 """
 from __future__ import annotations
@@ -37,15 +37,18 @@ MODEL_NAME = 'omni-ctc-300m'
 MAX_WINDOW_S = 40.0
 # The job is 150 minutes. Leave the chance pass and qa their own time.
 DEFAULT_BUDGET_S = 70 * 60
-# Published lines that must not fall. Internal union can be one higher.
-BASE_GROUPS = {
-    ('i-have-come-alive', 'solo'): 85,
-    ('karitas', 'solo'): 36,
-    ('one', 'solo'): 24,
-    ('one', 'choir'): 13,
-}
-BASE_PUBLISHED = 158
+# Last accepted internal union, one above the old published 158.
+# A later pass still has to beat it. The held line count is not this number:
+# it is baseline-155.json `held_groups`, read by `_floor`. Thresholds stay.
 BASE_INTERNAL = 159
+
+
+def _floor() -> tuple[dict[tuple[str, str], int], int]:
+    """Held solo/choir counts after lyric withdrawals. One source, the bench file."""
+    import attack_chance as A
+
+    groups = A.published_groups()
+    return groups, sum(groups.values())
 
 
 def budget_s() -> float:
@@ -121,6 +124,7 @@ def _write(payload: dict) -> None:
 
 def render_md(payload: dict) -> str:
     lic = payload.get('license') or {}
+    _, published_n = _floor()
     lines = [
         '# Omnilingual CTC 300M, латынь и азербайджанский',
         '',
@@ -128,7 +132,7 @@ def render_md(payload: dict) -> str:
         'Часы — Витерби проекта по логитам известной строки, не распознавание. '
         'Окно 40 с и длиннее пропускается и не режется. '
         'Арабский, английский, персидский, турецкий и немецкий этим проходом не мерились. '
-        'Время строк меняется только если опубликованных строк стало больше и база 158 удержана.',
+        f'Время строк меняется только если опубликованных строк стало больше и база {published_n} удержана.',
         '',
         f"Лицензия: `{lic.get('sentence') or lic.get('why') or '—'}`. "
         f"Бюджет {payload.get('budget_s')} с. {payload.get('note') or ''}",
@@ -386,10 +390,11 @@ def _choose(snapshot: Path) -> dict:
     import attack_chance
 
     before = _published()
-    if before != {key: BASE_GROUPS[key] for key in BASE_GROUPS} or sum(before.values()) != BASE_PUBLISHED:
+    groups, published_n = _floor()
+    if before != groups or sum(before.values()) != published_n:
         return {
             'ran': False,
-            'why': f'опубликованный счёт до прохода {before} не равен базе {BASE_GROUPS}',
+            'why': f'опубликованный счёт до прохода {before} не равен базе {groups}',
             'baseline_kept': False,
             'published_before': {f'{a}|{b}': n for (a, b), n in before.items()},
             'rows': [],
@@ -438,12 +443,12 @@ def _choose(snapshot: Path) -> dict:
         after = _published()
         info['published_after'] = sum(after.values())
         info['published_groups'] = {f'{a}|{b}': n for (a, b), n in sorted(after.items())}
-        dropped = any(after.get(key, 0) < BASE_GROUPS[key] for key in BASE_GROUPS)
-        if dropped or sum(after.values()) <= BASE_PUBLISHED:
+        dropped = any(after.get(key, 0) < groups[key] for key in groups)
+        if dropped or sum(after.values()) <= published_n:
             _restore(snapshot)
             info['kept_files'] = False
             info['why'] = 'qa не поднял опубликованный счёт или уронил группу, файлы возвращены'
-            info['published_after'] = BASE_PUBLISHED
+            info['published_after'] = published_n
         else:
             info['kept_files'] = True
             info['why'] = 'опубликованный счёт вырос, база удержана'

@@ -3546,30 +3546,69 @@ def _try_refuter(per_song: list[dict], refute: dict, baseline_n: int) -> dict:
 # Published by run 39548436423 on top of baseline-155.json. Holding the file
 # alone would allow those three lines to disappear. A missing line is still
 # allowed only when keeping it would push the line pass over 5 %.
+# `withdrawn` in that file is not a failed pass: the lyric text or its
+# timing-draft flag changed, so the old proof does not apply. Thresholds stay.
 PASS5_EXTRA = ('english-8', 'coda-fa-3', 'shushtari-s2')
 
 
-def _read_frozen() -> list[str]:
-    """Line ids proved before this pass. Missing file means the check cannot pass."""
+def _baseline_payload() -> dict:
+    """The frozen line list. An unreadable file fails the hold check."""
     path = ROOT / 'docs' / 'analysis' / 'bench' / 'baseline-155.json'
     if not path.is_file():
-        return []
+        return {}
     try:
         payload = json.loads(path.read_text(encoding='utf-8'))
     except (OSError, json.JSONDecodeError):
-        return []
-    return [str(item) for item in (payload.get('ids') or []) if item]
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _read_frozen() -> list[str]:
+    """Line ids proved before pass 5. Missing file means the check cannot pass."""
+    return [str(item) for item in (_baseline_payload().get('ids') or []) if item]
+
+
+def _withdrawn_ids() -> list[str]:
+    """Lines removed from the held set after the frozen list was written."""
+    return [str(item) for item in (_baseline_payload().get('withdrawn') or []) if item]
 
 
 def _published_ids() -> list[str]:
-    """The frozen 155 plus the three lines pass 5 published."""
+    """Frozen 155 plus pass 5, without lines withdrawn after a lyric edit."""
     ids = _read_frozen()
     seen = set(ids)
     for lid in PASS5_EXTRA:
         if lid not in seen:
             ids.append(lid)
             seen.add(lid)
-    return ids
+    drop = set(_withdrawn_ids())
+    return [lid for lid in ids if lid not in drop]
+
+
+def published_groups() -> dict[tuple[str, str], int]:
+    """Held solo and choir counts. Chance passes must not fall under these."""
+    groups: dict[tuple[str, str], int] = {}
+    raw = _baseline_payload().get('held_groups') or {}
+    if not isinstance(raw, dict):
+        return groups
+    for slug, kinds in raw.items():
+        if not isinstance(kinds, dict):
+            continue
+        for kind, count in kinds.items():
+            if kind not in ('solo', 'choir'):
+                continue
+            try:
+                n = int(count)
+            except (TypeError, ValueError):
+                continue
+            if n > 0:
+                groups[(str(slug), str(kind))] = n
+    return groups
+
+
+def published_count() -> int:
+    """How many lines the held baseline still requires."""
+    return len(_published_ids())
 
 
 def _frozen_status(result: dict | None, ids: list[str]) -> dict:
