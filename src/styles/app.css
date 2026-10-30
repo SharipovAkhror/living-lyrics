@@ -4108,7 +4108,10 @@ html[data-sheet='1'] .song {
     min-height: 0;
     margin-top: 0;
     overflow: hidden;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* One poster row. A wrapped card's image min-content collapses this row to 0. */
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr);
   }
   .lib-shelf > li {
