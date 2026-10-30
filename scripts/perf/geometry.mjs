@@ -105,6 +105,12 @@ async function meanChannel(accepted, shot) {
   return n ? sum / n : 99;
 }
 
+function songSlugs() {
+  return readdirSync('content/songs')
+    .filter((name) => existsSync(`content/songs/${name}/song.json`))
+    .sort();
+}
+
 function songDurations() {
   const map = {};
   for (const slug of readdirSync('content/songs')) {
@@ -132,6 +138,8 @@ async function installSilence(context) {
 const browser = await chromium.launch();
 const sheets = {};
 const pixel = [];
+const libraryGaps = [];
+const slugs = songSlugs();
 for (const sheet of SHEETS) {
   const context = await browser.newContext({ ...sheet.device, colorScheme: sheet.scheme });
   await installSilence(context);
@@ -142,6 +150,11 @@ for (const sheet of SHEETS) {
   await page.waitForTimeout(600);
   const measured = await page.evaluate(measureInPage);
   sheets[sheet.id] = { viewport: [sheet.device.viewport.width, sheet.device.viewport.height], ...measured };
+  if (sheet.page === 'library') {
+    const hrefs = await page.evaluate(() => [...document.querySelectorAll('a[href^="/song/"]')].map((el) => el.getAttribute('href') || ''));
+    const missing = slugs.filter((slug) => !hrefs.some((href) => href === `/song/${slug}` || href.startsWith(`/song/${slug}?`)));
+    if (missing.length) libraryGaps.push(`${sheet.id} missing ${missing.join(', ')} (${slugs.length} songs)`);
+  }
   const file = `${acceptedDir}/round18-${sheet.id}.png`;
   const shot = await page.screenshot({ type: 'png', fullPage: sheet.page === 'library' });
   if (existsSync(file)) {
@@ -188,9 +201,13 @@ for (const sheet of SHEETS) {
     }
   }
 }
+if (libraryGaps.length) {
+  console.error(`\nFAIL geometry library ${libraryGaps.length}`);
+  for (const row of libraryGaps) console.error(`  ${row}`);
+}
 if (problems.length) {
   console.error(`\nFAIL geometry ${problems.length}`);
   for (const row of problems) console.error(`  ${row}`);
-  process.exit(1);
 }
+if (problems.length || libraryGaps.length) process.exit(1);
 console.log(`\nPASS geometry ${SHEETS.length} sheets`);

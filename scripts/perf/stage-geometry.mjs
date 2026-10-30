@@ -21,7 +21,7 @@ const args = process.argv.slice(2);
 const url = flag(args, '--url', 'http://127.0.0.1:5173');
 const writePath = flag(args, '--write', '');
 const expectPath = flag(args, '--expect', 'scripts/perf/stage-geometry.json');
-const songs = flag(args, '--songs', 'karitas,one,i-have-come-alive').split(',');
+const songs = flag(args, '--songs', 'karitas,one,i-have-come-alive,alive').split(',');
 const schemes = ['dark', 'light'];
 
 const shots = {

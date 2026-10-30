@@ -9,7 +9,7 @@ import { flag, phoneContext } from './lib.mjs';
 
 const args = process.argv.slice(2);
 const url = flag(args, '--url', 'http://127.0.0.1:4179');
-const songs = flag(args, '--songs', 'karitas,one,i-have-come-alive').split(',');
+const songs = flag(args, '--songs', 'karitas,one,i-have-come-alive,alive').split(',');
 
 function collect() {
   const stage = document.querySelector('.scene-stage');

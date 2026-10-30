@@ -1267,13 +1267,29 @@ function normLine(value) {
 
 const results = [];
 
-// T36. Five unit checks, named, so a miss is its own row.
+// T36. The resume record, then the five page-kill cases (`npm run test:resume`).
 const resume = spawnSync('npx', ['tsx', 'src/player/resume.test.ts'], { encoding: 'utf8', shell: true });
 const resumeText = `${resume.stdout || ''}\n${resume.stderr || ''}`;
 for (const name of ['round-trip', 'rejects NaN', 'corrupt json', 'clear', 'storage throws']) {
   const line = resumeText.split(/\r?\n/).find((row) => row.includes(`resume ${name}`));
-  const ok = !!line && line.startsWith('PASS ');
+  const ok = !!line && line.startsWith('PASS ') && resume.status === 0;
   results.push({ name: `resume ${name}`, ok, detail: line || `missing (exit ${resume.status})` });
+  console.log(`${ok ? 'PASS' : 'FAIL'} resume ${name}${line ? '' : ' missing'}`);
+}
+const usable = resumeText.split(/\r?\n/).find((row) => row.includes('resume usable point'));
+const usableOk = !!usable && usable.startsWith('PASS ') && resume.status === 0;
+results.push({ name: 'resume usable point', ok: usableOk, detail: usable || `missing (exit ${resume.status})` });
+console.log(`${usableOk ? 'PASS' : 'FAIL'} resume usable point${usable ? '' : ' missing'}`);
+
+const crash = spawnSync('node', ['scripts/perf/resume-crash.mjs', '--url', base], {
+  encoding: 'utf8',
+  shell: true,
+});
+const crashText = `${crash.stdout || ''}\n${crash.stderr || ''}`;
+for (const name of ['seek-then-kill', 'wait-then-kill', 'idb-stall', 'render-error', 'bad-storage']) {
+  const line = crashText.split(/\r?\n/).find((row) => row.startsWith(`PASS ${name}`) || row.startsWith(`FAIL ${name}`));
+  const ok = !!line && line.startsWith('PASS ');
+  results.push({ name: `resume ${name}`, ok, detail: line || `missing (exit ${crash.status})` });
   console.log(`${ok ? 'PASS' : 'FAIL'} resume ${name}${line ? '' : ' missing'}`);
 }
 
