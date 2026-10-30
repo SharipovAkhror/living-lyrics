@@ -466,6 +466,13 @@
     "cue": 64,
     "lang": "ar",
     "start": 338.68,
+    "end": 340.6
+  },
+  {
+    "line": "arabic-26c",
+    "cue": 64,
+    "lang": "ar",
+    "start": 340.6,
     "end": 343.41
   },
   {
@@ -497,18 +504,11 @@
     "end": 360.411
   },
   {
-    "line": "arabic-said-1",
+    "line": "rumi-8-0a",
     "cue": 69,
     "lang": "ar",
     "start": 360.411,
     "end": 365.53
-  },
-  {
-    "line": "arabic-said-2",
-    "cue": 70,
-    "lang": "ar",
-    "start": 366.662,
-    "end": 371.295
   },
   {
     "line": "rumi-8-1",
@@ -613,6 +613,13 @@
     "cue": 84,
     "lang": "en-GB",
     "start": 449.712,
+    "end": 451.65
+  },
+  {
+    "line": "rumi-16-2c",
+    "cue": 84,
+    "lang": "en-GB",
+    "start": 451.65,
     "end": 453.712
   },
   {
