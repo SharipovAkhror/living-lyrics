@@ -1,0 +1,56 @@
+# Re-upload one finished align artifact without decrypting it.
+# A public repository keeps an artifact for at most 90 days. The upload is
+# the encrypted pack already in the source run: stems stay *.flac.enc.
+name: preserve-align
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Прогон, чей артефакт выравнивания перезалить'
+        required: true
+        default: '40144966993'
+      artifact:
+        description: 'Имя артефакта'
+        required: true
+        default: 'align-alive'
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  preserve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Download the encrypted alignment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run_id }}
+          ARTIFACT: ${{ inputs.artifact }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$RUN_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::run_id не число"
+            exit 1
+          fi
+          if ! [[ "$ARTIFACT" =~ ^align-[a-z0-9-]+$ ]]; then
+            echo "::error::имя артефакта не align-<slug>"
+            exit 1
+          fi
+          mkdir -p pack
+          gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" -n "$ARTIFACT" -D pack
+          find pack -type f \( -name '*.wav' -o -name '*.flac' -o -name '*.m4a' -o -name '*.mp3' \) ! -name '*.flac.enc' -delete
+          if ! find pack -type f -name '*.flac.enc' | grep -q .; then
+            echo "::error::в артефакте нет зашифрованных стемов"
+            exit 1
+          fi
+          echo "файлов: $(find pack -type f | wc -l)"
+      - name: Upload the same encrypted pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact }}
+          path: pack
+          if-no-files-found: error
+          retention-days: 90
