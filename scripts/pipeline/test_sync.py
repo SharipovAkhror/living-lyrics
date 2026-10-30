@@ -113,7 +113,8 @@ def test_solo() -> None:
     n_solo = sum(T.is_solo(sec, line) for sec, line in pairs)
     n_choir = sum(T.is_choir(sec, line) for sec, line in pairs)
     n = len(pairs)
-    check('IHCA solo count', n_solo == 125 and n_choir == 0 and n == 125, f'{n_solo} solo, {n_choir} choir of {n}')
+    # listen9 adds rumi-8-0a, arabic-26c and rumi-16-2c, and drops arabic-said-1 and arabic-said-2.
+    check('IHCA solo count', n_solo == 126 and n_choir == 0 and n == 126, f'{n_solo} solo, {n_choir} choir of {n}')
 
 
 def _bursts() -> tuple[np.ndarray, Q.Signals]:
@@ -2418,8 +2419,9 @@ def test_bench_commit_gate() -> None:
 
     Run 40144966993 measured one song, lost the 158-line baseline, and the
     prove step committed that bench anyway. The gate refuses that file. The
-    prove commit in pipeline.yml adds docs/analysis/bench only when the gate
-    says yes, and the run still fails.
+    158 in this fixture is that run's payload, not the held count after later
+    lyric edits. The prove commit in pipeline.yml adds docs/analysis/bench
+    only when the gate says yes, and the run still fails.
     """
     import attack_chance as A
 
@@ -2538,6 +2540,62 @@ def test_align_from_run_per_song() -> None:
           "reuse_run != 'multi'" in prove)
 
 
+def test_listen9_baseline() -> None:
+    """PR #6 drops proved lines whose text or timing-draft flag changed.
+
+    The frozen 155 and the three pass-5 names stay on record. The held set
+    is that union minus baseline-155.json `withdrawn`. The count and the
+    group floors are that file, not a second copy in the chance passes.
+    """
+    import attack_chance as A
+
+    root = Path(__file__).resolve().parents[2]
+    payload = json.loads(
+        (root / 'docs' / 'analysis' / 'bench' / 'baseline-155.json').read_text(encoding='utf-8'))
+    frozen = [str(item) for item in payload['ids']]
+    withdrawn = [str(item) for item in payload['withdrawn']]
+    expect = [
+        'arabic-26b', 'rumi-16-2b', 'coda-fa-1', 'coda-fa-3',
+        'hildegard-h1-1', 'shushtari-s2',
+    ]
+    old = set(frozen) | set(A.PASS5_EXTRA)
+    published = A._published_ids()
+    check('the frozen list is still the 155', len(frozen) == 155 and payload['n'] == 155)
+    check('pass 5 still records the three lines it published',
+          set(A.PASS5_EXTRA) == {'english-8', 'coda-fa-3', 'shushtari-s2'})
+    check('six lines are withdrawn and no others', withdrawn == expect, str(withdrawn))
+    check('every withdrawn line belonged to the old 158', set(withdrawn) <= old)
+    check('the held ids are the old baseline minus those six',
+          published == [lid for lid in (frozen + [lid for lid in A.PASS5_EXTRA if lid not in frozen]) if lid not in set(withdrawn)])
+    check('the held baseline counts 152',
+          len(published) == 152 and A.published_count() == 152 and len(set(published)) == 152)
+    check('english-8 was checked and stays held',
+          'english-8' in published and 'english-8' not in withdrawn)
+    groups = A.published_groups()
+    check('held groups are the file and sum to 152',
+          groups == {
+              ('i-have-come-alive', 'solo'): 81,
+              ('karitas', 'solo'): 34,
+              ('one', 'solo'): 24,
+              ('one', 'choir'): 13,
+          } and sum(groups.values()) == 152, str(groups))
+    counts: dict[tuple[str, str], int] = {}
+    live: list[str] = []
+    for slug in ('i-have-come-alive', 'karitas', 'one'):
+        lyrics = json.loads((root / 'content' / 'songs' / slug / 'lyrics.json').read_text(encoding='utf-8'))
+        for sec, line in T.vocal_lines(lyrics):
+            if 'timing-draft' in (line.get('flags') or []):
+                continue
+            kind = T.group(sec, line)
+            if kind not in ('solo', 'choir'):
+                continue
+            counts[(slug, kind)] = counts.get((slug, kind), 0) + 1
+            live.append(str(line['id']))
+    check('lines without timing-draft are exactly the held baseline',
+          counts == groups and set(live) == set(published) and len(live) == 152,
+          str((counts, len(live))))
+
+
 def test_lyric_frame_rises() -> None:
     """A caption onset is the first frame of a held rise, not a flicker."""
     import lyric_frames as LF
@@ -2602,6 +2660,7 @@ def main() -> int:
     test_bias_and_witnesses()
     test_attack_chance()
     test_bench_commit_gate()
+    test_listen9_baseline()
     test_run_job_commit_gate()
     test_align_from_run_per_song()
     test_line_rule()
