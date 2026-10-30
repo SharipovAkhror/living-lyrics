@@ -100,3 +100,16 @@
 Запрос просил 3000×3000. Ответ Apple — JPEG 1440×1440. Он лежит как `public/covers/i-have-come-alive/source.jpg`. 1024 и меньшие размеры — уменьшение этого файла, без растягивания.
 
 Альбом из `song.json`, Beyond the Stars (Live), collectionId 1654043063, дата альбома 2022-11-10. Дорожка 5 из 12, trackId 1654043530, то же имя I Have Come Alive (Live), те же 577250 мс и дата дорожки 2022-03-20, обложка альбома `fc5cfcd1-688f-36a4-6762-1f639c47e76d`. На плитку положена обложка сингла. Сингл 2025 «Alive» с Homayoun Shajarian — другая запись, её обложка сюда не бралась. Файл проекта — дорожка YouTube, 580,06 с.
+
+## Пояснения
+
+Открыто для пояснений строк, 2026-10-31.
+
+- Арберри, стихотворение 170: первый бейт с. 183, бейты 2–15 с. 184, бейты 16–21 с. 185, примечания 9, 18, 19, 21 на с. 402. https://archive.org/stream/MysticalPoemsOfRumiArberry_201806/mystical%20poems%20of%20Rumi%20%28Arberry_djvu.txt
+- Стейнгасс, страницы этого прохода: 99 (amr), 202 (banda), 236 (pāyanda), 266 (pesh), 267 (pesh-rau), 546 (daulat), 608 (zāyanda), 626 (zinda), 631 (zahra, zuhra), 772 (shaikh), 1444 (nayam / nīm). https://dsal.uchicago.edu/dictionaries/steingass/
+- Кулиев: 2:144, 12:10, 12:31, 67:3. https://quran-online.ru/2:144 https://quran-online.ru/12:10 https://quran-online.ru/12:31 https://quran-online.ru/67:3
+- Аль-Кушайри, ар-Рисала, с. 453, бейт فأحيا بالمنى وأموت شوقا / فكم أحيا عليك وكم أموت. В записи عليك нет. https://ablibrary.net/book_content/b/9533/453
+- Буквы газели: https://ganjoor.net/moulavi/shams/ghazalsh/sh1393
+- Буквы английского, турецкого и арабского переложения: https://www.youtube.com/watch?v=M_8ano37jYo
+
+Страница Лейна на بدأ и страницы Редхауса в этом проходе заново не открывались и в новых пояснениях по номеру не цитируются.
