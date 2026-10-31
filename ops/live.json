@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-31T21:26:21Z",
+  "at": "2026-10-31T21:27:51Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,19 +10,19 @@
     },
     {
       "name": "bench-r6",
-      "state": "finished",
-      "minutes": 558,
-      "age": 605,
-      "step": "Доказательство использует scoped witnesses.",
-      "tokens": 2837396,
-      "model": "grok-4.7-build",
+      "state": "working",
+      "minutes": 0,
+      "age": 0,
+      "step": "",
+      "tokens": 0,
+      "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/bench-r6"
     },
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 14734,
-      "age": 14763,
+      "minutes": 14736,
+      "age": 14765,
       "step": "Набор Phosphor собран, проверен на странице песни и запушен в grok/icons-a. В main не влит. ## 1. Готово, когда | Пункт | Статус | |---|---| | Полный набор на Phosphor, те же имена и API | выполнено | | Лицензия, версия и URL в docs/design/credits.md | выполнено | | Каждый знак API сопоставлен глифу базы | выполнено | | Тихий фирменный ход без потери ремесла | выполнено | | Старые наборы с ветки с",
       "tokens": 9490511,
       "model": "grok-4.7-build",
@@ -31,8 +31,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 14735,
-      "age": 14763,
+      "minutes": 14737,
+      "age": 14765,
       "step": "Push на телефон недоступен: в этой среде нет уведомлений на телефон. ## 1. Готово, когда - Полный набор на прежнем API, старые наборы сняты — выполнено. 21 имя в src/ui/icons.tsx. Удалены пути Phosphor и неиспользуемый src/icons/Icon.tsx. - Лицензия в docs/design/credits.md — выполнено. - Доски в work/icons-b/ — выполнено локально. Каталог work/ в .gitignore, на remote их нет. - validate, typechec",
       "tokens": 9850680,
       "model": "grok-4.7-build",
@@ -41,8 +41,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 14676,
-      "age": 14727,
+      "minutes": 14677,
+      "age": 14729,
       "step": "Шесть правок панели сделаны, доски пересняты, ветка запушена в grok/icons-c. В main ничего не сливал. ## 1. Готово, когда 1. Пуск по оптическому центру — выполнено. Сдвиг translate(1 0). Центр площади треугольника садится в 12,29 по сетке 24 (пауза — в 11,97). Плюс 1, а не 0,71: основание тяжелее площади, в круге 64 px плюс 1 читается серединой. При смене пуск и пауза расходятся на 0,32 единицы, н",
       "tokens": 13196979,
       "model": "grok-4.7-build",
@@ -59,27 +59,27 @@
       "name": "song-new",
       "state": "working",
       "minutes": 0,
-      "age": 0,
-      "step": "Продолжаю «For True Lovers» с того места, где оборвалась прошлая сессия. Сначала читаю бриф, статус и код ворот, которые ошибочно отказали в приёмке.",
+      "age": 1,
+      "step": "Нужно полностью разобраться в баге и исправить его корректно. Причина бага в build_payload: при запуске с одним новым песнем код возвращает _measure_slugs(slugs) без проверки frozen-базы. РанееAlive-запуски затрагивали и frozen-песни, поэтому проблема не проявлялась. Нужно проверить qa_file_gate на аналогичный дефект. Исправление должно быть минимальным и тестируемым. Запуск, в котором все песни в",
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/song-new"
     },
     {
       "name": "studio-pass",
-      "state": "finished",
-      "minutes": 557,
-      "age": 959,
-      "step": "StageVars is a child of the song div, so songRef applies. React sets refs before children's useLayoutEffect, so StageVars should write the 868 column on first mount. The song page might not be fully mounted at t=705 within 2.5s, or timeline could be null. The CSS defines --stage-w and positions .topbar and .player. The probe shows the player is 1440px wide on seek, not 868px. Either StageVars fail",
-      "tokens": 25439946,
-      "model": "grok-4.7-build",
+      "state": "working",
+      "minutes": 0,
+      "age": 0,
+      "step": "",
+      "tokens": 0,
+      "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
     },
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 677,
-      "age": 691,
+      "minutes": 679,
+      "age": 693,
       "step": "Вливать нечего. Персидское «اختر» уже совпадает с Ганджуром и Викитекой, двоения на стыках бледных строк нет, веток ci/probe и wip/sync-tools на origin нет. Коммитов нет, ветка не пушилась: она совпадает с origin/main (70372c27). ## 1. Что сделано Каждое «اختر» сверено с источником — выполнено. В lyrics.json арабской «أ» (U+0623) нет. Править было нечего, запись в review не добавлялась: открытого ",
       "tokens": 4653311,
       "model": "grok-4.7-build",
@@ -88,8 +88,8 @@
     {
       "name": "t11-route",
       "state": "finished",
-      "minutes": 676,
-      "age": 691,
+      "minutes": 678,
+      "age": 693,
       "step": "Ветка site/t11-route запушена. Новых стадий нет, репетиции нет, content/ и src/ не менялись. С origin/main слито до проверок: уже было актуально. ## 1. Готово, когда | Находка | Статус | Где | |---|---|---| | Шифрование держит весь маршрут | уже исправлено | scripts/tools/song-status.ts:54 (cipherRow), :62 (encryptIsNext только на стадии 12 и только с ключом). Отдельная строка «шифр», следующая ко",
       "tokens": 5417173,
       "model": "grok-4.7-build",
@@ -98,8 +98,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 1227,
-      "age": 1348,
+      "minutes": 1229,
+      "age": 1349,
       "step": "Круг T27 закрыт. Удерживаемый объект JavaScript, который объяснял бы мегабайты в минуту, снимок кучи не назвал. Растёт рабочий набор одного процесса рендерера; куча JS за час плоская. Код сцены не менялся. Ветка site/t27-memory запушена. ## 1. Готово, когда - Растущий объект назван, либо честно сказано, что назвать нельзя. Выполнено во второй формулировке. После принудительной сборки мусора в куче",
       "tokens": 13262986,
       "model": "grok-4.7-build",
@@ -108,8 +108,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 14672,
-      "age": 14774,
+      "minutes": 14674,
+      "age": 14775,
       "step": "Push-уведомления в этой среде нет. ## 1. Готово, когда 1. Гладкий контур — выполнено. Кривые выходят дугами и кубическими Безье. Посадка кубика на истинную кривую — 0,015 на сетке 24 (порог 0,02). Кольца «О песне», поиска и инструментов — дуги одного радиуса; внешний край стыкуется с гранью пера по касательной. Скругление рамки — круговая галтель, параллель — та же дуга. Прямой стержень остаётся м",
       "tokens": 29801018,
       "model": "grok-4.7-build",
@@ -118,8 +118,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 11629,
-      "age": 11660,
+      "minutes": 11631,
+      "age": 11661,
       "step": "Круг 1 выполнен и запушен в site/t35. Голос снят там, где стем и Gemini оба не слышат пения. Где свидетели расходятся не меньше 2 с, данные оставлены и записаны в review. ## 1. Готово, когда Таблица, пороги, число исправлений и «после правки» — выполнено. Файл docs/analysis/stage-marks.md. Порог — середина медиан вокального стема в спетых строках и в обычном проигрыше (формула work/review/t35/stem",
       "tokens": 6757832,
       "model": "grok-4.7-build",
@@ -128,8 +128,8 @@
     {
       "name": "t35-r2",
       "state": "finished",
-      "minutes": 654,
-      "age": 691,
+      "minutes": 655,
+      "age": 693,
       "step": "T35, круг 2, готов и запушен в origin/site/t35-r2. Детектор, таблица с точностью и полнотой, правило валидатора и кадры пустой сцены на месте. Новой красной стадии нет. ## 1. Готово, когда Детектор одной командой, таблица с точностью и полнотой — выполнено. Команда: python scripts/instrument_id/run.py applause. Пороги записаны в scripts/instrument_id/applause.py и в этом прогоне --calibrate напеча",
       "tokens": 11402426,
       "model": "grok-4.7-build",
@@ -138,8 +138,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 1032,
-      "age": 1059,
+      "minutes": 1033,
+      "age": 1061,
       "step": "Круг 4 закрыт по таблице work/t37/codex-recheck3.md. Ветка site/t37-comments слита с origin/main и запушена. ## 1. Готово, когда - Каждая строка таблицы — выполнено: ниже по id, со статусом и цитатой открытой страницы. - sources.md четырёх песен — выполнено: раздел «Круг 4» с адресом и цитатой. - npm run validate, npm run typecheck, npx vite build — выполнено. Крупнейший кусок текста: lyrics-Cuire",
       "tokens": 8440338,
       "model": "grok-4.7-build",
@@ -195,7 +195,7 @@
       "state": "working",
       "last": "Отправляю AOS · Main номера коммитов и разбираюсь, почему остановился LL · Main.",
       "last_at": "",
-      "last_act_at": "2026-10-31T21:25:03.501Z"
+      "last_act_at": "2026-10-31T21:26:37.865Z"
     },
     {
       "name": "LL · Business",
@@ -212,10 +212,10 @@
       "role": "ll-main",
       "project": "living-lyrics",
       "reports_to": "owner",
-      "state": "idle",
+      "state": "working",
       "last": "Новой песни на сайте ещё нет, и работа над ней простаивала. Песня называется For True Lovers. Текст, перевод и зашифрованная запись готовы, но вечером шаг проверки времени остановился с ошибкой, и LL · Site больше ничего не делал. Я заметил это только сейчас и снова дал ему задачу: довести песню до сайта без подсветки слов. Ещё я обновил панель задач и отправил полный отчёт в AOS · Main. От вас ни",
       "last_at": "2026-10-31T21:24:28.358Z",
-      "last_act_at": "2026-10-31T21:24:28.358Z"
+      "last_act_at": "2026-10-31T21:27:15.000Z"
     },
     {
       "name": "LL · Site",
@@ -223,9 +223,7 @@
       "project": "living-lyrics",
       "reports_to": "LL · Main",
       "state": "working",
-      "last": "API Error: Can't reach the API server — check your internet or DNS (ENOTFOUND)",
-      "last_at": "2026-10-31T17:29:38.729Z",
-      "last_act_at": "2026-10-31T21:25:18.209Z"
+      "last_act_at": "2026-10-31T21:27:14.977Z"
     }
   ],
   "pipeline": [],
