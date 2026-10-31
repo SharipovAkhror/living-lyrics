@@ -4281,6 +4281,9 @@ html[data-sheet='1'] .song {
     margin: 0;
     transform: translate(-50%, -50%);
     border-radius: 18px;
+    background: var(--lg-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 
@@ -4304,12 +4307,15 @@ html[data-sheet='1'] .song {
     transform: translateX(-50%);
     border-radius: 28px;
   }
+  .player .player-row,
+  .player .scrub {
+    width: min(680px, 100%);
+    margin-inline: auto;
+  }
   .player .player-row {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    width: min(680px, 100%);
-    margin-inline: auto;
   }
   .player .transport {
     justify-content: center;
