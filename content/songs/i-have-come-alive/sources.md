@@ -119,3 +119,24 @@
 Заново открыты: Ганджур 1393; Арберри, поток djvu; Стейнгасс, с. 236, 546, 608, 626, 631, 772, 1444; Кулиев, 2:144, 12:10, 12:31, 67:3; аль-Кушайри, с. 453, https://ablibrary.net/book_content/b/9533/453.
 
 Не открыты в этом круге и из пояснений сняты номера: Стейнгасс, с. 99, 202, 266, 267; кадры https://www.youtube.com/watch?v=M_8ano37jYo; Редхаус; отдельный лист Лейна на عود. На с. 608 глагола زائیدن нет.
+
+## Круг 3, 2026-10-31
+
+Страницы открыты в этом круге. Ниже — короткая цитата с самой страницы.
+
+- Стейнгасс, с. 236, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=236. pāyanda: “Firm, solid, lasting, perpetual”.
+- С. 546, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=546. daulat: “good turn of fortune; felicity, wealth, victory; power, dominion, empire; a state, reign, dynasty”.
+- С. 608, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=608. zāʼīdan: “To bring forth (a child); to originate, appear, come forth”.
+- С. 626, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=626. zinda: “Alive, living; life”. zinda shudan: “To become alive”.
+- С. 631, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=631. zahra: “Boldness, spirit; power, vigour; the gall-bladder, bile”. zuhra: “The planet Venus”.
+- С. 772, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=772. shaikh: “A venerable old man; a man of fifty and upwards… doctor learned in religion and law”.
+- С. 812, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=812. tarab: “Skipping, leaping, dancing for joy; cheerfulness, joy, gladness”.
+- С. 1444, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=1444. nayam: “(for na am), I am not”.
+- С. 1518, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=1518. haul: “fright, terror”. hol: “High, lofty; true, just; straight.”
+- Ганджур, https://ganjoor.net/moulavi/shams/ghazalsh/sh1393. «مُرده بُدم زنده شدم، گریه بُدم خنده شدم». «یوسف بودم ز کنون یوسف زاینده شدم». Английского «you have lit the fire» и арабского «في رحلة الفنون» на странице нет.
+- Арберри, тот же поток, стихотворение 170. Маркер [ 184 ]: “I went and became mad, I became bound in shackles.” Маркер [ 185 ]: “I was Joseph, henceforth I have become the waxing Joseph.” “I have become bright and bountiful.” После маркера [402], примечание 19: “Joseph, after coming up from the well, waxed in beauty and power.” https://archive.org/stream/MysticalPoemsOfRumiArberry_201806/mystical%20poems%20of%20Rumi%20%28Arberry_djvu.txt
+- Кулиев, https://quran-online.ru/12:31. «порезали ножами себе руки». https://quran-online.ru/2:144. «Мы обратим тебя к кибле, которой ты останешься доволен. Обрати же свое лицо в сторону Заповедной мечети.» https://quran-online.ru/67:3. «Он создал семь небес одно над другим.»
+- Арберри, стихотворение 170, те же строки, что в Alive: “Do not move from my breast”. “Move silently like a chessman… I have become happy and blissful.” “Your paper gives thanks for your limitless sugar.”
+- Аль-Кушайри, с. 453, https://ablibrary.net/book_content/b/9533/453. Под «وأنشدوا»: «فأحيا بالمنى وأموت شوقا * فكم أحيا عليك ! وكم أموت !» Он приводит бейт, не называет себя автором. В строке mawwal-2 слова عليك нет.
+
+Не открыты в этом круге и в пояснениях не цитируются: кадры https://www.youtube.com/watch?v=M_8ano37jYo; Стейнгасс, с. 99, 202, 266, 267; Редхаус; Лейн. Аят 12:10 в пояснения Юсуфа не входит.

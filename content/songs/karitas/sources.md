@@ -130,3 +130,13 @@ Francesca Thompson ни на одной открытой странице нет
 Заново открыты: Викитека Физули; страница Общества Хильдегарды от 20 ноября 2014; диван, с. 80, и https://www.aldiwan.net/poem69336.html; десять бейтов ан-Набулси; Кулиев, 112:1 и 2:286.
 
 Не открыты: кадры ролика, Редхаус, страницы Symphonia 140 и 279, страница ат-Тилимсани. Утверждение о нём из пояснения секции снято. Сомнение о гласном feryâdın оставлено в review, не в пояснении fuzuli-f7-1.
+
+## Круг 3, 2026-10-31
+
+- Физули, https://tr.wikisource.org/wiki/Öyle_ser-mestem_ki_idrâk_etmezem_dünyâ_nedir, oldid 171025. «Hikmet-i dünya vü mâfiha bilen ârif degül / Ârif oldur bilmeye dünya vü mâfiha nedür». Последний бейт: «Âh u feryâdun Fuzûlî incidübdür âlemi / Ger belâ-yı ışk ile hoşnûd isen gavga nedür».
+- Хильдегарда, https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html. В латинском тексте «atque amantissima», в английском Кэмпбелла «and most beloved». Комментарий: “God, her royal spouse, as amantissima (‘most beloved’)”. Там же: “Let him kiss me with the kisses of his mouth!” (Sg. Sgs. 1:2) и “the kiss shared between Justice and Peace in Ps. 85:10 (84:11 in the Vulgate)”. В пояснении 1:2 — Песнь песней, 85:10 — псалом, как у Кэмпбелла, не аяты.
+- Диван, с. 80, https://ablibrary.net/book_content/b/9579/80. «يا ساقي القوم من شذاه ، * الكلّ لمّا سقيت تاهوا». Ниже на той же странице «تقول يا هو لبّيك يا هو».
+- Набулси, https://ar.wikisource.org/wiki/عيني_لغير_جمالكم_لا_تنظر. Автор в шапке «عبد الغني النابلسي». Первая строка «عيني لغير جمالكم لا تنظر». В третьем бейте «أبدا وعنكم ساعة لا أصبر». Строки «صبرت قلبي» на странице нет.
+- Кулиев, https://quran-online.ru/112:1. «Скажи: „Он — Аллах Единый,». https://quran-online.ru/2:286. «Ты — наш Покровитель.»
+
+Не открыты в этом круге и в пояснениях не цитируются: кадры ролика, Редхаус, Symphonia с. 140 и 279, https://www.aldiwan.net/poem69336.html, страница ат-Тилимсани, гарвардская страница бейта о терпении. На sabr-p1, sabr-p1a и sabr-p2 флаг comment-draft.
