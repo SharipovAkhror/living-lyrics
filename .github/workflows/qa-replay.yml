@@ -1,6 +1,9 @@
 # One replay of the proof from run 41171958873.
 # That run skipped prove (measure=no) and left no qa-sync.json.
-# Three songs only: the run has no Alive artifact.
+# The three songs come from that run. Alive comes from 40144966993, the same
+# artifact as the previous replay: attack_chance keeps the published rule of
+# the frozen three only when a fresh song is named beside them. A three-song
+# list remeasures that rule and returns 2 before qa.
 # This workflow does not separate, does not align, and does not commit.
 # It unpacks the alignment artifacts, repeats the prove measurements, and
 # uploads the qa reports. Remove the file once the report is in the repo.
@@ -69,7 +72,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p incoming
-          pairs="i-have-come-alive=41171958873,karitas=41171958873,one=41171958873"
+          pairs="alive=40144966993,i-have-come-alive=41171958873,karitas=41171958873,one=41171958873"
           IFS=',' read -ra items <<< "$pairs"
           for pair in "${items[@]}"; do
             slug="${pair%%=*}"
@@ -98,7 +101,7 @@ jobs:
           mkdir -p docs/analysis/bench work
           cp -a "$src/content/songs/." content/songs/
           cp -a "$src/docs/analysis/." docs/analysis/
-          printf '%s\n' i-have-come-alive karitas one > /tmp/calibrate.txt
+          printf '%s\n' alive i-have-come-alive karitas one > /tmp/calibrate.txt
           missing=0
           while read -r slug; do
             [ -z "$slug" ] && continue
@@ -188,7 +191,7 @@ jobs:
         run: |
           rm -rf qa-pack
           mkdir -p qa-pack
-          for slug in i-have-come-alive karitas one; do
+          for slug in alive i-have-come-alive karitas one; do
             if [ -f "work/$slug/qa-sync.json" ]; then
               mkdir -p "qa-pack/$slug"
               cp "work/$slug/qa-sync.json" "qa-pack/$slug/qa-sync.json"
@@ -204,7 +207,7 @@ jobs:
           from pathlib import Path
           pack = Path('qa-pack')
           lines = []
-          for slug in ('i-have-come-alive', 'karitas', 'one'):
+          for slug in ('alive', 'i-have-come-alive', 'karitas', 'one'):
               path = pack / slug / 'qa-sync.json'
               if not path.is_file():
                   lines.append(f'{slug}: нет qa-sync.json')
