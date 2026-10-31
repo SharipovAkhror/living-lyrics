@@ -1,18 +1,18 @@
 {
-  "updated": "2026-10-31T21:41:31Z",
+  "updated": "2026-10-31T22:09:34Z",
   "grok": {
     "today": 0,
     "todaySource": "grok usage",
-    "todayAt": "2026-10-31T21:41:31Z",
-    "week": 811247722,
+    "todayAt": "2026-10-31T22:09:34Z",
+    "week": 798507622,
     "weekSource": "grok usage",
-    "weekAt": "2026-10-31T21:41:31Z",
+    "weekAt": "2026-10-31T22:09:34Z",
     "todayByTask": {},
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-10-31T21:41:31Z",
+    "todayByTaskAt": "2026-10-31T22:09:34Z",
     "plan": "SuperGrok Heavy",
     "planSource": "~/.grok/settings_cache.json",
-    "planAt": "2026-10-31T21:28:10Z",
+    "planAt": "2026-10-31T21:49:28Z",
     "weekly": {
       "percentUsed": 31,
       "source": "grok /usage",
@@ -38,15 +38,15 @@
         "weeklyResetIn": "155h 6m"
       }
     },
-    "conversationsToday": 0,
+    "conversationsToday": 1,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-10-31T21:41:31Z",
+    "conversationsTodayAt": "2026-10-31T22:09:34Z",
     "runsToday": 1,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-10-31T21:41:31Z",
+    "runsTodayAt": "2026-10-31T22:09:34Z",
     "secondsToday": 0,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-10-31T21:41:31Z",
+    "secondsTodayAt": "2026-10-31T22:09:34Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
     "at": "2026-10-31T09:38:22Z",
@@ -71,7 +71,7 @@
   "claude": {
     "plan": "Claude Pro",
     "planSource": "claude auth status --json",
-    "at": "2026-10-31T21:41:31Z",
+    "at": "2026-10-31T22:09:34Z",
     "windows": [
       {
         "kind": "five_hour",
