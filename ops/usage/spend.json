@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-31T15:50:10Z",
+  "at": "2026-10-31T16:00:12Z",
   "unit": "Claude cost = API-price-weighted tokens, Opus-input units (see claude_review.py)",
   "calibration": {
     "proWeek": 109378470.58,
@@ -160,7 +160,7 @@
       }
     },
     "day": {
-      "since": "2026-10-30T15:50:10",
+      "since": "2026-10-30T16:00:12",
       "cost": 33907325.88,
       "tokens": 186598363,
       "calls": 1561,
@@ -377,7 +377,7 @@
       }
     },
     "day": {
-      "since": "2026-10-30T15:50:10",
+      "since": "2026-10-30T16:00:12",
       "tokens": 591190802,
       "pctUsed": 31.0,
       "byTask": {
@@ -678,6 +678,16 @@
           "status": "ERROR",
           "runId": "1e7d7592654b",
           "worktree": "C:\\Users\\User\\Documents\\GitHub\\living-lyrics-wt\\song-new"
+        },
+        {
+          "ts": "2026-10-31T15:56:15Z",
+          "task": "watch-video for-true-lovers",
+          "model": "gemini-3.8-flash-high",
+          "seconds": 0.0,
+          "tokens": 0,
+          "status": "ERROR",
+          "runId": "c6ca610b92f4",
+          "worktree": "C:\\Users\\User\\Documents\\GitHub\\living-lyrics-wt\\song-new"
         }
       ],
       "week": [
@@ -900,6 +910,16 @@
           "status": "ERROR",
           "runId": "1e7d7592654b",
           "worktree": "C:\\Users\\User\\Documents\\GitHub\\living-lyrics-wt\\song-new"
+        },
+        {
+          "ts": "2026-10-31T15:56:15Z",
+          "task": "watch-video for-true-lovers",
+          "model": "gemini-3.8-flash-high",
+          "seconds": 0.0,
+          "tokens": 0,
+          "status": "ERROR",
+          "runId": "c6ca610b92f4",
+          "worktree": "C:\\Users\\User\\Documents\\GitHub\\living-lyrics-wt\\song-new"
         }
       ]
     }
@@ -907,10 +927,10 @@
   "sources": {
     "claude.week": "python ops/usage/claude_review.py --since 2026-10-30T04:00:00 --by-chat",
     "claude.week.overhead": "python ops/usage/claude_cache.py --since 2026-10-30T04:00:00",
-    "claude.day": "python ops/usage/claude_review.py --since 2026-10-30T15:50:10 --by-chat",
+    "claude.day": "python ops/usage/claude_review.py --since 2026-10-30T16:00:12 --by-chat",
     "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 31% / 100); pro5h carried forward from the previous spend.json",
     "grok.week": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T16:08:00 (grok.weekly.resetsAt minus 7d)",
-    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T15:50:10",
+    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T16:00:12",
     "agy.quota": "ops/usage/latest.json gemini.quota",
     "agy.runs": "ops/usage/ledger/*.jsonl kind=run"
   }
