@@ -579,7 +579,11 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const list = windowAround(timeline, pos, entrance);
       const key = list.join(',');
       if (key !== lastKey) {
-        lastKey = key;
+        // A desktop drag used to flushSync the next window on every step.
+        // Those commits were the doubled frames (33.4 ms, n 43). The landed
+        // window commits once, on the frame the finger lifts.
+        const deferDesk = !isPhone() && scrubbingNow;
+        if (!deferDesk) lastKey = key;
         // Measurement only: leave the phone hosts empty, so lyric text is never
         // committed. Those commits were the floor that kept climbing after the
         // sky, the placement and the chrome had been stopped (T27).
@@ -630,7 +634,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
               heavyCommit = true;
             }
           }
-        } else {
+        } else if (!deferDesk) {
           // Commit before this frame paints. A hidden new block and a removed
           // old one would otherwise be one empty frame when a seek crosses
           // from a line into an instrumental break.

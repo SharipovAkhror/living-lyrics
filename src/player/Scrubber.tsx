@@ -113,6 +113,14 @@ export function Scrubber({
     lastMark = at;
     return true;
   });
+  // The map is the whole song. .scrub-seg stays the near-thumb ticks D25 counts.
+  let lastMap = -1;
+  const mapMarks = segments.filter((seg) => {
+    const at = seg.start / span;
+    if (at < 0.008 || at - lastMap < 0.012) return false;
+    lastMap = at;
+    return true;
+  });
   const boundsKey = segments.map((seg) => `${seg.id}:${seg.start}:${seg.end}`).join('|');
   const boundsRef = useRef<number[]>([]);
   boundsRef.current = segments.map((seg) => seg.start).concat(duration);
@@ -253,9 +261,19 @@ export function Scrubber({
           if (partEl.current) partEl.current.textContent = view.part;
           if (lineEl.current) lineEl.current.textContent = view.line;
           if (!first) labelSpring = { x: 0, v: 0 };
-          if (first) rememberPlaces();
+          if (first && !holding) rememberPlaces();
           const body = bubbleBody.current;
-          if (body) {
+          // A drag used to read the bubble's box on every new cue. That layout
+          // sat on the same frames as the stage commit.
+          if (holding && !haveWidth) {
+            haveWidth = true;
+            haveHeight = true;
+            widthSpring = { x: 168, v: 0 };
+            widthTarget = 168;
+            heightSpring = { x: 48, v: 0 };
+            heightTarget = 48;
+            bubbleH = 48;
+          } else if (body && !holding) {
             const measured = body.offsetWidth;
             const measuredH = body.offsetHeight;
             if (!haveWidth || measured < 2) {
@@ -380,8 +398,9 @@ export function Scrubber({
     let lastMove = 0;
     let vx = 0;
 
-    const timeAt = (clientX: number) => {
-      const r = node.getBoundingClientRect();
+    let trackRect: DOMRect | null = null;
+    const timeAt = (clientX: number, fresh = false) => {
+      const r = !fresh && trackRect ? trackRect : (trackRect = node.getBoundingClientRect());
       return Math.min(duration, Math.max(0, ((clientX - r.left) / Math.max(1, r.width)) * duration));
     };
 
@@ -392,6 +411,7 @@ export function Scrubber({
       hoverT.current = null;
       node.setPointerCapture(event.pointerId);
       originX = event.clientX;
+      trackRect = node.getBoundingClientRect();
       originT = timeAt(event.clientX);
       lastX = event.clientX;
       lastMove = performance.now();
@@ -402,7 +422,7 @@ export function Scrubber({
     };
     const move = (event: PointerEvent) => {
       if (dragT.current == null) {
-        if (fine && event.pointerType !== 'touch') hoverT.current = timeAt(event.clientX);
+        if (fine && event.pointerType !== 'touch') hoverT.current = timeAt(event.clientX, true);
         return;
       }
       hoverT.current = null;
@@ -411,8 +431,8 @@ export function Scrubber({
       vx = (event.clientX - lastX) / dt;
       lastX = event.clientX;
       lastMove = now;
-      const r = node.getBoundingClientRect();
-      dragT.current = Math.min(duration, Math.max(0, originT + ((event.clientX - originX) / Math.max(1, r.width)) * duration));
+      const widthPx = trackRect?.width || node.offsetWidth || 1;
+      dragT.current = Math.min(duration, Math.max(0, originT + ((event.clientX - originX) / Math.max(1, widthPx)) * duration));
     };
     const up = (event: PointerEvent) => {
       if (dragT.current == null) return;
@@ -500,6 +520,13 @@ export function Scrubber({
       >
         <div ref={rail} className="scrub-rail">
           <div ref={played} className="scrub-played" />
+          {mapMarks.map((seg) => (
+            <span
+              key={`map-${seg.id}`}
+              className={`scrub-map${seg.kind === 'inst' ? ' is-inst' : ''}`}
+              style={{ left: `${(seg.start / span) * 100}%` }}
+            />
+          ))}
           {partMarks.map((seg) => (
             <span
               key={seg.id}

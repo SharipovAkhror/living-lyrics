@@ -66,26 +66,14 @@ html[data-glass='lens'] .lg-lens {
   backdrop-filter: url('#lg-refract') blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.05);
 }
 
-.lg-tint {
-  background:
-    linear-gradient(180deg, transparent 0%, var(--lg-tint) 78%),
-    radial-gradient(120% 80% at 50% 120%, var(--lg-tint), transparent 60%);
-  opacity: 0.9;
-}
-
+/* Tint and spec were the violet step and the header light band. One hairline remains. */
+.lg-tint,
 .lg-spec {
-  background: radial-gradient(120% 78% at var(--lg-x) var(--lg-y), var(--lg-spec), transparent 46%);
-  opacity: 0.55;
+  display: none;
 }
 
 .lg-edge {
-  box-shadow:
-    inset 0 1px 1px 0 var(--lg-hi),
-    inset 0 -1px 1px 0 var(--lg-lo),
-    inset 1px 0 0 color-mix(in srgb, var(--lg-hi) 35%, transparent),
-    inset -1px 0 0 color-mix(in srgb, var(--lg-hi) 16%, transparent),
-    inset 0 0 0 1px var(--lg-hair);
-  background: linear-gradient(var(--lg-angle), rgba(255, 255, 255, 0.42), transparent 38%, transparent 72%, rgba(255, 255, 255, 0.08));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 14%, transparent);
 }
 
 /* Cards take a light pinned to the top lip, not a diagonal smear. */
@@ -116,11 +104,7 @@ html[data-glass='lens'] .lg-host--card .lg-edge {
 .lg-host--floor .lg-lens {
   background: none;
 }
-/* No sheen of its own: the floor is a pane over the song, not a second picture. */
-.lg-host--floor .lg-edge {
-  background: none;
-  box-shadow: none;
-}
+/* The floor uses the shared hairline. A second sheen painted the violet step. */
 
 .lg-host--note .lg-lens {
   background: var(--lg-fill-note);
@@ -129,11 +113,6 @@ html[data-glass='lens'] .lg-host--card .lg-edge {
 .lg-host--chip .lg-lens {
   background: var(--lg-fill);
 }
-.lg-host--floor .lg-tint,
-.lg-host.lg-host--floor .lg-spec {
-  opacity: 0;
-}
-
 .lg-host--card .lg-lens {
   background: var(--lg-fill-card);
 }
@@ -168,9 +147,8 @@ html[data-glass='solid'] .lg-spec {
   opacity: 0;
 }
 
-/* Coarse pointers and narrow windows never snapshot the thick surfaces, even before the script runs. */
+/* The sheet is a form. It stays a solid fill on a coarse pointer. The song dock does not. */
 @media (pointer: coarse), (max-width: 799px) {
-  .lg-host--floor .lg-lens,
   .lg-host--sheet .lg-lens {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -225,7 +203,7 @@ html[data-glass='solid'] .lg-spec {
 }
 
 .topbar.lg-host {
-  box-shadow: none;
+  box-shadow: 0 10px 28px -18px rgba(0, 0, 0, 0.35);
   border-radius: 0;
 }
 
@@ -235,7 +213,7 @@ html[data-glass='solid'] .lg-spec {
 
 .player.lg-host {
   background: none;
-  box-shadow: none;
+  box-shadow: 0 12px 32px -20px rgba(0, 0, 0, 0.38);
   border-color: transparent;
 }
 .comment.is-margin.lg-host {
@@ -265,9 +243,15 @@ html[data-glass='lens'] .lg-host--note .lg-lens {
   background: radial-gradient(130% 120% at 50% 40%, var(--lg-fill) 46%, transparent 78%);
 }
 
-html[data-glass='lens'] .lg-host--floor .lg-lens,
+/* Restrained glass: a dense tint, a blur, no refraction and no brightening. */
+html[data-glass='lens'] .topbar .lg-lens,
+html[data-glass='lens'] .lg-host--floor .lg-lens {
+  background: color-mix(in srgb, var(--bg-elevated) 62%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+}
 html[data-glass='solid'] .lg-host--floor .lg-lens {
-  background: var(--dock-solid);
+  background: var(--lg-solid);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
@@ -289,20 +273,27 @@ html[data-glass='lens'] .sheet.glass.lg-host .lg-lens {
   backdrop-filter: none;
 }
 
-/* Glass on the song controls. Cards are a plain surface, so the song colour does not fill them. */
-.topbar .lg-lens,
-.lg-host--floor .lg-lens {
-  background: var(--dock-solid);
+/* Phone keeps a smaller blur so the dock does not spend the frame budget. */
+html[data-glass='rim'] .topbar .lg-lens,
+html[data-glass='rim'] .lg-host--floor .lg-lens {
+  background: color-mix(in srgb, var(--bg-elevated) 72%, transparent);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
 }
-.lg-host--card .lg-tint,
-.lg-host--card .lg-spec,
-.lg-host--sheet .lg-tint,
-.lg-host--sheet .lg-spec,
-.search .lg-spec,
-.search .lg-tint,
-.lib-nav .lg-spec,
-.lib-nav .lg-tint {
-  opacity: 0;
+/* The margin note is one fill. The lens radial and the accent wash were a second material. */
+html[data-glass='lens'] .comment.is-margin .lg-lens,
+html[data-glass='rim'] .comment.is-margin .lg-lens {
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+}
+.comment.is-margin.lg-host {
+  box-shadow: 0 10px 28px -18px rgba(0, 0, 0, 0.32);
+}
+@media (min-width: 768px) {
+  .topbar.lg-host {
+    border-radius: 22px;
+  }
 }
 .lg-host--card .lg-lens {
   background: var(--bg-elevated) !important;

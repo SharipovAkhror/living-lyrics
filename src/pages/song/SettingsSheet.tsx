@@ -24,8 +24,8 @@ const PAGE_TITLE: Record<Page, string> = {
   eq: 'Эквалайзер',
 };
 
-const THEME_NAME: Record<ThemePref, string> = { auto: 'Системная', light: 'Светлая', dark: 'Тёмная' };
-const MOTION_NAME: Record<MotionPref, string> = { full: 'Полная', calm: 'Спокойная', off: 'Выключена' };
+const THEME_NAME: Record<ThemePref, string> = { auto: 'Как на устройстве', light: 'Светлая', dark: 'Тёмная' };
+const MOTION_NAME: Record<MotionPref, string> = { full: 'С движением', calm: 'Спокойная', off: 'Выключена' };
 const STYLE_NAME: Record<InstrumentStyle, string> = {
   drawing: 'Рисунок',
   realistic: 'Реалистичный',
@@ -480,20 +480,20 @@ export function SettingsSheet({
               className="seg--lines"
               value={settings.theme}
               options={[
-                { value: 'auto', label: 'Системная' },
+                { value: 'auto', label: 'Как на устройстве' },
                 { value: 'light', label: 'Светлая' },
                 { value: 'dark', label: 'Тёмная' },
               ]}
               onChange={(v) => setSettings({ theme: v })}
             />
           </Choice>
-          <Choice label="Движение" hint="Полная, спокойная или без переездов строк.">
+          <Choice label="Движение" hint="С движением, спокойная или без переездов строк.">
             <Segmented
               label="Движение"
               className="seg--lines"
               value={settings.motion}
               options={[
-                { value: 'full', label: 'Полная' },
+                { value: 'full', label: 'С движением' },
                 { value: 'calm', label: 'Спокойная' },
                 { value: 'off', label: 'Выключена' },
               ]}
@@ -513,7 +513,7 @@ export function SettingsSheet({
 function fontSummary(settings: Settings, hasPersian: boolean): string {
   const sameSerif = settings.fontOriginal === 'source-serif' && settings.fontTranslation === 'source-serif';
   const classicPersian = !hasPersian || settings.fontPersian === 'amiri';
-  if (sameSerif && classicPersian) return hasPersian ? 'насх · антиква' : 'антиква · стих и перевод';
+  if (sameSerif && classicPersian) return 'как в книге · стих и перевод';
   const names = [
     hasPersian ? PERSIAN_FONTS.find((f) => f.id === settings.fontPersian)?.name : null,
     ORIGINAL_FONTS.find((f) => f.id === settings.fontOriginal)?.name,

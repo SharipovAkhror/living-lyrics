@@ -15,6 +15,24 @@ import { isPhone } from '@/ui/phone';
 /** Compact height already read. A phone scrub reuses it and does not lay out. */
 const instCompact = new Map<number, number>();
 
+/** Plates a phone can show at once. The rest rotate; they are not a different set. */
+const PHONE_ROSTER = 4;
+const ROSTER_DWELL = 4;
+
+/** Page of a phone roster. A pure function of time, so a seek repeats the frame. */
+export function rosterPageAt(t: number, start: number, total: number, size = PHONE_ROSTER, dwell = ROSTER_DWELL): number {
+  if (total <= size || size < 1 || dwell <= 0) return 0;
+  const pages = Math.ceil(total / size);
+  return Math.floor(Math.max(0, t - start) / dwell) % pages;
+}
+
+function rosterWindow<T>(items: readonly T[], page: number, size: number): T[] {
+  if (items.length <= size) return items.slice();
+  const pages = Math.ceil(items.length / size);
+  const at = (page % pages) * size;
+  return items.slice(at).concat(items.slice(0, at)).slice(0, size);
+}
+
 interface Props {
   cue: InstCue;
   /** Phone slot that has left the window. The host and its engravings stay mounted. */
@@ -89,10 +107,12 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   const room = Math.max(0, stage.h);
   const shortStage = room > 0 && room <= 420 && stage.w >= 640;
   const tight = room > 0 && room < 300 && !shortStage;
-  const fullH = shortStage ? Math.round(room * 0.92) : Math.round(Math.min(tight ? room : room * 0.72, 620));
+  // A wide stage used to keep 72 % and a tall caption, so six plates became icons.
+  const wide = stage.w >= 900 && room > 480 && !shortStage && !tight;
+  const fullH = shortStage ? Math.round(room * 0.92) : Math.round(Math.min(tight ? room : room * (wide ? 0.9 : 0.72), wide ? 760 : 620));
   const textH = shortStage
     ? section.note ? 52 : section.mode ? 36 : 28
-    : section.note ? (tight ? 36 : 96) : section.mode ? (tight ? 28 : 64) : tight ? 20 : 44;
+    : section.note ? (tight ? 36 : wide ? 52 : 96) : section.mode ? (tight ? 28 : wide ? 40 : 64) : tight ? 20 : wide ? 28 : 44;
   const stageSize = {
     w: Math.max(200, Math.min(stage.w - (shortStage ? 16 : 24), 1040)),
     h: Math.max(64, Math.min(fullH - textH, room > 0 ? room : fullH)),
@@ -107,6 +127,10 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   });
   const heroes = cast.filter((m) => m.place === 'hero');
   const echoes = cast.filter((m) => m.place === 'echo');
+  const phoneRoster = isPhone() && heroes.length > PHONE_ROSTER;
+  const [rosterPage, setRosterPage] = useState(0);
+  const rosterPageRef = useRef(0);
+  const shownHeroes = phoneRoster ? rosterWindow(heroes, rosterPage, PHONE_ROSTER) : heroes;
   // The engravings are the long commit. The label paints first; the plates follow
   // on the next frame, after the song page has laid out.
   const [platesOn, setPlatesOn] = useState(() => !isPhone() || !!document.querySelector('.song.is-scrubbing'));
@@ -240,12 +264,22 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     const frame = frameFor(members, features, t, motion);
     frameRef.current = frame;
     const scrubbingNow = isPhone() && !!r.closest('.song')?.classList.contains('is-scrubbing');
+    // Desktop included: a presence commit during a drag was a doubled frame.
+    const finger = !!r.closest('.song')?.classList.contains('is-scrubbing');
     if (!bisect('instruments')) {
       // A scrub already moves the plate through this updater. A React commit
       // on every presence step was the long frame (the phone scrub budget).
-      if (!scrubbingNow && !bisect('react') && sig !== castSig.current) {
+      if (!finger && !bisect('react') && sig !== castSig.current) {
         castSig.current = sig;
         setCast(members);
+      }
+      if (isPhone()) {
+        const heroCount = members.filter((m) => m.place === 'hero').length;
+        const nextPage = rosterPageAt(t, section.start, heroCount);
+        if (nextPage !== rosterPageRef.current) {
+          rosterPageRef.current = nextPage;
+          setRosterPage(nextPage);
+        }
       }
       // The figure opacity is this frame's presence. Skipping the pose while
       // the finger moved left the engraving at the section-start value, which
@@ -259,7 +293,7 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     const q = (v: number) => Math.round(v * steps) / steps;
     const next = { progress: q(motion === 'off' ? 1 : clamp01((t - (cue.start - 0.3)) / 2.6)), presence: q(p) };
     const cur = animRef.current;
-    if (!scrubbingNow && !bisect('react') && (next.presence !== cur.presence || next.progress !== cur.progress)) {
+    if (!finger && !bisect('react') && (next.presence !== cur.presence || next.progress !== cur.progress)) {
       animRef.current = next;
       setAnim(next);
     }
@@ -284,13 +318,13 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
         {(platesOn && heroes.length > 0 && !bisect('instruments') && (isPhone() || anim.presence > 0.02)) && (
           <InstrumentStage
             ref={stageRef}
-            keys={heroes.map((m) => m.key)}
+            keys={shownHeroes.map((m) => m.key)}
             echoes={echoes.map((m) => ({ key: m.key }))}
-            performers={heroes.map((m) => (m.source >= 0 ? credited[m.source] ?? '' : ''))}
-            presences={heroes.map((m) => m.presence)}
+            performers={shownHeroes.map((m) => (m.source >= 0 ? credited[m.source] ?? '' : ''))}
+            presences={shownHeroes.map((m) => m.presence)}
             mode={section.layout ?? 'auto'}
             fitRoster
-            wrapNames
+            wrapNames={!wide}
             progress={1}
             presence={anim.presence}
             energy={0}
@@ -298,6 +332,11 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
           />
         )}
         <div className="fb-inst-text">
+          {phoneRoster && (
+            <p className="fb-inst-roster t-footnote">
+              {shownHeroes.length} из {heroes.length} · остальные по ходу
+            </p>
+          )}
           {section.mode && <div className="t-footnote fb-inst-mode">{section.mode}</div>}
           {section.note && <p className="t-callout fb-inst-note">{section.note}</p>}
           {timed && <span ref={count} className="fb-inst-count t-footnote tabular" />}

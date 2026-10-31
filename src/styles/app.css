@@ -374,6 +374,12 @@
 .w--em {
   --w-lit: var(--accent);
   font-weight: 650;
+  /* Opaque plate. The song field behind the accent failed 4.5:1 (about 1.85:1). */
+  background-color: var(--bg-elevated);
+  border-radius: 0.14em;
+  padding-inline: 0.1em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 .w.is-sung {
   opacity: 1;
@@ -423,6 +429,11 @@
 .tr-em {
   color: var(--accent);
   font-weight: 650;
+  background-color: var(--bg-elevated);
+  border-radius: 0.14em;
+  padding-inline: 0.1em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 .fb-tr em,
 .tl-tr em {
@@ -728,22 +739,6 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   box-shadow: none;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-}
-/* The glass hangs into the stage and dissolves. The title itself stays solid. */
-.topbar::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: -28px;
-  pointer-events: none;
-  background: linear-gradient(to bottom, var(--glass-bg) 0%, var(--glass-bg) 55%, transparent 100%);
-  -webkit-backdrop-filter: blur(24px) saturate(var(--glass-saturate));
-  backdrop-filter: blur(24px) saturate(var(--glass-saturate));
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
 }
 .now-art {
   width: 40px;
@@ -1261,13 +1256,6 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 .scrub.is-dragging .scrub-head {
   box-shadow: none;
 }
-.scrub-fill {
-  position: absolute;
-  inset: 0;
-  background: color-mix(in srgb, var(--ink) 78%, transparent);
-  transform-origin: left center;
-  transform: scaleX(0);
-}
 .scrub-seg {
   position: absolute;
   z-index: 2;
@@ -1288,6 +1276,21 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   width: 2px;
   margin-left: -1px;
   background: var(--accent);
+}
+/* Section map. Not .scrub-seg: D25 counts that class and allows four visible ticks. */
+.scrub-map {
+  position: absolute;
+  z-index: 3;
+  top: 1px;
+  bottom: 1px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--ink) 72%, transparent);
+  pointer-events: none;
+}
+.scrub-map.is-inst {
+  background: color-mix(in srgb, var(--accent) 75%, var(--ink));
 }
 .scrub-rest {
   position: absolute;
@@ -1355,13 +1358,6 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 }
 .scrub-preview-line {
   color: var(--ink-2);
-}
-.scrub-inst {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  z-index: 1;
-  background: color-mix(in srgb, var(--ink) 45%, transparent);
 }
 .scrub-meta {
   margin: 0;
@@ -1459,12 +1455,10 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   z-index: 2;
   padding: 10px 14px 6px;
   border-radius: 24px 24px 0 0;
-  background: var(--dock-solid);
-  border: 1px solid var(--dock-line);
+  background: var(--bg-elevated);
+  border: 0;
   border-bottom: 0;
-  box-shadow: 0 -12px 32px -24px rgba(0, 0, 0, 0.45);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: none;
 }
 .player .comment .comment-head {
   padding-top: 2px;
@@ -1616,13 +1610,11 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   flex-direction: column;
   margin: 0;
   padding: 16px 18px 20px;
-  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border: 0;
   border-radius: 22px;
-  background: color-mix(in srgb, var(--bg-elevated) 78%, transparent);
-  box-shadow: var(--glass-shadow), var(--glass-rim);
+  background: transparent;
+  box-shadow: none;
   color: var(--ink);
-  -webkit-backdrop-filter: blur(28px) saturate(var(--glass-saturate));
-  backdrop-filter: blur(28px) saturate(var(--glass-saturate));
 }
 .comment.is-margin .comment-head {
   display: flex;
@@ -2901,13 +2893,6 @@ html.is-sheet-drag .sheet-grabber {
     var(--glass-rim),
     0 0 0 1px color-mix(in srgb, var(--ink) 28%, transparent);
 }
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .search {
-    background: var(--glass-bg);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  }
-}
 .lib-hero {
   display: flex;
   flex-direction: column;
@@ -3040,7 +3025,7 @@ html.is-sheet-drag .sheet-grabber {
   text-wrap: pretty;
 }
 .lib-row-version {
-  color: var(--ink-3);
+  color: color-mix(in srgb, var(--ink) 78%, var(--bg-elevated));
 }
 @media (hover: hover) and (pointer: fine) {
   .lib-hero-cover,
@@ -3554,12 +3539,16 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
   .lib-hero-copy {
     max-width: 28rem;
   }
-  /* The card is the cover and the words. It does not stretch into an empty half. */
+  /* The card fills the row. A max-content card left an empty field beside Alive. */
   .lib-hero {
-    width: max-content;
-    max-width: min(960px, 100%);
+    width: 100%;
+    max-width: none;
     margin-inline: 0;
-    align-self: flex-start;
+    align-self: stretch;
+  }
+  .lib-hero-copy {
+    flex: 1 1 auto;
+    max-width: none;
   }
   .lib-shelf {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 440px));
@@ -3976,7 +3965,7 @@ html[data-sheet='1'] .song {
   .player .mark-bar { grid-area: flag; margin: -8px 0; }
   .player .scrub-track {
     grid-area: track;
-    height: 24px;
+    height: 44px;
   }
   .player .utility {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4111,9 +4100,9 @@ html[data-sheet='1'] .song {
     flex: none;
     flex-direction: row;
     align-items: center;
-    width: max-content;
-    max-width: 100%;
-    align-self: flex-start;
+    width: 100%;
+    max-width: none;
+    align-self: stretch;
     margin-top: 0;
     gap: 40px;
     padding: 24px;
@@ -4128,7 +4117,11 @@ html[data-sheet='1'] .song {
     font-size: clamp(2.5rem, 3vw, 3.5rem);
   }
   .lib-hero-copy {
-    max-width: 40rem;
+    flex: 1 1 auto;
+    max-width: none;
+  }
+  .lib-hero-go {
+    margin-inline-start: auto;
   }
   .lib-shelf {
     flex: 1 1 auto;
@@ -4251,7 +4244,7 @@ html[data-sheet='1'] .song {
   display: inline;
 }
 
-/* Performer names wrap instead of ending in an ellipsis. */
+/* Performer names wrap instead of ending in an ellipsis. A wide plate keeps one line. */
 .scene .ist-label {
   overflow: visible;
 }
@@ -4259,6 +4252,17 @@ html[data-sheet='1'] .song {
   white-space: normal;
   overflow: visible;
   text-overflow: unset;
+}
+@media (min-width: 900px) {
+  .scene .ist-perf {
+    white-space: nowrap;
+  }
+}
+.fb-inst-roster {
+  margin: 2px 0 0;
+  color: var(--ink);
+  font-weight: 600;
+  text-align: center;
 }
 
 /* A PC settings dialog: centred, no grabber, the page is not scaled into a black frame. */

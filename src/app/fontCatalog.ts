@@ -141,7 +141,7 @@ export const PERSIAN_FONTS: FontFace<FontPersian>[] = [
   {
     id: 'amiri',
     name: 'Amiri',
-    note: 'классический насх',
+    note: 'как в старой книге',
     stack: "'Amiri', 'KFGQPC Hafs', serif",
     lineHeight: 1.75,
     text: [sheet('amiri-ar', () => import('@fontsource/amiri/arabic-400.css'))],
@@ -150,7 +150,7 @@ export const PERSIAN_FONTS: FontFace<FontPersian>[] = [
   {
     id: 'naskh',
     name: 'Noto Naskh Arabic',
-    note: 'простой насх',
+    note: 'проще и ровнее',
     stack: "'Noto Naskh Arabic', 'KFGQPC Hafs', serif",
     lineHeight: 1.8,
     text: [sheet('naskh-ar', () => import('@fontsource/noto-naskh-arabic/arabic-400.css'))],
@@ -159,7 +159,7 @@ export const PERSIAN_FONTS: FontFace<FontPersian>[] = [
   {
     id: 'scheherazade',
     name: 'Scheherazade New',
-    note: 'крупный насх',
+    note: 'крупнее и яснее',
     stack: "'Scheherazade New', 'KFGQPC Hafs', serif",
     lineHeight: 1.9,
     text: [sheet('scheh-ar', () => import('@fontsource/scheherazade-new/arabic-400.css'))],
@@ -180,7 +180,7 @@ export const ORIGINAL_FONTS: FontFace<FontOriginal>[] = [
   {
     id: 'source-serif',
     name: 'Source Serif 4',
-    note: 'классическая антиква',
+    note: 'как в книге',
     stack: "'Source Serif 4', 'Iowan Old Style', Palatino, Georgia, serif",
     text: sourceSerif.verse,
     label: sourceSerif.label,
@@ -204,7 +204,7 @@ export const ORIGINAL_FONTS: FontFace<FontOriginal>[] = [
   {
     id: 'literata',
     name: 'Literata',
-    note: 'текстовая антиква',
+    note: 'для длинного текста',
     stack: "'Literata', Georgia, serif",
     text: literata.verse,
     label: literata.label,
@@ -215,7 +215,7 @@ export const TRANSLATION_FONTS: FontFace<FontTranslation>[] = [
   {
     id: 'source-serif',
     name: 'Source Serif 4',
-    note: 'классическая антиква, легче стиха',
+    note: 'как в книге, легче стиха',
     stack: "'Source Serif 4', Georgia, serif",
     text: sourceSerif.reading,
     label: sourceSerif.label,
