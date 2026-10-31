@@ -47,6 +47,11 @@ def main(argv: list[str] | None = None) -> None:
     sub.add_parser("loso")
     sub.add_parser("report")
     sub.add_parser("selftest")
+    applause = sub.add_parser("applause", help="широкополосный шум без высоты тона на стеме other")
+    applause.add_argument("slug", nargs="*")
+    applause.add_argument("--selftest", action="store_true")
+    applause.add_argument("--no-write", action="store_true")
+    applause.add_argument("--calibrate", action="store_true")
     eyes = sub.add_parser("vision-selftest")
     eyes.add_argument("--backend", default="agy", choices=("agy", "gemini-api"))
     sub.add_parser("all")
@@ -111,11 +116,23 @@ def main(argv: list[str] | None = None) -> None:
     elif args.cmd == "report":
         from report import write_report
         write_report()
+    elif args.cmd == "applause":
+        from applause import main as applause_main
+        argv = list(args.slug)
+        if args.selftest:
+            argv.append("--selftest")
+        if args.no_write:
+            argv.append("--no-write")
+        if args.calibrate:
+            argv.append("--calibrate")
+        applause_main(argv)
     elif args.cmd == "selftest":
         from selftest import main as selftest_main
         from entries import selftest as entries_selftest
+        from applause import selftest as applause_selftest
         selftest_main()
         entries_selftest()
+        applause_selftest()
     elif args.cmd == "vision-selftest":
         from watch import vision_selftest
         from report import write_report
