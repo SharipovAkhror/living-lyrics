@@ -299,7 +299,9 @@ html[data-glass='lens'] .sheet.glass.lg-host .lg-lens {
 .lg-host--sheet .lg-tint,
 .lg-host--sheet .lg-spec,
 .search .lg-spec,
-.lib-nav .lg-spec {
+.search .lg-tint,
+.lib-nav .lg-spec,
+.lib-nav .lg-tint {
   opacity: 0;
 }
 .lg-host--card .lg-lens {

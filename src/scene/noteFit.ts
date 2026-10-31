@@ -136,7 +136,19 @@ export function fitNote(host: HTMLElement): void {
   const line = host.querySelector('.scene-view .fb--line.is-current');
   const ref = line?.querySelector('.fb-tr') ?? line?.querySelector('.fb-orig');
   const width = ref ? Math.floor(paintedWidth(ref)) : 0;
-  if (width < 80) return;
+  // An instrumental picture has no sung line to measure. The footnote is still
+  // one line, and a CSS ellipsis with no «ещё» looks cut off with nowhere to go.
+  if (width < 80) {
+    const box = span.clientWidth;
+    if (box > 80) {
+      const font = getComputedStyle(span).font;
+      const reserve = measure(full, font) > box ? 36 : 0;
+      const text = fitClause(full, Math.max(40, box - reserve), font);
+      if (span.textContent !== text) span.textContent = text;
+      span.dataset.truncated = text !== full ? '1' : '0';
+    }
+    return;
+  }
   const max = `${width}px`;
   if (card.style.maxWidth !== max) card.style.maxWidth = max;
   const key = `${width}|${full}`;
