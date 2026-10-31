@@ -2709,6 +2709,25 @@ def test_song_choice_is_per_song() -> None:
           'measure=' in prepare and "outputs.measure == 'yes'" in prove)
 
 
+def test_qa_report_is_uploaded() -> None:
+    """A refused file gate must still leave qa-sync.json.
+
+    Run 41159206022 refused 97 retained lines. The prove step exits 0 and a
+    later step fails the job, and work/ is gitignored, so the report never
+    became an artifact. The upload runs on every outcome and is kept 90 days,
+    the same retention as an alignment.
+    """
+    root = Path(__file__).resolve().parents[2]
+    workflow = (root / '.github' / 'workflows' / 'pipeline.yml').read_text(encoding='utf-8')
+    prove = workflow.split('\n  prove:\n', 1)[1]
+    check('prove copies qa-sync.json out of the gitignored work directory',
+          'qa-pack' in prove and 'work/$slug/qa-sync.json' in prove)
+    upload = prove.split('- name: Upload qa-sync', 1)[1].split('\n      - name:', 1)[0]
+    check('prove uploads qa-sync even when the file gate refuses',
+          'if: always()' in upload and 'retention-days: 90' in upload
+          and 'name: qa-sync' in upload and 'if-no-files-found: warn' in upload)
+
+
 def test_lyric_frame_rises() -> None:
     """A caption onset is the first frame of a held rise, not a flicker."""
     import lyric_frames as LF
@@ -2775,6 +2794,7 @@ def main() -> int:
     test_bench_commit_gate()
     test_listen9_baseline()
     test_file_write_gate()
+    test_qa_report_is_uploaded()
     test_song_choice_is_per_song()
     test_run_job_commit_gate()
     test_align_from_run_per_song()

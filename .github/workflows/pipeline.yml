@@ -38,7 +38,10 @@
 # this run unless holding a lost line would push the line pass over 5 %.
 # The retained file is separate: baseline-155.json plus the pass-5 trio, minus
 # withdrawn, is 152 lines. Losing one of those refuses the lyrics write and
-# sets commit_bench to no. The prove job commits docs/analysis/bench only when this
+# sets commit_bench to no. The qa report is still uploaded. work/ is gitignored,
+# so the prove job copies qa-sync.json out and keeps the artifact for 90 days
+# even when the job then fails. Run 41159206022 lost that file, and with it the
+# per-line reasons. The prove job commits docs/analysis/bench only when this
 # measurement chose a rule and baseline_kept is true. A refused rule leaves
 # the published bench untouched and the run still fails. Run 40144966993
 # committed a one-song bench after that refusal. The run job uses the same
@@ -1088,6 +1091,29 @@ jobs:
           echo "commit_bench=$commit_bench" >> "$GITHUB_OUTPUT"
           cat /tmp/summary.txt >> "$GITHUB_STEP_SUMMARY"
           exit 0
+      # work/ is gitignored. Uploading it directly drops qa-sync.json, which is
+      # the only copy of the per-line proof once the runner is gone.
+      - name: Keep the qa report
+        if: always()
+        run: |
+          rm -rf qa-pack
+          mkdir -p qa-pack
+          for slug in ${{ needs.prepare.outputs.prove_slugs }}; do
+            [ -z "$slug" ] && continue
+            src="work/$slug/qa-sync.json"
+            if [ -f "$src" ]; then
+              mkdir -p "qa-pack/$slug"
+              cp "$src" "qa-pack/$slug/qa-sync.json"
+            fi
+          done
+      - name: Upload qa-sync
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-sync
+          path: qa-pack
+          if-no-files-found: warn
+          retention-days: 90
       - name: Commit results and remove the job files
         if: always() && steps.run.outcome == 'success'
         run: |
