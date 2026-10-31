@@ -427,7 +427,11 @@ export function workingSetTree(rootPid) {
     'Write-Output ($sum.ToString() + " " + $count.ToString() + " " + $label)',
   ].join('; ');
   try {
-    const out = execFileSync('powershell', ['-NoProfile', '-Command', script], { encoding: 'utf8', timeout: 20000 });
+    const out = execFileSync('powershell', ['-NoProfile', '-Command', script], {
+      encoding: 'utf8',
+      timeout: 20000,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
     const parts = out.trim().split(/\s+/);
     const bytes = Number(parts[0]);
     const processes = Number(parts[1]);
@@ -436,6 +440,94 @@ export function workingSetTree(rootPid) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Working set of a process and every process it spawned, in bytes, split by role.
+ * Node and the shell are left out, same as workingSetTree.
+ * `webBytes` is WebKitWebProcess only. Chromium's renderer and GPU are separate
+ * (`--type=renderer`, `--type=gpu` on the command line).
+ */
+export function processTreeMemory(rootPid) {
+  if (!rootPid) return null;
+  const script = [
+    `$target = ${Number(rootPid)}`,
+    '$procs = Get-CimInstance Win32_Process | Select-Object ProcessId, ParentProcessId, Name, WorkingSetSize, CommandLine',
+    '$set = [System.Collections.Generic.HashSet[int]]::new()',
+    '[void]$set.Add($target)',
+    '$grow = $true',
+    'while ($grow) {',
+    '  $grow = $false',
+    '  foreach ($p in $procs) {',
+    '    $id = [int]$p.ProcessId',
+    '    $parent = [int]$p.ParentProcessId',
+    '    if ($set.Contains($parent) -and -not $set.Contains($id)) { [void]$set.Add($id); $grow = $true }',
+    '  }',
+    '}',
+    '$items = New-Object System.Collections.Generic.List[object]',
+    'foreach ($p in $procs) {',
+    '  if (-not $set.Contains([int]$p.ProcessId)) { continue }',
+    '  $n = [string]$p.Name',
+    "  if ($n -match '^(node|powershell|pwsh|cmd|conhost)') { continue }",
+    '  $cmd = [string]$p.CommandLine',
+    "  $role = 'other'",
+    "  if ($n -eq 'WebKitWebProcess.exe') { $role = 'web' } elseif ($n -eq 'WebKitNetworkProcess.exe') { $role = 'network' } elseif ($cmd -match '--type=gpu') { $role = 'gpu' } elseif ($cmd -match '--type=renderer') { $role = 'renderer' } elseif ($cmd -match '--type=utility') { $role = 'utility' } elseif ($n -match 'chrome|chromium|msedge|headless_shell') { $role = 'browser' } elseif ($n -match 'WebKit') { $role = 'webkit' }",
+    '  [void]$items.Add([pscustomobject]@{ name = $n; role = $role; bytes = [int64]$p.WorkingSetSize; pid = [int]$p.ProcessId })',
+    '}',
+    '[pscustomobject]@{ items = $items } | ConvertTo-Json -Compress -Depth 4',
+  ].join('; ');
+  try {
+    const out = execFileSync('powershell', ['-NoProfile', '-Command', script], {
+      encoding: 'utf8',
+      timeout: 20000,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    const parsed = JSON.parse(out.trim());
+    const items = Array.isArray(parsed.items) ? parsed.items : parsed.items ? [parsed.items] : [];
+    const sum = (role) => items.filter((item) => item.role === role).reduce((total, item) => total + Number(item.bytes || 0), 0);
+    const names = {};
+    let bytes = 0;
+    const rendererSizes = [];
+    for (const item of items) {
+      const size = Number(item.bytes || 0);
+      bytes += size;
+      names[item.name] = (names[item.name] ?? 0) + 1;
+      if (item.role === 'renderer') rendererSizes.push(size);
+    }
+    return {
+      bytes,
+      webBytes: sum('web'),
+      rendererBytes: sum('renderer'),
+      rendererMaxBytes: rendererSizes.length ? Math.max(...rendererSizes) : 0,
+      gpuBytes: sum('gpu'),
+      browserBytes: sum('browser'),
+      utilityBytes: sum('utility'),
+      processes: items.length,
+      names: Object.entries(names)
+        .map(([name, count]) => `${name}=${count}`)
+        .join(','),
+      items: items.map((item) => ({
+        name: String(item.name),
+        role: String(item.role),
+        bytes: Number(item.bytes || 0),
+        pid: Number(item.pid),
+      })),
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** Byte length advertised by a Range response. Null when the server did not say. */
+export async function rangedTotal(url) {
+  const res = await fetch(url, { headers: { Range: 'bytes=0-15' } });
+  const range = res.headers.get('content-range') ?? '';
+  const total = Number(String(range).split('/').pop());
+  return {
+    status: res.status,
+    type: res.headers.get('content-type') ?? '',
+    total: Number.isFinite(total) ? total : null,
+  };
 }
 
 export function browserPid(browser) {
