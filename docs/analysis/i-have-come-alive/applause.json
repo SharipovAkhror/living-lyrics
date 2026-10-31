@@ -1,0 +1,21 @@
+{
+  "source": "cache work/t35/audio/i-have-come-alive.other.f32",
+  "vocalSource": "cache work/t35/audio/i-have-come-alive.vocals.f32",
+  "recording": "76af4b4ed246",
+  "thresholds": {
+    "flatnessMin": 0.4904,
+    "pitchMax": 0.3558,
+    "rmsMin": 0.0136,
+    "vocalRmsMax": 0.0678,
+    "minSpanS": 2.0,
+    "gapS": 0.5
+  },
+  "precision": 0.0,
+  "recall": 0.0,
+  "seconds": {
+    "tp": 0.0,
+    "fp": 0.0,
+    "fn": 14.5
+  },
+  "spans": []
+}

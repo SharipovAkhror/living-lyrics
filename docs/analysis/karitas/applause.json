@@ -1,0 +1,29 @@
+{
+  "source": "cache work/t35/audio/karitas.other.f32",
+  "vocalSource": "cache work/t35/audio/karitas.vocals.f32",
+  "recording": "83ac4729622a",
+  "thresholds": {
+    "flatnessMin": 0.4904,
+    "pitchMax": 0.3558,
+    "rmsMin": 0.0136,
+    "vocalRmsMax": 0.0678,
+    "minSpanS": 2.0,
+    "gapS": 0.5
+  },
+  "precision": 1.0,
+  "recall": 0.32,
+  "seconds": {
+    "tp": 6.0,
+    "fp": 0.0,
+    "fn": 12.75
+  },
+  "spans": [
+    {
+      "start": 948.0,
+      "end": 955.0,
+      "flatness": 0.74,
+      "accepted": true,
+      "reason": "уже размечено, сцена пустая"
+    }
+  ]
+}
