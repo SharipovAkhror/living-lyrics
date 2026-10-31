@@ -109,3 +109,20 @@
 - https://quran-online.ru/67:3. «Он создал семь небес одно над другим.»
 
 Не открыты в этом круге и в пояснениях не цитируются: кадры https://www.youtube.com/watch?v=okICm2EWb7U, Редхаус, отдельный лист Лейна. Аят 12:10 как спасение из колодца в пояснения Юсуфа не входит: примечание 19 говорит о колодце, аят 12:19 в эти пояснения не брался.
+
+
+## Круг 4, 2026-10-31
+
+Страницы открыты в этом круге. Цитата — с самой страницы.
+
+- Стейнгасс, с. 236, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=236. pāyanda: “Firm, solid, lasting, perpetual”.
+- С. 546, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=546. daulat: “good turn of fortune; felicity, wealth, victory; power, dominion, empire; a state, reign, dynasty”.
+- С. 631, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=631. zahra: “Boldness, spirit; power, vigour; the gall-bladder, bile”. zuhra: “The planet Venus”.
+- С. 1518, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=1518. haul: “fright, terror”. hol: “High, lofty; true, just; straight.”
+- Арберри, поток https://archive.org/stream/MysticalPoemsOfRumiArberry_201806/mystical%20poems%20of%20Rumi%20%28Arberry_djvu.txt. В этом OCR маркера [ 183 ] нет. Первый бейт стихотворения 170 стоит сразу перед маркером [ 184 ]: “I was dead, I became alive; I was weeping, I became laughing; the power of love came, and I became everlasting power.” После [ 184 ]: “You are not appropriate to this house”; “I went and became mad, I became bound in shackles”; “You are not slain”; “I became a fool, I became straightened”; “the qibla of this assembly”; “Go not on the way, do not become pained”; “You are the fountain of the sun, I am the shadow of the willow”; “Your paper gives thanks for your limitless sugar, for it came into my embrace”. После [ 185 ]: “through its gaze and circling I became light-receiving”; “I have become bright and bountiful”; “I became the two hundredfold slcy”; “I was Joseph, henceforth I have become the waxing Joseph.” Примечание под [402], “NOTES TO PAGES 171-178”, стихотворение 170: “19. Joseph, after coming up from the well, waxed in beauty and power.”
+- Ганджур, https://ganjoor.net/moulavi/shams/ghazalsh/sh1393. «کز کرم و بخشش او روشن بخشنده شدم» — без союза. «یوسف بودم ز کنون یوسف زاینده شدم». К бейту бумаги и сахара, пояснение без пометы «هوش مصنوعی»: «در قدیم شکر را در کاغذ پیچیده و به خریدار و مشتری می‌داده‌اند». Пересказ с пометой «هوش مصنوعی» в пояснения не брался.
+- Кулиев, https://quran-online.ru/12:31. «Когда они увидели его, то так превознесли его, что порезали ножами себе руки». На той же странице толкование ас-Саади: «были очень поражены его красотой» и «Никогда ранее они не видели подобной красоты». Слова «красота» в самом переводе Кулиева на этой странице нет: там «превознесли».
+- https://quran-online.ru/2:144. «Мы обратим тебя к кибле, которой ты останешься доволен. Обрати же свое лицо в сторону Заповедной мечети.»
+
+Не открыты в этом круге: Редхаус, лист Лейна, кадры ролика. Пояснение en5-01 по-прежнему без страницы припева.
+

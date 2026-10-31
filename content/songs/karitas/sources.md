@@ -140,3 +140,13 @@ Francesca Thompson ни на одной открытой странице нет
 - Кулиев, https://quran-online.ru/112:1. «Скажи: „Он — Аллах Единый,». https://quran-online.ru/2:286. «Ты — наш Покровитель.»
 
 Не открыты в этом круге и в пояснениях не цитируются: кадры ролика, Редхаус, Symphonia с. 140 и 279, https://www.aldiwan.net/poem69336.html, страница ат-Тилимсани, гарвардская страница бейта о терпении. На sabr-p1, sabr-p1a и sabr-p2 флаг comment-draft.
+
+
+## Круг 4, 2026-10-31
+
+- Диван, с. 80, https://ablibrary.net/book_content/b/9579/80. «يا ساقي القوم من شذاه ، * الكلّ لمّا سقيت تاهوا».
+- Викисловарь, https://en.wiktionary.org/wiki/%D8%AA%D8%A7%D9%87. تَاهَ: “to lose one's way”; “to wander”; “to wander in mind, to be confused, to be absent-minded”. Второе значение той же статьи — “to be proud, haughty”; в пояснение оно не взято.
+- Физули, https://tr.wikisource.org/wiki/Öyle_ser-mestem_ki_idrâk_etmezem_dünyâ_nedir. «Gerçi cânândan dil-i şeydâ için kâm isterem / Sorsa cânan bilmezem kâm-ı dil-i şeydâ nedir». «Hikmet-i dünya vü mâfiha bilen ârif degül / Ârif oldur bilmeye dünya vü mâfiha nedür». «Âh u feryâdun Fuzûlî incidübdür âlemi / Ger belâ-yı ışk ile hoşnûd isen gavga nedür». Отдельный словарь на «ариф» не открыт: парадокс взят из этих бейтов.
+- Хильдегарда, https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html. Латынь: «atque amantissima / in omnia». Английский Кэмпбелла: “and most beloved / of all”. Комментарий: “God, her royal spouse, as amantissima (‘most beloved’)”.
+- Викисловарь, https://en.wiktionary.org/wiki/amans. amans: “Present active participle of amō (‘to love’)”; “loving”. https://en.wiktionary.org/wiki/amantissimus. “feminine amantissima”, superlative.
+

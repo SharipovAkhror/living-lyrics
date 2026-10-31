@@ -140,3 +140,22 @@
 - Аль-Кушайри, с. 453, https://ablibrary.net/book_content/b/9533/453. Под «وأنشدوا»: «فأحيا بالمنى وأموت شوقا * فكم أحيا عليك ! وكم أموت !» Он приводит бейт, не называет себя автором. В строке mawwal-2 слова عليك нет.
 
 Не открыты в этом круге и в пояснениях не цитируются: кадры https://www.youtube.com/watch?v=M_8ano37jYo; Стейнгасс, с. 99, 202, 266, 267; Редхаус; Лейн. Аят 12:10 в пояснения Юсуфа не входит.
+
+
+## Круг 4, 2026-10-31
+
+Страницы открыты в этом круге. Цитата — с самой страницы.
+
+- Стейнгасс, с. 236, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=236. pāyanda: “Firm, solid, lasting, perpetual”.
+- С. 546, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=546. daulat: “good turn of fortune; felicity, wealth, victory; power, dominion, empire”.
+- С. 631, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=631. zahra: “Boldness, spirit; power, vigour; the gall-bladder, bile”. zuhra: “The planet Venus”.
+- С. 772, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=772. shaikh: “A venerable old man; a man of fifty and upwards; a man of authority, a chief… superior of the dervishes”.
+- С. 812, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=812. tarab: “Skipping, leaping, dancing for joy; cheerfulness, joy, gladness; motion; emotion; grief, sadness”.
+- С. 1444, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=1444. nayam: “(for na am), I am not”. nīm: “A half”.
+- Арберри, тот же поток, https://archive.org/stream/MysticalPoemsOfRumiArberry_201806/mystical%20poems%20of%20Rumi%20%28Arberry_djvu.txt. Маркера [ 183 ] в этом OCR нет; первый бейт 170 — сразу перед [ 184 ]. После [ 184 ]: “My eye is satiated”; “I have become shining Venus”; “You are not mad”; “I went and became mad”; “drunk with fancy and doubt”; “I am not a shaikh, I am not a leader”; “Your paper gives thanks for your limitless sugar”. После [ 185 ]: “I became the two hundredfold slcy; I was Joseph, henceforth I have become the waxing Joseph.” Под [402]: “19. Joseph, after coming up from the well, waxed in beauty and power.”
+- Ганджур, https://ganjoor.net/moulavi/shams/ghazalsh/sh1393. «یوسف بودم ز کنون یوسف زاینده شدم». К бумаге и сахару, без пометы «هوش مصنوعی»: «در قدیم شکر را در کاغذ پیچیده». Английского «you have lit the fire» и арабского «في رحلة الفنون» на странице нет.
+- Кулиев, https://quran-online.ru/12:31. «так превознесли его, что порезали ножами себе руки». Толкование ас-Саади на той же странице: «поражены его красотой». https://quran-online.ru/2:144. «Обрати же свое лицо в сторону Заповедной мечети.»
+- Аль-Кушайри, с. 453, https://ablibrary.net/book_content/b/9533/453. «فأحيا بالمنى وأموت شوقا * فكم أحيا عليك ! وكم أموت !»
+
+Не открыты: лист Лейна (в том числе с. 163), Редхаус, кадры ролика, отдельные статьи أو / أبدى / أعاد / مريد. Пояснения english-5, arabic-8 и arabic-24 остаются черновиками.
+
