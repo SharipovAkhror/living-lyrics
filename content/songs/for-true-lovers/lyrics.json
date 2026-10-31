@@ -8,13 +8,28 @@
       "end": 37.42,
       "label": "Вступление",
       "instruments": [
-        "ensemble"
+        "baglama",
+        "daf"
       ],
       "flags": [
         "timing-draft",
         "attribution-unverified"
       ],
-      "note": "Вступление до первой строки. В описании оркестр из 37 человек, по секундам инструменты не разложены."
+      "note": "Вступление до первой строки. В описании оркестр из 37 человек, по секундам инструменты не разложены.",
+      "entries": [
+        {
+          "key": "baglama",
+          "at": 16.0
+        },
+        {
+          "key": "daf",
+          "at": 28.0
+        }
+      ],
+      "performers": [
+        "Kutay Ozcan (баглама)",
+        "Mohammad Jaberi (даф)"
+      ]
     },
     {
       "id": "open",
@@ -316,13 +331,22 @@
       "end": 70.62,
       "label": "Проигрыш",
       "instruments": [
-        "ensemble"
+        "baglama"
       ],
       "flags": [
         "timing-draft",
         "attribution-unverified"
       ],
-      "note": "Короткий проигрыш между строками. Состав по секундам не назван."
+      "note": "Короткий проигрыш между строками. Состав по секундам не назван.",
+      "entries": [
+        {
+          "key": "baglama",
+          "at": 69.0
+        }
+      ],
+      "performers": [
+        "Kutay Ozcan (баглама)"
+      ]
     },
     {
       "id": "yunus-1",
@@ -1782,13 +1806,27 @@
       "end": 307.981,
       "label": "Проигрыш",
       "instruments": [
-        "ensemble"
+        "kamancheh",
+        "daf"
       ],
       "flags": [
         "timing-draft",
         "attribution-unverified"
       ],
-      "note": "Слов на этом отрезке официальные дорожки не дают. Описание не указывает, кто играет и кто поёт эти секунды."
+      "note": "Слов на этом отрезке официальные дорожки не дают. Описание не указывает, кто играет и кто поёт эти секунды.",
+      "entries": [
+        {
+          "key": "kamancheh",
+          "at": 267.0
+        },
+        {
+          "key": "daf",
+          "at": 272.0
+        }
+      ],
+      "performers": [
+        "Mohammad Jaberi (даф)"
+      ]
     },
     {
       "id": "yunus-3",
