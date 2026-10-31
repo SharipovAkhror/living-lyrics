@@ -4,7 +4,7 @@
 
 Последние:
 - LL · Main: [2026-10-25-ll-main.md](2026-10-25-ll-main.md)
-- LL · Site: [2026-10-31b-ll-site.md](2026-10-31b-ll-site.md)
+- LL · Site: [2026-10-31c-ll-site.md](2026-10-31c-ll-site.md)
 - LL · Business: —
 
 Сдачи дел LL · Tech и LL · Ops (до 2026-10-23) — в `agentic-os-live/ops/handoff/archive/`.
