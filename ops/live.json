@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-31T13:41:56Z",
+  "at": "2026-10-31T13:41:27Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -11,7 +11,7 @@
     {
       "name": "bench-r6",
       "state": "finished",
-      "minutes": 94,
+      "minutes": 93,
       "age": 140,
       "step": "Доказательство использует scoped witnesses.",
       "tokens": 2837396,
@@ -21,7 +21,7 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 14270,
+      "minutes": 14269,
       "age": 14299,
       "step": "Набор Phosphor собран, проверен на странице песни и запушен в grok/icons-a. В main не влит. ## 1. Готово, когда | Пункт | Статус | |---|---| | Полный набор на Phosphor, те же имена и API | выполнено | | Лицензия, версия и URL в docs/design/credits.md | выполнено | | Каждый знак API сопоставлен глифу базы | выполнено | | Тихий фирменный ход без потери ремесла | выполнено | | Старые наборы с ветки с",
       "tokens": 9490511,
@@ -31,7 +31,7 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 14271,
+      "minutes": 14270,
       "age": 14299,
       "step": "Push на телефон недоступен: в этой среде нет уведомлений на телефон. ## 1. Готово, когда - Полный набор на прежнем API, старые наборы сняты — выполнено. 21 имя в src/ui/icons.tsx. Удалены пути Phosphor и неиспользуемый src/icons/Icon.tsx. - Лицензия в docs/design/credits.md — выполнено. - Доски в work/icons-b/ — выполнено локально. Каталог work/ в .gitignore, на remote их нет. - validate, typechec",
       "tokens": 9850680,
@@ -41,7 +41,7 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 14212,
+      "minutes": 14211,
       "age": 14263,
       "step": "Шесть правок панели сделаны, доски пересняты, ветка запушена в grok/icons-c. В main ничего не сливал. ## 1. Готово, когда 1. Пуск по оптическому центру — выполнено. Сдвиг translate(1 0). Центр площади треугольника садится в 12,29 по сетке 24 (пауза — в 11,97). Плюс 1, а не 0,71: основание тяжелее площади, в круге 64 px плюс 1 читается серединой. При смене пуск и пауза расходятся на 0,32 единицы, н",
       "tokens": 13196979,
@@ -59,7 +59,7 @@
       "name": "song-new",
       "state": "working",
       "minutes": 4,
-      "age": 23,
+      "age": 22,
       "step": "Частичный файл размером 2,6 МБ из 8,29 МБ.",
       "tokens": 0,
       "model": "",
@@ -68,8 +68,8 @@
     {
       "name": "studio-pass",
       "state": "finished",
-      "minutes": 93,
-      "age": 495,
+      "minutes": 92,
+      "age": 494,
       "step": "StageVars is a child of the song div, so songRef applies. React sets refs before children's useLayoutEffect, so StageVars should write the 868 column on first mount. The song page might not be fully mounted at t=705 within 2.5s, or timeline could be null. The CSS defines --stage-w and positions .topbar and .player. The probe shows the player is 1440px wide on seek, not 868px. Either StageVars fail",
       "tokens": 25439946,
       "model": "grok-4.7-build",
@@ -78,8 +78,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 213,
-      "age": 227,
+      "minutes": 212,
+      "age": 226,
       "step": "Вливать нечего. Персидское «اختر» уже совпадает с Ганджуром и Викитекой, двоения на стыках бледных строк нет, веток ci/probe и wip/sync-tools на origin нет. Коммитов нет, ветка не пушилась: она совпадает с origin/main (70372c27). ## 1. Что сделано Каждое «اختر» сверено с источником — выполнено. В lyrics.json арабской «أ» (U+0623) нет. Править было нечего, запись в review не добавлялась: открытого ",
       "tokens": 4653311,
       "model": "grok-4.7-build",
@@ -88,8 +88,8 @@
     {
       "name": "t11-route",
       "state": "finished",
-      "minutes": 212,
-      "age": 227,
+      "minutes": 211,
+      "age": 226,
       "step": "Ветка site/t11-route запушена. Новых стадий нет, репетиции нет, content/ и src/ не менялись. С origin/main слито до проверок: уже было актуально. ## 1. Готово, когда | Находка | Статус | Где | |---|---|---| | Шифрование держит весь маршрут | уже исправлено | scripts/tools/song-status.ts:54 (cipherRow), :62 (encryptIsNext только на стадии 12 и только с ключом). Отдельная строка «шифр», следующая ко",
       "tokens": 5417173,
       "model": "grok-4.7-build",
@@ -118,7 +118,7 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 11165,
+      "minutes": 11164,
       "age": 11195,
       "step": "Круг 1 выполнен и запушен в site/t35. Голос снят там, где стем и Gemini оба не слышат пения. Где свидетели расходятся не меньше 2 с, данные оставлены и записаны в review. ## 1. Готово, когда Таблица, пороги, число исправлений и «после правки» — выполнено. Файл docs/analysis/stage-marks.md. Порог — середина медиан вокального стема в спетых строках и в обычном проигрыше (формула work/review/t35/stem",
       "tokens": 6757832,
@@ -128,8 +128,8 @@
     {
       "name": "t35-r2",
       "state": "finished",
-      "minutes": 190,
-      "age": 227,
+      "minutes": 189,
+      "age": 226,
       "step": "T35, круг 2, готов и запушен в origin/site/t35-r2. Детектор, таблица с точностью и полнотой, правило валидатора и кадры пустой сцены на месте. Новой красной стадии нет. ## 1. Готово, когда Детектор одной командой, таблица с точностью и полнотой — выполнено. Команда: python scripts/instrument_id/run.py applause. Пороги записаны в scripts/instrument_id/applause.py и в этом прогоне --calibrate напеча",
       "tokens": 11402426,
       "model": "grok-4.7-build",
