@@ -368,10 +368,11 @@
   color: var(--w-lit);
   opacity: calc(var(--dim-op) + (1 - var(--dim-op)) * var(--litf, 0));
 }
-/* Round 20 kept the stressed word in ink at 650, not the song colour.
-   See docs/design/studio-pass.md, «Акцент растрачен». */
+/* The stressed word is the song colour on the original, so it stays linked
+   to the same colour on the translation. Round 20's ink-only weight lost
+   that link (owner check, 2026-10-31). Contrast stays at least 4.5:1. */
 .w--em {
-  --w-lit: var(--ink);
+  --w-lit: var(--accent);
   font-weight: 650;
 }
 .w.is-sung {
@@ -420,8 +421,8 @@
   text-align: center;
 }
 .tr-em {
-  color: inherit;
-  font-weight: 600;
+  color: var(--accent);
+  font-weight: 650;
 }
 .fb-tr em,
 .tl-tr em {
@@ -1058,15 +1059,19 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
     color var(--dur-1) var(--ease-out),
     background-color var(--dur-1) var(--ease-out);
 }
-/* Apple's weight: 11 px regular, second ink. Opacity, so a live task still takes the accent. */
+/* 13 px ink. 10 px at half opacity sat under 4.5:1 on the dock. */
 .util-label {
   max-width: 100%;
   text-align: center;
   white-space: nowrap;
-  font-size: 0.625rem;
-  font-weight: 400;
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 500;
   letter-spacing: 0;
-  opacity: 0.5;
+  opacity: 1;
+}
+.util.is-live-task .util-label {
+  color: inherit;
 }
 .util.has-note::after {
   content: '';
@@ -1218,9 +1223,9 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 }
 .scrub-now,
 .scrub-remain {
-  color: color-mix(in srgb, var(--ink) 50%, transparent);
-  font-size: 0.6875rem;
-  font-weight: 400;
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 .scrub-track {
@@ -1277,6 +1282,12 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 }
 .scrub-seg.is-inst {
   opacity: 0;
+}
+/* Near the thumb only. A full ruler is more than four .scrub-seg and fails D25. */
+.scrub-seg.is-near {
+  width: 2px;
+  margin-left: -1px;
+  background: var(--accent);
 }
 .scrub-rest {
   position: absolute;
@@ -2906,10 +2917,8 @@ html.is-sheet-drag .sheet-grabber {
   border-radius: var(--r-lg);
   color: inherit;
   text-decoration: none;
-  box-shadow:
-    var(--glass-shadow),
-    var(--glass-rim),
-    0 22px 44px -24px color-mix(in srgb, var(--glow, var(--ink)) 55%, transparent);
+  background: var(--bg-elevated);
+  box-shadow: none;
   transition: transform var(--dur-3) var(--ease-spring), background-color var(--dur-1) var(--ease-out);
 }
 .lib-hero:active {
@@ -2919,9 +2928,11 @@ html.is-sheet-drag .sheet-grabber {
   display: block;
   width: 100%;
   aspect-ratio: 1;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
+  background: var(--bg-elevated);
   border-radius: var(--r-md);
-  box-shadow: 0 16px 32px -18px color-mix(in srgb, var(--glow, #000) 70%, transparent);
+  box-shadow: none;
 }
 .lib-hero-bleed {
   display: none;
@@ -2993,10 +3004,8 @@ html.is-sheet-drag .sheet-grabber {
   border-radius: var(--r-md);
   color: inherit;
   text-decoration: none;
-  background: color-mix(in srgb, var(--glass-bg) 72%, transparent);
-  box-shadow:
-    var(--glass-rim),
-    0 14px 30px -20px color-mix(in srgb, var(--glow, var(--ink)) 45%, transparent);
+  background: var(--bg-elevated);
+  box-shadow: none;
   transition: transform var(--dur-3) var(--ease-spring), background-color var(--dur-1) var(--ease-out);
 }
 .lib-row:active {
@@ -3006,7 +3015,9 @@ html.is-sheet-drag .sheet-grabber {
   width: 96px;
   height: 96px;
   border-radius: 16px;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
+  background: var(--bg-elevated);
 }
 .lib-row-copy {
   display: flex;
@@ -3509,26 +3520,10 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
   .library {
     max-width: 1200px;
   }
-  /* The cover's own colour, blurred behind the glass. A sharp second copy read as a duplicate. */
-  .lib-hero-bleed {
-    display: block;
-    position: absolute;
-    z-index: -2;
-    inset: 0;
-    overflow: hidden;
-    border-radius: inherit;
-    pointer-events: none;
-  }
+  /* No second, blurred copy of the cover. It filled the empty half of the card. */
+  .lib-hero-bleed,
   .lib-hero-bleed-img {
-    position: absolute;
-    top: -28%;
-    right: -12%;
-    width: 78%;
-    height: 156%;
-    object-fit: cover;
-    filter: blur(42px) saturate(1.25);
-    opacity: 0.85;
-    mask-image: linear-gradient(90deg, transparent 0%, #000 42%);
+    display: none;
   }
   .lib-hero-cover,
   .lib-hero-copy {
@@ -3538,11 +3533,12 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
   .lib-hero-copy {
     max-width: 28rem;
   }
-  /* A wide window must not stretch two songs into hollow strips. */
+  /* The card is the cover and the words. It does not stretch into an empty half. */
   .lib-hero {
-    width: min(960px, 100%);
-    max-width: 960px;
-    margin-inline: auto;
+    width: max-content;
+    max-width: min(960px, 100%);
+    margin-inline: 0;
+    align-self: flex-start;
   }
   .lib-shelf {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 440px));
@@ -3630,10 +3626,6 @@ html[data-sheet='1'] .song {
     min-width: 0;
     overflow: hidden;
   }
-  .topbar-version,
-  .topbar-part {
-    display: none;
-  }
   .topbar-song,
   .song.is-big-type .topbar-song {
     display: block;
@@ -3677,7 +3669,8 @@ html[data-sheet='1'] .song {
   }
 }
 
-/* Under 400 px the concert string is dropped and the title keeps the row. 13 px is the floor. */
+/* Under 400 px the title stays one line. The concert line and the section stay,
+   wrapping to two lines. 13 px is the floor. SE (320) hides them below. */
 @media (max-width: 399px) {
   .topbar-title {
     display: flex;
@@ -3686,10 +3679,6 @@ html[data-sheet='1'] .song {
     justify-content: center;
     gap: 0;
     min-width: 0;
-  }
-  .topbar-version,
-  .topbar-part {
-    display: none;
   }
   .topbar-song,
   .song.is-big-type .topbar-song {
@@ -3700,14 +3689,28 @@ html[data-sheet='1'] .song {
     text-overflow: clip;
     font-size: clamp(0.8125rem, 4.6vw, 1.0625rem);
   }
+  .topbar-version {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: normal;
+  }
   .topbar-who,
   .song.is-big-type .topbar-who {
     display: block;
     -webkit-line-clamp: unset;
-    white-space: nowrap;
+    white-space: normal;
     overflow: hidden;
-    text-overflow: clip;
     font-size: 0.8125rem;
+  }
+}
+
+/* compact-title: at 320 the version is gone and the artist line stays at least 13 px. */
+@media (max-width: 360px) {
+  .topbar-version,
+  .topbar-part {
+    display: none;
   }
 }
 
@@ -4087,8 +4090,9 @@ html[data-sheet='1'] .song {
     flex: none;
     flex-direction: row;
     align-items: center;
-    width: 100%;
-    max-width: none;
+    width: max-content;
+    max-width: 100%;
+    align-self: flex-start;
     margin-top: 0;
     gap: 40px;
     padding: 24px;
@@ -4130,8 +4134,10 @@ html[data-sheet='1'] .song {
   .lib-row-cover {
     width: 100%;
     height: 100%;
-    min-height: 0;
-    object-fit: cover;
+    min-height: 180px;
+    object-fit: contain;
+    object-position: center;
+    background: var(--bg-elevated);
   }
 }
 
@@ -4169,10 +4175,11 @@ html[data-sheet='1'] .song {
   display: flex;
   justify-content: center;
   align-items: baseline;
+  gap: 6px;
   width: 100%;
   min-height: 36px;
   margin: 0;
-  padding: 0;
+  padding: 0 2px;
   border: 0;
   background: none;
   color: var(--ink-2);
@@ -4185,6 +4192,15 @@ html[data-sheet='1'] .song {
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+}
+.note-more {
+  display: none;
+  flex: none;
+  color: var(--ink);
+  font: 600 0.75rem/1 var(--font-ui);
+}
+.note-line-text[data-truncated='1'] + .note-more {
+  display: inline;
 }
 /* Round 14. Phone play disc: smaller, a material, an ink glyph.
    Desktop from 768 / 1100 keeps 56 and 64. */
@@ -4206,6 +4222,89 @@ html[data-sheet='1'] .song {
   transition: none;
 }
 
+/* «Перевод» and «Пояснение» show on or off by the filled glyph, not by colour alone.
+   The plate stays the icon, so the button's glass still matches the dock (D19). */
+.player .util.util--mark[aria-pressed='true'] .ll-icon.ll-pair .ll-line {
+  display: none;
+}
+.player .util.util--mark[aria-pressed='true'] .ll-icon.ll-pair .ll-fill {
+  display: inline;
+}
+
+/* A phone shows the hero as a row, so a second song is on screen without scrolling. */
+@media (min-width: 390px) and (max-width: 699px) {
+  .lib-hero {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    margin-top: 12px;
+    padding: 10px;
+  }
+  .lib-hero-cover {
+    width: 120px;
+    height: 120px;
+    flex: none;
+    aspect-ratio: auto;
+  }
+  .lib-hero-title {
+    font-size: 1.45rem;
+  }
+  .lib-hero-go {
+    min-height: 36px;
+    margin-top: 2px;
+  }
+  .lib-row {
+    min-height: 88px;
+  }
+}
+
+/* Performer names wrap instead of ending in an ellipsis. */
+.scene .ist-label {
+  overflow: visible;
+}
+.scene .ist-perf {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+/* A PC settings dialog: centred, no grabber, the page is not scaled into a black frame. */
+@media (min-width: 1100px) {
+  html[data-sheet='1'],
+  html[data-sheet='1'] body {
+    background: var(--bg);
+  }
+  html[data-sheet='1'] .song {
+    transform: none;
+    border-radius: 0;
+  }
+  .sheet.sheet--form {
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
+    width: min(520px, calc(100vw - 64px));
+    max-height: min(640px, calc(100dvh - 96px));
+    margin: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 18px;
+  }
+  .sheet--form .sheet-head {
+    cursor: default;
+    touch-action: auto;
+  }
+  .sheet--form .sheet-titlebar {
+    display: flex;
+    justify-content: space-between;
+  }
+  .sheet--form .sheet-title {
+    text-align: start;
+  }
+  .sheet--form .sheet-side {
+    display: none;
+  }
+}
+
 /* From 1280 the floor and the top bar stay inside a dock on the stage column.
    Transport is centred. Tasks group on the right. The scrubber is the dock, not the window. */
 @media (min-width: 1280px) and (min-height: 641px), (min-width: 768px) and (min-height: 1000px) {
@@ -4215,12 +4314,15 @@ html[data-sheet='1'] .song {
     width: var(--stage-w, 920px);
     max-width: var(--stage-w, 920px);
   }
-  /* The player is the stage column. It stays inside the 920 cap with the header. */
+  /* A compact dock inside the stage column, not a phone stretched to the edges.
+     Width stays under the D18 cap of 920. The header keeps the stage width. */
   .player {
-    left: var(--col-left, 0px);
+    left: calc(var(--col-left, 0px) + (var(--stage-w, 920px) - min(680px, var(--stage-w, 920px))) / 2);
     right: auto;
-    width: var(--stage-w, 920px);
-    max-width: var(--stage-w, 920px);
+    width: min(680px, var(--stage-w, 920px));
+    max-width: min(680px, var(--stage-w, 920px));
+    bottom: max(12px, var(--safe-b, 0px));
+    border-radius: 28px;
   }
   .player .player-row {
     display: flex;

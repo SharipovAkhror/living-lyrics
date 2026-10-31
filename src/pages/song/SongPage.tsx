@@ -233,6 +233,7 @@ function NoteCard({
         <span key={preview} className="note-line-text" data-full={preview}>
           {preview}
         </span>
+        <span className="note-more">ещё</span>
       </button>
     </aside>
   );
@@ -524,7 +525,7 @@ function ExplainButton({
   const noteText = useNoteSnapshot(store, timeline);
   return (
     <button
-      className={`util${live ? ' is-live-task' : ''}${noteText && !showComment ? ' has-note' : ''}`}
+      className={`util util--mark${live ? ' is-live-task' : ''}${noteText && !showComment ? ' has-note' : ''}`}
       aria-label={noteText ? 'Пояснение к этой строке' : 'Пояснение'}
       aria-pressed={shortLand ? commentOpen : showComment}
       aria-keyshortcuts="C"
@@ -1439,8 +1440,8 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         </div>
       )}
 
-      {/* One thin layer on the field: no glass plate of its own. */}
       <header className="topbar lg-host" ref={topbarRef}>
+        <GlassLayers />
         <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен" data-tip="К списку песен">
           <Icon name="chevron.left" size={22} />
         </a>
@@ -1564,7 +1565,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
             </button>
           </div>
           <div className="utility" role="group" aria-label="Действия с песней">
-            <button className="util" aria-label="Перевод" aria-pressed={settings.showTranslation} aria-keyshortcuts="T" data-tip="Перевод · T" onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
+            <button className="util util--mark" aria-label="Перевод" aria-pressed={settings.showTranslation} aria-keyshortcuts="T" data-tip="Перевод · T" onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
               <Icon name="character.bubble" size={24} />
               <span className="util-label">Перевод</span>
             </button>

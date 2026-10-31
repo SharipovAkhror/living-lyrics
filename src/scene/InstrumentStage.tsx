@@ -33,6 +33,10 @@ export interface InstrumentStageProps {
   uniform?: boolean;
   /** At most this many plates. What does not fit is left out. */
   maxShown?: number;
+  /** Draw the whole roster. The gallery leaves this off and keeps the width cap. */
+  fitRoster?: boolean;
+  /** Reserve one more caption line so a performer name can wrap. */
+  wrapNames?: boolean;
   /** Cast presence 0…1 aligned with `keys`, for the first paint. Later frames come from `pose`. */
   presences?: number[];
   /** Draw-in progress 0…1 (contours, then hatching), a pure function of time. */
@@ -162,7 +166,7 @@ function applyPlate(el: HTMLElement, drive: InstrumentDrive, time: number, opaci
 }
 
 export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStageProps>(function InstrumentStage(
-  { keys, performers, mode, uniform = false, maxShown, presences, progress, presence, size, energy = 0, time, drives, echoes, preserve = false, className, onLayout },
+  { keys, performers, mode, uniform = false, maxShown, fitRoster = false, wrapNames = false, presences, progress, presence, size, energy = 0, time, drives, echoes, preserve = false, className, onLayout },
   ref,
 ) {
   const list = keys.length ? keys : ['ensemble'];
@@ -171,7 +175,7 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   const infos = list.map((k) => instrument(k));
   const players = useMemo(() => assignPerformers(list, performers), [list.join(), performers?.join()]); // eslint-disable-line react-hooks/exhaustive-deps
-  const lines = 1 + (infos.some((i) => i?.native) ? 1 : 0) + (players.some(Boolean) ? 1 : 0);
+  const lines = 1 + (infos.some((i) => i?.native) ? 1 : 0) + (players.some(Boolean) ? 1 : 0) + (wrapNames ? 1 : 0);
 
   const layout = useMemo(
     () =>
@@ -181,9 +185,10 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
         lines,
         uniform,
         maxShown,
+        fitRoster,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [n, size.w, size.h, mode, list.join(), lines, uniform, maxShown],
+    [n, size.w, size.h, mode, list.join(), lines, uniform, maxShown, fitRoster],
   );
   useEffect(() => onLayout?.(layout), [layout, onLayout]);
 

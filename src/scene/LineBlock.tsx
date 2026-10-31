@@ -547,6 +547,32 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
         subs.current.style.opacity = sub;
       }
     }
+    // A neighbour parked on the clip edge used to leave a dash and two dots
+    // (the cut translation). Hide a sliver. A line that is fully in stays.
+    if (!phone) {
+      const stage = r.closest('.scene-stage');
+      if (stage) {
+        const edge = stage.clientHeight;
+        const blockBottom = top + r.offsetHeight;
+        if (blockBottom > edge - 2 && top < edge) {
+          const sr = stage.getBoundingClientRect();
+          if (subs.current) {
+            const tr = subs.current.getBoundingClientRect();
+            const visibleH = Math.min(tr.bottom, sr.bottom) - Math.max(tr.top, sr.top);
+            const clipped = tr.height > 4 && visibleH < tr.height - 2 && visibleH < 22;
+            const next = clipped ? 'hidden' : '';
+            if (subs.current.style.visibility !== next) subs.current.style.visibility = next;
+          }
+          if (cur !== '1') {
+            const br = r.getBoundingClientRect();
+            const visibleH = Math.min(br.bottom, sr.bottom) - Math.max(br.top, sr.top);
+            if (br.height > 8 && visibleH > 0 && visibleH < 18) r.style.visibility = 'hidden';
+          }
+        } else if (subs.current && subs.current.style.visibility === 'hidden') {
+          subs.current.style.visibility = '';
+        }
+      }
+    }
 
     // Every word is visible from the start (dim). With measured timing, each word fills in the
     // writing direction as it is sung; otherwise the whole line lights up while it is current.

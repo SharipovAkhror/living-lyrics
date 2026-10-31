@@ -306,3 +306,71 @@ html[data-glass='lens'] .sheet.glass.lg-host .lg-lens {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
+
+/* Glass on the song's own controls. Library cards are a plain surface. */
+.topbar.lg-host .lg-lens,
+.lg-host--floor .lg-lens {
+  background: var(--dock-solid);
+}
+@media (hover: hover) and (pointer: fine) {
+  .topbar.lg-host .lg-lens,
+  .lg-host--floor .lg-lens {
+    -webkit-backdrop-filter: blur(22px) saturate(1.4);
+    backdrop-filter: blur(22px) saturate(1.4);
+  }
+}
+
+.lg-host--card .lg-tint,
+.lg-host--card .lg-spec,
+.lg-host--sheet .lg-tint,
+.lg-host--sheet .lg-spec,
+.search.lg-host .lg-spec,
+.lib-nav.lg-host .lg-spec {
+  opacity: 0;
+}
+.lg-host--card .lg-lens,
+html[data-glass='lens'] .lg-host--card .lg-lens,
+html[data-glass='solid'] .lg-host--card .lg-lens,
+html[data-glass='rim'] .lg-host--card .lg-lens {
+  background: var(--bg-elevated);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.lg-host--card {
+  box-shadow: none;
+}
+:root[data-theme='dark'] .search.lg-host .lg-edge,
+:root[data-theme='dark'] .lib-nav.lg-host .lg-edge,
+:root[data-theme='dark'] .lg-host--sheet .lg-edge {
+  background: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .search.lg-host .lg-edge,
+  :root:not([data-theme='light']) .lib-nav.lg-host .lg-edge,
+  :root:not([data-theme='light']) .lg-host--sheet .lg-edge {
+    background: none;
+  }
+}
+
+/* More contrast and less transparency are opaque paint, including the dock. */
+@media (prefers-contrast: more), (prefers-reduced-transparency: reduce) {
+  .lg-lens,
+  .lg-host--floor .lg-lens,
+  .lg-host--card .lg-lens,
+  .lg-host--sheet .lg-lens,
+  .topbar.lg-host .lg-lens,
+  html[data-glass='lens'] .lg-host--floor .lg-lens,
+  html[data-glass='solid'] .lg-host--floor .lg-lens,
+  .sheet.glass,
+  .search,
+  .lib-hero,
+  .lib-row {
+    background: var(--lg-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .lg-tint,
+  .lg-spec {
+    opacity: 0;
+  }
+}

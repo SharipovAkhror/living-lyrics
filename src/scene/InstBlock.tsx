@@ -289,6 +289,8 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
             performers={heroes.map((m) => (m.source >= 0 ? credited[m.source] ?? '' : ''))}
             presences={heroes.map((m) => m.presence)}
             mode={section.layout ?? 'auto'}
+            fitRoster
+            wrapNames
             progress={1}
             presence={anim.presence}
             energy={0}

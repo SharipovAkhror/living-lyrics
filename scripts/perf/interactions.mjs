@@ -693,16 +693,49 @@ async function runCore(page, label) {
         const box = dialog.getBoundingClientRect();
         const scrim = backdrop ? getComputedStyle(backdrop).opacity : '0';
         const g = grabber?.getBoundingClientRect();
-        return { title, h: Math.round(box.height), scrim: Number(scrim), grabber: g ? g.height : 0 };
+        const song = document.querySelector('.song');
+        const songTransform = song instanceof HTMLElement ? song.style.transform : '';
+        return {
+          title,
+          h: Math.round(box.height),
+          scrim: Number(scrim),
+          grabber: g ? g.height : 0,
+          form: dialog.classList.contains('sheet--form'),
+          top: Math.round(box.top),
+          bottomGap: Math.round(window.innerHeight - box.bottom),
+          songTransform,
+        };
       })
     : null;
+  const desktop = label.includes('desktop');
+  const phoneSheet = !!sheet && sheet.h > 120 && sheet.title === 'Настройки' && sheet.scrim >= 0.9 && sheet.grabber >= 4;
+  const deskSheet =
+    !!sheet &&
+    sheet.h > 120 &&
+    sheet.title === 'Настройки' &&
+    sheet.scrim >= 0.9 &&
+    sheet.form &&
+    sheet.grabber < 1 &&
+    sheet.top > 40 &&
+    sheet.bottomGap > 24 &&
+    !/scale\(/.test(sheet.songTransform || '');
   note(
     'settings-open',
-    !!sheet && sheet.h > 120 && sheet.title === 'Настройки' && sheet.scrim >= 0.9 && sheet.grabber >= 4,
+    desktop ? deskSheet : phoneSheet,
     sheet ? JSON.stringify(sheet) : 'dialog never entered the viewport',
   );
 
-  if (sheet) {
+  if (sheet && desktop) {
+    note('sheet-rubber', sheet.form && sheet.grabber < 1, 'pc form, no grabber');
+    let gone = false;
+    try {
+      await closeDialog(page);
+      gone = true;
+    } catch {
+      gone = false;
+    }
+    note('settings-close', gone, gone ? 'unmounted' : 'still covering the page');
+  } else if (sheet) {
     const grabber = page.locator('.sheet-grabber');
     const box = await grabber.boundingBox();
     if (box) {

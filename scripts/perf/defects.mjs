@@ -891,7 +891,9 @@ async function runAccentRest(browser) {
       if (r.width < 2 || r.height < 2) return null;
       return { x: r.x, y: r.y, w: r.width, h: r.height };
     };
-    const word = document.querySelector('.fb--line.is-current .w:not(.is-filling)');
+    const word = document.querySelector('.fb--line.is-current .w:not(.is-filling):not(.w--em)');
+    const em = document.querySelector('.fb--line.is-current .w--em');
+    const trEm = document.querySelector('.fb--line.is-current .tr-em');
     return {
       hex,
       disc: box(document.querySelector('.player .btn-ring')),
@@ -899,6 +901,8 @@ async function runAccentRest(browser) {
       label: box(document.querySelector('.player .util-label')),
       title: box(document.querySelector('.topbar-song')),
       word: box(word),
+      em: box(em),
+      trEm: box(trEm),
     };
   });
   const accent = parseHex(spots && spots.hex);
@@ -940,10 +944,22 @@ async function runAccentRest(browser) {
       quiet.push(near(await pagePixel(b.x + b.w / 2, b.y + b.h / 2), accent));
     }
     const leaked = quiet.filter((d) => d < 48).length;
+    // The stressed word is the song colour, on the original and on the translation.
+    // A line with no stressed word does not fail. Thresholds stay 40 and 48.
+    const accentMark = async (b) => {
+      if (!b) return null;
+      const xs = [0.35, 0.5, 0.65];
+      let best = Infinity;
+      for (const x of xs) best = Math.min(best, near(await pagePixel(b.x + b.w * x, b.y + b.h / 2), accent));
+      return best;
+    };
+    const emDist = await accentMark(spots.em);
+    const trDist = await accentMark(spots.trEm);
+    const marks = (emDist == null || emDist < 48) && (trDist == null || trDist < 48);
     note(
       'chromium D26 play-disc-only-accent',
-      discHits >= 3 && leaked === 0 && quiet.length >= 3,
-      `disc ${discHits}/4 quiet ${quiet.map((d) => Math.round(d)).join(',')}`,
+      discHits >= 3 && leaked === 0 && quiet.length >= 3 && marks,
+      `disc ${discHits}/4 quiet ${quiet.map((d) => Math.round(d)).join(',')} em ${emDist == null ? '—' : Math.round(emDist)} tr ${trDist == null ? '—' : Math.round(trDist)}`,
     );
   }
   await context.close();

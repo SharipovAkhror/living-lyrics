@@ -218,7 +218,8 @@ export function Scrubber({
           for (const seg of marks) {
             const at = parseFloat(seg.style.left) / 100;
             const near = Number.isFinite(at) && Math.abs(at - p) < 0.045;
-            const next = near ? (seg.classList.contains('is-inst') ? '0.12' : '0.16') : '0';
+            seg.classList.toggle('is-near', near);
+            const next = near ? '1' : '0';
             if (seg.style.opacity !== next) seg.style.opacity = next;
           }
         }

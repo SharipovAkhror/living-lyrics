@@ -144,4 +144,6 @@ export function fitNote(host: HTMLElement): void {
   span.dataset.fit = key;
   const text = fitClause(full, width, getComputedStyle(span).font);
   if (span.textContent !== text) span.textContent = text;
+  const cut = text !== full || span.scrollWidth > span.clientWidth + 1;
+  span.dataset.truncated = cut ? '1' : '0';
 }

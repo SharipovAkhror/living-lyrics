@@ -1,9 +1,21 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from './icons';
 import { GlassLayers } from './glass/Glass';
 import { SHEET_GLASS_MS, SHEET_SHELL_MS } from '@/scene/cover';
 import { SHEET_CLOSE, SHEET_OPEN, springSettled, stepSpring, type SpringState } from './spring';
+
+const PC_FORM = '(min-width: 1100px)';
+
+function subscribeForm(onChange: () => void) {
+  const mq = window.matchMedia(PC_FORM);
+  mq.addEventListener('change', onChange);
+  return () => mq.removeEventListener('change', onChange);
+}
+
+function pcFormNow() {
+  return window.matchMedia(PC_FORM).matches;
+}
 
 function motionOff() {
   if (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
@@ -101,6 +113,9 @@ export function Sheet({
     pointer: number;
   } | null>(null);
   const titleId = useId();
+  const form = useSyncExternalStore(subscribeForm, pcFormNow, () => false);
+  const formRef = useRef(form);
+  formRef.current = form;
   const plainRef = useRef(plain);
   plainRef.current = plain;
   openRef.current = open;
@@ -124,6 +139,16 @@ export function Sheet({
   const paint = (y: number) => {
     const el = panel.current;
     if (!el) return;
+    // A PC form is centred by CSS. It does not ride the phone spring or scale the page.
+    if (formRef.current) {
+      el.style.removeProperty('transform');
+      if (backdrop.current) backdrop.current.style.opacity = plainRef.current ? '0' : openRef.current ? '1' : '0';
+      const song = document.querySelector('.song');
+      if (song instanceof HTMLElement) song.style.transform = '';
+      document.documentElement.style.removeProperty('--sheet-p');
+      if (!openRef.current) delete document.documentElement.dataset.sheet;
+      return;
+    }
     // Negative y is the upward rubber-band. The scrim follows only the downward travel.
     const travel = y;
     el.style.transform = `translate3d(0, ${travel.toFixed(2)}px, 0)`;
@@ -396,6 +421,7 @@ export function Sheet({
   if (!render) return null;
 
   const onDown = (e: ReactPointerEvent) => {
+    if (formRef.current) return;
     const t = e.target as HTMLElement;
     if (t.closest('button, a, input, textarea, select, label, [role="switch"], [role="radio"]')) return;
     const scroller = body.current;
@@ -472,7 +498,7 @@ export function Sheet({
       <div ref={backdrop} className="sheet-backdrop" onClick={onClose} />
       <div
         ref={panel}
-        className={`sheet glass lg-host lg-host--sheet sheet--${size}`}
+        className={`sheet glass lg-host lg-host--sheet sheet--${size}${form ? ' sheet--form' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -484,7 +510,7 @@ export function Sheet({
       >
         {plain ? null : <GlassLayers />}
         <div className="sheet-head">
-          <div className="sheet-grabber" />
+          {form ? null : <div className="sheet-grabber" />}
           <div className="sheet-titlebar">
             {onBack ? (
               <button type="button" className="btn btn-plain sheet-back" onClick={onBack}>

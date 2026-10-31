@@ -203,6 +203,11 @@ for (const [name, w, h, cap] of cars) {
   const bottoms = L.slots.map((s) => s.y + s.art.y + s.art.h);
   if (Math.max(...bottoms) - Math.min(...bottoms) > 0.2) fail(name, 'art bottoms are not aligned');
 }
+const rosterPhone = layoutInstruments(6, { w: 390, h: 520 }, { fitRoster: true });
+const rosterDesk = layoutInstruments(6, { w: 800, h: 480 }, { fitRoster: true });
+if (rosterPhone.slots.length !== 6 || rosterDesk.slots.length !== 6 || rosterPhone.hidden.length || rosterDesk.hidden.length) {
+  fail('fit roster', `phone ${rosterPhone.slots.length} desk ${rosterDesk.slots.length}`);
+}
 const asUniform = layoutInstruments(5, { w: 1440, h: 820 }, { uniform: true });
 if (asUniform.mode !== 'prominence' || asUniform.slots.length !== 4 || asUniform.slots.some((s) => s.kind === 'more')) {
   fail('uniform', `${asUniform.mode} shown ${asUniform.slots.length}`);

@@ -100,6 +100,11 @@ export interface LayoutOptions {
   uniform?: boolean;
   /** Show at most this many plates. What does not fit is left out. */
   maxShown?: number;
+  /**
+   * Song stage only. Draw every plate in the roster. The gallery keeps the width cap.
+   * More than four plates use a grid; four or fewer stay a prominence row when it fits.
+   */
+  fitRoster?: boolean;
 }
 
 /* ---------- Caption metrics (keep in sync with src/styles/instruments.css) ---------- */
@@ -220,6 +225,8 @@ interface Ctx {
   lines: number;
   maxArt: number;
   gap: number;
+  /** Skip a column count whose cell is narrower than this, so a name can sit on the plate. */
+  minCell?: number;
 }
 
 type Built = { slots: Slot[]; visibility: number };
@@ -460,6 +467,7 @@ function grid(c: Ctx, idx: number[], more: number): Built {
     const cw = (box.w - (cols - 1) * gap) / cols;
     const ch = (box.h - (rows - 1) * gap) / rows;
     if (cw <= 0 || ch <= 0) continue;
+    if (c.minCell && cols > 1 && cw < c.minCell) continue;
     const side = Math.min(...idx.map((i) => plateBelow(cw, ch, c.aspects[i], c.lines, c.maxArt).side));
     const empty = cols * rows - cells;
     const score = side * (1 - 0.04 * empty) * (rows > 1 && empty >= cols ? 0.5 : 1);
@@ -705,6 +713,7 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
     lines: opts.lines ?? 2,
     maxArt: opts.maxArt ?? 540,
     gap: gapFor(box),
+    minCell: opts.fitRoster ? 150 : undefined,
   };
   const threshold = opts.minArt ?? readableMin(c.box);
   const aspect = c.box.w / c.box.h;
@@ -721,6 +730,16 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
     threshold,
     fallback,
   });
+
+  // The song stage asks for the whole roster. Width does not drop a plate.
+  if (opts.fitRoster) {
+    const idx = all.slice(0, limit);
+    if (limit <= 4) {
+      const row = prominence(c, idx);
+      if (row) return result('prominence', row, limit, false);
+    }
+    return result('grid', grid(c, idx, 0), limit, false);
+  }
 
   // A requested mode is honoured when it can show the instruments readably.
   // Extras are not drawn. Prominence also keeps to the box cap.

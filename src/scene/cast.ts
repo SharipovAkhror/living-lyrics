@@ -2,8 +2,9 @@
  * Who is on the instrument stage at a playback time. Pure: the same inputs are the same cast,
  * so a seek paints the same plates. No DOM.
  *
- * The roster is prominence order, capped by the box (four on a phone and a wide box, three
- * on a medium one). Every place is filled from the moment the roster begins, not when the
+ * The roster is prominence order. Who is in it comes from the section's instruments,
+ * not from the stage width: a phone and a desk share one set. Every place is filled
+ * from the moment the roster begins, not when the
  * player enters. The roster changes only at a section boundary, and not when the previous
  * change was under eight seconds ago: a short section keeps the plates already standing.
  * An instrument shared with the previous roster keeps its place in the order and does not enter again.
@@ -17,7 +18,7 @@
  * An empty key list and no entries is an empty stage (applause). It is not ensemble.
  */
 import type { MotionPref } from '@/app/settings';
-import { prominenceLimit } from '@/instruments/layout';
+
 
 export interface CastSection {
   start: number;
@@ -218,8 +219,24 @@ export function standingKeys(sections: CastSection[], limit: number): Standing {
   return { keys, joined, playAt, changedAt };
 }
 
+/** Enough for every named plate a section lists. The width cap used to live here. */
+const ROSTER_ALL = 24;
+
 /**
- * Plates to mount at `t`. `boxWidth` is the stage box in CSS px.
+ * The largest roster among these sections. Same number on every screen,
+ * so the standing set does not change when the stage gets narrower.
+ */
+function rosterCap(sections: CastSection[]): number {
+  let n = 1;
+  for (const section of sections) {
+    const count = desiredKeys(section, ROSTER_ALL).length;
+    if (count > n) n = count;
+  }
+  return n;
+}
+
+/**
+ * Plates to mount at `t`. `boxWidth` is still passed by callers; it does not choose the set.
  * `earlier` is every instrumental section that starts before this one, in time order.
  * The roster does not change with `t`.
  */
@@ -230,7 +247,8 @@ export function castAt(
   motion: MotionPref = 'full',
   earlier: CastSection[] = [],
 ): CastMember[] {
-  const limit = prominenceLimit(boxWidth);
+  void boxWidth;
+  const limit = rosterCap([...earlier, section]);
   const standing = standingKeys([...earlier, section], limit);
   if (!standing.keys.length) return [];
   const { enter, stagger } = plateMotion(motion);
