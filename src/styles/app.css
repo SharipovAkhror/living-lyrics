@@ -368,6 +368,8 @@
   color: var(--w-lit);
   opacity: calc(var(--dim-op) + (1 - var(--dim-op)) * var(--litf, 0));
 }
+/* Round 20 kept the stressed word in ink at 650, not the song colour.
+   See docs/design/studio-pass.md, «Акцент растрачен». */
 .w--em {
   --w-lit: var(--ink);
   font-weight: 650;
