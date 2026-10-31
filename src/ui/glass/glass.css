@@ -78,10 +78,6 @@ html[data-glass='lens'] .lg-lens {
   opacity: 0.55;
 }
 
-html[data-glass='lens'] .lg-spec {
-  opacity: 0.8;
-}
-
 .lg-edge {
   box-shadow:
     inset 0 1px 1px 0 var(--lg-hi),
@@ -315,6 +311,15 @@ html[data-glass='lens'] .sheet.glass.lg-host .lg-lens {
 .lib-nav .lg-edge,
 .lg-host--sheet .lg-edge {
   background: none;
+  box-shadow: none;
+}
+html[data-glass='rim'] .search .lg-lens,
+html[data-glass='rim'] .lib-nav .lg-lens,
+html[data-glass='lens'] .search .lg-lens,
+html[data-glass='lens'] .lib-nav .lg-lens {
+  background: var(--bg-elevated);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 @media (prefers-contrast: more), (prefers-reduced-transparency: reduce) {
   .lg-lens {
