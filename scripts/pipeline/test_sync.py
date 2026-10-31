@@ -2596,6 +2596,138 @@ def test_listen9_baseline() -> None:
           str((counts, len(live))))
 
 
+def test_file_write_gate() -> None:
+    """The retained file is 152 lines. Losing one refuses the data write.
+
+    pass_keeps_baseline only looks at the ids of this run, and a line pass
+    above 5 % excuses a missing run line. The file gate does not use that
+    excuse. The count is baseline-155.json plus the pass-5 trio, minus
+    withdrawn.
+    """
+    import attack_chance as A
+
+    ids = A._published_ids()
+    dropped = ids[-1]
+    ok, detail = A.file_write_allowed(ids)
+    check('the full retained file may be written', ok and detail == 'файл удержан: 152', detail)
+    lost = A.file_lines_lost(ids[:-1])
+    check('one missing file line is the one that was dropped',
+          lost == [dropped], str(lost[:4]))
+    ok, detail = A.file_write_allowed(ids[:-1])
+    check('one missing file line refuses the write',
+          not ok and dropped in detail and 'потеряна строка файла' in detail, detail)
+    excused = {
+        'proved': ids[:-1], 'lost': [dropped],
+        'lost_detail': {dropped: 0.10}, 'lost_chance': 0.10,
+    }
+    check('the run gate still allows a cap above 5 %',
+          A.pass_keeps_baseline(excused, ids))
+    check('the file gate does not use that cap as an excuse',
+          not A.file_write_allowed(excused['proved'])[0])
+    slugs = ['i-have-come-alive', 'karitas', 'one', 'alive']
+    held = {
+        'songs': slugs,
+        'chosen': {
+            'name': 'line-0.25', 'within_limit': True, 'baseline_kept': True,
+            'baseline_n': 158, 'baseline_reason': 'удержано', 'chance': 0.04,
+            'file_proved': list(ids),
+        },
+    }
+    ok, detail = A.commit_gate(held, slugs, 0)
+    check('a bench that still has every file line may commit',
+          ok and '158' in detail, detail)
+    short = {
+        'songs': slugs,
+        'chosen': dict(held['chosen'], file_proved=ids[:-1]),
+    }
+    ok, detail = A.commit_gate(short, slugs, 0)
+    check('a bench that lost one file line does not commit',
+          not ok and 'файл не удержан' in detail and dropped in detail, detail)
+
+
+def test_song_choice_is_per_song() -> None:
+    """Alive's K and phoneme witness stay on Alive. An old song keeps its own."""
+    import attack_chance as A
+
+    shared = {
+        'line_share': 0.25,
+        'line_limit': 0.05,
+        'shifts': {'0.15': 0.02},
+        'scopes': [
+            {'song': 'i-have-come-alive', 'lang': 'fa', 'witnesses': 'one', 'phoneme': 'off'},
+            {'song': 'alive', 'lang': 'fa', 'witnesses': 'one', 'phoneme': 'or',
+             'phoneme_model': 'xlsr-53-espeak'},
+        ],
+        'line_fill': ['arabic-1', 'b1q1-01'],
+        'line_roles': {'arabic-1': 'or', 'b1q1-01': 'only'},
+        'lang_of': {
+            'i-have-come-alive|fa': 'xlsr-53-fa-m3hrdadfi',
+            'alive|fa': 'xlsr-53-fa-m3hrdadfi',
+        },
+        'refute': {'both_far': 0.20, 'only_far': 0.30},
+        'retime': {'i-have-come-alive': [{'id': 'arabic-1'}], 'alive': [{'id': 'b1q1-01'}]},
+    }
+    old = A.song_choice_from_chosen(shared, 'i-have-come-alive', {'arabic-1'})
+    alive = A.song_choice_from_chosen(shared, 'alive', {'b1q1-01'})
+    alive['k'] = 0.50
+    check('an old song stores K, the shift grid and the limits',
+          old['k'] == 0.25 and old['shifts'] == [0.15, 0.25, 0.40]
+          and old['word_limit'] == 0.15 and old['line_limit'] == 0.05, str(old))
+    check('an old song does not keep Alive lines or Alive language clocks',
+          old['line_fill'] == ['arabic-1'] and old['line_roles'] == {'arabic-1': 'or'}
+          and list(old['lang_of']) == ['i-have-come-alive|fa']
+          and old['scopes'] == [shared['scopes'][0]]
+          and old['retime'] == {'i-have-come-alive': [{'id': 'arabic-1'}]}, str(old))
+    over_old = Q.overlay_song_choice(shared, old)
+    over_alive = Q.overlay_song_choice(shared, alive)
+    check('overlaying the old song keeps its share and drops the Alive witness',
+          over_old['line_share'] == 0.25
+          and over_old['scopes'] == [shared['scopes'][0]]
+          and over_old['line_fill'] == ['arabic-1'], str(over_old))
+    check('overlaying Alive keeps its own share and its phoneme witness',
+          over_alive['line_share'] == 0.50
+          and over_alive['scopes'][0]['phoneme'] == 'or'
+          and over_alive['line_fill'] == ['b1q1-01']
+          and 'arabic-1' not in over_alive['line_roles'], str(over_alive))
+    bare = dict(alive)
+    bare['k'] = None
+    over_bare = Q.overlay_song_choice(shared, bare)
+    check('a song measured without a share does not inherit the other K',
+          over_bare['line_share'] is None, str(over_bare.get('line_share')))
+    lines = [(None, {'id': lid}) for lid in A._published_ids()]
+    missed = Q.held_lines_lost(lines, set(A._published_ids()[:-1]))
+    check('qa names the one held line this proof missed',
+          missed == [A._published_ids()[-1]], str(missed[:4]))
+    root = Path(__file__).resolve().parents[2]
+    workflow = (root / '.github' / 'workflows' / 'pipeline.yml').read_text(encoding='utf-8')
+    align = workflow.split('\n  align:\n', 1)[1].split('\n  prove:\n', 1)[0]
+    prepare = workflow.split('\n  prepare:\n', 1)[1].split('\n  run:\n', 1)[0]
+    prove = workflow.split('\n  prove:\n', 1)[1]
+    check('align artifacts use the public maximum retention',
+          'retention-days: 90' in align and 'retention-days: 7' not in align)
+    check('an align job without qa does not open the measure',
+          'measure=' in prepare and "outputs.measure == 'yes'" in prove)
+
+
+def test_qa_report_is_uploaded() -> None:
+    """A refused file gate must still leave qa-sync.json.
+
+    Run 41159206022 refused 97 retained lines. The prove step exits 0 and a
+    later step fails the job, and work/ is gitignored, so the report never
+    became an artifact. The upload runs on every outcome and is kept 90 days,
+    the same retention as an alignment.
+    """
+    root = Path(__file__).resolve().parents[2]
+    workflow = (root / '.github' / 'workflows' / 'pipeline.yml').read_text(encoding='utf-8')
+    prove = workflow.split('\n  prove:\n', 1)[1]
+    check('prove copies qa-sync.json out of the gitignored work directory',
+          'qa-pack' in prove and 'work/$slug/qa-sync.json' in prove)
+    upload = prove.split('- name: Upload qa-sync', 1)[1].split('\n      - name:', 1)[0]
+    check('prove uploads qa-sync even when the file gate refuses',
+          'if: always()' in upload and 'retention-days: 90' in upload
+          and 'name: qa-sync' in upload and 'if-no-files-found: warn' in upload)
+
+
 def test_lyric_frame_rises() -> None:
     """A caption onset is the first frame of a held rise, not a flicker."""
     import lyric_frames as LF
@@ -2661,6 +2793,9 @@ def main() -> int:
     test_attack_chance()
     test_bench_commit_gate()
     test_listen9_baseline()
+    test_file_write_gate()
+    test_qa_report_is_uploaded()
+    test_song_choice_is_per_song()
     test_run_job_commit_gate()
     test_align_from_run_per_song()
     test_line_rule()
