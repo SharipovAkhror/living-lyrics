@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-31T10:29:04Z",
+  "at": "2026-10-31T10:31:23Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,19 +10,19 @@
     },
     {
       "name": "bench-r6",
-      "state": "working",
+      "state": "finished",
       "minutes": 0,
-      "age": 319,
-      "step": "The section is intact. The branch is behind origin/main. I will verify the section is well-formed and check code and lyrics identity against origin/main and commit 80d56ad8. I also need to re-run the comparison script to confirm the numbers match the artifacts. I will fast-forward to origin/main while keeping the uncommitted change. The section claims that align.py, separate.py, and requirements.t",
-      "tokens": 0,
-      "model": "",
+      "age": 322,
+      "step": "Повтор отделения и выравнивания не повторил начала слов до притяжения. Раздел записан и запушен в site/bench-r6-repeat коммитом 6f3d1d8f. Новый прогон не запускался. Прогон [41171958873](https://github.com/SharipovAkhror/living-lyrics/actions/runs/41171958873) завершился с итогом success в 2026-10-31T08:03:12Z. На ветке задания после 6aa66836 коммита конвейера нет. Удалённая ветка site/bench-r6-re",
+      "tokens": 3493502,
+      "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/bench-r6"
     },
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 14077,
-      "age": 14106,
+      "minutes": 14079,
+      "age": 14109,
       "step": "Набор Phosphor собран, проверен на странице песни и запушен в grok/icons-a. В main не влит. ## 1. Готово, когда | Пункт | Статус | |---|---| | Полный набор на Phosphor, те же имена и API | выполнено | | Лицензия, версия и URL в docs/design/credits.md | выполнено | | Каждый знак API сопоставлен глифу базы | выполнено | | Тихий фирменный ход без потери ремесла | выполнено | | Старые наборы с ветки с",
       "tokens": 9490511,
       "model": "grok-4.7-build",
@@ -31,8 +31,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 14078,
-      "age": 14106,
+      "minutes": 14080,
+      "age": 14108,
       "step": "Push на телефон недоступен: в этой среде нет уведомлений на телефон. ## 1. Готово, когда - Полный набор на прежнем API, старые наборы сняты — выполнено. 21 имя в src/ui/icons.tsx. Удалены пути Phosphor и неиспользуемый src/icons/Icon.tsx. - Лицензия в docs/design/credits.md — выполнено. - Доски в work/icons-b/ — выполнено локально. Каталог work/ в .gitignore, на remote их нет. - validate, typechec",
       "tokens": 9850680,
       "model": "grok-4.7-build",
@@ -41,8 +41,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 14018,
-      "age": 14070,
+      "minutes": 14021,
+      "age": 14073,
       "step": "Шесть правок панели сделаны, доски пересняты, ветка запушена в grok/icons-c. В main ничего не сливал. ## 1. Готово, когда 1. Пуск по оптическому центру — выполнено. Сдвиг translate(1 0). Центр площади треугольника садится в 12,29 по сетке 24 (пауза — в 11,97). Плюс 1, а не 0,71: основание тяжелее площади, в круге 64 px плюс 1 читается серединой. При смене пуск и пауза расходятся на 0,32 единицы, н",
       "tokens": 13196979,
       "model": "grok-4.7-build",
@@ -58,8 +58,8 @@
     {
       "name": "studio-pass",
       "state": "working",
-      "minutes": 2,
-      "age": 302,
+      "minutes": 5,
+      "age": 304,
       "step": "The default block was 30 seconds because block_until_ms was not passed.",
       "tokens": 0,
       "model": "",
@@ -68,8 +68,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 20,
-      "age": 34,
+      "minutes": 22,
+      "age": 36,
       "step": "Вливать нечего. Персидское «اختر» уже совпадает с Ганджуром и Викитекой, двоения на стыках бледных строк нет, веток ci/probe и wip/sync-tools на origin нет. Коммитов нет, ветка не пушилась: она совпадает с origin/main (70372c27). ## 1. Что сделано Каждое «اختر» сверено с источником — выполнено. В lyrics.json арабской «أ» (U+0623) нет. Править было нечего, запись в review не добавлялась: открытого ",
       "tokens": 4653311,
       "model": "grok-4.7-build",
@@ -78,8 +78,8 @@
     {
       "name": "t11-route",
       "state": "finished",
-      "minutes": 19,
-      "age": 34,
+      "minutes": 21,
+      "age": 36,
       "step": "Ветка site/t11-route запушена. Новых стадий нет, репетиции нет, content/ и src/ не менялись. С origin/main слито до проверок: уже было актуально. ## 1. Готово, когда | Находка | Статус | Где | |---|---|---| | Шифрование держит весь маршрут | уже исправлено | scripts/tools/song-status.ts:54 (cipherRow), :62 (encryptIsNext только на стадии 12 и только с ключом). Отдельная строка «шифр», следующая ко",
       "tokens": 5417173,
       "model": "grok-4.7-build",
@@ -88,8 +88,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 570,
-      "age": 690,
+      "minutes": 573,
+      "age": 693,
       "step": "Круг T27 закрыт. Удерживаемый объект JavaScript, который объяснял бы мегабайты в минуту, снимок кучи не назвал. Растёт рабочий набор одного процесса рендерера; куча JS за час плоская. Код сцены не менялся. Ветка site/t27-memory запушена. ## 1. Готово, когда - Растущий объект назван, либо честно сказано, что назвать нельзя. Выполнено во второй формулировке. После принудительной сборки мусора в куче",
       "tokens": 13262986,
       "model": "grok-4.7-build",
@@ -98,8 +98,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 14015,
-      "age": 14116,
+      "minutes": 14017,
+      "age": 14119,
       "step": "Push-уведомления в этой среде нет. ## 1. Готово, когда 1. Гладкий контур — выполнено. Кривые выходят дугами и кубическими Безье. Посадка кубика на истинную кривую — 0,015 на сетке 24 (порог 0,02). Кольца «О песне», поиска и инструментов — дуги одного радиуса; внешний край стыкуется с гранью пера по касательной. Скругление рамки — круговая галтель, параллель — та же дуга. Прямой стержень остаётся м",
       "tokens": 29801018,
       "model": "grok-4.7-build",
@@ -108,8 +108,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 10972,
-      "age": 11002,
+      "minutes": 10974,
+      "age": 11005,
       "step": "Круг 1 выполнен и запушен в site/t35. Голос снят там, где стем и Gemini оба не слышат пения. Где свидетели расходятся не меньше 2 с, данные оставлены и записаны в review. ## 1. Готово, когда Таблица, пороги, число исправлений и «после правки» — выполнено. Файл docs/analysis/stage-marks.md. Порог — середина медиан вокального стема в спетых строках и в обычном проигрыше (формула work/review/t35/stem",
       "tokens": 6757832,
       "model": "grok-4.7-build",
@@ -119,8 +119,8 @@
       "name": "t35-r2",
       "state": "working",
       "minutes": 0,
-      "age": 34,
-      "step": "Сборка прошла. Снимаю кадры сцены на участках аплодисментов с собранного сайта.",
+      "age": 36,
+      "step": "Ветка синхронизирована с origin. Рабочая директория чистая. Счётчик аплодисментов сохранился после слияния. Логика song-status не изменилась, поэтому предыдущие данные остаются валидными. Детектор запускается одной командой и выдаёт таблицу precision/recall. Формирую финальный отчёт. Все пункты «Готово, когда» выполнены. Аплодисменты отображаются в кадрах. Правило с фейл-фикстурой добавлено в vali",
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35-r2"
@@ -128,8 +128,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 374,
-      "age": 402,
+      "minutes": 377,
+      "age": 404,
       "step": "Круг 4 закрыт по таблице work/t37/codex-recheck3.md. Ветка site/t37-comments слита с origin/main и запушена. ## 1. Готово, когда - Каждая строка таблицы — выполнено: ниже по id, со статусом и цитатой открытой страницы. - sources.md четырёх песен — выполнено: раздел «Круг 4» с адресом и цитатой. - npm run validate, npm run typecheck, npx vite build — выполнено. Крупнейший кусок текста: lyrics-Cuire",
       "tokens": 8440338,
       "model": "grok-4.7-build",
@@ -221,7 +221,7 @@
   ],
   "pipeline": [],
   "hygiene": {
-    "at": "2026-10-31T09:29:16Z",
+    "at": "2026-10-31T10:30:29Z",
     "fixed": [],
     "issues": [
       "ветка grok/icons-a не влита и не менялась 9 дн.",
