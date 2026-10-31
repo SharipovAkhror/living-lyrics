@@ -4276,30 +4276,32 @@ html[data-sheet='1'] .song {
   }
 }
 
-/* From 1280 the floor and the top bar stay inside a dock on the stage column.
-   Transport is centred. Tasks group on the right. The scrubber is the dock, not the window. */
-@media (min-width: 1280px) and (min-height: 641px), (min-width: 768px) and (min-height: 1000px) {
-  .topbar {
+/* From 1280 the floor and the top bar stay inside the stage column (D39: the
+   player box matches the stage). The plate and the controls sit in a centred
+   dock, so the phone row is not stretched to the edges of that column. */
+@media (min-width: 1280px) and (min-height: 641px) {
+  .topbar,
+  .player {
     left: var(--col-left, 0px);
     right: auto;
     width: var(--stage-w, 920px);
     max-width: var(--stage-w, 920px);
   }
-  /* A compact dock inside the stage column, not a phone stretched to the edges.
-     Width stays under the D18 cap of 920. The header keeps the stage width. */
-  .player {
-    left: calc(var(--col-left, 0px) + (var(--stage-w, 920px) - min(680px, var(--stage-w, 920px))) / 2);
-    right: auto;
-    width: min(680px, var(--stage-w, 920px));
-    max-width: min(680px, var(--stage-w, 920px));
-    bottom: max(12px, var(--safe-b, 0px));
+  .player > .lg {
+    inset: auto;
+    left: 50%;
+    bottom: 0;
+    width: min(680px, 100%);
+    height: 100%;
+    transform: translateX(-50%);
     border-radius: 28px;
   }
   .player .player-row {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    width: 100%;
+    width: min(680px, 100%);
+    margin-inline: auto;
   }
   .player .transport {
     justify-content: center;
