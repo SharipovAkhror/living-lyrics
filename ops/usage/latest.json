@@ -1,18 +1,18 @@
 {
-  "updated": "2026-10-31T22:14:17Z",
+  "updated": "2026-10-31T23:23:34Z",
   "grok": {
     "today": 0,
     "todaySource": "grok usage",
-    "todayAt": "2026-10-31T22:14:17Z",
-    "week": 798507622,
+    "todayAt": "2026-10-31T23:23:34Z",
+    "week": 791041707,
     "weekSource": "grok usage",
-    "weekAt": "2026-10-31T22:14:17Z",
+    "weekAt": "2026-10-31T23:23:34Z",
     "todayByTask": {},
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-10-31T22:14:17Z",
+    "todayByTaskAt": "2026-10-31T23:23:34Z",
     "plan": "SuperGrok Heavy",
     "planSource": "~/.grok/settings_cache.json",
-    "planAt": "2026-10-31T21:49:28Z",
+    "planAt": "2026-10-31T23:23:31Z",
     "weekly": {
       "percentUsed": 31,
       "source": "grok /usage",
@@ -40,13 +40,13 @@
     },
     "conversationsToday": 2,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-10-31T22:14:17Z",
+    "conversationsTodayAt": "2026-10-31T23:23:34Z",
     "runsToday": 2,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-10-31T22:14:17Z",
+    "runsTodayAt": "2026-10-31T23:23:34Z",
     "secondsToday": 274,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-10-31T22:14:17Z",
+    "secondsTodayAt": "2026-10-31T23:23:34Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
     "at": "2026-10-31T09:38:22Z",
@@ -95,16 +95,16 @@
     "windows": [
       {
         "kind": "five_hour",
-        "percentUsed": 0,
+        "percentUsed": 7,
         "source": "codex app-server",
-        "at": "2026-10-31T22:12:16Z",
-        "resetsAt": "2026-11-01T03:12:18Z"
+        "at": "2026-10-31T23:23:34Z",
+        "resetsAt": "2026-11-01T03:16:18Z"
       },
       {
         "kind": "seven_day",
-        "percentUsed": 32,
+        "percentUsed": 33,
         "source": "codex app-server",
-        "at": "2026-10-31T22:12:16Z",
+        "at": "2026-10-31T23:23:34Z",
         "resetsAt": "2026-11-05T13:58:03Z"
       }
     ],
