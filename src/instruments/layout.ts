@@ -731,14 +731,29 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
     fallback,
   });
 
-  // The song stage asks for the whole roster. Width does not drop a plate.
+  // The song stage asks for the whole roster. Width does not choose a different set:
+  // the cast is already the section's standing plates. A short box cannot hold every
+  // caption, and a grid that ran past the box left the next line sitting on «Рик».
+  // Draw as many as stay inside, largest first. A smaller screen may show fewer at once.
   if (opts.fitRoster) {
     const idx = all.slice(0, limit);
-    if (limit <= 4) {
-      const row = prominence(c, idx);
-      if (row) return result('prominence', row, limit, false);
+    const inside = (b: Built) =>
+      b.slots.every((s) => s.x >= -0.5 && s.y >= -0.5 && s.x + s.w <= c.box.w + 0.5 && s.y + s.h <= c.box.h + 0.5);
+    const artOf = (b: Built) => {
+      const arts = b.slots.filter((s) => s.kind === 'instrument').map((s) => Math.min(s.art.w, s.art.h));
+      return arts.length ? Math.min(...arts) : 0;
+    };
+    let tight: { mode: LayoutMode; b: Built; shown: number } | null = null;
+    for (let k = limit; k >= 1; k--) {
+      const row = k <= 4 ? prominence(c, idx.slice(0, k)) : null;
+      const b = row ?? grid(c, idx.slice(0, k), 0);
+      if (!inside(b)) continue;
+      const mode: LayoutMode = row ? 'prominence' : 'grid';
+      if (artOf(b) >= 24) return result(mode, b, k, k < limit);
+      if (!tight) tight = { mode, b, shown: k };
     }
-    return result('grid', grid(c, idx, 0), limit, false);
+    if (tight) return result(tight.mode, tight.b, tight.shown, tight.shown < limit);
+    return result('single', single(c, idx.slice(0, 1), limit - 1), 1, true);
   }
 
   // A requested mode is honoured when it can show the instruments readably.
