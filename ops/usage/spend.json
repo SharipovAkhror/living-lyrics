@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-31T14:29:51Z",
+  "at": "2026-10-31T14:39:53Z",
   "unit": "Claude cost = API-price-weighted tokens, Opus-input units (see claude_review.py)",
   "calibration": {
     "proWeek": 109378470.58,
@@ -160,7 +160,7 @@
       }
     },
     "day": {
-      "since": "2026-10-30T14:29:51",
+      "since": "2026-10-30T14:39:53",
       "cost": 33907325.88,
       "tokens": 186598363,
       "calls": 1561,
@@ -377,7 +377,7 @@
       }
     },
     "day": {
-      "since": "2026-10-30T14:29:51",
+      "since": "2026-10-30T14:39:53",
       "tokens": 591190802,
       "pctUsed": 31.0,
       "byTask": {
@@ -887,10 +887,10 @@
   "sources": {
     "claude.week": "python ops/usage/claude_review.py --since 2026-10-30T04:00:00 --by-chat",
     "claude.week.overhead": "python ops/usage/claude_cache.py --since 2026-10-30T04:00:00",
-    "claude.day": "python ops/usage/claude_review.py --since 2026-10-30T14:29:51 --by-chat",
+    "claude.day": "python ops/usage/claude_review.py --since 2026-10-30T14:39:53 --by-chat",
     "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 31% / 100); pro5h carried forward from the previous spend.json",
     "grok.week": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T16:08:00 (grok.weekly.resetsAt minus 7d)",
-    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T14:29:51",
+    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T14:39:53",
     "agy.quota": "ops/usage/latest.json gemini.quota",
     "agy.runs": "ops/usage/ledger/*.jsonl kind=run"
   }
