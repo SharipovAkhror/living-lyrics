@@ -359,18 +359,29 @@ function StageVars({
   const note = useNoteSnapshot(store, timeline);
   const noteOpen = !!(showComment && note);
   const { frame } = useStageFrame(noteOpen);
+  // A cold instrumental open left --stage-w at the stylesheet default: the
+  // stage was the full window and the plate was the large tier. A scrub that
+  // started on a lyric kept the 868 column, so the two pictures differed.
+  // Writing only when `frame` changed never corrected that first open. Apply
+  // again whenever this child commits and the inline values are missing.
   useLayoutEffect(() => {
     const root = songRef.current;
     if (!root) return;
+    const want = {
+      '--col-left': `${frame.colLeft}px`,
+      '--col-right': `${frame.colRight}px`,
+      '--stage-w': `${frame.stageW}px`,
+      '--note-w': `${frame.noteW}px`,
+      '--lyric-w': `${frame.lyricW}px`,
+      '--note-inset': `${frame.panelInset}px`,
+      '--note-right': `${frame.noteRight}px`,
+    } as const;
+    const keys = Object.keys(want) as (keyof typeof want)[];
+    const stale = keys.some((key) => root.style.getPropertyValue(key) !== want[key]);
+    if (!stale && root.classList.contains('has-margin') === frame.marginNote) return;
     root.classList.toggle('has-margin', frame.marginNote);
-    root.style.setProperty('--col-left', `${frame.colLeft}px`);
-    root.style.setProperty('--col-right', `${frame.colRight}px`);
-    root.style.setProperty('--stage-w', `${frame.stageW}px`);
-    root.style.setProperty('--note-w', `${frame.noteW}px`);
-    root.style.setProperty('--lyric-w', `${frame.lyricW}px`);
-    root.style.setProperty('--note-inset', `${frame.panelInset}px`);
-    root.style.setProperty('--note-right', `${frame.noteRight}px`);
-  }, [frame, songRef]);
+    for (const key of keys) root.style.setProperty(key, want[key]);
+  });
   return null;
 }
 
