@@ -3365,12 +3365,12 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
     flex-direction: row;
     align-items: center;
     gap: 14px;
-    margin-top: 12px;
-    padding: 10px;
+    margin-top: 8px;
+    padding: 8px;
   }
   .lib-hero-cover {
-    width: 120px;
-    height: 120px;
+    width: 96px;
+    height: 96px;
     flex: none;
     aspect-ratio: auto;
   }
@@ -3380,6 +3380,14 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
   .lib-hero-go {
     min-height: 36px;
     margin-top: 2px;
+  }
+  /* The last card used to end inside the song floor's box (shelf bottom 707,
+     floor top 688). That strip is the whole of D31's library-only edges, and
+     one frame of the arriving track lands on them. The shelf stops above the
+     floor. Covers stay whole; more than one song is still on screen. */
+  .lib-shelf {
+    margin-top: 8px;
+    gap: 8px;
   }
 }
 
