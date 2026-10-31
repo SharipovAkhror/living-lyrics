@@ -6,6 +6,8 @@
 import { LIFE_DIM, LIFE_REST, plateLife, type AudioFeatures } from '../../src/instruments/animation.ts';
 import { CHIP, LAYOUT_MODES, layoutInstruments, type Layout, type LayoutMode, type Rect, type Slot } from '../../src/instruments/layout.ts';
 import { castAt } from '../../src/scene/cast.ts';
+import { stageFrame } from '../../src/scene/columns.ts';
+import { footnoteTop } from '../../src/scene/noteFit.ts';
 
 let failures = 0;
 const fail = (where: string, msg: string) => {
@@ -201,6 +203,11 @@ for (const [name, w, h, cap] of cars) {
   const bottoms = L.slots.map((s) => s.y + s.art.y + s.art.h);
   if (Math.max(...bottoms) - Math.min(...bottoms) > 0.2) fail(name, 'art bottoms are not aligned');
 }
+const rosterPhone = layoutInstruments(6, { w: 390, h: 520 }, { fitRoster: true });
+const rosterDesk = layoutInstruments(6, { w: 800, h: 480 }, { fitRoster: true });
+if (rosterPhone.slots.length !== 6 || rosterDesk.slots.length !== 6 || rosterPhone.hidden.length || rosterDesk.hidden.length) {
+  fail('fit roster', `phone ${rosterPhone.slots.length} desk ${rosterDesk.slots.length}`);
+}
 const asUniform = layoutInstruments(5, { w: 1440, h: 820 }, { uniform: true });
 if (asUniform.mode !== 'prominence' || asUniform.slots.length !== 4 || asUniform.slots.some((s) => s.kind === 'more')) {
   fail('uniform', `${asUniform.mode} shown ${asUniform.slots.length}`);
@@ -296,5 +303,90 @@ for (const [name, w, h] of screens) {
   console.log(row.join(''));
 }
 
-console.log(`\n${cases} раскладок проверено, ошибок: ${failures}.`);
+// The lyric column. Every desktop width from 800 to 1920, with and without the margin note.
+// The line box stays inside the stage, and the stage stays clear of the note panel.
+let columns = 0;
+const columnHeights = [641, 700, 800, 900, 1080];
+for (let vw = 800; vw <= 1920; vw++) {
+  for (const vh of columnHeights) {
+    for (const noteOpen of [false, true]) {
+      columns++;
+      const f = stageFrame(vw, vh, noteOpen);
+      const where = `${vw}×${vh}${noteOpen ? ' note' : ''}`;
+      if (f.colLeft < 0 || f.colRight < 0 || f.stageW <= 0) fail(where, `negative column ${f.colLeft}+${f.stageW}+${f.colRight}`);
+      if (f.colLeft + f.stageW + f.colRight !== vw) fail(where, `columns ${f.colLeft}+${f.stageW}+${f.colRight} ≠ ${vw}`);
+      if (f.lyricW > f.stageW - f.padX * 2 + 0.01) fail(where, `lyric ${f.lyricW} wider than the stage content`);
+      if (f.lyricW < Math.min(280, f.stageW - f.padX * 2)) fail(where, `lyric ${f.lyricW} too narrow`);
+      const lyricRight = f.colLeft + (f.stageW + f.lyricW) / 2;
+      if (f.marginNote) {
+        if (f.noteW < 260) fail(where, `note ${f.noteW} too narrow`);
+        const panelLeft = vw - f.panelInset - f.noteW;
+        const stageRight = f.colLeft + f.stageW;
+        if (stageRight > panelLeft - f.gap + 0.01) fail(where, `stage ${stageRight} enters the note at ${panelLeft}`);
+        if (lyricRight > panelLeft - 8) fail(where, `lyric ends at ${lyricRight}, note starts at ${panelLeft}`);
+      } else if (f.noteW !== 0) fail(where, `note width ${f.noteW} while the column is closed`);
+      if (lyricRight > f.colLeft + f.stageW + 0.01) fail(where, `lyric ends at ${lyricRight} past the stage`);
+    }
+  }
+}
+const wideGroup = stageFrame(2560, 1440, true);
+{
+  const noteLeft = 2560 - wideGroup.noteRight - wideGroup.noteW;
+  const stageRight = wideGroup.colLeft + wideGroup.stageW;
+  const gap = noteLeft - stageRight;
+  const group = wideGroup.stageW + gap + wideGroup.noteW;
+  if (wideGroup.panelInset !== 16) fail('2560 group', `panel inset ${wideGroup.panelInset}`);
+  if (wideGroup.colLeft + wideGroup.stageW + wideGroup.colRight !== 2560) fail('2560 group', 'columns do not add up');
+  if (gap > 28 || gap < 12) fail('2560 group', `note gap ${gap}`);
+  if (wideGroup.stageW > 920) fail('2560 group', `stage ${wideGroup.stageW} wider than the 920 column`);
+  if (wideGroup.lyricW > 820) fail('2560 group', `measure ${wideGroup.lyricW} grew past the desk spread`);
+  if (group < 1100 || group > 1400) fail('2560 group', `group ${group} is not the desk column`);
+  if (Math.abs(wideGroup.colLeft - wideGroup.noteRight) > 2) fail('2560 group', 'the group is not centred');
+}
+const at1920 = stageFrame(1920, 1080, true);
+if (at1920.panelInset !== 16) fail('1920 note', `inset ${at1920.panelInset}`);
+for (const [vw, vh] of [[390, 852], [320, 700], [800, 480], [1280, 480]] as const) {
+  const f = stageFrame(vw, vh, true);
+  if (f.marginNote) fail(`${vw}×${vh}`, 'a short or narrow window opened the margin note');
+  if (f.lyricW > f.stageW - f.padX * 2 + 0.01) fail(`${vw}×${vh}`, `lyric ${f.lyricW} overflows`);
+  if (f.colLeft + f.stageW + f.colRight !== vw) fail(`${vw}×${vh}`, 'columns do not add up');
+}
+
+// Phone instrumental footnote. The measured frame (393×852, t = 70) put the
+// comment through the first row of musician names. The footnote sits under
+// the picture and must miss every caption.
+{
+  const hard = [
+    { top: 203, bottom: 248 },
+    { top: 216, bottom: 259 },
+    { top: 349, bottom: 394 },
+    { top: 362, bottom: 406 },
+    { top: 414, bottom: 456 },
+  ];
+  const soft = [{ top: 509, bottom: 610 }];
+  const top = footnoteTop({ hard, soft, under: 456, noteH: 36, ceiling: 82, limit: 684, maxTop: 596, pad: 8 });
+  const band = top == null ? null : { top, bottom: top + 36 };
+  const hits = band ? hard.filter((b) => b.bottom > band.top && b.top < band.bottom) : hard;
+  if (top == null || Math.abs(top - 464) > 0.2 || hits.length) fail('phone footnote', `top ${top} hits ${hits.length}`);
+  const phone = layoutInstruments(4, { w: 361, h: 300 }, { lines: 3 });
+  const captions = phone.slots
+    .filter((s) => s.kind === 'instrument')
+    .map((s) => ({ top: s.y + s.label.y, bottom: s.y + s.label.y + s.label.h }));
+  const under = Math.max(...captions.map((b) => b.bottom));
+  const placed = footnoteTop({
+    hard: captions,
+    soft: [{ top: under + 50, bottom: under + 120 }],
+    under,
+    noteH: 36,
+    ceiling: 0,
+    limit: under + 220,
+    maxTop: under + 180,
+    pad: 8,
+  });
+  const overlaps = placed == null || placed < under - 0.5 || captions.some((b) => b.bottom > placed && b.top < placed + 36);
+  if (overlaps) fail('phone footnote', `layout top ${placed} under ${under.toFixed(1)}`);
+  cases += 2;
+}
+
+console.log(`\n${cases} раскладок проверено, колонок ${columns}, ошибок: ${failures}.`);
 process.exit(failures ? 1 : 0);

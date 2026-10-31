@@ -177,35 +177,35 @@
 }
 .ist-t-l .ist-name {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 1.25rem;
   line-height: 25px;
   letter-spacing: -0.45px;
 }
 .ist-t-l .ist-native,
 .ist-t-l .ist-perf {
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 20px;
   letter-spacing: -0.23px;
 }
 .ist-t-m .ist-name {
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 22px;
   letter-spacing: -0.43px;
 }
 .ist-t-m .ist-native,
 .ist-t-m .ist-perf {
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 18px;
   letter-spacing: -0.08px;
 }
 .ist-t-s .ist-name {
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 17px;
   letter-spacing: -0.08px;
 }
 .ist-t-s .ist-native,
 .ist-t-s .ist-perf {
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 16px;
   letter-spacing: 0;
 }
@@ -224,7 +224,7 @@
     0 6px 16px -8px rgba(20, 20, 40, 0.3),
     inset 0 0 0 0.5px var(--glass-edge);
   color: var(--label);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: -0.02em;
   white-space: nowrap;

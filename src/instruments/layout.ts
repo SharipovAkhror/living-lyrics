@@ -100,6 +100,11 @@ export interface LayoutOptions {
   uniform?: boolean;
   /** Show at most this many plates. What does not fit is left out. */
   maxShown?: number;
+  /**
+   * Song stage only. Draw every plate in the roster. The gallery keeps the width cap.
+   * More than four plates use a grid; four or fewer stay a prominence row when it fits.
+   */
+  fitRoster?: boolean;
 }
 
 /* ---------- Caption metrics (keep in sync with src/styles/instruments.css) ---------- */
@@ -220,6 +225,8 @@ interface Ctx {
   lines: number;
   maxArt: number;
   gap: number;
+  /** Skip a column count whose cell is narrower than this, so a name can sit on the plate. */
+  minCell?: number;
 }
 
 type Built = { slots: Slot[]; visibility: number };
@@ -460,6 +467,7 @@ function grid(c: Ctx, idx: number[], more: number): Built {
     const cw = (box.w - (cols - 1) * gap) / cols;
     const ch = (box.h - (rows - 1) * gap) / rows;
     if (cw <= 0 || ch <= 0) continue;
+    if (c.minCell && cols > 1 && cw < c.minCell) continue;
     const side = Math.min(...idx.map((i) => plateBelow(cw, ch, c.aspects[i], c.lines, c.maxArt).side));
     const empty = cols * rows - cells;
     const score = side * (1 - 0.04 * empty) * (rows > 1 && empty >= cols ? 0.5 : 1);
@@ -705,6 +713,7 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
     lines: opts.lines ?? 2,
     maxArt: opts.maxArt ?? 540,
     gap: gapFor(box),
+    minCell: opts.fitRoster ? 150 : undefined,
   };
   const threshold = opts.minArt ?? readableMin(c.box);
   const aspect = c.box.w / c.box.h;
@@ -721,6 +730,31 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
     threshold,
     fallback,
   });
+
+  // The song stage asks for the whole roster. Width does not choose a different set:
+  // the cast is already the section's standing plates. A short box cannot hold every
+  // caption, and a grid that ran past the box left the next line sitting on «Рик».
+  // Draw as many as stay inside, largest first. A smaller screen may show fewer at once.
+  if (opts.fitRoster) {
+    const idx = all.slice(0, limit);
+    const inside = (b: Built) =>
+      b.slots.every((s) => s.x >= -0.5 && s.y >= -0.5 && s.x + s.w <= c.box.w + 0.5 && s.y + s.h <= c.box.h + 0.5);
+    const artOf = (b: Built) => {
+      const arts = b.slots.filter((s) => s.kind === 'instrument').map((s) => Math.min(s.art.w, s.art.h));
+      return arts.length ? Math.min(...arts) : 0;
+    };
+    let tight: { mode: LayoutMode; b: Built; shown: number } | null = null;
+    for (let k = limit; k >= 1; k--) {
+      const row = k <= 4 ? prominence(c, idx.slice(0, k)) : null;
+      const b = row ?? grid(c, idx.slice(0, k), 0);
+      if (!inside(b)) continue;
+      const mode: LayoutMode = row ? 'prominence' : 'grid';
+      if (artOf(b) >= 24) return result(mode, b, k, k < limit);
+      if (!tight) tight = { mode, b, shown: k };
+    }
+    if (tight) return result(tight.mode, tight.b, tight.shown, tight.shown < limit);
+    return result('single', single(c, idx.slice(0, 1), limit - 1), 1, true);
+  }
 
   // A requested mode is honoured when it can show the instruments readably.
   // Extras are not drawn. Prominence also keeps to the box cap.

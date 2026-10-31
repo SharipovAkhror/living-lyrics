@@ -23,7 +23,11 @@
     "audio:encrypt": "node scripts/tools/audio-crypt.mjs encrypt",
     "rotate-key": "node scripts/tools/rotate-audio-key.mjs",
     "perf:iphone": "node scripts/perf/long-run.mjs",
-    "perf:settings": "node scripts/perf/settings-trace.mjs"
+    "perf:settings": "node scripts/perf/settings-trace.mjs",
+    "test:interactions": "node scripts/perf/interactions.mjs",
+    "perf:frames": "node scripts/perf/frames.mjs",
+    "gate": "node scripts/perf/gate.mjs",
+    "gate:prove": "node scripts/perf/prove.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "5.3.0",

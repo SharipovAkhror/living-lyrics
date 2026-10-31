@@ -22,25 +22,49 @@
 }
 
 .empty {
+  margin: 0;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--sp-4);
-  padding: var(--sp-6);
+  padding:
+    calc(env(safe-area-inset-top) + var(--sp-6))
+    var(--sp-6)
+    calc(env(safe-area-inset-bottom) + var(--sp-6));
   text-align: center;
+}
+.empty-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: var(--t-title2);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.empty p {
+  margin: 0;
+  max-width: 28em;
 }
 
 /* ===================== Song page ===================== */
 .song {
-  /* Time row, rail, transport ring and the labelled tasks. The safe area is counted once, inside the player. */
-  --safe-t: env(safe-area-inset-top);
-  --safe-b: env(safe-area-inset-bottom);
-  /* Capsule content is about 166 px, plus the 10 px lift off the screen edge. */
-  --player-h: calc(176px + var(--safe-b));
-  /* Title, a one-line version and the part line under it. */
-  --chrome-top: calc(var(--safe-t) + 88px);
+  /* Time row, rail, transport ring and the labelled tasks. The safe area is counted once, inside the chrome. */
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
+  /* Phone floor: times, a full-width track, transport, labelled actions. Measured after paint. */
+  --player-h: calc(208px + var(--safe-b));
+  /* Title, wrapping version, performer. Measured after paint. */
+  --chrome-top: calc(var(--safe-t) + 104px);
+  --col-left: 0px;
+  --col-right: 0px;
+  --lyric-w: calc(100% - 48px);
+  --stage-w: calc(100vw - var(--col-left) - var(--col-right));
+  --note-w: 0px;
+  --note-inset: 16px;
   --player-bottom: 0px;
   position: fixed;
   top: 0;
@@ -84,20 +108,12 @@
   justify-content: center;
 }
 .load-error {
-  position: absolute;
-  z-index: 3;
-  left: 24px;
-  right: 24px;
-  top: 62%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  text-align: center;
-  color: var(--ink);
+  position: static;
+  width: min(340px, 100%);
+  margin-top: var(--sp-4);
 }
-.load-error p {
-  margin: 0;
+.scene--hold .scene-stage {
+  overflow: auto;
 }
 .field {
   z-index: 0;
@@ -157,6 +173,19 @@
 .field.is-dark .field-veil {
   opacity: 0.18;
 }
+/* The song paints the whole frame. Library keeps the plain field. Dark stops at a 40 % mix with #07060c. */
+.song > .field.is-dark {
+  background: color-mix(in srgb, var(--f2, #54182d) 40%, #07060c);
+}
+.song > .field:not(.is-dark) {
+  background: color-mix(in srgb, var(--f4, var(--bg)) 42%, var(--bg));
+}
+.song > .field.is-dark .field-veil {
+  opacity: 0.04;
+}
+.song > .field:not(.is-dark) .field-veil {
+  opacity: 0.08;
+}
 .field-star {
   position: absolute;
   border-radius: 50%;
@@ -167,30 +196,35 @@
 
 .scene-stage {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: var(--chrome-top);
-  bottom: calc(var(--player-bottom) + var(--player-h) + 12px);
+  left: var(--col-left);
+  top: calc(var(--chrome-top) + var(--banner-h, 0px));
+  /* A clear band above the floor, so the last readable line does not sit on the dock. */
+  bottom: calc(var(--player-h) + 40px);
+  /* An explicit width. A long line must not stretch this box over the margin note. */
+  width: var(--stage-w);
+  max-width: var(--stage-w);
+  min-width: 0;
   touch-action: pan-y;
   user-select: none;
   -webkit-user-select: none;
-}
-.song.has-comment .scene-stage {
-  bottom: calc(var(--player-h) + 76px);
-}
-/* The 286px reserve is taller than the player. On a low window that empty band
-   was the whole stage, and the plates had nowhere to stand. */
-@media (max-height: 640px) {
-  .song.has-comment .scene-stage {
-    bottom: calc(var(--player-bottom) + var(--player-h) + 28px);
-  }
+  /* 32 px under the top bar. Anything translated above the stage is clipped, so it cannot sit in the bar. */
+  overflow: clip;
+  -webkit-mask-image: linear-gradient(#0000, #000 32px);
+  mask-image: linear-gradient(#0000, #000 32px);
 }
 
 /* ----- Lyrics flow ----- */
-/* Lines fade out under the bars instead of being cut, as in Apple Music. */
-.scene-stage {
-  -webkit-mask-image: linear-gradient(transparent 0, #000 3%, #000 94%, transparent 100%);
-  mask-image: linear-gradient(transparent 0, #000 3%, #000 94%, transparent 100%);
+/* The two views share one box. A scrub fades the live view over a single departing clone. */
+.scene-live,
+.scene-view,
+.scene-depart {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.scene-live .fb,
+.scene-view .fb {
+  pointer-events: auto;
 }
 .fb {
   position: absolute;
@@ -202,7 +236,10 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 0 28px;
+  padding: 0 24px;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   transform-origin: 50% 0;
   cursor: pointer;
   overflow: visible;
@@ -217,6 +254,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow: visible;
 }
 .scene[data-align='edge'] .fb--line .fb-main,
@@ -230,10 +270,11 @@
   justify-content: center;
   gap: 8px;
   margin-bottom: 8px;
-  color: color-mix(in srgb, var(--ink) 62%, transparent);
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
 }
 .fb-voice {
   font-weight: 600;
+  color: color-mix(in srgb, var(--ink) 88%, transparent);
 }
 .fb-repeat,
 .fb-wait {
@@ -262,13 +303,16 @@
   align-items: baseline;
   column-gap: 0;
   row-gap: 0.12em;
+  width: 100%;
+  max-width: min(100%, 44ch);
+  min-width: 0;
   color: var(--ink-unsung);
-  font-size: 40px;
+  font-size: 2.5rem;
   overflow: visible;
 }
 /* A draft line fades as one layer. Per-word opacity followed --litf and rasterised
    each glyph again on this WebKit (T27). The fill mask still fades a sung word. */
-.fb-orig.is-line-fade {
+.fb--line:not(.is-current) .fb-orig.is-line-fade {
   opacity: var(--dim-op);
 }
 .fb-orig.is-line-fade .w {
@@ -324,8 +368,12 @@
   color: var(--w-lit);
   opacity: calc(var(--dim-op) + (1 - var(--dim-op)) * var(--litf, 0));
 }
+/* The stressed word is the song colour on the original, so it stays linked
+   to the same colour on the translation. Round 20's ink-only weight lost
+   that link (owner check, 2026-10-31). Contrast stays at least 4.5:1. */
 .w--em {
   --w-lit: var(--accent);
+  font-weight: 650;
 }
 .w.is-sung {
   opacity: 1;
@@ -336,7 +384,7 @@
    RTL fills from the right (`--fill-dir`). */
 .w.is-filling {
   opacity: 1;
-  color: var(--w-lit);
+  color: var(--accent);
   -webkit-text-fill-color: currentColor;
   background-image: none;
   --fill-dir: to right;
@@ -374,9 +422,10 @@
 }
 .tr-em {
   color: var(--accent);
-  font-weight: 600;
+  font-weight: 650;
 }
-.fb-tr em {
+.fb-tr em,
+.tl-tr em {
   font-style: italic;
 }
 .fb-tr,
@@ -386,13 +435,38 @@
   font-weight: 400;
   font-synthesis: none;
 }
+/* Light keeps the serif crisp. A neighbour is a little soft, not a second fade. Phones skip the filter (T27). */
+html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
+  filter: blur(0.5px);
+}
+/* Light keeps the serif crisp. Dark restores a soft shadow so the line sits on the wash. */
+.fb-orig,
+.fb-tr {
+  text-shadow: none;
+}
 .fb-tr {
   margin: 0;
   font-size: var(--lyric-tr);
   line-height: 1.4;
   letter-spacing: -0.2px;
-  color: color-mix(in srgb, var(--ink) 82%, transparent);
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
   text-wrap: balance;
+}
+/* Scrub overlay. Every child stays mounted, including the plain spans, so the
+   release commit does not remove a node the drag already replaced. Only the
+   attribute is drawn. Cleared before the next paint. */
+.fb-tr[data-scrub] {
+  font-size: 0;
+}
+.fb-tr[data-scrub] > * {
+  display: none;
+}
+.fb-tr[data-scrub]::before {
+  content: attr(data-scrub);
+  display: block;
+  font-size: var(--lyric-tr);
+  line-height: 1.4;
+  font-weight: 400;
 }
 .fb-translit {
   font-size: clamp(14px, 0.5vw + 12px, 18px);
@@ -412,10 +486,11 @@
   position: absolute;
   top: 0;
   left: 50%;
-  width: min(78vw, 520px);
-  margin-left: calc(min(78vw, 520px) / -2);
-  border-radius: 50%;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 28%, transparent), transparent 72%);
+  width: min(100%, var(--lyric-w, 520px));
+  margin-left: calc(min(100%, var(--lyric-w, 520px)) / -2);
+  border-radius: 36px;
+  /* Light: no coloured glow behind the serif. A seek still moves this plate; it just stays clear. */
+  background: transparent;
   will-change: transform, opacity;
   pointer-events: none;
   z-index: 0;
@@ -431,12 +506,24 @@
   margin-left: 0;
   width: min(68vw, 420px);
 }
+/* Dark only. Light keeps the serif on the wash, with no halo behind it. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .fb-orig,
+  :root:not([data-theme='light']) .fb-tr {
+    text-shadow: 0 1px 10px color-mix(in srgb, var(--bg) 72%, transparent);
+  }
+}
+:root[data-theme='dark'] .fb-orig,
+:root[data-theme='dark'] .fb-tr {
+  text-shadow: 0 1px 10px color-mix(in srgb, var(--bg) 72%, transparent);
+}
+
 
 /* Title card: block −1 of the flow. */
 .fb--intro {
-  gap: 6px;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  gap: var(--sp-2);
+  padding-top: var(--sp-2);
+  padding-bottom: var(--sp-2);
   cursor: default;
 }
 /* Shown before the timed flow exists, in the same place the title card settles. */
@@ -447,27 +534,27 @@
 .intro-title {
   font-family: var(--font-serif);
   font-weight: 600;
-  font-size: clamp(44px, 10vw, 104px);
-  line-height: 1;
+  font-size: clamp(34px, 8vw, 64px);
+  line-height: 1.05;
   letter-spacing: -0.02em;
   color: var(--ink);
 }
 .intro-original {
-  font-size: clamp(26px, 5vw, 44px);
+  font-size: clamp(22px, 4vw, 34px);
   line-height: 2.15;
-  color: color-mix(in srgb, var(--ink) 70%, transparent);
+  color: var(--ink-2);
 }
 .intro-meta {
-  margin-top: 8px;
-  color: color-mix(in srgb, var(--ink) 68%, transparent);
+  margin-top: var(--sp-2);
+  color: var(--ink-2);
 }
 .intro-poets {
-  color: color-mix(in srgb, var(--ink) 52%, transparent);
+  color: var(--ink-3);
 }
 
 /* ----- Instrumental passages in the flow ----- */
 .fb--inst {
-  overflow: visible;
+  overflow: hidden;
 }
 .fb-inst-compact {
   display: inline-flex;
@@ -491,7 +578,7 @@
   -webkit-backdrop-filter: none;
 }
 .fb-inst-kicker {
-  color: var(--accent);
+  color: var(--ink-2);
   font-weight: 600;
 }
 .fb-inst-full {
@@ -543,7 +630,7 @@
   gap: 4px;
   padding: 10px 10px 8px;
   border-radius: var(--r-lg);
-  color: color-mix(in srgb, var(--accent) 78%, var(--ink));
+  color: var(--ink-2);
 }
 .fb-inst-cell .eng {
   flex: 1;
@@ -569,7 +656,7 @@
   color: color-mix(in srgb, var(--ink) 75%, transparent);
 }
 .fb-inst-mode {
-  color: var(--accent);
+  color: var(--ink-2);
   font-weight: 600;
 }
 .fb-inst-note {
@@ -624,18 +711,47 @@
 /* ----- Chrome: top bar, commentary, player ----- */
 .topbar {
   position: absolute;
-  z-index: 5;
-  top: calc(var(--safe-t, env(safe-area-inset-top)) + 8px);
-  left: 12px;
-  right: 12px;
-  padding: 6px 8px;
+  z-index: 6;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding:
+    max(12px, var(--safe-t, env(safe-area-inset-top, 0px)))
+    max(8px, var(--safe-r, env(safe-area-inset-right, 0px)))
+    8px
+    max(8px, var(--safe-l, env(safe-area-inset-left, 0px)));
   display: flex;
   align-items: center;
   gap: 8px;
-  border-radius: var(--r-lg);
-  transition:
-    opacity var(--dur-3) var(--ease-out),
-    transform var(--dur-3) var(--ease-spring);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+/* The glass hangs into the stage and dissolves. The title itself stays solid. */
+.topbar::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: -28px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--glass-bg) 0%, var(--glass-bg) 55%, transparent 100%);
+  -webkit-backdrop-filter: blur(24px) saturate(var(--glass-saturate));
+  backdrop-filter: blur(24px) saturate(var(--glass-saturate));
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
+}
+.now-art {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 8px 16px -10px rgba(26, 20, 15, 0.45);
 }
 .topbar-title {
   flex: 1;
@@ -643,67 +759,219 @@
   text-align: start;
 }
 .topbar-song {
-  font-size: 16px;
-  line-height: 1.25;
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   color: var(--ink);
 }
 .topbar-version,
-.topbar-section {
-  font-size: 13px;
+.topbar-who {
+  font-size: 0.8125rem;
   line-height: 1.3;
-  color: color-mix(in srgb, var(--ink) 72%, transparent);
+  color: var(--ink-2);
 }
-.topbar-version {
+.topbar-who {
+  color: var(--ink);
+}
+.topbar-part {
+  color: var(--ink-2);
   font-weight: 400;
-  color: color-mix(in srgb, var(--ink) 68%, transparent);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 .topbar-song,
 .topbar-version,
-.topbar-section {
-  overflow: hidden;
-}
-.topbar-song,
-.topbar-section {
-  white-space: nowrap;
-  text-overflow: ellipsis;
+.topbar-who {
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .player {
   position: absolute;
-  z-index: 5;
-  left: 12px;
-  right: 12px;
-  bottom: calc(10px + var(--safe-b, env(safe-area-inset-bottom)));
-  padding: 4px 12px 4px;
-  border-radius: var(--r-lg);
-  transition: opacity var(--dur-3) var(--ease-out);
+  z-index: 6;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding:
+    10px
+    max(14px, var(--safe-r, env(safe-area-inset-right, 0px)))
+    max(12px, var(--safe-b, env(safe-area-inset-bottom, 0px)))
+    max(14px, var(--safe-l, env(safe-area-inset-left, 0px)));
+  border-radius: 0;
+  border-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: none;
+  box-shadow: none;
 }
-.player-alert {
-  position: absolute;
-  z-index: 4;
-  left: 16px;
-  right: 16px;
-  top: calc(var(--chrome-top) + 6px);
+.floor-retry {
+  flex: none;
+  min-height: 44px;
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: 600 0.8125rem / 1.2 var(--font-ui);
+  text-decoration: none;
+  opacity: 0.9;
+  cursor: pointer;
+}
+.floor-retry:active {
+  opacity: 0.6;
+}
+.btn-ring.is-error {
+  box-shadow:
+    0 0 0 2px var(--system-orange),
+    inset 0 1px 0 color-mix(in srgb, white 42%, transparent);
+}
+.player-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  min-height: 0;
+}
+.player .btn-xl {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  /* The press spring writes transform every frame. The shorthand on .btn
+     keeps a transform timing in WebKit even after transition-property is narrowed. */
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out),
+    opacity var(--dur-1) var(--ease-out),
+    box-shadow var(--dur-1) var(--ease-out);
+}
+.player .btn-xl:active:not(:disabled) {
+  transform: none;
+}
+.player .btn-ring {
+  box-shadow: none;
+  background: color-mix(in srgb, var(--accent) 82%, white);
+}
+.player .btn-ring:active:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 70%, white);
+}
+/* Designed status: recording error, missing text, empty search, a sheet that is still opening. */
+.status {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 8px 8px 8px 14px;
+  gap: var(--sp-3);
+  min-height: var(--hit);
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-3);
   border-radius: var(--r-md);
   color: var(--ink);
 }
-.player-alert p {
+.status-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--ink-2);
+}
+.status-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.status-title,
+.status-copy {
   margin: 0;
-  font: 500 13px/1.35 var(--font-ui);
+}
+.status-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: var(--t-title3);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+.status-copy {
+  font-size: var(--t-subhead);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.status > .btn {
+  flex: none;
+  white-space: nowrap;
+}
+.status--stack {
+  flex-direction: column;
+  text-align: center;
+  padding: var(--sp-6) var(--sp-5);
+  gap: var(--sp-3);
+}
+.status--stack .status-text {
+  align-items: center;
+}
+.status--stack .status-copy,
+.status--stack .status-title {
+  text-align: center;
+}
+.player-alert {
+  position: absolute;
+  z-index: 7;
+  top: calc(var(--chrome-top) - 6px);
+  /* Centred in the lyric column. A viewport centre drifts toward the margin note. */
+  left: var(--col-left, 0px);
+  right: var(--col-right, 0px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(540px, calc(100% - 32px));
+  height: fit-content;
+  min-height: 44px;
+  margin-inline: auto;
+  transform: none;
+  padding: 4px 8px 4px 14px;
+  border-radius: var(--r-pill);
+  /* The wash sits on an opaque field, so a line under the pill cannot show through. */
+  background:
+    linear-gradient(var(--alert-bg), var(--alert-bg)),
+    var(--bg-elevated);
+  color: var(--alert-fg);
+  border: 1px solid var(--alert-line);
+  box-shadow: inset 0 0 0 1px var(--alert-line), 0 10px 28px -18px rgba(0, 0, 0, 0.45);
+}
+.player-alert p {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 500 0.8125rem/1.3 var(--font-ui);
+}
+.sheet .status {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  box-shadow: none;
 }
 .resume-offer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
+  min-height: 44px;
   margin: 2px 0 6px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  color: var(--ink);
+  font: 600 0.9375rem / 1 var(--font-ui);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+}
+.resume-offer:active {
+  transform: scale(0.98);
 }
 .btn-ring.is-buffering {
   position: relative;
@@ -713,9 +981,12 @@
   position: absolute;
   inset: -3px;
   border-radius: inherit;
-  border: 1.5px solid transparent;
-  border-top-color: var(--accent);
+  border: 2px solid color-mix(in srgb, var(--on-accent) 28%, transparent);
+  border-top-color: var(--on-accent);
   animation: btn-buffer 0.9s linear infinite;
+}
+.btn-ring.is-buffering:has(.btn-buffer)::after {
+  content: none;
 }
 @keyframes btn-buffer {
   to {
@@ -723,67 +994,111 @@
   }
 }
 .btn-buffer {
-  width: 8px;
-  height: 8px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: var(--accent);
+  background: none;
+  border: 2px solid color-mix(in srgb, var(--on-accent) 28%, transparent);
+  border-top-color: var(--on-accent);
+  animation: btn-buffer 0.9s linear infinite;
 }
+/* The wait card is a .status row. This only keeps it off the sheet edge. */
 .sheet-wait {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 4px 0 12px;
+  margin: var(--sp-2) 0 var(--sp-3);
 }
 .transport {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  max-width: 280px;
-  margin: 0 auto;
+  justify-content: center;
+  gap: 2px;
+  margin: 0;
   padding: 0;
+  min-height: 48px;
 }
 .transport .btn-plain {
-  color: color-mix(in srgb, var(--ink) 72%, transparent);
+  color: var(--ink-2);
 }
 .btn-lg-hit {
   min-width: 44px;
   min-height: 44px;
 }
 .utility {
-  display: flex;
-  justify-content: space-around;
-  padding: 0 0 2px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  justify-items: center;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  padding: 0;
+  border-radius: 0;
+  background: none;
 }
 .util {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 2px;
-  min-width: 64px;
+  min-width: 0;
+  width: auto;
+  max-width: 100%;
   min-height: 44px;
-  padding: 2px 6px;
+  padding: 2px 2px 0;
   border: 0;
-  border-radius: var(--r-pill);
+  border-radius: 0;
   background: none;
-  /* 72 % ink stays muted and clears 3:1 on the glass over every song wash. */
-  color: color-mix(in srgb, var(--ink) 72%, transparent);
-  font: 500 13px/1.2 var(--font-ui);
-  white-space: nowrap;
+  box-shadow: none;
+  /* Full ink. 72 % on this glass measured under AA for 13 px type. */
+  color: var(--ink);
+  font: 500 0.8125rem / 1.15 var(--font-ui);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition:
     transform var(--dur-3) var(--ease-spring),
-    color var(--dur-1),
-    background-color var(--dur-1);
+    color var(--dur-1) var(--ease-out),
+    background-color var(--dur-1) var(--ease-out);
+}
+/* 13 px ink. 10 px at half opacity sat under 4.5:1 on the dock. */
+.util-label {
+  max-width: 100%;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  opacity: 1;
+}
+.util.is-live-task .util-label {
+  color: inherit;
+}
+.util.has-note::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: calc(50% + 8px);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink-3);
 }
 .util:active {
   transform: scale(0.96);
-  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  background: none;
 }
 .util[aria-pressed='true'] {
-  color: var(--accent);
+  color: var(--ink);
+  font-weight: 500;
+  background: none;
+  box-shadow: none;
+}
+/* The four actions already have their own row. A narrower phone only softens the type. */
+@media (max-width: 370px) {
+  .util,
+  .util-label {
+    font-size: 0.8125rem;
+  }
 }
 
 /* One labelled control. It stays in the player (paused or playing) so the stage does not jump. */
@@ -795,27 +1110,35 @@
 }
 .mark-btn {
   display: inline-flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   width: 44px;
-  height: 44px;
+  max-width: 100%;
   min-width: 44px;
   min-height: 44px;
   padding: 0;
   border: 0;
-  border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--ink) 7%, transparent);
-  color: color-mix(in srgb, var(--ink) 58%, transparent);
+  border-radius: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink-2);
+  opacity: 1;
+  font: 600 0.8125rem / 1 var(--font-ui);
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 .mark-btn {
-  transition: transform var(--dur-3) var(--ease-spring), background-color var(--dur-1);
+  transition: transform var(--dur-3) var(--ease-spring), background-color var(--dur-1) var(--ease-out);
 }
 .mark-btn:active:not(:disabled) {
   transform: scale(0.96);
-  background: color-mix(in srgb, var(--ink) 14%, transparent);
+  background: none;
+  opacity: 1;
 }
 .mark-btn:disabled {
   opacity: 0.35;
@@ -832,9 +1155,13 @@
   border-radius: var(--r-xs);
   background: color-mix(in srgb, var(--ink) 10%, transparent);
   color: var(--label-2);
-  font: 600 13px/1 var(--font-ui);
+  font: 600 0.8125rem/1 var(--font-ui);
 }
 @media (min-width: 720px) {
+  .mark-btn {
+    width: auto;
+    padding: 0 10px 0 12px;
+  }
   .mark-kbd {
     display: inline-flex;
   }
@@ -848,7 +1175,7 @@
   min-width: 0;
   min-height: 44px;
   color: var(--label);
-  font: 600 14px/1 var(--font-ui);
+  font: 600 0.875rem/1 var(--font-ui);
   white-space: nowrap;
 }
 .mark-toast-undo {
@@ -859,7 +1186,7 @@
   border-radius: var(--r-pill);
   background: none;
   color: var(--accent);
-  font: 600 14px/1 var(--font-ui);
+  font: 600 0.875rem/1 var(--font-ui);
   cursor: pointer;
   touch-action: manipulation;
 }
@@ -871,7 +1198,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
+  width: 100%;
+  min-height: 32px;
 }
 .scrub-top,
 .scrub-meta {
@@ -895,11 +1223,13 @@
 }
 .scrub-now,
 .scrub-remain {
-  color: color-mix(in srgb, var(--ink) 70%, transparent);
-  font-size: 13px;
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 .scrub-track {
+  position: relative;
   height: 44px;
   display: flex;
   align-items: center;
@@ -909,14 +1239,27 @@
 .scrub-rail {
   position: relative;
   width: 100%;
-  height: 4px;
+  height: 6px;
   border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--ink) 16%, transparent);
+  background: color-mix(in srgb, var(--ink) 28%, transparent);
   overflow: hidden;
-  transition: height var(--dur-2) var(--ease-spring);
+  transition: background-color var(--dur-1) var(--ease-out);
 }
-.scrub.is-dragging .scrub-rail {
-  height: 10px;
+.scrub-played {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--ink) 72%, transparent);
+  transform-origin: left center;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+.scrub.is-dragging .scrub-head {
+  box-shadow: none;
 }
 .scrub-fill {
   position: absolute;
@@ -925,25 +1268,113 @@
   transform-origin: left center;
   transform: scaleX(0);
 }
+.scrub-seg {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  margin-left: -0.5px;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--ink) 65%, transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+.scrub-seg.is-inst {
+  opacity: 0;
+}
+/* Near the thumb only. A full ruler is more than four .scrub-seg and fails D25. */
+.scrub-seg.is-near {
+  width: 2px;
+  margin-left: -1px;
+  background: var(--accent);
+}
+.scrub-rest {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: none;
+  transform-origin: right center;
+  pointer-events: none;
+}
+.scrub-head {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+.scrub-preview {
+  position: absolute;
+  z-index: 6;
+  left: 0;
+  bottom: calc(100% + 8px);
+  width: max-content;
+  max-width: min(240px, 70vw);
+  margin-left: -72px;
+  padding: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.55), inset 0 0 0 1px color-mix(in srgb, var(--ink) 14%, transparent);
+  pointer-events: none;
+  transform-origin: center bottom;
+}
+.scrub-preview-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: max-content;
+  max-width: min(240px, 70vw);
+  padding: 8px 12px;
+}
+@media (hover: none), (pointer: coarse) {
+  .scrub-preview {
+    bottom: calc(100% + 28px);
+  }
+}
+.scrub-preview-part,
+.scrub-preview-line {
+  display: block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+.scrub-preview-part {
+  font-weight: 600;
+  color: var(--ink);
+}
+.scrub-preview-line {
+  color: var(--ink-2);
+}
 .scrub-inst {
   position: absolute;
   top: 0;
   bottom: 0;
   z-index: 1;
-  background: color-mix(in srgb, var(--accent) 70%, var(--ink));
+  background: color-mix(in srgb, var(--ink) 45%, transparent);
 }
 .scrub-meta {
   margin: 0;
 }
 .comment {
-  position: absolute;
-  z-index: 4;
-  left: 16px;
-  right: 16px;
-  bottom: calc(var(--player-h) + 8px);
+  position: static;
+  z-index: 1;
   margin: 0;
-  padding: 4px 16px 6px;
-  border-radius: var(--r-md);
+  padding: 0 2px 2px;
+  border-radius: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  background: none;
+  box-shadow: none;
   color: var(--ink);
 }
 .comment-head {
@@ -961,11 +1392,12 @@
 }
 .comment-kicker {
   flex: none;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 400;
-  font-size: 15px;
-  color: color-mix(in srgb, var(--ink) 72%, transparent);
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-weight: 600;
+  font-size: var(--t-footnote);
+  letter-spacing: 0;
+  color: var(--ink-2);
 }
 .comment-preview {
   flex: 1;
@@ -973,12 +1405,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: color-mix(in srgb, var(--ink) 72%, transparent);
+  color: var(--ink-2);
 }
 .comment-chevron {
   flex: none;
   margin-inline-start: auto;
-  color: color-mix(in srgb, var(--ink) 55%, transparent);
+  color: var(--ink-3);
   transition: transform var(--dur-3) var(--ease-spring);
 }
 .comment:not(.is-open) .comment-chevron {
@@ -1014,6 +1446,34 @@
   opacity: 1;
   transform: none;
 }
+/* On the phone the note is the top edge of the floor. Opening it climbs over the verse and the stage stays put. */
+.player .comment {
+  position: relative;
+  z-index: 1;
+}
+.player .comment.is-open .comment-fold {
+  position: absolute;
+  left: calc(-1 * max(14px, var(--safe-l, env(safe-area-inset-left, 0px))));
+  right: calc(-1 * max(14px, var(--safe-r, env(safe-area-inset-right, 0px))));
+  bottom: calc(100% - 1px);
+  z-index: 2;
+  padding: 10px 14px 6px;
+  border-radius: 24px 24px 0 0;
+  background: var(--dock-solid);
+  border: 1px solid var(--dock-line);
+  border-bottom: 0;
+  box-shadow: 0 -12px 32px -24px rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+}
+.player .comment .comment-head {
+  padding-top: 2px;
+  padding-bottom: 4px;
+}
+.rt-ar.f-persian {
+  line-height: 1.7;
+  font-size: 1.15em;
+}
 .comment-body p {
   margin: 0 0 10px;
 }
@@ -1025,125 +1485,252 @@
 .hint {
   position: absolute;
   z-index: 4;
-  left: 64px;
-  right: 64px;
-  top: calc(env(safe-area-inset-top) + 52px);
+  top: var(--chrome-top);
+  left: 16px;
+  right: 16px;
+  width: min(420px, calc(100% - 32px));
+  margin-inline: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-height: 32px;
-  padding: 0;
+  gap: var(--sp-2);
+  min-height: var(--hit);
+  padding: 0 var(--sp-4);
   border: 0;
-  background: none;
-  color: color-mix(in srgb, var(--ink) 55%, transparent);
-  font-size: 13px;
+  border-radius: var(--r-pill);
+  background: var(--glass-fallback);
+  box-shadow: var(--glass-rim);
+  color: var(--ink-2);
+  font-size: var(--t-footnote);
   cursor: pointer;
 }
-
-/* Wide screens: the player stays a column. The comment becomes a card on the right once there is height for it. */
-@media (min-width: 800px) {
-  .player {
-    left: 50%;
-    right: auto;
-    width: min(640px, calc(100% - 48px));
-    transform: translateX(-50%);
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .hint {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   }
+}
+
+/* From here the page is a column, not a phone floor stretched across the window. */
+@media (min-width: 768px) {
+  .song {
+    --chrome-top: calc(var(--safe-t) + 118px);
+    --player-h: calc(176px + var(--safe-b));
+  }
+  .topbar::before {
+    display: none;
+  }
+  .topbar,
+  .player {
+    left: max(var(--col-left), var(--safe-l));
+    right: max(var(--col-right), var(--safe-r));
+    width: auto;
+    margin: 0;
+    transform: none;
+  }
+  .topbar {
+    top: max(16px, var(--safe-t));
+    padding: 8px 12px;
+    border-radius: 0;
+    border-top: 0;
+    box-shadow: none;
+  }
+  .player {
+    bottom: max(18px, var(--safe-b));
+    padding: 10px 18px 12px;
+  }
+  .player .btn-xl {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+  }
+  .scrub {
+    min-height: 40px;
+  }
+  .scrub-track {
+    height: 40px;
+  }
+  .transport {
+    min-height: 56px;
+  }
+  .player-row {
+    align-items: stretch;
+    width: 100%;
+  }
+  .utility {
+    margin-top: 2px;
+    padding-top: 4px;
+  }
+  .util {
+    flex-direction: row;
+    gap: 6px;
+    height: auto;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: var(--t-footnote);
+  }
+  .util[aria-pressed='true'] {
+    background: none;
+    box-shadow: none;
+    color: var(--ink);
+  }
+  .now-art {
+    width: 48px;
+    height: 48px;
+  }
+  .player-alert {
+    left: var(--col-left, 0px);
+    right: var(--col-right, 0px);
+    width: min(540px, calc(100% - 48px));
+    margin-inline: auto;
+    transform: none;
+  }
+  .hint {
+    left: var(--col-left);
+    right: var(--col-right);
+    width: auto;
+  }
+}
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  .util {
+    height: 32px;
+    min-height: 32px;
+  }
+}
+
+/* The margin note is a glass sheet. Its width and the stage beside it come from stageFrame. */
+.comment.is-margin {
+  position: fixed;
+  z-index: 5;
+  top: max(16px, var(--safe-t, 0px));
+  right: var(--note-right, var(--note-inset, 16px));
+  bottom: auto;
+  left: auto;
+  width: var(--note-w);
+  height: auto;
+  max-height: calc(100dvh - max(16px, var(--safe-t, 0px)) - 36px);
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 16px 18px 20px;
+  border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--bg-elevated) 78%, transparent);
+  box-shadow: var(--glass-shadow), var(--glass-rim);
+  color: var(--ink);
+  -webkit-backdrop-filter: blur(28px) saturate(var(--glass-saturate));
+  backdrop-filter: blur(28px) saturate(var(--glass-saturate));
+}
+.comment.is-margin .comment-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 32px;
+  padding: 0 0 8px;
+  pointer-events: auto;
+  cursor: default;
+}
+.close-disc {
+  position: relative;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  margin-inline-start: auto;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  color: var(--ink);
+  cursor: pointer;
+}
+.close-disc:active {
+  transform: scale(0.92);
+}
+
+.comment.is-margin .comment-body {
+  max-height: min(52dvh, 480px);
+  flex: 0 1 auto;
+  overflow: auto;
+  opacity: 1;
+  transform: none;
+  padding-bottom: 8px;
+  line-height: 1.55;
+  font-size: var(--lyric-note);
 }
 
 @media (min-width: 1100px) and (min-height: 641px) {
-  .song.has-comment .scene-stage {
-    right: 392px;
-    bottom: calc(var(--player-h) + 16px);
+  .now-art {
+    width: 52px;
+    height: 52px;
   }
-  .comment {
-    left: auto;
-    right: 20px;
-    top: calc(var(--chrome-top) + 8px);
-    bottom: auto;
-    width: 340px;
-    height: auto;
-    max-height: calc(100dvh - var(--chrome-top) - var(--player-h) - 28px);
-    display: flex;
-    flex-direction: column;
-    padding: 8px 18px 16px;
-  }
-  .comment-head {
-    pointer-events: none;
-    cursor: default;
-  }
-  .comment-preview,
-  .comment-chevron {
-    display: none;
-  }
-  .comment-fold {
-    grid-template-rows: 1fr;
-    flex: 0 1 auto;
-    min-height: 0;
-    overflow: hidden;
-    transition: none;
-  }
-  .comment-body {
-    max-height: calc(100dvh - var(--chrome-top) - var(--player-h) - 140px);
-    height: auto;
-    overflow: auto;
-    opacity: 1;
-    transform: none;
-  }
-  .song.has-comment .player {
-    left: 24px;
-    right: auto;
-    width: min(640px, calc(100% - 430px));
-    transform: none;
-  }
-  .song.has-comment .hint {
-    left: 64px;
-    right: 456px;
+  .player .btn-xl {
+    width: 64px;
+    height: 64px;
+    min-width: 64px;
+    min-height: 64px;
   }
 }
 
-/* Short landscape: the car screen. One capsule row, a one-line footnote, a large line. */
-@media (min-width: 700px) and (max-height: 640px) {
+/* Short landscape: the car screen. One capsule row, a one-line footnote, a large line.
+   Narrow phones (SE landscape) share this row; the 700 px query missed them. */
+@media (min-width: 700px) and (max-height: 640px),
+  (max-width: 699px) and (max-height: 520px) and (orientation: landscape),
+  (max-width: 480px) and (max-height: 400px) {
   .song {
-    --chrome-top: calc(var(--safe-t) + 44px);
-    /* 84 px capsule plus the 10 px lift off the bottom edge. */
-    --player-h: calc(94px + var(--safe-b));
+    --col-left: 12px;
+    --col-right: 12px;
+    --chrome-top: calc(var(--safe-t) + 64px);
+    /* One capsule row, lifted just clear of the stage so the next line has the lower half. */
+    --player-h: calc(78px + var(--safe-b));
   }
-  .topbar {
-    top: calc(var(--safe-t) + 4px);
-    padding: 4px 6px;
-  }
-  .topbar-section {
+  .now-art {
     display: none;
   }
-  .scene-stage {
-    bottom: calc(var(--player-h) + 8px);
-  }
-  .song.has-comment .scene-stage {
-    right: 0;
-    bottom: calc(var(--player-h) + 48px);
-  }
-  .song.has-comment.comment-open .scene-stage {
-    bottom: calc(var(--player-h) + 120px);
-  }
-  .song:has(.player-alert) .scene-stage {
-    top: calc(var(--chrome-top) + 48px);
+  .topbar {
+    top: max(4px, var(--safe-t));
+    left: max(12px, var(--safe-l));
+    right: max(12px, var(--safe-r));
+    width: auto;
+    margin-inline: 0;
+    padding: 4px 6px;
+    border-radius: var(--r-lg);
   }
   .player,
   .song.has-comment .player {
-    left: 12px;
-    right: 12px;
+    left: max(12px, var(--safe-l));
+    right: max(12px, var(--safe-r));
+    bottom: max(10px, var(--safe-b));
     width: auto;
-    height: 84px;
-    max-height: 110px;
+    height: auto;
+    max-height: none;
     box-sizing: border-box;
     transform: none;
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 6px;
-    padding: 6px 10px;
-    flex-wrap: nowrap;
+    padding: 4px 10px;
+    flex-wrap: wrap;
+    border-radius: var(--r-lg);
   }
+  .player .comment,
+  .player .floor-status,
+  .player .mark-toast {
+    position: static;
+    flex: 1 0 100%;
+    order: -1;
+    width: auto;
+    max-width: none;
+    min-height: 36px;
+    border-radius: 0;
+  }
+  .player-row,
   .player .scrub,
   .player .scrub-top,
   .player .scrub-meta,
@@ -1152,14 +1739,35 @@
     display: contents;
   }
   .player .scrub-now { order: 1; }
-  .player .mark-bar { order: 2; flex: none; min-height: 0; }
-  .player .scrub-track { order: 3; flex: 1 1 auto; height: 36px; }
-  .player .scrub-remain { order: 4; }
+  .player .scrub-track { order: 2; flex: 1 1 auto; min-width: 0; height: 36px; }
+  .player .scrub-remain { order: 3; }
   .player .transport .btn:nth-child(1) { order: 5; }
   .player .transport .btn:nth-child(2) { order: 6; }
   .player .transport .btn:nth-child(3) { order: 7; }
-  .player .util { order: 8; }
+  .player .mark-bar { display: contents; }
+  .player .mark-btn { order: 4; width: 44px; min-width: 44px; padding: 0; justify-content: center; }
   .mark-kbd { display: none; }
+  .scene-stage {
+    left: max(12px, var(--safe-l));
+    width: calc(100vw - max(12px, var(--safe-l)) - max(12px, var(--safe-r)));
+    max-width: none;
+    bottom: calc(var(--player-h) + 6px);
+  }
+  .player .comment .comment-fold,
+  .player .comment.is-open .comment-fold {
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .player .util { order: 9; }
   .player .btn-xl {
     width: 48px;
     height: 48px;
@@ -1175,36 +1783,13 @@
     min-height: 44px;
     padding: 0;
     flex: none;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
   }
-  .util-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
-  .comment {
-    left: 12px;
-    right: auto;
-    top: auto;
-    bottom: calc(var(--player-h) + 4px);
-    width: max-content;
-    max-width: calc(100% - 24px);
-    display: flex;
-    align-items: center;
-    padding: 0 12px 0 14px;
-    border-radius: var(--r-pill);
-    min-height: 36px;
-  }
-  .comment.is-open {
-    right: 12px;
-    width: auto;
-    max-height: 108px;
-    border-radius: var(--r-md);
-    align-items: stretch;
-    flex-direction: column;
-    padding: 0 14px 6px;
+  .player .util[aria-pressed='true'] {
+    background: none;
+    color: var(--ink);
   }
   .comment-head {
     pointer-events: auto;
@@ -1214,7 +1799,7 @@
     padding: 4px 0;
     gap: 4px;
   }
-  .comment-kicker { font-size: 15px; }
+  .comment-kicker { font-size: var(--t-subhead); }
   .comment-preview { display: none; }
   .comment-chevron {
     display: block;
@@ -1256,17 +1841,33 @@
   }
 }
 
+/* land-15 fits the four names on the row. A shorter landscape phone keeps glyphs. */
+@media (max-width: 799px) and (max-height: 640px) {
+  .util-label,
+  .mark-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+@media (min-width: 800px) and (max-height: 640px) {
+  .player { flex-wrap: nowrap; }
+  .player .util {
+    flex-direction: row;
+    width: auto;
+    gap: 4px;
+    padding: 0 6px;
+  }
+  .util-label { font-size: 0.75rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .comment-fold,
   .comment-chevron {
     transition: none;
-  }
-}
-@media (prefers-reduced-transparency: reduce) {
-  .comment {
-    background: var(--bg-elevated);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
   }
 }
 
@@ -1281,20 +1882,21 @@
 .sheet-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.28);
+  background: rgba(0, 0, 0, 0.45);
   opacity: 0;
 }
 .sheet {
   position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: calc(env(safe-area-inset-bottom) + 10px);
+  left: max(12px, env(safe-area-inset-left, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
   max-width: 560px;
   margin: 0 auto;
   max-height: calc(100dvh - env(safe-area-inset-top) - 36px);
   border-radius: var(--r-lg);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   outline: none;
   transform: translate3d(0, 110%, 0);
   will-change: transform;
@@ -1310,17 +1912,22 @@
   }
 }
 .sheet-head {
-  padding: 8px 16px 4px;
+  padding: var(--sp-2) var(--sp-4) var(--sp-2);
   touch-action: none;
   cursor: grab;
   flex: none;
 }
 .sheet-grabber {
-  width: 40px;
+  width: 36px;
   height: 5px;
   border-radius: var(--r-pill);
-  background: var(--label-3);
-  margin: 0 auto 6px;
+  background: var(--ink);
+  opacity: 0.62;
+  margin: 0 auto var(--sp-2);
+}
+html.is-sheet-drag .sheet-grabber {
+  width: 48px;
+  opacity: 0.95;
 }
 .sheet-titlebar {
   display: grid;
@@ -1366,26 +1973,46 @@
   color: var(--label-2);
   background: color-mix(in srgb, var(--ink) 8%, transparent);
 }
-/* The page under a sheet steps back. --sheet-p is painted each frame by the spring, so there is no CSS transition on top. */
-html[data-sheet='1'] .song,
-html[data-sheet='1'] .library,
-html[data-sheet='1'] .ig,
-html[data-sheet='1'] .method,
-html[data-sheet='1'] .empty {
-  transform: scale(calc(1 - 0.04 * var(--sheet-p, 0)));
-  border-radius: calc(28px * var(--sheet-p, 0));
-  transform-origin: center center;
+.sheet-done {
+  justify-self: end;
+  min-height: 44px;
+  padding: 0 0 0 8px;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  font-style: normal;
+  font-variant-caps: normal;
+  font-feature-settings: normal;
+  letter-spacing: 0;
+  line-height: 1.2;
+  text-transform: none;
+  white-space: nowrap;
+  cursor: pointer;
 }
-html.is-sheet-drag .song,
-html.is-sheet-drag .library,
-html.is-sheet-drag .ig,
-html.is-sheet-drag .method,
-html.is-sheet-drag .empty {
-  transition: none;
+.sheet-done:active {
+  opacity: 0.55;
 }
+.sheet--medium {
+  max-height: min(52dvh, 520px);
+}
+.note-sheet-body {
+  max-height: none;
+  overflow: auto;
+  opacity: 1;
+  transform: none;
+}
+.note-empty {
+  margin: 8px 0 16px;
+  color: var(--ink-2);
+  font-size: var(--t-subhead);
+}
+/* The sheet spring moves only the sheet. Scaling the page under it missed the frame budget. */
 .sheet-body {
   overflow: auto;
-  padding: 0 16px 22px;
+  padding: 0 var(--sp-4) var(--sp-6);
   overscroll-behavior: contain;
 }
 .set-stage {
@@ -1396,50 +2023,8 @@ html.is-sheet-drag .empty {
   grid-area: 1 / 1;
   min-width: 0;
 }
-.set-page.is-enter {
-  animation: set-in var(--dur-3) var(--ease-spring) both;
-}
 .set-page.is-leave {
-  animation: set-out var(--dur-3) var(--ease-spring) both;
   pointer-events: none;
-}
-.set-stage.is-back .set-page.is-enter {
-  animation-name: set-in-back;
-}
-.set-stage.is-back .set-page.is-leave {
-  animation-name: set-out-back;
-}
-@keyframes set-in {
-  from {
-    opacity: 0;
-    transform: translate3d(22%, 0, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes set-out {
-  to {
-    opacity: 0;
-    transform: translate3d(-12%, 0, 0);
-  }
-}
-@keyframes set-in-back {
-  from {
-    opacity: 0;
-    transform: translate3d(-22%, 0, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes set-out-back {
-  to {
-    opacity: 0;
-    transform: translate3d(12%, 0, 0);
-  }
 }
 @keyframes rise {
   from {
@@ -1450,15 +2035,6 @@ html.is-sheet-drag .empty {
     opacity: 1;
     transform: none;
   }
-}
-.set-page.is-enter .group {
-  animation: rise var(--dur-3) var(--ease-spring) both;
-}
-.set-page.is-enter .group:nth-child(2) {
-  animation-delay: 40ms;
-}
-.set-page.is-enter .group:nth-child(3) {
-  animation-delay: 80ms;
 }
 .tl-row {
   animation: rise var(--dur-3) var(--ease-spring) both;
@@ -1476,13 +2052,13 @@ html.is-sheet-drag .empty {
 }
 
 .group {
-  margin-top: 20px;
+  margin-top: var(--sp-6);
 }
 .group:first-child {
-  margin-top: 6px;
+  margin-top: var(--sp-2);
 }
 .group-header {
-  margin: 0 0 7px 16px;
+  margin: 0 0 var(--sp-2) var(--sp-4);
   font-weight: 400;
   color: var(--label-2);
 }
@@ -1499,7 +2075,7 @@ html.is-sheet-drag .empty {
   text-align: center;
 }
 .info-original {
-  font-size: 26px;
+  font-size: 1.625rem;
   line-height: 2.15;
 }
 .info-version {
@@ -1586,13 +2162,13 @@ html.is-sheet-drag .empty {
   border-top: 0.5px solid var(--separator);
 }
 .part-title {
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1.25;
   color: var(--ink);
 }
 .part-lang,
 .part-kicker {
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.3;
   color: var(--label-2);
 }
@@ -1605,26 +2181,26 @@ html.is-sheet-drag .empty {
 .part-author,
 .part-book-ru,
 .part-missing {
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.35;
   color: var(--ink);
 }
 .part-original {
   display: block;
   margin-top: 2px;
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1.4;
   color: var(--ink);
 }
 .part-original.f-mushaf,
 .part-original.f-persian,
 .part-original.f-nastaliq {
-  font-size: 20px;
+  font-size: 1.25rem;
   line-height: 2.05;
 }
 .part-ref {
   margin-top: 2px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.4;
   color: var(--accent);
 }
@@ -1635,7 +2211,7 @@ html.is-sheet-drag .empty {
   text-underline-offset: 2px;
 }
 .part-note {
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.45;
   color: color-mix(in srgb, var(--ink) 78%, transparent);
 }
@@ -1647,13 +2223,13 @@ html.is-sheet-drag .empty {
   font-size: 1.15em;
 }
 .group-body {
-  border-radius: var(--r-md);
-  overflow: hidden;
-  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  border-radius: 0;
+  overflow: visible;
+  background: none;
   box-shadow: none;
 }
 .group-footer {
-  margin: 7px 16px 0;
+  margin: var(--sp-2) var(--sp-4) 0;
   color: var(--label-2);
 }
 .row {
@@ -1663,7 +2239,7 @@ html.is-sheet-drag .empty {
   gap: 12px;
   width: 100%;
   min-height: 52px;
-  padding: 9px 16px;
+  padding: var(--sp-2) var(--sp-4);
   border: 0;
   background: none;
   color: var(--label);
@@ -1685,7 +2261,7 @@ html.is-sheet-drag .empty {
   border-radius: var(--r-sm);
   transition:
     transform var(--dur-3) var(--ease-spring),
-    background-color var(--dur-1);
+    background-color var(--dur-1) var(--ease-out);
 }
 .row--button:active {
   transform: scale(0.96);
@@ -1746,7 +2322,7 @@ html.is-sheet-drag .empty {
   overflow: hidden;
 }
 .mark-line.f-mushaf {
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 2.05;
 }
 .mark-section {
@@ -1778,6 +2354,13 @@ html.is-sheet-drag .empty {
 .row-detail {
   color: var(--label-2);
 }
+/* Settings subtitles stay one line. «О песне» is outside .set-page and may wrap. */
+.set-page .row-detail {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .row-icon {
   width: 26px;
   display: flex;
@@ -1788,6 +2371,7 @@ html.is-sheet-drag .empty {
 .row-chevron {
   color: var(--label-3);
   flex: none;
+  display: block;
 }
 .row-accessory {
   flex: none;
@@ -1806,13 +2390,13 @@ html.is-sheet-drag .empty {
   padding: 12px 16px 14px;
 }
 .choice-label {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 600;
 }
 .choice-hint {
   margin: 0;
   color: var(--label-2);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.35;
   font-weight: 400;
 }
@@ -1857,7 +2441,7 @@ html.is-sheet-drag .empty {
   display: grid;
   grid-template-columns: repeat(var(--n), 1fr);
   width: 100%;
-  min-height: 36px;
+  min-height: 44px;
   height: auto;
   padding: 2px;
   border-radius: var(--r-pill);
@@ -1889,9 +2473,10 @@ html.is-sheet-drag .empty {
   position: relative;
   z-index: 1;
   border: 0;
-  padding: 0 4px;
+  min-height: 44px;
+  padding: 4px;
   background: none;
-  font-size: 14px;
+  font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: -0.15px;
   white-space: nowrap;
@@ -1907,12 +2492,12 @@ html.is-sheet-drag .empty {
 }
 .seg.seg--lines .seg-item {
   white-space: normal;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.2;
   padding: 6px 3px;
 }
 .seg-sample {
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1;
 }
 
@@ -1945,20 +2530,14 @@ html.is-sheet-drag .empty {
   background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 .font-opt-sample {
-  font-size: 26px;
+  font-size: 1.625rem;
   line-height: 1.45;
   font-weight: 400;
   font-synthesis: none;
 }
-.font-opt-name {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.3;
-  color: color-mix(in srgb, var(--ink) 70%, transparent);
-}
 .font-opt-note {
   font-family: var(--font-ui);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.3;
   color: var(--label-2);
 }
@@ -2090,15 +2669,16 @@ html.is-sheet-drag .empty {
   padding: 0;
 }
 .tl-section {
-  padding: 18px 8px 6px;
+  padding: var(--sp-5) var(--sp-2) var(--sp-2);
   color: var(--accent);
   font-weight: 600;
 }
 .tl-row {
   display: flex;
-  gap: 12px;
+  gap: var(--sp-3);
   width: 100%;
-  padding: 10px 8px;
+  min-height: var(--hit);
+  padding: var(--sp-3) var(--sp-2);
   border: 0;
   border-radius: var(--r-sm);
   background: none;
@@ -2110,8 +2690,52 @@ html.is-sheet-drag .empty {
 .tl-row:active {
   background: var(--fill-3);
 }
+.tl-gap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  margin: 2px 0;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  color: color-mix(in srgb, var(--ink) 46%, transparent);
+  font: 500 0.8125rem / 1.35 var(--font-ui);
+  text-align: center;
+  cursor: pointer;
+}
+.tl-gap-time {
+  color: color-mix(in srgb, var(--ink) 40%, transparent);
+}
+.tl-gap.is-current {
+  color: var(--ink);
+}
+.tl-gap:active {
+  opacity: 0.6;
+}
+.tl {
+  padding-top: 8px;
+}
+.sheet-head {
+  position: relative;
+  z-index: 2;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+  background: var(--sheet-fallback);
+}
+.tl-row:not(.is-current) .tl-orig,
+.tl-row:not(.is-current) .tl-tr,
+.tl-row:not(.is-current) .tl-inst {
+  color: color-mix(in srgb, var(--ink) 48%, transparent);
+}
 .tl-row.is-current {
-  background: color-mix(in srgb, var(--accent) 13%, transparent);
+  background: none;
+  box-shadow: none;
+}
+.tl-row.is-current .tl-orig {
+  color: var(--ink);
+  font-size: 1.08em;
 }
 .tl-repeat {
   align-self: flex-start;
@@ -2121,9 +2745,12 @@ html.is-sheet-drag .empty {
   color: var(--label-2);
 }
 .tl-time {
-  min-width: 36px;
-  padding-top: 5px;
-  color: var(--label-3);
+  align-self: first baseline;
+  min-width: 40px;
+  padding-top: 0.35em;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--ink) 36%, transparent);
 }
 .tl-text {
   display: flex;
@@ -2133,16 +2760,16 @@ html.is-sheet-drag .empty {
   min-width: 0;
 }
 .tl-orig.f-serif {
-  font-size: 21px;
+  font-size: 1.3125rem;
   line-height: 1.25;
 }
 .tl-orig.f-mushaf,
 .tl-orig.f-persian {
-  font-size: 22px;
+  font-size: 1.375rem;
   line-height: 2.15;
 }
 .tl-orig.f-nastaliq {
-  font-size: 19px;
+  font-size: 1.1875rem;
   line-height: 2.45;
 }
 
@@ -2150,25 +2777,74 @@ html.is-sheet-drag .empty {
 .library {
   max-width: 1120px;
   margin: 0 auto;
-  padding: calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + 40px);
+  padding:
+    max(12px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    calc(40px + env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
+}
+.lib-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
 }
 .lib-titlebar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 6px 4px 10px;
+  margin: 0;
+  gap: var(--sp-3);
 }
-.lib-titlebar h1 {
+.lib-title {
   margin: 0;
   font-family: var(--font-serif);
-  font-weight: 500;
-  font-size: clamp(42px, 12vw, 72px);
-  line-height: 1.02;
-  letter-spacing: -0.03em;
+  font-weight: 600;
+  font-size: var(--t-display);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
 }
 .lib-actions {
   display: flex;
-  gap: 10px;
+  gap: var(--sp-2);
+}
+.lib-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: var(--r-pill);
+  color: var(--ink-2);
+  background: var(--glass-fallback);
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  box-shadow: var(--glass-rim), 0 8px 18px -14px rgba(26, 20, 15, 0.28);
+  text-decoration: none;
+}
+.lib-nav-label {
+  display: none;
+  font-size: var(--t-footnote);
+  font-weight: 600;
+  color: var(--ink);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lib-nav {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  }
+}
+@media (min-width: 800px) {
+  .lib-nav {
+    width: auto;
+    padding: 0 16px 0 12px;
+  }
+  .lib-nav-label {
+    display: inline;
+  }
 }
 .search {
   display: flex;
@@ -2177,7 +2853,7 @@ html.is-sheet-drag .empty {
   height: 44px;
   padding: 0 2px;
   border-bottom: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
-  color: color-mix(in srgb, var(--ink) 55%, transparent);
+  color: var(--ink-3);
 }
 .search-input {
   flex: 1;
@@ -2190,7 +2866,7 @@ html.is-sheet-drag .empty {
   font-size: var(--t-body);
 }
 .search-input::placeholder {
-  color: var(--label-2);
+  color: color-mix(in srgb, var(--ink) 68%, transparent);
 }
 .search-input::-webkit-search-cancel-button {
   filter: grayscale(1);
@@ -2205,18 +2881,25 @@ html.is-sheet-drag .empty {
   z-index: 0;
 }
 .lib-head,
-.lib-list,
-.lib-empty,
-.lib-foot {
+.lib-hero,
+.lib-shelf,
+.lib-empty {
   position: relative;
   z-index: 1;
 }
 .search {
-  border: 0;
+  width: min(520px, 100%);
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
   border-radius: var(--r-pill);
   padding: 0 14px;
   background: var(--glass-fallback);
   box-shadow: var(--glass-shadow), var(--glass-rim);
+}
+.search:focus-within {
+  box-shadow:
+    var(--glass-shadow),
+    var(--glass-rim),
+    0 0 0 1px color-mix(in srgb, var(--ink) 28%, transparent);
 }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .search {
@@ -2225,112 +2908,212 @@ html.is-sheet-drag .empty {
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   }
 }
-.lib-list {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin: 22px 0 0;
-  padding: 0;
-}
-@media (min-width: 700px) {
-  .lib-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-@media (min-width: 1100px) {
-  .lib-list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-.lib-tile {
-  position: relative;
+.lib-hero {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
+  margin-top: 28px;
+  padding: 12px;
+  border-radius: var(--r-lg);
   color: inherit;
-  transition: transform var(--dur-3) var(--ease-spring);
+  text-decoration: none;
+  background: var(--bg-elevated);
+  box-shadow: none;
+  transition: transform var(--dur-3) var(--ease-spring), background-color var(--dur-1) var(--ease-out);
 }
-.lib-tile:active {
-  transform: scale(0.96);
+.lib-hero:active {
+  transform: scale(0.985);
 }
-/* Official covers carry their own lettering, so the caption sits under the art, not on it. */
-.lib-tile-cover {
+.lib-hero-cover {
   display: block;
   width: 100%;
   aspect-ratio: 1;
-  object-fit: cover;
+  object-fit: contain;
+  background: var(--bg-elevated);
   border-radius: var(--r-md);
-  box-shadow: var(--glass-shadow, 0 8px 24px rgb(0 0 0 / 0.28));
+  box-shadow: none;
 }
-.lib-tile-cap {
+.lib-hero-bleed {
+  display: none;
+}
+.lib-hero-copy {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  padding: 0 2px;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  padding: 2px 6px 8px;
 }
-.lib-tile-title,
-.lib-tile-version,
-.lib-tile-artist {
-  overflow: hidden;
-}
-.lib-tile-title {
-  font-size: 17px;
+.lib-hero-title {
+  font-family: var(--font-serif);
   font-weight: 600;
-  line-height: 1.15;
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  line-height: 1.08;
   letter-spacing: -0.02em;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  text-wrap: balance;
+}
+.lib-hero-version,
+.lib-hero-artist,
+.lib-hero-langs {
+  font-size: var(--t-subhead);
+  line-height: 1.35;
+  color: var(--ink-2);
   white-space: normal;
+  text-wrap: pretty;
 }
-.lib-tile-version {
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.25;
-  color: color-mix(in srgb, var(--ink) 66%, transparent);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+.lib-hero-langs {
+  color: var(--ink-3);
+  font-size: var(--t-footnote);
+}
+.lib-hero-artist {
+  color: var(--ink);
+  font-weight: 600;
+}
+.lib-hero-go {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 6px;
+  padding: 0 18px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: var(--t-subhead);
+  font-weight: 600;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 40%, transparent),
+    0 10px 22px -12px color-mix(in srgb, var(--accent) 70%, black);
+}
+.lib-shelf {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 0;
+}
+.lib-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  min-height: 116px;
+  padding: 10px;
+  border-radius: var(--r-md);
+  color: inherit;
+  text-decoration: none;
+  background: var(--bg-elevated);
+  box-shadow: none;
+  transition: transform var(--dur-3) var(--ease-spring), background-color var(--dur-1) var(--ease-out);
+}
+.lib-row:active {
+  transform: scale(0.985);
+}
+.lib-row-cover {
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+  object-fit: contain;
+  background: var(--bg-elevated);
+}
+.lib-row-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.lib-row-lead {
+  font-family: var(--font-serif);
+  font-size: var(--t-title3);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.lib-row-version,
+.lib-row-artist {
+  font-size: var(--t-footnote);
+  line-height: 1.35;
+  color: var(--ink-2);
   white-space: normal;
+  text-wrap: pretty;
 }
-.lib-tile-artist {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 14px;
-  line-height: 1.3;
-  color: color-mix(in srgb, var(--ink) 66%, transparent);
+.lib-row-version {
+  color: var(--ink-3);
 }
-/* Short landscape: the large title plus a two-line version used to push the artist off the first screen. */
+@media (hover: hover) and (pointer: fine) {
+  .lib-hero-cover,
+  .lib-row-cover {
+    transition: transform var(--dur-3) var(--ease-spring);
+  }
+  .lib-hero:hover .lib-hero-cover,
+  .lib-row:hover .lib-row-cover {
+    transform: translateY(-4px) scale(1.015);
+  }
+  .lib-hero:active,
+  .lib-row:active {
+    transform: scale(0.985);
+  }
+}
+@media (min-width: 800px) {
+  .lib-hero {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 28px;
+    padding: 16px;
+  }
+  .lib-hero-cover {
+    width: min(42%, 380px);
+    flex: none;
+  }
+  .lib-hero-copy {
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 12px 8px 4px;
+  }
+  .lib-hero-title {
+    font-size: clamp(2rem, 2.6vw, 2.75rem);
+    letter-spacing: -0.03em;
+  }
+  .lib-hero-go {
+    margin-top: 16px;
+  }
+  .lib-shelf {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+}
 @media (min-width: 700px) and (max-height: 640px) {
-  .lib-titlebar {
-    margin: 0 4px 6px;
+  .lib-hero {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 12px;
+    padding: 8px;
   }
-  .lib-titlebar h1 {
-    font-size: 52px;
+  .lib-hero-cover {
+    width: 120px;
+    height: 120px;
+    aspect-ratio: auto;
   }
-  .lib-list {
+  .lib-hero-title {
+    font-size: 1.625rem;
+  }
+  .lib-shelf {
     margin-top: 12px;
   }
-  .lib-tile {
-    gap: 4px;
-  }
 }
-.lib-tile .chip {
+.lib-hero .chip,
+.lib-row .chip {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 18px;
+  left: 18px;
   margin: 0;
   background: var(--glass-fallback);
   color: var(--label);
   box-shadow: var(--glass-rim);
-}
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .lib-tile .chip {
-    background: var(--glass-tint-strong);
-    -webkit-backdrop-filter: blur(16px) saturate(var(--glass-saturate));
-    backdrop-filter: blur(16px) saturate(var(--glass-saturate));
-  }
 }
 .card {
   display: flex;
@@ -2338,44 +3121,12 @@ html.is-sheet-drag .empty {
   gap: 9px;
   color: inherit;
 }
-.card-cover {
-  position: relative;
-  border-radius: var(--r-md);
-  overflow: hidden;
-  box-shadow: 0 10px 28px -14px rgba(0, 0, 0, 0.45);
-  transition: transform var(--dur-3) var(--ease-spring);
-}
-.card:active .card-cover {
-  transform: scale(0.97);
-}
-.card-play {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  padding-left: 2px;
-}
 .card-text {
   display: flex;
   flex-direction: column;
   gap: 1px;
   padding: 0 2px;
   min-width: 0;
-}
-.card-title,
-.card-sub {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.card-meta {
-  margin-top: 2px;
 }
 .chip {
   align-self: flex-start;
@@ -2390,12 +3141,8 @@ html.is-sheet-drag .empty {
   color: color-mix(in srgb, var(--system-orange) 70%, var(--label));
 }
 .lib-empty {
-  margin-top: 40px;
-  text-align: center;
-}
-.lib-foot {
-  margin-top: 48px;
-  text-align: center;
+  margin: var(--sp-10) auto 0;
+  width: min(420px, 100%);
 }
 
 /* ===================== Methodology ===================== */
@@ -2513,7 +3260,7 @@ html.is-sheet-drag .empty {
   background: var(--bg-elevated);
   border: 0.5px solid var(--separator);
   overflow: auto;
-  font-size: 13.5px;
+  font-size: 0.84375rem;
   line-height: 1.5;
 }
 .doc pre code {
@@ -2566,20 +3313,1070 @@ html.is-sheet-drag .empty {
   text-align: right;
 }
 
-/* Library to song: a crossfade, so the paper never flashes between the two skies. */
-::view-transition-old(root) {
-  animation: vt-out var(--dur-3) var(--ease-spring) both;
-}
-::view-transition-new(root) {
-  animation: vt-in var(--dur-3) var(--ease-spring) both;
-}
-@keyframes vt-out {
-  to {
-    opacity: 0;
+/* The cover flies as its own image. A view-transition snapshot stays off
+   (sharedTransition is false): it was a long frame and a black root on WebKit. */
+
+@keyframes now-live {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  46% {
+    transform: scale(1.06);
   }
 }
-@keyframes vt-in {
-  from {
+
+/* The breathe lives on the glyph wrapper. The paths morph on their own transform. */
+html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
+  animation: now-live 1.4s var(--ease-spring) infinite;
+}
+
+/* Phone portrait: header and floor are islands. The field stays in the margins. */
+@media (max-width: 699px) and (min-height: 521px),
+  (max-width: 767px) and (min-height: 641px) {
+  .topbar.lg-host {
+    top: 0;
+    left: 0;
+    right: 0;
+    width: auto;
+    padding:
+      max(8px, var(--safe-t))
+      max(10px, var(--safe-r))
+      8px
+      max(8px, var(--safe-l));
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .player.lg-host {
+    left: max(10px, var(--safe-l));
+    right: max(10px, var(--safe-r));
+    bottom: max(4px, var(--safe-b));
+    width: auto;
+    border-radius: 26px;
+    border-top: 0;
+    overflow: visible;
+  }
+  .player .comment.is-open .comment-fold {
+    left: 0;
+    right: 0;
+    border-radius: 22px 22px 0 0;
+  }
+  .lib-hero {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    margin-top: 8px;
+    padding: 8px;
+  }
+  .lib-hero-cover {
+    width: 96px;
+    height: 96px;
+    flex: none;
+    aspect-ratio: auto;
+  }
+  .lib-hero-title {
+    font-size: 1.45rem;
+  }
+  .lib-hero-go {
+    min-height: 36px;
+    margin-top: 2px;
+  }
+  /* The last card used to end inside the song floor's box (shelf bottom 707,
+     floor top 688). That strip is the whole of D31's library-only edges, and
+     one frame of the arriving track lands on them. The shelf stops above the
+     floor. Covers stay whole; more than one song is still on screen. */
+  .lib-shelf {
+    margin-top: 8px;
+    gap: 8px;
+  }
+}
+
+/* iPhone SE: the hero is a row, the shelf is short, the title is a poster not a billboard. */
+@media (max-width: 389px) {
+  .lib-title {
+    font-size: 2rem;
+  }
+  .lib-hero {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    padding: 8px;
+  }
+  .lib-hero-cover {
+    width: 112px;
+    height: 112px;
+    flex: none;
+    aspect-ratio: auto;
+  }
+  .lib-hero-copy {
+    padding: 2px 2px 4px;
+  }
+  .lib-hero-title {
+    font-size: 1.35rem;
+  }
+  .lib-hero-go {
+    min-height: 36px;
+    margin-top: 2px;
+    padding: 0 14px;
+  }
+  .lib-row {
+    grid-template-columns: 72px minmax(0, 1fr);
+    min-height: 88px;
+    gap: 10px;
+  }
+  .lib-row-cover {
+    width: 72px;
+    height: 72px;
+  }
+  /* 320 px keeps two columns. The names stay; the boxes do not. */
+  .utility {
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 8px;
+  }
+  .util {
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 6px;
+    padding: 0 4px;
+    background: none;
+    box-shadow: none;
+  }
+  /* A doubled system size must not turn the header into a stack of wrapped lines. */
+  .topbar-song,
+  .topbar-version,
+  .topbar-who {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* 150% type and above: one line, or a short phone loses the verse between header and floor. */
+.song.is-big-type .topbar-song,
+.song.is-big-type .topbar-version,
+.song.is-big-type .topbar-who {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Phone landscape library: a filmstrip, not a stacked list under a short sky. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .library {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+  .lib-hero {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 8px;
+    padding: 8px;
+    gap: 12px;
+  }
+  .lib-hero-cover {
+    width: 96px;
+    height: 96px;
+    aspect-ratio: auto;
+    flex: none;
+  }
+  .lib-hero-title {
+    font-size: 1.35rem;
+  }
+  .lib-shelf {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+  .lib-shelf > li {
+    flex: 0 0 min(280px, 72vw);
+    scroll-snap-align: start;
+  }
+  .lib-row {
+    min-height: 76px;
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+  .lib-row-cover {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* iPad: a hall. The poster keeps the left, the shelf keeps the right. The song stays a column. */
+@media (min-width: 768px) and (max-width: 1099px) and (min-height: 700px) {
+  .library {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+    grid-template-areas:
+      'head head'
+      'hero shelf';
+    column-gap: 28px;
+    align-items: start;
+    max-width: 1080px;
+  }
+  .lib-head {
+    grid-area: head;
+  }
+  .lib-hero {
+    grid-area: hero;
+    flex-direction: column;
+    margin-top: 8px;
+  }
+  .lib-hero-cover {
+    width: 100%;
+    aspect-ratio: 1;
+  }
+  .lib-shelf {
+    grid-area: shelf;
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+  }
+  .lib-empty {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1100px) {
+  .library {
+    max-width: 1200px;
+  }
+  .lib-hero-cover,
+  .lib-hero-copy {
+    position: relative;
+    z-index: 1;
+  }
+  .lib-hero-copy {
+    max-width: 28rem;
+  }
+  /* The card is the cover and the words. It does not stretch into an empty half. */
+  .lib-hero {
+    width: max-content;
+    max-width: min(960px, 100%);
+    margin-inline: 0;
+    align-self: flex-start;
+  }
+  .lib-shelf {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 440px));
+    justify-content: center;
+  }
+}
+
+/* ===================== Round 8: the cover flies, the page does not hide ===================== */
+
+.morph-cover {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 80;
+  pointer-events: none;
+  object-fit: cover;
+  transform-origin: 0 0;
+}
+
+/* One rule, not a style write on every node. The filtered clone was a long frame. */
+.lib-exit,
+.lib-exit * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+.song.is-flying .now-art {
+  opacity: 0;
+}
+
+/* The scene writes lyric opacity every frame. This wins until the cover has landed. */
+.song.is-arriving .fb,
+.song.is-arriving .ist-chip {
+  opacity: var(--title-in, 0) !important;
+  transition: none !important;
+}
+
+/* Floor enters from below. Inline transform on the player fought this rule. */
+.song.is-arriving .player {
+  opacity: var(--floor-in, 0) !important;
+  transform: translate3d(0, calc((1 - var(--floor-in, 0)) * 84px), 0) !important;
+  transition: none !important;
+}
+
+/* Black page and an inset dim, so the 8% scale reads. The sheet is portaled above. */
+html[data-sheet='1'],
+html[data-sheet='1'] body {
+  background: #05040a;
+}
+html[data-sheet='1'] .song {
+  transform-origin: 50% 42%;
+  transform: scale(calc(1 - 0.08 * var(--sheet-p, 0)));
+  border-radius: 18px;
+}
+
+.play-glyph {
+  display: grid;
+  place-items: center;
+}
+.play-glyph-mark {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+}
+
+/* SE: one header line. The note stays off the rail. Labels live in the floor rules below. */
+@media (max-width: 389px) {
+  .topbar.lg-host {
+    top: max(2px, env(safe-area-inset-top, 0px));
+    padding: 4px 6px;
+    border-radius: 16px;
+  }
+  .now-art {
+    width: 32px;
+    height: 32px;
+  }
+  .topbar-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .topbar-song,
+  .song.is-big-type .topbar-song {
+    display: block;
+    -webkit-line-clamp: unset;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    flex: none;
+    font-size: clamp(0.875rem, 4.6vw, 1.0625rem);
+  }
+  .topbar-who,
+  .song.is-big-type .topbar-who {
+    display: block;
+    -webkit-line-clamp: unset;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    font-size: 0.8125rem;
+  }
+  .player .resume-offer,
+  .player .mark-toast {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: calc(100% + 6px);
+    width: auto;
+    margin: 0;
+    z-index: 2;
+  }
+  /* The note is the top rim of the card, as on the taller phones. A floating
+     strip here covered the line under it, and the card behind it was clear. */
+  .player .comment {
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: auto;
+    margin: 0;
+    z-index: 1;
+    background: var(--dock-solid);
+  }
+}
+
+/* Under 400 px the title stays one line. The concert line and the section stay,
+   wrapping to two lines. 13 px is the floor. SE (320) hides them below. */
+@media (max-width: 399px) {
+  .topbar-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    min-width: 0;
+  }
+  .topbar-song,
+  .song.is-big-type .topbar-song {
+    display: block;
+    -webkit-line-clamp: unset;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    font-size: clamp(0.8125rem, 4.6vw, 1.0625rem);
+  }
+  .topbar-version {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: normal;
+  }
+  .topbar-who,
+  .song.is-big-type .topbar-who {
+    display: block;
+    -webkit-line-clamp: unset;
+    white-space: normal;
+    overflow: hidden;
+    font-size: 0.8125rem;
+  }
+}
+
+/* compact-title: at 320 the version is gone and the artist line stays at least 13 px. */
+@media (max-width: 360px) {
+  .topbar-version,
+  .topbar-part {
+    display: none;
+  }
+}
+
+/* Landscape phones: the stage keeps the glass. Chrome is a slim rail. */
+@media (min-width: 700px) and (max-height: 640px),
+  (max-width: 699px) and (max-height: 520px) and (orientation: landscape) {
+  .topbar.lg-host {
+    padding: 2px 6px;
+  }
+  .topbar-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .topbar-sub {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .topbar-song,
+  .topbar-version,
+  .topbar-who {
+    display: block;
+    -webkit-line-clamp: unset;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .topbar-song {
+    flex: 0 1 auto;
+  }
+  .topbar-version,
+  .topbar-who {
+    flex: 0 1 auto;
+    min-width: 0;
+    font-size: 0.8125rem;
+  }
+  .player,
+  .song.has-comment .player {
+    flex-wrap: nowrap;
+    height: 52px;
+    max-height: 56px;
+    overflow: visible;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+  .player .mark-toast,
+  .player .resume-offer {
+    position: absolute;
+    left: 10px;
+    right: auto;
+    top: auto;
+    bottom: calc(100% + 6px);
+    flex: none;
+    order: 0;
+    width: max-content;
+    max-width: min(460px, 72vw);
+    min-height: 32px;
+    margin: 0;
+    border-bottom: 0;
+  }
+  /* The book icon in the utility row is the one explanation control.
+     The text pill repeated it. The open panel stays a drawer. */
+  .player .comment {
+    position: static;
+    order: 8;
+    flex: 0 0 auto;
+    width: 0;
+    max-width: none;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    overflow: visible;
+  }
+  .player .comment .comment-head,
+  .player .comment .comment-preview {
+    display: none;
+  }
+  .player .comment.is-open .comment-fold {
+    position: fixed;
+    top: calc(var(--chrome-top) + var(--banner-h, 0px));
+    right: max(8px, env(safe-area-inset-right, 0px));
+    bottom: calc(var(--player-h) + 8px);
+    left: auto;
+    width: min(40vw, 420px);
+    z-index: 8;
+    padding: 16px 16px 12px;
+    border-radius: 22px;
+    background: var(--dock-solid);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+    overflow: auto;
+  }
+  .player .comment.is-open .comment-fold::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: -1;
+  }
+  /* One row. Time and the track fill the left. Transport sits in the middle.
+     Tasks sit on the right. An empty first column left a blank third. */
+  .player,
+  .song.has-comment .player {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto max-content;
+    grid-template-areas: 'scrub transport tasks';
+    align-items: center;
+    column-gap: 8px;
+    row-gap: 0;
+    height: auto;
+    min-height: 52px;
+    max-height: none;
+    padding: 4px 10px;
+  }
+  .player .comment {
+    position: absolute;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+  }
+  .player .scrub,
+  .player .transport,
+  .player .utility {
+    display: flex;
+  }
+  /* The earlier query already flattens these. Flex here bundled the flag
+     with the elapsed time and pushed the track to the end of the row. */
+  .player .player-row {
+    display: contents;
+  }
+  .player .scrub {
+    grid-area: scrub;
+    width: auto;
+    min-width: 0;
+    height: 36px;
+    min-height: 36px;
+  }
+  .player .scrub-track {
+    height: 36px;
+    order: 2;
+    flex: 1 1 auto;
+  }
+  .player .transport {
+    grid-area: transport;
+    justify-content: center;
+  }
+  .player .utility {
+    grid-area: tasks;
+    justify-self: end;
+    justify-content: flex-end;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    gap: 0;
+  }
+  .player-alert {
+    min-height: 28px;
+    padding: 1px 10px 1px 12px;
+    gap: 8px;
+  }
+  .player-alert p {
+    font-size: 0.8125rem;
+  }
+  .player-alert .floor-retry {
+    min-height: 28px;
+  }
+}
+
+/* Narrow portrait: the alert stays a slim line. The actions keep their names. */
+@media (max-width: 429px) and (min-height: 521px) {
+  .player-alert {
+    min-height: 32px;
+    padding: 2px 10px 2px 12px;
+    gap: 8px;
+  }
+  .player-alert p {
+    font-size: 0.8125rem;
+  }
+  .player-alert .floor-retry {
+    min-height: 32px;
+    padding: 0 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note-card {
+    transition: none;
+  }
+}
+
+/* Tall phone, no note in the floor: drop the dock's own padding so the stage
+   keeps the open frame (the note's head is what shortens it when it is there).
+   SE is below 390 and landscape is shorter than 521, so those frames stay. */
+@media (min-width: 390px) and (max-width: 699px) and (min-height: 521px) {
+  .player:not(:has(.comment)) {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    gap: 0;
+    border-top-width: 0;
+  }
+  .player:not(:has(.comment)) .transport {
+    min-height: 52px;
+  }
+}
+
+/* Phone portrait floor. One solid track, readable times, named actions, no tiles. */
+@media (max-width: 699px) and (min-height: 521px) {
+  .player .btn-xl {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    min-height: 46px;
+  }
+  .transport .btn-plain {
+    color: var(--ink);
+  }
+  .player .scrub {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'track track track track'
+      'now . remain flag';
+    column-gap: 8px;
+    row-gap: 0;
+    align-items: center;
+    min-height: 0;
+  }
+  .player .scrub-now { grid-area: now; }
+  .player .scrub-remain { grid-area: remain; justify-self: end; }
+  .player .mark-bar { grid-area: flag; margin: -8px 0; }
+  .player .scrub-track {
+    grid-area: track;
+    height: 24px;
+  }
+  .player .utility {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    justify-items: center;
+    gap: 0;
+    width: 100%;
+  }
+  .player .util {
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    min-height: 44px;
+    padding: 2px 1px 0;
+    gap: 2px;
+    background: none;
+    box-shadow: none;
+    border-radius: 0;
+    color: var(--ink);
+  }
+  .player .util[aria-pressed='true'] {
+    color: var(--ink);
+    background: none;
+    box-shadow: none;
+  }
+  .player .util-label {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/* Below 360 the four tasks stay one row. The names stay in the accessible name. */
+@media (max-width: 359px) and (min-height: 521px) {
+  .player .utility {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+  }
+  .player .util {
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+  }
+  .player .util-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/* From a tablet up, the search stays in the header row. It wraps only under 768. */
+@media (min-width: 768px) {
+  .lib-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 24px;
+  }
+  .lib-titlebar {
+    display: contents;
+  }
+  .lib-title {
+    grid-column: 1;
+    justify-self: start;
+  }
+  .search {
+    grid-column: 2;
+    grid-row: 1;
+    width: min(480px, 100%);
+    margin-inline: auto;
+    justify-self: center;
+  }
+  .lib-actions {
+    grid-column: 3;
+    justify-self: end;
+  }
+}
+
+/* Desk and wider: one centered spread. Search sits in the head, the shelf is a poster row. */
+@media (min-width: 1200px) and (min-height: 700px) {
+  .library {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 28px;
+    box-sizing: border-box;
+    height: 100dvh;
+    max-height: 100dvh;
+    max-width: 1760px;
+    margin-inline: auto;
+    overflow: hidden;
+  }
+  .lib-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 640px) minmax(0, 1fr);
+    align-items: center;
+    column-gap: 24px;
+    width: 100%;
+  }
+  .lib-titlebar {
+    display: contents;
+  }
+  .lib-title {
+    grid-column: 1;
+    justify-self: start;
+  }
+  .search {
+    grid-column: 2;
+    grid-row: 1;
+    width: min(480px, 100%);
+    margin-inline: auto;
+  }
+  .lib-actions {
+    grid-column: 3;
+    justify-self: end;
+  }
+  .lib-hero {
+    flex: none;
+    flex-direction: row;
+    align-items: center;
+    width: max-content;
+    max-width: 100%;
+    align-self: flex-start;
+    margin-top: 0;
+    gap: 40px;
+    padding: 24px;
+  }
+  .lib-hero-cover {
+    width: min(34%, 440px);
+    height: auto;
+    max-height: 36dvh;
+    aspect-ratio: 1;
+  }
+  .lib-hero-title {
+    font-size: clamp(2.5rem, 3vw, 3.5rem);
+  }
+  .lib-hero-copy {
+    max-width: 40rem;
+  }
+  .lib-shelf {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin-top: 0;
+    overflow: hidden;
+    /* One poster row. A wrapped card's image min-content collapses this row to 0. */
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .lib-shelf > li {
+    display: flex;
+    min-height: 0;
+  }
+  .lib-row {
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+  .lib-row-cover {
+    width: 100%;
+    height: 100%;
+    min-height: 180px;
+    object-fit: contain;
+    background: var(--bg-elevated);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .play-glyph {
+    animation: none;
+    transition: none;
+  }
+  .song.is-flying .now-art {
+    opacity: 1;
+  }
+}
+
+.note-card {
+  position: absolute;
+  z-index: 5;
+  left: max(16px, var(--col-left, 16px));
+  right: max(16px, var(--col-right, 16px));
+  top: min(var(--note-foot, 28%), calc(100dvh - var(--player-h, 180px) - 48px));
+  bottom: auto;
+  display: flex;
+  align-items: center;
+  height: 36px;
+  max-height: 36px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.note-line {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 6px;
+  width: 100%;
+  min-height: 36px;
+  margin: 0;
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  font: 400 0.8125rem/1.3 var(--font-tr);
+  text-align: start;
+  cursor: pointer;
+}
+.note-line-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.note-more {
+  display: none;
+  flex: none;
+  color: var(--ink);
+  font: 600 0.75rem/1 var(--font-ui);
+}
+.note-line-text[data-truncated='1'] + .note-more {
+  display: inline;
+}
+/* Round 14. Phone play disc: smaller, a material, an ink glyph.
+   Desktop from 768 / 1100 keeps 56 and 64. */
+@media (max-width: 699px) and (min-height: 521px),
+  (min-width: 700px) and (max-height: 640px),
+  (max-width: 699px) and (max-height: 520px) and (orientation: landscape) {
+  .player .btn-ring {
+    color: var(--on-accent);
+    background: color-mix(in srgb, var(--accent) 82%, white);
+    box-shadow: none;
+  }
+}
+
+/* Pressed song tasks: the glyph and the label take the accent.
+   A filled chip read as an app icon next to the outline marks. */
+.player .util.is-live-task {
+  color: var(--accent);
+  font-weight: 600;
+  transition: none;
+}
+
+/* «Перевод» and «Пояснение» show on or off by the filled glyph, not by colour alone.
+   The plate stays the icon, so the button's glass still matches the dock (D19). */
+.player .util.util--mark[aria-pressed='true'] .ll-icon.ll-pair .ll-line {
+  display: none;
+}
+.player .util.util--mark[aria-pressed='true'] .ll-icon.ll-pair .ll-fill {
+  display: inline;
+}
+
+/* Performer names wrap instead of ending in an ellipsis. */
+.scene .ist-label {
+  overflow: visible;
+}
+.scene .ist-perf {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+/* A PC settings dialog: centred, no grabber, the page is not scaled into a black frame. */
+@media (min-width: 1100px) {
+  html[data-sheet='1'],
+  html[data-sheet='1'] body {
+    background: var(--bg);
+  }
+  html[data-sheet='1'] .song {
+    transform: none;
+    border-radius: 0;
+  }
+  .sheet.sheet--form {
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
+    width: min(520px, calc(100vw - 64px));
+    max-height: min(640px, calc(100dvh - 96px));
+    margin: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 18px;
+    background: var(--lg-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* From 1280 the floor and the top bar stay inside the stage column (D39: the
+   player box matches the stage). The plate and the controls sit in a centred
+   dock, so the phone row is not stretched to the edges of that column. */
+@media (min-width: 1280px) and (min-height: 641px) {
+  .topbar,
+  .player {
+    left: var(--col-left, 0px);
+    right: auto;
+    width: var(--stage-w, 920px);
+    max-width: var(--stage-w, 920px);
+  }
+  .player > .lg {
+    inset: auto;
+    left: 50%;
+    bottom: 0;
+    width: min(680px, 100%);
+    height: 100%;
+    transform: translateX(-50%);
+    border-radius: 28px;
+  }
+  .player .player-row,
+  .player .scrub {
+    width: min(680px, 100%);
+    margin-inline: auto;
+  }
+  .player .player-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .player .transport {
+    justify-content: center;
+  }
+  .player .utility {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-self: stretch;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+    gap: 0;
+  }
+  .player .util {
+    flex-direction: column;
+    height: auto;
+    min-height: 44px;
+    padding: 2px 1px 0;
+    gap: 2px;
+  }
+}
+
+/* One curve. Touch does not hover, and a tooltip does not wait on a finger. */
+@media (hover: hover) and (pointer: fine) {
+  .lib-hero:hover,
+  .lib-row:hover,
+  .topbar .btn:hover,
+  .transport .btn:hover,
+  .player .util:hover:not([aria-pressed='true']),
+  .mark-btn:hover,
+  .sheet .row--button:hover {
+    background-color: color-mix(in srgb, var(--ink) 8%, transparent);
+  }
+  .player .btn-ring:hover {
+    background-color: color-mix(in srgb, var(--accent) 68%, white);
+  }
+  .scrub-track:hover .scrub-rail {
+    background-color: color-mix(in srgb, var(--ink) 42%, transparent);
+  }
+  [data-tip] { position: relative; }
+  [data-tip]::before {
+    content: attr(data-tip);
+    position: absolute;
+    z-index: 9;
+    left: 50%;
+    bottom: calc(100% + 6px);
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    border-radius: 8px;
+    background: var(--bg-elevated);
+    color: var(--ink);
+    font: 400 11px/1.3 var(--font-ui);
+    white-space: nowrap;
+    pointer-events: none;
     opacity: 0;
+    transition: opacity var(--dur-1) var(--ease-out);
+  }
+  [data-tip]:hover::before {
+    opacity: 1;
+    transition-delay: 500ms;
   }
 }

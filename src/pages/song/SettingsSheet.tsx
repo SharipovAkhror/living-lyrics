@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Group, Row, Segmented, Sheet, Slider, Switch } from '@/ui/controls';
+import { SHEET_SHELL_MS } from '@/scene/cover';
 import { Icon } from '@/ui/icons';
 import { loadFontLabels, ORIGINAL_FONTS, PERSIAN_FONTS, TRANSLATION_FONTS, type FontFace } from '@/app/fontCatalog';
 import { effectiveMotion, setSettings, type InstrumentStyle, type LineEntrance, type MotionPref, type Settings, type TextAlign, type ThemePref } from '@/app/settings';
@@ -23,8 +24,8 @@ const PAGE_TITLE: Record<Page, string> = {
   eq: 'Эквалайзер',
 };
 
-const THEME_NAME: Record<ThemePref, string> = { auto: 'Как в системе', light: 'Светлая', dark: 'Тёмная' };
-const MOTION_NAME: Record<MotionPref, string> = { full: 'Полная', calm: 'Спокойная', off: 'Без анимации' };
+const THEME_NAME: Record<ThemePref, string> = { auto: 'Системная', light: 'Светлая', dark: 'Тёмная' };
+const MOTION_NAME: Record<MotionPref, string> = { full: 'Полная', calm: 'Спокойная', off: 'Выключена' };
 const STYLE_NAME: Record<InstrumentStyle, string> = {
   drawing: 'Рисунок',
   realistic: 'Реалистичный',
@@ -55,6 +56,50 @@ export function SettingsSheet({
   has: { translit: boolean; alt: boolean; persian: boolean; arab: boolean };
 }) {
   const [page, setPage] = useState<Page>('home');
+  // Rows and glass wait one frame so the tap paints the shell only.
+  // The sheet stays mounted after it closes, so a later open has to drop
+  // back to the shell in the same render that `open` turns true.
+  const [full, setFull] = useState(false);
+  const wasOpen = useRef(false);
+  if (open && !wasOpen.current && full) setFull(false);
+  else wasOpen.current = open;
+  useEffect(() => {
+    if (!open) return;
+    const id = window.setTimeout(() => setFull(true), SHEET_SHELL_MS);
+    return () => window.clearTimeout(id);
+  }, [open]);
+  // Phone CSS draws these rows at full opacity with no animation. A fade of
+  // two frames keeps the arrival from popping, and the sheet holds its top
+  // until the flag drops (D33). Desktop already fades; an inline opacity
+  // loses to that animation, so this only changes the phone.
+  useLayoutEffect(() => {
+    if (!full) return;
+    const sheet = document.querySelector('.sheet');
+    const stage = document.querySelector('.set-stage');
+    if (!(sheet instanceof HTMLElement) || !(stage instanceof HTMLElement)) return;
+    const nodes = [...stage.querySelectorAll('.group')].filter((node): node is HTMLElement => node instanceof HTMLElement);
+    for (const node of nodes) node.style.opacity = '0';
+    sheet.dataset.rowLock = '1';
+    const steps = [0.34, 0.67, 1];
+    let i = 0;
+    let raf = 0;
+    const tick = () => {
+      const value = steps[i];
+      i += 1;
+      for (const node of nodes) node.style.opacity = String(value);
+      if (i < steps.length) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      for (const node of nodes) node.style.removeProperty('opacity');
+      delete sheet.dataset.rowLock;
+    };
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf);
+      delete sheet.dataset.rowLock;
+    };
+  }, [full]);
   const [leaving, setLeaving] = useState<Page | null>(null);
   const [dir, setDir] = useState<1 | -1>(1);
   const input = useRef<HTMLInputElement>(null);
@@ -62,18 +107,10 @@ export function SettingsSheet({
 
   useEffect(() => {
     if (!open) return;
-    // Names of the faces are not needed for the first frame of the sheet.
-    const host = window as Window & {
-      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
-      cancelIdleCallback?: (id: number) => void;
-    };
-    let idle = 0;
-    if (typeof host.requestIdleCallback === 'function') idle = host.requestIdleCallback(() => void loadFontLabels(), { timeout: 800 });
-    else idle = window.setTimeout(() => void loadFontLabels(), 450);
-    return () => {
-      if (typeof host.cancelIdleCallback === 'function') host.cancelIdleCallback(idle);
-      else window.clearTimeout(idle);
-    };
+    // Names of the faces are not needed while the sheet is still arriving.
+    // Loading them on those frames dropped one.
+    const idle = window.setTimeout(() => void loadFontLabels(), 1200);
+    return () => window.clearTimeout(idle);
   }, [open]);
 
   // Samples need the faces themselves, not only the latin names. Loaded when this page opens.
@@ -130,14 +167,12 @@ export function SettingsSheet({
 
   const back = page === 'home' ? undefined : () => go(page === 'eq' ? 'sound' : 'home');
   const shown: Page[] = leaving && leaving !== page ? [leaving, page] : [page];
-  const sourceLabel = state?.source === 'library' ? 'Запись из библиотеки' : state?.source === 'local' ? (state.localName ?? 'Свой файл') : 'Аудио не подключено';
-  const persianName = PERSIAN_FONTS.find((f) => f.id === settings.fontPersian)?.name ?? '';
-  const originalName = ORIGINAL_FONTS.find((f) => f.id === settings.fontOriginal)?.name ?? '';
-  const translationName = TRANSLATION_FONTS.find((f) => f.id === settings.fontTranslation)?.name ?? '';
+  const sourceLabel = state?.source === 'library' ? 'Библиотека' : state?.source === 'local' ? (state.localName ?? 'Свой файл') : 'Нет аудио';
+  const fontLine = fontSummary(settings, has.persian);
 
   return (
-    <Sheet open={open} onClose={close} title={PAGE_TITLE[page]} size="large" onBack={back} backLabel={page === 'eq' ? 'Звук' : 'Настройки'}>
-      <div className={`set-stage${dir < 0 ? ' is-back' : ''}`}>
+    <Sheet open={open} plain={!full} onClose={close} title={PAGE_TITLE[page]} size="large" onBack={back} backLabel={page === 'eq' ? 'Звук' : 'Настройки'}>
+      {full && <div className={`set-stage${dir < 0 ? ' is-back' : ''}`}>
         {shown.map((p) => (
           <div key={p} className={`set-page${p === page ? ' is-enter' : ' is-leave'}`}>
       {p === 'home' && (
@@ -146,7 +181,7 @@ export function SettingsSheet({
             <Row title="Текст" detail={`${ALIGN_NAME[settings.textAlign]} · ${ENTER_NAME[settings.lineEntrance]}`} onClick={() => go('text')} chevron />
             <Row
               title="Шрифты"
-              detail={[has.persian ? persianName : null, originalName, translationName].filter(Boolean).join(' · ')}
+              detail={fontLine}
               onClick={() => go('fonts')}
               chevron
             />
@@ -154,7 +189,7 @@ export function SettingsSheet({
             <Row title="Инструменты" detail={STYLE_NAME[settings.instrumentStyle]} onClick={() => go('instruments')} chevron />
             <Row
               title="Звук"
-              detail={`${String(settings.rate).replace('.', ',')}× · ${settings.eqEnabled ? (EQ_PRESETS.some((p) => p.id === settings.eqPreset) ? presetById(settings.eqPreset).name : 'Своя настройка') : 'эквалайзер выключен'}`}
+              detail={`${String(settings.rate).replace('.', ',')}× · ${settings.eqEnabled ? (EQ_PRESETS.some((p) => p.id === settings.eqPreset) ? presetById(settings.eqPreset).name : 'Свой') : 'без эквалайзера'}`}
               onClick={() => go('sound')}
               chevron
             />
@@ -213,12 +248,12 @@ export function SettingsSheet({
               <span className="t-footnote secondary" aria-hidden>
                 А
               </span>
-              <Slider label="Размер текста" min={0.8} max={1.3} step={0.05} value={settings.textScale} onChange={(v) => setSettings({ textScale: v })} />
+              <Slider label="Размер текста" min={0.8} max={2} step={0.05} value={settings.textScale} onChange={(v) => setSettings({ textScale: v })} />
               <span className="t-title3 secondary" aria-hidden>
                 А
               </span>
             </div>
-            <p className="choice-hint choice-hint--pad">Размер оригинала на сцене.</p>
+            <p className="choice-hint choice-hint--pad">Размер оригинала на сцене. Системный шрифт учитывается, верх — вдвое от рисунка.</p>
           </Group>
         </>
       )}
@@ -236,7 +271,7 @@ export function SettingsSheet({
             />
           )}
           <FontPick
-            label="Оригинал латиницей и кириллицей"
+            label="Латиница и кириллица"
             sample="I was dead"
             value={settings.fontOriginal}
             options={ORIGINAL_FONTS}
@@ -254,12 +289,12 @@ export function SettingsSheet({
       )}
 
       {p === 'comment' && (
-        <Group footer="Длинное пояснение раскрывается сноской под стихом. На широком экране оно стоит справа.">
-          <Row title="Показывать пояснения" detail="То, что не вошло в перевод">
+        <Group footer="На широком экране пояснение стоит колонкой справа. На телефоне это верхняя кромка пола: одна строка, пока его не раскроют.">
+          <Row title="Пояснения" detail="Колонка справа на широком экране">
             <Switch label="Пояснения" checked={settings.showComment} onChange={(v) => setSettings({ showComment: v })} />
           </Row>
-          <Row title="Держать открытым" detail="Сноска сразу развёрнута">
-            <Switch label="Держать пояснение открытым" checked={settings.commentOpen} onChange={(v) => setSettings({ commentOpen: v })} />
+          <Row title="Сразу открыто" detail="На телефоне сноска развёрнута">
+            <Switch label="Сразу открыто" checked={settings.commentOpen} onChange={(v) => setSettings({ commentOpen: v })} />
           </Row>
         </Group>
       )}
@@ -284,8 +319,8 @@ export function SettingsSheet({
       {p === 'sound' && (
         <>
           <Group header="Слушать" footer="Пауза после строки — чтобы разбирать текст по строке. «Воспроизвести» продолжает со следующей.">
-            <Row title="Пауза после каждой строки">
-              <Switch label="Пауза после каждой строки" checked={settings.pauseAfterLine} onChange={(v) => setSettings({ pauseAfterLine: v })} />
+            <Row title="Пауза по строке">
+              <Switch label="Пауза по строке" checked={settings.pauseAfterLine} onChange={(v) => setSettings({ pauseAfterLine: v })} />
             </Row>
             <Choice label="Скорость">
               <Segmented
@@ -331,9 +366,9 @@ export function SettingsSheet({
                 />
               </div>
             )}
-            <Row title="Выравнивать громкость" detail="Все песни звучат одинаково громко">
+            <Row title="Ровная громкость" detail="Песни одной громкости">
               <Switch
-                label="Выравнивать громкость"
+                label="Ровная громкость"
                 checked={settings.normalize}
                 onChange={(v) => {
                   setSettings({ normalize: v });
@@ -345,7 +380,7 @@ export function SettingsSheet({
           </Group>
           <Group header="Запись" footer={state?.source === 'local' ? 'Свой файл хранится только на этом устройстве.' : 'Подойдут m4a, mp3, wav и flac. Файл останется только на этом устройстве.'}>
             <Row icon={<Icon name="music.note" size={20} />} title={sourceLabel} detail={state?.error ?? undefined} />
-            <Row icon={<Icon name="square.and.arrow.down" size={20} />} title="Подключить свой файл…" onClick={() => input.current?.click()} chevron />
+            <Row icon={<Icon name="square.and.arrow.down" size={20} />} title="Свой файл" onClick={() => input.current?.click()} chevron />
             {state?.source === 'local' && <Row icon={<Icon name="xmark" size={20} />} title="Убрать свой файл" onClick={() => void engine.detachFile()} />}
             <input
               ref={input}
@@ -442,9 +477,10 @@ export function SettingsSheet({
           <Choice label="Тема">
             <Segmented
               label="Тема"
+              className="seg--lines"
               value={settings.theme}
               options={[
-                { value: 'auto', label: 'Как в системе' },
+                { value: 'auto', label: 'Системная' },
                 { value: 'light', label: 'Светлая' },
                 { value: 'dark', label: 'Тёмная' },
               ]}
@@ -454,11 +490,12 @@ export function SettingsSheet({
           <Choice label="Движение" hint="Полная, спокойная или без переездов строк.">
             <Segmented
               label="Движение"
+              className="seg--lines"
               value={settings.motion}
               options={[
                 { value: 'full', label: 'Полная' },
                 { value: 'calm', label: 'Спокойная' },
-                { value: 'off', label: 'Без' },
+                { value: 'off', label: 'Выключена' },
               ]}
               onChange={(v) => setSettings({ motion: v })}
             />
@@ -467,9 +504,22 @@ export function SettingsSheet({
       )}
           </div>
         ))}
-      </div>
+      </div>}
     </Sheet>
   );
+}
+
+/** One short line. The default pair is not named twice. */
+function fontSummary(settings: Settings, hasPersian: boolean): string {
+  const sameSerif = settings.fontOriginal === 'source-serif' && settings.fontTranslation === 'source-serif';
+  const classicPersian = !hasPersian || settings.fontPersian === 'amiri';
+  if (sameSerif && classicPersian) return hasPersian ? 'насх · антиква' : 'антиква · стих и перевод';
+  const names = [
+    hasPersian ? PERSIAN_FONTS.find((f) => f.id === settings.fontPersian)?.name : null,
+    ORIGINAL_FONTS.find((f) => f.id === settings.fontOriginal)?.name,
+    TRANSLATION_FONTS.find((f) => f.id === settings.fontTranslation)?.name,
+  ].filter((name): name is string => !!name);
+  return [...new Set(names)].join(' · ');
 }
 
 function Choice({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
@@ -514,7 +564,6 @@ function FontPick<Id extends string>({
           <span className="font-opt-sample" dir={sampleDir} style={{ fontFamily: face.stack, fontStyle: italic ? 'italic' : undefined }}>
             {sample}
           </span>
-          <span className="font-opt-name">{face.name}</span>
           <span className="font-opt-note">{face.note}</span>
         </button>
       ))}

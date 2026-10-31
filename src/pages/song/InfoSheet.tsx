@@ -53,6 +53,7 @@ export function InfoSheet({
   showHarakat,
   fontPersian,
   onSeek,
+  onMark,
   pendingNote,
 }: {
   open: boolean;
@@ -63,6 +64,8 @@ export function InfoSheet({
   fontPersian: FontPersian;
   /** Jump to a marked moment. Playback keeps its current play or pause state. */
   onSeek: (t: number) => void;
+  /** Drop a mismatch mark at the moment that is playing. */
+  onMark?: () => void;
   /** Shown while the line list is still on its way, or when it failed. */
   pendingNote?: string | null;
 }) {
@@ -137,7 +140,7 @@ export function InfoSheet({
         onSeek={onSeek}
       />
 
-      <MarksSection slug={song.slug} title={song.title} open={open} onSeek={onSeek} />
+      <MarksSection slug={song.slug} title={song.title} open={open} onSeek={onSeek} onMark={onMark} />
 
       {(voices.size > 0 || song.credits?.length) && (
         <Group header="Кто поёт и играет">

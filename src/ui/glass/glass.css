@@ -1,0 +1,336 @@
+/*
+ * Liquid glass. One lens per surface. Tokens live in tokens.css (--lg-*).
+ * Phone (html[data-glass=rim]) keeps the rim, tint and shadow, and skips the
+ * displacement filter. Thick surfaces skip backdrop-filter entirely there.
+ */
+
+.lg-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/*
+ * No `isolation` and no forced position. Isolation would become the backdrop
+ * root and the lens would blur an empty background. Positioned chrome
+ * (header, floor, sheet) keeps the position it already has; a negative
+ * z-index stays inside that stacking context and the backdrop is the page.
+ */
+.lg-host {
+  box-shadow: var(--lg-shadow);
+}
+
+.lib-hero.lg-host,
+.lib-row.lg-host,
+.search.lg-host,
+.lib-nav.lg-host,
+.status.lg-host {
+  position: relative;
+}
+
+.lg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.lg-lens,
+.lg-tint,
+.lg-spec,
+.lg-edge {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.lg-lens {
+  background: var(--lg-fill);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat));
+}
+
+/* Edge bulge, static map. Invalid url() is dropped and the blur above remains. */
+/* A view-transition snapshot of live filters is one long frame, so the capture is flat. */
+html[data-vt='flat'] .lg-lens,
+html[data-vt='flat'] .sheet.glass.lg-host {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+html[data-glass='lens'] .lg-lens {
+  -webkit-backdrop-filter: url('#lg-refract') blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.05);
+  backdrop-filter: url('#lg-refract') blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.05);
+}
+
+.lg-tint {
+  background:
+    linear-gradient(180deg, transparent 0%, var(--lg-tint) 78%),
+    radial-gradient(120% 80% at 50% 120%, var(--lg-tint), transparent 60%);
+  opacity: 0.9;
+}
+
+.lg-spec {
+  background: radial-gradient(120% 78% at var(--lg-x) var(--lg-y), var(--lg-spec), transparent 46%);
+  opacity: 0.55;
+}
+
+.lg-edge {
+  box-shadow:
+    inset 0 1px 1px 0 var(--lg-hi),
+    inset 0 -1px 1px 0 var(--lg-lo),
+    inset 1px 0 0 color-mix(in srgb, var(--lg-hi) 35%, transparent),
+    inset -1px 0 0 color-mix(in srgb, var(--lg-hi) 16%, transparent),
+    inset 0 0 0 1px var(--lg-hair);
+  background: linear-gradient(var(--lg-angle), rgba(255, 255, 255, 0.42), transparent 38%, transparent 72%, rgba(255, 255, 255, 0.08));
+}
+
+/* Cards take a light pinned to the top lip, not a diagonal smear. */
+html[data-glass='lens'] .lg-host--card .lg-edge {
+  background: radial-gradient(90% 42% at 50% 0%, rgba(255, 255, 255, 0.55), transparent 68%);
+}
+
+/* Dark cards: a hairline rim, not a white gloss along the top. */
+:root[data-theme='dark'] .lg-host--card .lg-edge {
+  background: none;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .lg-host--card .lg-edge {
+    background: none;
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.22),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* The sheet stays dense. The floor is thin enough that the song field reads through. */
+.lg-host--sheet .lg-lens {
+  background: var(--lg-fill-thick);
+}
+.lg-host--floor .lg-lens {
+  background: none;
+}
+/* No sheen of its own: the floor is a pane over the song, not a second picture. */
+.lg-host--floor .lg-edge {
+  background: none;
+  box-shadow: none;
+}
+
+.lg-host--note .lg-lens {
+  background: var(--lg-fill-note);
+}
+
+.lg-host--chip .lg-lens {
+  background: var(--lg-fill);
+}
+.lg-host--floor .lg-tint,
+.lg-host.lg-host--floor .lg-spec {
+  opacity: 0;
+}
+
+.lg-host--card .lg-lens {
+  background: var(--lg-fill-card);
+}
+
+/* Phone path. No displacement, and no backdrop snapshot on the thick pieces. */
+html[data-glass='rim'] .lg-lens,
+html[data-glass='solid'] .lg-lens {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+html[data-glass='rim'] .lg-host--card .lg-lens,
+html[data-glass='rim'] .lg-host--note .lg-lens,
+html[data-glass='rim'] .lg-host--chip .lg-lens {
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: blur(12px) saturate(150%);
+}
+
+html[data-glass='solid'] .lg-lens,
+html[data-glass='solid'] .lg-host--card .lg-lens,
+html[data-glass='solid'] .lg-host--note .lg-lens,
+html[data-glass='solid'] .lg-host--chip .lg-lens,
+html[data-glass='solid'] .lg-host--floor .lg-lens,
+html[data-glass='solid'] .lg-host--sheet .lg-lens {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: var(--lg-solid);
+}
+
+html[data-glass='solid'] .lg-tint,
+html[data-glass='solid'] .lg-spec {
+  opacity: 0;
+}
+
+/* Coarse pointers and narrow windows never snapshot the thick surfaces, even before the script runs. */
+@media (pointer: coarse), (max-width: 799px) {
+  .lg-host--floor .lg-lens,
+  .lg-host--sheet .lg-lens {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* A glass inside glass does not take a second snapshot. */
+.lg-host .lg-host .lg-lens {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: color-mix(in srgb, var(--ink) 6%, var(--lg-fill-thick));
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .lg-lens,
+  .lg-host--floor .lg-lens {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--lg-solid);
+  }
+  .lg-tint,
+  .lg-spec {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-spec,
+  .lg-edge {
+    transition: none;
+  }
+}
+
+/* The previous frost must not paint a second snapshot under the lens. */
+.topbar.lg-host,
+.player.lg-host,
+.comment.is-margin.lg-host,
+.lib-hero.lg-host,
+.lib-row.lg-host,
+.search.lg-host,
+.lib-nav.lg-host,
+.sheet.glass.lg-host,
+.status.lg-host {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.topbar.lg-host::before,
+.player.lg-host::before {
+  display: none;
+}
+
+.topbar.lg-host {
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.sheet.lg-host .sheet-head {
+  background: transparent;
+}
+
+.player.lg-host {
+  background: none;
+  box-shadow: none;
+  border-color: transparent;
+}
+.comment.is-margin.lg-host {
+  border-color: transparent;
+}
+
+/* The phone note climbs the floor. It is thick paint, not a second blur. */
+html[data-glass='rim'] .player .comment.is-open .comment-fold,
+html[data-glass='solid'] .player .comment.is-open .comment-fold {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: var(--lg-fill-thick);
+}
+
+.lg-host--card {
+  box-shadow: none;
+}
+
+/*
+ * Desktop lens: the centre stays dense, the rim thins so the displaced
+ * backdrop reads. The sheet is transformed, and a filter on a child cannot
+ * see past that transform, so the sheet carries the filter itself.
+ */
+html[data-glass='lens'] .lg-host--card .lg-lens,
+html[data-glass='lens'] .lg-host--chip .lg-lens,
+html[data-glass='lens'] .lg-host--note .lg-lens {
+  background: radial-gradient(130% 120% at 50% 40%, var(--lg-fill) 46%, transparent 78%);
+}
+
+html[data-glass='lens'] .lg-host--floor .lg-lens,
+html[data-glass='solid'] .lg-host--floor .lg-lens {
+  background: var(--dock-solid);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* Opaque plate. The settled radial faded to transparent and the song field
+   showed through the lower half of the settings form. The shared host rule
+   above paints the sheet transparent, so the form names itself here. */
+html[data-glass='lens'] .sheet.glass.lg-host,
+html[data-glass='lens'] .sheet.glass.lg-host.is-settled,
+.sheet.sheet--form.glass.lg-host {
+  background: var(--lg-solid);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+html[data-glass='lens'] .sheet.glass.lg-host .lg-lens {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* Glass on the song controls. Cards are a plain surface, so the song colour does not fill them. */
+.topbar .lg-lens,
+.lg-host--floor .lg-lens {
+  background: var(--dock-solid);
+}
+.lg-host--card .lg-tint,
+.lg-host--card .lg-spec,
+.lg-host--sheet .lg-tint,
+.lg-host--sheet .lg-spec,
+.search .lg-spec,
+.search .lg-tint,
+.lib-nav .lg-spec,
+.lib-nav .lg-tint {
+  opacity: 0;
+}
+.lg-host--card .lg-lens {
+  background: var(--bg-elevated) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.search .lg-edge,
+.lib-nav .lg-edge,
+.lg-host--sheet .lg-edge {
+  background: none;
+  box-shadow: none;
+}
+html[data-glass='rim'] .search .lg-lens,
+html[data-glass='rim'] .lib-nav .lg-lens,
+html[data-glass='lens'] .search .lg-lens,
+html[data-glass='lens'] .lib-nav .lg-lens {
+  background: var(--bg-elevated);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+@media (prefers-contrast: more), (prefers-reduced-transparency: reduce) {
+  .lg-lens {
+    background: var(--lg-solid) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .lg-tint,
+  .lg-spec {
+    opacity: 0 !important;
+  }
+}

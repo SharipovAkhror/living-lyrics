@@ -29,11 +29,14 @@ export function MarksSection({
   title,
   open,
   onSeek,
+  onMark,
 }: {
   slug: string;
   title: string;
   open: boolean;
   onSeek: (t: number) => void;
+  /** Marks the moment that is playing now. The player no longer carries this control. */
+  onMark?: () => void;
 }) {
   const { marks, memoryOnly } = useMarks(slug);
   const [copied, setCopied] = useState<'done' | 'fail' | null>(null);
@@ -65,10 +68,18 @@ export function MarksSection({
     ? 'Браузер не сохранил отметки на устройство. Они пропадут, если закрыть или обновить страницу.'
     : marks.length
       ? 'Время — момент нажатия. Строка — та, что была на экране.'
-      : 'Во время прослушивания нажмите «Не совпадает» или клавишу M. Звук не останавливается.';
+      : 'Клавиша M отмечает место и не останавливает звук. То же делает кнопка ниже.';
 
   return (
     <Group header="Отмеченные места" footer={footer}>
+      {onMark && (
+        <button type="button" className="row row--button" onClick={onMark}>
+          <span className="row-text">
+            <span className="row-title">Не совпадает</span>
+            <span className="row-detail t-footnote">Отметить место, которое сейчас звучит</span>
+          </span>
+        </button>
+      )}
       {marks.length === 0 ? (
         <div className="row">
           <span className="row-text">
