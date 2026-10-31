@@ -1,12 +1,12 @@
 {
-  "updated": "2026-10-31T10:18:22Z",
+  "updated": "2026-10-31T10:19:38Z",
   "grok": {
     "today": 438878909,
     "todaySource": "grok usage",
-    "todayAt": "2026-10-31T10:18:22Z",
+    "todayAt": "2026-10-31T10:19:38Z",
     "week": 1021825641,
     "weekSource": "grok usage",
-    "weekAt": "2026-10-31T10:18:22Z",
+    "weekAt": "2026-10-31T10:19:38Z",
     "todayByTask": {
       "bench-r5": 6638672,
       "studio-pass": 106530352,
@@ -41,10 +41,10 @@
       "t11-route": 5417173
     },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-10-31T10:18:22Z",
+    "todayByTaskAt": "2026-10-31T10:19:38Z",
     "plan": "SuperGrok Heavy",
-    "planSource": "grok /usage",
-    "planAt": "2026-10-31T10:18:22Z",
+    "planSource": "~/.grok/settings_cache.json",
+    "planAt": "2026-10-31T10:18:45Z",
     "weekly": {
       "percentUsed": 23,
       "source": "grok /usage",
@@ -57,37 +57,37 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-10-31T10:18:22Z",
+        "at": "2026-10-31T09:38:22Z",
         "weeklyRemaining": 95.49,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "4h 28m"
+        "weeklyResetIn": "5h 8m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-10-31T10:18:22Z",
+        "at": "2026-10-31T09:38:22Z",
         "weeklyRemaining": 0.5,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "154h 26m"
+        "weeklyResetIn": "155h 6m"
       }
     },
     "conversationsToday": 19,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-10-31T10:18:22Z",
+    "conversationsTodayAt": "2026-10-31T10:19:38Z",
     "runsToday": 18,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-10-31T10:18:22Z",
+    "runsTodayAt": "2026-10-31T10:19:38Z",
     "secondsToday": 3944,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-10-31T10:18:22Z",
+    "secondsTodayAt": "2026-10-31T10:19:38Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
-    "at": "2026-10-31T10:18:22Z",
+    "at": "2026-10-31T09:38:22Z",
     "claudeGpt": {
       "source": "agy /usage",
-      "at": "2026-10-31T10:18:22Z",
+      "at": "2026-10-31T09:38:22Z",
       "weeklyRemaining": 0.5,
       "fiveHourRemaining": 100,
-      "weeklyResetIn": "154h 26m"
+      "weeklyResetIn": "155h 6m"
     }
   },
   "alerts": [
@@ -96,7 +96,7 @@
       "task": "",
       "session": "",
       "value": 1,
-      "at": "2026-10-31T10:18:22Z"
+      "at": "2026-10-31T10:19:38Z"
     }
   ],
   "value": {
@@ -135,16 +135,16 @@
     "windows": [
       {
         "kind": "five_hour",
-        "percentUsed": 0,
+        "percentUsed": 33,
         "source": "codex app-server",
-        "at": "2026-10-31T09:39:45Z",
-        "resetsAt": "2026-10-31T14:39:47Z"
+        "at": "2026-10-31T10:19:38Z",
+        "resetsAt": "2026-10-31T14:39:55Z"
       },
       {
         "kind": "seven_day",
-        "percentUsed": 26,
+        "percentUsed": 31,
         "source": "codex app-server",
-        "at": "2026-10-31T09:39:45Z",
+        "at": "2026-10-31T10:19:38Z",
         "resetsAt": "2026-11-05T13:58:03Z"
       }
     ],
