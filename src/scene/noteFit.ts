@@ -57,6 +57,76 @@ function paintedWidth(el: Element): number {
   return box.width;
 }
 
+export interface VBand {
+  top: number;
+  bottom: number;
+}
+
+function mergeBands(bands: VBand[]): VBand[] {
+  const list = bands
+    .filter((b) => Number.isFinite(b.top) && Number.isFinite(b.bottom) && b.bottom > b.top + 0.5)
+    .map((b) => ({ top: b.top, bottom: b.bottom }))
+    .sort((a, b) => a.top - b.top || a.bottom - b.bottom);
+  const out: VBand[] = [];
+  for (const b of list) {
+    const last = out[out.length - 1];
+    if (last && b.top <= last.bottom + 0.5) last.bottom = Math.max(last.bottom, b.bottom);
+    else out.push({ top: b.top, bottom: b.bottom });
+  }
+  return out;
+}
+
+/**
+ * Top of a one-line footnote that does not cross the instrumental captions.
+ * `under` is the bottom of the current picture (labels, drawings, section note).
+ * The footnote sits in the gap just under that picture when the gap is free.
+ * `maxTop` is the stylesheet clamp: a larger top is pulled back up into the captions.
+ * Returns null when no gap is tall enough.
+ */
+export function footnoteTop(opts: {
+  hard: VBand[];
+  soft?: VBand[];
+  under: number;
+  noteH: number;
+  ceiling: number;
+  limit: number;
+  maxTop: number;
+  pad?: number;
+}): number | null {
+  const pad = opts.pad ?? 8;
+  const { noteH, ceiling, under, maxTop } = opts;
+  const limit = Math.min(opts.limit, maxTop + noteH);
+  if (!(noteH > 0) || limit - ceiling < noteH) return null;
+  const clear = (top: number, bands: VBand[]) => {
+    if (top < ceiling - 0.5 || top > maxTop + 0.5 || top + noteH > limit + 0.5) return false;
+    const bottom = top + noteH;
+    return !bands.some((b) => b.bottom > top + 0.5 && b.top < bottom - 0.5);
+  };
+  const gaps = (bands: VBand[]) => {
+    const merged = mergeBands(bands);
+    const found: number[] = [];
+    let cursor = ceiling;
+    for (const b of merged) {
+      const gapBot = Math.min(b.top - pad, limit);
+      if (gapBot - cursor >= noteH) found.push(cursor);
+      cursor = Math.max(cursor, b.bottom + pad);
+    }
+    if (limit - cursor >= noteH) found.push(cursor);
+    return found;
+  };
+  const obstacles = mergeBands([...opts.hard, ...(opts.soft ?? [])]);
+  const preferred = under + pad;
+  if (clear(preferred, obstacles)) return Math.round(preferred * 10) / 10;
+  const below = gaps(obstacles).filter((t) => t >= under - 0.5 && clear(t, obstacles));
+  if (below.length) return Math.round(below[0] * 10) / 10;
+  // The next line fills the gap. Still keep the captions clear, even above the picture.
+  const hard = mergeBands(opts.hard);
+  const hardBelow = gaps(hard).filter((t) => t >= under - 0.5 && clear(t, hard));
+  if (hardBelow.length) return Math.round(hardBelow[0] * 10) / 10;
+  const anywhere = gaps(hard).find((t) => clear(t, hard));
+  return anywhere == null ? null : Math.round(anywhere * 10) / 10;
+}
+
 /** Size the footnote to the translation and cut its text to fit. Cheap when nothing changed. */
 export function fitNote(host: HTMLElement): void {
   const card = host.querySelector<HTMLElement>('.note-card');

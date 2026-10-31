@@ -5,7 +5,7 @@ import type { LineEntrance, MotionPref } from '@/app/settings';
 import { formatTime } from '@/data/library';
 import { instrument } from '@/instruments/catalog';
 import { blockState, clamp01, entranceOpacity, instPresence, type Measure } from './flow';
-import type { BlockUpdater } from './LineBlock';
+import { syncInstNote, type BlockUpdater } from './LineBlock';
 import { InstrumentStage, assignPerformers, type InstrumentStageHandle, type StagePose } from './InstrumentStage';
 import { castAt, castSignature, isVoicePassage, type CastMember } from './cast';
 import { stageDrive } from './stageDrive';
@@ -263,6 +263,8 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
       animRef.current = next;
       setAnim(next);
     }
+    // The footnote is not part of the block height: stage geometry stays put.
+    if (!ended && Math.abs(d) < 0.5 && p >= 0.5 && !scrubbingNow) syncInstNote(r);
     if (count.current && p > 0.01 && timed) {
       const left = (nextVocal?.start ?? cue.end) - t;
       const txt = nextVocal ? `Голос через ${formatTime(Math.max(0, left))}` : `До конца ${formatTime(Math.max(0, cue.end - t))}`;

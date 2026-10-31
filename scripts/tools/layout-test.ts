@@ -7,6 +7,7 @@ import { LIFE_DIM, LIFE_REST, plateLife, type AudioFeatures } from '../../src/in
 import { CHIP, LAYOUT_MODES, layoutInstruments, type Layout, type LayoutMode, type Rect, type Slot } from '../../src/instruments/layout.ts';
 import { castAt } from '../../src/scene/cast.ts';
 import { stageFrame } from '../../src/scene/columns.ts';
+import { footnoteTop } from '../../src/scene/noteFit.ts';
 
 let failures = 0;
 const fail = (where: string, msg: string) => {
@@ -344,6 +345,42 @@ for (const [vw, vh] of [[390, 852], [320, 700], [800, 480], [1280, 480]] as cons
   if (f.marginNote) fail(`${vw}×${vh}`, 'a short or narrow window opened the margin note');
   if (f.lyricW > f.stageW - f.padX * 2 + 0.01) fail(`${vw}×${vh}`, `lyric ${f.lyricW} overflows`);
   if (f.colLeft + f.stageW + f.colRight !== vw) fail(`${vw}×${vh}`, 'columns do not add up');
+}
+
+// Phone instrumental footnote. The measured frame (393×852, t = 70) put the
+// comment through the first row of musician names. The footnote sits under
+// the picture and must miss every caption.
+{
+  const hard = [
+    { top: 203, bottom: 248 },
+    { top: 216, bottom: 259 },
+    { top: 349, bottom: 394 },
+    { top: 362, bottom: 406 },
+    { top: 414, bottom: 456 },
+  ];
+  const soft = [{ top: 509, bottom: 610 }];
+  const top = footnoteTop({ hard, soft, under: 456, noteH: 36, ceiling: 82, limit: 684, maxTop: 596, pad: 8 });
+  const band = top == null ? null : { top, bottom: top + 36 };
+  const hits = band ? hard.filter((b) => b.bottom > band.top && b.top < band.bottom) : hard;
+  if (top == null || Math.abs(top - 464) > 0.2 || hits.length) fail('phone footnote', `top ${top} hits ${hits.length}`);
+  const phone = layoutInstruments(4, { w: 361, h: 300 }, { lines: 3 });
+  const captions = phone.slots
+    .filter((s) => s.kind === 'instrument')
+    .map((s) => ({ top: s.y + s.label.y, bottom: s.y + s.label.y + s.label.h }));
+  const under = Math.max(...captions.map((b) => b.bottom));
+  const placed = footnoteTop({
+    hard: captions,
+    soft: [{ top: under + 50, bottom: under + 120 }],
+    under,
+    noteH: 36,
+    ceiling: 0,
+    limit: under + 220,
+    maxTop: under + 180,
+    pad: 8,
+  });
+  const overlaps = placed == null || placed < under - 0.5 || captions.some((b) => b.bottom > placed && b.top < placed + 36);
+  if (overlaps) fail('phone footnote', `layout top ${placed} under ${under.toFixed(1)}`);
+  cases += 2;
 }
 
 console.log(`\n${cases} раскладок проверено, колонок ${columns}, ошибок: ${failures}.`);
