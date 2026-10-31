@@ -1,0 +1,150 @@
+{
+  "updated": "2026-10-31T10:08:22Z",
+  "grok": {
+    "today": 425623021,
+    "todaySource": "grok usage",
+    "todayAt": "2026-10-31T10:08:22Z",
+    "week": 1008569753,
+    "weekSource": "grok usage",
+    "weekAt": "2026-10-31T10:08:22Z",
+    "todayByTask": {
+      "bench-r5": 6638672,
+      "studio-pass": 106530352,
+      "t37-comments": 71067691,
+      "t36-soak": 7939803,
+      "ops-ledger-grok": 3172975,
+      "ops-rotation": 7198284,
+      "ops-rotcost": 8819764,
+      "ops-terms": 5786115,
+      "ops-w44": 2263314,
+      "tech-dashboard-est": 4390337,
+      "tech-dashboard-live": 13171682,
+      "tech-digest": 5243093,
+      "tech-living": 22531396,
+      "tech-memory-page": 909465,
+      "tech-on-call-cards": 896072,
+      "tech-panel-writer": 11963053,
+      "tech-plugin-rename": 16876188,
+      "tech-prostranstvo": 6901033,
+      "tech-repo-compare": 1686912,
+      "tech-review-codex": 2019405,
+      "tech-rotation-fix": 21340562,
+      "tech-usage-live": 9069377,
+      "ops-docs-1031": 3216148,
+      "tech-living-codex": 3027819,
+      "listen9": 6579248,
+      "tech-mod-chain": 32043898,
+      "t27-memory": 13262986,
+      "bench-r6": 31077377
+    },
+    "todayByTaskSource": "grok usage",
+    "todayByTaskAt": "2026-10-31T10:08:22Z",
+    "plan": "SuperGrok Heavy",
+    "planSource": "grok /usage",
+    "planAt": "2026-10-31T10:08:22Z",
+    "weekly": {
+      "percentUsed": 23,
+      "source": "grok /usage",
+      "at": "2026-10-31T10:08:22Z",
+      "timezoneLabeled": false,
+      "resetsAt": "November 6, 21:08"
+    }
+  },
+  "gemini": {
+    "quota": {
+      "gemini": {
+        "source": "agy /usage",
+        "at": "2026-10-31T10:08:22Z",
+        "weeklyRemaining": 95.49,
+        "fiveHourRemaining": 100,
+        "weeklyResetIn": "4h 38m"
+      },
+      "claude-gpt": {
+        "source": "agy /usage",
+        "at": "2026-10-31T10:08:22Z",
+        "weeklyRemaining": 0.5,
+        "fiveHourRemaining": 100,
+        "weeklyResetIn": "154h 36m"
+      }
+    },
+    "conversationsToday": 19,
+    "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
+    "conversationsTodayAt": "2026-10-31T10:08:22Z",
+    "runsToday": 18,
+    "runsTodaySource": "agy -p",
+    "runsTodayAt": "2026-10-31T10:08:22Z",
+    "secondsToday": 3944,
+    "secondsTodaySource": "agy -p",
+    "secondsTodayAt": "2026-10-31T10:08:22Z",
+    "plan": "Google AI Pro",
+    "planSource": "agy /usage",
+    "at": "2026-10-31T10:08:22Z",
+    "claudeGpt": {
+      "source": "agy /usage",
+      "at": "2026-10-31T10:08:22Z",
+      "weeklyRemaining": 0.5,
+      "fiveHourRemaining": 100,
+      "weeklyResetIn": "154h 36m"
+    }
+  },
+  "alerts": [
+    {
+      "kind": "agy-unlogged",
+      "task": "",
+      "session": "",
+      "value": 1,
+      "at": "2026-10-31T10:08:22Z"
+    }
+  ],
+  "value": {
+    "weekTokens": 1958.4,
+    "tokensInMain": 1270.5,
+    "tokensNotInMain": 687.9,
+    "mergedTasks": 44,
+    "mTokPerMergedTask": 28.9,
+    "source": "ops/usage/review.py + merge-base check on main: w43 Grok, final at the 23 Oct 21:08 reset (no Grok sessions after 100 % on 22 Oct 08:46); not in main = studio-pass (73 commits ahead), t28-icons, icons-a/b/c (docs/research/spend-2026-w43.md)",
+    "at": "2026-10-23T02:30:00Z"
+  },
+  "claude": {
+    "plan": "Claude Pro",
+    "planSource": "claude auth status --json",
+    "at": "2026-10-31T10:08:22Z",
+    "windows": [
+      {
+        "kind": "five_hour",
+        "percentUsed": 31,
+        "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
+        "at": "2026-10-31T05:41:27Z",
+        "resetsAt": "2026-10-31T08:40:00.000Z",
+        "readAt": "2026-10-31T05:26:54Z"
+      },
+      {
+        "kind": "seven_day",
+        "percentUsed": 31,
+        "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
+        "at": "2026-10-31T05:41:27Z",
+        "resetsAt": "2026-11-06T04:00:00.000Z",
+        "readAt": "2026-10-31T05:26:54Z"
+      }
+    ]
+  },
+  "codex": {
+    "windows": [
+      {
+        "kind": "five_hour",
+        "percentUsed": 0,
+        "source": "codex app-server",
+        "at": "2026-10-31T09:39:45Z",
+        "resetsAt": "2026-10-31T14:39:47Z"
+      },
+      {
+        "kind": "seven_day",
+        "percentUsed": 26,
+        "source": "codex app-server",
+        "at": "2026-10-31T09:39:45Z",
+        "resetsAt": "2026-11-05T13:58:03Z"
+      }
+    ],
+    "plan": "plus"
+  }
+}
