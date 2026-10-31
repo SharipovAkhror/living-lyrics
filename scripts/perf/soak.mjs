@@ -5,10 +5,14 @@
  *   npm run test:soak                              # 60 real minutes, then three kills
  *   npm run test:soak -- --minutes 3 --out work/perf/t36/smoke
  *   node scripts/perf/soak.mjs --url http://127.0.0.1:4185 --minutes 60 --slug karitas
+ *   node scripts/perf/soak.mjs --browser chromium --real-audio --minutes 60 --port 4199
  *
- * WebKit on Windows does not decode the fixture. The stand-in clock from lib.mjs
- * advances currentTime (--native-audio turns it off). play() without a trusted
- * gesture is refused, as on iOS, so a reload stays paused on «Продолжить с m:ss».
+ * WebKit on Windows does not decode a recording (the silent fixture or the real
+ * m4a): the media element stays on error 4 and the native decoder never starts.
+ * --real-audio is refused on webkit for that reason. Chromium plays the decrypted
+ * file the preview already serves (public/audio is gitignored). --native-audio
+ * turns the stand-in clock off but still serves the silent fixture.
+ * play() without a trusted gesture is refused, as on iOS, so a reload stays paused on «Продолжить с m:ss».
  *
  * Once a minute a line is appended to <out>/soak.jsonl: minute, position, the OS
  * working set of the WebKit process tree, the JS heap when the page exposes one
@@ -25,11 +29,11 @@
  * above 1 MB/min over minutes 10–60 is printed as LEAK and left in the summary;
  * it does not by itself change the exit code.
  */
-import { execFileSync, spawn } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
-import { webkit } from 'playwright';
+import { chromium, webkit } from 'playwright';
 import {
   browserPid,
   flag,
@@ -39,6 +43,8 @@ import {
   phoneContext,
   prepareAudio,
   probe,
+  processTreeMemory,
+  rangedTotal,
   slopePerMin,
 } from './lib.mjs';
 
@@ -49,7 +55,19 @@ const outDir = flag(args, '--out', 'work/perf/t36');
 const slug = flag(args, '--slug', 'karitas');
 const minutes = Math.max(1, Math.round(Number(flag(args, '--minutes', '60'))));
 const nativeAudio = args.includes('--native-audio');
+const browserName = flag(args, '--browser', 'webkit');
+const realAudio = args.includes('--real-audio');
 const KEY = 'living-lyrics.resume.v1';
+if (browserName !== 'webkit' && browserName !== 'chromium') {
+  process.stderr.write(`unknown --browser ${browserName}\n`);
+  process.exit(2);
+}
+if (realAudio && browserName === 'webkit') {
+  process.stderr.write(
+    'Windows WebKit does not decode the recording: the media element stays on error 4 and the native decoder never starts. Refusing --real-audio on webkit. Use --browser chromium.\n',
+  );
+  process.exit(2);
+}
 const TOLERANCE = 2;
 
 /** Hour protocol, or a short run that still touches each action once. */
@@ -257,52 +275,9 @@ async function seekTo(page, seconds) {
   }
 }
 
-/**
- * Working set of the browser tree, in bytes. Node and the shell are left out.
- * `webBytes` is WebKitWebProcess only: that is the process iOS would jetsam.
- * One PowerShell call, same walk as lib.mjs workingSetTree.
- */
+/** Working set of the browser tree. Same split as lib.mjs processTreeMemory. */
 function memorySnapshot(rootPid) {
-  if (!rootPid) return null;
-  const script = [
-    `$target = ${Number(rootPid)}`,
-    '$procs = Get-CimInstance Win32_Process | Select-Object ProcessId, ParentProcessId, Name, WorkingSetSize',
-    '$set = [System.Collections.Generic.HashSet[int]]::new()',
-    '[void]$set.Add($target)',
-    '$grow = $true',
-    'while ($grow) {',
-    '  $grow = $false',
-    '  foreach ($p in $procs) {',
-    '    $id = [int]$p.ProcessId',
-    '    $parent = [int]$p.ParentProcessId',
-    '    if ($set.Contains($parent) -and -not $set.Contains($id)) { [void]$set.Add($id); $grow = $true }',
-    '  }',
-    '}',
-    '$sum = [int64]0; $web = [int64]0; $count = 0; $names = @{}',
-    'foreach ($p in $procs) {',
-    '  if (-not $set.Contains([int]$p.ProcessId)) { continue }',
-    '  $n = [string]$p.Name',
-    "  if ($n -like 'node*' -or $n -like 'powershell*' -or $n -like 'pwsh*' -or $n -like 'cmd*' -or $n -like 'conhost*') { continue }",
-    '  $b = [int64]$p.WorkingSetSize',
-    '  $sum += $b',
-    '  $count++',
-    "  if ($n -eq 'WebKitWebProcess.exe') { $web += $b }",
-    '  if ($names.ContainsKey($n)) { $names[$n]++ } else { $names[$n] = 1 }',
-    '}',
-    '$label = ($names.Keys | ForEach-Object { $_ + "=" + $names[$_] }) -join ","',
-    'Write-Output ($sum.ToString() + " " + $web.ToString() + " " + $count.ToString() + " " + $label)',
-  ].join('; ');
-  try {
-    const out = execFileSync('powershell', ['-NoProfile', '-Command', script], { encoding: 'utf8', timeout: 20000 });
-    const parts = out.trim().split(/\s+/);
-    const bytes = Number(parts[0]);
-    const webBytes = Number(parts[1]);
-    const processes = Number(parts[2]);
-    if (!Number.isFinite(bytes)) return null;
-    return { bytes, webBytes: Number.isFinite(webBytes) ? webBytes : null, processes, names: parts.slice(3).join(' ') };
-  } catch {
-    return null;
-  }
+  return processTreeMemory(rootPid);
 }
 
 async function openSettings(page) {
@@ -459,6 +434,16 @@ async function sampleRow(page, minute, started, extra) {
     workingSetBytes: mem?.bytes ?? null,
     webProcessMb: mb(mem?.webBytes),
     webProcessBytes: mem?.webBytes ?? null,
+    rendererMb: mb(mem?.rendererBytes),
+    rendererBytes: mem?.rendererBytes ?? null,
+    rendererMaxMb: mb(mem?.rendererMaxBytes),
+    rendererMaxBytes: mem?.rendererMaxBytes ?? null,
+    gpuMb: mb(mem?.gpuBytes),
+    gpuBytes: mem?.gpuBytes ?? null,
+    utilityMb: mb(mem?.utilityBytes),
+    utilityBytes: mem?.utilityBytes ?? null,
+    browserMb: mb(mem?.browserBytes),
+    mediaError: state.mediaError,
     processes: mem?.processes ?? null,
     processNames: mem?.names ?? null,
     jsHeapMb: state.jsHeap == null ? null : Math.round((state.jsHeap / (1024 * 1024)) * 1000) / 1000,
@@ -477,7 +462,7 @@ async function prepareContext(browser) {
   const context = await browser.newContext(phoneContext());
   await context.addInitScript(harness, KEY);
   await installProbe(context);
-  if (!nativeAudio) await installStandInClock(context, songSeconds);
+  if (!nativeAudio && !realAudio) await installStandInClock(context, songSeconds);
   await context.addInitScript(autoplayPolicy);
   return context;
 }
@@ -485,7 +470,7 @@ async function prepareContext(browser) {
 async function runKill(browser, url, index) {
   const row = { case: `kill-${index + 1}`, pass: false };
   const context = await prepareContext(browser);
-  await installAudioRoute(context, audio.body, audio.type);
+  if (!realAudio) await installAudioRoute(context, audio.body, audio.type);
   const page = await context.newPage();
   const pageErrors = [];
   page.on('pageerror', (err) => pageErrors.push(String(err).slice(0, 300)));
@@ -555,18 +540,23 @@ async function runKill(browser, url, index) {
 }
 
 const plan = schedule(minutes);
-const audio = prepareAudio(songSeconds, outDir);
+const audio = realAudio
+  ? { body: null, type: 'audio/mp4', label: 'decrypted recording served by the preview; the plain m4a is gitignored' }
+  : prepareAudio(songSeconds, outDir);
 writeFileSync(jsonlPath, '');
 writeFileSync(logPath, '');
-log(`soak start minutes=${minutes} slug=${slug} canonical=${plan.canonical} clock=${nativeAudio ? 'native' : 'stand-in'} songSeconds=${songSeconds}`);
+log(`soak start minutes=${minutes} slug=${slug} browser=${browserName} canonical=${plan.canonical} clock=${realAudio || nativeAudio ? 'native' : 'stand-in'} audio=${realAudio ? 'real' : 'fixture'} songSeconds=${songSeconds}`);
 log(`audio: ${audio.label}`);
 log(`plan ${JSON.stringify(plan)}`);
 
 const server = await serve();
 log(`preview ${server.url} pid=${server.pid ?? 'external'}`);
-const browser = await webkit.launch();
+const launchOpts = { args: browserName === 'chromium' ? ['--enable-precise-memory-info'] : [] };
+// Playwright's bundled Chromium has no AAC demuxer. Real audio needs installed Chrome.
+if (browserName === 'chromium' && realAudio) launchOpts.channel = 'chrome';
+const browser = await (browserName === 'webkit' ? webkit : chromium).launch(launchOpts);
 const browserProcess = browserPid(browser);
-log(`webkit pid=${browserProcess ?? 'unknown'} entry=${entryFile() ?? 'unknown'}`);
+log(`${browserName} pid=${browserProcess ?? 'unknown'} entry=${entryFile() ?? 'unknown'}`);
 
 const pageErrors = [];
 const rows = [];
@@ -576,8 +566,15 @@ let crashed = false;
 let hourError = null;
 
 try {
+  if (realAudio) {
+    const served = await rangedTotal(`${server.url}/audio/${slug}/high.m4a`);
+    if (!((served.status === 200 || served.status === 206) && served.total != null && served.total >= 100000)) {
+      throw new Error(`real audio is not served (${served.status}, ${served.total} bytes, ${served.type}). Decrypt and rebuild; do not commit the m4a.`);
+    }
+    log(`real audio ${served.total} bytes ${served.type || 'unknown type'}`);
+  }
   const context = await prepareContext(browser);
-  await installAudioRoute(context, audio.body, audio.type);
+  if (!realAudio) await installAudioRoute(context, audio.body, audio.type);
   const page = await context.newPage();
   page.on('pageerror', (err) => {
     const text = String(err).slice(0, 300);
@@ -591,6 +588,12 @@ try {
   const started = Date.now();
   playState.started = started;
   await startPlayback(page, server.url);
+  if (realAudio) {
+    const proof = await readState(page);
+    if (proof.mediaError) throw new Error(`decoder error ${proof.mediaError} at ${proof.audioTime}`);
+    if (!(proof.audioTime > 0.3) || proof.paused !== false) throw new Error(`decoder did not start (t=${proof.audioTime}, paused=${proof.paused})`);
+    log(`decoder playing t=${proof.audioTime} ready error=${proof.mediaError}`);
+  }
   if (sheetWanted(plan, 1)) await openSettings(page);
   log('playback started');
 
@@ -649,7 +652,7 @@ try {
     });
     rows.push(row);
     appendFileSync(jsonlPath, `${JSON.stringify(row)}\n`);
-    log(`minute ${minute} pos=${row.position} ws=${row.workingSetMb}MB web=${row.webProcessMb}MB nodes=${row.nodes} heap=${row.jsHeapMb ?? 'n/a'} errors=${row.pageErrors} sheet=${row.sheet} wall=${row.wallMin}`);
+    log(`minute ${minute} pos=${row.position} ws=${row.workingSetMb}MB web=${row.webProcessMb}MB renderer=${row.rendererMb}MB rendererMax=${row.rendererMaxMb}MB gpu=${row.gpuMb}MB utility=${row.utilityMb}MB nodes=${row.nodes} heap=${row.jsHeapMb ?? 'n/a'} media=${row.mediaError} errors=${row.pageErrors} sheet=${row.sheet} wall=${row.wallMin}`);
     // First window: open from the start until the minute-10 sample, then close.
     // Middle window: open after minute 25 so it stays up for the next ten minutes.
     try {
@@ -675,6 +678,11 @@ const span = rows.filter((row) => row.minute >= 10 && row.minute <= minutes);
 const slopeRows = span.length >= 3 ? span : rows;
 const workingSetSlope = slopePerMin(slopeRows, (row) => row.workingSetMb);
 const webSlope = slopePerMin(slopeRows, (row) => row.webProcessMb);
+const rendererSlope = slopePerMin(slopeRows, (row) => row.rendererMb);
+const rendererMaxSlope = slopePerMin(slopeRows, (row) => row.rendererMaxMb);
+const gpuSlope = slopePerMin(slopeRows, (row) => row.gpuMb);
+const utilitySlope = slopePerMin(slopeRows, (row) => row.utilityMb);
+const heapSlope = slopePerMin(slopeRows, (row) => row.jsHeapMb);
 const nodeSlope = slopePerMin(slopeRows, (row) => row.nodes);
 const nodeVals = slopeRows.map((row) => row.nodes).filter((n) => Number.isFinite(n));
 const nodeRise = nodeVals.length >= 2 ? nodeVals[nodeVals.length - 1] - nodeVals[0] : null;
@@ -691,7 +699,8 @@ const summary = {
   minutes,
   canonical: plan.canonical,
   plan,
-  clock: nativeAudio ? 'native' : 'stand-in',
+  browser: browserName,
+  clock: realAudio || nativeAudio ? 'native' : 'stand-in',
   audio: audio.label,
   entry: entryFile(),
   webkitPid: browserProcess,
@@ -724,6 +733,11 @@ const summary = {
   slopeWindow: span.length >= 3 ? '10-end' : 'all',
   workingSetSlopeMbPerMin: workingSetSlope,
   webProcessSlopeMbPerMin: webSlope,
+  rendererSlopeMbPerMin: rendererSlope,
+  rendererMaxSlopeMbPerMin: rendererMaxSlope,
+  gpuSlopeMbPerMin: gpuSlope,
+  utilitySlopeMbPerMin: utilitySlope,
+  jsHeapSlopeMbPerMin: heapSlope,
   uncoveredWorkingSetSlopeMbPerMin: uncoveredSlope,
   nodeSlopePerMin: nodeSlope,
   nodeRise,
@@ -745,7 +759,7 @@ const summary = {
 
 writeFileSync(summaryPath, JSON.stringify(summary, null, 2));
 log(
-  `slope minutes ${summary.slopeWindow}: tree ${workingSetSlope == null ? 'n/a' : workingSetSlope.toFixed(2)} MB/min, web process ${webSlope == null ? 'n/a' : webSlope.toFixed(2)} MB/min, nodes ${nodeSlope == null ? 'n/a' : nodeSlope.toFixed(2)} /min, rise ${nodeRise ?? 'n/a'}`,
+  `slope minutes ${summary.slopeWindow}: tree ${workingSetSlope == null ? 'n/a' : workingSetSlope.toFixed(2)} MB/min, web process ${webSlope == null ? 'n/a' : webSlope.toFixed(2)} MB/min, renderer ${rendererSlope == null ? 'n/a' : rendererSlope.toFixed(2)} MB/min, gpu ${gpuSlope == null ? 'n/a' : gpuSlope.toFixed(2)} MB/min, utility ${utilitySlope == null ? 'n/a' : utilitySlope.toFixed(2)} MB/min, js heap ${heapSlope == null ? 'n/a' : heapSlope.toFixed(2)} MB/min, nodes ${nodeSlope == null ? 'n/a' : nodeSlope.toFixed(2)} /min, rise ${nodeRise ?? 'n/a'}`,
 );
 if (!judged) log('memory window is shorter than minutes 10-60; slope is not a leak verdict');
 if (memLeak) log(`LEAK working set tree ${workingSetSlope == null ? 'n/a' : workingSetSlope.toFixed(2)} MB/min, web process ${webSlope == null ? 'n/a' : webSlope.toFixed(2)} MB/min over ${summary.slopeWindow}`);
