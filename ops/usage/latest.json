@@ -1,12 +1,12 @@
 {
-  "updated": "2026-10-31T12:58:24Z",
+  "updated": "2026-10-31T13:08:24Z",
   "grok": {
     "today": 591190802,
     "todaySource": "grok usage",
-    "todayAt": "2026-10-31T12:58:24Z",
+    "todayAt": "2026-10-31T13:08:24Z",
     "week": 1056320587,
     "weekSource": "grok usage",
-    "weekAt": "2026-10-31T12:58:24Z",
+    "weekAt": "2026-10-31T13:08:24Z",
     "todayByTask": {
       "bench-r5": 6638672,
       "studio-pass": 131970298,
@@ -61,14 +61,14 @@
       "space3-card-a": 18954
     },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-10-31T12:58:24Z",
+    "todayByTaskAt": "2026-10-31T13:08:24Z",
     "plan": "SuperGrok Heavy",
-    "planSource": "~/.grok/settings_cache.json",
-    "planAt": "2026-10-31T12:08:52Z",
+    "planSource": "grok /usage",
+    "planAt": "2026-10-31T13:08:24Z",
     "weekly": {
       "percentUsed": 30,
       "source": "grok /usage",
-      "at": "2026-10-31T12:08:24Z",
+      "at": "2026-10-31T13:08:24Z",
       "timezoneLabeled": false,
       "resetsAt": "November 6, 21:08"
     }
@@ -92,13 +92,13 @@
     },
     "conversationsToday": 19,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-10-31T12:58:24Z",
+    "conversationsTodayAt": "2026-10-31T13:08:24Z",
     "runsToday": 18,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-10-31T12:58:24Z",
+    "runsTodayAt": "2026-10-31T13:08:24Z",
     "secondsToday": 3944,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-10-31T12:58:24Z",
+    "secondsTodayAt": "2026-10-31T13:08:24Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
     "at": "2026-10-31T09:38:22Z",
@@ -112,18 +112,11 @@
   },
   "alerts": [
     {
-      "kind": "no-progress",
-      "value": 25439946,
-      "task": "studio-pass",
-      "session": "ebbefaf9-131c-4c32-9987-eb0b29b174bc",
-      "at": "2026-10-31T12:58:24Z"
-    },
-    {
       "kind": "agy-unlogged",
       "task": "",
       "session": "",
       "value": 1,
-      "at": "2026-10-31T12:58:24Z"
+      "at": "2026-10-31T13:08:24Z"
     }
   ],
   "value": {
@@ -138,7 +131,7 @@
   "claude": {
     "plan": "Claude Pro",
     "planSource": "claude auth status --json",
-    "at": "2026-10-31T12:58:24Z",
+    "at": "2026-10-31T13:08:24Z",
     "windows": [
       {
         "kind": "five_hour",
