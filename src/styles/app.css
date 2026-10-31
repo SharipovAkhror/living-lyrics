@@ -2929,7 +2929,6 @@ html.is-sheet-drag .sheet-grabber {
   width: 100%;
   aspect-ratio: 1;
   object-fit: contain;
-  object-position: center;
   background: var(--bg-elevated);
   border-radius: var(--r-md);
   box-shadow: none;
@@ -3016,7 +3015,6 @@ html.is-sheet-drag .sheet-grabber {
   height: 96px;
   border-radius: 16px;
   object-fit: contain;
-  object-position: center;
   background: var(--bg-elevated);
 }
 .lib-row-copy {
@@ -3363,6 +3361,26 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
     right: 0;
     border-radius: 22px 22px 0 0;
   }
+  .lib-hero {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    margin-top: 12px;
+    padding: 10px;
+  }
+  .lib-hero-cover {
+    width: 120px;
+    height: 120px;
+    flex: none;
+    aspect-ratio: auto;
+  }
+  .lib-hero-title {
+    font-size: 1.45rem;
+  }
+  .lib-hero-go {
+    min-height: 36px;
+    margin-top: 2px;
+  }
 }
 
 /* iPhone SE: the hero is a row, the shelf is short, the title is a poster not a billboard. */
@@ -3519,11 +3537,6 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
 @media (min-width: 1100px) {
   .library {
     max-width: 1200px;
-  }
-  /* No second, blurred copy of the cover. It filled the empty half of the card. */
-  .lib-hero-bleed,
-  .lib-hero-bleed-img {
-    display: none;
   }
   .lib-hero-cover,
   .lib-hero-copy {
@@ -4136,7 +4149,6 @@ html[data-sheet='1'] .song {
     height: 100%;
     min-height: 180px;
     object-fit: contain;
-    object-position: center;
     background: var(--bg-elevated);
   }
 }
@@ -4231,33 +4243,6 @@ html[data-sheet='1'] .song {
   display: inline;
 }
 
-/* A phone shows the hero as a row, so a second song is on screen without scrolling. */
-@media (min-width: 390px) and (max-width: 699px) {
-  .lib-hero {
-    flex-direction: row;
-    align-items: center;
-    gap: 14px;
-    margin-top: 12px;
-    padding: 10px;
-  }
-  .lib-hero-cover {
-    width: 120px;
-    height: 120px;
-    flex: none;
-    aspect-ratio: auto;
-  }
-  .lib-hero-title {
-    font-size: 1.45rem;
-  }
-  .lib-hero-go {
-    min-height: 36px;
-    margin-top: 2px;
-  }
-  .lib-row {
-    min-height: 88px;
-  }
-}
-
 /* Performer names wrap instead of ending in an ellipsis. */
 .scene .ist-label {
   overflow: visible;
@@ -4288,20 +4273,6 @@ html[data-sheet='1'] .song {
     margin: 0;
     transform: translate(-50%, -50%);
     border-radius: 18px;
-  }
-  .sheet--form .sheet-head {
-    cursor: default;
-    touch-action: auto;
-  }
-  .sheet--form .sheet-titlebar {
-    display: flex;
-    justify-content: space-between;
-  }
-  .sheet--form .sheet-title {
-    text-align: start;
-  }
-  .sheet--form .sheet-side {
-    display: none;
   }
 }
 
