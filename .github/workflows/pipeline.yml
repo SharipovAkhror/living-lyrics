@@ -1073,7 +1073,11 @@ jobs:
           slugs = [s for s in Path('/tmp/calibrate.txt').read_text(encoding='utf-8').split() if s]
           ok, detail = A.qa_file_gate(slugs)
           print(detail)
-          Path('/tmp/file-gate.txt').write_text(('yes' if ok else 'no') + '\n' + detail + '\n', encoding='utf-8')
+          # hold: this run named no frozen song. qa has already read the
+          # measurement. The commit puts the published bench back.
+          mode = 'hold' if ok and A.outside_frozen(slugs) else 'yes'
+          Path('/tmp/file-gate.txt').write_text(
+              ('yes' if ok else 'no') + '\n' + detail + '\n' + mode + '\n', encoding='utf-8')
           raise SystemExit(0 if ok else 2)
           PY
             file_rc=$?
@@ -1085,6 +1089,11 @@ jobs:
               if [ -z "$detail" ]; then detail='файл не удержан'; fi
               echo "::error::$detail"
               echo "file-gate: $detail" >> /tmp/summary.txt
+            else
+              mode=$(sed -n '3p' /tmp/file-gate.txt 2>/dev/null || true)
+              if [ "$mode" = "hold" ]; then
+                commit_bench=hold
+              fi
             fi
           fi
           echo "worst=$worst" >> "$GITHUB_OUTPUT"
@@ -1122,10 +1131,17 @@ jobs:
           git config user.email '41898283+github-actions[bot]@users.noreply.github.com'
           # A refused measurement must not replace the published bench, the
           # clocks it wrote, or the song files it copied off the align artifact.
-          if [ "${{ steps.run.outputs.commit_bench }}" != "yes" ]; then
+          # commit_bench != "yes" does not add the bench. "hold" is a run of
+          # only new songs: their files stay, the published bench is put back.
+          if [ "${{ steps.run.outputs.commit_bench }}" != "yes" ] && [ "${{ steps.run.outputs.commit_bench }}" != "hold" ]; then
             echo "стенд не коммитится: замер не выбрал правило или база не удержана"
             git checkout -- content/songs docs/analysis
             git clean -fd -- content/songs docs/analysis
+          fi
+          if [ "${{ steps.run.outputs.commit_bench }}" = "hold" ]; then
+            echo "опубликованный стенд не меняется: песня вне замороженных"
+            git checkout -- docs/analysis/bench
+            git clean -fd -- docs/analysis/bench
           fi
           for slug in ${{ needs.prepare.outputs.prove_slugs }}; do
             git add "content/songs/$slug/lyrics.json" "content/songs/$slug/song.json" 2>/dev/null || true
