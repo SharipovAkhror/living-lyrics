@@ -562,6 +562,14 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       }
       if (isPhone() && scrubbingNow) applyScrubPicture(kindAt(t));
       else if (host?.classList.contains('is-scrub-line') || host?.classList.contains('is-scrub-inst')) clearScrubPicture();
+      // The mounted window waits for the finger to lift. Walking the next
+      // window on every step missed a vsync: desktop scrub p95 was 33.3 (n 43)
+      // while the pointer handlers themselves were under a millisecond.
+      if (!isPhone() && scrubbingNow) {
+        lastT = t;
+        lastLive = liveKey;
+        return;
+      }
       if (t === lastT && !measuresMoved && !featuresMoved && liveKey === lastLive && pendingOwner == null && !depart) {
         // Fonts and the phone measure queue change the ink after the clock has
         // settled. Follow the painted line; do not keep the short layout slot.
