@@ -107,12 +107,15 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   const room = Math.max(0, stage.h);
   const shortStage = room > 0 && room <= 420 && stage.w >= 640;
   const tight = room > 0 && room < 300 && !shortStage;
-  // A wide stage used to keep 72 % and a tall caption, so six plates became icons.
-  const wide = stage.w >= 900 && room > 480 && !shortStage && !tight;
+  // The desk column is 868. A 900 cutoff never saw it, so six plates kept the
+  // short stack and read as icons. 840 is that column and not the 760 shelf.
+  const wide = stage.w >= 840 && room > 480 && !shortStage && !tight;
   const fullH = shortStage ? Math.round(room * 0.92) : Math.round(Math.min(tight ? room : room * (wide ? 0.9 : 0.72), wide ? 760 : 620));
   const textH = shortStage
     ? section.note ? 52 : section.mode ? 36 : 28
-    : section.note ? (tight ? 36 : wide ? 52 : 96) : section.mode ? (tight ? 28 : wide ? 40 : 64) : tight ? 20 : wide ? 28 : 44;
+    // The desk note is one line (about 20px). A 52px reserve shrank the six
+    // drawings. 24px is the largest stack this 868 column can give them.
+    : section.note ? (tight ? 36 : wide ? 24 : 96) : section.mode ? (tight ? 28 : wide ? 40 : 64) : tight ? 20 : wide ? 28 : 44;
   const stageSize = {
     w: Math.max(200, Math.min(stage.w - (shortStage ? 16 : 24), 1040)),
     h: Math.max(64, Math.min(fullH - textH, room > 0 ? room : fullH)),
