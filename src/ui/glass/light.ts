@@ -70,6 +70,9 @@ export function mountGlassLight(): void {
     'pointermove',
     (e) => {
       if (root.dataset.glass !== 'lens') return;
+      // A button-down move belongs to the scrubber. These variables restyle
+      // the whole document, and nothing in the stylesheet reads them during a drag.
+      if (e.buttons) return;
       queue(e);
     },
     { passive: true },
