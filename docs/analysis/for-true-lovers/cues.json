@@ -1,0 +1,737 @@
+[
+  {
+    "line": "open-1",
+    "cue": 1,
+    "lang": "en",
+    "start": 37.42,
+    "end": 40.357
+  },
+  {
+    "line": "land-1",
+    "cue": 2,
+    "lang": "en",
+    "start": 40.357,
+    "end": 43.634
+  },
+  {
+    "line": "mansion-1",
+    "cue": 3,
+    "lang": "en",
+    "start": 43.634,
+    "end": 46.72
+  },
+  {
+    "line": "palace-1",
+    "cue": 4,
+    "lang": "en",
+    "start": 46.72,
+    "end": 49.865
+  },
+  {
+    "line": "wonder-1",
+    "cue": 5,
+    "lang": "en",
+    "start": 49.865,
+    "end": 52.911
+  },
+  {
+    "line": "moses-1",
+    "cue": 6,
+    "lang": "en",
+    "start": 52.911,
+    "end": 55.666
+  },
+  {
+    "line": "sinai-1",
+    "cue": 7,
+    "lang": "en",
+    "start": 55.666,
+    "end": 58.781
+  },
+  {
+    "line": "arrive-1",
+    "cue": 8,
+    "lang": "en",
+    "start": 58.781,
+    "end": 62.185
+  },
+  {
+    "line": "thrive-1",
+    "cue": 9,
+    "lang": "en",
+    "start": 62.185,
+    "end": 64.583
+  },
+  {
+    "line": "haber-1",
+    "cue": 9,
+    "lang": "tr",
+    "start": 70.62,
+    "end": 73.614
+  },
+  {
+    "line": "gonul-1",
+    "cue": 10,
+    "lang": "tr",
+    "start": 73.614,
+    "end": 76.768
+  },
+  {
+    "line": "haber-2",
+    "cue": 11,
+    "lang": "tr",
+    "start": 76.768,
+    "end": 79.80199999999999
+  },
+  {
+    "line": "gonul-2",
+    "cue": 12,
+    "lang": "tr",
+    "start": 79.80199999999999,
+    "end": 82.837
+  },
+  {
+    "line": "bahri-1",
+    "cue": 13,
+    "lang": "tr",
+    "start": 82.837,
+    "end": 85.923
+  },
+  {
+    "line": "dive-1",
+    "cue": 14,
+    "lang": "tr",
+    "start": 85.923,
+    "end": 91.89
+  },
+  {
+    "line": "bahri-2",
+    "cue": 15,
+    "lang": "tr",
+    "start": 93.731,
+    "end": 96.685
+  },
+  {
+    "line": "dive-2",
+    "cue": 16,
+    "lang": "tr",
+    "start": 96.685,
+    "end": 102.837
+  },
+  {
+    "line": "wave-1",
+    "cue": 17,
+    "lang": "tr",
+    "start": 104.388,
+    "end": 107.437
+  },
+  {
+    "line": "sky-1",
+    "cue": 18,
+    "lang": "tr",
+    "start": 107.437,
+    "end": 110.64099999999999
+  },
+  {
+    "line": "wave-2",
+    "cue": 19,
+    "lang": "tr",
+    "start": 110.64099999999999,
+    "end": 113.40899999999999
+  },
+  {
+    "line": "sky-2",
+    "cue": 20,
+    "lang": "tr",
+    "start": 113.40899999999999,
+    "end": 116.64099999999999
+  },
+  {
+    "line": "cloud-1",
+    "cue": 21,
+    "lang": "tr",
+    "start": 116.64099999999999,
+    "end": 119.821
+  },
+  {
+    "line": "throne-1",
+    "cue": 22,
+    "lang": "tr",
+    "start": 119.821,
+    "end": 125.89
+  },
+  {
+    "line": "cloud-2",
+    "cue": 23,
+    "lang": "tr",
+    "start": 125.89,
+    "end": 128.949
+  },
+  {
+    "line": "throne-2",
+    "cue": 24,
+    "lang": "tr",
+    "start": 128.949,
+    "end": 134.62
+  },
+  {
+    "line": "rule-1",
+    "cue": 25,
+    "lang": "tr",
+    "start": 144.207,
+    "end": 147.345
+  },
+  {
+    "line": "rain-1",
+    "cue": 26,
+    "lang": "tr",
+    "start": 147.345,
+    "end": 156.465
+  },
+  {
+    "line": "bolt-1",
+    "cue": 27,
+    "lang": "tr",
+    "start": 156.465,
+    "end": 159.459
+  },
+  {
+    "line": "strike-1",
+    "cue": 28,
+    "lang": "tr",
+    "start": 159.459,
+    "end": 162.692
+  },
+  {
+    "line": "rule-2",
+    "cue": 29,
+    "lang": "tr",
+    "start": 162.692,
+    "end": 165.698
+  },
+  {
+    "line": "rain-2",
+    "cue": 30,
+    "lang": "tr",
+    "start": 165.698,
+    "end": 171.95
+  },
+  {
+    "line": "saw-1",
+    "cue": 31,
+    "lang": "tr",
+    "start": 171.95,
+    "end": 174.924
+  },
+  {
+    "line": "task-1",
+    "cue": 32,
+    "lang": "tr",
+    "start": 174.924,
+    "end": 177.89
+  },
+  {
+    "line": "praise-1",
+    "cue": 33,
+    "lang": "tr",
+    "start": 177.89,
+    "end": 180.964
+  },
+  {
+    "line": "book-1",
+    "cue": 34,
+    "lang": "tr",
+    "start": 180.964,
+    "end": 187.178
+  },
+  {
+    "line": "hallaj-1",
+    "cue": 35,
+    "lang": "ar",
+    "start": 187.337,
+    "end": 190.423
+  },
+  {
+    "line": "hallaj-2",
+    "cue": 36,
+    "lang": "ar",
+    "start": 190.423,
+    "end": 193.25900000000001
+  },
+  {
+    "line": "hallaj-3",
+    "cue": 37,
+    "lang": "ar",
+    "start": 193.25900000000001,
+    "end": 196.333
+  },
+  {
+    "line": "hallaj-4",
+    "cue": 38,
+    "lang": "ar",
+    "start": 196.333,
+    "end": 199.566
+  },
+  {
+    "line": "hallaj-5",
+    "cue": 39,
+    "lang": "ar",
+    "start": 199.566,
+    "end": 202.56
+  },
+  {
+    "line": "hallaj-6",
+    "cue": 40,
+    "lang": "ar",
+    "start": 202.56,
+    "end": 208.749
+  },
+  {
+    "line": "hallaj-7",
+    "cue": 41,
+    "lang": "ar",
+    "start": 210.249,
+    "end": 213.38
+  },
+  {
+    "line": "hallaj-8",
+    "cue": 42,
+    "lang": "ar",
+    "start": 213.38,
+    "end": 216.454
+  },
+  {
+    "line": "hallaj-9",
+    "cue": 43,
+    "lang": "ar",
+    "start": 216.454,
+    "end": 219.409
+  },
+  {
+    "line": "hallaj-10",
+    "cue": 44,
+    "lang": "ar",
+    "start": 219.409,
+    "end": 222.535
+  },
+  {
+    "line": "hallaj-11",
+    "cue": 45,
+    "lang": "ar",
+    "start": 222.535,
+    "end": 225.697
+  },
+  {
+    "line": "hallaj-12",
+    "cue": 46,
+    "lang": "ar",
+    "start": 225.697,
+    "end": 228.625
+  },
+  {
+    "line": "hallaj-13",
+    "cue": 47,
+    "lang": "ar",
+    "start": 228.625,
+    "end": 231.659
+  },
+  {
+    "line": "hallaj-14",
+    "cue": 48,
+    "lang": "ar",
+    "start": 231.659,
+    "end": 234.773
+  },
+  {
+    "line": "hallaj-15",
+    "cue": 49,
+    "lang": "ar",
+    "start": 234.773,
+    "end": 238.046
+  },
+  {
+    "line": "hallaj-16",
+    "cue": 50,
+    "lang": "ar",
+    "start": 238.046,
+    "end": 243.956
+  },
+  {
+    "line": "hallaj-17",
+    "cue": 51,
+    "lang": "ar",
+    "start": 245.45,
+    "end": 248.698
+  },
+  {
+    "line": "hallaj-18",
+    "cue": 52,
+    "lang": "ar",
+    "start": 248.698,
+    "end": 254.632
+  },
+  {
+    "line": "mad-1",
+    "cue": 53,
+    "lang": "tr",
+    "start": 307.981,
+    "end": 310.817
+  },
+  {
+    "line": "guide-1",
+    "cue": 54,
+    "lang": "tr",
+    "start": 310.817,
+    "end": 313.613
+  },
+  {
+    "line": "alone-1",
+    "cue": 55,
+    "lang": "tr",
+    "start": 313.613,
+    "end": 316.619
+  },
+  {
+    "line": "facep-1",
+    "cue": 56,
+    "lang": "tr",
+    "start": 316.619,
+    "end": 319.574
+  },
+  {
+    "line": "mad-2",
+    "cue": 57,
+    "lang": "tr",
+    "start": 319.574,
+    "end": 322.435
+  },
+  {
+    "line": "guide-2",
+    "cue": 58,
+    "lang": "tr",
+    "start": 322.435,
+    "end": 325.282
+  },
+  {
+    "line": "alone-2",
+    "cue": 59,
+    "lang": "tr",
+    "start": 325.282,
+    "end": 328.237
+  },
+  {
+    "line": "facep-2",
+    "cue": 60,
+    "lang": "tr",
+    "start": 328.237,
+    "end": 331.171
+  },
+  {
+    "line": "mad-3",
+    "cue": 61,
+    "lang": "tr",
+    "start": 331.171,
+    "end": 333.988
+  },
+  {
+    "line": "guide-3",
+    "cue": 62,
+    "lang": "tr",
+    "start": 333.988,
+    "end": 336.903
+  },
+  {
+    "line": "alone-3",
+    "cue": 63,
+    "lang": "tr",
+    "start": 336.903,
+    "end": 339.579
+  },
+  {
+    "line": "facep-3",
+    "cue": 64,
+    "lang": "tr",
+    "start": 339.579,
+    "end": 342.335
+  },
+  {
+    "line": "mad-4",
+    "cue": 65,
+    "lang": "tr",
+    "start": 342.335,
+    "end": 345.21
+  },
+  {
+    "line": "guide-4",
+    "cue": 66,
+    "lang": "tr",
+    "start": 345.21,
+    "end": 347.807
+  },
+  {
+    "line": "alone-4",
+    "cue": 67,
+    "lang": "tr",
+    "start": 347.807,
+    "end": 350.694
+  },
+  {
+    "line": "facep-4",
+    "cue": 68,
+    "lang": "tr",
+    "start": 350.694,
+    "end": 353.37
+  },
+  {
+    "line": "earth-1",
+    "cue": 69,
+    "lang": "tr",
+    "start": 353.37,
+    "end": 356.126
+  },
+  {
+    "line": "better-1",
+    "cue": 70,
+    "lang": "tr",
+    "start": 356.126,
+    "end": 358.89300000000003
+  },
+  {
+    "line": "price-1",
+    "cue": 71,
+    "lang": "tr",
+    "start": 358.89300000000003,
+    "end": 361.691
+  },
+  {
+    "line": "ore-1",
+    "cue": 72,
+    "lang": "tr",
+    "start": 361.691,
+    "end": 364.339
+  },
+  {
+    "line": "din-1",
+    "cue": 73,
+    "lang": "ar",
+    "start": 367.164,
+    "end": 375.817
+  },
+  {
+    "line": "husn-1",
+    "cue": 74,
+    "lang": "ar",
+    "start": 376.572,
+    "end": 392.507
+  },
+  {
+    "line": "mad-5",
+    "cue": 73,
+    "lang": "tr",
+    "start": 419.372,
+    "end": 422.043
+  },
+  {
+    "line": "guide-5",
+    "cue": 74,
+    "lang": "tr",
+    "start": 422.043,
+    "end": 424.679
+  },
+  {
+    "line": "alone-5",
+    "cue": 75,
+    "lang": "tr",
+    "start": 424.679,
+    "end": 427.456
+  },
+  {
+    "line": "face-1",
+    "cue": 76,
+    "lang": "tr",
+    "start": 427.456,
+    "end": 430.172
+  },
+  {
+    "line": "mad-6",
+    "cue": 77,
+    "lang": "tr",
+    "start": 430.172,
+    "end": 432.808
+  },
+  {
+    "line": "guide-6",
+    "cue": 78,
+    "lang": "tr",
+    "start": 432.808,
+    "end": 435.484
+  },
+  {
+    "line": "alone-6",
+    "cue": 79,
+    "lang": "tr",
+    "start": 435.484,
+    "end": 438.222
+  },
+  {
+    "line": "face-2",
+    "cue": 80,
+    "lang": "tr",
+    "start": 438.222,
+    "end": 441.069
+  },
+  {
+    "line": "mad-7",
+    "cue": 81,
+    "lang": "tr",
+    "start": 441.069,
+    "end": 443.60699999999997
+  },
+  {
+    "line": "guide-7",
+    "cue": 82,
+    "lang": "tr",
+    "start": 443.60699999999997,
+    "end": 446.414
+  },
+  {
+    "line": "alone-7",
+    "cue": 83,
+    "lang": "tr",
+    "start": 446.414,
+    "end": 449.062
+  },
+  {
+    "line": "face-3",
+    "cue": 84,
+    "lang": "tr",
+    "start": 449.062,
+    "end": 451.909
+  },
+  {
+    "line": "mad-8",
+    "cue": 85,
+    "lang": "tr",
+    "start": 451.909,
+    "end": 454.507
+  },
+  {
+    "line": "guide-8",
+    "cue": 86,
+    "lang": "tr",
+    "start": 454.507,
+    "end": 457.223
+  },
+  {
+    "line": "alone-8",
+    "cue": 87,
+    "lang": "tr",
+    "start": 457.223,
+    "end": 459.939
+  },
+  {
+    "line": "face-4",
+    "cue": 88,
+    "lang": "tr",
+    "start": 459.939,
+    "end": 462.75
+  },
+  {
+    "line": "haber-3",
+    "cue": 89,
+    "lang": "tr",
+    "start": 465.497,
+    "end": 468.244
+  },
+  {
+    "line": "gonul-3",
+    "cue": 90,
+    "lang": "tr",
+    "start": 468.244,
+    "end": 470.972
+  },
+  {
+    "line": "haber-4",
+    "cue": 91,
+    "lang": "tr",
+    "start": 470.972,
+    "end": 473.659
+  },
+  {
+    "line": "gonul-4",
+    "cue": 92,
+    "lang": "tr",
+    "start": 473.659,
+    "end": 476.495
+  },
+  {
+    "line": "bahri-3",
+    "cue": 93,
+    "lang": "tr",
+    "start": 476.495,
+    "end": 479.284
+  },
+  {
+    "line": "dive-3",
+    "cue": 94,
+    "lang": "tr",
+    "start": 479.284,
+    "end": 484.518
+  },
+  {
+    "line": "wave-3",
+    "cue": 95,
+    "lang": "tr",
+    "start": 486.228,
+    "end": 489.015
+  },
+  {
+    "line": "sky-3",
+    "cue": 96,
+    "lang": "tr",
+    "start": 489.014,
+    "end": 491.89
+  },
+  {
+    "line": "wave-4",
+    "cue": 97,
+    "lang": "tr",
+    "start": 491.89,
+    "end": 494.498
+  },
+  {
+    "line": "sky-4",
+    "cue": 98,
+    "lang": "tr",
+    "start": 494.498,
+    "end": 497.424
+  },
+  {
+    "line": "cloud-3",
+    "cue": 99,
+    "lang": "tr",
+    "start": 497.424,
+    "end": 500.258
+  },
+  {
+    "line": "throne-3",
+    "cue": 100,
+    "lang": "tr",
+    "start": 500.258,
+    "end": 505.77
+  },
+  {
+    "line": "cloud-4",
+    "cue": 101,
+    "lang": "tr",
+    "start": 505.77,
+    "end": 508.592
+  },
+  {
+    "line": "throne-4",
+    "cue": 102,
+    "lang": "tr",
+    "start": 508.592,
+    "end": 519.41
+  }
+]
