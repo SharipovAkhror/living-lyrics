@@ -376,7 +376,9 @@
   font-weight: 650;
   /* Opaque plate. The song field behind the accent failed 4.5:1 (about 1.85:1). */
   background-color: var(--bg-elevated);
-  border-radius: 0.14em;
+  /* An em radius on a display word left the corner transparent, so the field
+     showed through the plate. A fixed radius keeps the corner on the plate. */
+  border-radius: 3px;
   padding-inline: 0.1em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
@@ -430,7 +432,7 @@
   color: var(--accent);
   font-weight: 650;
   background-color: var(--bg-elevated);
-  border-radius: 0.14em;
+  border-radius: 3px;
   padding-inline: 0.1em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
