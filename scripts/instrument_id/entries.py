@@ -1396,8 +1396,35 @@ def test_known_concert_frames() -> None:
     check(voice_open["instruments"][0] == "voice" and "tanbur" in voice_open["instruments"], f"танбур вступает в voice-open: {voice_open['instruments']}")
 
 
+def song_gate_message(slug: str) -> str | None:
+    """None when entries may run.
+
+    SONGS stays the benchmark trio. Any other song with content/songs/<slug>/lyrics.json
+    is on the route. A name with no folder gets the route command, not a longer bench list.
+    """
+    on_disk = (ROOT / "content" / "songs" / slug / "lyrics.json").is_file()
+    if slug in SONGS or on_disk:
+        return None
+    return (
+        f"неизвестная песня: {slug}. "
+        f"Стенд не расширяют: самопроверка требует ровно три песни. "
+        f"Для песни вне стенда нужна папка content/songs/{slug}/lyrics.json. "
+        f"Дальше команда маршрута: npm run song-status -- {slug}."
+    )
+
+
+def test_song_gate() -> None:
+    check(song_gate_message("karitas") is None, "karitas в стенде")
+    check(song_gate_message("alive") is None, "alive вне стенда, папка есть")
+    missing = song_gate_message("not-a-song") or ""
+    check(missing.startswith("неизвестная песня: not-a-song"), "чужой слаг без папки")
+    check("npm run song-status -- not-a-song" in missing, "чужому слагу дана команда маршрута")
+    check(set(SONGS) == {"i-have-come-alive", "karitas", "one"}, "стенд — ровно три песни")
+
+
 def selftest() -> None:
     FAILURES.clear()
+    test_song_gate()
     test_rules()
     test_known_concert_frames()
     if FAILURES:
@@ -1412,10 +1439,9 @@ def main(args) -> None:
             return
     slugs = list(SONGS) if getattr(args, "all", False) or not getattr(args, "slug", None) else [args.slug]
     for slug in slugs:
-        # SONGS is the benchmark trio. A song folder is enough for this command.
-        on_disk = (ROOT / "content" / "songs" / slug / "lyrics.json").is_file()
-        if slug not in SONGS and not on_disk:
-            raise SystemExit(f"неизвестная песня: {slug}")
+        refused = song_gate_message(slug)
+        if refused:
+            raise SystemExit(refused)
         lyrics = json.loads((ROOT / "content" / "songs" / slug / "lyrics.json").read_text(encoding="utf-8"))
         result = load_song(slug)
         path = write_report(result, lyrics["sections"])
@@ -1428,7 +1454,7 @@ def main(args) -> None:
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Вступления инструментов по видео концерта")
+    parser = argparse.ArgumentParser(description="Вступления инструментов по видео ролика")
     parser.add_argument("slug", nargs="?")
     parser.add_argument("--write", action="store_true")
     parser.add_argument("--all", action="store_true")
