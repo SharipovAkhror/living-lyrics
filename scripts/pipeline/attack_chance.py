@@ -3549,8 +3549,9 @@ def _try_refuter(per_song: list[dict], refute: dict, baseline_n: int) -> dict:
 # `withdrawn` in that file is not a failed pass: the lyric text or its
 # timing-draft flag changed, so the old proof does not apply. Thresholds stay.
 PASS5_EXTRA = ('english-8', 'coda-fa-3', 'shushtari-s2')
-# These three keep the published choice. A song outside the list, Alive, is
-# measured on its own so its witnesses do not move the three.
+# These three keep the published choice. A song outside the list is measured
+# on its own so its witnesses do not move the three. A run that names none of
+# them does the same: it does not check its join against this list.
 FROZEN_SONGS = ('i-have-come-alive', 'karitas', 'one')
 _LINE_LIST_KEYS = (
     'line_fill', 'line_nucleus', 'line_nearest', 'line_wide',
@@ -3668,8 +3669,20 @@ def qa_proved_ids(slugs: list[str]) -> list[str]:
     return proved
 
 
+def outside_frozen(slugs: list[str]) -> bool:
+    """True when the run names songs and none of them is one of the frozen three."""
+    return bool(slugs) and all(slug not in FROZEN_SONGS for slug in slugs)
+
+
 def qa_file_gate(slugs: list[str]) -> tuple[bool, str]:
-    """The write gate on this run's qa proof. One lost file line refuses."""
+    """The write gate on this run's qa proof.
+
+    One lost line of a frozen song refuses. A run that names none of the
+    frozen songs does not carry their lines, so this gate leaves the
+    published file alone.
+    """
+    if outside_frozen(slugs):
+        return True, 'файл не этой песни: база не тронута'
     return file_write_allowed(qa_proved_ids(slugs))
 
 
@@ -3754,36 +3767,125 @@ def song_choice_from_chosen(chosen: dict, slug: str, line_ids: set[str] | None =
     return choice
 
 
+def _choice_from_piece(piece: dict, slug: str) -> dict:
+    """One new song's own K and line lists, taken from its own measurement."""
+    fresh_chosen = piece.get('chosen') if isinstance(piece.get('chosen'), dict) else {}
+    choice = song_choice_from_chosen(fresh_chosen, slug)
+    choice['k'] = fresh_chosen.get('line_share')
+    choice['line_share'] = fresh_chosen.get('line_share')
+    choice['shifts'] = list(SHIFTS)
+    choice['word_limit'] = LIMIT
+    choice['line_limit'] = LINE_LIMIT
+    phone = piece.get('phoneme') if isinstance(piece.get('phoneme'), dict) else {}
+    choice['phoneme_kept'] = bool(phone.get('kept'))
+    choice['phoneme_search'] = phone.get('search')
+    return choice
+
+
+def _own_rule_ok(chosen: dict) -> bool:
+    """Whether this song's own measurement chose a rule at or under 5 %.
+
+    The frozen baseline is not this song's to lose. A line pass over 5 %,
+    or no chosen rule, still refuses the run.
+    """
+    name = chosen.get('name')
+    if not chosen.get('within_limit') or name in (None, '', 'unmeasured'):
+        return False
+    chance = chosen.get('chance')
+    try:
+        chance_f = None if chance is None else float(chance)
+    except (TypeError, ValueError):
+        return False
+    if chance_f is not None and chance_f > LINE_LIMIT + 1e-12:
+        return False
+    return True
+
+
+def _fresh_only_payload(published: dict, slugs: list[str], pieces: list[tuple[str, dict]]) -> dict:
+    """The published choice and baseline, plus each new song measured alone.
+
+    The returned bench is what qa reads during the run. The prove job puts
+    the published bench files back before it commits, so this addition does
+    not replace them. A new song over 5 % fails the rule check and does not
+    report the frozen lines as lost.
+    """
+    held = published.get('chosen') if isinstance(published.get('chosen'), dict) else {}
+    published_ok = bool(held.get('within_limit') and held.get('baseline_kept'))
+    by_song: dict[str, dict] = {}
+    worst_name = None
+    worst_chance = None
+    own_ok = True
+    for slug, piece in pieces:
+        fresh_chosen = piece.get('chosen') if isinstance(piece.get('chosen'), dict) else {}
+        if not _own_rule_ok(fresh_chosen):
+            own_ok = False
+            worst_name = fresh_chosen.get('name')
+            worst_chance = fresh_chosen.get('chance')
+        by_song[slug] = _choice_from_piece(piece, slug)
+    held_n = published_count()
+    held_status = {
+        'kept': True, 'lost': [], 'n': held_n, 'reason': 'удержано',
+    }
+    if not published_ok or not own_ok:
+        return {
+            'songs': list(slugs),
+            'by_song': by_song,
+            'measured_songs': list(slugs),
+            'chosen': {
+                'name': worst_name if worst_name not in (None, '') else 'unmeasured',
+                'within_limit': False,
+                'chance': worst_chance,
+                'baseline_kept': True,
+                'baseline_lost': [],
+                'baseline_n': held_n,
+                'baseline_reason': 'удержано',
+            },
+            'frozen': dict(held_status),
+        }
+    payload = copy.deepcopy(published)
+    have = [str(item) for item in (payload.get('songs') or [])]
+    for slug in slugs:
+        if slug not in have:
+            have.append(slug)
+    payload['songs'] = have
+    payload['by_song'] = by_song
+    payload['measured_songs'] = list(slugs)
+    out_chosen = dict(payload.get('chosen') or {})
+    out_chosen['baseline_n'] = held_n
+    out_chosen['baseline_kept'] = True
+    out_chosen['baseline_lost'] = []
+    out_chosen['baseline_reason'] = 'удержано'
+    payload['chosen'] = out_chosen
+    payload['frozen'] = dict(held_status)
+    return payload
+
+
 def build_payload(slugs: list[str]) -> dict:
     """Measure a new song on its own and keep the published choice of the three.
 
     A run of only the frozen songs still measures them together, as before.
-    A run that also names another song, Alive, does not put that song into
-    their union. Each song's K, shift grid and limits are stored under
-    `by_song`. Thresholds are not changed.
+    A run that names none of them measures each new song on its own and
+    leaves the published choice, the baseline list and the published bench.
+    The new song still has to come in at or under the 5 % line pass.
+    A run that also names a frozen song does not put the new song into their
+    union. Each song's K, shift grid and limits are stored under `by_song`.
+    Thresholds are not changed.
     """
     fresh = [slug for slug in slugs if slug not in FROZEN_SONGS]
     frozen = [slug for slug in slugs if slug in FROZEN_SONGS]
-    if not fresh or not frozen:
+    if not fresh:
         return _measure_slugs(slugs)
     published = _published_bench()
     chosen = published.get('chosen') if isinstance(published.get('chosen'), dict) else {}
-    if not chosen.get('within_limit') or not chosen.get('baseline_kept'):
+    if frozen and (not chosen.get('within_limit') or not chosen.get('baseline_kept')):
         return _measure_slugs(slugs)
+    if not frozen:
+        pieces = [(slug, _measure_slugs([slug])) for slug in fresh]
+        return _fresh_only_payload(published, fresh, pieces)
     by_song = {slug: song_choice_from_chosen(chosen, slug) for slug in frozen}
     for slug in fresh:
         piece = _measure_slugs([slug])
-        fresh_chosen = piece.get('chosen') if isinstance(piece.get('chosen'), dict) else {}
-        choice = song_choice_from_chosen(fresh_chosen, slug)
-        choice['k'] = fresh_chosen.get('line_share')
-        choice['line_share'] = fresh_chosen.get('line_share')
-        choice['shifts'] = list(SHIFTS)
-        choice['word_limit'] = LIMIT
-        choice['line_limit'] = LINE_LIMIT
-        phone = piece.get('phoneme') if isinstance(piece.get('phoneme'), dict) else {}
-        choice['phoneme_kept'] = bool(phone.get('kept'))
-        choice['phoneme_search'] = phone.get('search')
-        by_song[slug] = choice
+        by_song[slug] = _choice_from_piece(piece, slug)
     payload = copy.deepcopy(published)
     payload['songs'] = list(slugs)
     payload['by_song'] = by_song
