@@ -3549,6 +3549,14 @@ def _try_refuter(per_song: list[dict], refute: dict, baseline_n: int) -> dict:
 # `withdrawn` in that file is not a failed pass: the lyric text or its
 # timing-draft flag changed, so the old proof does not apply. Thresholds stay.
 PASS5_EXTRA = ('english-8', 'coda-fa-3', 'shushtari-s2')
+# These three keep the published choice. A song outside the list, Alive, is
+# measured on its own so its witnesses do not move the three.
+FROZEN_SONGS = ('i-have-come-alive', 'karitas', 'one')
+_LINE_LIST_KEYS = (
+    'line_fill', 'line_nucleus', 'line_nearest', 'line_wide',
+    'line_lang', 'line_pair', 'line_overrule', 'line_placed_clock',
+)
+_LINE_MAP_KEYS = ('line_roles', 'line_stable', 'line_phone_model')
 
 
 def _baseline_payload() -> dict:
@@ -3611,6 +3619,190 @@ def published_count() -> int:
     return len(_published_ids())
 
 
+def file_lines_lost(proved_ids) -> list[str]:
+    """Retained file lines missing from `proved_ids`.
+
+    The retained set is the frozen list plus the pass-5 trio, minus
+    `withdrawn`. `pass_keeps_baseline` only looks at the ids of this run, and
+    a line pass above 5 % excuses a missing run line. A missing file line is
+    not excused.
+    """
+    proved = {str(item) for item in (proved_ids or []) if item}
+    return [lid for lid in _published_ids() if lid not in proved]
+
+
+def file_write_allowed(proved_ids) -> tuple[bool, str]:
+    """Whether lyrics and timing flags may be written.
+
+    The file must be the 152 distinct retained lines, and every one of them
+    must be in `proved_ids`. One absence refuses the write.
+    """
+    ids = _published_ids()
+    if len(ids) != 152 or len(set(ids)) != 152:
+        return False, f'файл базы не 152 строки ({len(ids)})'
+    lost = file_lines_lost(proved_ids)
+    if lost:
+        shown = ', '.join(lost[:12])
+        more = '' if len(lost) <= 12 else f' и ещё {len(lost) - 12}'
+        return False, f'потеряна строка файла: {shown}{more}'
+    return True, 'файл удержан: 152'
+
+
+def qa_proved_ids(slugs: list[str]) -> list[str]:
+    """Line ids `qa_sync` marked pass in `work/<slug>/qa-sync.json`."""
+    proved: list[str] = []
+    for slug in slugs:
+        path = work_dir(slug) / 'qa-sync.json'
+        if not path.is_file():
+            continue
+        try:
+            data = json.loads(path.read_text(encoding='utf-8'))
+        except (OSError, json.JSONDecodeError):
+            continue
+        proof = data.get('proof') if isinstance(data, dict) else None
+        if not isinstance(proof, dict):
+            continue
+        for row in proof.get('lines') or []:
+            if isinstance(row, dict) and row.get('pass') and row.get('id'):
+                proved.append(str(row['id']))
+    return proved
+
+
+def qa_file_gate(slugs: list[str]) -> tuple[bool, str]:
+    """The write gate on this run's qa proof. One lost file line refuses."""
+    return file_write_allowed(qa_proved_ids(slugs))
+
+
+def _lyric_ids(slug: str) -> set[str]:
+    """Vocal line ids of one song. An unreadable file contributes none."""
+    import timing as T
+
+    path = song_dir(slug) / 'lyrics.json'
+    if not path.is_file():
+        return set()
+    try:
+        lyrics = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return set()
+    return {str(line.get('id')) for _sec, line in T.vocal_lines(lyrics) if line.get('id')}
+
+
+def _published_bench() -> dict:
+    """The bench file already in the tree. Measuring Alive must not replace it."""
+    path = ROOT / 'docs' / 'analysis' / 'bench' / 'attack-chance.json'
+    if not path.is_file():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def song_choice_from_chosen(chosen: dict, slug: str, line_ids: set[str] | None = None) -> dict:
+    """One song's K, shift grid and limits, and only that song's line lists.
+
+    Word chance stays 15 % and line chance stays 5 %. The shift grid stays
+    `SHIFTS`. Lists are restricted to this song so another song's witness
+    cannot add or remove a line.
+    """
+    ids = _lyric_ids(slug) if line_ids is None else {str(item) for item in line_ids if item}
+    choice = {
+        'k': chosen.get('line_share'),
+        'shifts': list(SHIFTS),
+        'shift_chance': dict(chosen.get('shifts') or {}) if isinstance(chosen.get('shifts'), dict) else {},
+        'word_limit': LIMIT,
+        'line_limit': LINE_LIMIT,
+    }
+    for key in (
+        'name', 'tol', 'choir_tol', 'peak_height', 'require_rise', 'require_second',
+        'witnesses', 'agree_tol', 'line_share', 'line_min_words', 'line_chance',
+        'chance', 'refute', 'bias', 'adopt', 'choir_attack', 'choir_clock',
+        'attack_fill', 'blocked_primaries', 'primaries', 'translation_half',
+        'within_limit',
+    ):
+        if key in chosen:
+            choice[key] = chosen[key]
+    choice['line_limit'] = LINE_LIMIT
+    scopes = []
+    for scope in chosen.get('scopes') or []:
+        if isinstance(scope, dict) and str(scope.get('song') or '') == slug:
+            scopes.append(scope)
+    choice['scopes'] = scopes
+    for key in _LINE_LIST_KEYS:
+        choice[key] = [str(lid) for lid in (chosen.get(key) or []) if str(lid) in ids]
+    for key in _LINE_MAP_KEYS:
+        raw = chosen.get(key) or {}
+        if isinstance(raw, dict):
+            choice[key] = {str(lid): value for lid, value in raw.items() if str(lid) in ids}
+        else:
+            choice[key] = {}
+    lang_of = {}
+    prefix = slug + '|'
+    for key, value in (chosen.get('lang_of') or {}).items():
+        if str(key).startswith(prefix):
+            lang_of[str(key)] = value
+    choice['lang_of'] = lang_of
+    pair_phone = {}
+    for key, value in (chosen.get('pair_phone') or {}).items():
+        if str(key).startswith(prefix):
+            pair_phone[str(key)] = value
+    choice['pair_phone'] = pair_phone
+    retime = chosen.get('retime') if isinstance(chosen.get('retime'), dict) else {}
+    rows = retime.get(slug)
+    choice['retime'] = {slug: rows} if isinstance(rows, list) else {}
+    return choice
+
+
+def build_payload(slugs: list[str]) -> dict:
+    """Measure a new song on its own and keep the published choice of the three.
+
+    A run of only the frozen songs still measures them together, as before.
+    A run that also names another song, Alive, does not put that song into
+    their union. Each song's K, shift grid and limits are stored under
+    `by_song`. Thresholds are not changed.
+    """
+    fresh = [slug for slug in slugs if slug not in FROZEN_SONGS]
+    frozen = [slug for slug in slugs if slug in FROZEN_SONGS]
+    if not fresh or not frozen:
+        return _measure_slugs(slugs)
+    published = _published_bench()
+    chosen = published.get('chosen') if isinstance(published.get('chosen'), dict) else {}
+    if not chosen.get('within_limit') or not chosen.get('baseline_kept'):
+        return _measure_slugs(slugs)
+    by_song = {slug: song_choice_from_chosen(chosen, slug) for slug in frozen}
+    for slug in fresh:
+        piece = _measure_slugs([slug])
+        fresh_chosen = piece.get('chosen') if isinstance(piece.get('chosen'), dict) else {}
+        choice = song_choice_from_chosen(fresh_chosen, slug)
+        choice['k'] = fresh_chosen.get('line_share')
+        choice['line_share'] = fresh_chosen.get('line_share')
+        choice['shifts'] = list(SHIFTS)
+        choice['word_limit'] = LIMIT
+        choice['line_limit'] = LINE_LIMIT
+        phone = piece.get('phoneme') if isinstance(piece.get('phoneme'), dict) else {}
+        choice['phoneme_kept'] = bool(phone.get('kept'))
+        choice['phoneme_search'] = phone.get('search')
+        by_song[slug] = choice
+    payload = copy.deepcopy(published)
+    payload['songs'] = list(slugs)
+    payload['by_song'] = by_song
+    payload['measured_songs'] = list(fresh)
+    out_chosen = dict(payload.get('chosen') or {})
+    out_chosen['baseline_n'] = published_count()
+    out_chosen['baseline_kept'] = True
+    out_chosen['baseline_lost'] = []
+    out_chosen['baseline_reason'] = 'удержано'
+    payload['chosen'] = out_chosen
+    frozen_status = dict(payload.get('frozen') or {})
+    frozen_status['n'] = published_count()
+    frozen_status['kept'] = True
+    frozen_status['lost'] = []
+    frozen_status['reason'] = 'удержано'
+    payload['frozen'] = frozen_status
+    return payload
+
+
 def _frozen_status(result: dict | None, ids: list[str]) -> dict:
     """Whether the published join still holds the frozen proved lines.
 
@@ -3636,7 +3828,7 @@ def _frozen_status(result: dict | None, ids: list[str]) -> dict:
     }
 
 
-def build_payload(slugs: list[str]) -> dict:
+def _measure_slugs(slugs: list[str]) -> dict:
     import features as F
 
     review = load_review()
@@ -4061,6 +4253,15 @@ def commit_gate(payload: dict | None, slugs: list[str], exit_code: int = 0) -> t
         missing = [slug for slug in slugs if slug not in have]
         if missing:
             ok, detail = False, 'нет песен: ' + ', '.join(missing)
+        elif 'file_kept' in chosen and not chosen.get('file_kept'):
+            reason = chosen.get('file_reason') or 'строка файла потеряна'
+            ok, detail = False, f'файл не удержан: {reason}'
+        elif 'file_proved' in chosen:
+            allowed, reason = file_write_allowed(chosen.get('file_proved') or [])
+            if not allowed:
+                ok, detail = False, f'файл не удержан: {reason}'
+            else:
+                ok, detail = True, f"правило {name}, база {chosen.get('baseline_n')}"
         else:
             ok, detail = True, f"правило {name}, база {chosen.get('baseline_n')}"
     if exit_code != 0 and ok:
