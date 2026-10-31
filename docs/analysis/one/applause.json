@@ -1,0 +1,50 @@
+{
+  "source": "cache work/t35/audio/one.other.f32",
+  "vocalSource": "cache work/t35/audio/one.vocals.f32",
+  "recording": "e8bc538d0ef3",
+  "thresholds": {
+    "flatnessMin": 0.4904,
+    "pitchMax": 0.3558,
+    "rmsMin": 0.0136,
+    "vocalRmsMax": 0.0678,
+    "minSpanS": 2.0,
+    "gapS": 0.5
+  },
+  "precision": 0.914,
+  "recall": 0.698,
+  "seconds": {
+    "tp": 31.75,
+    "fp": 3.0,
+    "fn": 13.75
+  },
+  "spans": [
+    {
+      "start": 617.5,
+      "end": 622.0,
+      "flatness": 0.514,
+      "accepted": false,
+      "reason": "пересекает рисунок inst-5 на 4.5 с, не мечу"
+    },
+    {
+      "start": 774.5,
+      "end": 783.2,
+      "flatness": 0.732,
+      "accepted": true,
+      "reason": "уже размечено, сцена пустая"
+    },
+    {
+      "start": 783.5,
+      "end": 798.2,
+      "flatness": 0.652,
+      "accepted": true,
+      "reason": "уже размечено, сцена пустая"
+    },
+    {
+      "start": 798.0,
+      "end": 808.5,
+      "flatness": 0.695,
+      "accepted": true,
+      "reason": "уже размечено, сцена пустая"
+    }
+  ]
+}

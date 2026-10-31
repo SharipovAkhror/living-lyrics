@@ -646,6 +646,9 @@ const translationReady = lines.every((line) => line.tr.ru.trim()) && slow.length
 const commentsReady = lines.length > 0 && fragmentsWithoutComment.length === 0 && bareInstrumentals.length === 0;
 const translitReady = noTranslit.length === 0;
 const instrumentsReady = unknownInstruments.length === 0;
+const applauseCount = lyrics.sections.filter(
+  (section) => section.kind === 'instrumental' && section.label === 'Аплодисменты',
+).length;
 const qaReady = flagCount === 0 && review.length === 0;
 const coverFileExt = song.cover?.ext === 'jpg' ? 'jpg' : 'png';
 const coverReady = [96, 192, 512, 1024].every((size) =>
@@ -736,7 +739,9 @@ const rows: Row[] = [
     n: '9',
     name: 'инструменты',
     state: instrumentsReady ? 'да' : 'нет',
-    detail: instrumentsReady ? 'ключи есть в каталоге' : `нет в каталоге: ${[...new Set(unknownInstruments)].join(', ')}`,
+    detail: instrumentsReady
+      ? `ключи есть в каталоге; аплодисменты: ${applauseCount}`
+      : `нет в каталоге: ${[...new Set(unknownInstruments)].join(', ')}`,
   },
   {
     n: '5',

@@ -14,6 +14,7 @@ import { harakatWarning } from '../../src/data/harakat.ts';
 import { INSTRUMENTS } from '../../src/instruments/list.ts';
 import { MODE_COUNTS, modeFit } from '../../src/instruments/layout.ts';
 import { checkSequence, sequenceSelfTest } from './sequence-check.ts';
+import { checkApplause } from './applause-check.ts';
 import { letterAtoms, persianOrthographyIssues, persianSelfTest } from './persian-letters.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -441,6 +442,7 @@ function check(slug: string): Issue[] {
   checkParts(song, lyrics, sourcesText, err, warn);
   issues.push(...checkSequence(slug));
   checkRouteFiles(slug, lyrics, err, warn);
+  issues.push(...checkApplause(slug, song, lyrics));
   return issues;
 }
 
