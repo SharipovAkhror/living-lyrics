@@ -8,7 +8,7 @@ attack inside `--measure`. `--chance` then substitutes RoFormer vocals only
 on the placed unproved words of a song that cleared the bar, and only when
 that window is at least 0.80 s from a proved word. The full song is not
 separated. Lyric times change only when the published count rises and the
-158-line baseline is kept.
+held baseline is kept.
 
 Weights stay in the Hugging Face cache. The author's inference code is
 cloned under work/ and is not committed. The licence field is read from
@@ -46,14 +46,18 @@ ALIGN_RUN = '39548436423'
 GAP_S = 0.80
 HALF_S = 0.25
 FADE_S = 0.03
-BASE_GROUPS = {
-    ('i-have-come-alive', 'solo'): 85,
-    ('karitas', 'solo'): 36,
-    ('one', 'solo'): 24,
-    ('one', 'choir'): 13,
-}
-BASE_PUBLISHED = 158
+# Last accepted internal union, one above the old published 158.
+# A later pass still has to beat it. The held line count is not this number:
+# it is baseline-155.json `held_groups`, read by `_floor`. Thresholds stay.
 BASE_INTERNAL = 159
+
+
+def _floor() -> tuple[dict[tuple[str, str], int], int]:
+    """Held solo/choir counts after lyric withdrawals. One source, the bench file."""
+    import attack_chance as A
+
+    groups = A.published_groups()
+    return groups, sum(groups.values())
 
 
 def budget_s() -> float:
@@ -361,6 +365,7 @@ def _decide(base: dict | None, cand: dict | None) -> dict:
 
 
 def render_md(payload: dict) -> str:
+    _, published_n = _floor()
     lines = [
         '# Mel-Band RoFormer, ясность атаки на отрезках',
         '',
@@ -409,7 +414,7 @@ def render_md(payload: dict) -> str:
             'Случайный проход после порога. Полная песня не считалась. '
             'В вокал htdemucs подставлены только окна поставленных недоказанных слов '
             'песни, где порог взят, и только если окно не ближе 0,80 с к доказанному слову. '
-            'Время строк меняется только если опубликованных строк стало больше и база 158 удержана.',
+            f'Время строк меняется только если опубликованных строк стало больше и база {published_n} удержана.',
             '',
             f"Время строк изменено: {payload.get('moved_times')}. {chance.get('why') or ''}",
             '',
@@ -842,11 +847,11 @@ def _choose(snapshot: Path) -> dict:
     import attack_chance
 
     before = _published()
-    expected = {key: BASE_GROUPS[key] for key in BASE_GROUPS}
-    if before != expected or sum(before.values()) != BASE_PUBLISHED:
+    expected, published_n = _floor()
+    if before != expected or sum(before.values()) != published_n:
         return {
             'ran': False,
-            'why': f'опубликованный счёт до прохода {before} не равен базе {BASE_GROUPS}',
+            'why': f'опубликованный счёт до прохода {before} не равен базе {expected}',
             'kept_files': False,
         }
     _snapshot(snapshot)
@@ -871,7 +876,7 @@ def _choose(snapshot: Path) -> dict:
         'baseline_kept': chosen.get('baseline_kept'),
         'internal_proved': union.get('proved'),
         'kept_files': False,
-        'published_after': BASE_PUBLISHED,
+        'published_after': published_n,
     }
     rise = (
         code == 0
@@ -888,11 +893,11 @@ def _choose(snapshot: Path) -> dict:
         after = _published()
         info['published_after'] = sum(after.values())
         info['published_groups'] = {f'{a}|{b}': n for (a, b), n in sorted(after.items())}
-        dropped = any(after.get(key, 0) < BASE_GROUPS[key] for key in BASE_GROUPS)
-        if dropped or sum(after.values()) <= BASE_PUBLISHED:
+        dropped = any(after.get(key, 0) < expected[key] for key in expected)
+        if dropped or sum(after.values()) <= published_n:
             _restore(snapshot)
             info['why'] = 'qa не поднял опубликованный счёт или уронил группу, файлы возвращены'
-            info['published_after'] = BASE_PUBLISHED
+            info['published_after'] = published_n
         else:
             info['kept_files'] = True
             info['why'] = 'опубликованный счёт вырос, база удержана'
@@ -926,7 +931,8 @@ def chance() -> int:
         _write(payload)
         return 0
     before = _published()
-    if before != {key: BASE_GROUPS[key] for key in BASE_GROUPS} or sum(before.values()) != BASE_PUBLISHED:
+    groups, published_n = _floor()
+    if before != groups or sum(before.values()) != published_n:
         info['why'] = f'опубликованный счёт до прохода {before} не равен базе, окна не считались'
         payload['chance'] = info
         payload['moved_times'] = False
