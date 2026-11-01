@@ -1,0 +1,415 @@
+[
+  {
+    "line": "ar-1-1",
+    "cue": 1,
+    "lang": "ar",
+    "start": 0.56,
+    "end": 3.4
+  },
+  {
+    "line": "ar-1-2",
+    "cue": 2,
+    "lang": "ar",
+    "start": 6.174,
+    "end": 9.858
+  },
+  {
+    "line": "ar-1-3",
+    "cue": 3,
+    "lang": "ar",
+    "start": 11.534,
+    "end": 15.56
+  },
+  {
+    "line": "ar-1-4",
+    "cue": 4,
+    "lang": "ar",
+    "start": 16.511,
+    "end": 20.6
+  },
+  {
+    "line": "ar-1-5",
+    "cue": 5,
+    "lang": "ar",
+    "start": 21.984,
+    "end": 26.224
+  },
+  {
+    "line": "ar-1-6",
+    "cue": 6,
+    "lang": "ar",
+    "start": 27.486,
+    "end": 31.131
+  },
+  {
+    "line": "ar-1-7",
+    "cue": 7,
+    "lang": "ar",
+    "start": 32.766,
+    "end": 36.76
+  },
+  {
+    "line": "ar-1-8",
+    "cue": 8,
+    "lang": "ar",
+    "start": 37.977,
+    "end": 41.852
+  },
+  {
+    "line": "ar-hayy-01",
+    "cue": 9,
+    "lang": "ar",
+    "start": 42.804,
+    "end": 47.284
+  },
+  {
+    "line": "ar-hayy-02",
+    "cue": 10,
+    "lang": "ar",
+    "start": 48.0,
+    "end": 52.133
+  },
+  {
+    "line": "ar-hayy-03",
+    "cue": 11,
+    "lang": "ar",
+    "start": 52.984,
+    "end": 57.529
+  },
+  {
+    "line": "ar-hayy-04",
+    "cue": 12,
+    "lang": "ar",
+    "start": 58.013,
+    "end": 61.492
+  },
+  {
+    "line": "ar-hayy-05",
+    "cue": 13,
+    "lang": "ar",
+    "start": 63.0,
+    "end": 67.48
+  },
+  {
+    "line": "ar-hayy-06",
+    "cue": 14,
+    "lang": "ar",
+    "start": 68.021,
+    "end": 72.448
+  },
+  {
+    "line": "ar-hayy-07",
+    "cue": 15,
+    "lang": "ar",
+    "start": 73.117,
+    "end": 77.193
+  },
+  {
+    "line": "ar-hayy-08",
+    "cue": 16,
+    "lang": "ar",
+    "start": 78.081,
+    "end": 82.226
+  },
+  {
+    "line": "ar-2-1",
+    "cue": 17,
+    "lang": "ar",
+    "start": 83.24,
+    "end": 85.675
+  },
+  {
+    "line": "ar-2-2",
+    "cue": 18,
+    "lang": "ar",
+    "start": 88.283,
+    "end": 90.933
+  },
+  {
+    "line": "ar-2-3",
+    "cue": 19,
+    "lang": "ar",
+    "start": 93.157,
+    "end": 96.416
+  },
+  {
+    "line": "ar-2-4",
+    "cue": 20,
+    "lang": "ar",
+    "start": 98.034,
+    "end": 101.88
+  },
+  {
+    "line": "ar-2-5",
+    "cue": 21,
+    "lang": "ar",
+    "start": 102.974,
+    "end": 106.199
+  },
+  {
+    "line": "ar-2-6",
+    "cue": 22,
+    "lang": "ar",
+    "start": 107.615,
+    "end": 111.235
+  },
+  {
+    "line": "ar-2-7",
+    "cue": 23,
+    "lang": "ar",
+    "start": 112.757,
+    "end": 115.628
+  },
+  {
+    "line": "ar-2-8",
+    "cue": 24,
+    "lang": "ar",
+    "start": 117.398,
+    "end": 122.413
+  },
+  {
+    "line": "ar-hayy-09",
+    "cue": 25,
+    "lang": "ar",
+    "start": 122.413,
+    "end": 126.853
+  },
+  {
+    "line": "ar-hayy-10",
+    "cue": 26,
+    "lang": "ar",
+    "start": 127.42,
+    "end": 131.274
+  },
+  {
+    "line": "ar-hayy-11",
+    "cue": 27,
+    "lang": "ar",
+    "start": 132.2,
+    "end": 136.299
+  },
+  {
+    "line": "ar-hayy-12",
+    "cue": 28,
+    "lang": "ar",
+    "start": 137.142,
+    "end": 140.671
+  },
+  {
+    "line": "ar-hayy-13",
+    "cue": 29,
+    "lang": "ar",
+    "start": 142.12,
+    "end": 145.907
+  },
+  {
+    "line": "ar-hayy-14",
+    "cue": 30,
+    "lang": "ar",
+    "start": 146.914,
+    "end": 151.041
+  },
+  {
+    "line": "ar-hayy-15",
+    "cue": 31,
+    "lang": "ar",
+    "start": 151.842,
+    "end": 155.34
+  },
+  {
+    "line": "ar-hayy-16",
+    "cue": 32,
+    "lang": "ar",
+    "start": 156.558,
+    "end": 161.047
+  },
+  {
+    "line": "fa-1-1",
+    "cue": 33,
+    "lang": "fa",
+    "start": 170.92,
+    "end": 178.481
+  },
+  {
+    "line": "fa-1-2",
+    "cue": 34,
+    "lang": "fa",
+    "start": 179.298,
+    "end": 186.737
+  },
+  {
+    "line": "fa-1-3",
+    "cue": 35,
+    "lang": "fa",
+    "start": 187.304,
+    "end": 191.953
+  },
+  {
+    "line": "fa-1-4",
+    "cue": 36,
+    "lang": "fa",
+    "start": 197.01,
+    "end": 204.907
+  },
+  {
+    "line": "fa-1-5",
+    "cue": 37,
+    "lang": "fa",
+    "start": 205.326,
+    "end": 213.431
+  },
+  {
+    "line": "fa-1-6",
+    "cue": 38,
+    "lang": "fa",
+    "start": 213.848,
+    "end": 219.925
+  },
+  {
+    "line": "fa-1-7",
+    "cue": 39,
+    "lang": "fa",
+    "start": 225.661,
+    "end": 233.316
+  },
+  {
+    "line": "fa-1-8",
+    "cue": 40,
+    "lang": "fa",
+    "start": 233.96,
+    "end": 242.189
+  },
+  {
+    "line": "fa-1-9",
+    "cue": 41,
+    "lang": "fa",
+    "start": 242.56,
+    "end": 250.213
+  },
+  {
+    "line": "ar-1-1b",
+    "cue": 42,
+    "lang": "ar",
+    "start": 302.155,
+    "end": 305.12
+  },
+  {
+    "line": "fa-w-sun",
+    "cue": 43,
+    "lang": "fa",
+    "start": 305.592,
+    "end": 308.169
+  },
+  {
+    "line": "ar-1-2b",
+    "cue": 44,
+    "lang": "ar",
+    "start": 308.169,
+    "end": 310.487
+  },
+  {
+    "line": "ar-1-34",
+    "cue": 45,
+    "lang": "ar",
+    "start": 312.0,
+    "end": 315.334
+  },
+  {
+    "line": "fa-1-3b",
+    "cue": 46,
+    "lang": "fa",
+    "start": 315.334,
+    "end": 318.135
+  },
+  {
+    "line": "ar-1-5b",
+    "cue": 47,
+    "lang": "ar",
+    "start": 318.135,
+    "end": 320.852
+  },
+  {
+    "line": "ar-1-6b",
+    "cue": 48,
+    "lang": "ar",
+    "start": 320.852,
+    "end": 322.57
+  },
+  {
+    "line": "ar-1-78",
+    "cue": 49,
+    "lang": "ar",
+    "start": 322.57,
+    "end": 326.261
+  },
+  {
+    "line": "fa-1-4b",
+    "cue": 50,
+    "lang": "fa",
+    "start": 328.145,
+    "end": 333.255
+  },
+  {
+    "line": "fa-1-5b",
+    "cue": 51,
+    "lang": "fa",
+    "start": 337.424,
+    "end": 342.087
+  },
+  {
+    "line": "ar-1-78b",
+    "cue": 52,
+    "lang": "ar",
+    "start": 342.087,
+    "end": 345.154
+  },
+  {
+    "line": "fa-1-7b",
+    "cue": 53,
+    "lang": "fa",
+    "start": 345.154,
+    "end": 348.888
+  },
+  {
+    "line": "ar-ah",
+    "cue": 54,
+    "lang": "ar",
+    "start": 348.888,
+    "end": 351.6
+  },
+  {
+    "line": "fa-1-8b",
+    "cue": 55,
+    "lang": "fa",
+    "start": 354.951,
+    "end": 358.876
+  },
+  {
+    "line": "ar-cup-1",
+    "cue": 56,
+    "lang": "ar",
+    "start": 358.876,
+    "end": 360.958
+  },
+  {
+    "line": "ar-cup-2",
+    "cue": 57,
+    "lang": "ar",
+    "start": 360.958,
+    "end": 363.392
+  },
+  {
+    "line": "ar-cup-3",
+    "cue": 58,
+    "lang": "ar",
+    "start": 363.392,
+    "end": 365.809
+  },
+  {
+    "line": "ar-cup-4",
+    "cue": 59,
+    "lang": "ar",
+    "start": 365.809,
+    "end": 368.459
+  }
+]
