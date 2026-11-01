@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "node scripts/tools/audio-crypt.mjs decrypt && npm run validate && tsc --noEmit -p . && vite build",
+    "precheck": "npm run validate && npm run typecheck && vite build",
+    "prepare": "node scripts/tools/install-hooks.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p .",
     "validate": "tsx scripts/tools/validate.ts",
@@ -16,6 +18,7 @@
     "art": "node scripts/art/build-instruments.mjs",
     "art3d": "node scripts/art3d/build.mjs",
     "test:layout": "tsx scripts/tools/layout-test.ts",
+    "test:position": "tsx scripts/tools/position-test.ts",
     "test:resume": "node scripts/perf/resume-crash.mjs",
     "test:soak": "node scripts/perf/soak.mjs",
     "shots": "node scripts/tools/screenshots.mjs",

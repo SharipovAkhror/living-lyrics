@@ -175,9 +175,9 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     return () => ro.disconnect();
   }, []);
 
-  // A new stage object used to restart the frame loop on the opening. Fonts
-  // that are already loaded have not moved the box, so the remeasure waits
-  // until the cover has landed and then only bumps the line epoch.
+  // Fonts that are already loaded have not moved the box. The remeasure waits
+  // until the cover has landed and then only bumps the line epoch. A new stage
+  // object used to restart the frame loop, and a width nudge moved the column.
   useEffect(() => {
     let alive = true;
     let timer = 0;
@@ -191,13 +191,15 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       }
       setLayoutEpoch((n) => n + 1);
     };
-    document.fonts?.ready.then(() => alive && remeasure());
+    void document.fonts?.ready.then(() => alive && remeasure());
     const onRemeasure = () => alive && remeasure();
     el?.addEventListener('ll-remeasure', onRemeasure);
+    document.addEventListener('living-lyrics:remeasure', onRemeasure);
     return () => {
       alive = false;
       window.clearTimeout(timer);
       el?.removeEventListener('ll-remeasure', onRemeasure);
+      document.removeEventListener('living-lyrics:remeasure', onRemeasure);
     };
   }, []);
 
@@ -980,6 +982,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
                   motion={motion}
                   stage={stage}
                   features={features}
+                  showComment={settings.showComment}
                   register={register}
                   onPick={onPick}
                   measureEpoch={layoutEpoch}
@@ -993,7 +996,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
             const c = timeline.cues[idx];
             if (!c || c.kind !== 'inst') return null;
             return (
-              <InstBlock key={idx} cue={c} timeline={timeline} timed={wordSync} entrance={entrance} motion={motion} stage={stage} features={features} register={register} onPick={onPick} />
+              <InstBlock key={idx} cue={c} timeline={timeline} timed={wordSync} entrance={entrance} motion={motion} stage={stage} features={features} showComment={settings.showComment} register={register} onPick={onPick} measureEpoch={layoutEpoch} />
             );
           })}
         </div>

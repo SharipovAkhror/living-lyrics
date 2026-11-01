@@ -212,13 +212,11 @@
   -webkit-mask-image: linear-gradient(#0000, #000 32px);
   mask-image: linear-gradient(#0000, #000 32px);
 }
-/* The interlude is the spectacle. The lyric reserve (40px) and the top fade
-   gave the six drawings a 433px box and a 146px ceiling. For that picture only,
-   the column runs from the header to the dock and nothing is faded away. */
+/* The interlude drops the top fade so the picture is not eaten by the mask.
+   The column box itself does not grow: a different top or bottom while an
+   interlude is current moved the stage between neighbouring seconds. */
 @media (min-width: 1100px) and (min-height: 700px) {
   .song.is-inst .scene-stage {
-    top: calc(var(--chrome-top) - 8px);
-    bottom: var(--player-h);
     -webkit-mask-image: none;
     mask-image: none;
   }
@@ -1472,6 +1470,11 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
 }
 .comment-body p {
   margin: 0 0 10px;
+}
+/* Mushaf glyphs are taller than the prose line. Same relief as .part-note. */
+.comment-body .rt-ar {
+  line-height: 2.05;
+  font-size: 1.15em;
 }
 .rt-ar {
   font-size: 1.24em;

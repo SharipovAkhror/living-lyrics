@@ -1475,6 +1475,123 @@ def test_whisper_choice() -> None:
     check('the rewritten witness is that model’s clock',
           ar_third == 10.0 and en_third == 50.0, f'{ar_third}, {en_third}')
 
+    import copy
+
+    bare = copy.deepcopy(report)
+    for line in bare['lines']:
+        line['cue_start'] = None
+    bare_err = ''
+    try:
+        C.choose(['s'], {'s': bare}, {'s': peaks}, {}, {})
+    except RuntimeError as exc:
+        bare_err = str(exc)
+    check('zero line candidates name the song and the missing cues',
+          's' in bare_err and 'реплик' in bare_err and 'постановщик' in bare_err
+          and 'caps' not in bare_err and 'порог' not in bare_err
+          and '5 %' not in bare_err and '15 %' not in bare_err
+          and 'word chance' not in bare_err and 'line chance' not in bare_err,
+          bare_err or 'no error')
+    saved_search = C.search
+
+    def no_fit(songs):
+        if int(np.asarray(songs[0]['cand']).sum()) <= 0:
+            raise AssertionError('the cap message is only for a song that still has candidates')
+        return None
+
+    C.search = no_fit
+    cap_err = ''
+    try:
+        try:
+            C.choose(['s'], {'s': report}, {'s': peaks}, {}, {})
+        except RuntimeError as exc:
+            cap_err = str(exc)
+    finally:
+        C.search = saved_search
+    check('a refusal that still has line candidates keeps the cap text',
+          cap_err == 'no assignment keeps the word chance and the line chance inside the caps',
+          cap_err or 'no error')
+
+
+def test_require_cues() -> None:
+    """prove stops before align when cues.json is missing or empty.
+
+    No network and no GPU: the script only reads the cue file. nasimi has no
+    file in this tree. for-true-lovers has one. A temporary root covers an
+    empty file, a missing file and a file with one row.
+    """
+    import subprocess
+    import tempfile
+
+    script = Path(__file__).resolve().parent / 'require_cues.py'
+    message = (
+        '::error::nasimi: нет docs/analysis/nasimi/cues.json, '
+        'строки не доказать, сначала реплики (docs/methodology/05-alignment.md)'
+    )
+
+    def run(slugs: list[str], root: Path | None = None) -> subprocess.CompletedProcess[str]:
+        cmd = [sys.executable, str(script)]
+        if root is not None:
+            cmd.extend(['--root', str(root)])
+        cmd.extend(slugs)
+        return subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8')
+
+    def shown(proc: subprocess.CompletedProcess[str]) -> str:
+        return (proc.stdout or '') + (proc.stderr or '')
+
+    missing = run(['nasimi'])
+    check('nasimi without cues.json exits non-zero and names the file',
+          missing.returncode != 0 and message in shown(missing),
+          f'{missing.returncode} {shown(missing)!r}')
+    present = run(['for-true-lovers'])
+    check('for-true-lovers with cues.json exits 0',
+          present.returncode == 0 and '::error::' not in shown(present),
+          f'{present.returncode} {shown(present)!r}')
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        folder = root / 'docs' / 'analysis' / 'nasimi'
+        folder.mkdir(parents=True)
+        gone = run(['nasimi'], root)
+        check('a missing cues file is the same refusal',
+              gone.returncode != 0 and message in shown(gone), shown(gone))
+        (folder / 'cues.json').write_text('', encoding='utf-8')
+        empty = run(['nasimi'], root)
+        check('an empty cues file is the same refusal',
+              empty.returncode != 0 and message in shown(empty), shown(empty))
+        (folder / 'cues.json').write_text(' \n\t', encoding='utf-8')
+        blank = run(['nasimi'], root)
+        check('a whitespace cues file is the same refusal',
+              blank.returncode != 0 and message in shown(blank), shown(blank))
+        (folder / 'cues.json').write_text('[]\n', encoding='utf-8')
+        vacant = run(['nasimi'], root)
+        check('a cues file with no rows is the same refusal',
+              vacant.returncode != 0 and message in shown(vacant), shown(vacant))
+        (folder / 'cues.json').write_text(
+            '[{"line":"a","cue":1,"lang":"az","start":1.0,"end":2.0}]\n', encoding='utf-8')
+        filled = run(['nasimi'], root)
+        check('a cues file with one row exits 0',
+              filled.returncode == 0 and '::error::' not in shown(filled),
+              f'{filled.returncode} {shown(filled)!r}')
+
+    repo = Path(__file__).resolve().parents[2]
+    workflow = (repo / '.github' / 'workflows' / 'pipeline.yml').read_text(encoding='utf-8')
+    prepare = workflow.split('\n  prepare:\n', 1)[1].split('\n  run:\n', 1)[0]
+    run_job = workflow.split('\n  run:\n', 1)[1].split('\n  calibrate:\n', 1)[0]
+    calibrate = workflow.split('\n  calibrate:\n', 1)[1].split('\n  align:\n', 1)[0]
+    align = workflow.split('\n  align:\n', 1)[1].split('\n  prove:\n', 1)[0]
+    prove = workflow.split('\n  prove:\n', 1)[1]
+    check('prepare calls the cue check for prove slugs only, before align',
+          'scripts/pipeline/require_cues.py' in prepare
+          and 'PROVE_SLUGS' in prepare
+          and "steps.jobs.outputs.prove_slugs != ''" in prepare
+          and 'require_cues.py' not in run_job
+          and 'require_cues.py' not in calibrate
+          and 'require_cues.py' not in align
+          and 'require_cues.py' not in prove)
+    method = (repo / 'docs' / 'methodology' / '05-alignment.md').read_text(encoding='utf-8')
+    check('the alignment note says prepare stops a prove song that has no cues',
+          'prove_slugs' in method and 'prepare' in method and 'пустым файлом' in method)
+
 
 def test_phoneme() -> None:
     import inspect
@@ -2926,6 +3043,7 @@ def main() -> int:
     test_placement_chain()
     test_whisper_witness()
     test_whisper_choice()
+    test_require_cues()
     test_phoneme()
     test_lang_ctc()
     test_pass5_placement()

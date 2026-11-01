@@ -358,7 +358,9 @@ function StageVars({
   showComment: boolean;
 }) {
   const note = useNoteSnapshot(store, timeline);
-  const noteOpen = !!(showComment && note);
+  // Commentary on reserves the margin for the whole song. Following the current
+  // note moved the column and the engraving whenever a cue gained or lost one.
+  const noteOpen = showComment;
   const { frame } = useStageFrame(noteOpen);
   // A cold instrumental open left --stage-w at the stylesheet default: the
   // stage was the full window and the plate was the large tier. A scrub that
@@ -379,6 +381,10 @@ function StageVars({
     } as const;
     const keys = Object.keys(want) as (keyof typeof want)[];
     const stale = keys.some((key) => root.style.getPropertyValue(key) !== want[key]);
+    // has-comment marks the cue that owns the open card. comments-on is the
+    // setting, and it does not follow that cue, so the column stays put.
+    root.classList.toggle('comments-on', showComment);
+    root.classList.toggle('has-comment', !!(showComment && note));
     if (!stale && root.classList.contains('has-margin') === frame.marginNote) return;
     root.classList.toggle('has-margin', frame.marginNote);
     for (const key of keys) root.style.setProperty(key, want[key]);
@@ -1410,6 +1416,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       (lyrics?.sections.some((s) => arabScript.test(s.comment ?? '')) ?? false),
   };
 
+  // comments-on reserves the note for the whole song. has-comment only means this cue has one.
   return (
     <div
       ref={songRef}

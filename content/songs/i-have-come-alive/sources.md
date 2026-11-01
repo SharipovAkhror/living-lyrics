@@ -100,3 +100,73 @@
 Запрос просил 3000×3000. Ответ Apple — JPEG 1440×1440. Он лежит как `public/covers/i-have-come-alive/source.jpg`. 1024 и меньшие размеры — уменьшение этого файла, без растягивания.
 
 Альбом из `song.json`, Beyond the Stars (Live), collectionId 1654043063, дата альбома 2022-11-10. Дорожка 5 из 12, trackId 1654043530, то же имя I Have Come Alive (Live), те же 577250 мс и дата дорожки 2022-03-20, обложка альбома `fc5cfcd1-688f-36a4-6762-1f639c47e76d`. На плитку положена обложка сингла. Сингл 2025 «Alive» с Homayoun Shajarian — другая запись, её обложка сюда не бралась. Файл проекта — дорожка YouTube, 580,06 с.
+
+## Пояснения
+
+Открыто для пояснений строк, 2026-10-31.
+
+- Арберри, стихотворение 170: первый бейт с. 183, бейты 2–15 с. 184, бейты 16–21 с. 185, примечания 9, 18, 19, 21 на с. 402. https://archive.org/stream/MysticalPoemsOfRumiArberry_201806/mystical%20poems%20of%20Rumi%20%28Arberry_djvu.txt
+- Стейнгасс, страницы этого прохода: 99 (amr), 202 (banda), 236 (pāyanda), 266 (pesh), 267 (pesh-rau), 546 (daulat), 608 (zāyanda), 626 (zinda), 631 (zahra, zuhra), 772 (shaikh), 1444 (nayam / nīm). https://dsal.uchicago.edu/dictionaries/steingass/
+- Кулиев: 2:144, 12:10, 12:31, 67:3. https://quran-online.ru/2:144 https://quran-online.ru/12:10 https://quran-online.ru/12:31 https://quran-online.ru/67:3
+- Аль-Кушайри, ар-Рисала, с. 453, бейт فأحيا بالمنى وأموت شوقا / فكم أحيا عليك وكم أموت. В записи عليك нет. https://ablibrary.net/book_content/b/9533/453
+- Буквы газели: https://ganjoor.net/moulavi/shams/ghazalsh/sh1393
+- Буквы английского, турецкого и арабского переложения: https://www.youtube.com/watch?v=M_8ano37jYo
+
+Страница Лейна на بدأ и страницы Редхауса в этом проходе заново не открывались и в новых пояснениях по номеру не цитируются.
+
+## Круг 2, 2026-10-31
+
+Заново открыты: Ганджур 1393; Арберри, поток djvu; Стейнгасс, с. 236, 546, 608, 626, 631, 772, 1444; Кулиев, 2:144, 12:10, 12:31, 67:3; аль-Кушайри, с. 453, https://ablibrary.net/book_content/b/9533/453.
+
+Не открыты в этом круге и из пояснений сняты номера: Стейнгасс, с. 99, 202, 266, 267; кадры https://www.youtube.com/watch?v=M_8ano37jYo; Редхаус; отдельный лист Лейна на عود. На с. 608 глагола زائیدن нет.
+
+## Круг 3, 2026-10-31
+
+Страницы открыты в этом круге. Ниже — короткая цитата с самой страницы.
+
+- Стейнгасс, с. 236, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=236. pāyanda: “Firm, solid, lasting, perpetual”.
+- С. 546, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=546. daulat: “good turn of fortune; felicity, wealth, victory; power, dominion, empire; a state, reign, dynasty”.
+- С. 608, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=608. zāʼīdan: “To bring forth (a child); to originate, appear, come forth”.
+- С. 626, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=626. zinda: “Alive, living; life”. zinda shudan: “To become alive”.
+- С. 631, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=631. zahra: “Boldness, spirit; power, vigour; the gall-bladder, bile”. zuhra: “The planet Venus”.
+- С. 772, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=772. shaikh: “A venerable old man; a man of fifty and upwards… doctor learned in religion and law”.
+- С. 812, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=812. tarab: “Skipping, leaping, dancing for joy; cheerfulness, joy, gladness”.
+- С. 1444, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=1444. nayam: “(for na am), I am not”.
+- С. 1518, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=1518. haul: “fright, terror”. hol: “High, lofty; true, just; straight.”
+- Ганджур, https://ganjoor.net/moulavi/shams/ghazalsh/sh1393. «مُرده بُدم زنده شدم، گریه بُدم خنده شدم». «یوسف بودم ز کنون یوسف زاینده شدم». Английского «you have lit the fire» и арабского «في رحلة الفنون» на странице нет.
+- Арберри, тот же поток, стихотворение 170. Маркер [ 184 ]: “I went and became mad, I became bound in shackles.” Маркер [ 185 ]: “I was Joseph, henceforth I have become the waxing Joseph.” “I have become bright and bountiful.” После маркера [402], примечание 19: “Joseph, after coming up from the well, waxed in beauty and power.” https://archive.org/stream/MysticalPoemsOfRumiArberry_201806/mystical%20poems%20of%20Rumi%20%28Arberry_djvu.txt
+- Кулиев, https://quran-online.ru/12:31. «порезали ножами себе руки». https://quran-online.ru/2:144. «Мы обратим тебя к кибле, которой ты останешься доволен. Обрати же свое лицо в сторону Заповедной мечети.» https://quran-online.ru/67:3. «Он создал семь небес одно над другим.»
+- Арберри, стихотворение 170, те же строки, что в Alive: “Do not move from my breast”. “Move silently like a chessman… I have become happy and blissful.” “Your paper gives thanks for your limitless sugar.”
+- Аль-Кушайри, с. 453, https://ablibrary.net/book_content/b/9533/453. Под «وأنشدوا»: «فأحيا بالمنى وأموت شوقا * فكم أحيا عليك ! وكم أموت !» Он приводит бейт, не называет себя автором. В строке mawwal-2 слова عليك нет.
+
+Не открыты в этом круге и в пояснениях не цитируются: кадры https://www.youtube.com/watch?v=M_8ano37jYo; Стейнгасс, с. 99, 202, 266, 267; Редхаус; Лейн. Аят 12:10 в пояснения Юсуфа не входит.
+
+
+## Круг 4, 2026-10-31
+
+Страницы открыты в этом круге. Цитата — с самой страницы.
+
+- Стейнгасс, с. 236, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=236. pāyanda: “Firm, solid, lasting, perpetual”.
+- С. 546, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=546. daulat: “good turn of fortune; felicity, wealth, victory; power, dominion, empire”.
+- С. 631, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=631. zahra: “Boldness, spirit; power, vigour; the gall-bladder, bile”. zuhra: “The planet Venus”.
+- С. 772, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=772. shaikh: “A venerable old man; a man of fifty and upwards; a man of authority, a chief… superior of the dervishes”.
+- С. 812, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=812. tarab: “Skipping, leaping, dancing for joy; cheerfulness, joy, gladness; motion; emotion; grief, sadness”.
+- С. 1444, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=1444. nayam: “(for na am), I am not”. nīm: “A half”.
+- Арберри, тот же поток, https://archive.org/stream/MysticalPoemsOfRumiArberry_201806/mystical%20poems%20of%20Rumi%20%28Arberry_djvu.txt. Маркера [ 183 ] в этом OCR нет; первый бейт 170 — сразу перед [ 184 ]. После [ 184 ]: “My eye is satiated”; “I have become shining Venus”; “You are not mad”; “I went and became mad”; “drunk with fancy and doubt”; “I am not a shaikh, I am not a leader”; “Your paper gives thanks for your limitless sugar”. После [ 185 ]: “I became the two hundredfold slcy; I was Joseph, henceforth I have become the waxing Joseph.” Под [402]: “19. Joseph, after coming up from the well, waxed in beauty and power.”
+- Ганджур, https://ganjoor.net/moulavi/shams/ghazalsh/sh1393. «یوسف بودم ز کنون یوسف زاینده شدم». К бумаге и сахару, без пометы «هوش مصنوعی»: «در قدیم شکر را در کاغذ پیچیده». Английского «you have lit the fire» и арабского «في رحلة الفنون» на странице нет.
+- Кулиев, https://quran-online.ru/12:31. «так превознесли его, что порезали ножами себе руки». Толкование ас-Саади на той же странице: «поражены его красотой». https://quran-online.ru/2:144. «Обрати же свое лицо в сторону Заповедной мечети.»
+- Аль-Кушайри, с. 453, https://ablibrary.net/book_content/b/9533/453. «فأحيا بالمنى وأموت شوقا * فكم أحيا عليك ! وكم أموت !»
+
+Не открыты: лист Лейна (в том числе с. 163), Редхаус, кадры ролика, отдельные статьи أو / أبدى / أعاد / مريد. Пояснения english-5 и english-12 проверка 2026-11-01 подтвердила, флаг снят. Пояснения arabic-8 и arabic-8b исправлены по арабским строкам, флаг снят. Пояснение arabic-24 остаётся черновиком.
+
+## Проверка пояснений, 2026-11-01
+
+Исправленные пояснения арабского переложения и бейтов 17 и 20 сверены с открытыми Ганджуром, газель 1393, https://ganjoor.net/moulavi/shams/ghazalsh/sh1393, и Арберри, стихотворение 170. Пояснения, которые опираются на страницу Стейнгасса и которые эта проверка не подтвердила, скрыты, вместе с повторами того же текста. Прежние выписки Стейнгасса в этом файле не отменены. Пояснение секции arabic-main скрыто: утверждение, что классической поэмы нет, источником не закрыто.
+
+## Сосед и чтение, 2026-11-01
+
+Снова открыт Арберри, стихотворение 170, тот же поток. “Move silently like a chessman” стоит одной фразой. “through its gaze and circling I became light-receiving”: свет принимает «я». “The gnostic of God” — его чтение حق. Ганджур, газель 1393: после اختر رخشنده идёт زهره بدم ماه شدم. Из пояснения секции inst-tanbur снята фраза про игру пальцами без плектра: в каталоге инструментов и в открытых источниках этой проверки её нет.
+
+## Показано при споре, 2026-11-01
+
+`rumi-19-5b` проверка отметила как спорное: Арберри, стихотворение 170, с. 185 и примечание 19, с. 402, читает рост самого говорящего, толкования на Ганджуре, газель 1393, допускают рождение других Юсуфов. Пояснение называет оба чтения, поэтому показано по решению LL · Main (вариант A): это место владелец просил объяснить.

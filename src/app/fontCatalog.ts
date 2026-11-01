@@ -262,18 +262,12 @@ export function loadFontLabels() {
 }
 
 function nudgeMeasure() {
-  const stage = document.querySelector('.scene-stage');
-  if (!(stage instanceof HTMLElement)) return;
-  // A width toggle lays the phone out twice. The scene remeasures on the event.
-  if (document.documentElement.dataset.phone === '1') {
-    stage.dispatchEvent(new Event('ll-remeasure'));
-    return;
-  }
-  const previous = stage.style.width;
-  stage.style.width = 'calc(100% - 0.5px)';
-  requestAnimationFrame(() => {
-    stage.style.width = previous;
-  });
+  // A one-frame width of calc(100% - 0.5px) used to wake the stage's
+  // ResizeObserver. That frame was a real shift of the column, so the
+  // measure is an event and the box stays where it is.
+  if (typeof document === 'undefined') return;
+  document.dispatchEvent(new Event('living-lyrics:remeasure'));
+  document.querySelector('.scene-stage')?.dispatchEvent(new Event('ll-remeasure'));
 }
 
 /**

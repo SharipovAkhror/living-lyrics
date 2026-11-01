@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LyricsSchema, SongSchema, type Lyrics, type Song } from '../../src/data/schema.ts';
 import { INSTRUMENTS } from '../../src/instruments/list.ts';
-import { ARABIC_SCRIPTS, CPS_OK, letters, readingCps } from './validate.ts';
+import { ARABIC_SCRIPTS, CPS_OK, letters, lineCommentGap, readingCps } from './validate.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -544,97 +544,11 @@ const canonReady =
   !!canonText && !canonText.includes(TEMPLATE) && (citesWork(canonText) || /Подтверждено:\s*[1-9]/.test(canonText));
 const textReady = canonReady && lines.length > 0 && missingCanon.length === 0;
 
-/**
- * One ## block before «Последовательность» / «Расхождения» is one fragment
- * (a poem, a bayt, a prayer, a refrain). Sung text is read from code fences,
- * labels (F1, H2, S1) and numbered or indented poem lines. Russian prose
- * and tables are not sung text: a fragment that only retells the poem
- * in Russian stays invisible, and so does a line shorter than 8 letters.
- */
-function cyrillicHeavy(text: string) {
-  const cyr = text.match(/\p{Script=Cyrillic}/gu)?.length ?? 0;
-  const all = text.match(/\p{L}/gu)?.length ?? 0;
-  return all > 0 && cyr / all > 0.5;
-}
-
-function canonFragments(canon: string) {
-  // `\b` is ASCII-only and the `i` flag does not fold Cyrillic, so the heading is matched by letters.
-  const skip = /^(последовательность|расхождения)(?:\s|$)/iu;
-  const labelRe = /^[-*]\s+(\S{1,12})\.\s+(\S.*?)\s*$/;
-  const out: { title: string; pools: string[] }[] = [];
-  for (const part of canon.split(/^## /m).slice(1)) {
-    const breakAt = part.indexOf('\n');
-    const title = (breakAt === -1 ? part : part.slice(0, breakAt)).trim();
-    if (skip.test(title)) continue;
-    const body = breakAt === -1 ? '' : part.slice(breakAt + 1);
-    const pools: string[] = [];
-    let inFence = false;
-    for (const row of body.split(/\r?\n/)) {
-      if (/^```/.test(row.trim())) {
-        inFence = !inFence;
-        continue;
-      }
-      if (inFence) {
-        const pool = letters(row);
-        if (pool.length >= 8) pools.push(pool);
-        continue;
-      }
-      if (/^\s*\|/.test(row) || /^#{1,6}\s/.test(row)) continue;
-      const labelled = row.match(labelRe);
-      if (labelled && /^[A-Za-zА-Яа-яЁё]{1,4}\d/.test(labelled[1])) {
-        const pool = letters(labelled[2].split(/\s+—\s+/)[0]);
-        if (pool.length >= 8) pools.push(pool);
-        continue;
-      }
-      const numbered = row.match(/^\d+\.\s+(\S.*?)\s*$/);
-      if (numbered && !cyrillicHeavy(numbered[1]) && !/https?:\/\//i.test(numbered[1])) {
-        const pool = letters(numbered[1].split(/\s+—\s+/)[0]);
-        if (pool.length >= 8) pools.push(pool);
-        continue;
-      }
-      const indented = row.match(/^[ \t]{2,}(\S.*?)\s*$/);
-      if (indented && !/^[-—]/.test(indented[1]) && !cyrillicHeavy(indented[1])) {
-        const pool = letters(indented[1].split(/\s+—\s+/)[0]);
-        if (pool.length >= 8) pools.push(pool);
-      }
-    }
-    if (pools.length) out.push({ title, pools });
-  }
-  return out;
-}
-
 const VOICE_KEYS = new Set(['voice', 'choir']);
-const fragments = canonFragments(canonText);
-const fragmentSeen = new Set<string>();
-const fragmentsWithoutComment: { title: string; sectionId: string }[] = [];
-for (const section of vocal) {
-  let best: { title: string; score: number; slack: number } | null = null;
-  for (const fragment of fragments) {
-    let score = 0;
-    let slack = Infinity;
-    for (const line of section.lines) {
-      const got = letters(line.words.map((word) => word.w).join(' '));
-      if (got.length < 8) continue;
-      for (const pool of fragment.pools) {
-        if (!pool.includes(got) && !got.includes(pool)) continue;
-        const nextScore = Math.min(got.length, pool.length);
-        const nextSlack = Math.abs(got.length - pool.length);
-        if (nextScore > score || (nextScore === score && nextSlack < slack)) {
-          score = nextScore;
-          slack = nextSlack;
-        }
-      }
-    }
-    if (score < 8) continue;
-    if (!best || score > best.score || (score === best.score && slack < best.slack)) {
-      best = { title: fragment.title, score, slack };
-    }
-  }
-  const opening = section.comment?.trim() || section.lines[0]?.comment?.trim();
-  if (!best || fragmentSeen.has(best.title)) continue;
-  fragmentSeen.add(best.title);
-  if (!opening) fragmentsWithoutComment.push({ title: best.title, sectionId: section.id });
-}
+const commentGaps = lines.flatMap((line) => {
+  const why = lineCommentGap(line, review);
+  return why ? [{ id: line.id, why }] : [];
+});
 const bareInstrumentals = lyrics.sections.filter(
   (section) =>
     section.kind === 'instrumental' &&
@@ -643,7 +557,7 @@ const bareInstrumentals = lyrics.sections.filter(
 );
 const timingReady = song.timing.status === 'aligned' || song.timing.status === 'verified';
 const translationReady = lines.every((line) => line.tr.ru.trim()) && slow.length === 0;
-const commentsReady = lines.length > 0 && fragmentsWithoutComment.length === 0 && bareInstrumentals.length === 0;
+const commentsReady = lines.length > 0 && commentGaps.length === 0 && bareInstrumentals.length === 0;
 const translitReady = noTranslit.length === 0;
 const instrumentsReady = unknownInstruments.length === 0;
 const applauseCount = lyrics.sections.filter(
@@ -725,8 +639,8 @@ const rows: Row[] = [
       lines.length === 0
         ? 'строк ещё нет'
         : commentsReady
-          ? 'у фрагмента есть пояснение, у проигрыша — заметка'
-          : `фрагмент без пояснения: ${fragmentsWithoutComment.length}, проигрыш без заметки: ${bareInstrumentals.length}`,
+          ? 'у каждой строки пояснение с источником или флагом, у проигрыша — заметка'
+          : `строк без пояснения или источника: ${commentGaps.length}, проигрыш без заметки: ${bareInstrumentals.length}`,
   },
   {
     n: '8',
@@ -1104,14 +1018,14 @@ if (!sourcesReady) {
   next = dossierNext();
 } else if (!commentsReady) {
   const sample = [
-    ...fragmentsWithoutComment.slice(0, 4).map((fragment) => `  фрагмент «${short(fragment.title)}» — секция ${fragment.sectionId}`),
+    ...commentGaps.slice(0, 6).map((gap) => `  ${gap.id} — ${gap.why}`),
     ...bareInstrumentals.slice(0, 4).map((section) => `  проигрыш ${section.id} — нет note`),
   ].join('\n');
   next = {
     row: '7',
     file: 'docs/methodology/07-comment.md',
     command: `npm run song-status -- ${slug}`,
-    because: `Одно пояснение на фрагмент канона: автор, форма, контекст. Место — первая секция фрагмента или её первая строка. Строке с em пояснение не нужно, ей нужна пара **…** в переводе. Пустое пояснение ради галочки не пишите. У проигрыша — note, одно-два спокойных предложения. Секция только с voice или choir ничего не требует. Если рядом с voice или choir стоит другой ключ, note нужен: это уже не секция только из голоса.\n${sample}\nПояснение отдельной строки пишите, только если перевод не передал термин, игру слов или аллюзию. Такие строки машина не ищет: это чек-лист в файле стадии.`,
+    because: `Пояснение нужно каждой спетой строке: что сказано и что это значит, обычно 2–5 предложений, со источником (сура:аят, страница, адрес). Повтор может повторить пояснение первого раза. Нет источника — флаг comment-draft и вопрос в review с id строки. Пустое пояснение ради галочки не пишите. У проигрыша — note. Секция только с voice или choir ничего не требует.\n${sample}`,
   };
 } else if (!translitReady) {
   const sample = noTranslit.slice(0, 5).map((line) => `  ${line.id}`).join('\n');

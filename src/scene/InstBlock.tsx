@@ -34,6 +34,17 @@ function rosterWindow<T>(items: readonly T[], page: number, size: number): T[] {
   return items.slice(at).concat(items.slice(0, at)).slice(0, size);
 }
 
+/**
+ * Widest centred engraving that stays clear of the margin card on main's
+ * full-width stage. The column here already stops before that card, so the
+ * cap is a ceiling, not a second shrink, and it does not follow the current cue.
+ */
+export function sideCommentArtCap(viewportW: number): number {
+  const card = Math.min(340, viewportW / 2 - 396);
+  const cardLeft = viewportW - 20 - card;
+  return 2 * (cardLeft - 16 - viewportW / 2);
+}
+
 interface Props {
   cue: InstCue;
   /** Phone slot that has left the window. The host and its engravings stay mounted. */
@@ -46,6 +57,8 @@ interface Props {
   stage: { w: number; h: number };
   /** Song-level audio features. Null until the file arrives, or when the song has none. */
   features: AudioFeatures | null;
+  /** Commentary is on for the whole song. The cap does not follow the current card, so the engraving does not jump when a note appears. */
+  showComment: boolean;
   register: (idx: number, fn: BlockUpdater | null, m?: Measure) => void;
   onPick: (idx: number) => void;
   /** Bumps once when a scrub ends, so a passage that used a cached box is read again. */
@@ -126,6 +139,9 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     // The desk note is one line (about 20px). A 52px reserve shrank the six
     // drawings. 24px is the largest stack this 868 column can give them.
     : section.note ? (tight ? 36 : wide ? 24 : 96) : section.mode ? (tight ? 28 : wide ? 40 : 64) : tight ? 20 : wide ? 28 : 44;
+  // The stage column already ends before the margin card, and that column is
+  // reserved for the whole song. sideCommentArtCap remains for a full-width
+  // stage; applying it here would shrink a plate that is already clear.
   const stageSize = {
     w: Math.max(200, Math.min(stage.w - (shortStage ? 16 : 24), 1040)),
     h: Math.max(64, Math.min(fullH - textH, room > 0 ? room : fullH)),
