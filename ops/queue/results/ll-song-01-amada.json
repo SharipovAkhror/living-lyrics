@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-01-amada",
+  "status": "pass",
+  "branch": "night/ll-song-01-amada",
+  "commit": "74b1b669871d11ff477e1d9c166a442c994d5b39",
+  "tokens": 12354417,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts amada\n\n\n✓ amada  (0 ошибок, 1 предупреждений)\n  внимание  transcript.json: нет docs/analysis/<slug>/transcript.json: порядок строк с голосом не сверен\n\nИтого: 0 ошибок, 1 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue\\logs\\ll-song-01-amada.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
