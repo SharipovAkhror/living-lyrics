@@ -838,6 +838,12 @@ def choose(slugs: list[str], reports: dict, peaks: dict, bias: dict | None = Non
     songs = [_prepare_song(slug, reports[slug], peaks[slug], bias, adopt) for slug in slugs]
     found = search(songs)
     if found is None:
+        # Every placer at zero means the line sample was empty. The caps were
+        # never measured, so the message names the song and the missing cues.
+        bare = [song['slug'] for song in songs if int(np.asarray(song['cand']).sum()) == 0]
+        if bare:
+            raise RuntimeError(
+                f"{', '.join(bare)}: нет реплик, кандидатов строки 0 у всех постановщиков")
         raise RuntimeError('no assignment keeps the word chance and the line chance inside the caps')
     assignment = _assignment(songs, found['combo'])
     for slug, by_lang in assignment.items():
