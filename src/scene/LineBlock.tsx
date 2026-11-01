@@ -1,4 +1,4 @@
-import { fitNote, footnoteTop, type VBand } from './noteFit';
+import { fitNote } from './noteFit';
 import { memo, useEffect, useLayoutEffect, useRef } from 'react';
 import type { LineCue } from '@/data/timeline';
 import type { LineEntrance, MotionPref, Settings } from '@/app/settings';
@@ -59,96 +59,22 @@ function queuePhoneWidths(job: () => void) {
 }
 
 /**
- * The phone footnote sits under the painted line. The layout slot can be
- * shorter until the measure queue lands, and a resting clock does not place again.
+ * The phone footnote is a fixed slot above the player. This only cuts the
+ * text to that slot. Following the painted line covered the captions, then
+ * jumped, and shrank the card to a fragment of the note.
  */
 export function syncNoteFoot(line: HTMLElement): void {
-  const stage = line.closest('.scene-stage');
   const host = line.closest('.song');
-  if (!(stage instanceof HTMLElement) || !(host instanceof HTMLElement)) return;
-  const stageBox = stage.getBoundingClientRect();
-  const lineBox = line.getBoundingClientRect();
-  if (lineBox.height < 8) return;
-  const foot = `${(stage.offsetTop + (lineBox.bottom - stageBox.top) + 16).toFixed(1)}px`;
-  if (host.style.getPropertyValue('--note-foot') !== foot) host.style.setProperty('--note-foot', foot);
+  if (!(host instanceof HTMLElement)) return;
   fitNote(host);
 }
 
-function shownBand(el: Element): VBand | null {
-  if (!(el instanceof HTMLElement)) return null;
-  const r = el.getBoundingClientRect();
-  if (r.width < 2 || r.height < 2) return null;
-  let n: HTMLElement | null = el;
-  while (n) {
-    const s = getComputedStyle(n);
-    if (s.visibility === 'hidden' || s.display === 'none' || Number(s.opacity) < 0.05) return null;
-    if (n.classList.contains('fb--inst') || n.classList.contains('scene-stage')) break;
-    n = n.parentElement;
-  }
-  return { top: r.top, bottom: r.bottom };
-}
-
-let instFootAt = 0;
-let instFootKey = '';
-
-/**
- * The phone footnote follows the sung line. An instrumental picture has no line,
- * so the unset foot (28% of the song) ran through the musician names. Place it
- * under that picture, clear of the captions, without moving the picture itself.
- */
+/** Same slot during an instrumental picture. The card does not chase the labels. */
 export function syncInstNote(inst: HTMLElement): void {
   const host = inst.closest('.song');
-  const stage = inst.closest('.scene-stage');
-  if (!(host instanceof HTMLElement) || !(stage instanceof HTMLElement)) return;
+  if (!(host instanceof HTMLElement)) return;
   if (host.classList.contains('is-scrubbing')) return;
-  const card = host.querySelector('.note-card');
-  if (!(card instanceof HTMLElement)) return;
-  const full = inst.querySelector('.fb-inst-full');
-  if (!(full instanceof HTMLElement)) return;
-  const labels = inst.querySelectorAll('.ist-label').length;
-  const key = `${inst.style.transform}|${inst.style.height}|${labels}`;
-  const now = performance.now();
-  if (key === instFootKey && now - instFootAt < 120) return;
-
-  const hard: VBand[] = [];
-  inst.querySelectorAll('.ist-label, .fb-inst-note, .fb-inst-mode, .ist-art, .ist-art-mount').forEach((el) => {
-    const b = shownBand(el);
-    if (b) hard.push(b);
-  });
-  if (!hard.length) return;
-  const soft: VBand[] = [];
-  stage.querySelectorAll('.fb--line').forEach((el) => {
-    const b = shownBand(el);
-    if (b) soft.push(b);
-  });
-  const under = Math.max(...hard.map((b) => b.bottom));
-  const cardBox = card.getBoundingClientRect();
-  const noteH = cardBox.height > 8 ? cardBox.height : 36;
-  const player = host.querySelector('.player');
-  const playerTop = player instanceof HTMLElement ? player.getBoundingClientRect().top : window.innerHeight;
-  const raw = getComputedStyle(host).getPropertyValue('--player-h');
-  const px = /([\d.]+)px/.exec(raw);
-  const playerVar = px ? Number(px[1]) : 208;
-  const maxTop = window.innerHeight - playerVar - 48;
-  const header = host.querySelector('.topbar');
-  const ceiling = header instanceof HTMLElement ? header.getBoundingClientRect().bottom + 4 : 8;
-  const top = footnoteTop({
-    hard,
-    soft,
-    under,
-    noteH,
-    ceiling,
-    limit: playerTop - 4,
-    maxTop,
-    pad: 16,
-    strict: true,
-  });
-  if (top == null) return;
-  instFootKey = key;
-  instFootAt = now;
-  const stageBox = stage.getBoundingClientRect();
-  const foot = `${(stage.offsetTop + (top - stageBox.top)).toFixed(1)}px`;
-  if (host.style.getPropertyValue('--note-foot') !== foot) host.style.setProperty('--note-foot', foot);
+  fitNote(host);
 }
 
 /** Light markup in translations: **key word** (the counterpart of the accented original word), *nuance*. */

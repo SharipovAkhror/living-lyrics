@@ -49,14 +49,6 @@ export function fitClause(full: string, width: number, font: string): string {
   return `${words[0]}…`;
 }
 
-/** Width of the painted translation of the current line (its text, not its block). */
-function paintedWidth(el: Element): number {
-  const range = document.createRange();
-  range.selectNodeContents(el);
-  const box = range.getBoundingClientRect();
-  return box.width;
-}
-
 export interface VBand {
   top: number;
   bottom: number;
@@ -131,25 +123,22 @@ export function footnoteTop(opts: {
   return anywhere == null ? null : Math.round(anywhere * 10) / 10;
 }
 
-/** Size the footnote to the translation and cut its text to fit. Cheap when nothing changed. */
+/** Cut the footnote to the card's own width. The card does not follow the line. */
 export function fitNote(host: HTMLElement): void {
   const card = host.querySelector<HTMLElement>('.note-card');
   const span = card?.querySelector<HTMLElement>('.note-line-text');
   const full = span?.dataset.full;
   if (!card || !span || !full) return;
-  const line = host.querySelector('.scene-view .fb--line.is-current');
-  const ref = line?.querySelector('.fb-tr') ?? line?.querySelector('.fb-orig');
-  const width = ref ? Math.floor(paintedWidth(ref)) : 0;
-  // An instrumental picture has no sung line to measure. The footnote stays
-  // the full line and a CSS ellipsis; «ещё» is the visible way to open it.
+  // A width taken from the scaled translation collapsed the card to «Эти…»
+  // and changed again on every frame of the handoff.
+  if (card.style.maxWidth) card.style.maxWidth = '';
+  const width = Math.floor(card.clientWidth - 36);
   if (width < 80) {
     if (span.clientWidth > 40) {
       span.dataset.truncated = span.scrollWidth > span.clientWidth + 1 ? '1' : '0';
     }
     return;
   }
-  const max = `${width}px`;
-  if (card.style.maxWidth !== max) card.style.maxWidth = max;
   const key = `${width}|${full}`;
   if (span.dataset.fit === key) return;
   span.dataset.fit = key;

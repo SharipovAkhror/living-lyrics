@@ -460,10 +460,7 @@
   font-weight: 400;
   font-synthesis: none;
 }
-/* Light keeps the serif crisp. A neighbour is a little soft, not a second fade. Phones skip the filter (T27). */
-html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
-  filter: blur(0.5px);
-}
+/* Neighbours stay crisp. A blur on top of the fade made the next line unreadable. */
 /* Light keeps the serif crisp. Dark restores a soft shadow so the line sits on the wash. */
 .fb-orig,
 .fb-tr {
@@ -474,7 +471,8 @@ html:not([data-phone='1']) .fb--line:not(.is-current) .fb-orig {
   font-size: var(--lyric-tr);
   line-height: 1.4;
   letter-spacing: -0.2px;
-  color: color-mix(in srgb, var(--ink) 62%, transparent);
+  font-weight: 500;
+  color: color-mix(in srgb, var(--ink) 88%, transparent);
   text-wrap: balance;
 }
 /* Scrub overlay. Every child stays mounted, including the plain spans, so the
@@ -4162,13 +4160,16 @@ html[data-sheet='1'] .song {
   }
 }
 
+.song.foot-mode .scene-stage {
+  bottom: calc(var(--player-h) + 76px);
+}
 .note-card {
   position: absolute;
   z-index: 5;
   left: max(16px, var(--col-left, 16px));
   right: max(16px, var(--col-right, 16px));
-  top: min(var(--note-foot, 28%), calc(100dvh - var(--player-h, 180px) - 48px));
-  bottom: auto;
+  top: auto;
+  bottom: calc(var(--player-h, 180px) + 8px);
   display: flex;
   align-items: center;
   height: auto;

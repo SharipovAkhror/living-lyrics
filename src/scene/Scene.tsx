@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { flushSync } from 'react-dom';
 import type { Song } from '@/data/schema';
-import { commentFor, type Timeline } from '@/data/timeline';
+import type { Timeline } from '@/data/timeline';
 import type { AudioFeatures } from '@/instruments/animation';
 import { effectiveMotion, type Settings } from '@/app/settings';
 import { showHarakatText } from '@/data/harakat';
@@ -13,7 +13,7 @@ import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
 import { sceneProbeArmed } from './probe';
 import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, generousLine, retargetPhoneLines, sameSlots, type PhoneSlot } from './slots';
-import { GAP, WAIT_ROOM, blockHeight, blockState, clearBand, concealCut, compressStack, flowPosition, instPresence, keepInStage, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
+import { GAP, WAIT_ROOM, blockHeight, blockState, clearBand, concealCut, compressStack, flowPosition, handoffBlend, instPresence, introLineDistance, keepInStage, layoutAt, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
 import { stepSpring, type SpringState } from '@/ui/spring';
 
 /** False in the Vercel production build, so `?ll-render-error=1` is compiled out. See vite.config.ts. */
@@ -52,36 +52,6 @@ function fillSpare(slots: (PhoneSlot | null)[], ids: readonly number[]) {
     used.add(id);
     free = slots.findIndex((slot) => slot == null);
   }
-}
-
-/** Something on this block is actually drawn, so a departing clone is worth keeping. */
-function hasLightPixels(el: HTMLElement): boolean {
-  if (el.querySelector('.ist-art')) return true;
-  const plate = el.querySelector<HTMLElement>('.ist-plate');
-  if (plate) {
-    const opacity = plate.style.opacity === '' ? 1 : Number(plate.style.opacity);
-    if (opacity >= 0.08) return true;
-  }
-  for (const node of el.querySelectorAll('.fb-orig, .intro-title')) {
-    const text = (node.textContent || '').replace(/\u200b/g, '').trim();
-    if (text) return true;
-  }
-  return false;
-}
-
-/** cloneNode drops the open shadow root, which is where a phone engraving lives. */
-function cloneBlock(el: HTMLElement): HTMLElement {
-  const clone = el.cloneNode(true) as HTMLElement;
-  const src = [...el.querySelectorAll<HTMLElement>('.ist-art-mount')];
-  const dst = [...clone.querySelectorAll<HTMLElement>('.ist-art-mount')];
-  src.forEach((from, i) => {
-    const to = dst[i];
-    const inner = from.shadowRoot;
-    if (!to || !inner) return;
-    const shadow = to.attachShadow({ mode: 'open' });
-    shadow.innerHTML = inner.innerHTML;
-  });
-  return clone;
 }
 
 interface Props {
@@ -235,16 +205,6 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let noteY = '';
     let pool = '';
     let footAt = 0;
-    // A line with a note leaves the footnote's room under it.
-    const notes = new Map<number, boolean>();
-    const noted = (k: number) => {
-      let hit = notes.get(k);
-      if (hit == null) {
-        hit = timeline.cues[k]?.kind === 'line' && !!commentFor(timeline, k);
-        notes.set(k, hit);
-      }
-      return hit;
-    };
     let lastPlate = '';
     let lastT = Number.NaN;
     let placedFeatures = featureEpoch.current;
@@ -259,20 +219,13 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     let pendingOwner: number | null = null;
     let ownerWait = false;
     let scrubWas = false;
-    // One departing picture. A finger faster than one view per 250 ms swaps with no fade,
-    // so the stage never holds an outgoing frame plus the next one plus another.
-    // A dwell hands off in sequence: the outgoing picture leaves, then the next one
-    // arrives. They do not share a frame above 0.05, and the gap is not an empty stage.
-    const DWELL_MS = 250;
-    // Sequential on the frame clock. WebKit blends a WAAPI hard cut, so the
-    // two pictures are written here: one of them is at 0 on every sample.
-    // A late frame snaps to the end instead of stretching the crossfade.
+    let scrubCue = '';
+    // A departing clone used to keep the previous interlude on top of the next
+    // line for the whole drag. The live picture is the cue under the finger.
     const HANDOFF_MS = 90;
     let depart: HTMLElement | null = null;
     let handoffGen = 0;
     let handoffStart = 0;
-    let viewKey = '';
-    let viewAt = 0;
     const markHandoff = () => {
       if (!host) return;
       host.dataset.handoff = 'ok';
@@ -303,42 +256,6 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const first = elapsed < HANDOFF_MS / 2;
       depart.style.opacity = first ? '1' : '0';
       if (live) live.style.opacity = first ? '0' : '1';
-    };
-    const takeDepart = () => {
-      const stageEl = stageRef.current;
-      if (!stageEl || depart) return false;
-      const linePicture = !!host?.classList.contains('is-scrub-line');
-      const instPicture = !!host?.classList.contains('is-scrub-inst');
-      const nodes = [...stageEl.querySelectorAll<HTMLElement>('.scene-live .fb')].filter((el) => {
-        if (linePicture && el.classList.contains('fb--inst')) return false;
-        if (instPicture && (el.classList.contains('fb--line') || el.classList.contains('fb--intro'))) return false;
-        if (el.style.visibility === 'hidden') return false;
-        const opacity = el.style.opacity === '' ? 1 : Number(el.style.opacity);
-        return opacity >= 0.08 && hasLightPixels(el);
-      });
-      if (!nodes.length) return false;
-      const layer = document.createElement('div');
-      layer.className = 'scene-depart stage-view';
-      layer.setAttribute('aria-hidden', 'true');
-      for (const el of nodes) {
-        const clone = cloneBlock(el);
-        // The leave is opacity only. A scale on the clone would shrink the outgoing picture.
-        clone.style.transform = clone.style.transform.replace(/scale3d\([^)]*\)|scale[XY]?\([^)]*\)/g, '').replace(/\s{2,}/g, ' ').trim();
-        layer.appendChild(clone);
-      }
-      stageEl.appendChild(layer);
-      depart = layer;
-      handoffStart = performance.now();
-      layer.style.opacity = '1';
-      const live = liveView.current;
-      if (live) live.style.opacity = '0';
-      const gen = ++handoffGen;
-      // The flag is the schedule length, not how long this frame took to paint.
-      window.setTimeout(() => {
-        if (gen !== handoffGen || !host) return;
-        markHandoff();
-      }, HANDOFF_MS + 20);
-      return true;
     };
     // The opening seek (deep link or resume) is not a scrub. Ignore it.
     const veilReadyAt = performance.now() + 600;
@@ -469,10 +386,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       scrubWas = scrubbingNow;
       const frameDt = frameAt ? Math.min(0.05, (now - frameAt) / 1000) : 0.016;
       frameAt = now;
-      // A drag freezes the picture. Walking the next window, cloning a depart
-      // view, or placing the phone stage on every step missed a vsync (desktop
-      // scrub p95 33.3, phone Scene frames 53–73 ms). The release block above
-      // already cleared lastT, so the frame after the finger lifts paints once.
+      // A drag used to freeze the picture: the time moved and the previous
+      // interlude stayed on top of the next line. Rebuilding the window on
+      // every step missed a vsync, so only a new cue falls through. The
+      // departing clone is not kept — it was the old picture still on stage.
       if (scrubbingNow) {
         if (veil) {
           veil = null;
@@ -482,23 +399,12 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
             stageEl.style.transform = '';
           }
         }
-        // The picture stays. A dwell of one view still hands the outgoing frame
-        // to the next, which is what the scrub handoff measures. A fast flick
-        // is shorter than that dwell, so it does not clone the stage.
-        if (motion !== 'off') {
-          const key = String(Math.round(flowPosition(plan, clock())));
-          if (!viewKey) {
-            viewKey = key;
-            viewAt = now;
-          } else if (key !== viewKey) {
-            const held = now - viewAt;
-            dropDepart();
-            if (held >= DWELL_MS) takeDepart();
-            viewKey = key;
-            viewAt = now;
-          }
-        }
-        return;
+        const cueNow = String(Math.round(flowPosition(plan, clock())));
+        if (cueNow === scrubCue) return;
+        scrubCue = cueNow;
+        dropDepart();
+      } else if (scrubCue) {
+        scrubCue = '';
       }
       if (motion !== 'off') {
         const time = clock();
@@ -578,33 +484,9 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       // The page says whether the phone footnote is in use (not which note: that is data).
       const footMode = !!host?.classList.contains('foot-mode');
       const liveKey = `${Math.round(liveW)}x${Math.round(liveH)}x${footMode ? 1 : 0}`;
-      if (scrubbingNow && motion !== 'off') {
-        const key = String(Math.round(flowPosition(plan, t)));
-        if (!viewKey) {
-          viewKey = key;
-          viewAt = now;
-        } else if (key !== viewKey) {
-          const held = now - viewAt;
-          // Faster than one view per dwell: drop any ghost and draw only the live picture.
-          dropDepart();
-          if (held >= DWELL_MS) takeDepart();
-          viewKey = key;
-          viewAt = now;
-        }
-      } else if (viewKey) {
-        viewKey = '';
-        viewAt = 0;
-      }
+      if (scrubbingNow) dropDepart();
       if (isPhone() && scrubbingNow) applyScrubPicture(kindAt(t));
       else if (host?.classList.contains('is-scrub-line') || host?.classList.contains('is-scrub-inst')) clearScrubPicture();
-      // The mounted window waits for the finger to lift. Walking the next
-      // window on every step missed a vsync: desktop scrub p95 was 33.3 (n 43)
-      // while the pointer handlers themselves were under a millisecond.
-      if (!isPhone() && scrubbingNow) {
-        lastT = t;
-        lastLive = liveKey;
-        return;
-      }
       if (t === lastT && !measuresMoved && !featuresMoved && liveKey === lastLive && pendingOwner == null && !depart) {
         // Fonts and the phone measure queue change the ink after the clock has
         // settled. Follow the painted line; do not keep the short layout slot.
@@ -625,8 +507,9 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         // A desktop drag used to flushSync the next window on every step.
         // Those commits were the doubled frames (33.4 ms, n 43). The landed
         // window commits once, on the frame the finger lifts.
-        const deferDesk = !isPhone() && scrubbingNow;
-        if (!deferDesk) lastKey = key;
+        // One commit per cue, not per finger step: the scrub path above
+        // already skipped the frames that stay on the same picture.
+        lastKey = key;
         // Measurement only: leave the phone hosts empty, so lyric text is never
         // committed. Those commits were the floor that kept climbing after the
         // sky, the placement and the chrome had been stopped (T27).
@@ -677,10 +560,11 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
               heavyCommit = true;
             }
           }
-        } else if (!deferDesk) {
+        } else {
           // Commit before this frame paints. A hidden new block and a removed
           // old one would otherwise be one empty frame when a seek crosses
-          // from a line into an instrumental break.
+          // from a line into an instrumental break. A scrub does this once
+          // per cue, so the previous interlude does not stay on the next line.
           flushSync(() => setMounted(list));
         }
       }
@@ -736,22 +620,23 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const pad = shortStage ? 2 : Math.max(28, liveH * 0.1);
       const stackAt = (anchor: number) => {
         const held = clampAnchor(anchor);
-        const stacked = compressStack(layoutAt(anchor, list, measures, centerY, 8, room, gap), held, compress, heightsAt(anchor));
-        // After the compression: the settle entrance must not squeeze the footnote's room.
-        // A function of the anchor, so a seek and a release place the same frame.
-        const footRoom = !footMode ? 0 : timeline.cues[held]?.kind === 'inst' ? INST_FOOT_ROOM : noted(held) ? FOOT_ROOM : 0;
+        // A sung line is pinned by its top. An engraving stays centred in its stack.
+        const pin = held < 0 || timeline.cues[held]?.kind === 'line';
+        const stacked = compressStack(layoutAt(anchor, list, measures, centerY, 8, room, gap, pin), held, compress, heightsAt(anchor));
+        // The phone card is a constant slot above the player, so the room under
+        // the anchor does not appear and disappear with each note.
+        const footRoom = !footMode ? 0 : timeline.cues[held]?.kind === 'inst' ? INST_FOOT_ROOM : FOOT_ROOM;
         if (footRoom) for (const [k, y] of stacked) if (k > held) stacked.set(k, y + footRoom);
-        return keepInStage(stacked, held, heightsAt(anchor).get(held) ?? 0, liveH, pad);
+        return stacked;
       };
       const A = stackAt(a);
       const B = stackAt(a + 1);
-      const blended = new Map<number, number>();
+      const blended = handoffBlend(pos, list, A, B);
       const bandH = new Map<number, number>();
-      for (const k of list) {
-        blended.set(k, lerp(A.get(k) ?? 0, B.get(k) ?? 0, f));
-        bandH.set(k, blockHeight(measures.get(k), k - pos));
-      }
-      const placed = concealCut(clearBand(blended, pos, bandH, liveH, liveTop, window.innerHeight, !roomyLandscape), pos, bandH, liveH, 32);
+      for (const k of list) bandH.set(k, blockHeight(measures.get(k), k - pos));
+      const accent = pos < 0 ? 0 : f < 0.5 ? a : a + 1;
+      const fitted = keepInStage(blended, clampAnchor(accent), bandH.get(accent) ?? 0, liveH, pad);
+      const placed = concealCut(clearBand(fitted, pos, bandH, liveH, liveTop, window.innerHeight, !roomyLandscape), pos, bandH, liveH, 32);
       // The engraving block is the whole column. Centring it at 0.42 left the top in the bar and the next line under the floor.
       if (liveW >= 840 && liveH >= 480) {
         const picture = Math.max(list[0] ?? 0, Math.min(list[list.length - 1] ?? 0, Math.round(pos)));
@@ -763,7 +648,8 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       for (const k of list) {
         const b = blocks.current.get(k);
         if (!b) continue;
-        b.fn(t, k - pos, placed.get(k) ?? 0, waits.get(k) ?? 0);
+        const introD = k === 0 ? introLineDistance(pos) : null;
+        b.fn(t, introD ?? k - pos, placed.get(k) ?? 0, waits.get(k) ?? 0);
       }
       if (isPhone() && scrubbingNow) applyScrubPicture(kindAt(t));
       // The title card is always in the DOM; once it leaves the window nothing updates it, so hide it
@@ -782,12 +668,12 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
           const top = placed.get(k) ?? 0;
           return { top, h: (b.m.main + b.m.sub * s.subRoom) * s.scale };
         };
-        const b0 = box(a);
-        const b1 = box(a + 1);
-        const o = (b0 ? 1 - f : 0) + (b1 ? f : 0);
-        const top = b0 && b1 ? lerp(b0.top, b1.top, f) : (b0 ?? b1)?.top ?? 0;
-        const h = b0 && b1 ? lerp(b0.h, b1.h, f) : (b0 ?? b1)?.h ?? 0;
-        const shown = f < 0.5 ? timeline.cues[a] : timeline.cues[a + 1];
+        const focus = f < 0.5 ? a : a + 1;
+        const heldBox = box(focus);
+        const o = heldBox ? 1 : 0;
+        const top = heldBox?.top ?? 0;
+        const h = heldBox?.h ?? 0;
+        const shown = timeline.cues[focus];
         const nextPool = shown?.kind === 'line' && shown.rtl ? 'rtl' : 'ltr';
         if (nextPool !== pool) {
           pool = nextPool;
@@ -804,7 +690,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
           p.style.transform = transform;
         }
         // The margin note shares this frame: its top is the active line's top. A seek lands both together.
-        if (host && (b0 || b1)) {
+        if (host && heldBox) {
           const y = `${(stageTop + top + 2).toFixed(1)}px`;
           if (y !== noteY) {
             noteY = y;

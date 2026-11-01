@@ -221,8 +221,8 @@
     --accent: var(--song-accent-dark, #d7c4ff);
     --on-accent: #0b0b0d;
     --ink: #f6f0e6;
-    --ink-unsung: rgba(246, 240, 230, 0.42);
-    --dim-op: 0.42;
+    --ink-unsung: rgba(246, 240, 230, 0.72);
+    --dim-op: 0.68;
     --plate-tint: transparent;
     --ink-ghost: rgba(246, 240, 230, 0.1);
     --glass-bg: rgba(255, 255, 255, 0.1);
@@ -286,8 +286,8 @@
   --accent: var(--song-accent-dark, #d7c4ff);
   --on-accent: #0b0b0d;
   --ink: #f6f0e6;
-  --ink-unsung: rgba(246, 240, 230, 0.42);
-  --dim-op: 0.42;
+  --ink-unsung: rgba(246, 240, 230, 0.72);
+  --dim-op: 0.68;
   --plate-tint: transparent;
   --ink-ghost: rgba(246, 240, 230, 0.1);
   --glass-bg: rgba(255, 255, 255, 0.1);

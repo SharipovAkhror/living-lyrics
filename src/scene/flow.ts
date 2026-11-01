@@ -16,7 +16,23 @@ const MOVE_MIN = 0.16;
 
 export const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 export const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const easeOut = (t: number) => 1 - (1 - t) * (1 - t);
 export const lerp = (a: number, b: number, f: number) => a + (b - a) * f;
+
+/**
+ * Ink of a line at distance `a` from the position.
+ * The nearer line stays at full ink. Just past the handoff the other one
+ * drops, so the two are equal only at |d| = 0.5 and neither spends the
+ * move dim. Far lines fade out; a ghost over the title is not a second line.
+ */
+function inkAt(a: number): number {
+  if (a <= 0.5) return 1;
+  if (a <= 0.72) return lerp(1, 0.62, easeOut((a - 0.5) / 0.22));
+  if (a <= 1) return lerp(0.62, 0.58, (a - 0.72) / 0.28);
+  if (a <= 2.5) return lerp(0.58, 0.34, (a - 1) / 1.5);
+  if (a <= 2.8) return lerp(0.34, 0, (a - 2.5) / 0.3);
+  return 0;
+}
 
 export interface FlowPlan {
   /** When each cue starts to become current. Non-decreasing. */
@@ -79,19 +95,16 @@ export function instPresence(t: number, start: number, end: number, flow: number
 /** Visual state of a block at distance d from the current position (d = index − position). */
 export function blockState(d: number) {
   const a = Math.abs(d);
-  // One size for the line in the light. The next line is clearly smaller, and the one after that steps down again.
-  const scale = a >= 2 ? FAR : a >= 1 ? lerp(SMALL, FAR, a - 1) : 1 - (1 - SMALL) * a;
-  // The current line stays at full ink. Everything else recedes, including the line that just left.
-  let opacity: number;
-  if (a <= 0.2) opacity = 1;
-  else if (a <= 1) opacity = lerp(1, 0.36, (a - 0.2) / 0.8);
-  else if (a <= 2.5) opacity = lerp(0.36, 0.16, (a - 1) / 1.5);
-  else opacity = 0.14;
+  // Full size while this line holds the accent. It shrinks only after the
+  // accent has moved, and it has the neighbour's size by the next integer.
+  // Both lines are full size only at the single point |d| = 0.5.
+  const scale = a >= 2 ? FAR : a >= 1 ? lerp(SMALL, FAR, a - 1) : a <= 0.5 ? 1 : lerp(1, SMALL, (a - 0.5) / 0.5);
+  const opacity = inkAt(a);
   const blur = a < 1.15 ? 0 : d < 0 ? Math.min(1.6, (a - 1.15) * 1.4) : Math.min(1, (a - 1.15) * 0.8);
-  // The translation belongs to the current line only. By the next line it is gone, so the column is not pairs of equal blocks.
-  const sub = a <= 0.2 ? 1 : a <= 0.9 ? lerp(1, 0, (a - 0.2) / 0.7) : 0;
+  // The translation stays with the accent and leaves with it, not while the line is still being read.
+  const sub = a <= 0.5 ? 1 : a <= 0.9 ? lerp(1, 0, (a - 0.5) / 0.4) : 0;
   /** Share of the translation's height the layout reserves (it fades inside that room). */
-  const subRoom = a <= 0.35 ? 1 : a <= 1.05 ? lerp(1, 0, (a - 0.35) / 0.7) : 0;
+  const subRoom = a <= 0.5 ? 1 : a <= 1.05 ? lerp(1, 0, (a - 0.5) / 0.55) : 0;
   /** Instrument blocks: 1 = full stage, 0 = the compact "next" chip. */
   const presence = clamp01(1 - a);
   return { scale, opacity, blur, sub, subRoom, presence };
@@ -118,17 +131,26 @@ export function blockHeight(m: Measure | undefined, d: number) {
 }
 
 /**
- * Tops of the blocks when `anchor` is exactly current: the current block's centre sits at
- * `centerY` (but never above `minTop`); the others stack below and above it.
+ * Top of the line being read. It does not depend on the line's height:
+ * centring a taller line used to lift the words the reader was already on.
  */
-export function layoutAt(anchor: number, indices: number[], m: Map<number, Measure>, centerY: number, minTop: number, room: (k: number) => number = () => 0, gap = GAP) {
+export function readingTop(centerY: number, minTop: number): number {
+  return Math.max(minTop, Math.min(centerY * 0.72, centerY - 24));
+}
+
+/**
+ * Tops of the blocks when `anchor` is exactly current.
+ * A lyric line is pinned by its top (`pinTop`): the centre used to move
+ * that top whenever the line's height changed. An engraving stays centred.
+ */
+export function layoutAt(anchor: number, indices: number[], m: Map<number, Measure>, centerY: number, minTop: number, room: (k: number) => number = () => 0, gap = GAP, pinTop = false) {
   const tops = new Map<number, number>();
   if (!indices.length) return tops;
   const first = indices[0];
   const last = indices[indices.length - 1];
   const cur = Math.max(first, Math.min(last, anchor));
   const h = (k: number) => blockHeight(m.get(k), k - anchor);
-  tops.set(cur, Math.max(minTop, centerY - h(cur) / 2));
+  tops.set(cur, pinTop ? readingTop(centerY, minTop) : Math.max(minTop, centerY - h(cur) / 2));
   for (let k = cur + 1; k <= last; k++) tops.set(k, tops.get(k - 1)! + h(k - 1) + gap + room(k));
   for (let k = cur - 1; k >= first; k--) tops.set(k, tops.get(k + 1)! - gap - room(k + 1) - h(k));
   return tops;
@@ -340,20 +362,46 @@ export function scriptShift(d: number, rtl: boolean, stageW: number, motionOff: 
 }
 
 /**
+ * How far the column has scrolled between the two stacks around `pos`.
+ * The line that holds the accent does not move: the next line arrives
+ * before the handoff, and the line that lost the accent leaves after it.
+ * Leaving the title, the first line is already on its anchor.
+ */
+export function handoffBlend(pos: number, indices: number[], topsA: Map<number, number>, topsB: Map<number, number>): Map<number, number> {
+  const out = new Map<number, number>();
+  const a = Math.floor(pos);
+  const f = pos - a;
+  if (a < 0) {
+    for (const k of indices) out.set(k, (k >= 0 ? topsB : topsA).get(k) ?? 0);
+    return out;
+  }
+  const u = f <= 0.5 ? easeInOut(clamp01(f / 0.5)) : easeInOut(clamp01((f - 0.5) / 0.5));
+  for (const k of indices) {
+    const from = topsA.get(k) ?? 0;
+    const to = topsB.get(k) ?? 0;
+    if (f <= 0.5) out.set(k, k <= a ? from : lerp(from, to, u));
+    else out.set(k, k >= a + 1 ? to : lerp(from, to, u));
+  }
+  return out;
+}
+
+/**
+ * Distance for the first line while the title still holds the stage.
+ * The line is already on the anchor; this only fades it. At and after
+ * −0.55 it matches the real distance, so the handoff does not jump.
+ * Returns null once the real distance should be used.
+ */
+export function introLineDistance(pos: number): number | null {
+  if (pos >= -0.55) return null;
+  const u = clamp01((pos + 1) / 0.45);
+  return lerp(3.2, 0.55, easeInOut(u));
+}
+
+/**
  * Opacity for the short column. Flow keeps the wider preview curve from `blockState`.
  * Still a function of distance, which is a function of time.
  */
 export function entranceOpacity(d: number, entrance: LineEntrance, flowOpacity: number): number {
   if (entrance === 'flow') return flowOpacity;
-  const a = Math.abs(d);
-  // Settle is the default. The current line is the light; the next one is already quiet, and none of them vanish.
-  if (entrance === 'settle') {
-    if (a <= 0.2) return 1;
-    if (a <= 1) return lerp(1, 0.36, (a - 0.2) / 0.8);
-    return Math.max(0.18, 0.36 - 0.08 * (a - 1));
-  }
-  // Script: the line travelling in from the writing side is readable, then drops to the same quiet neighbour.
-  if (a <= 0.35) return 1;
-  if (a <= 1.05) return lerp(1, 0.4, (a - 0.35) / 0.7);
-  return Math.max(0.22, 0.4 - 0.08 * (a - 1.05));
+  return inkAt(Math.abs(d));
 }
