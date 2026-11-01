@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T15:10:03Z",
+  "at": "2026-11-01T15:12:03Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,8 +10,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 15798,
-      "age": 15827,
+      "minutes": 15800,
+      "age": 15829,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -19,8 +19,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 15799,
-      "age": 15827,
+      "minutes": 15801,
+      "age": 15829,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -28,8 +28,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 15740,
-      "age": 15791,
+      "minutes": 15742,
+      "age": 15793,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -44,7 +44,7 @@
       "name": "studio-pass",
       "state": "working",
       "minutes": 0,
-      "age": 57,
+      "age": 59,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -52,8 +52,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 1741,
-      "age": 1755,
+      "minutes": 1743,
+      "age": 1757,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -61,8 +61,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2291,
-      "age": 2411,
+      "minutes": 2293,
+      "age": 2413,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -70,8 +70,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 15736,
-      "age": 15837,
+      "minutes": 15738,
+      "age": 15839,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -79,8 +79,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 12693,
-      "age": 12723,
+      "minutes": 12695,
+      "age": 12725,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -88,8 +88,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 48,
-      "age": 69,
+      "minutes": 50,
+      "age": 71,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -104,7 +104,7 @@
       "name": "t38-steady",
       "state": "working",
       "minutes": 0,
-      "age": 0,
+      "age": 2,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t38-steady"
@@ -112,8 +112,8 @@
     {
       "name": "t39-precheck",
       "state": "finished",
-      "minutes": 50,
-      "age": 69,
+      "minutes": 52,
+      "age": 71,
       "tokens": 5651269,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t39-precheck"
@@ -180,9 +180,10 @@
       "role": "ll-main",
       "project": "living-lyrics",
       "reports_to": "owner",
-      "state": "working",
+      "state": "waiting",
+      "waiting_for": "input needed",
       "last_at": "2026-11-01T15:09:13.217Z",
-      "last_act_at": "2026-11-01T15:09:13.217Z"
+      "last_act_at": "2026-11-01T15:10:20.226Z"
     },
     {
       "name": "LL · Site",
@@ -190,8 +191,8 @@
       "project": "living-lyrics",
       "reports_to": "LL · Main",
       "state": "working",
-      "last_at": "2026-11-01T14:39:02.765Z",
-      "last_act_at": "2026-11-01T15:09:17.808Z"
+      "last_at": "2026-11-01T15:10:22.140Z",
+      "last_act_at": "2026-11-01T15:10:22.140Z"
     }
   ],
   "pipeline": [],
