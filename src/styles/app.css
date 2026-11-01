@@ -1,4 +1,4 @@
-/* ===================== Script faces ===================== */
+﻿/* ===================== Script faces ===================== */
 .f-mushaf {
   font-family: var(--font-mushaf);
   font-weight: 400;
@@ -175,13 +175,15 @@
   user-select: none;
   -webkit-user-select: none;
 }
-.song.has-comment .scene-stage {
+/* While commentary is enabled the bar keeps its place, so a cue gaining or
+   losing a note does not resize the stage. */
+.song.comments-on .scene-stage {
   bottom: calc(var(--player-h) + 76px);
 }
 /* The 286px reserve is taller than the player. On a low window that empty band
    was the whole stage, and the plates had nowhere to stand. */
 @media (max-height: 640px) {
-  .song.has-comment .scene-stage {
+  .song.comments-on .scene-stage {
     bottom: calc(var(--player-bottom) + var(--player-h) + 28px);
   }
 }
@@ -1026,6 +1028,14 @@
   font-size: 1.24em;
   line-height: 1;
 }
+/* Links inside comment body. Colour inherits; thin underline only. */
+.comment-body .rt-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+}
 
 .hint {
   position: absolute;
@@ -1046,7 +1056,7 @@
   cursor: pointer;
 }
 
-/* Wide screens: the player stays a column. The comment becomes a card on the right once there is height for it. */
+/* Wide screens: the player stays a centered column. A comment is a card in the right margin and does not move the player or the lyric column. */
 @media (min-width: 800px) {
   .player {
     left: 50%;
@@ -1057,16 +1067,17 @@
 }
 
 @media (min-width: 1100px) and (min-height: 641px) {
-  .song.has-comment .scene-stage {
-    right: 392px;
-    bottom: calc(var(--player-h) + 16px);
+  /* Undo the narrow-screen reserve. 396px = half of the 720px line box, the 20px inset and a 16px gap. */
+  .song.comments-on .scene-stage {
+    right: 0;
+    bottom: calc(var(--player-bottom) + var(--player-h) + 12px);
   }
   .comment {
     left: auto;
     right: 20px;
     top: calc(var(--chrome-top) + 8px);
     bottom: auto;
-    width: 340px;
+    width: min(340px, calc(50% - 396px));
     height: auto;
     max-height: calc(100dvh - var(--chrome-top) - var(--player-h) - 28px);
     display: flex;
@@ -1095,16 +1106,6 @@
     opacity: 1;
     transform: none;
   }
-  .song.has-comment .player {
-    left: 24px;
-    right: auto;
-    width: min(640px, calc(100% - 430px));
-    transform: none;
-  }
-  .song.has-comment .hint {
-    left: 64px;
-    right: 456px;
-  }
 }
 
 /* Short landscape: the car screen. One capsule row, a one-line footnote, a large line. */
@@ -1124,11 +1125,11 @@
   .scene-stage {
     bottom: calc(var(--player-h) + 8px);
   }
-  .song.has-comment .scene-stage {
+  .song.comments-on .scene-stage {
     right: 0;
     bottom: calc(var(--player-h) + 48px);
   }
-  .song.has-comment.comment-open .scene-stage {
+  .song.comments-on.comment-open .scene-stage {
     bottom: calc(var(--player-h) + 120px);
   }
   .song:has(.player-alert) .scene-stage {

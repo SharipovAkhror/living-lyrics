@@ -18,6 +18,7 @@
     "art": "node scripts/art/build-instruments.mjs",
     "art3d": "node scripts/art3d/build.mjs",
     "test:layout": "tsx scripts/tools/layout-test.ts",
+    "test:position": "tsx scripts/tools/position-test.ts",
     "test:resume": "node scripts/perf/resume-crash.mjs",
     "test:soak": "node scripts/perf/soak.mjs",
     "shots": "node scripts/tools/screenshots.mjs",
