@@ -1,0 +1,272 @@
+{
+  "$schema": "../../../docs/schema/song.schema.json",
+  "slug": "no-word-is",
+  "title": "No Word Is Worthy",
+  "artist": "Sami Yusuf",
+  "release": {
+    "album": "Wherever You Are",
+    "year": 2010,
+    "label": "Andante Records"
+  },
+  "version": {
+    "kind": "studio",
+    "label": "Студийная, Wherever You Are 2010"
+  },
+  "languages": [
+    "en",
+    "ar",
+    "ur",
+    "fa",
+    "ms"
+  ],
+  "poets": [
+    {
+      "name": "Sami Yusuf",
+      "lang": "en"
+    },
+    {
+      "name": "Mehboob",
+      "lang": "ur"
+    },
+    {
+      "name": "Ustad Babak Radmanesh",
+      "lang": "fa"
+    },
+    {
+      "name": "Yasin Sulaiman",
+      "lang": "ms"
+    }
+  ],
+  "credits": [
+    {
+      "role": "музыка и слова",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "слова на урду",
+      "name": "Mehboob"
+    },
+    {
+      "role": "слова на фарси",
+      "name": "Ustad Babak Radmanesh"
+    },
+    {
+      "role": "слова на малайском",
+      "name": "Yasin Sulaiman"
+    },
+    {
+      "role": "продюсер",
+      "name": "Sami Yusuf"
+    }
+  ],
+  "duration": 370.06,
+  "palette": {
+    "accent": "#012235",
+    "accentDark": "#9EA7B0",
+    "field": [
+      "#012235",
+      "#011E30",
+      "#000D20",
+      "#C1C2C4"
+    ]
+  },
+  "audio": {
+    "status": "ready",
+    "high": "/audio/no-word-is/high.m4a",
+    "peaks": "/audio/no-word-is/peaks.json",
+    "gainDb": -5.2,
+    "provenance": {
+      "kind": "file",
+      "ref": "https://www.youtube.com/watch?v=wJ-dm4ebqE0",
+      "retrieved": "2026-11-02",
+      "sha256": "069b64dc32dfd7c738b855244cfad667e2c28e1759e1d326e5d2488b4f44dc70"
+    }
+  },
+  "timing": {
+    "status": "draft",
+    "method": "none",
+    "notes": "Начала строк взяты из текстовой дорожки ролика. Слова внутри строки разложены равномерно, это не измерение."
+  },
+  "review": [
+    "Автозагрузка Andante на том же канале называет автором слов только Sami Yusuf. В описании ролика соавторы урду, фарси и малайского названы. В карточке оставлены они.",
+    "У строки зикра в описании нет отдельного автора. В poets и в составе её нет. Имена в конце дорожки тоже без автора.",
+    "Урду, фарси и зикр в официальном описании и в текстовой дорожке латиницей. Огласованного арабского письма источник не дал, поэтому script остаётся Latn.",
+    "Прямое тело страницы ролика не прочитано: описание снято с карточки поиска того же адреса.",
+    "Текстовая дорожка en этого ролика длиннее описания: в ней Allahu Allah, зикр режется на четыре строки и повторяется, в конце идут имена. Описания этого нет.",
+    "Вторая малайская строка в описании: Buat menemani zikir hati. В дорожке: Moga menjadi zikir hati. В строке m2 оставлена дорожка. Словарь малайского не открыт.",
+    "Два окна дорожки наложены на имена: около 5:30 и около 5:45 Subhan Allah пересекается со следующей строкой. В словах наложения нет: строка кончается к началу следующей.",
+    "Дорожка кончается на 6:05. Файл длится 370,06 с. После последней строки новых слов дорожка не даёт.",
+    "Карта пауз голоса дала вход около 15,45 с. Первая строка дорожки начинается на 14,50 с. Граница секции взята по дорожке.",
+    "У имён Mannan, Karim, Azim, Jabbar, Ghaffar, Halim, Sattar, Salam и Qahhar пословный русский перевод по открытому аяту не найден. На экране форма дорожки.",
+    "Видео скачано в work и в git не входит. Кадры не просмотрены: просмотр запускает Claude · Lead, этот исполнитель agy не вызывает. vision.json нет, song-status задание выравнивания не печатал. Слова внутри строки остаются черновиком, заливка слов выключена."
+  ],
+  "parts": [
+    {
+      "id": "allahu",
+      "title": "Аллаху Аллах",
+      "lang": "ar",
+      "url": "https://www.youtube.com/watch?v=wJ-dm4ebqE0",
+      "note": "Строка Allahu Allah открывает запись и возвращается перед именами, отдельного автора описание не называет.",
+      "lines": [
+        "aa-01",
+        "aa-02",
+        "aa-03",
+        "aa-04",
+        "aa-05",
+        "aa-06",
+        "aa-07",
+        "aa-08",
+        "aa-09",
+        "aa-10",
+        "aa-11",
+        "aa-12"
+      ]
+    },
+    {
+      "id": "en-words",
+      "title": "Английские строки",
+      "lang": "en",
+      "author": {
+        "name": "Sami Yusuf"
+      },
+      "work": {
+        "ru": "No Word Is Worthy",
+        "lang": "en"
+      },
+      "url": "https://www.youtube.com/watch?v=wJ-dm4ebqE0",
+      "note": "Английский блок один раз, слова и музыка в описании названы именем Сами Юсуфа.",
+      "lines": [
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6",
+        "e7",
+        "e8"
+      ]
+    },
+    {
+      "id": "tasbih",
+      "title": "Зикр",
+      "lang": "ar",
+      "url": "https://www.youtube.com/watch?v=wJ-dm4ebqE0",
+      "note": "Четыре формулы зикра повторяются после языковых блоков, отдельного автора описание не называет.",
+      "lines": [
+        "sn-01",
+        "hm-01",
+        "sh-01",
+        "kb-01",
+        "sn-02",
+        "hm-02",
+        "sh-02",
+        "kb-02",
+        "sn-03",
+        "hm-03",
+        "sh-03",
+        "kb-03",
+        "sn-04",
+        "hm-04",
+        "sh-04",
+        "kb-04",
+        "sn-05",
+        "hm-05",
+        "sh-05",
+        "kb-05",
+        "sn-06",
+        "hm-06",
+        "sh-06",
+        "kb-06",
+        "sn-07",
+        "hm-07",
+        "sh-07",
+        "kb-07",
+        "sn-08",
+        "hm-08",
+        "sh-08",
+        "kb-08",
+        "sh-09",
+        "sn-09",
+        "hm-09",
+        "sh-10",
+        "kb-09",
+        "sn-10",
+        "hm-10",
+        "sh-11",
+        "kb-10",
+        "sn-11",
+        "sn-12",
+        "sn-13"
+      ]
+    },
+    {
+      "id": "ur-words",
+      "title": "Строки на урду",
+      "lang": "ur",
+      "author": {
+        "name": "Mehboob"
+      },
+      "url": "https://www.youtube.com/watch?v=wJ-dm4ebqE0",
+      "note": "Блок урду в описании подписан именем Mehboob, без фамилии.",
+      "lines": [
+        "u1",
+        "u2",
+        "u3",
+        "u4"
+      ]
+    },
+    {
+      "id": "fa-words",
+      "title": "Строки на фарси",
+      "lang": "fa",
+      "author": {
+        "name": "Ustad Babak Radmanesh"
+      },
+      "url": "https://www.youtube.com/watch?v=wJ-dm4ebqE0",
+      "note": "Блок фарси в описании подписан именем Ustad Babak Radmanesh.",
+      "lines": [
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8"
+      ]
+    },
+    {
+      "id": "ms-words",
+      "title": "Строки на малайском",
+      "lang": "ms",
+      "author": {
+        "name": "Yasin Sulaiman"
+      },
+      "url": "https://www.youtube.com/watch?v=wJ-dm4ebqE0",
+      "note": "Блок малайского в описании подписан именем Yasin Sulaiman.",
+      "lines": [
+        "m1",
+        "m2",
+        "m3",
+        "m4"
+      ]
+    },
+    {
+      "id": "names",
+      "title": "Имена",
+      "lang": "ar",
+      "url": "https://www.youtube.com/watch?v=wJ-dm4ebqE0",
+      "note": "Имена в конце дорожки описание ролика не приводит и автора не называет.",
+      "lines": [
+        "rah-01",
+        "man-01",
+        "mal-01",
+        "rb-01",
+        "jab-01",
+        "hal-01",
+        "sal-01",
+        "rb-02"
+      ]
+    }
+  ]
+}
