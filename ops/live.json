@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T22:11:03Z",
+  "at": "2026-11-01T22:17:03Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,8 +10,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 16219,
-      "age": 16248,
+      "minutes": 16225,
+      "age": 16254,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -19,8 +19,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 16220,
-      "age": 16248,
+      "minutes": 16226,
+      "age": 16254,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -28,8 +28,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 16161,
-      "age": 16212,
+      "minutes": 16167,
+      "age": 16218,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -42,11 +42,11 @@
     },
     {
       "name": "phone-overlap",
-      "state": "working",
+      "state": "finished",
       "minutes": 0,
-      "age": 144,
-      "tokens": 0,
-      "model": "",
+      "age": 150,
+      "tokens": 39150936,
+      "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/phone-overlap"
     },
     {
@@ -58,8 +58,8 @@
     {
       "name": "studio-pass",
       "state": "working",
-      "minutes": 0,
-      "age": 41,
+      "minutes": 2,
+      "age": 47,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -67,8 +67,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 2162,
-      "age": 2176,
+      "minutes": 2168,
+      "age": 2182,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -76,8 +76,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2712,
-      "age": 2832,
+      "minutes": 2718,
+      "age": 2838,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -85,8 +85,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 16157,
-      "age": 16258,
+      "minutes": 16163,
+      "age": 16264,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -94,8 +94,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 13114,
-      "age": 13144,
+      "minutes": 13120,
+      "age": 13150,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -103,8 +103,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 469,
-      "age": 490,
+      "minutes": 475,
+      "age": 496,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -112,8 +112,8 @@
     {
       "name": "translation-alive",
       "state": "finished",
-      "minutes": 54,
-      "age": 80,
+      "minutes": 60,
+      "age": 86,
       "tokens": 7090137,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/translation-alive"
@@ -198,12 +198,12 @@
     {
       "name": "pipeline",
       "title": "Add Mevlana Celaleddin: text, translation, commentary, timing (draft)",
-      "minutes": 24
+      "minutes": 30
     },
     {
       "name": "pipeline",
       "title": "Add We Love Life: text, translation, commentary, timing (draft)",
-      "minutes": 73
+      "minutes": 79
     }
   ],
   "hygiene": {
