@@ -954,23 +954,10 @@
 .player-alert-mark,
 .status-alert-mark {
   flex: none;
-  width: 22px;
-  height: 22px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--alert-fg);
-  color: #fff;
-  font: 700 0.85rem/1 var(--font-ui);
+  color: var(--alert-fg);
+  font: 700 1.15rem/1 var(--font-ui);
 }
 .song.has-playback-error .btn-ring { opacity: 0.38; }
-.song.has-playback-error .floor-retry {
-  min-height: 36px;
-  padding: 0 12px;
-  border-radius: var(--r-pill);
-  background: var(--alert-fg);
-  color: #fff;
-}
 .player-alert p {
   flex: 1;
   min-width: 0;
@@ -1312,13 +1299,6 @@
   border-radius: 0.5px;
   background: var(--scrub-tick);
   pointer-events: none;
-}
-.scrub-map {
-  top: -2px;
-  width: 2px;
-  height: 8px;
-  margin-left: -1px;
-  background: color-mix(in srgb, var(--ink) 55%, transparent);
 }
 .scrub-seg {
   height: 5px;

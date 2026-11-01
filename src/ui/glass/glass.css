@@ -192,16 +192,10 @@ html[data-glass='solid'] .lg-spec {
 .lib-row.lg-host,
 .search.lg-host,
 .lib-nav.lg-host,
-.sheet.glass.lg-host,
 .status.lg-host {
   background: transparent;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
-}
-/* The shared rule above clears the sheet. Put the solid fill back, or the
-   lens colour arrives a frame later and the dialog flashes. */
-.sheet.glass.lg-host {
-  background: var(--lg-solid);
 }
 
 .topbar.lg-host::before,
