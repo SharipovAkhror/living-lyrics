@@ -1,12 +1,12 @@
 {
-  "updated": "2026-11-01T15:37:30Z",
+  "updated": "2026-11-01T15:44:44Z",
   "grok": {
     "today": 532910248,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-01T15:37:30Z",
+    "todayAt": "2026-11-01T15:44:44Z",
     "week": 1249163725,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-01T15:37:30Z",
+    "weekAt": "2026-11-01T15:44:44Z",
     "todayByTask": {
       "ops-claude-spend": 20609250,
       "space3-card-a": 5995198,
@@ -54,10 +54,10 @@
       "t39-precheck": 5651269
     },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-01T15:37:30Z",
+    "todayByTaskAt": "2026-11-01T15:44:44Z",
     "plan": "SuperGrok Heavy",
-    "planSource": "grok /usage",
-    "planAt": "2026-11-01T15:37:30Z",
+    "planSource": "~/.grok/settings_cache.json",
+    "planAt": "2026-11-01T15:37:58Z",
     "weekly": {
       "percentUsed": 62,
       "source": "grok /usage",
@@ -70,33 +70,33 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-01T15:37:30Z",
+        "at": "2026-11-01T14:37:31Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "150h 27m"
+        "weeklyResetIn": "151h 27m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-01T15:37:30Z",
+        "at": "2026-11-01T14:37:31Z",
         "weeklyRemaining": 100,
         "fiveHourRemaining": 100
       }
     },
     "conversationsToday": 2,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-01T15:37:30Z",
+    "conversationsTodayAt": "2026-11-01T15:44:44Z",
     "runsToday": 2,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-01T15:37:30Z",
+    "runsTodayAt": "2026-11-01T15:44:44Z",
     "secondsToday": 274,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-01T15:37:30Z",
+    "secondsTodayAt": "2026-11-01T15:44:44Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
-    "at": "2026-11-01T15:37:30Z",
+    "at": "2026-11-01T14:37:31Z",
     "claudeGpt": {
       "source": "agy /usage",
-      "at": "2026-11-01T15:37:30Z",
+      "at": "2026-11-01T14:37:31Z",
       "weeklyRemaining": 100,
       "fiveHourRemaining": 100
     }
