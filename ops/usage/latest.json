@@ -1,22 +1,24 @@
 {
-  "updated": "2026-11-01T19:02:21Z",
+  "updated": "2026-11-01T19:08:29Z",
   "grok": {
-    "today": 0,
+    "today": 19760819,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-01T19:02:21Z",
-    "week": 1457217796,
+    "todayAt": "2026-11-01T19:08:29Z",
+    "week": 1476978615,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-01T19:02:21Z",
-    "todayByTask": {},
+    "weekAt": "2026-11-01T19:08:29Z",
+    "todayByTask": {
+      "night-ll-song-04-muhabbatga-yaqinlar": 19760819
+    },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-01T19:02:21Z",
+    "todayByTaskAt": "2026-11-01T19:08:29Z",
     "plan": "SuperGrok Heavy",
-    "planSource": "~/.grok/settings_cache.json",
-    "planAt": "2026-11-01T18:58:54Z",
+    "planSource": "grok /usage",
+    "planAt": "2026-11-01T19:08:29Z",
     "weekly": {
       "percentUsed": 72,
       "source": "grok /usage",
-      "at": "2026-11-01T18:58:29Z",
+      "at": "2026-11-01T19:08:29Z",
       "timezoneLabeled": false,
       "resetsAt": "November 6, 21:08"
     }
@@ -25,39 +27,39 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-01T14:37:31Z",
+        "at": "2026-11-01T19:08:29Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "151h 27m"
+        "weeklyResetIn": "146h 56m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-01T18:17:30Z",
+        "at": "2026-11-01T19:08:29Z",
         "weeklyRemaining": 51.12,
         "fiveHourRemaining": 2.24,
-        "weeklyResetIn": "165h 58m",
-        "fiveHourResetIn": "2h 58m"
+        "weeklyResetIn": "165h 7m",
+        "fiveHourResetIn": "2h 7m"
       }
     },
     "conversationsToday": 0,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-01T19:02:21Z",
+    "conversationsTodayAt": "2026-11-01T19:08:29Z",
     "runsToday": 0,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-01T19:02:21Z",
+    "runsTodayAt": "2026-11-01T19:08:29Z",
     "secondsToday": 0,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-01T19:02:21Z",
+    "secondsTodayAt": "2026-11-01T19:08:29Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
-    "at": "2026-11-01T18:17:30Z",
+    "at": "2026-11-01T19:08:29Z",
     "claudeGpt": {
       "source": "agy /usage",
-      "at": "2026-11-01T18:17:30Z",
+      "at": "2026-11-01T19:08:29Z",
       "weeklyRemaining": 51.12,
       "fiveHourRemaining": 2.24,
-      "weeklyResetIn": "165h 58m",
-      "fiveHourResetIn": "2h 58m"
+      "weeklyResetIn": "165h 7m",
+      "fiveHourResetIn": "2h 7m"
     }
   },
   "alerts": [
@@ -66,7 +68,7 @@
       "task": "",
       "session": "",
       "value": 72,
-      "at": "2026-11-01T19:02:21Z"
+      "at": "2026-11-01T19:08:29Z"
     }
   ],
   "value": {
@@ -81,23 +83,23 @@
   "claude": {
     "plan": "Claude Pro",
     "planSource": "claude auth status --json",
-    "at": "2026-11-01T18:58:29Z",
+    "at": "2026-11-01T19:08:29Z",
     "windows": [
       {
         "kind": "five_hour",
-        "percentUsed": 32,
+        "percentUsed": 34,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T18:58:29Z",
+        "at": "2026-11-01T19:08:29Z",
         "resetsAt": "2026-11-01T20:50:00.000Z",
-        "readAt": "2026-11-01T18:28:54Z"
+        "readAt": "2026-11-01T19:07:45Z"
       },
       {
         "kind": "seven_day",
-        "percentUsed": 87,
+        "percentUsed": 88,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T18:58:29Z",
+        "at": "2026-11-01T19:08:29Z",
         "resetsAt": "2026-11-06T04:00:00.000Z",
-        "readAt": "2026-11-01T18:28:54Z"
+        "readAt": "2026-11-01T19:07:45Z"
       }
     ],
     "trend": [
@@ -187,22 +189,23 @@
     "windows": [
       {
         "kind": "five_hour",
-        "percentUsed": 0,
-        "source": "codex app-server",
-        "at": "2026-11-01T19:02:21Z",
-        "resetsAt": "2026-11-02T00:02:23Z"
+        "percentUsed": 29.0,
+        "source": "~/.codex/sessions",
+        "at": "2026-11-01T19:08:28Z",
+        "readAt": "2026-11-01T19:08:28Z",
+        "resetsAt": "2026-11-02T00:02:32Z"
       },
       {
         "kind": "seven_day",
-        "percentUsed": 65.0,
+        "percentUsed": 70.0,
         "source": "~/.codex/sessions",
-        "at": "2026-11-01T15:46:32Z",
-        "readAt": "2026-11-01T15:46:32Z",
+        "at": "2026-11-01T19:08:28Z",
+        "readAt": "2026-11-01T19:08:28Z",
         "resetsAt": "2026-11-05T13:58:03Z"
       }
     ],
     "plan": "plus",
-    "at": "2026-11-01T15:46:32Z",
+    "at": "2026-11-01T19:08:28Z",
     "source": "~/.codex/sessions"
   }
 }
