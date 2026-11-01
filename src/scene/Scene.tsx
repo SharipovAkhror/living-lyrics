@@ -353,9 +353,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const stageEl = stageRef.current;
       if (!stageEl) return;
       const o = Math.max(0.2, Math.min(1, amount));
-      const y = (1 - o) * 16;
       stageEl.style.opacity = o.toFixed(3);
-      stageEl.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
+      // The slide used to move the column by up to 16 px whenever a line and
+      // an interlude traded places. The dim is the cue; the box stays put.
+      if (stageEl.style.transform) stageEl.style.transform = '';
     };
     // Read once. offsetTop inside the frame forces layout on every seek tick.
     const stageTop = stageRef.current?.offsetTop ?? 0;
