@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+﻿﻿import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { formatTime, getSong, loadLyrics, loadPeaks } from '@/data/library';
 import { marksFor, momentAt } from '@/app/marks';
 import type { Lyrics, Peaks } from '@/data/schema';
@@ -19,6 +19,7 @@ import { Field } from '@/scene/Field';
 import { LEAD } from '@/scene/flow';
 import { Icon } from '@/ui/icons';
 import { RichText } from '@/components/RichText';
+import { plainComment } from '@/data/commentText';
 import { showHarakatText, stripHarakat } from '@/data/harakat';
 import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
 import { preloadInstruments } from '@/instruments/catalog';
@@ -473,7 +474,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         <aside className={`comment glass${settings.commentOpen ? ' is-open' : ''}`} aria-label="Пояснение">
           <button className="comment-head" onClick={() => setSettings({ commentOpen: !settings.commentOpen })} aria-expanded={settings.commentOpen}>
             <span className="comment-kicker">Пояснение</span>
-            <span className="comment-preview">{settings.commentOpen ? '' : (settings.showHarakat ? comment.text : stripHarakat(comment.text)).replace(/\*+/g, '')}</span>
+            <span className="comment-preview">{settings.commentOpen ? '' : plainComment(settings.showHarakat ? comment.text : stripHarakat(comment.text))}</span>
             <Icon name="chevron.down" size={20} className="comment-chevron" />
           </button>
           <div className="comment-fold">
