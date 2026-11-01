@@ -1,0 +1,24 @@
+{
+  "video_type": "static",
+  "video_type_note": "Один и тот же кадр обложки альбома с 0 по 277 с. Строк песни на экране нет. Кадры 0, 15, 30, 90, 200 и 275 с просмотрены; с 30 по 260 с кадры совпадают по хешу.",
+  "captions": [
+    {
+      "first_s": 0,
+      "last_s": 277,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "credit",
+      "text": "Sami Yusuf",
+      "confidence": "high"
+    },
+    {
+      "first_s": 0,
+      "last_s": 277,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "title",
+      "text": "LIVE AT THE KATARA AMPHITHEATRE",
+      "confidence": "high"
+    }
+  ]
+}

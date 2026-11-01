@@ -1,0 +1,156 @@
+{
+  "slug": "chant-percussion-ensemble",
+  "present": [],
+  "check": [],
+  "missingEngraving": [],
+  "sections": [
+    {
+      "id": "intro",
+      "action": "unchanged",
+      "label": "Вступление",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "voice-1",
+      "action": "voice",
+      "label": "Голос",
+      "identity": "voice",
+      "instruments": [
+        "voice",
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "break-1",
+      "action": "unchanged",
+      "label": "Проигрыш",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "voice-2",
+      "action": "voice",
+      "label": "Голос",
+      "identity": "voice",
+      "instruments": [
+        "voice",
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "break-2",
+      "action": "unchanged",
+      "label": "Проигрыш",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "voice-3",
+      "action": "voice",
+      "label": "Голос",
+      "identity": "voice",
+      "instruments": [
+        "voice",
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "break-3",
+      "action": "unchanged",
+      "label": "Проигрыш",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "voice-4",
+      "action": "voice",
+      "label": "Голос",
+      "identity": "voice",
+      "instruments": [
+        "voice",
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "break-4",
+      "action": "unchanged",
+      "label": "Проигрыш",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "voice-5",
+      "action": "voice",
+      "label": "Голос",
+      "identity": "voice",
+      "instruments": [
+        "voice",
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "coda",
+      "action": "unchanged",
+      "label": "Кода",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    }
+  ]
+}

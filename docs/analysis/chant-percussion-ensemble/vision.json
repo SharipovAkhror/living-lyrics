@@ -1,0 +1,41 @@
+{
+  "video_type": "static",
+  "frames": [
+    {
+      "time_s": 0,
+      "visible": true,
+      "players": [],
+      "note": "Обложка альбома: портрет, подпись Sami Yusuf, строка LIVE AT THE KATARA AMPHITHEATRE. Играющих и строк песни нет."
+    },
+    {
+      "time_s": 15,
+      "visible": true,
+      "players": [],
+      "note": "Тот же кадр обложки. Играющих и строк песни нет."
+    },
+    {
+      "time_s": 30,
+      "visible": true,
+      "players": [],
+      "note": "Тот же кадр обложки. Играющих и строк песни нет."
+    },
+    {
+      "time_s": 90,
+      "visible": true,
+      "players": [],
+      "note": "Тот же кадр обложки. С 30 по 260 с кадры совпадают по хешу."
+    },
+    {
+      "time_s": 200,
+      "visible": true,
+      "players": [],
+      "note": "Тот же кадр обложки. Играющих и строк песни нет."
+    },
+    {
+      "time_s": 275,
+      "visible": true,
+      "players": [],
+      "note": "Тот же кадр обложки у конца ролика. Играющих и строк песни нет."
+    }
+  ]
+}
