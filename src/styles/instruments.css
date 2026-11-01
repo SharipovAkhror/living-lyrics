@@ -115,6 +115,27 @@
 .scene .ist-art .h {
   stroke-width: 1.4;
 }
+/* Phone size: the same hairline disappeared into the field. */
+@media (max-width: 699px) {
+  .scene .ist-art .d { stroke-width: 3.3; }
+  .scene .ist-art .h { stroke-width: 1.7; }
+}
+/* Desk: a contour heavier than the hatch, so a lute is not one weight of line. */
+@media (min-width: 900px) {
+  .scene .ist-art .d { stroke-width: 2.15; }
+  .scene .ist-art .h { stroke-width: 0.65; opacity: 0.62; }
+}
+/* Light field: the full dark ink sat dirty on the violet. Hatch steps back. */
+:root[data-theme='light'] .scene .ist-art {
+  color: color-mix(in srgb, var(--ink) 82%, #4a3428);
+}
+:root[data-theme='light'] .scene .ist-art .h {
+  opacity: 0.5;
+}
+/* The shared ring was louder than the instrument. */
+.scene .ist-art .frame {
+  opacity: calc(var(--hatch, 1) * 0.12);
+}
 .ist-art .str {
   transform: translate(var(--str-x, 0), var(--str-y, 0));
 }

@@ -454,7 +454,13 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       filterRef.current = nextFilter;
       r.style.filter = nextFilter;
     }
-    const vis = s.opacity < 0.01 ? 'hidden' : 'visible';
+    let vis = s.opacity < 0.01 ? 'hidden' : 'visible';
+    // A neighbour whose top sits in the last strip of the stage is a cut
+    // sliver. The phone used to paint that sliver for a frame after a retry.
+    if (phone && vis === 'visible' && Math.abs(d) >= 0.5) {
+      const edge = r.closest('.scene-stage')?.clientHeight ?? 0;
+      if (edge > 0 && top > edge - 28 && top < edge + 8) vis = 'hidden';
+    }
     if (painted.current.vis !== vis || r.style.visibility !== vis) {
       painted.current.vis = vis;
       r.style.visibility = vis;

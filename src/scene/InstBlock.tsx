@@ -17,7 +17,7 @@ import { isPhone } from '@/ui/phone';
 const instCompact = new Map<number, number>();
 
 /** Plates a phone can show at once. The rest rotate; they are not a different set. */
-const PHONE_ROSTER = 4;
+const PHONE_ROSTER = 2;
 const ROSTER_DWELL = 4;
 
 /** Page of a phone roster. A pure function of time, so a seek repeats the frame. */
@@ -286,15 +286,18 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     // The opening roster is already playing: keep the full engraving, not the empty cascade.
     const opening = earlier.length === 0 && t >= section.start && t < section.end && d < 1.05;
     const flowP = opening ? Math.max(s.presence, 0.92) : s.presence;
-    // A passage that has started is the picture. One that has ended is gone:
-    // the flow move straddles the shared boundary and used to draw both captions.
+    // Once the accent has moved, this plate leaves with it. Waiting for the
+    // section's end kept the previous drawing up under the next name.
     const ended = t >= section.end;
-    const p = instPresence(t, section.start, section.end, flowP);
+    const left = d < -0.5 ? clamp01((Math.abs(d) - 0.5) / 0.35) : 0;
+    const gone = ended || left >= 1;
+    const p = gone ? 0 : instPresence(t, section.start, section.end, flowP);
+    const fade = gone ? 0 : 1 - left;
     const z = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
     const transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
-    const opacity = (ended ? 0 : entranceOpacity(d, entrance, s.opacity)).toFixed(3);
-    const vis = ended || s.opacity < 0.01 ? 'hidden' : 'visible';
-    const grown = ended ? 0 : compactH.current + (fullH - compactH.current) * p;
+    const opacity = (entranceOpacity(d, entrance, s.opacity) * fade).toFixed(3);
+    const vis = fade < 0.02 || s.opacity < 0.01 ? 'hidden' : 'visible';
+    const grown = fade < 0.02 ? 0 : compactH.current + (fullH - compactH.current) * p;
     const height = `${grown.toFixed(1)}px`;
     const box = painted.current;
     if (box.z !== z) {
@@ -320,14 +323,14 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     if (compact.current) {
       // One caption at a time. The old crossfade kept the chip and the note
       // both above 0.05 while the box was still growing.
-      const compactO = ended || p >= 0.5 ? '0' : '1';
+      const compactO = gone || p >= 0.5 ? '0' : '1';
       if (box.compact !== compactO) {
         box.compact = compactO;
         compact.current.style.opacity = compactO;
       }
     }
     if (full.current) {
-      const fullO = ended || p < 0.5 ? '0' : '1';
+      const fullO = gone || p < 0.5 ? '0' : '1';
       const fullS = `scale(${(0.94 + 0.06 * p).toFixed(4)})`;
       if (box.fullO !== fullO) {
         box.fullO = fullO;
@@ -377,7 +380,7 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
       setAnim(next);
     }
     // The footnote is not part of the block height: stage geometry stays put.
-    if (!ended && Math.abs(d) < 0.5 && p >= 0.5 && !scrubbingNow) syncInstNote(r);
+    if (!gone && Math.abs(d) < 0.5 && p >= 0.5 && !scrubbingNow) syncInstNote(r);
     if (count.current && p > 0.01 && timed) {
       const left = (nextVocal?.start ?? cue.end) - t;
       const txt = nextVocal ? `Голос через ${formatTime(Math.max(0, left))}` : `До конца ${formatTime(Math.max(0, cue.end - t))}`;

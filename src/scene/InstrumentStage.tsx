@@ -9,7 +9,6 @@
  * Styles: src/styles/instruments.css (classes `ist-…`) and src/instruments/render/stage3d.css.
  */
 import { forwardRef, memo, useEffect, useId, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { bisect } from '@/app/bisect';
 import { effectiveMotion, useSettings } from '@/app/settings';
 import type { InstrumentDrive } from '@/instruments/animation';
 import { instrument, instrumentAspect, instrumentSvg, loadInstrumentSvg, scopeSvgIds } from '@/instruments/catalog';
@@ -122,17 +121,11 @@ function poseSignature(frame: StagePose) {
 }
 
 function artFilter(drive: InstrumentDrive) {
-  const life = drive.life ?? 1;
-  const halo = drive.halo ?? 0;
-  const flash = drive.hit ?? 0;
-  const brightness = `brightness(${life.toFixed(3)})`;
-  // brightness(1) is a no-op that still allocates a filtered layer. Skip it.
-  if (Math.abs(life - 1) < 0.004 && halo < 0.004 && flash < 0.004) return 'none';
-  // The glow arm drops the halo. Brightness stays, so the engraving still breathes.
-  if (bisect('glow') || (halo < 0.004 && flash < 0.004)) return brightness;
-  const glow = `drop-shadow(0 0 ${(halo * 18).toFixed(2)}px var(--accent))`;
-  const flare = flash >= 0.004 ? ` drop-shadow(0 0 ${(flash * 12).toFixed(2)}px var(--accent))` : '';
-  return `${brightness} ${glow}${flare}`;
+  const life = Math.min(1.06, Math.max(0.82, drive.life ?? 1));
+  // A drop-shadow in the song colour washed the strokes out (a pink ring on
+  // Karitas, a purple flare on the oud). Motion stays in the drawing.
+  if (Math.abs(life - 1) < 0.004) return 'none';
+  return `brightness(${life.toFixed(3)})`;
 }
 
 const plateVars = new WeakMap<HTMLElement, Map<string, string>>();
@@ -173,7 +166,8 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
   { keys, performers, mode, uniform = false, maxShown, fitRoster = false, spectacle = false, wrapNames = false, presences, progress, presence, size, energy = 0, time, drives, echoes, preserve = false, className, onLayout },
   ref,
 ) {
-  const list = keys.length ? keys : ['ensemble'];
+  // An empty roster is an empty stage. The assembled badge is not a stand-in.
+  const list = keys;
   const echoList = echoes ?? [];
   const n = list.length;
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
@@ -183,15 +177,17 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
 
   const layout = useMemo(
     () =>
-      layoutInstruments(n, size, {
-        mode: mode && mode !== 'auto' ? (mode as LayoutMode) : 'auto',
-        aspects: list.map(instrumentAspect),
-        lines,
-        uniform,
-        maxShown,
-        fitRoster,
-        spectacle,
-      }),
+      n === 0
+        ? { mode: 'single' as const, box: size, slots: [], hidden: [] as number[], minArt: 0, threshold: 0, fallback: false }
+        : layoutInstruments(n, size, {
+            mode: mode && mode !== 'auto' ? (mode as LayoutMode) : 'auto',
+            aspects: list.map(instrumentAspect),
+            lines,
+            uniform,
+            maxShown,
+            fitRoster,
+            spectacle,
+          }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [n, size.w, size.h, mode, list.join(), lines, uniform, maxShown, fitRoster, spectacle],
   );

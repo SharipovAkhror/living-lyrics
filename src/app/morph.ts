@@ -30,6 +30,9 @@ interface RiseGroup {
 }
 
 const RISES: RiseGroup[] = [
+  // The bar itself waits with the title. It used to be opaque while the
+  // library header was still on screen, and the cover sat apart from it.
+  { sel: '.topbar', gate: 0.4, dist: 0 },
   // Last third of the flight. The stage used to stay empty until 0.85,
   // which was a dark frame on a 100 ms sheet.
   { sel: '.topbar-title', gate: 0.67, dist: 12 },
@@ -325,6 +328,11 @@ function readPx(style: CSSStyleDeclaration, name: string, fallback: number): num
  * The numbers follow the header rules in app.css. followHeader replaces this
  * with the measured box once the song has painted.
  */
+/** Where the header art will land. The song page uses this until its own box agrees. */
+export function predictedHeader(): MorphBox {
+  return predictHeader();
+}
+
 function predictHeader(): MorphBox {
   const vw = window.innerWidth;
   const vh = window.innerHeight;

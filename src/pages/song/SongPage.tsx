@@ -10,7 +10,7 @@ import { useSongAccent } from '@/app/theme';
 import { enableSongFonts } from '@/app/fontCatalog';
 import { nextSlug, prefetchLyrics, prefetchRecording, recordingUrl } from '@/app/prefetch';
 import { linkHandler } from '@/app/router';
-import { followHeader, hasFlight, motionBlocked, playRise } from '@/app/morph';
+import { followHeader, hasFlight, motionBlocked, playRise, predictedHeader } from '@/app/morph';
 import { SPRING, stepSpring, type SpringState } from '@/ui/spring';
 import { bindPress } from '@/ui/press';
 import { PlayPause } from '@/ui/playglyph';
@@ -702,6 +702,7 @@ function EngineAlerts({
 }) {
   const state = useEngineView(engine, alertKey);
   const [pending, setPending] = useState(false);
+  const fitted = useRef(false);
   useEffect(() => {
     if (!state.error) setPending(false);
   }, [state.error]);
@@ -712,6 +713,16 @@ function EngineAlerts({
     const root = floor.closest('.song');
     const top = root?.querySelector('.topbar');
     if (root instanceof HTMLElement && top instanceof HTMLElement) measureChrome(root, top, floor);
+    if (!(root instanceof HTMLElement)) return;
+    // The first measure is the open. Later ones are a retry: hide a cut line
+    // for the frame the stage grows, then let the placement show it.
+    if (!fitted.current) {
+      fitted.current = true;
+      return;
+    }
+    root.classList.add('is-refitting');
+    const id = requestAnimationFrame(() => root.classList.remove('is-refitting'));
+    return () => cancelAnimationFrame(id);
   }, [floorRef, state.error, state.source]);
   return (
     <>
@@ -1368,17 +1379,26 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
     // One box for the whole rise. Reading the header on every flight frame
     // forced a layout of the page the cover was crossing.
     let cached: { left: number; top: number; width: number; height: number; radius: number } | null = null;
+    let lastLeft = Number.NaN;
     const dest = () => {
       if (cached) return cached;
+      const expect = predictedHeader();
       const art = img.getBoundingClientRect();
-      if (art.width < 1 || art.height < 1) return null;
+      if (art.width < 1 || art.height < 1) return expect;
       if (!radiusReady) {
         const raw = getComputedStyle(img).borderTopLeftRadius;
         radius = parseFloat(raw) || 0;
         if (raw.trim().endsWith('%')) radius = (radius / 100) * Math.min(art.width, art.height);
         radiusReady = true;
       }
-      cached = { left: art.left, top: art.top, width: art.width, height: art.height, radius };
+      // The first layout can sit at the window edge, before the column is written.
+      // Caching that box left the cover there after the header had moved.
+      // Aim at the predicted header until the measured box has settled.
+      const box = { left: art.left, top: art.top, width: art.width, height: art.height, radius };
+      const stable = Number.isFinite(lastLeft) && Math.abs(art.left - lastLeft) < 1 && art.left > 8 && art.top > 4;
+      lastLeft = art.left;
+      if (!stable) return expect;
+      cached = box;
       return cached;
     };
     const reveal = () => {

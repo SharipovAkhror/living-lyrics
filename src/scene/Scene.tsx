@@ -638,12 +638,36 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       const fitted = keepInStage(blended, clampAnchor(accent), bandH.get(accent) ?? 0, liveH, pad);
       const placed = concealCut(clearBand(fitted, pos, bandH, liveH, liveTop, window.innerHeight, !roomyLandscape), pos, bandH, liveH, 32);
       // The engraving block is the whole column. Centring it at 0.42 left the top in the bar and the next line under the floor.
-      if (liveW >= 840 && liveH >= 480) {
+      if (liveW >= 840 && liveH >= 480 && pos >= 0.45) {
         const picture = Math.max(list[0] ?? 0, Math.min(list[list.length - 1] ?? 0, Math.round(pos)));
         if (timeline.cues[picture]?.kind === 'inst') {
           const h = bandH.get(picture) ?? 0;
           if (h > 0 && h <= liveH) placed.set(picture, Math.max(0, (liveH - h) / 2));
         }
+      }
+      // The title still holds the stage. The opening engraving used to be
+      // centred through that card.
+      if (pos < 0.55) {
+        const introTop = placed.get(-1);
+        const introH = bandH.get(-1) ?? 0;
+        const instTop = placed.get(0);
+        if (introTop != null && instTop != null && introH > 8 && timeline.cues[0]?.kind === 'inst') {
+          const floor = introTop + introH + 20;
+          if (instTop < floor) placed.set(0, floor);
+        }
+      }
+      // A line that arrives against an engraving's caption. Push it clear,
+      // and only by as much as the overlap, so the column does not jump.
+      for (const k of list) {
+        if (timeline.cues[k]?.kind !== 'inst') continue;
+        const top = placed.get(k);
+        const h = bandH.get(k) ?? 0;
+        const nextTop = placed.get(k + 1);
+        if (top == null || nextTop == null || h < 24) continue;
+        const overlap = top + h + 12 - nextTop;
+        if (overlap <= 0) continue;
+        const shift = Math.min(48, overlap);
+        for (const j of list) if (j > k) placed.set(j, (placed.get(j) ?? 0) + shift);
       }
       for (const k of list) {
         const b = blocks.current.get(k);

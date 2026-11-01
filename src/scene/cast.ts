@@ -180,8 +180,11 @@ interface Standing {
 }
 
 /**
- * Walk the sections in order. A different roster is taken only when the previous change
- * was at least {@link CAST_HOLD_S} seconds earlier. A key shared with the roster already
+ * Walk the sections in order. A short section keeps the plates already standing.
+ * A long one takes its own roster even when it begins immediately: the old clock
+ * skipped that whole section, so the intro badge stayed up under the next name.
+ * A short section with no instruments keeps those plates too, instead of clearing
+ * the stage. A key shared with the roster already
  * standing keeps its slot and is not entered again. A newcomer fills the first free slot.
  * An empty slot is then closed, so a plate that stood to the right of a hole can shift left:
  * the row has no spacers. A key that leaves is forgotten, so a later return is a new entrance.
@@ -194,7 +197,10 @@ export function standingKeys(sections: CastSection[], limit: number): Standing {
   for (const section of sections) {
     const next = desiredKeys(section, limit);
     const same = keys.length === next.length && keys.every((key, i) => key === next[i]);
-    if (keys.length && (same || section.start - changedAt < CAST_HOLD_S)) continue;
+    const span = section.end - section.start;
+    const short = span < CAST_HOLD_S;
+    if (keys.length && next.length === 0 && short) continue;
+    if (keys.length && (same || (short && section.start - changedAt < CAST_HOLD_S))) continue;
     const slots: (string | null)[] = keys.map((key) => (next.includes(key) ? key : null));
     for (const key of next) {
       if (keys.includes(key)) continue;

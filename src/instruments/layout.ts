@@ -6,7 +6,7 @@
  * with a caption under it (or beside it in `stack`). The engine picks a mode from the count and the box,
  * never lets a drawing fall below a readable size. What does not fit is left out: there is no «+N» chip.
  * Automatic layout is prominence on every screen, including the short wide car page.
- * A phone (narrow box) keeps three in one row, or four in two rows of two. The car page's
+ * A narrow box keeps fewer, larger drawings. The car page's
  * chrome (lyric, comment, player) is CSS, not a second instrument layout.
  * Rules in prose: docs/methodology/09-instruments.md.
  */
@@ -754,14 +754,19 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
       const arts = b.slots.filter((s) => s.kind === 'instrument').map((s) => Math.min(s.art.w, s.art.h));
       return arts.length ? Math.min(...arts) : 0;
     };
-    let tight: { mode: LayoutMode; b: Built; shown: number } | null = null;
+    let tight: { mode: LayoutMode; b: Built; shown: number; art: number } | null = null;
+    const floor = c.box.w < 560 ? 100 : 48;
     for (let k = limit; k >= 1; k--) {
       const row = k <= 4 ? prominence(c, idx.slice(0, k)) : null;
       const b = row ?? grid(c, idx.slice(0, k), 0);
       if (!inside(b)) continue;
       const mode: LayoutMode = row ? 'prominence' : 'grid';
-      if (artOf(b) >= 24) return result(mode, b, k, k < limit);
-      if (!tight) tight = { mode, b, shown: k };
+      // Four drawings at a couple of dozen pixels left the captions larger
+      // than the engravings. A narrow stage keeps fewer, and each one stays
+      // large enough to read.
+      const art = artOf(b);
+      if (art >= floor) return result(mode, b, k, k < limit);
+      if (!tight || art > tight.art) tight = { mode, b, shown: k, art };
     }
     if (tight) return result(tight.mode, tight.b, tight.shown, tight.shown < limit);
     return result('single', single(c, idx.slice(0, 1), limit - 1), 1, true);

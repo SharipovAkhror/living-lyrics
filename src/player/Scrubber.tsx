@@ -56,7 +56,21 @@ function cueAt(cues: Cue[], t: number): Cue | null {
 
 function previewOf(cue: Cue | null): { part: string; line: string } {
   if (!cue) return { part: '', line: '' };
-  if (cue.kind === 'inst') return { part: cue.section.label, line: 'Проигрыш' };
+  if (cue.kind === 'inst') {
+    const keys = cue.section.instruments;
+    const voiceOnly = keys.length > 0 && keys.every((k) => k === 'voice' || k === 'choir');
+    // «Проигрыш» on a choir, and «Хор» on an ensemble, were three names for one picture.
+    const line = voiceOnly
+      ? keys.includes('voice') && keys.includes('choir')
+        ? 'Голос и хор'
+        : keys.includes('choir')
+          ? 'Хор'
+          : 'Голос'
+      : cue.section.label === 'Проигрыш'
+        ? 'Проигрыш'
+        : '';
+    return { part: cue.section.label, line };
+  }
   const words = lineText(cue.line).replace(/\s+/g, ' ').trim();
   return { part: cue.section.label, line: words };
 }
