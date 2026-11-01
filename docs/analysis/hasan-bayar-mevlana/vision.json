@@ -1,0 +1,22 @@
+{
+  "video_type": "lyric_video",
+  "frames": [
+    {"time_s": 0.0, "visible": false, "players": [], "note": "wide dim title, upper left, whirling hall"},
+    {"time_s": 1.12, "visible": false, "players": [], "note": "wide Latin titles, upper left"},
+    {"time_s": 9.84, "visible": false, "players": [], "note": "wide whirling hall, titles off"},
+    {"time_s": 11.12, "visible": false, "players": [], "note": "wide Latin titles, upper left"},
+    {"time_s": 23.6, "visible": false, "players": [], "note": "wide Latin titles, upper left"},
+    {"time_s": 34.2, "visible": false, "players": [], "note": "wide Latin titles, upper left"},
+    {"time_s": 42.6, "visible": false, "players": [], "note": "wide whirling hall, titles fading"},
+    {"time_s": 54.4, "visible": false, "players": [], "note": "wide Latin titles, upper left"},
+    {"time_s": 65.4, "visible": false, "players": [], "note": "wide whirling hall, titles off"},
+    {"time_s": 74.52, "visible": false, "players": [], "note": "wide whirling hall, titles off"},
+    {"time_s": 86.36, "visible": false, "players": [], "note": "wide Latin titles, upper left"},
+    {"time_s": 95.64, "visible": false, "players": [], "note": "wide whirling hall, titles fading"},
+    {"time_s": 96.8, "visible": false, "players": [], "note": "wide Latin titles, upper left"},
+    {"time_s": 108.0, "visible": false, "players": [], "note": "wide Latin titles, upper left"},
+    {"time_s": 118.2, "visible": false, "players": [], "note": "wide Latin titles, upper left"},
+    {"time_s": 128.96, "visible": false, "players": [], "note": "wide Latin titles, upper left"},
+    {"time_s": 139.96, "visible": false, "players": [], "note": "wide Latin titles, upper left"}
+  ]
+}

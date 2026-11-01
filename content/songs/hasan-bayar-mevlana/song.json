@@ -1,0 +1,96 @@
+{
+  "$schema": "../../../docs/schema/song.schema.json",
+  "slug": "hasan-bayar-mevlana",
+  "title": "Mevlana Celaleddin",
+  "artist": "Hasan Bayar",
+  "version": {
+    "kind": "single",
+    "label": "Сингл Mevlana Celaleddin, 2026"
+  },
+  "languages": [
+    "tr"
+  ],
+  "poets": [
+    {
+      "name": "Hasan Bayar",
+      "lang": "tr"
+    }
+  ],
+  "credits": [
+    {
+      "role": "слова и музыка",
+      "name": "Hasan Bayar"
+    },
+    {
+      "role": "вокал",
+      "name": "Hasan Bayar"
+    },
+    {
+      "role": "продюсер",
+      "name": "Hasan Bayar"
+    }
+  ],
+  "release": {
+    "year": 2026,
+    "label": "Kemal Faruk Medya",
+    "album": "Mevlana Celaleddin"
+  },
+  "duration": 151.07,
+  "palette": {
+    "accent": "#6F3E0A",
+    "accentDark": "#F0A356",
+    "field": [
+      "#060505",
+      "#232921",
+      "#63562E",
+      "#F0A356"
+    ]
+  },
+  "audio": {
+    "status": "ready",
+    "high": "/audio/hasan-bayar-mevlana/high.m4a",
+    "peaks": "/audio/hasan-bayar-mevlana/peaks.json",
+    "gainDb": -3.5,
+    "provenance": {
+      "kind": "file",
+      "ref": "https://www.youtube.com/watch?v=8LDGYQaHCX4",
+      "retrieved": "2026-11-02",
+      "sha256": "14a0daa14c6d92d87ceb42a0a3c2550d89878957ea286dd45b1a875c95ea7130"
+    }
+  },
+  "timing": {
+    "status": "draft",
+    "method": "none",
+    "notes": "Время строки — доля показа экранной карточки по группам гласных. Слова внутри доли черновые. Заливка выключена флагом timing-draft."
+  },
+  "parts": [
+    {
+      "id": "ilahi",
+      "title": "Иляхи Мевлана Джелаледдин",
+      "lang": "tr",
+      "author": {
+        "name": "Hasan Bayar"
+      },
+      "work": {
+        "original": "Mevlana Celaleddin",
+        "ru": "Мевлана Джелаледдин",
+        "lang": "tr"
+      },
+      "url": "https://www.shazam.com/song/1877640496/mevlana-celaleddin",
+      "note": "Один турецкий текст на всю запись: обращение к Мевлане, затем земзем, мост и Месневи.",
+      "sections": ["v1", "v2"]
+    }
+  ],
+  "review": [
+    "Описание ролика автора не подписывает, там только «eserimizi». Страница Shazam того же трека Apple в разделе Composition & Lyrics ставит hasan bayar как Songwriter, отдельно Lead Vocals и Producer. poets и credits взяты с этой страницы, не из описания.",
+    "Файл ролика канала измерен: 151,07 с (карточка 2:31). Магазинный трек Apple — 153 с. Шкалы разные. Секунды магазина в текст не переносить.",
+    "Файл обложки в репозиторий не положен: задание разрешает только папки песни, шифра, jobs и docs/analysis. Цвета сняты с кадра Apple Music, адрес в sources.md. Библиотека без файла обложки запросит /covers/hasan-bayar-mevlana/512.png.",
+    "официальные субтитры: пусто",
+    "Тело страницы YouTube не открылось, запрос ушёл на проверку. Буквы переписаны с карточки поиска того же адреса. Две карточки совпали.",
+    "На экране двенадцать карточек по четыре строки: припев, припев, куплет про земзем, он же ещё раз, припев, припев, пауза без текста, куплет про мост, куплет про Месневи, затем припев четыре раза. Пауза совпала с тишиной голоса 64,45–85,70. Правый край закрывает танцующий.",
+    "В листе Lutfeyle без ü. Словарь даёт lütfetmek с ü. Букву не выправлял.",
+    "В листе ALLAH заглавными. На сайте строка пишется Allah.",
+    "Карточка загорается целиком меньше чем за полторы секунды. Отдельного появления строки нет. Начало строки — доля показа по группам гласных. Слова внутри доли черновые, заливка выключена.",
+    "обратный перевод: ждёт Gemini"
+  ]
+}
