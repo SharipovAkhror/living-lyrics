@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-26-sherali-tark",
+  "status": "failed",
+  "branch": "night/ll-song-26-sherali-tark",
+  "commit": "f72b0e590d4ce1feb9153194f3d9c9deabf11536",
+  "tokens": 11322492,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts sherali-tark\n\n\n✗ sherali-tark  (1 ошибок, 3 предупреждений)\n  ошибка  song.json: audio.high: нет шифра content/audio-enc/sherali-tark/high.m4a.enc\n  внимание  version: kind = live, а performance нет: подпись должна опираться на факты концерта\n  внимание  transcript.json: нет docs/analysis/<slug>/transcript.json: порядок строк с голосом не сверен\n  внимание  cues.json: нет docs/analysis/<slug>/cues.json: время строк по официальным субтитрам (docs/methodology/04-text.md)\n\nИтого: 1 ошибок, 3 предупреждений.\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue-b\\logs\\ll-song-26-sherali-tark.log",
+  "reason": "tokens",
+  "restarts": 0,
+  "pushed": false
+}
