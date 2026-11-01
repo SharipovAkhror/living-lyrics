@@ -43,6 +43,7 @@ npm install
 npm run dev                         # http://localhost:5173 (расшифрует записи, если есть AUDIO_KEY в .env.local)
 npm run validate [-- <slug>]        # проверка данных, включая сверку строк с canon.md; --strict для финальной
 npm run typecheck
+npm run precheck                    # validate + typecheck + vite build, без ключа записи; перед пушем
 npm run build                       # расшифровка записей + validate + typecheck + vite build
 npm run new-song -- <slug> "Title" "Artist"
 npm run song-status -- <slug>       # где песня на маршруте и одна следующая команда
@@ -51,6 +52,8 @@ npm run shots -- <url> <dir> <paths…>   # скриншоты iPhone/дескт
 npm run audio:encrypt -- <slug>     # зашифровать запись перед коммитом (репозиторий публичный)
 python scripts/review/launch_round.py <round> [--wt <папка>] [--dry-run]  # круг студии Гроком без чата; журнал work/review/launch_round.log
 ```
+
+Исполнитель перед пушем запускает `npm run precheck`. Хук `.githooks/pre-push` запускает ту же команду при пуше ветки `site/*`. Хук ставится сам при `npm install` (`prepare` записывает `core.hooksPath`). Обход хука — `git push --no-verify`: Git тогда не запускает хук, и проверку делает сам исполнитель.
 
 Аудиоконвейер (Python, `scripts/pipeline/requirements.txt`): `decrypt_audio.py`, `process_audio.py`, `separate.py`, `sections.py`, `transcribe.py`, `align.py`, `qa_sync.py`. Нужны `ffmpeg` и сеть (модели Whisper, Demucs, MMS). В облачной среде Claude Code сеть закрыта — пользуйтесь GitHub Actions или песочницей.
 
@@ -68,4 +71,4 @@ python scripts/review/launch_round.py <round> [--wt <папка>] [--dry-run]  #
 
 ## Стиль кода
 
-TypeScript strict, React 19 без сторонних UI-библиотек. Комментарии по-английски, тексты интерфейса и документация — по-русски, обычным регистром. Анимации сцены — функции времени (перемотка должна давать тот же кадр). Перед коммитом: `npm run validate && npm run typecheck`. Приёмка — один список, его же держит `docs/tasks/README.md`. Команды, которые 2026-10-21 уже проходили на одной машине без `AUDIO_KEY` (замер `docs/research/repo-audit.md`, в CI не заводились): `npm run validate`, `npm run typecheck`, `npx vite build`, `npx tsx src/player/background.test.ts`, `npx tsx src/player/preload.test.ts`, `npx tsx src/app/marks.test.ts`, `npm run test:layout`, `python scripts/pipeline/test_sync.py`. Без `AUDIO_KEY` `npm run build` звук не проверяет: `scripts/tools/audio-crypt.mjs` предупреждает и выходит с кодом 0.
+TypeScript strict, React 19 без сторонних UI-библиотек. Комментарии по-английски, тексты интерфейса и документация — по-русски, обычным регистром. Анимации сцены — функции времени (перемотка должна давать тот же кадр). Перед коммитом: `npm run validate && npm run typecheck`. Перед пушем: `npm run precheck`. Приёмка — один список, его же держит `docs/tasks/README.md`. Команды, которые 2026-10-21 уже проходили на одной машине без `AUDIO_KEY` (замер `docs/research/repo-audit.md`, в CI не заводились): `npm run validate`, `npm run typecheck`, `npx vite build`, `npx tsx src/player/background.test.ts`, `npx tsx src/player/preload.test.ts`, `npx tsx src/app/marks.test.ts`, `npm run test:layout`, `python scripts/pipeline/test_sync.py`. Без `AUDIO_KEY` `npm run build` звук не проверяет: `scripts/tools/audio-crypt.mjs` предупреждает и выходит с кодом 0.

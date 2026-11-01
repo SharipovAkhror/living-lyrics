@@ -256,15 +256,23 @@ function check(slug: string): Issue[] {
   const canon = canonRaw ? letters(canonRaw) : null;
   if (!canon) warn('canon.md', 'нет оригиналов текста (canon.md): строки не с чем сверить (docs/methodology/04-text.md)');
 
-  // Audio
+  // Audio. Recordings are stored as ciphertext in content/audio-enc/. A missing
+  // decrypted file under public/ is a warning, not a failure: precheck and
+  // validate run without AUDIO_KEY. Peaks and other plain files stay required.
   if (song.audio.status === 'ready') {
     if (!song.audio.high) err('song.json', 'audio.status = ready, но нет audio.high');
     for (const key of ['high', 'saver', 'peaks'] as const) {
       const p = song.audio[key];
-      if (p && !existsSync(join(root, 'public', p))) {
-        const encrypted = join(root, 'content/audio-enc', p.replace(/^\/audio\//, '') + '.enc');
-        if (existsSync(encrypted)) warn('song.json', `audio.${key}: ${p} есть только в зашифрованном виде — нужен AUDIO_KEY (npm run dev / build расшифруют)`);
-        else err('song.json', `audio.${key}: файл ${p} не найден в public/`);
+      if (!p) continue;
+      const publicFile = join(root, 'public', p);
+      const encRel = p.replace(/^\/audio\//, '') + '.enc';
+      const encrypted = join(root, 'content/audio-enc', encRel);
+      const recording = /\.(m4a|mp3|flac)$/i.test(p);
+      if (recording) {
+        if (!existsSync(encrypted)) err('song.json', `audio.${key}: нет шифра content/audio-enc/${encRel}`);
+        else if (!existsSync(publicFile)) warn('song.json', `audio.${key}: ${p} есть только в зашифрованном виде — нужен AUDIO_KEY (npm run dev / build расшифруют)`);
+      } else if (!existsSync(publicFile)) {
+        err('song.json', `audio.${key}: файл ${p} не найден в public/`);
       }
     }
     if (!song.audio.provenance) warn('song.json', 'audio.provenance не заполнен (откуда запись)');
