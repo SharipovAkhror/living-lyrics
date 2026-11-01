@@ -3,6 +3,7 @@
  * (each repetition is its own line) and every instrumental passage. Pure function of the data,
  * so seeking backwards renders exactly like playing forwards.
  */
+import { commentDraftHidden } from './comments';
 import type { InstrumentalSection, Line, Lyrics, Peaks, VocalSection } from './schema';
 
 export interface LineCue {
@@ -134,15 +135,31 @@ export function buildTimeline(lyrics: Lyrics, duration: number, peaks: Peaks | n
   return { cues, lines, duration, ownerAt, energyAt };
 }
 
-/** The commentary that applies at a cue: its own, else the latest earlier line in the same section, else the section's. */
+/** Section commentary, when the section itself was not hidden as a draft. */
+function sectionComment(cue: LineCue): { text: string; from: Cue } | null {
+  if (commentDraftHidden(cue.section.flags)) return null;
+  return cue.section.comment ? { text: cue.section.comment, from: cue } : null;
+}
+
+/**
+ * The commentary the reader sees at a cue: the line's own, else the latest earlier
+ * line in the same section that still has one, else the section's.
+ * A line marked `comment-draft` does not inherit a neighbour. It shows the section
+ * comment when that comment is itself visible, and nothing otherwise.
+ */
 export function commentFor(timeline: Timeline, cueIdx: number): { text: string; from: Cue } | null {
   const cue = timeline.cues[cueIdx];
   if (!cue) return null;
-  if (cue.kind === 'inst') return cue.section.comment ? { text: cue.section.comment, from: cue } : null;
+  if (cue.kind === 'inst') {
+    if (commentDraftHidden(cue.section.flags)) return null;
+    return cue.section.comment ? { text: cue.section.comment, from: cue } : null;
+  }
+  if (commentDraftHidden(cue.line.flags)) return sectionComment(cue);
   for (let i = cueIdx; i >= 0; i--) {
     const c = timeline.cues[i];
     if (c.kind !== 'line' || c.section.id !== cue.section.id) break;
+    if (commentDraftHidden(c.line.flags)) continue;
     if (c.line.comment) return { text: c.line.comment, from: c };
   }
-  return cue.section.comment ? { text: cue.section.comment, from: cue } : null;
+  return sectionComment(cue);
 }

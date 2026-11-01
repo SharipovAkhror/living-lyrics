@@ -67,8 +67,8 @@ Francesca Thompson ни на одной открытой странице нет
 | газель, бейты 2658–2662 месневи; поются 1, 2, 4, 5 | Физули | слова: tr.wikisource и цитата Догана 2000 у Каяокая (Littera Turca, 2024); az.wikisource (Анар, 1999) — современная орфография. Как поётся: 1 источник, титры. Арабское письмо не найдено |
 | антифон Karitas habundat | Хильдегарда | 2 источника: Hildegard Society и Cantus 588605. В титрах только перевод |
 | يا ساقي القوم, бейт 1 | аш-Шуштари | 2 источника: aldiwan.net/poem69336 и диван, с. 80 (ablibrary.net). Огласовки титра — 1 источник |
-| عيني لغير جمالكم, бейт 1 | ан-Набулси; зачин старше, есть у ат-Тилимсани | 2 источника: ar.wikisource и Harvard (Sulayman ibn Qiddees) |
-| صبرت قلبي عليكم | по релизу ан-Набулси; в его десяти бейтах строки нет | слова: 1 источник, титры. Ближайший печатный бейт — ат-Тилимсани, с другим первым полустишием |
+| عيني لغير جمالكم, бейт 1 | релиз и шапка Викитеки: ан-Набулси. Страница ат-Тилимсани в круге 2 не открыта | ar.wikisource открыта; Harvard в этом круге отдал заголовок |
+| صبرت قلبي عليكم | по релизу ан-Набулси; в его десяти бейтах строки нет | слова: 1 источник, титры. Страница ат-Тилимсани в круге 2 не открыта и в пояснение не взята |
 | يا هو, يا مولانا | возгласы, не стихотворение | 1 источник, титры |
 
 Зеркало [nasheedlyrics.com/karitas-lyrics-sami-yusuf](https://nasheedlyrics.com/karitas-lyrics-sami-yusuf/) повторяет титры пословно и источником не считается.
@@ -112,3 +112,45 @@ Francesca Thompson ни на одной открытой странице нет
 Запрос просил 3000×3000. Ответ Apple — JPEG 1440×1440. Он лежит как `public/covers/karitas/source.jpg`. 1024 и меньшие размеры — уменьшение этого файла, без растягивания.
 
 Альбом из `song.json`, When Paths Meet (Live at The Holland Festival), collectionId 1661656156. Дорожка там называется Karitas (Live at The Holland Festival), trackId 1661656179, та же дата 2022-12-12 и те же 951500 мс, общая обложка альбома `fdc5ba6b-1052-ddc5-7b11-0e9129411e7a`. На плитку положена обложка отдельного EP. Файл проекта — дорожка YouTube, 977,05 с. Времена в `canon.md` относятся к этому файлу.
+
+
+## Пояснения
+
+Открыто для пояснений строк.
+
+- Газель Физули, пять бейтов: https://tr.wikisource.org/wiki/Öyle_ser-mestem_ki_idrâk_etmezem_dünyâ_nedir (снимок oldid 171025). Третий бейт, о свидании, на странице есть и в записи не поётся. Расхождения записи и этой страницы (men и Ben, mey û и mey ü, içün и için, degil и degül, feryâdın и feryâdun, incidipdir и incidübdür, aşk и ışk, kavga и gavga) в пояснения строк не вынесены: они не объясняют смысл. Сомнение о гласном feryâdın — в review. Место газели в месневи и номера бейтов в этом проходе заново не открывались и в пояснения строк не вошли. Словарь Редхауса, с. 1354, не открыт, в пояснении последней строки его нет. Азербайджанская антология не открыта, чтение «мои вздохи» в пояснения не взято.
+- Антифон: https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html, страница Натаниэла Кэмпбелла от 20 ноября 2014. Латынь, его английский и комментарий. На странице названы рукописи D 157r и R 466v. Страницы Symphonia 140 и 279 не открыты, чтение Ньюман в пояснения строк не взято. Cantus в этом проходе не открыт.
+- Шуштари, первый бейт: диван, с. 80, https://ablibrary.net/book_content/b/9579/80, заголовок «يا من هو هو». Те же слова: https://www.aldiwan.net/poem69336.html. Автоматический разбор на aldiwan не использован: страница сама пишет, что он сгенерирован. Поздний бейт «يا هو» этой касыды пояснением возгласа ياهو не служит.
+- Набулси, десять бейтов: https://ar.wikisource.org/wiki/عيني_لغير_جمالكم_لا_تنظر (oldid 475413). В шапке автор Абд аль-Гани ан-Набулси. Категория страницы — тексты неизвестного источника. Строки صبرت قلبي в этих десяти бейтах нет. В третьем бейте там другая фраза: وعنكم ساعة لا أصبر.
+- Возгласы. Коран 112:1, https://quran-online.ru/112:1. Кулиев: «Скажи: «Он — Аллах Единый,». Коран 2:286, https://quran-online.ru/2:286. Кулиев: «Ты — наш Покровитель.» Связка возгласа с аятом в пояснении помечена как чтение.
+- Бейт о терпении. Автор спетой строки не установлен. Гарвардская страница в этом проходе отдала только заголовок, тело не прочитано, поэтому ближайший печатный вариант в пояснения не цитируется. Пояснение держится на отсутствии строки в десяти бейтах Набулси и на чтении спетых слов.
+
+## Круг 2, 2026-10-31
+
+Заново открыты: Викитека Физули; страница Общества Хильдегарды от 20 ноября 2014; диван, с. 80, и https://www.aldiwan.net/poem69336.html; десять бейтов ан-Набулси; Кулиев, 112:1 и 2:286.
+
+Не открыты: кадры ролика, Редхаус, страницы Symphonia 140 и 279, страница ат-Тилимсани. Утверждение о нём из пояснения секции снято. Сомнение о гласном feryâdın оставлено в review, не в пояснении fuzuli-f7-1.
+
+## Круг 3, 2026-10-31
+
+- Физули, https://tr.wikisource.org/wiki/Öyle_ser-mestem_ki_idrâk_etmezem_dünyâ_nedir, oldid 171025. «Hikmet-i dünya vü mâfiha bilen ârif degül / Ârif oldur bilmeye dünya vü mâfiha nedür». Последний бейт: «Âh u feryâdun Fuzûlî incidübdür âlemi / Ger belâ-yı ışk ile hoşnûd isen gavga nedür».
+- Хильдегарда, https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html. В латинском тексте «atque amantissima», в английском Кэмпбелла «and most beloved». Комментарий: “God, her royal spouse, as amantissima (‘most beloved’)”. Там же: “Let him kiss me with the kisses of his mouth!” (Sg. Sgs. 1:2) и “the kiss shared between Justice and Peace in Ps. 85:10 (84:11 in the Vulgate)”. В пояснении 1:2 — Песнь песней, 85:10 — псалом, как у Кэмпбелла, не аяты.
+- Диван, с. 80, https://ablibrary.net/book_content/b/9579/80. «يا ساقي القوم من شذاه ، * الكلّ لمّا سقيت تاهوا». Ниже на той же странице «تقول يا هو لبّيك يا هو».
+- Набулси, https://ar.wikisource.org/wiki/عيني_لغير_جمالكم_لا_تنظر. Автор в шапке «عبد الغني النابلسي». Первая строка «عيني لغير جمالكم لا تنظر». В третьем бейте «أبدا وعنكم ساعة لا أصبر». Строки «صبرت قلبي» на странице нет.
+- Кулиев, https://quran-online.ru/112:1. «Скажи: „Он — Аллах Единый,». https://quran-online.ru/2:286. «Ты — наш Покровитель.»
+
+Не открыты в этом круге и в пояснениях не цитируются: кадры ролика, Редхаус, Symphonia с. 140 и 279, https://www.aldiwan.net/poem69336.html, страница ат-Тилимсани, гарвардская страница бейта о терпении. Проверка 2026-11-01 подтвердила пояснения sabr-p1, sabr-p1a и sabr-p2, флаг comment-draft снят.
+
+
+## Круг 4, 2026-10-31
+
+- Диван, с. 80, https://ablibrary.net/book_content/b/9579/80. «يا ساقي القوم من شذاه ، * الكلّ لمّا سقيت تاهوا».
+- Викисловарь, https://en.wiktionary.org/wiki/%D8%AA%D8%A7%D9%87. تَاهَ: “to lose one's way”; “to wander”; “to wander in mind, to be confused, to be absent-minded”. Второе значение той же статьи — “to be proud, haughty”; в пояснение оно не взято.
+- Физули, https://tr.wikisource.org/wiki/Öyle_ser-mestem_ki_idrâk_etmezem_dünyâ_nedir. «Gerçi cânândan dil-i şeydâ için kâm isterem / Sorsa cânan bilmezem kâm-ı dil-i şeydâ nedir». «Hikmet-i dünya vü mâfiha bilen ârif degül / Ârif oldur bilmeye dünya vü mâfiha nedür». «Âh u feryâdun Fuzûlî incidübdür âlemi / Ger belâ-yı ışk ile hoşnûd isen gavga nedür». Отдельный словарь на «ариф» не открыт: парадокс взят из этих бейтов.
+- Хильдегарда, https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html. Латынь: «atque amantissima / in omnia». Английский Кэмпбелла: “and most beloved / of all”. Комментарий: “God, her royal spouse, as amantissima (‘most beloved’)”.
+- Викисловарь, https://en.wiktionary.org/wiki/amans. amans: “Present active participle of amō (‘to love’)”; “loving”. https://en.wiktionary.org/wiki/amantissimus. “feminine amantissima”, superlative.
+
+
+## Проверка пояснений, 2026-11-01
+
+Пояснения sabr-p1, sabr-p1a и sabr-p2 проверка подтвердила, флаг снят. Скрыты пояснения, которые проверка оставила спорными или неподтверждёнными: hildegard-h4, hildegard-h5, shushtari-s1 и секция shushtari. fuzuli-f7-1 и fuzuli-f7-2 не переписаны. Викитека открыта: последний бейт «Ger belâ-yı ışk ile hoşnûd isen gavga nedür» стоит во втором лице, а предписанная правка говорила «если он доволен». Вопрос записан в review.

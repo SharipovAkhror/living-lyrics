@@ -163,6 +163,92 @@ export function editorialMarkers(text: string) {
   return found;
 }
 
+/**
+ * A commentary names a place the reader can open.
+ * Accepted: surah:ayah (`12:31`), a page (`с. 184`, `стр. 312`), or a page address (`https://…`).
+ * Shared with song-status and docs/methodology/07-comment.md.
+ */
+export function commentHasSource(text: string) {
+  if (/(?:^|[^\d])\d{1,3}\s*:\s*\d{1,3}(?!\d)/.test(text)) return true;
+  if (/(?:^|\s)(?:с|стр|сс)\.\s*\d{1,4}/iu.test(text)) return true;
+  if (/https?:\/\/[^\s)]+/i.test(text)) return true;
+  return false;
+}
+
+/** Sentence count after abbreviations like «с.» are folded, so a page number is not a second sentence. */
+export function commentSentences(text: string) {
+  const plain = text
+    .replace(/\*/g, '')
+    .replace(/(?:^|\s)(?:с|стр|сс|т|п|г|др|проч)\./giu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!plain) return 0;
+  return plain.split(/[.!?…]+/u).filter((part) => part.trim().length > 0).length;
+}
+
+export function commentPlainLength(text: string) {
+  return text.replace(/\*/g, '').replace(/\s+/g, ' ').trim().length;
+}
+
+/** Whole-token line id. `b1q1` does not match `b1q1-01`, and `b1q1-01` does not match `b1q1-010`. */
+export function mentionsLineId(id: string, text: string) {
+  const escaped = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`(^|[^a-z0-9-])${escaped}([^a-z0-9-]|$)`).test(text);
+}
+
+/**
+ * Why a sung line is not ready, or null when it meets the comment standard.
+ * A `comment-draft` flag stands in for a missing source only together with a review question that names the line.
+ */
+export function lineCommentGap(line: { id?: string; comment?: string; flags?: string[] }, review: string[] = []): string | null {
+  const text = line.comment?.trim() ?? '';
+  if (!text) return 'нет пояснения';
+  if (commentSentences(text) < 2 || commentPlainLength(text) < 160) return 'пояснение короче двух предложений';
+  const flagged = line.flags?.includes('comment-draft') ?? false;
+  if (!commentHasSource(text) && !flagged) return 'нет источника';
+  if (flagged && line.id && !review.some((item) => mentionsLineId(line.id!, item))) return 'флаг comment-draft без вопроса в review';
+  return null;
+}
+
+/**
+ * A `comment-draft` flag on a section needs a review question that names the section id.
+ * Same rule as a line: the flag alone is not ready. The question must name this id,
+ * not only a line inside the section.
+ */
+export function sectionCommentGap(section: { id?: string; flags?: string[] }, review: string[] = []): string | null {
+  const flagged = section.flags?.includes('comment-draft') ?? false;
+  if (!flagged) return null;
+  if (section.id && !review.some((item) => mentionsLineId(section.id!, item))) return 'флаг comment-draft без вопроса в review';
+  return null;
+}
+
+function commentSelfTest() {
+  if (commentSentences('Одно предложение без точки') !== 1) return 'одно предложение без точки сосчитано неверно';
+  if (commentSentences('Первое. Второе со с. 184.') !== 2) return 'страница «с.» разбила предложение';
+  if (!commentHasSource('Кулиев, 12:31, женщины режут руки.')) return 'аят не признан источником';
+  if (!commentHasSource('Арберри, стихотворение 170, с. 184.')) return 'страница не признана источником';
+  if (!commentHasSource('Буквы газели: https://ganjoor.net/moulavi/shams/ghazalsh/sh1393.')) return 'адрес страницы не признан источником';
+  if (commentHasSource('Просто слова, без места.')) return 'слова без места приняты за источник';
+  const short = lineCommentGap({ comment: 'Коротко. И с. 1.' });
+  if (short !== 'пояснение короче двух предложений') return `короткое пояснение: ${short}`;
+  const ready =
+    'Говорящий был мёртв и стал живым: редиф этой газели — «я стал», и первая пара уже кладёт смерть и жизнь. Арберри передаёт то же место так: был мёртв, стал жив, стихотворение 170, с. 184.';
+  if (lineCommentGap({ comment: ready })) return 'готовое пояснение отвергнуто';
+  const bare =
+    'Говорящий был мёртв и стал живым: редиф этой газели — «я стал», и первая пара уже кладёт смерть и жизнь. Второе предложение объясняет редиф, но места не называет вовсе и источника не даёт.';
+  if (lineCommentGap({ comment: bare }) !== 'нет источника') return 'пояснение без источника прошло';
+  const flagged = lineCommentGap({ id: 'b1q1-01', comment: bare, flags: ['comment-draft'] }, ['Вопрос по b1q1-01.']);
+  if (flagged) return `флаг с вопросом отвергнут: ${flagged}`;
+  const orphan = lineCommentGap({ id: 'b1q1-01', comment: bare, flags: ['comment-draft'] }, ['Другой вопрос.']);
+  if (orphan !== 'флаг comment-draft без вопроса в review') return `сирота флага: ${orphan}`;
+  const sectionOk = sectionCommentGap({ id: 'shushtari-1', flags: ['comment-draft'] }, ['Вопрос по shushtari-1.']);
+  if (sectionOk) return `флаг секции с вопросом отвергнут: ${sectionOk}`;
+  const sectionOrphan = sectionCommentGap({ id: 'shushtari-1', flags: ['comment-draft'] }, ['Вопрос по shushtari-1-1.']);
+  if (sectionOrphan !== 'флаг comment-draft без вопроса в review') return `сирота флага секции: ${sectionOrphan}`;
+  if (sectionCommentGap({ id: 'shushtari-1' }, [])) return 'секция без флага отвергнута';
+  return '';
+}
+
 /** A line of punctuation or single letters («؟», «…», «آ») is a stub, not sung text. */
 export function isStubLine(words: { w: string }[]) {
   return words.length > 0 && words.every((word) => letters(word.w).length <= 1);
@@ -301,6 +387,8 @@ function check(slug: string): Issue[] {
       const marks = editorialMarkers(s.comment);
       if (marks.length) warn(where, `в пояснении редакторская пометка (${marks.join(', ')}): её место — canon.md, раздел «Расхождения и вопросы», song.json → review или sources.md`);
     }
+    const sectionGap = sectionCommentGap(s, song.review ?? []);
+    if (sectionGap) warn(where, `${sectionGap} (docs/methodology/07-comment.md)`);
 
     // entries: catalogue keys, and the entrance sits inside the section (accompaniment on a vocal
     // section uses the same field). Order is appearance order; an unsorted list is a warning.
@@ -406,6 +494,8 @@ function check(slug: string): Issue[] {
         const marks = editorialMarkers(line.comment);
         if (marks.length) warn(lw, `в пояснении редакторская пометка (${marks.join(', ')}): её место — canon.md, раздел «Расхождения и вопросы», song.json → review или sources.md`);
       }
+      const commentGap = lineCommentGap(line, song.review ?? []);
+      if (commentGap) warn(lw, `${commentGap} (docs/methodology/07-comment.md)`);
       const ems = line.words.filter((w) => w.em).length;
       if (ems > 1) warn(lw, `ключевых слов (em) ${ems} — нужно не больше одного`);
       if (ems >= 1 && !hasEmphasisPair(line.tr.ru)) warn(lw, 'в оригинале есть em, а в переводе нет пары **…**');
@@ -643,6 +733,11 @@ if (isCli()) {
   const self = sequenceSelfTest();
   if (self) {
     console.log(`\n✗ sequence-check  ${self}`);
+    process.exit(1);
+  }
+  const commentRule = commentSelfTest();
+  if (commentRule) {
+    console.log(`\n✗ comment-rule  ${commentRule}`);
     process.exit(1);
   }
   const orth = persianSelfTest();

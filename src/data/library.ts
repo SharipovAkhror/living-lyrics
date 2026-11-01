@@ -1,3 +1,4 @@
+import { hideDraftComments } from './comments';
 import { LyricsSchema, PeaksSchema, SongSchema, type Lyrics, type Peaks, type Song } from './schema';
 
 const songModules = import.meta.glob('/content/songs/*/song.json', { eager: true, import: 'default' });
@@ -27,7 +28,8 @@ export async function loadLyrics(slug: string): Promise<Lyrics> {
   const loader = lyricsModules[`/content/songs/${slug}/lyrics.json`];
   if (!loader) throw new Error(`No lyrics for ${slug}`);
   const raw = await loader();
-  return LyricsSchema.parse(raw);
+  // The only gate: draft commentary is gone before a screen, a search or a font check can see it.
+  return hideDraftComments(LyricsSchema.parse(raw));
 }
 
 export async function loadPeaks(url: string): Promise<Peaks | null> {

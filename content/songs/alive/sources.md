@@ -70,3 +70,70 @@
 ## Тайм-коды
 
 - Статус: draft. Секунды секций — из вокального стема. Черновые секунды слов разложены по окнам экранного текста, чтобы строка лежала внутри своей секции. Это не измерение. Измерение — выравнивание `align.py` по вокальному стему. `docs/analysis/alive/cues.json` держит те же окна, без текста реплики: официальной дорожки субтитров нет, окна экрана стоят вместо неё.
+
+## Пояснения
+
+Открыто для пояснений строк, 2026-10-31. В пояснение попало только то, что открыто в этом проходе.
+
+- Арберри, Mystical Poems of Rumi, стихотворение 170 (Фурузанфар 1393). Первый бейт на с. 183, бейты 2–15 на с. 184, бейты 16–21 на с. 185. Примечания 9, 18, 19 и 21 на с. 402. Текст: https://archive.org/stream/MysticalPoemsOfRumiArberry_201806/mystical%20poems%20of%20Rumi%20%28Arberry_djvu.txt
+- Стейнгасс, A Comprehensive Persian-English Dictionary, London, Routledge, 1892. Страницы 236 (pāyanda), 546 (daulat), 608 (zāyanda), 626 (zinda и zinda-kun), 631 (zahra и zuhra), 772 (shaikh). https://dsal.uchicago.edu/dictionaries/steingass/
+- Кулиев: 2:144 (кибла), 12:10 и 12:31 (Юсуф), 67:3 (семь небес). https://quran-online.ru/2:144 https://quran-online.ru/12:10 https://quran-online.ru/12:31 https://quran-online.ru/67:3
+- Буквы персидской газели: https://ganjoor.net/moulavi/shams/ghazalsh/sh1393
+- Буквы английского припева и турецкого пересказа: кадр ролика https://www.youtube.com/watch?v=okICm2EWb7U
+
+В пояснениях не утверждается как словарный факт то, чья страница не открыта: Редхаус на турецкие слова, статья Стейнгасса на هول, отдельная статья на عارف, этимология فرخ.
+
+## Круг 2, 2026-10-31
+
+Заново открыты и сверены с текстом страницы: Ганджур, газель 1393; Арберри, поток djvu (бейты 183–185 и примечания на с. 402); Стейнгасс, с. 236, 546, 608, 626, 631, 772; Кулиев, 2:144, 12:10, 12:31, 67:3.
+
+Не открыты в этом круге, из пояснений убраны: кадры https://www.youtube.com/watch?v=okICm2EWb7U. На с. 608 есть زاينده «Bringing forth; a mother». Глагола زائیدن на этой странице нет, пояснение на него не опирается.
+
+## Круг 3, 2026-10-31
+
+Страницы открыты в этом круге. Ниже — короткая цитата с самой страницы.
+
+- Стейнгасс, с. 236, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=236. pāyanda: “Firm, solid, lasting, perpetual”.
+- С. 546, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=546. daulat: “good turn of fortune; felicity, wealth, victory; power, dominion, empire; a state, reign, dynasty”.
+- С. 608, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=608. zāyanda: “Bringing forth; a mother”. zāʼīdan: “To bring forth (a child); to originate, appear, come forth”. Рядом zāydan: “To be born; to beget”.
+- С. 626, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=626. zinda: “Alive, living; life”. zinda shudan: “To become alive”. zinda-kun: “One who brings to life”.
+- С. 631, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=631. zahra: “Boldness, spirit; power, vigour; the gall-bladder, bile”. zuhra: “The planet Venus”.
+- С. 772, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=772. shaikh: “A venerable old man; a man of fifty and upwards; a man of authority, a chief… doctor learned in religion and law”.
+- С. 812, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=812. tarab: “Skipping, leaping, dancing for joy; cheerfulness, joy, gladness; motion; emotion; grief, sadness”.
+- С. 1444, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=1444. nayam: “(for na am), I am not”. nīm: “A half”.
+- С. 1518, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=1518. haul: “fright, terror”. hol: “High, lofty; true, just; straight.”
+- Арберри, поток https://archive.org/stream/MysticalPoemsOfRumiArberry_201806/mystical%20poems%20of%20Rumi%20%28Arberry_djvu.txt. Маркер [ 183 ] стоит перед бейтом 169; стихотворение 170 сразу после. “I was dead, I became alive; I was weeping, I became laughing”. Маркер [ 184 ]: “He said, ‘You are not mad, you are not appropriate to this house’; I went and became mad, I became bound in shackles.” И “for out of grace and generosity I am now coming to you.” Маркер [ 185 ]: “I have become bright and bountiful.” “I was Joseph, henceforth I have become the waxing Joseph.” После маркера [402]: “9. ‘Impotent’: i.e. ‘plucked clean of feathers.’” “18. ‘The seven layers’: the seven heavens.” “19. Joseph, after coming up from the well, waxed in beauty and power.” “21. ‘The face’: a pun on rukh, which also means ‘rook.’” В том же стихотворении 170: “Do not move from my breast”. “Move silently like a chessman… I have become happy and blissful.” “Your paper gives thanks for your limitless sugar.”
+- Ганджур, https://ganjoor.net/moulavi/shams/ghazalsh/sh1393. Заголовок «غزل شمارهٔ ۱۳۹۳». «مُرده بُدم زنده شدم، گریه بُدم خنده شدم». «زانک من از لطف و کرم سوی تو آینده شدم». «یوسف بودم ز کنون یوسف زاینده شدم». Пересказ «هوش مصنوعی» на той же странице в цитату не брался. Английского «you have lit the fire» на странице нет.
+- Кулиев, https://quran-online.ru/12:31. «Когда они увидели его, то так превознесли его, что порезали ножами себе руки».
+- https://quran-online.ru/2:144. «Мы обратим тебя к кибле, которой ты останешься доволен. Обрати же свое лицо в сторону Заповедной мечети.»
+- https://quran-online.ru/67:3. «Он создал семь небес одно над другим.»
+
+Не открыты в этом круге и в пояснениях не цитируются: кадры https://www.youtube.com/watch?v=okICm2EWb7U, Редхаус, отдельный лист Лейна. Аят 12:10 как спасение из колодца в пояснения Юсуфа не входит: примечание 19 говорит о колодце, аят 12:19 в эти пояснения не брался.
+
+
+## Круг 4, 2026-10-31
+
+Страницы открыты в этом круге. Цитата — с самой страницы.
+
+- Стейнгасс, с. 236, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=236. pāyanda: “Firm, solid, lasting, perpetual”.
+- С. 546, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=546. daulat: “good turn of fortune; felicity, wealth, victory; power, dominion, empire; a state, reign, dynasty”.
+- С. 631, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=631. zahra: “Boldness, spirit; power, vigour; the gall-bladder, bile”. zuhra: “The planet Venus”.
+- С. 1518, https://dsal.uchicago.edu/cgi-bin/app/steingass_query.py?page=1518. haul: “fright, terror”. hol: “High, lofty; true, just; straight.”
+- Арберри, поток https://archive.org/stream/MysticalPoemsOfRumiArberry_201806/mystical%20poems%20of%20Rumi%20%28Arberry_djvu.txt. В этом OCR маркера [ 183 ] нет. Первый бейт стихотворения 170 стоит сразу перед маркером [ 184 ]: “I was dead, I became alive; I was weeping, I became laughing; the power of love came, and I became everlasting power.” После [ 184 ]: “You are not appropriate to this house”; “I went and became mad, I became bound in shackles”; “You are not slain”; “I became a fool, I became straightened”; “the qibla of this assembly”; “Go not on the way, do not become pained”; “You are the fountain of the sun, I am the shadow of the willow”; “Your paper gives thanks for your limitless sugar, for it came into my embrace”. После [ 185 ]: “through its gaze and circling I became light-receiving”; “I have become bright and bountiful”; “I became the two hundredfold slcy”; “I was Joseph, henceforth I have become the waxing Joseph.” Примечание под [402], “NOTES TO PAGES 171-178”, стихотворение 170: “19. Joseph, after coming up from the well, waxed in beauty and power.”
+- Ганджур, https://ganjoor.net/moulavi/shams/ghazalsh/sh1393. «کز کرم و بخشش او روشن بخشنده شدم» — без союза. «یوسف بودم ز کنون یوسف زاینده شدم». К бейту бумаги и сахара, пояснение без пометы «هوش مصنوعی»: «در قدیم شکر را در کاغذ پیچیده و به خریدار و مشتری می‌داده‌اند». Пересказ с пометой «هوش مصنوعی» в пояснения не брался.
+- Кулиев, https://quran-online.ru/12:31. «Когда они увидели его, то так превознесли его, что порезали ножами себе руки». На той же странице толкование ас-Саади: «были очень поражены его красотой» и «Никогда ранее они не видели подобной красоты». Слова «красота» в самом переводе Кулиева на этой странице нет: там «превознесли».
+- https://quran-online.ru/2:144. «Мы обратим тебя к кибле, которой ты останешься доволен. Обрати же свое лицо в сторону Заповедной мечети.»
+
+Не открыты в этом круге: Редхаус, лист Лейна, кадры ролика. Пояснение en5-01 по-прежнему без страницы припева.
+
+## Проверка пояснений, 2026-11-01
+
+Исправленные пояснения сверены с открытыми Ганджуром, газель 1393, https://ganjoor.net/moulavi/shams/ghazalsh/sh1393, Арберри, стихотворение 170, и Кулиевым, 67:3, https://quran-online.ru/67:3. Пояснения, которые эта проверка не подтвердила, скрыты, вместе с повторами того же текста. Страницы Стейнгасса заново не открывались; прежние выписки в этом файле не отменены. Пояснения en5-01 и en5-02 остаются черновиком: у этой проверки нет открытого источника припева. Пояснение секции v-en скрыто.
+
+## Сосед и чтение, 2026-11-01
+
+Снова открыт Арберри, стихотворение 170, тот же поток. После «above the seven layers I have become a shining star» следующий бейт на с. 185 начинается заново: “I was Venus, I became the moon”. Звезда луной там не названа. “Move silently like a chessman” — одна фраза, молчание не вынесено отдельно. “through its gaze and circling I became light-receiving”: свет принимает «я». “The gnostic of God” — его чтение حق. Ганджур, газель 1393, тот же адрес: после اختر رخشنده идёт زهره بدم ماه شدم.
+
+## Показано при споре, 2026-11-01
+
+`b19q4-01` проверка отметила как спорное: Арберри, стихотворение 170, с. 185 и примечание 19, с. 402, читает рост самого говорящего, толкования на Ганджуре, газель 1393, допускают рождение других Юсуфов. Пояснение называет оба чтения, поэтому показано по решению LL · Main (вариант A): это место владелец просил объяснить.
