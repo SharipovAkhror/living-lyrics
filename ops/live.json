@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T20:13:33Z",
+  "at": "2026-11-01T20:15:05Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,8 +10,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 16101,
-      "age": 16131,
+      "minutes": 16103,
+      "age": 16132,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -19,8 +19,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 16102,
-      "age": 16131,
+      "minutes": 16104,
+      "age": 16132,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -28,8 +28,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 16043,
-      "age": 16095,
+      "minutes": 16045,
+      "age": 16096,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -49,8 +49,8 @@
     {
       "name": "phone-overlap",
       "state": "working",
-      "minutes": 1,
-      "age": 26,
+      "minutes": 0,
+      "age": 28,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/phone-overlap"
@@ -59,7 +59,7 @@
       "name": "studio-pass",
       "state": "working",
       "minutes": 0,
-      "age": 46,
+      "age": 47,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -67,8 +67,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 2044,
-      "age": 2059,
+      "minutes": 2046,
+      "age": 2060,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -76,8 +76,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2595,
-      "age": 2715,
+      "minutes": 2596,
+      "age": 2716,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -85,8 +85,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 16040,
-      "age": 16141,
+      "minutes": 16041,
+      "age": 16142,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -94,8 +94,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 12996,
-      "age": 13027,
+      "minutes": 12998,
+      "age": 13028,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -103,8 +103,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 352,
-      "age": 373,
+      "minutes": 353,
+      "age": 374,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -112,8 +112,8 @@
     {
       "name": "t37b",
       "state": "finished",
-      "minutes": 4,
-      "age": 18,
+      "minutes": 6,
+      "age": 20,
       "tokens": 4988948,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37b"
@@ -186,9 +186,9 @@
       "role": "ll-main",
       "project": "living-lyrics",
       "reports_to": "owner",
-      "state": "working",
-      "last_at": "2026-11-01T20:10:53.504Z",
-      "last_act_at": "2026-11-01T20:12:30.688Z"
+      "state": "idle",
+      "last_at": "2026-11-01T20:12:35.595Z",
+      "last_act_at": "2026-11-01T20:12:35.595Z"
     },
     {
       "name": "LL · Site",
@@ -196,20 +196,20 @@
       "project": "living-lyrics",
       "reports_to": "LL · Main",
       "state": "working",
-      "last_at": "2026-11-01T20:12:26.151Z",
-      "last_act_at": "2026-11-01T20:12:30.710Z"
+      "last_at": "2026-11-01T20:14:14.094Z",
+      "last_act_at": "2026-11-01T20:14:15.939Z"
     }
   ],
   "pipeline": [
     {
       "name": "pipeline",
       "title": "Add Noor: text, translation, commentary, timing (draft)",
-      "minutes": 7
+      "minutes": 9
     },
     {
       "name": "pipeline",
       "title": "Add Sami Yusuf - Existentia",
-      "minutes": 63
+      "minutes": 65
     }
   ],
   "hygiene": {
