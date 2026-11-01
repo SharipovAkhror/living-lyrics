@@ -1,0 +1,207 @@
+{
+  "$schema": "../../../docs/schema/song.schema.json",
+  "slug": "i-only-knew",
+  "title": "I Only Knew Love",
+  "artist": "Sami Yusuf",
+  "release": {
+    "album": "Live at the Dubai Opera",
+    "year": 2017,
+    "label": "Andante Records"
+  },
+  "performance": {
+    "event": "Live at the Dubai Opera",
+    "venue": "Dubai Opera",
+    "city": "Dubai",
+    "date": "2016-12-16"
+  },
+  "version": {
+    "kind": "live",
+    "label": "Концерт Live at the Dubai Opera, Дубай 2016"
+  },
+  "languages": [
+    "en"
+  ],
+  "poets": [
+    {
+      "name": "Раби‘а ал-‘Адавийя",
+      "lang": "ar",
+      "era": "VIII в."
+    }
+  ],
+  "duration": 368.13,
+  "palette": {
+    "accent": "#3A5BA0",
+    "accentDark": "#8FB2FF",
+    "field": [
+      "#3A5BA0",
+      "#7C4DBA",
+      "#2A8C8C"
+    ]
+  },
+  "audio": {
+    "status": "ready",
+    "high": "/audio/i-only-knew/high.m4a",
+    "peaks": "/audio/i-only-knew/peaks.json",
+    "gainDb": -3.5,
+    "provenance": {
+      "kind": "file",
+      "ref": "дорожка YouTube 140 официального видео https://www.youtube.com/watch?v=Ta4SlUPP_04",
+      "retrieved": "2026-11-02",
+      "codec": "aac lc 128k 44.1kHz stereo",
+      "sha256": "d04ef061caf4dbcf564967a96fc5c73b4d95e4f6ed4d63a066dc210cc8f6b604"
+    }
+  },
+  "timing": {
+    "status": "draft",
+    "method": "none",
+    "notes": "время строк по официальным субтитрам видео; слова — черновые"
+  },
+  "review": [
+    "Палитра в заготовке — заглушка. Замените её цветами обложки, когда обложка будет. До этого цвета по настроению не подбирайте.",
+    "Участки voice-early (24,5–34,9 с) и voice-gap (219,4–229,1 с): карта голоса слышит голос, английской строки нет, окна стема слов не дали. Строк туда не вписано.",
+    "Описание ролика относит все слова Раби‘е. Другое чтение (зачин — Тахир Абу Фаша) оставлено как чтение: тело статьи «Аль-Джазиры» не открылось.",
+    "Год альбома 2017 взят из индекса страницы https://samiyusuf.art/music/live-at-the-dubai-opera: HTML не открылся.",
+    "Границы проигрышей взяты из карты голоса и подогнаны к краям строк. На слух в этом проходе не проверялись.",
+    "обратный перевод: ждёт Gemini"
+  ],
+  "credits": [
+    {
+      "role": "Слова",
+      "name": "Раби‘а ал-‘Адавийя"
+    },
+    {
+      "role": "Английский перевод",
+      "name": "Dr. Tim Winter (Abdal Hakim Murad)"
+    },
+    {
+      "role": "Музыка",
+      "name": "Traditional Andalusian"
+    },
+    {
+      "role": "Аранжировка и исполнение",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "Вокал, фортепиано, тар, уд, томбак",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "Даф, бендир, dayre, вокал",
+      "name": "Seyyed Mohammad Jaberi"
+    },
+    {
+      "role": "Dohol, бендир, kudum, вокал",
+      "name": "Ömer Avci"
+    },
+    {
+      "role": "Басовая дарбука, бендир, tef",
+      "name": "Abbas Karacan"
+    },
+    {
+      "role": "Уд, вокал",
+      "name": "Selim Boyaci"
+    },
+    {
+      "role": "Канун, вокал",
+      "name": "Mustafa Olgan"
+    },
+    {
+      "role": "Танбур, тар, вокал",
+      "name": "Seyed Ali Jaberi"
+    },
+    {
+      "role": "Най, зурна, вокал",
+      "name": "Türker Dinletir"
+    },
+    {
+      "role": "Баглама, танбур, кяманча, вокал",
+      "name": "Adem Tosunoglu"
+    },
+    {
+      "role": "Сантур, вокал",
+      "name": "Farshad Mohammadi"
+    },
+    {
+      "role": "Классическая гитара, танбур, вокал",
+      "name": "Jon Lawton"
+    },
+    {
+      "role": "Бэк-вокал, бас",
+      "name": "Sami Mohammad Ahmad Alhaj"
+    },
+    {
+      "role": "Бэк-вокал, баритон",
+      "name": "AbdulRazzak Barma"
+    },
+    {
+      "role": "Бэк-вокал, меццо-сопрано",
+      "name": "Abeer El Sayed Ahmad"
+    },
+    {
+      "role": "Бэк-вокал, контральто",
+      "name": "Nancy Al Baltaji"
+    },
+    {
+      "role": "Исполнительный продюсер",
+      "name": "Ahmed Salim"
+    },
+    {
+      "role": "Исполнительный продюсер",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "Исполнительный продюсер",
+      "name": "Christine Hoechstoetter"
+    },
+    {
+      "role": "Инженер записи",
+      "name": "Peter Herrmann"
+    },
+    {
+      "role": "Сведение и мастеринг",
+      "name": "Vishnu Rajan"
+    },
+    {
+      "role": "Монтаж",
+      "name": "Omar Habib"
+    },
+    {
+      "role": "Съёмка",
+      "name": "2Shoes (London, UK)"
+    },
+    {
+      "role": "Графика",
+      "name": "Kwame Busia"
+    },
+    {
+      "role": "Дополнительная графика",
+      "name": "Mahdi Jahangir"
+    },
+    {
+      "role": "Издатель",
+      "name": "Andante Records"
+    }
+  ],
+  "parts": [
+    {
+      "id": "winter",
+      "title": "Я узнал любовь",
+      "lang": "en",
+      "author": {
+        "name": "Раби‘а ал-‘Адавийя",
+        "original": "Rabi‘a al-‘Adawiyyah"
+      },
+      "work": {
+        "original": "I Only Knew Love",
+        "lang": "en"
+      },
+      "ref": "описание ролика: слова Rabi‘a al-‘Adawiyyah, английский перевод Dr. Tim Winter (Abdal Hakim Murad)",
+      "url": "https://www.youtube.com/watch?v=Ta4SlUPP_04",
+      "note": "Поётся английский перевод Тима Уинтера; описание ролика относит все слова Раби‘е, а другое чтение отдаёт зачин Тахиру Абу Фаше.",
+      "sections": [
+        "verse-1",
+        "verse-2"
+      ]
+    }
+  ]
+}

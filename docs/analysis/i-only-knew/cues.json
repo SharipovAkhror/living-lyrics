@@ -1,0 +1,198 @@
+[
+  {
+    "line": "knew-1",
+    "cue": 1,
+    "lang": "en",
+    "start": 46.096,
+    "end": 51.549
+  },
+  {
+    "line": "sealed-1",
+    "cue": 2,
+    "lang": "en",
+    "start": 52.454,
+    "end": 57.799
+  },
+  {
+    "line": "converse-1",
+    "cue": 3,
+    "lang": "en",
+    "start": 58.624,
+    "end": 64.01
+  },
+  {
+    "line": "secrets-1",
+    "cue": 4,
+    "lang": "en",
+    "start": 64.972,
+    "end": 70.11
+  },
+  {
+    "line": "knew-2",
+    "cue": 5,
+    "lang": "en",
+    "start": 70.969,
+    "end": 76.946
+  },
+  {
+    "line": "sealed-2",
+    "cue": 6,
+    "lang": "en",
+    "start": 77.328,
+    "end": 83.132
+  },
+  {
+    "line": "converse-2",
+    "cue": 7,
+    "lang": "en",
+    "start": 83.516,
+    "end": 88.7
+  },
+  {
+    "line": "secrets-2",
+    "cue": 8,
+    "lang": "en",
+    "start": 89.493,
+    "end": 94.453
+  },
+  {
+    "line": "twin-1",
+    "cue": 9,
+    "lang": "en",
+    "start": 95.546,
+    "end": 101.034
+  },
+  {
+    "line": "firstfor-1",
+    "cue": 10,
+    "lang": "en",
+    "start": 101.85,
+    "end": 107.273
+  },
+  {
+    "line": "asfirst-1",
+    "cue": 11,
+    "lang": "en",
+    "start": 108.099,
+    "end": 113.33
+  },
+  {
+    "line": "remembrance-1",
+    "cue": 12,
+    "lang": "en",
+    "start": 114.015,
+    "end": 125.974
+  },
+  {
+    "line": "knew-3",
+    "cue": 13,
+    "lang": "en",
+    "start": 126.436,
+    "end": 138.223
+  },
+  {
+    "line": "sealed-3",
+    "cue": 14,
+    "lang": "en",
+    "start": 138.635,
+    "end": 149.578
+  },
+  {
+    "line": "assecond-1",
+    "cue": 15,
+    "lang": "en",
+    "start": 150.751,
+    "end": 162.297
+  },
+  {
+    "line": "glory-1",
+    "cue": 16,
+    "lang": "en",
+    "start": 163.328,
+    "end": 174.45
+  },
+  {
+    "line": "knew-4",
+    "cue": 17,
+    "lang": "en",
+    "start": 175.244,
+    "end": 186.538
+  },
+  {
+    "line": "sealed-4",
+    "cue": 18,
+    "lang": "en",
+    "start": 187.143,
+    "end": 198.195
+  },
+  {
+    "line": "twin-2",
+    "cue": 19,
+    "lang": "en",
+    "start": 240.448,
+    "end": 251.568
+  },
+  {
+    "line": "firstfor-2",
+    "cue": 20,
+    "lang": "en",
+    "start": 251.851,
+    "end": 262.624
+  },
+  {
+    "line": "asfirst-2",
+    "cue": 21,
+    "lang": "en",
+    "start": 263.278,
+    "end": 274.512
+  },
+  {
+    "line": "remembrance-2",
+    "cue": 22,
+    "lang": "en",
+    "start": 275.253,
+    "end": 285.856
+  },
+  {
+    "line": "assecond-2",
+    "cue": 23,
+    "lang": "en",
+    "start": 286.809,
+    "end": 297.991
+  },
+  {
+    "line": "present-1",
+    "cue": 24,
+    "lang": "en",
+    "start": 298.427,
+    "end": 303.38
+  },
+  {
+    "line": "knew-5",
+    "cue": 25,
+    "lang": "en",
+    "start": 304.239,
+    "end": 315.332
+  },
+  {
+    "line": "sealed-5",
+    "cue": 26,
+    "lang": "en",
+    "start": 315.904,
+    "end": 321.328
+  },
+  {
+    "line": "praise-1",
+    "cue": 27,
+    "lang": "en",
+    "start": 321.736,
+    "end": 333.004
+  },
+  {
+    "line": "glory-2",
+    "cue": 28,
+    "lang": "en",
+    "start": 333.575,
+    "end": 350.905
+  }
+]
