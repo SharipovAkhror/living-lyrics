@@ -1,0 +1,359 @@
+[
+  {
+    "line": "wll-001",
+    "cue": 1,
+    "lang": "ar",
+    "start": 0.0,
+    "end": 48.351
+  },
+  {
+    "line": "wll-002",
+    "cue": 2,
+    "lang": "ar",
+    "start": 51.3,
+    "end": 55.778
+  },
+  {
+    "line": "wll-003",
+    "cue": 3,
+    "lang": "ar",
+    "start": 55.778,
+    "end": 61.722
+  },
+  {
+    "line": "wll-004",
+    "cue": 4,
+    "lang": "ar",
+    "start": 61.722,
+    "end": 63.772
+  },
+  {
+    "line": "wll-005",
+    "cue": 5,
+    "lang": "ar",
+    "start": 63.772,
+    "end": 73.737
+  },
+  {
+    "line": "wll-006",
+    "cue": 6,
+    "lang": "ar",
+    "start": 73.737,
+    "end": 79.951
+  },
+  {
+    "line": "wll-007",
+    "cue": 7,
+    "lang": "ar",
+    "start": 79.951,
+    "end": 84.066
+  },
+  {
+    "line": "wll-008",
+    "cue": 8,
+    "lang": "ar",
+    "start": 84.066,
+    "end": 86.186
+  },
+  {
+    "line": "wll-009",
+    "cue": 9,
+    "lang": "ar",
+    "start": 86.186,
+    "end": 89.533
+  },
+  {
+    "line": "wll-010",
+    "cue": 10,
+    "lang": "ar",
+    "start": 89.533,
+    "end": 95.388
+  },
+  {
+    "line": "wll-011",
+    "cue": 11,
+    "lang": "ar",
+    "start": 96.133,
+    "end": 106.083
+  },
+  {
+    "line": "wll-012",
+    "cue": 12,
+    "lang": "ar",
+    "start": 106.083,
+    "end": 108.836
+  },
+  {
+    "line": "wll-013",
+    "cue": 13,
+    "lang": "ar",
+    "start": 108.836,
+    "end": 118.001
+  },
+  {
+    "line": "wll-014",
+    "cue": 14,
+    "lang": "ar",
+    "start": 120.454,
+    "end": 125.304
+  },
+  {
+    "line": "wll-015",
+    "cue": 15,
+    "lang": "ar",
+    "start": 125.304,
+    "end": 130.248
+  },
+  {
+    "line": "wll-016",
+    "cue": 16,
+    "lang": "ar",
+    "start": 130.248,
+    "end": 139.782
+  },
+  {
+    "line": "wll-017",
+    "cue": 17,
+    "lang": "ar",
+    "start": 139.782,
+    "end": 144.455
+  },
+  {
+    "line": "wll-018",
+    "cue": 18,
+    "lang": "ar",
+    "start": 144.455,
+    "end": 149.29
+  },
+  {
+    "line": "wll-019",
+    "cue": 19,
+    "lang": "ar",
+    "start": 149.29,
+    "end": 157.948
+  },
+  {
+    "line": "wll-020",
+    "cue": 20,
+    "lang": "ar",
+    "start": 157.948,
+    "end": 200.268
+  },
+  {
+    "line": "wll-021",
+    "cue": 21,
+    "lang": "ar",
+    "start": 202.866,
+    "end": 212.428
+  },
+  {
+    "line": "wll-022",
+    "cue": 22,
+    "lang": "ar",
+    "start": 213.186,
+    "end": 215.67
+  },
+  {
+    "line": "wll-023",
+    "cue": 23,
+    "lang": "ar",
+    "start": 215.67,
+    "end": 224.934
+  },
+  {
+    "line": "wll-024",
+    "cue": 24,
+    "lang": "ar",
+    "start": 225.357,
+    "end": 231.472
+  },
+  {
+    "line": "wll-025",
+    "cue": 25,
+    "lang": "ar",
+    "start": 231.472,
+    "end": 237.954
+  },
+  {
+    "line": "wll-026",
+    "cue": 26,
+    "lang": "ar",
+    "start": 237.954,
+    "end": 247.495
+  },
+  {
+    "line": "wll-027",
+    "cue": 27,
+    "lang": "ar",
+    "start": 247.495,
+    "end": 258.349
+  },
+  {
+    "line": "wll-028",
+    "cue": 28,
+    "lang": "ar",
+    "start": 258.349,
+    "end": 263.732
+  },
+  {
+    "line": "wll-029",
+    "cue": 29,
+    "lang": "ar",
+    "start": 263.732,
+    "end": 270.739
+  },
+  {
+    "line": "wll-030",
+    "cue": 30,
+    "lang": "ar",
+    "start": 271.921,
+    "end": 276.666
+  },
+  {
+    "line": "wll-031",
+    "cue": 31,
+    "lang": "ar",
+    "start": 276.666,
+    "end": 281.232
+  },
+  {
+    "line": "wll-032",
+    "cue": 32,
+    "lang": "ar",
+    "start": 281.232,
+    "end": 290.627
+  },
+  {
+    "line": "wll-033",
+    "cue": 33,
+    "lang": "ar",
+    "start": 290.627,
+    "end": 295.279
+  },
+  {
+    "line": "wll-034",
+    "cue": 34,
+    "lang": "ar",
+    "start": 295.279,
+    "end": 300.0
+  },
+  {
+    "line": "wll-035",
+    "cue": 35,
+    "lang": "ar",
+    "start": 300.0,
+    "end": 309.057
+  },
+  {
+    "line": "wll-036",
+    "cue": 36,
+    "lang": "ar",
+    "start": 309.057,
+    "end": 313.626
+  },
+  {
+    "line": "wll-037",
+    "cue": 37,
+    "lang": "ar",
+    "start": 313.626,
+    "end": 318.249
+  },
+  {
+    "line": "wll-038",
+    "cue": 38,
+    "lang": "ar",
+    "start": 318.249,
+    "end": 335.906
+  },
+  {
+    "line": "wll-039",
+    "cue": 39,
+    "lang": "ar",
+    "start": 346.805,
+    "end": 350.08
+  },
+  {
+    "line": "wll-040",
+    "cue": 40,
+    "lang": "ar",
+    "start": 350.878,
+    "end": 356.12
+  },
+  {
+    "line": "wll-041",
+    "cue": 41,
+    "lang": "ar",
+    "start": 363.558,
+    "end": 367.642
+  },
+  {
+    "line": "wll-042",
+    "cue": 42,
+    "lang": "ar",
+    "start": 367.642,
+    "end": 372.56
+  },
+  {
+    "line": "wll-043",
+    "cue": 43,
+    "lang": "ar",
+    "start": 379.962,
+    "end": 384.055
+  },
+  {
+    "line": "wll-044",
+    "cue": 44,
+    "lang": "ar",
+    "start": 384.055,
+    "end": 389.287
+  },
+  {
+    "line": "wll-045",
+    "cue": 45,
+    "lang": "ar",
+    "start": 396.329,
+    "end": 399.68
+  },
+  {
+    "line": "wll-046",
+    "cue": 46,
+    "lang": "ar",
+    "start": 400.239,
+    "end": 404.297
+  },
+  {
+    "line": "wll-047",
+    "cue": 47,
+    "lang": "ar",
+    "start": 404.297,
+    "end": 411.958
+  },
+  {
+    "line": "wll-048",
+    "cue": 48,
+    "lang": "ar",
+    "start": 411.958,
+    "end": 415.28
+  },
+  {
+    "line": "wll-049",
+    "cue": 49,
+    "lang": "ar",
+    "start": 415.661,
+    "end": 419.423
+  },
+  {
+    "line": "wll-050",
+    "cue": 50,
+    "lang": "ar",
+    "start": 419.423,
+    "end": 422.923
+  },
+  {
+    "line": "wll-051",
+    "cue": 51,
+    "lang": "ar",
+    "start": 422.923,
+    "end": 426.36
+  }
+]
