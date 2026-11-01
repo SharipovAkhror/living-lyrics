@@ -1,6 +1,6 @@
 // Vercel ignored build step. Exit 0 skips the build, exit 1 builds.
-// Production builds are skipped only when every path in the push is under
-// ops/ or docs/. Previews always build. A missing parent (shallow clone) builds.
+// Production builds compare the last successful deployment with this commit.
+// Builds skip only when every changed path is under ops/ or docs/. Previews build.
 import { spawnSync } from 'node:child_process';
 
 function git(args) {
@@ -25,9 +25,8 @@ if (argBase && argHead) {
 } else if (argBase || argHead) {
   finish(1, 'build (usage: vercel-ignore.mjs [<base> <head>])');
 } else {
-  const parent = git(['rev-parse', '--verify', 'HEAD^']);
-  if (parent.status !== 0) finish(1, 'build (no HEAD^)');
-  base = 'HEAD^';
+  base = process.env.VERCEL_GIT_PREVIOUS_SHA;
+  if (!base) finish(1, 'build (VERCEL_GIT_PREVIOUS_SHA is unset or empty)');
   head = 'HEAD';
 }
 
