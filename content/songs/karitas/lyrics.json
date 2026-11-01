@@ -633,7 +633,7 @@
           "flags": [
             "timing-draft"
           ],
-          "comment": "**Амантиссима** (*amantissima*) — превосходная степень: в чтении Ньюман Любовь «в высшей степени любящая» (Symphonia, 1998, с. 141). В чтении [Кэмпбелла](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) она «самая любимая»: здесь говорится о любви к ней.",
+          "comment": "**Амантиссима** (*amantissima*) — превосходная степень причастия *amans*. [Викисловарь](https://en.wiktionary.org/wiki/amans) даёт причастию значение «любящий», поэтому одно чтение — «в высшей степени любящая»; со словами строки «больше всех любит» совпадает оно. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) переводит то же слово как «самая любимая» и относит его к любви, которую питают к ней. Это два чтения одной формы.",
           "placedBy": "mms-ft"
         },
         {
@@ -659,7 +659,7 @@
             "timing-draft"
           ],
           "placedBy": "mms-ft",
-          "comment": "*In omnia* продолжает слово «любящая»: в чтении Ньюман любовь направлена «ко всем» (Symphonia, 1998, с. 141). В чтении [Кэмпбелла](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) вся пара означает «самая любимая из всех»; это другое понимание того, кто кого любит."
+          "comment": "*In omnia* стоит сразу после *amantissima*. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) передаёт эту пару как «самая любимая из всех», а первое *in omnia* на той же странице — «во всём» (*abounds in all*). Слова строки «во всём» совпадают со вторым чтением. Причастие *amans* значит «любящий»: [викисловарь](https://en.wiktionary.org/wiki/amans). Кто кого любит, эти чтения решают по-разному."
         },
         {
           "id": "hildegard-h6-1",
@@ -953,7 +953,7 @@
           "tr": {
             "ru": "**Физули**, твои вздохи и стоны измучили весь мир;"
           },
-          "comment": "В чтении [турецкой Викитеки](https://tr.wikisource.org/wiki/Öyle_ser-mestem_ki_idrâk_etmezem_dünyâ_nedir) — «Физули, твои вздохи и стоны измучили мир»; следующая строка продолжает обращение: «если ты доволен бедой любви, к чему шум?». Такое же *feryâdun* приведено у Каяокая (Littera Turca, 2024, с. 343). Иное чтение [азербайджанской Викитеки](https://az.wikisource.org/wiki/Öylə_sərməstəm_ki,_idrak_etməzəm_dünya_nedir): *fəryadım*, «мои стоны», — жалоба принадлежит самому говорящему.",
+          "comment": "В чтении [турецкой Викитеки](https://tr.wikisource.org/wiki/Öyle_ser-mestem_ki_idrâk_etmezem_dünyâ_nedir) — «Физули, твои вздохи и стоны измучили мир»: *feryâdun* стоит во втором лице, и следующая строка продолжает обращение «если ты доволен». Иное чтение [азербайджанской Викитеки](https://az.wikisource.org/wiki/Öylə_sərməstəm_ki,_idrak_etməzəm_dünya_nedir): *fəryadım*, «мои стоны», — жалоба принадлежит самому говорящему. Это два чтения одного бейта, каждое со своей страницей.",
           "placedBy": "mms"
         },
         {
@@ -1163,7 +1163,7 @@
           "flags": [
             "timing-draft"
           ],
-          "comment": "**Амантиссима** (*amantissima*) — превосходная степень: в чтении Ньюман Любовь «в высшей степени любящая» (Symphonia, 1998, с. 141). В чтении [Кэмпбелла](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) она «самая любимая»: здесь говорится о любви к ней.",
+          "comment": "**Амантиссима** (*amantissima*) — превосходная степень причастия *amans*. [Викисловарь](https://en.wiktionary.org/wiki/amans) даёт причастию значение «любящий», поэтому одно чтение — «в высшей степени любящая»; со словами строки «больше всех любит» совпадает оно. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) переводит то же слово как «самая любимая» и относит его к любви, которую питают к ней. Это два чтения одной формы.",
           "placedBy": "mms-ft"
         },
         {
@@ -1189,7 +1189,7 @@
             "timing-draft"
           ],
           "placedBy": "stable-ts",
-          "comment": "*In omnia* продолжает слово «любящая»: в чтении Ньюман любовь направлена «ко всем» (Symphonia, 1998, с. 141). В чтении [Кэмпбелла](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) вся пара означает «самая любимая из всех»; это другое понимание того, кто кого любит."
+          "comment": "*In omnia* стоит сразу после *amantissima*. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) передаёт эту пару как «самая любимая из всех», а первое *in omnia* на той же странице — «во всём» (*abounds in all*). Слова строки «во всём» совпадают со вторым чтением. Причастие *amans* значит «любящий»: [викисловарь](https://en.wiktionary.org/wiki/amans). Кто кого любит, эти чтения решают по-разному."
         },
         {
           "id": "hildegard-h6-2",
@@ -1486,7 +1486,7 @@
           "tr": {
             "ru": "**Физули**, твои вздохи и стоны измучили весь мир;"
           },
-          "comment": "В чтении [турецкой Викитеки](https://tr.wikisource.org/wiki/Öyle_ser-mestem_ki_idrâk_etmezem_dünyâ_nedir) — «Физули, твои вздохи и стоны измучили мир»; следующая строка продолжает обращение: «если ты доволен бедой любви, к чему шум?». Такое же *feryâdun* приведено у Каяокая (Littera Turca, 2024, с. 343). Иное чтение [азербайджанской Викитеки](https://az.wikisource.org/wiki/Öylə_sərməstəm_ki,_idrak_etməzəm_dünya_nedir): *fəryadım*, «мои стоны», — жалоба принадлежит самому говорящему.",
+          "comment": "В чтении [турецкой Викитеки](https://tr.wikisource.org/wiki/Öyle_ser-mestem_ki_idrâk_etmezem_dünyâ_nedir) — «Физули, твои вздохи и стоны измучили мир»: *feryâdun* стоит во втором лице, и следующая строка продолжает обращение «если ты доволен». Иное чтение [азербайджанской Викитеки](https://az.wikisource.org/wiki/Öylə_sərməstəm_ki,_idrak_etməzəm_dünya_nedir): *fəryadım*, «мои стоны», — жалоба принадлежит самому говорящему. Это два чтения одного бейта, каждое со своей страницей.",
           "placedBy": "mms"
         },
         {
@@ -2209,9 +2209,10 @@
         }
       ],
       "flags": [
-        "timing-draft"
+        "timing-draft",
+        "comment-draft"
       ],
-      "comment": "Бейт Абу-ль-Хасана аш-Шуштари (1212–1269). **Мавваль** — пение короткого стиха свободным ритмом."
+      "comment": "Здесь звучит бейт Абу-ль-Хасана аш-Шуштари."
     },
     {
       "id": "nabulsi",
@@ -3251,7 +3252,7 @@
             "timing-draft"
           ],
           "placedBy": "mms-window",
-          "comment": "**Амантиссима** (*amantissima*) — превосходная степень: в чтении Ньюман Любовь «в высшей степени любящая» (Symphonia, 1998, с. 141). В чтении [Кэмпбелла](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) она «самая любимая»: здесь говорится о любви к ней."
+          "comment": "**Амантиссима** (*amantissima*) — превосходная степень причастия *amans*. [Викисловарь](https://en.wiktionary.org/wiki/amans) даёт причастию значение «любящий», поэтому одно чтение — «в высшей степени любящая»; со словами строки «больше всех любит» совпадает оно. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) переводит то же слово как «самая любимая» и относит его к любви, которую питают к ней. Это два чтения одной формы."
         },
         {
           "id": "hildegard-h5-3",
@@ -3276,7 +3277,7 @@
             "timing-draft"
           ],
           "placedBy": "mms",
-          "comment": "*In omnia* продолжает слово «любящая»: в чтении Ньюман любовь направлена «ко всем» (Symphonia, 1998, с. 141). В чтении [Кэмпбелла](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) вся пара означает «самая любимая из всех»; это другое понимание того, кто кого любит."
+          "comment": "*In omnia* стоит сразу после *amantissima*. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) передаёт эту пару как «самая любимая из всех», а первое *in omnia* на той же странице — «во всём» (*abounds in all*). Слова строки «во всём» совпадают со вторым чтением. Причастие *amans* значит «любящий»: [викисловарь](https://en.wiktionary.org/wiki/amans). Кто кого любит, эти чтения решают по-разному."
         },
         {
           "id": "hildegard-h6-3",
@@ -3447,7 +3448,7 @@
             "timing-draft"
           ],
           "placedBy": "mms-window",
-          "comment": "**Амантиссима** (*amantissima*) — превосходная степень: в чтении Ньюман Любовь «в высшей степени любящая» (Symphonia, 1998, с. 141). В чтении [Кэмпбелла](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) она «самая любимая»: здесь говорится о любви к ней."
+          "comment": "**Амантиссима** (*amantissima*) — превосходная степень причастия *amans*. [Викисловарь](https://en.wiktionary.org/wiki/amans) даёт причастию значение «любящий», поэтому одно чтение — «в высшей степени любящая»; со словами строки «больше всех любит» совпадает оно. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) переводит то же слово как «самая любимая» и относит его к любви, которую питают к ней. Это два чтения одной формы."
         },
         {
           "id": "hildegard-h5-4",
@@ -3472,7 +3473,7 @@
             "timing-draft"
           ],
           "placedBy": "mms-ft",
-          "comment": "*In omnia* продолжает слово «любящая»: в чтении Ньюман любовь направлена «ко всем» (Symphonia, 1998, с. 141). В чтении [Кэмпбелла](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) вся пара означает «самая любимая из всех»; это другое понимание того, кто кого любит."
+          "comment": "*In omnia* стоит сразу после *amantissima*. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) передаёт эту пару как «самая любимая из всех», а первое *in omnia* на той же странице — «во всём» (*abounds in all*). Слова строки «во всём» совпадают со вторым чтением. Причастие *amans* значит «любящий»: [викисловарь](https://en.wiktionary.org/wiki/amans). Кто кого любит, эти чтения решают по-разному."
         },
         {
           "id": "hildegard-h6-4",
