@@ -1146,7 +1146,8 @@
             "ru": "он поминает Бога"
           },
           "flags": [
-            "timing-draft"
+            "timing-draft",
+            "comment-draft"
           ],
           "comment": "şalab — так на дорожке. В газели Çalab, старое имя Бога."
         },
@@ -2765,7 +2766,8 @@
             "ru": "иду, лицом касаясь земли"
           },
           "flags": [
-            "timing-draft"
+            "timing-draft",
+            "comment-draft"
           ],
           "comment": "Здесь sürüyü, без конечного p. Раньше в записи sürüyüp. В газели süriye.",
           "placedBy": "mms-window"
