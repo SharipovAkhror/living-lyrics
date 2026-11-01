@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T18:53:02Z",
+  "at": "2026-11-01T19:05:02Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -16,8 +16,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 16021,
-      "age": 16050,
+      "minutes": 16033,
+      "age": 16062,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -25,8 +25,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 16022,
-      "age": 16050,
+      "minutes": 16034,
+      "age": 16062,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -34,8 +34,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 15963,
-      "age": 16014,
+      "minutes": 15975,
+      "age": 16026,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -49,8 +49,8 @@
     {
       "name": "prove-witness",
       "state": "finished",
-      "minutes": 84,
-      "age": 95,
+      "minutes": 96,
+      "age": 107,
       "tokens": 2969138,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/prove-witness"
@@ -58,8 +58,8 @@
     {
       "name": "studio-pass",
       "state": "finished",
-      "minutes": 158,
-      "age": 280,
+      "minutes": 170,
+      "age": 292,
       "tokens": 54666236,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -67,8 +67,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 1964,
-      "age": 1978,
+      "minutes": 1976,
+      "age": 1990,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -76,8 +76,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2514,
-      "age": 2634,
+      "minutes": 2526,
+      "age": 2646,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -85,8 +85,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 15959,
-      "age": 16060,
+      "minutes": 15971,
+      "age": 16072,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -94,8 +94,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 12916,
-      "age": 12946,
+      "minutes": 12928,
+      "age": 12958,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -103,8 +103,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 271,
-      "age": 292,
+      "minutes": 283,
+      "age": 304,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -118,8 +118,8 @@
     {
       "name": "t38-steady",
       "state": "finished",
-      "minutes": 136,
-      "age": 175,
+      "minutes": 148,
+      "age": 187,
       "tokens": 13361130,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t38-steady"
@@ -127,8 +127,8 @@
     {
       "name": "t39-precheck",
       "state": "finished",
-      "minutes": 273,
-      "age": 292,
+      "minutes": 285,
+      "age": 304,
       "tokens": 5651269,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t39-precheck"
@@ -150,9 +150,9 @@
       "role": "aos-main",
       "project": "agentic-os-live",
       "reports_to": "owner",
-      "state": "waiting",
-      "waiting_for": "input needed",
-      "last_act_at": "2026-11-01T18:28:58.011Z"
+      "state": "working",
+      "last_at": "2026-11-01T18:29:14.670Z",
+      "last_act_at": "2026-11-01T19:04:28.850Z"
     },
     {
       "name": "AOS · Ops",
@@ -1285,7 +1285,7 @@
   },
   "queue": {
     "open": 55,
-    "overdue": 21,
+    "overdue": 25,
     "unmapped": 0
   },
   "failed": [],

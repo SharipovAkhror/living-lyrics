@@ -1,77 +1,22 @@
 {
-  "updated": "2026-11-01T18:48:29Z",
+  "updated": "2026-11-01T19:02:21Z",
   "grok": {
-    "today": 740964319,
+    "today": 0,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-01T18:48:29Z",
+    "todayAt": "2026-11-01T19:02:21Z",
     "week": 1457217796,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-01T18:48:29Z",
-    "todayByTask": {
-      "ops-claude-spend": 20609250,
-      "space3-card-a": 5995198,
-      "space3-card-b": 6213309,
-      "space3-card-c": 11666231,
-      "space3-card-d": 8964691,
-      "space3-glass": 5623417,
-      "space3-ground": 4218424,
-      "space3-layout": 8596800,
-      "space3-lines-l1": 3966816,
-      "space3-lines-l2": 5717868,
-      "space3-lines-l3": 6841990,
-      "space3-motion": 4788805,
-      "space3-tokens": 8700257,
-      "tech-always-on": 7339695,
-      "tech-net-nudge": 7216020,
-      "tech-night-queue": 5274620,
-      "tech-owner-signal": 17026156,
-      "tech-panel-write": 18686039,
-      "tech-rotation-clear": 9174982,
-      "tech-stop-wake": 3692682,
-      "bench-r6": 5669530,
-      "song-new": 15139854,
-      "studio-pass": 126334497,
-      "night-night-config-refs": 1321206,
-      "night-night-chat-cases": 5377142,
-      "night-night-hygiene-project": 5946674,
-      "night-night-quota-rate": 7041573,
-      "space3-overview": 64534799,
-      "night-night-rotation-true-cost": 5651498,
-      "night-night-tests-usage": 3315437,
-      "night-night-tests-agents": 6586193,
-      "tech-live-page": 17342313,
-      "t37-comments": 22581874,
-      "tech-lean-workers": 1896805,
-      "owner-requests": 19854273,
-      "tech-rc-server": 4508063,
-      "live-page-hidden": 25970568,
-      "teacher-page": 5080161,
-      "old-rows": 10350403,
-      "queue": 10047060,
-      "codex-summary": 13056339,
-      "foreman-audit": 5495429,
-      "space4-craft": 51926206,
-      "t39-precheck": 5651269,
-      "t38-steady": 23428126,
-      "tech-codex-utf8": 1170365,
-      "night-ll-song-01-amada": 12354417,
-      "night-ll-song-03-you": 22201723,
-      "night-ll-song-06-lifting-the-veil": 2535904,
-      "night-ll-song-02-nasimi": 20442482,
-      "night-ll-song-07-healing": 13894282,
-      "prove-witness": 10282413,
-      "night-ll-song-05-lovers": 18501049,
-      "night-ll-song-10-one-true-love": 5161142
-    },
+    "weekAt": "2026-11-01T19:02:21Z",
+    "todayByTask": {},
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-01T18:48:29Z",
+    "todayByTaskAt": "2026-11-01T19:02:21Z",
     "plan": "SuperGrok Heavy",
-    "planSource": "grok /usage",
-    "planAt": "2026-11-01T18:48:29Z",
+    "planSource": "~/.grok/settings_cache.json",
+    "planAt": "2026-11-01T18:58:54Z",
     "weekly": {
       "percentUsed": 72,
       "source": "grok /usage",
-      "at": "2026-11-01T18:48:29Z",
+      "at": "2026-11-01T18:58:29Z",
       "timezoneLabeled": false,
       "resetsAt": "November 6, 21:08"
     }
@@ -80,39 +25,39 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-01T18:48:29Z",
+        "at": "2026-11-01T14:37:31Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "147h 16m"
+        "weeklyResetIn": "151h 27m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-01T18:48:29Z",
+        "at": "2026-11-01T18:17:30Z",
         "weeklyRemaining": 51.12,
         "fiveHourRemaining": 2.24,
-        "weeklyResetIn": "165h 27m",
-        "fiveHourResetIn": "2h 27m"
+        "weeklyResetIn": "165h 58m",
+        "fiveHourResetIn": "2h 58m"
       }
     },
-    "conversationsToday": 4,
+    "conversationsToday": 0,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-01T18:48:29Z",
-    "runsToday": 4,
+    "conversationsTodayAt": "2026-11-01T19:02:21Z",
+    "runsToday": 0,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-01T18:48:29Z",
-    "secondsToday": 2460,
+    "runsTodayAt": "2026-11-01T19:02:21Z",
+    "secondsToday": 0,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-01T18:48:29Z",
+    "secondsTodayAt": "2026-11-01T19:02:21Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
-    "at": "2026-11-01T18:48:29Z",
+    "at": "2026-11-01T18:17:30Z",
     "claudeGpt": {
       "source": "agy /usage",
-      "at": "2026-11-01T18:48:29Z",
+      "at": "2026-11-01T18:17:30Z",
       "weeklyRemaining": 51.12,
       "fiveHourRemaining": 2.24,
-      "weeklyResetIn": "165h 27m",
-      "fiveHourResetIn": "2h 27m"
+      "weeklyResetIn": "165h 58m",
+      "fiveHourResetIn": "2h 58m"
     }
   },
   "alerts": [
@@ -121,7 +66,7 @@
       "task": "",
       "session": "",
       "value": 72,
-      "at": "2026-11-01T18:48:29Z"
+      "at": "2026-11-01T19:02:21Z"
     }
   ],
   "value": {
@@ -136,13 +81,13 @@
   "claude": {
     "plan": "Claude Pro",
     "planSource": "claude auth status --json",
-    "at": "2026-11-01T18:48:29Z",
+    "at": "2026-11-01T18:58:29Z",
     "windows": [
       {
         "kind": "five_hour",
         "percentUsed": 32,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T18:48:29Z",
+        "at": "2026-11-01T18:58:29Z",
         "resetsAt": "2026-11-01T20:50:00.000Z",
         "readAt": "2026-11-01T18:28:54Z"
       },
@@ -150,7 +95,7 @@
         "kind": "seven_day",
         "percentUsed": 87,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T18:48:29Z",
+        "at": "2026-11-01T18:58:29Z",
         "resetsAt": "2026-11-06T04:00:00.000Z",
         "readAt": "2026-11-01T18:28:54Z"
       }
@@ -230,6 +175,11 @@
         "at": "2026-11-01T18:38:29Z",
         "five_hour": 32,
         "seven_day": 87
+      },
+      {
+        "at": "2026-11-01T18:58:29Z",
+        "five_hour": 32,
+        "seven_day": 87
       }
     ]
   },
@@ -237,11 +187,10 @@
     "windows": [
       {
         "kind": "five_hour",
-        "percentUsed": 99.0,
-        "source": "~/.codex/sessions",
-        "at": "2026-11-01T15:46:32Z",
-        "readAt": "2026-11-01T15:46:32Z",
-        "resetsAt": "2026-11-01T19:00:42Z"
+        "percentUsed": 0,
+        "source": "codex app-server",
+        "at": "2026-11-01T19:02:21Z",
+        "resetsAt": "2026-11-02T00:02:23Z"
       },
       {
         "kind": "seven_day",
