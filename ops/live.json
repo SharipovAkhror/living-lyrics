@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T21:31:03Z",
+  "at": "2026-11-01T21:33:03Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,8 +10,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 16179,
-      "age": 16208,
+      "minutes": 16181,
+      "age": 16210,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -19,8 +19,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 16180,
-      "age": 16208,
+      "minutes": 16182,
+      "age": 16210,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -28,8 +28,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 16121,
-      "age": 16172,
+      "minutes": 16123,
+      "age": 16174,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -44,7 +44,7 @@
       "name": "phone-overlap",
       "state": "working",
       "minutes": 0,
-      "age": 104,
+      "age": 106,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/phone-overlap"
@@ -59,7 +59,7 @@
       "name": "studio-pass",
       "state": "working",
       "minutes": 0,
-      "age": 1,
+      "age": 3,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -67,8 +67,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 2122,
-      "age": 2136,
+      "minutes": 2124,
+      "age": 2138,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -76,8 +76,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2672,
-      "age": 2792,
+      "minutes": 2674,
+      "age": 2794,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -85,8 +85,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 16117,
-      "age": 16218,
+      "minutes": 16119,
+      "age": 16220,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -94,8 +94,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 13074,
-      "age": 13104,
+      "minutes": 13076,
+      "age": 13106,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -103,8 +103,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 429,
-      "age": 450,
+      "minutes": 431,
+      "age": 452,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -112,8 +112,8 @@
     {
       "name": "translation-alive",
       "state": "finished",
-      "minutes": 14,
-      "age": 40,
+      "minutes": 16,
+      "age": 42,
       "tokens": 7090137,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/translation-alive"
@@ -136,8 +136,8 @@
       "project": "agentic-os-live",
       "reports_to": "owner",
       "state": "working",
-      "last_at": "2026-11-01T21:30:24.009Z",
-      "last_act_at": "2026-11-01T21:30:24.009Z"
+      "last_at": "2026-11-01T21:32:17.126Z",
+      "last_act_at": "2026-11-01T21:32:17.126Z"
     },
     {
       "name": "AOS · Ops",
@@ -162,9 +162,9 @@
       "role": "aos-tech",
       "project": "agentic-os-live",
       "reports_to": "AOS · Main",
-      "state": "idle",
+      "state": "working",
       "last_at": "2026-11-01T15:59:51.054Z",
-      "last_act_at": "2026-11-01T15:59:51.054Z"
+      "last_act_at": "2026-11-01T21:32:22.675Z"
     },
     {
       "name": "LL · Business",
@@ -198,17 +198,17 @@
     {
       "name": "pipeline",
       "title": "Add I Only Knew Love: text, translation, commentary, timing (draft)",
-      "minutes": 10
+      "minutes": 12
     },
     {
       "name": "pipeline",
       "title": "you: cue the lyric panel and queue align",
-      "minutes": 27
+      "minutes": 29
     },
     {
       "name": "pipeline",
       "title": "Add We Love Life: text, translation, commentary, timing (draft)",
-      "minutes": 33
+      "minutes": 35
     }
   ],
   "hygiene": {

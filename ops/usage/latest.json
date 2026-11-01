@@ -1,12 +1,12 @@
 {
-  "updated": "2026-11-01T21:28:30Z",
+  "updated": "2026-11-01T21:31:20Z",
   "grok": {
     "today": 396368490,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-01T21:28:30Z",
+    "todayAt": "2026-11-01T21:31:20Z",
     "week": 1841160256,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-01T21:28:30Z",
+    "weekAt": "2026-11-01T21:31:20Z",
     "todayByTask": {
       "night-ll-song-04-muhabbatga-yaqinlar": 19760819,
       "night-ll-song-09-sari-gelin": 25213540,
@@ -36,10 +36,10 @@
       "studio-pass": 60863424
     },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-01T21:28:30Z",
+    "todayByTaskAt": "2026-11-01T21:31:20Z",
     "plan": "SuperGrok Heavy",
-    "planSource": "grok /usage",
-    "planAt": "2026-11-01T21:28:30Z",
+    "planSource": "~/.grok/settings_cache.json",
+    "planAt": "2026-11-01T21:29:36Z",
     "weekly": {
       "percentUsed": 93,
       "source": "grok /usage",
@@ -68,13 +68,13 @@
     },
     "conversationsToday": 1,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-01T21:28:30Z",
+    "conversationsTodayAt": "2026-11-01T21:31:20Z",
     "runsToday": 1,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-01T21:28:30Z",
+    "runsTodayAt": "2026-11-01T21:31:20Z",
     "secondsToday": 0,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-01T21:28:30Z",
+    "secondsTodayAt": "2026-11-01T21:31:20Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
     "at": "2026-11-01T21:08:30Z",
@@ -93,21 +93,21 @@
       "value": 60863424,
       "task": "studio-pass",
       "session": "9cbb5dd2-71f3-440c-9b44-0408cf0cfbfa",
-      "at": "2026-11-01T21:28:30Z"
+      "at": "2026-11-01T21:31:20Z"
     },
     {
       "kind": "no-progress",
       "value": 60863424,
       "task": "studio-pass",
       "session": "9cbb5dd2-71f3-440c-9b44-0408cf0cfbfa",
-      "at": "2026-11-01T21:28:30Z"
+      "at": "2026-11-01T21:31:20Z"
     },
     {
       "kind": "weekly",
       "task": "",
       "session": "",
       "value": 93,
-      "at": "2026-11-01T21:28:30Z"
+      "at": "2026-11-01T21:31:20Z"
     }
   ],
   "value": {
