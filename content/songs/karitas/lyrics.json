@@ -162,7 +162,7 @@
           "flags": [
             "timing-draft"
           ],
-          "comment": "Четыре вопроса без ответа: кто я, кто этот кравчий, что за вино и что за хмель. **Саки** (*sâkî*) — тот, кто разливает вино; перевод зовёт его кравчим. Строка не объясняет, человек это или кто-то больший: она только спрашивает. *Mey* и *sahbâ* стоят рядом как два имени вина; перевод отдаёт первое как «вино», второе как «хмель». https://tr.wikisource.org/wiki/Öyle_ser-mestem_ki_idrâk_etmezem_dünyâ_nedir",
+          "comment": "Четыре вопроса без ответа: кто я, кто этот кравчий, что за вино и что за хмель. **Саки** (*sâkî*) — тот, кто разливает вино; кравчий — виночерпий у чаши. Строка не объясняет, человек это или кто-то больший: она только спрашивает. *Mey* и *sahbâ* стоят рядом как два имени вина: «вино» и «хмель» — эти два имени. https://tr.wikisource.org/wiki/Öyle_ser-mestem_ki_idrâk_etmezem_dünyâ_nedir",
           "placedBy": "stable-ts"
         }
       ],
@@ -584,7 +584,7 @@
           "flags": [
             "timing-draft"
           ],
-          "comment": "«Из глубин, высшая»: *de imis excellentissima*. *De imis* — «из глубин». *Excellentissima* — превосходная степень при слове Любовь, «высочайшая», а не оценка самих глубин. Кэмпбелл переводит «from the depths exalted and excelling» и пишет, что первая половина антифона ведёт Любовь от глубин бездны вверх. Русская строка так и ставит «высшая» рядом с Любовью, не при глубинах. https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html"
+          "comment": "«Из глубин, высшая»: *de imis excellentissima*. *De imis* — «из глубин». *Excellentissima* — превосходная степень при слове Любовь, «высочайшая», а не оценка самих глубин. Кэмпбелл переводит «from the depths exalted and excelling» и пишет, что первая половина антифона ведёт Любовь от глубин бездны вверх. https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html"
         },
         {
           "id": "hildegard-h3-1",
@@ -633,7 +633,7 @@
           "flags": [
             "timing-draft"
           ],
-          "comment": "**Амантиссима** (*amantissima*) — превосходная степень причастия *amans*. [Викисловарь](https://en.wiktionary.org/wiki/amans) даёт причастию значение «любящий», поэтому одно чтение — «в высшей степени любящая»; со словами строки «больше всех любит» совпадает оно. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) переводит то же слово как «самая любимая» и относит его к любви, которую питают к ней. Это два чтения одной формы.",
+          "comment": "**Амантиссима** (*amantissima*) — превосходная степень причастия *amans*. [Викисловарь](https://en.wiktionary.org/wiki/amans) даёт причастию значение «любящий», поэтому одно чтение — «в высшей степени любящая», та, что любит больше всех. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) переводит то же слово как «самая любимая» и относит его к любви, которую питают к ней. Это два чтения одной формы.",
           "placedBy": "mms-ft"
         },
         {
@@ -659,7 +659,7 @@
             "timing-draft"
           ],
           "placedBy": "mms-ft",
-          "comment": "*In omnia* стоит сразу после *amantissima*. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) передаёт эту пару как «самая любимая из всех», а первое *in omnia* на той же странице — «во всём» (*abounds in all*). Слова строки «во всём» совпадают со вторым чтением. Причастие *amans* значит «любящий»: [викисловарь](https://en.wiktionary.org/wiki/amans). Кто кого любит, эти чтения решают по-разному."
+          "comment": "*In omnia* стоит сразу после *amantissima*. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) передаёт эту пару как «самая любимая из всех», а первое *in omnia* на той же странице — «во всём» (*abounds in all*). Одно чтение — «из всех», другое — «во всём». Причастие *amans* значит «любящий»: [викисловарь](https://en.wiktionary.org/wiki/amans). Кто кого любит, эти чтения решают по-разному."
         },
         {
           "id": "hildegard-h6-1",
@@ -1114,7 +1114,7 @@
             "timing-draft"
           ],
           "placedBy": "mms-ft",
-          "comment": "«Из глубин, высшая»: *de imis excellentissima*. *De imis* — «из глубин». *Excellentissima* — превосходная степень при слове Любовь, «высочайшая», а не оценка самих глубин. Кэмпбелл переводит «from the depths exalted and excelling» и пишет, что первая половина антифона ведёт Любовь от глубин бездны вверх. Русская строка так и ставит «высшая» рядом с Любовью, не при глубинах. https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html"
+          "comment": "«Из глубин, высшая»: *de imis excellentissima*. *De imis* — «из глубин». *Excellentissima* — превосходная степень при слове Любовь, «высочайшая», а не оценка самих глубин. Кэмпбелл переводит «from the depths exalted and excelling» и пишет, что первая половина антифона ведёт Любовь от глубин бездны вверх. https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html"
         },
         {
           "id": "hildegard-h3-2",
@@ -1163,7 +1163,7 @@
           "flags": [
             "timing-draft"
           ],
-          "comment": "**Амантиссима** (*amantissima*) — превосходная степень причастия *amans*. [Викисловарь](https://en.wiktionary.org/wiki/amans) даёт причастию значение «любящий», поэтому одно чтение — «в высшей степени любящая»; со словами строки «больше всех любит» совпадает оно. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) переводит то же слово как «самая любимая» и относит его к любви, которую питают к ней. Это два чтения одной формы.",
+          "comment": "**Амантиссима** (*amantissima*) — превосходная степень причастия *amans*. [Викисловарь](https://en.wiktionary.org/wiki/amans) даёт причастию значение «любящий», поэтому одно чтение — «в высшей степени любящая», та, что любит больше всех. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) переводит то же слово как «самая любимая» и относит его к любви, которую питают к ней. Это два чтения одной формы.",
           "placedBy": "mms-ft"
         },
         {
@@ -1189,7 +1189,7 @@
             "timing-draft"
           ],
           "placedBy": "stable-ts",
-          "comment": "*In omnia* стоит сразу после *amantissima*. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) передаёт эту пару как «самая любимая из всех», а первое *in omnia* на той же странице — «во всём» (*abounds in all*). Слова строки «во всём» совпадают со вторым чтением. Причастие *amans* значит «любящий»: [викисловарь](https://en.wiktionary.org/wiki/amans). Кто кого любит, эти чтения решают по-разному."
+          "comment": "*In omnia* стоит сразу после *amantissima*. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) передаёт эту пару как «самая любимая из всех», а первое *in omnia* на той же странице — «во всём» (*abounds in all*). Одно чтение — «из всех», другое — «во всём». Причастие *amans* значит «любящий»: [викисловарь](https://en.wiktionary.org/wiki/amans). Кто кого любит, эти чтения решают по-разному."
         },
         {
           "id": "hildegard-h6-2",
@@ -3202,7 +3202,7 @@
             "timing-draft"
           ],
           "placedBy": "mms-window",
-          "comment": "«Из глубин, высшая»: *de imis excellentissima*. *De imis* — «из глубин». *Excellentissima* — превосходная степень при слове Любовь, «высочайшая», а не оценка самих глубин. Кэмпбелл переводит «from the depths exalted and excelling» и пишет, что первая половина антифона ведёт Любовь от глубин бездны вверх. Русская строка так и ставит «высшая» рядом с Любовью, не при глубинах. https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html"
+          "comment": "«Из глубин, высшая»: *de imis excellentissima*. *De imis* — «из глубин». *Excellentissima* — превосходная степень при слове Любовь, «высочайшая», а не оценка самих глубин. Кэмпбелл переводит «from the depths exalted and excelling» и пишет, что первая половина антифона ведёт Любовь от глубин бездны вверх. https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html"
         },
         {
           "id": "hildegard-h3-3",
@@ -3252,7 +3252,7 @@
             "timing-draft"
           ],
           "placedBy": "mms-window",
-          "comment": "**Амантиссима** (*amantissima*) — превосходная степень причастия *amans*. [Викисловарь](https://en.wiktionary.org/wiki/amans) даёт причастию значение «любящий», поэтому одно чтение — «в высшей степени любящая»; со словами строки «больше всех любит» совпадает оно. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) переводит то же слово как «самая любимая» и относит его к любви, которую питают к ней. Это два чтения одной формы."
+          "comment": "**Амантиссима** (*amantissima*) — превосходная степень причастия *amans*. [Викисловарь](https://en.wiktionary.org/wiki/amans) даёт причастию значение «любящий», поэтому одно чтение — «в высшей степени любящая», та, что любит больше всех. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) переводит то же слово как «самая любимая» и относит его к любви, которую питают к ней. Это два чтения одной формы."
         },
         {
           "id": "hildegard-h5-3",
@@ -3277,7 +3277,7 @@
             "timing-draft"
           ],
           "placedBy": "mms",
-          "comment": "*In omnia* стоит сразу после *amantissima*. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) передаёт эту пару как «самая любимая из всех», а первое *in omnia* на той же странице — «во всём» (*abounds in all*). Слова строки «во всём» совпадают со вторым чтением. Причастие *amans* значит «любящий»: [викисловарь](https://en.wiktionary.org/wiki/amans). Кто кого любит, эти чтения решают по-разному."
+          "comment": "*In omnia* стоит сразу после *amantissima*. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) передаёт эту пару как «самая любимая из всех», а первое *in omnia* на той же странице — «во всём» (*abounds in all*). Одно чтение — «из всех», другое — «во всём». Причастие *amans* значит «любящий»: [викисловарь](https://en.wiktionary.org/wiki/amans). Кто кого любит, эти чтения решают по-разному."
         },
         {
           "id": "hildegard-h6-3",
@@ -3398,7 +3398,7 @@
             "timing-draft"
           ],
           "placedBy": "mms-window",
-          "comment": "«Из глубин, высшая»: *de imis excellentissima*. *De imis* — «из глубин». *Excellentissima* — превосходная степень при слове Любовь, «высочайшая», а не оценка самих глубин. Кэмпбелл переводит «from the depths exalted and excelling» и пишет, что первая половина антифона ведёт Любовь от глубин бездны вверх. Русская строка так и ставит «высшая» рядом с Любовью, не при глубинах. https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html"
+          "comment": "«Из глубин, высшая»: *de imis excellentissima*. *De imis* — «из глубин». *Excellentissima* — превосходная степень при слове Любовь, «высочайшая», а не оценка самих глубин. Кэмпбелл переводит «from the depths exalted and excelling» и пишет, что первая половина антифона ведёт Любовь от глубин бездны вверх. https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html"
         },
         {
           "id": "hildegard-h3-4",
@@ -3448,7 +3448,7 @@
             "timing-draft"
           ],
           "placedBy": "mms-window",
-          "comment": "**Амантиссима** (*amantissima*) — превосходная степень причастия *amans*. [Викисловарь](https://en.wiktionary.org/wiki/amans) даёт причастию значение «любящий», поэтому одно чтение — «в высшей степени любящая»; со словами строки «больше всех любит» совпадает оно. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) переводит то же слово как «самая любимая» и относит его к любви, которую питают к ней. Это два чтения одной формы."
+          "comment": "**Амантиссима** (*amantissima*) — превосходная степень причастия *amans*. [Викисловарь](https://en.wiktionary.org/wiki/amans) даёт причастию значение «любящий», поэтому одно чтение — «в высшей степени любящая», та, что любит больше всех. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) переводит то же слово как «самая любимая» и относит его к любви, которую питают к ней. Это два чтения одной формы."
         },
         {
           "id": "hildegard-h5-4",
@@ -3473,7 +3473,7 @@
             "timing-draft"
           ],
           "placedBy": "mms-ft",
-          "comment": "*In omnia* стоит сразу после *amantissima*. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) передаёт эту пару как «самая любимая из всех», а первое *in omnia* на той же странице — «во всём» (*abounds in all*). Слова строки «во всём» совпадают со вторым чтением. Причастие *amans* значит «любящий»: [викисловарь](https://en.wiktionary.org/wiki/amans). Кто кого любит, эти чтения решают по-разному."
+          "comment": "*In omnia* стоит сразу после *amantissima*. [Кэмпбелл](https://www.hildegard-society.org/2014/11/karitas-habundat-antiphon.html) передаёт эту пару как «самая любимая из всех», а первое *in omnia* на той же странице — «во всём» (*abounds in all*). Одно чтение — «из всех», другое — «во всём». Причастие *amans* значит «любящий»: [викисловарь](https://en.wiktionary.org/wiki/amans). Кто кого любит, эти чтения решают по-разному."
         },
         {
           "id": "hildegard-h6-4",
@@ -3637,7 +3637,7 @@
           "tr": {
             "ru": "кто я, кто этот **кравчий**, что за вино и что за хмель."
           },
-          "comment": "Четыре вопроса без ответа: кто я, кто этот кравчий, что за вино и что за хмель. **Саки** (*sâkî*) — тот, кто разливает вино; перевод зовёт его кравчим. Строка не объясняет, человек это или кто-то больший: она только спрашивает. *Mey* и *sahbâ* стоят рядом как два имени вина; перевод отдаёт первое как «вино», второе как «хмель». https://tr.wikisource.org/wiki/Öyle_ser-mestem_ki_idrâk_etmezem_dünyâ_nedir",
+          "comment": "Четыре вопроса без ответа: кто я, кто этот кравчий, что за вино и что за хмель. **Саки** (*sâkî*) — тот, кто разливает вино; кравчий — виночерпий у чаши. Строка не объясняет, человек это или кто-то больший: она только спрашивает. *Mey* и *sahbâ* стоят рядом как два имени вина: «вино» и «хмель» — эти два имени. https://tr.wikisource.org/wiki/Öyle_ser-mestem_ki_idrâk_etmezem_dünyâ_nedir",
           "placedBy": "mms-window"
         },
         {
