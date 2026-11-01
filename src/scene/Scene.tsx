@@ -200,6 +200,9 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
   }, [register, stage]);
 
   useEffect(() => {
+    // A rebuilt timeline rewrites the header from the playhead. This ref used
+    // to keep the previous index, so the phone and the desk named two passages.
+    ownerRef.current = -2;
     let raf = 0;
     let lastKey = '';
     let noteY = '';
@@ -730,7 +733,9 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       }
 
       placedGen.current = measureGen.current;
-      const owner = Math.max(-1, Math.min(timeline.cues.length - 1, Math.round(pos)));
+      // The header names the passage under the playhead. `pos` may hold the
+      // previous line through an empty ending; that hold is only the picture.
+      const owner = Math.max(-1, Math.min(timeline.cues.length - 1, Math.round(flowPosition(plan, t))));
       const scrubbing = !!host?.classList.contains('is-scrubbing');
       // A slot commit already spent this frame. The plates use the next one,
       // so the header waits one more and does not share that commit.
