@@ -81,12 +81,18 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
     return () => ro.disconnect();
   }, []);
 
-  // Re-measure once web fonts have arrived (line heights change).
+  // Re-measure once web fonts have arrived (line heights change). Later faces
+  // dispatch the same event; the column itself is not resized to force it.
   useEffect(() => {
     let alive = true;
-    document.fonts?.ready.then(() => alive && setStage((s) => ({ ...s })));
+    const poke = () => {
+      if (alive) setStage((s) => ({ ...s }));
+    };
+    void document.fonts?.ready.then(poke);
+    document.addEventListener('living-lyrics:remeasure', poke);
     return () => {
       alive = false;
+      document.removeEventListener('living-lyrics:remeasure', poke);
     };
   }, []);
 
@@ -367,6 +373,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
                   motion={motion}
                   stage={stage}
                   features={features}
+                  showComment={settings.showComment}
                   register={register}
                   onPick={onPick}
                 />
@@ -391,7 +398,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
                 onPick={onPick}
               />
             ) : (
-              <InstBlock key={idx} cue={c} timeline={timeline} timed={wordSync} entrance={entrance} motion={motion} stage={stage} features={features} register={register} onPick={onPick} />
+              <InstBlock key={idx} cue={c} timeline={timeline} timed={wordSync} entrance={entrance} motion={motion} stage={stage} features={features} showComment={settings.showComment} register={register} onPick={onPick} />
             );
           })}
       </div>

@@ -9,6 +9,7 @@
       "live": false,
       "grok/**": false,
       "ll-tech/**": false,
+      "night/**": false,
       "ll-business": false
     }
   },
