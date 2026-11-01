@@ -1,12 +1,12 @@
 {
-  "updated": "2026-11-01T21:08:30Z",
+  "updated": "2026-11-01T21:18:29Z",
   "grok": {
-    "today": 313915368,
+    "today": 321442967,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-01T21:08:30Z",
-    "week": 1758707134,
+    "todayAt": "2026-11-01T21:18:29Z",
+    "week": 1766234733,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-01T21:08:30Z",
+    "weekAt": "2026-11-01T21:18:29Z",
     "todayByTask": {
       "night-ll-song-04-muhabbatga-yaqinlar": 19760819,
       "night-ll-song-09-sari-gelin": 25213540,
@@ -25,8 +25,8 @@
       "night-ll-song-23-we-love-life": 16490049,
       "night-ll-song-24-eterna": 17361371,
       "night-ll-song-27-hasan-bayar-menem": 17433489,
-      "translation-alive": 7484155,
-      "night-ll-cues-03-you": 9515383,
+      "translation-alive": 14574292,
+      "night-ll-cues-03-you": 9952845,
       "night-ll-cues-07-healing": 6538627,
       "night-ll-cues-08-you-came-to-me": 4557853,
       "night-ll-cues-12-the-dawn": 3592402,
@@ -34,14 +34,14 @@
       "night-ll-song-18-go-encore": 14367002
     },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-01T21:08:30Z",
+    "todayByTaskAt": "2026-11-01T21:18:29Z",
     "plan": "SuperGrok Heavy",
     "planSource": "grok /usage",
-    "planAt": "2026-11-01T21:08:30Z",
+    "planAt": "2026-11-01T21:18:29Z",
     "weekly": {
-      "percentUsed": 90,
+      "percentUsed": 92,
       "source": "grok /usage",
-      "at": "2026-11-01T21:08:30Z",
+      "at": "2026-11-01T21:18:29Z",
       "timezoneLabeled": false,
       "resetsAt": "November 6, 21:08"
     }
@@ -50,10 +50,10 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-01T21:08:30Z",
+        "at": "2026-11-01T14:37:31Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "144h 56m"
+        "weeklyResetIn": "151h 27m"
       },
       "claude-gpt": {
         "source": "agy /usage",
@@ -66,13 +66,13 @@
     },
     "conversationsToday": 1,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-01T21:08:30Z",
+    "conversationsTodayAt": "2026-11-01T21:18:29Z",
     "runsToday": 1,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-01T21:08:30Z",
+    "runsTodayAt": "2026-11-01T21:18:29Z",
     "secondsToday": 0,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-01T21:08:30Z",
+    "secondsTodayAt": "2026-11-01T21:18:29Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
     "at": "2026-11-01T21:08:30Z",
@@ -90,8 +90,8 @@
       "kind": "weekly",
       "task": "",
       "session": "",
-      "value": 90,
-      "at": "2026-11-01T21:08:30Z"
+      "value": 92,
+      "at": "2026-11-01T21:18:29Z"
     }
   ],
   "value": {
@@ -106,23 +106,23 @@
   "claude": {
     "plan": "Claude Pro",
     "planSource": "claude auth status --json",
-    "at": "2026-11-01T21:08:30Z",
+    "at": "2026-11-01T21:18:29Z",
     "windows": [
       {
         "kind": "five_hour",
-        "percentUsed": 1,
+        "percentUsed": 3,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T21:08:30Z",
+        "at": "2026-11-01T21:18:29Z",
         "resetsAt": "2026-11-02T01:50:00.000Z",
-        "readAt": "2026-11-01T20:51:03Z"
+        "readAt": "2026-11-01T21:17:58Z"
       },
       {
         "kind": "seven_day",
         "percentUsed": 91,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T21:08:30Z",
+        "at": "2026-11-01T21:18:29Z",
         "resetsAt": "2026-11-06T04:00:00.000Z",
-        "readAt": "2026-11-01T20:51:03Z"
+        "readAt": "2026-11-01T21:17:58Z"
       }
     ],
     "trend": [
@@ -234,6 +234,11 @@
       {
         "at": "2026-11-01T20:58:30Z",
         "five_hour": 1,
+        "seven_day": 91
+      },
+      {
+        "at": "2026-11-01T21:18:29Z",
+        "five_hour": 3,
         "seven_day": 91
       }
     ]
