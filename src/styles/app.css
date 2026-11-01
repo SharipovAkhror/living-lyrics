@@ -1896,14 +1896,15 @@
   transform: translate3d(0, 110%, 0);
   will-change: transform;
   touch-action: pan-y;
-  /* Thick glass. Thin panels keep --glass-bg; a sheet must hide the words under it. */
-  background: var(--sheet-fallback);
+  /* Thick plate. The same fill the sheet settles on, so the open does not change colour. */
+  background: var(--lg-solid);
 }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .sheet.glass {
-    background: var(--sheet-fill);
-    -webkit-backdrop-filter: blur(var(--sheet-blur)) saturate(var(--sheet-saturate));
-    backdrop-filter: blur(var(--sheet-blur)) saturate(var(--sheet-saturate));
+    /* The same fill as the settled sheet. Saturate on the first frame flashed blue. */
+    background: var(--lg-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 .sheet-head {
@@ -1938,17 +1939,6 @@ html.is-sheet-drag .sheet-grabber {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  animation: title-in var(--dur-3) var(--ease-spring);
-}
-@keyframes title-in {
-  from {
-    opacity: 0;
-    transform: translate3d(10px, 0, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
 }
 .sheet-back {
   justify-self: start;
@@ -2717,7 +2707,7 @@ html.is-sheet-drag .sheet-grabber {
   position: relative;
   z-index: 2;
   border-bottom: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
-  background: var(--sheet-fallback);
+  background: transparent;
 }
 .tl-row:not(.is-current) .tl-orig,
 .tl-row:not(.is-current) .tl-tr,
@@ -3575,6 +3565,12 @@ html.is-sheet-drag .sheet-grabber {
 }
 
 /* The scene writes lyric opacity every frame. This wins until the cover has landed. */
+/* A retry removes the banner and the stage grows for one frame. A cut line
+   at the bottom used to flash before the next placement. */
+.song.is-refitting .fb--line:not(.is-current),
+.song.is-refitting .fb--intro {
+  visibility: hidden !important;
+}
 .song.is-arriving .fb,
 .song.is-arriving .ist-chip {
   opacity: var(--title-in, 0) !important;
@@ -4391,4 +4387,16 @@ html[data-sheet='1'] .song {
   .player .util-trail { justify-content: flex-end; }
   .player .transport { justify-content: center; }
   .player .util { flex-direction: row; }
+  /* Nowrap labels were wider than the trail and crossed the player's right edge. */
+  .player .util-lead .util,
+  .player .util-trail .util {
+    min-width: 0;
+    overflow: hidden;
+    padding-inline: 4px;
+  }
+  .player .util-lead .util-label,
+  .player .util-trail .util-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }

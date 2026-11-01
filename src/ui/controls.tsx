@@ -156,7 +156,7 @@ export function Sheet({
     // with the rows; they are what made the first cast frame late.
     if (plainRef.current) {
       el.dataset.shell = '1';
-      el.style.background = 'var(--sheet-fallback)';
+      el.style.background = 'var(--lg-solid)';
       el.style.boxShadow = 'none';
       el.style.backdropFilter = 'none';
       el.style.setProperty('-webkit-backdrop-filter', 'none');

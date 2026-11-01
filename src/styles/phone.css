@@ -24,7 +24,7 @@
     backdrop-filter: none;
   }
   .sheet.glass {
-    background: var(--sheet-fallback);
+    background: var(--lg-solid);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -71,7 +71,7 @@ html[data-phone='1'] .player-alert.glass {
 }
 
 html[data-phone='1'] .sheet.glass {
-  background: var(--sheet-fallback);
+  background: var(--lg-solid);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }

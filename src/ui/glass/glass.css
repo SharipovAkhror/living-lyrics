@@ -99,7 +99,9 @@ html[data-glass='lens'] .lg-host--card .lg-edge {
 
 /* The sheet stays dense. The floor is thin enough that the song field reads through. */
 .lg-host--sheet .lg-lens {
-  background: var(--lg-fill-thick);
+  background: var(--lg-solid);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 .lg-host--floor .lg-lens {
   background: none;
@@ -195,6 +197,11 @@ html[data-glass='solid'] .lg-spec {
   background: transparent;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
+}
+/* The shared rule above clears the sheet. Put the solid fill back, or the
+   lens colour arrives a frame later and the dialog flashes. */
+.sheet.glass.lg-host {
+  background: var(--lg-solid);
 }
 
 .topbar.lg-host::before,

@@ -1,6 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Group, Row, Segmented, Sheet, Slider, Switch } from '@/ui/controls';
-import { SHEET_SHELL_MS } from '@/scene/cover';
 import { Icon } from '@/ui/icons';
 import { loadFontLabels, ORIGINAL_FONTS, PERSIAN_FONTS, TRANSLATION_FONTS, type FontFace } from '@/app/fontCatalog';
 import { effectiveMotion, setSettings, type InstrumentStyle, type LineEntrance, type MotionPref, type Settings, type TextAlign, type ThemePref } from '@/app/settings';
@@ -56,50 +55,12 @@ export function SettingsSheet({
   has: { translit: boolean; alt: boolean; persian: boolean; arab: boolean };
 }) {
   const [page, setPage] = useState<Page>('home');
-  // Rows and glass wait one frame so the tap paints the shell only.
-  // The sheet stays mounted after it closes, so a later open has to drop
-  // back to the shell in the same render that `open` turns true.
-  const [full, setFull] = useState(false);
-  const wasOpen = useRef(false);
-  if (open && !wasOpen.current && full) setFull(false);
-  else wasOpen.current = open;
-  useEffect(() => {
-    if (!open) return;
-    const id = window.setTimeout(() => setFull(true), SHEET_SHELL_MS);
-    return () => window.clearTimeout(id);
-  }, [open]);
-  // Phone CSS draws these rows at full opacity with no animation. A fade of
-  // two frames keeps the arrival from popping, and the sheet holds its top
-  // until the flag drops (D33). Desktop already fades; an inline opacity
-  // loses to that animation, so this only changes the phone.
-  useLayoutEffect(() => {
-    if (!full) return;
-    const sheet = document.querySelector('.sheet');
-    const stage = document.querySelector('.set-stage');
-    if (!(sheet instanceof HTMLElement) || !(stage instanceof HTMLElement)) return;
-    const nodes = [...stage.querySelectorAll('.group')].filter((node): node is HTMLElement => node instanceof HTMLElement);
-    for (const node of nodes) node.style.opacity = '0';
-    sheet.dataset.rowLock = '1';
-    const steps = [0.34, 0.67, 1];
-    let i = 0;
-    let raf = 0;
-    const tick = () => {
-      const value = steps[i];
-      i += 1;
-      for (const node of nodes) node.style.opacity = String(value);
-      if (i < steps.length) {
-        raf = requestAnimationFrame(tick);
-        return;
-      }
-      for (const node of nodes) node.style.removeProperty('opacity');
-      delete sheet.dataset.rowLock;
-    };
-    raf = requestAnimationFrame(tick);
-    return () => {
-      cancelAnimationFrame(raf);
-      delete sheet.dataset.rowLock;
-    };
-  }, [full]);
+  // Rows and the final fill are on the first open frame. A shell that filled
+  // in later was an empty slab, and the colour changed when the rows arrived.
+  // They stay mounted through the close so the sheet does not collapse mid-flight.
+  const heldOpen = useRef(false);
+  if (open) heldOpen.current = true;
+  const full = open || heldOpen.current;
   const [leaving, setLeaving] = useState<Page | null>(null);
   const [dir, setDir] = useState<1 | -1>(1);
   const input = useRef<HTMLInputElement>(null);
