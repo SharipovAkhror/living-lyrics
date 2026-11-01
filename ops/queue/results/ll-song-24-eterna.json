@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-24-eterna",
+  "status": "pass",
+  "branch": "night/ll-song-24-eterna",
+  "commit": "f72b0e590d4ce1feb9153194f3d9c9deabf11536",
+  "tokens": 17361371,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts eterna\n\n\n✓ eterna  (0 ошибок, 2 предупреждений)\n  внимание  transcript.json: нет docs/analysis/<slug>/transcript.json: порядок строк с голосом не сверен\n  внимание  cues.json: нет docs/analysis/<slug>/cues.json: время строк по официальным субтитрам (docs/methodology/04-text.md)\n\nИтого: 0 ошибок, 2 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue-b\\logs\\ll-song-24-eterna.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
