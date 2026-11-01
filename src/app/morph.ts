@@ -567,19 +567,23 @@ export function playRise(root: HTMLElement, done: () => void): () => void {
         quiet = false;
         return;
       }
-      if (progress < group.gate) {
+      if (progress < group.gate || underOpacity > 0) {
         paint(group.sel, group.dist, 0);
         quiet = false;
         return;
       }
-      // The title used to wait on a spring that opened at this gate, so the
-      // last third of the flight was still a dark stage on a 100 ms sheet.
-      // It now tracks the flight itself and is already up as the cover lands.
+      // The title tracks the flight, so a 100 ms sheet still sees it rise
+      // with the cover. The shelf can outlast that flight: snapping to full
+      // ink then drew the song on top of a library that was still readable.
+      // The spring starts only once the shelf has left, and eases onto the
+      // flight instead of jumping.
       if (group.sel !== '.player') {
         const span = Math.max(0.001, 1 - group.gate);
-        const t = Math.max(0, Math.min(1, (progress - group.gate) / span));
+        const flightT = Math.max(0, Math.min(1, (progress - group.gate) / span));
+        springs[i] = stepSpring(springs[i], flightT, dt, RISE);
+        const t = Math.max(0, Math.min(1, springs[i].x));
         paint(group.sel, group.dist, t);
-        if (t < 0.99) quiet = false;
+        if (t < 0.99 || Math.abs(flightT - t) > 0.02) quiet = false;
         return;
       }
       springs[i] = stepSpring(springs[i], 1, dt, RISE);
