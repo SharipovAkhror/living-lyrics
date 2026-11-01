@@ -199,13 +199,17 @@
     filter: saturate(0.1);
   }
   .song .fb-repeat,
-  .fb--line:not(.is-current) .fb-orig,
-  .fb--line:not(.is-current) .fb-orig .w,
-  .fb--line:not(.is-current) .fb-tr,
-  .fb--line:not(.is-current) .fb-translit,
-  .fb--line:not(.is-current) .fb-alt {
+  .fb--line .fb-orig,
+  .fb--line .fb-orig .w,
+  .fb--line .fb-tr,
+  .fb--line .fb-translit,
+  .fb--line .fb-alt {
     color: var(--ink);
     opacity: 1;
+  }
+  /* The scene writes opacity on the line itself. A child cannot outvote that. */
+  .fb--line:not(.is-current) {
+    opacity: 1 !important;
   }
 }
 .field-star {
