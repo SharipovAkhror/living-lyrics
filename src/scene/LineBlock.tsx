@@ -141,6 +141,7 @@ export function syncInstNote(inst: HTMLElement): void {
     limit: playerTop - 4,
     maxTop,
     pad: 16,
+    strict: true,
   });
   if (top == null) return;
   instFootKey = key;

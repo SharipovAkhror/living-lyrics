@@ -92,6 +92,8 @@ export function footnoteTop(opts: {
   limit: number;
   maxTop: number;
   pad?: number;
+  /** Do not cover a sung line. Captions stay clear either way. */
+  strict?: boolean;
 }): number | null {
   const pad = opts.pad ?? 8;
   const { noteH, ceiling, under, maxTop } = opts;
@@ -100,7 +102,8 @@ export function footnoteTop(opts: {
   const clear = (top: number, bands: VBand[]) => {
     if (top < ceiling - 0.5 || top > maxTop + 0.5 || top + noteH > limit + 0.5) return false;
     const bottom = top + noteH;
-    return !bands.some((b) => b.bottom > top + 0.5 && b.top < bottom - 0.5);
+    // Pad on both sides. A card that merely misses the next line still sits on it.
+    return !bands.some((b) => b.bottom > top - pad + 0.5 && b.top < bottom + pad - 0.5);
   };
   const gaps = (bands: VBand[]) => {
     const merged = mergeBands(bands);
@@ -119,6 +122,7 @@ export function footnoteTop(opts: {
   if (clear(preferred, obstacles)) return Math.round(preferred * 10) / 10;
   const below = gaps(obstacles).filter((t) => t >= under - 0.5 && clear(t, obstacles));
   if (below.length) return Math.round(below[0] * 10) / 10;
+  if (opts.strict) return null;
   // The next line fills the gap. Still keep the captions clear, even above the picture.
   const hard = mergeBands(opts.hard);
   const hardBelow = gaps(hard).filter((t) => t >= under - 0.5 && clear(t, hard));

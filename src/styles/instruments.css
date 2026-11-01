@@ -106,14 +106,15 @@
    The hit also scales the drawing, at most to 1.04. Only transform, opacity and filter move. */
 .scene .ist-art {
   will-change: transform, filter;
+  /* The song field is the same violet as an accent-tinted stroke. The text ink
+     stays readable on that field in both themes; the theme attribute is not required. */
+  color: var(--ink);
 }
-/* Light field is the song's own violet. An accent-tinted stroke disappeared into it.
-   The ink is the text colour, and the contour is a hair thicker so a 1px line still reads. */
-:root[data-theme='light'] .scene .ist {
-  --ist-ink: var(--ink);
+.scene .ist-art .d {
+  stroke-width: 2.6;
 }
-:root[data-theme='light'] .scene .ist-art .d {
-  stroke-width: 1.8;
+.scene .ist-art .h {
+  stroke-width: 1.4;
 }
 .ist-art .str {
   transform: translate(var(--str-x, 0), var(--str-y, 0));
