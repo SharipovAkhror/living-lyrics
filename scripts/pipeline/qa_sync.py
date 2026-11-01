@@ -165,15 +165,45 @@ def default_word_rule() -> dict:
     }
 
 
-def load_word_rule() -> dict:
-    """The rule attack_chance.py wrote, or the 0.10 s default when the file is absent."""
+_SONG_CHOICE_SKIP = ('k', 'shifts', 'shift_chance', 'word_limit')
+
+
+def overlay_song_choice(rule: dict, song: dict | None) -> dict:
+    """Replace the shared lists with one song's own choice.
+
+    `k` is that song's line share. It is applied even when it is null, so a
+    song measured without a share does not inherit another song's K. The shift
+    grid and the word limit stay the published constants and are not copied.
+    A missing song record leaves the shared rule as it is.
+    """
+    if not isinstance(song, dict):
+        return rule
+    out = dict(rule)
+    for key, value in song.items():
+        if key in _SONG_CHOICE_SKIP:
+            continue
+        out[key] = value
+    if 'k' in song:
+        out['line_share'] = song['k']
+    return out
+
+
+def load_word_rule(slug: str | None = None) -> dict:
+    """The rule attack_chance.py wrote, or the 0.10 s default when the file is absent.
+
+    When the bench stores `by_song`, the named song replaces the shared line
+    lists and its own K. A file without `by_song` keeps the shared rule.
+    """
     path = ROOT / 'docs' / 'analysis' / 'bench' / 'attack-chance.json'
     if not path.exists():
         return default_word_rule()
     try:
-        chosen = json.loads(path.read_text(encoding='utf-8')).get('chosen') or {}
+        data = json.loads(path.read_text(encoding='utf-8'))
     except (OSError, json.JSONDecodeError):
         return default_word_rule()
+    if not isinstance(data, dict):
+        return default_word_rule()
+    chosen = data.get('chosen') or {}
     if 'tol' not in chosen:
         return default_word_rule()
     rule = default_word_rule()
@@ -310,7 +340,26 @@ def load_word_rule() -> dict:
     # only the fallback for a file that still names one mode for every line.
     if rule['witnesses'] or rule['scopes']:
         rule['require_second'] = False
+    if slug:
+        by_song = data.get('by_song') if isinstance(data.get('by_song'), dict) else {}
+        song = by_song.get(slug)
+        if isinstance(song, dict):
+            rule = overlay_song_choice(rule, song)
     return rule
+
+
+def held_lines_lost(lines, passed_ids) -> list[str]:
+    """Retained file lines of these lyrics that this proof did not pass.
+
+    The retained set is the frozen list plus the pass-5 trio, minus withdrawn.
+    A line of another song is not this proof's to lose. Import inside the
+    function: attack_chance imports this module.
+    """
+    import attack_chance as A
+
+    song_ids = {line.get('id') for _, line in lines if line.get('id')}
+    passed = {str(item) for item in (passed_ids or []) if item}
+    return [lid for lid in A._published_ids() if lid in song_ids and lid not in passed]
 
 
 def apply_saved_retime(slug: str, lyrics: dict, align_report: dict | None, rule: dict | None,
@@ -2335,7 +2384,7 @@ def main() -> int:
     align_path = work_dir(slug) / 'align-report.json'
     use_report = args.lyrics is None and align_path.exists()
     align_report = json.loads(align_path.read_text(encoding='utf-8')) if use_report else None
-    rule = load_word_rule()
+    rule = load_word_rule(slug)
     rule['song'] = slug
     if align_report is not None and apply_saved_retime(slug, lyrics, align_report, rule, sig):
         if args.apply:
@@ -2395,19 +2444,30 @@ def main() -> int:
                 align_path.write_text(json.dumps(align_report, ensure_ascii=False, indent=1), encoding='utf-8')
                 print(f'переводные реплики вне допущенного окна возвращены на реплику: {pulled}')
         proof = build_proof(sig, lines, results, align_report, cues, word_rule=rule)
+    file_refused = False
+    lost_file: list[str] = []
     if args.apply and proof is not None and song.get('timing', {}).get('status') == 'verified':
         print('song.json: timing.status = verified — qa_sync --apply ничего не меняет')
     elif args.apply and proof is not None:
         passed_ids = {r['id'] for r in proof['lines'] if r['pass']}
-        for _, line in lines:
-            T.set_flag(line, 'timing-draft', line['id'] not in passed_ids)
-        payload = timing_payload(slug, proof, align_report)
-        if 'method' not in payload:
-            payload['method'] = song.get('timing', {}).get('method', 'unmeasured')
-        song['timing'] = payload
-        lyr_path.write_text(dump_json(lyrics), encoding='utf-8')
-        if song_path.exists():
-            song_path.write_text(dump_json(song), encoding='utf-8')
+        lost_file = held_lines_lost(lines, passed_ids)
+        if lost_file:
+            # One retained line of this song is unproved. Leave lyrics and
+            # song.json untouched. The qa report below still records the proof.
+            file_refused = True
+            shown = ', '.join(lost_file[:12])
+            more = '' if len(lost_file) <= 12 else f' и ещё {len(lost_file) - 12}'
+            print(f'потеряна строка файла: {shown}{more}')
+        else:
+            for _, line in lines:
+                T.set_flag(line, 'timing-draft', line['id'] not in passed_ids)
+            payload = timing_payload(slug, proof, align_report)
+            if 'method' not in payload:
+                payload['method'] = song.get('timing', {}).get('method', 'unmeasured')
+            song['timing'] = payload
+            lyr_path.write_text(dump_json(lyrics), encoding='utf-8')
+            if song_path.exists():
+                song_path.write_text(dump_json(song), encoding='utf-8')
     meta = {'slug': slug, 'title': song.get('title'), 'date': dt.date.today().isoformat(), 'audio': audio.name,
             'stem': is_stem, 'lyrics': rel(lyr_path),
             'voice_threshold_db': round(sig.thr, 1)}
@@ -2415,6 +2475,7 @@ def main() -> int:
     md = render_md(meta, summary, results, words, gaps, novoice, glob, baseline, fixed, st, proof)
     out = {'meta': meta, 'summary': summary, 'proof': proof, 'global': glob, 'lines': results, 'words': words,
            'voice_without_text': gaps, 'selftest': st, 'fixed': fixed,
+           'file_gate': {'refused': file_refused, 'lost': lost_file},
            'params': {'max_lag': MAX_LAG, 'tol': TOL, 'no_voice': NO_VOICE, 'min_gain': MIN_GAIN, 'min_prom': MIN_PROM,
                       'strong_gain': STRONG_GAIN, 'strong_prom': STRONG_PROM, 'onset_weights': ONSET_W,
                       'w_act': W_ACT, 'w_edge': W_EDGE}}
@@ -2448,6 +2509,8 @@ def main() -> int:
     bad = s['off_lines'] + s['no-voice'] + (s['low'] if args.strict else 0)
     if proof and (not proof['aligned'] or proof['failed_solo'] or proof.get('failed_choir')):
         bad += 1
+    if file_refused:
+        return 2
     return 1 if bad else 0
 
 

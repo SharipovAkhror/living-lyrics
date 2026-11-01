@@ -2596,6 +2596,261 @@ def test_listen9_baseline() -> None:
           str((counts, len(live))))
 
 
+def test_file_write_gate() -> None:
+    """The retained file is 152 lines. Losing one refuses the data write.
+
+    pass_keeps_baseline only looks at the ids of this run, and a line pass
+    above 5 % excuses a missing run line. The file gate does not use that
+    excuse. The count is baseline-155.json plus the pass-5 trio, minus
+    withdrawn.
+    """
+    import attack_chance as A
+
+    ids = A._published_ids()
+    dropped = ids[-1]
+    ok, detail = A.file_write_allowed(ids)
+    check('the full retained file may be written', ok and detail == 'файл удержан: 152', detail)
+    lost = A.file_lines_lost(ids[:-1])
+    check('one missing file line is the one that was dropped',
+          lost == [dropped], str(lost[:4]))
+    ok, detail = A.file_write_allowed(ids[:-1])
+    check('one missing file line refuses the write',
+          not ok and dropped in detail and 'потеряна строка файла' in detail, detail)
+    excused = {
+        'proved': ids[:-1], 'lost': [dropped],
+        'lost_detail': {dropped: 0.10}, 'lost_chance': 0.10,
+    }
+    check('the run gate still allows a cap above 5 %',
+          A.pass_keeps_baseline(excused, ids))
+    check('the file gate does not use that cap as an excuse',
+          not A.file_write_allowed(excused['proved'])[0])
+    slugs = ['i-have-come-alive', 'karitas', 'one', 'alive']
+    held = {
+        'songs': slugs,
+        'chosen': {
+            'name': 'line-0.25', 'within_limit': True, 'baseline_kept': True,
+            'baseline_n': 158, 'baseline_reason': 'удержано', 'chance': 0.04,
+            'file_proved': list(ids),
+        },
+    }
+    ok, detail = A.commit_gate(held, slugs, 0)
+    check('a bench that still has every file line may commit',
+          ok and '158' in detail, detail)
+    short = {
+        'songs': slugs,
+        'chosen': dict(held['chosen'], file_proved=ids[:-1]),
+    }
+    ok, detail = A.commit_gate(short, slugs, 0)
+    check('a bench that lost one file line does not commit',
+          not ok and 'файл не удержан' in detail and dropped in detail, detail)
+
+
+def test_song_choice_is_per_song() -> None:
+    """Alive's K and phoneme witness stay on Alive. An old song keeps its own."""
+    import attack_chance as A
+
+    shared = {
+        'line_share': 0.25,
+        'line_limit': 0.05,
+        'shifts': {'0.15': 0.02},
+        'scopes': [
+            {'song': 'i-have-come-alive', 'lang': 'fa', 'witnesses': 'one', 'phoneme': 'off'},
+            {'song': 'alive', 'lang': 'fa', 'witnesses': 'one', 'phoneme': 'or',
+             'phoneme_model': 'xlsr-53-espeak'},
+        ],
+        'line_fill': ['arabic-1', 'b1q1-01'],
+        'line_roles': {'arabic-1': 'or', 'b1q1-01': 'only'},
+        'lang_of': {
+            'i-have-come-alive|fa': 'xlsr-53-fa-m3hrdadfi',
+            'alive|fa': 'xlsr-53-fa-m3hrdadfi',
+        },
+        'refute': {'both_far': 0.20, 'only_far': 0.30},
+        'retime': {'i-have-come-alive': [{'id': 'arabic-1'}], 'alive': [{'id': 'b1q1-01'}]},
+    }
+    old = A.song_choice_from_chosen(shared, 'i-have-come-alive', {'arabic-1'})
+    alive = A.song_choice_from_chosen(shared, 'alive', {'b1q1-01'})
+    alive['k'] = 0.50
+    check('an old song stores K, the shift grid and the limits',
+          old['k'] == 0.25 and old['shifts'] == [0.15, 0.25, 0.40]
+          and old['word_limit'] == 0.15 and old['line_limit'] == 0.05, str(old))
+    check('an old song does not keep Alive lines or Alive language clocks',
+          old['line_fill'] == ['arabic-1'] and old['line_roles'] == {'arabic-1': 'or'}
+          and list(old['lang_of']) == ['i-have-come-alive|fa']
+          and old['scopes'] == [shared['scopes'][0]]
+          and old['retime'] == {'i-have-come-alive': [{'id': 'arabic-1'}]}, str(old))
+    over_old = Q.overlay_song_choice(shared, old)
+    over_alive = Q.overlay_song_choice(shared, alive)
+    check('overlaying the old song keeps its share and drops the Alive witness',
+          over_old['line_share'] == 0.25
+          and over_old['scopes'] == [shared['scopes'][0]]
+          and over_old['line_fill'] == ['arabic-1'], str(over_old))
+    check('overlaying Alive keeps its own share and its phoneme witness',
+          over_alive['line_share'] == 0.50
+          and over_alive['scopes'][0]['phoneme'] == 'or'
+          and over_alive['line_fill'] == ['b1q1-01']
+          and 'arabic-1' not in over_alive['line_roles'], str(over_alive))
+    bare = dict(alive)
+    bare['k'] = None
+    over_bare = Q.overlay_song_choice(shared, bare)
+    check('a song measured without a share does not inherit the other K',
+          over_bare['line_share'] is None, str(over_bare.get('line_share')))
+    lines = [(None, {'id': lid}) for lid in A._published_ids()]
+    missed = Q.held_lines_lost(lines, set(A._published_ids()[:-1]))
+    check('qa names the one held line this proof missed',
+          missed == [A._published_ids()[-1]], str(missed[:4]))
+    root = Path(__file__).resolve().parents[2]
+    workflow = (root / '.github' / 'workflows' / 'pipeline.yml').read_text(encoding='utf-8')
+    align = workflow.split('\n  align:\n', 1)[1].split('\n  prove:\n', 1)[0]
+    prepare = workflow.split('\n  prepare:\n', 1)[1].split('\n  run:\n', 1)[0]
+    prove = workflow.split('\n  prove:\n', 1)[1]
+    check('align artifacts use the public maximum retention',
+          'retention-days: 90' in align and 'retention-days: 7' not in align)
+    check('an align job without qa does not open the measure',
+          'measure=' in prepare and "outputs.measure == 'yes'" in prove)
+
+
+def test_fresh_song_keeps_the_baseline() -> None:
+    """A run of only a new song must not fail the frozen songs' baseline.
+
+    Run 41217910624 measured for-true-lovers alone. The union path then
+    reported english-1 and the other frozen lines as lost, and prove put the
+    song back. The new song is measured on its own. Both gates pass and the
+    published bench files stay. A frozen song that loses a line, a line pass
+    over 5 %, a missing rule and a dead script still refuse.
+    """
+    import attack_chance as A
+
+    root = Path(__file__).resolve().parents[2]
+    bench = root / 'docs' / 'analysis' / 'bench' / 'attack-chance.json'
+    baseline = root / 'docs' / 'analysis' / 'bench' / 'baseline-155.json'
+    bench_before = bench.read_bytes()
+    baseline_before = baseline.read_bytes()
+    ids = A._published_ids()
+    published = json.loads(bench_before)
+    published_choice = published['chosen']
+
+    ok, detail = A.qa_file_gate(['for-true-lovers'])
+    check('a new-song file gate passes without the frozen lines',
+          ok and detail == 'файл не этой песни: база не тронута', detail)
+    real_proved = A.qa_proved_ids
+    A.qa_proved_ids = lambda slugs: ids[:-1]
+    try:
+        ok, detail = A.qa_file_gate(['karitas'])
+        mixed_ok, mixed_detail = A.qa_file_gate(['karitas', 'for-true-lovers'])
+    finally:
+        A.qa_proved_ids = real_proved
+    dropped = ids[-1]
+    check('a frozen song that lost a line still fails the file gate',
+          not ok and dropped in detail and 'потеряна строка файла' in detail, detail)
+    check('naming a frozen song still checks the whole file',
+          not mixed_ok and dropped in mixed_detail, mixed_detail)
+
+    calls: list[list[str]] = []
+
+    def fake_measure(slugs):
+        calls.append(list(slugs))
+        over = slugs == ['over-limit']
+        missing = slugs == ['no-rule']
+        return {
+            'songs': list(slugs),
+            'chosen': {
+                'name': 'unmeasured' if missing else 'line-0.25',
+                'within_limit': not over and not missing,
+                'baseline_kept': False,
+                'baseline_reason': 'базовая строка потеряна без прохода выше 5 %',
+                'baseline_lost': [{'id': 'english-1', 'chance': None}],
+                'chance': 0.2 if over else 0.04,
+                'line_share': 0.5,
+                'scopes': [{'song': slugs[0], 'lang': 'en', 'witnesses': 'one'}],
+                'line_fill': ['open-1'],
+            },
+            'phoneme': {'kept': False, 'search': None},
+        }
+
+    real_measure = A._measure_slugs
+    A._measure_slugs = fake_measure
+    try:
+        payload = A.build_payload(['for-true-lovers'])
+        over_payload = A.build_payload(['over-limit'])
+        missing_payload = A.build_payload(['no-rule'])
+        frozen_payload = A.build_payload(['karitas'])
+    finally:
+        A._measure_slugs = real_measure
+    check('a new song is measured on its own, not in the frozen union',
+          calls[0] == ['for-true-lovers'] and ['i-have-come-alive', 'karitas', 'one'] not in calls,
+          str(calls))
+    check('a frozen-only run is still measured as named',
+          calls[-1] == ['karitas'], str(calls))
+    chosen = payload['chosen']
+    check('the published rule stays on a new-song run',
+          chosen['name'] == published_choice['name']
+          and chosen.get('line_share') == published_choice.get('line_share')
+          and chosen.get('line_fill') == published_choice.get('line_fill')
+          and chosen.get('scopes') == published_choice.get('scopes'),
+          str(chosen.get('name')))
+    check('the new song does not inherit a lost frozen baseline',
+          chosen['baseline_kept'] is True and chosen['baseline_lost'] == []
+          and chosen['baseline_reason'] == 'удержано'
+          and chosen['baseline_n'] == 152
+          and payload['frozen']['kept'] is True and payload['frozen']['lost'] == [],
+          str(chosen.get('baseline_reason')))
+    check('the frozen songs stay in the bench song list',
+          payload['songs'] == ['i-have-come-alive', 'karitas', 'one', 'for-true-lovers']
+          and payload['measured_songs'] == ['for-true-lovers'],
+          str(payload['songs']))
+    own = payload['by_song']['for-true-lovers']
+    check('the new song keeps the share its own measurement chose',
+          own['k'] == 0.5 and own['line_limit'] == 0.05, str(own.get('k')))
+    ok, detail = A.commit_gate(payload, ['for-true-lovers'], 0)
+    check('a new-song run passes the bench gate', ok and '152' in detail, detail)
+    ok, detail = A.commit_gate(payload, ['for-true-lovers'], 2)
+    check('a dead script still does not commit',
+          not ok and detail == 'замер атак не выбрал правило', detail)
+    ok, detail = A.commit_gate(over_payload, ['over-limit'], 0)
+    check('a new song over 5 % is refused as its own rule',
+          not ok and 'не выбрал правило' in detail and '0.2' in detail
+          and 'база не удержана' not in detail
+          and over_payload['chosen']['baseline_kept'] is True, detail)
+    ok, detail = A.commit_gate(missing_payload, ['no-rule'], 0)
+    check('a new song with no rule is refused',
+          not ok and 'не выбрал правило' in detail and 'база не удержана' not in detail, detail)
+    ok, detail = A.commit_gate(frozen_payload, ['karitas'], 0)
+    check('a frozen song that lost a line is still refused',
+          not ok and 'база не удержана' in detail
+          and 'базовая строка потеряна' in detail
+          and frozen_payload['chosen']['baseline_kept'] is False, detail)
+    check('the published bench files were not rewritten',
+          bench.read_bytes() == bench_before and baseline.read_bytes() == baseline_before)
+    workflow = (root / '.github' / 'workflows' / 'pipeline.yml').read_text(encoding='utf-8')
+    prove = workflow.split('\n  prove:\n', 1)[1]
+    measure, commit = prove.split('Commit results and remove the job files', 1)
+    check('prove holds the bench when the new song passes',
+          'commit_bench=hold' in measure and '= "hold"' in commit and '!= "hold"' in commit)
+    check('hold puts only the published bench back',
+          'git checkout -- docs/analysis/bench' in commit
+          and 'git clean -fd -- docs/analysis/bench' in commit
+          and commit.index('git checkout -- content/songs docs/analysis') < commit.index('git add docs/analysis/bench'))
+
+
+def test_qa_report_is_uploaded() -> None:
+    """A refused file gate must still leave qa-sync.json.
+
+    Run 41159206022 refused 97 retained lines. The prove step exits 0 and a
+    later step fails the job, and work/ is gitignored, so the report never
+    became an artifact. The upload runs on every outcome and is kept 90 days,
+    the same retention as an alignment.
+    """
+    root = Path(__file__).resolve().parents[2]
+    workflow = (root / '.github' / 'workflows' / 'pipeline.yml').read_text(encoding='utf-8')
+    prove = workflow.split('\n  prove:\n', 1)[1]
+    check('prove copies qa-sync.json out of the gitignored work directory',
+          'qa-pack' in prove and 'work/$slug/qa-sync.json' in prove)
+    upload = prove.split('- name: Upload qa-sync', 1)[1].split('\n      - name:', 1)[0]
+    check('prove uploads qa-sync even when the file gate refuses',
+          'if: always()' in upload and 'retention-days: 90' in upload
+          and 'name: qa-sync' in upload and 'if-no-files-found: warn' in upload)
+
+
 def test_lyric_frame_rises() -> None:
     """A caption onset is the first frame of a held rise, not a flicker."""
     import lyric_frames as LF
@@ -2661,6 +2916,10 @@ def main() -> int:
     test_attack_chance()
     test_bench_commit_gate()
     test_listen9_baseline()
+    test_file_write_gate()
+    test_fresh_song_keeps_the_baseline()
+    test_qa_report_is_uploaded()
+    test_song_choice_is_per_song()
     test_run_job_commit_gate()
     test_align_from_run_per_song()
     test_line_rule()

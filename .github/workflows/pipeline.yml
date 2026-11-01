@@ -34,9 +34,14 @@
 # That line is proved by Whisper or the attack, not by the phoneme model. A witness kind
 # is dropped as a refuter for one song and language only when the placers and the T29
 # hearing agree against it and the shifted-label gates still rise
-# (docs/analysis/bench/refuter.md). The published join must keep
-# docs/analysis/bench/baseline-155.json unless holding a lost line would push the line
-# pass over 5 %. The prove job commits docs/analysis/bench only when this
+# (docs/analysis/bench/refuter.md). The published join must keep the ids of
+# this run unless holding a lost line would push the line pass over 5 %.
+# The retained file is separate: baseline-155.json plus the pass-5 trio, minus
+# withdrawn, is 152 lines. Losing one of those refuses the lyrics write and
+# sets commit_bench to no. The qa report is still uploaded. work/ is gitignored,
+# so the prove job copies qa-sync.json out and keeps the artifact for 90 days
+# even when the job then fails. Run 41159206022 lost that file, and with it the
+# per-line reasons. The prove job commits docs/analysis/bench only when this
 # measurement chose a rule and baseline_kept is true. A refused rule leaves
 # the published bench untouched and the run still fails. Run 40144966993
 # committed a one-song bench after that refusal. The run job uses the same
@@ -113,6 +118,7 @@ jobs:
       prove_files: ${{ steps.jobs.outputs.prove_files }}
       reuse_run: ${{ steps.jobs.outputs.reuse_run }}
       reuse_pairs: ${{ steps.jobs.outputs.reuse_pairs }}
+      measure: ${{ steps.jobs.outputs.measure }}
     steps:
       - uses: actions/checkout@v4
       - name: Collect jobs
@@ -169,6 +175,9 @@ jobs:
           reuse_pairs = ','.join(
               f"{j['slug']}={str(j.get('align_from_run')).strip()}" for j in reuse_jobs)
           prove_jobs = align_jobs or reuse_jobs
+          # Align-only jobs upload artifacts. The measure opens when a job
+          # asks for qa, or when align_from_run reuses a finished alignment.
+          measure = 'yes' if (any('qa' in (j.get('stages') or []) for j in ok) or reuse_jobs) else 'no'
           include = []
           for j in align_jobs:
               stages = [s for s in j['stages'] if s not in ('qa', 'calibrate')]
@@ -184,6 +193,7 @@ jobs:
               f.write(f"prove_files={' '.join(j['file'] for j in prove_jobs if j['file'])}\n")
               f.write(f"reuse_run={reuse_run}\n")
               f.write(f"reuse_pairs={reuse_pairs}\n")
+              f.write(f"measure={measure}\n")
               f.write('align_matrix=' + json.dumps({'include': include}, separators=(',', ':')) + '\n')
           print(json.dumps({'align': include, 'reuse_run': reuse_run, 'reuse_pairs': reuse_pairs,
                             'prove': [j['slug'] for j in prove_jobs]}, ensure_ascii=False, indent=1))
@@ -778,7 +788,8 @@ jobs:
           name: align-${{ matrix.slug }}
           path: pipeline-pack
           if-no-files-found: error
-          retention-days: 7
+          # 90 days is the longest a public repository allows.
+          retention-days: 90
 
   prove:
     needs: [prepare, calibrate, align]
@@ -786,7 +797,7 @@ jobs:
       always() &&
       needs.prepare.result == 'success' &&
       (
-        (needs.prepare.outputs.align_count != '0' && needs.calibrate.result == 'success' && needs.align.result == 'success')
+        (needs.prepare.outputs.align_count != '0' && needs.prepare.outputs.measure == 'yes' && needs.calibrate.result == 'success' && needs.align.result == 'success')
         ||
         (needs.prepare.outputs.reuse_run != '' && needs.prepare.outputs.align_count == '0')
       )
@@ -1053,11 +1064,65 @@ jobs:
               fi
               [ $rc -gt $worst ] && worst=$rc
             done < /tmp/calibrate.txt
+            echo "::group::file gate"
+            python3 - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, 'scripts/pipeline')
+          import attack_chance as A
+          slugs = [s for s in Path('/tmp/calibrate.txt').read_text(encoding='utf-8').split() if s]
+          ok, detail = A.qa_file_gate(slugs)
+          print(detail)
+          # hold: this run named no frozen song. qa has already read the
+          # measurement. The commit puts the published bench back.
+          mode = 'hold' if ok and A.outside_frozen(slugs) else 'yes'
+          Path('/tmp/file-gate.txt').write_text(
+              ('yes' if ok else 'no') + '\n' + detail + '\n' + mode + '\n', encoding='utf-8')
+          raise SystemExit(0 if ok else 2)
+          PY
+            file_rc=$?
+            echo "::endgroup::"
+            if [ "$file_rc" -ne 0 ]; then
+              commit_bench=no
+              worst=2
+              detail=$(sed -n '2p' /tmp/file-gate.txt 2>/dev/null || true)
+              if [ -z "$detail" ]; then detail='файл не удержан'; fi
+              echo "::error::$detail"
+              echo "file-gate: $detail" >> /tmp/summary.txt
+            else
+              mode=$(sed -n '3p' /tmp/file-gate.txt 2>/dev/null || true)
+              if [ "$mode" = "hold" ]; then
+                commit_bench=hold
+              fi
+            fi
           fi
           echo "worst=$worst" >> "$GITHUB_OUTPUT"
           echo "commit_bench=$commit_bench" >> "$GITHUB_OUTPUT"
           cat /tmp/summary.txt >> "$GITHUB_STEP_SUMMARY"
           exit 0
+      # work/ is gitignored. Uploading it directly drops qa-sync.json, which is
+      # the only copy of the per-line proof once the runner is gone.
+      - name: Keep the qa report
+        if: always()
+        run: |
+          rm -rf qa-pack
+          mkdir -p qa-pack
+          for slug in ${{ needs.prepare.outputs.prove_slugs }}; do
+            [ -z "$slug" ] && continue
+            src="work/$slug/qa-sync.json"
+            if [ -f "$src" ]; then
+              mkdir -p "qa-pack/$slug"
+              cp "$src" "qa-pack/$slug/qa-sync.json"
+            fi
+          done
+      - name: Upload qa-sync
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-sync
+          path: qa-pack
+          if-no-files-found: warn
+          retention-days: 90
       - name: Commit results and remove the job files
         if: always() && steps.run.outcome == 'success'
         run: |
@@ -1066,10 +1131,17 @@ jobs:
           git config user.email '41898283+github-actions[bot]@users.noreply.github.com'
           # A refused measurement must not replace the published bench, the
           # clocks it wrote, or the song files it copied off the align artifact.
-          if [ "${{ steps.run.outputs.commit_bench }}" != "yes" ]; then
+          # commit_bench != "yes" does not add the bench. "hold" is a run of
+          # only new songs: their files stay, the published bench is put back.
+          if [ "${{ steps.run.outputs.commit_bench }}" != "yes" ] && [ "${{ steps.run.outputs.commit_bench }}" != "hold" ]; then
             echo "стенд не коммитится: замер не выбрал правило или база не удержана"
             git checkout -- content/songs docs/analysis
             git clean -fd -- content/songs docs/analysis
+          fi
+          if [ "${{ steps.run.outputs.commit_bench }}" = "hold" ]; then
+            echo "опубликованный стенд не меняется: песня вне замороженных"
+            git checkout -- docs/analysis/bench
+            git clean -fd -- docs/analysis/bench
           fi
           for slug in ${{ needs.prepare.outputs.prove_slugs }}; do
             git add "content/songs/$slug/lyrics.json" "content/songs/$slug/song.json" 2>/dev/null || true

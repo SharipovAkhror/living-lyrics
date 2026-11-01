@@ -1,0 +1,321 @@
+{
+  "slug": "for-true-lovers",
+  "entries": [
+    {
+      "key": "baglama",
+      "at": 13.5,
+      "until": 17.5
+    },
+    {
+      "key": "baglama",
+      "at": 20.5,
+      "until": 25.5
+    },
+    {
+      "key": "sitar",
+      "at": 20.5,
+      "until": 25.5
+    },
+    {
+      "key": "daf",
+      "at": 26.5,
+      "until": 29.5
+    },
+    {
+      "key": "voice",
+      "at": 35.5,
+      "until": 51.5
+    },
+    {
+      "key": "voice",
+      "at": 57.5,
+      "until": 65.5
+    },
+    {
+      "key": "baglama",
+      "at": 63.5,
+      "until": 70.5
+    },
+    {
+      "key": "ney",
+      "at": 63.5,
+      "until": 66.5
+    },
+    {
+      "key": "sitar",
+      "at": 65.5,
+      "until": 69.5
+    },
+    {
+      "key": "voice",
+      "at": 69.5,
+      "until": 90.5
+    },
+    {
+      "key": "choir",
+      "at": 92.5,
+      "until": 101.5
+    },
+    {
+      "key": "voice",
+      "at": 102.5,
+      "until": 105.5
+    },
+    {
+      "key": "voice",
+      "at": 107.5,
+      "until": 113.5
+    },
+    {
+      "key": "choir",
+      "at": 111.5,
+      "until": 117.5
+    },
+    {
+      "key": "ney",
+      "at": 111.5,
+      "until": 114.5
+    },
+    {
+      "key": "voice",
+      "at": 115.5,
+      "until": 125.5
+    },
+    {
+      "key": "choir",
+      "at": 126.5,
+      "until": 133.5
+    },
+    {
+      "key": "choir",
+      "at": 142.5,
+      "until": 155.5
+    },
+    {
+      "key": "voice",
+      "at": 154.5,
+      "until": 173.5
+    },
+    {
+      "key": "baglama",
+      "at": 172.5,
+      "until": 175.5
+    },
+    {
+      "key": "sitar",
+      "at": 172.5,
+      "until": 175.5
+    },
+    {
+      "key": "choir",
+      "at": 173.5,
+      "until": 177.5
+    },
+    {
+      "key": "voice",
+      "at": 179.5,
+      "until": 217.5
+    },
+    {
+      "key": "choir",
+      "at": 215.5,
+      "until": 221.5
+    },
+    {
+      "key": "voice",
+      "at": 224.5,
+      "until": 254.5
+    },
+    {
+      "key": "choir",
+      "at": 227.5,
+      "until": 233.5
+    },
+    {
+      "key": "choir",
+      "at": 251.5,
+      "until": 254.5
+    },
+    {
+      "key": "baglama",
+      "at": 253.5,
+      "until": 257.5
+    },
+    {
+      "key": "baglama",
+      "at": 267.5,
+      "until": 270.5
+    },
+    {
+      "key": "oud",
+      "at": 267.5,
+      "until": 270.5
+    },
+    {
+      "key": "daf",
+      "at": 270.5,
+      "until": 273.5
+    },
+    {
+      "key": "baglama",
+      "at": 288.5,
+      "until": 291.5
+    },
+    {
+      "key": "ney",
+      "at": 288.5,
+      "until": 293.5
+    },
+    {
+      "key": "sitar",
+      "at": 288.5,
+      "until": 293.5
+    },
+    {
+      "key": "baglama",
+      "at": 303.5,
+      "until": 306.5
+    },
+    {
+      "key": "oud",
+      "at": 303.5,
+      "until": 306.5
+    },
+    {
+      "key": "choir",
+      "at": 313.5,
+      "until": 317.5
+    },
+    {
+      "key": "voice",
+      "at": 318.5,
+      "until": 321.5
+    },
+    {
+      "key": "choir",
+      "at": 320.5,
+      "until": 349.5
+    },
+    {
+      "key": "baglama",
+      "at": 350.5,
+      "until": 353.5
+    },
+    {
+      "key": "sitar",
+      "at": 350.5,
+      "until": 353.5
+    },
+    {
+      "key": "choir",
+      "at": 352.5,
+      "until": 361.5
+    },
+    {
+      "key": "voice",
+      "at": 360.5,
+      "until": 363.5
+    },
+    {
+      "key": "voice",
+      "at": 365.5,
+      "until": 413.5
+    },
+    {
+      "key": "baglama",
+      "at": 413.5,
+      "until": 417.5
+    },
+    {
+      "key": "choir",
+      "at": 413.5,
+      "until": 417.5
+    },
+    {
+      "key": "voice",
+      "at": 418.5,
+      "until": 421.5
+    },
+    {
+      "key": "choir",
+      "at": 422.5,
+      "until": 429.5
+    },
+    {
+      "key": "ney",
+      "at": 422.5,
+      "until": 425.5
+    },
+    {
+      "key": "voice",
+      "at": 428.5,
+      "until": 437.5
+    },
+    {
+      "key": "choir",
+      "at": 436.5,
+      "until": 439.5
+    },
+    {
+      "key": "choir",
+      "at": 442.5,
+      "until": 449.5
+    },
+    {
+      "key": "ney",
+      "at": 444.5,
+      "until": 447.5
+    },
+    {
+      "key": "voice",
+      "at": 449.5,
+      "until": 453.5
+    },
+    {
+      "key": "tabla",
+      "at": 455.5,
+      "until": 461.5
+    },
+    {
+      "key": "voice",
+      "at": 455.5,
+      "until": 461.5
+    },
+    {
+      "key": "voice",
+      "at": 464.5,
+      "until": 469.5
+    },
+    {
+      "key": "choir",
+      "at": 469.5,
+      "until": 475.5
+    },
+    {
+      "key": "voice",
+      "at": 474.5,
+      "until": 493.5
+    },
+    {
+      "key": "choir",
+      "at": 491.5,
+      "until": 497.5
+    },
+    {
+      "key": "voice",
+      "at": 495.5,
+      "until": 509.5
+    },
+    {
+      "key": "voice",
+      "at": 511.5,
+      "until": 517.5
+    },
+    {
+      "key": "ney",
+      "at": 514.5,
+      "until": 517.5
+    }
+  ],
+  "skippedNoCatalogKey": []
+}

@@ -63,6 +63,17 @@ function encryptIsNext(atPublish: boolean, hasEnc: boolean, hasPlain: boolean, h
   return atPublish && !hasEnc && hasPlain && hasKey;
 }
 
+/**
+ * What song-status prints once the other rows are closed and the owner's key
+ * is absent. docs/methodology/README.md quotes this once; other stage files do not.
+ */
+const MISSING_KEY_SAY =
+  'Ключа AUDIO_KEY нет: строка «шифр» — «шифр: ждёт ключа». Открытый файл в git не класть. Коммит записи ждёт ключ. Это место, где нужен человек; остальные стадии от ключа не зависят.';
+
+/** Shared with docs/methodology/04-text.md. A Whisper file never becomes the sung line. */
+const WHISPER_DRAFT =
+  'Черновик Whisper — свидетель порядка и времени, не эталон букв. В lyrics.json его текст не копируют и секунды из него не ставят.';
+
 type WitnessStep = 'download-video' | 'lyric-frames' | 'read-captions' | 'whisper' | 'done';
 
 /** What to do once official subtitles are known to be missing. */
@@ -115,6 +126,27 @@ function selfCheck() {
   check(encryptIsNext(true, false, true, true) === true, 'encrypt at publish when the key is here');
   check(encryptIsNext(true, false, true, false) === false, 'publish waits without a key');
   check(encryptIsNext(true, true, true, true) === false, 'encrypted file is not encrypted again');
+  check(MISSING_KEY_SAY.includes('шифр: ждёт ключа'), 'missing key names the cipher row');
+  check(WHISPER_DRAFT.startsWith('Черновик Whisper'), 'whisper stays a draft');
+  const methodDir = join(root, 'docs/methodology');
+  const readme = readFileSync(join(methodDir, 'README.md'), 'utf8');
+  const textDoc = readFileSync(join(methodDir, '04-text.md'), 'utf8');
+  const alignDoc = readFileSync(join(methodDir, '05-alignment.md'), 'utf8');
+  const audioDoc = readFileSync(join(methodDir, '02-audio.md'), 'utf8');
+  check(readme.split('Ключ записи — у владельца.').length - 1 === 1, 'audio key protocol is stated once');
+  const repeatedKey: string[] = [];
+  for (const name of readdirSync(methodDir)) {
+    if (!name.endsWith('.md')) continue;
+    const hits = readFileSync(join(methodDir, name), 'utf8').split(MISSING_KEY_SAY).length - 1;
+    if (name === 'README.md') check(hits === 1, 'README quotes the missing-key speech once');
+    else if (hits !== 0) repeatedKey.push(name);
+  }
+  check(repeatedKey.length === 0, `missing-key speech stays in README (${repeatedKey.join(', ')})`);
+  check(textDoc.includes(WHISPER_DRAFT), 'text stage quotes the whisper draft');
+  check(textDoc.includes('титры на экране видео, которое скачал маршрут'), 'a downloaded video counts');
+  check(!textDoc.includes('свидетели текста — ниже'), 'subtitles do not stop for a file');
+  check(!alignDoc.includes('только в секрете репозитория'), 'alignment does not hide the key');
+  check(audioDoc.includes('Если у шага нет входа'), 'audio stage points at the one protocol');
   const witnessBase = {
     subsUnavailable: true,
     videoOnDisk: false,
@@ -528,6 +560,9 @@ const translationReady = lines.every((line) => line.tr.ru.trim()) && slow.length
 const commentsReady = lines.length > 0 && commentGaps.length === 0 && bareInstrumentals.length === 0;
 const translitReady = noTranslit.length === 0;
 const instrumentsReady = unknownInstruments.length === 0;
+const applauseCount = lyrics.sections.filter(
+  (section) => section.kind === 'instrumental' && section.label === 'Аплодисменты',
+).length;
 const qaReady = flagCount === 0 && review.length === 0;
 const coverFileExt = song.cover?.ext === 'jpg' ? 'jpg' : 'png';
 const coverReady = [96, 192, 512, 1024].every((size) =>
@@ -618,7 +653,9 @@ const rows: Row[] = [
     n: '9',
     name: 'инструменты',
     state: instrumentsReady ? 'да' : 'нет',
-    detail: instrumentsReady ? 'ключи есть в каталоге' : `нет в каталоге: ${[...new Set(unknownInstruments)].join(', ')}`,
+    detail: instrumentsReady
+      ? `ключи есть в каталоге; аплодисменты: ${applauseCount}`
+      : `нет в каталоге: ${[...new Set(unknownInstruments)].join(', ')}`,
   },
   {
     n: '5',
@@ -738,7 +775,7 @@ function witnessNext(): Next | null {
     row: '4в',
     file: 'docs/methodology/04-text.md',
     command: `${python} scripts/pipeline/transcribe.py ${slug}`,
-    because: `Whisper по вокальному стему work/${slug}/stems/vocals.wav пишет work/${slug}/transcript.json. Это свидетель порядка и времени, не эталон букв. ${letters} transcript.json в git не класть.`,
+    because: `Whisper по вокальному стему work/${slug}/stems/vocals.wav пишет work/${slug}/transcript.json. ${WHISPER_DRAFT} ${letters} transcript.json в git не класть.`,
   };
 }
 
@@ -1056,8 +1093,7 @@ if (!sourcesReady) {
         row: '12',
         file: 'docs/methodology/12-publish.md',
         command: `npm run song-status -- ${slug}`,
-        because:
-          'Строки маршрута закрыты. Шифр — условие коммита записи. Ключа AUDIO_KEY нет: строка «шифр» — «шифр: ждёт ключа». Открытый файл в git не класть. Коммит записи ждёт ключ. Это место, где нужен человек; остальные стадии от ключа не зависят.',
+        because: `Строки маршрута закрыты. Шифр — условие коммита записи. ${MISSING_KEY_SAY}`,
       };
 } else {
   const publish = rows.find((row) => row.name === 'публикация');
