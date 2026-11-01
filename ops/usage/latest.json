@@ -1,12 +1,12 @@
 {
-  "updated": "2026-11-01T18:21:57Z",
+  "updated": "2026-11-01T18:27:30Z",
   "grok": {
-    "today": 737998130,
+    "today": 740964319,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-01T18:21:57Z",
-    "week": 1454251607,
+    "todayAt": "2026-11-01T18:27:30Z",
+    "week": 1457217796,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-01T18:21:57Z",
+    "weekAt": "2026-11-01T18:27:30Z",
     "todayByTask": {
       "ops-claude-spend": 20609250,
       "space3-card-a": 5995198,
@@ -50,7 +50,7 @@
       "queue": 10047060,
       "codex-summary": 13056339,
       "foreman-audit": 5495429,
-      "space4-craft": 48960017,
+      "space4-craft": 51926206,
       "t39-precheck": 5651269,
       "t38-steady": 23428126,
       "tech-codex-utf8": 1170365,
@@ -64,14 +64,14 @@
       "night-ll-song-10-one-true-love": 5161142
     },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-01T18:21:57Z",
+    "todayByTaskAt": "2026-11-01T18:27:30Z",
     "plan": "SuperGrok Heavy",
-    "planSource": "~/.grok/settings_cache.json",
-    "planAt": "2026-11-01T18:17:53Z",
+    "planSource": "grok /usage",
+    "planAt": "2026-11-01T18:27:30Z",
     "weekly": {
       "percentUsed": 71,
       "source": "grok /usage",
-      "at": "2026-11-01T18:17:30Z",
+      "at": "2026-11-01T18:27:30Z",
       "timezoneLabeled": false,
       "resetsAt": "November 6, 21:08"
     }
@@ -96,13 +96,13 @@
     },
     "conversationsToday": 4,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-01T18:21:57Z",
+    "conversationsTodayAt": "2026-11-01T18:27:30Z",
     "runsToday": 4,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-01T18:21:57Z",
+    "runsTodayAt": "2026-11-01T18:27:30Z",
     "secondsToday": 2460,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-01T18:21:57Z",
+    "secondsTodayAt": "2026-11-01T18:27:30Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
     "at": "2026-11-01T18:17:30Z",
@@ -121,7 +121,7 @@
       "task": "",
       "session": "",
       "value": 71,
-      "at": "2026-11-01T18:21:57Z"
+      "at": "2026-11-01T18:27:30Z"
     }
   ],
   "value": {
@@ -136,23 +136,23 @@
   "claude": {
     "plan": "Claude Pro",
     "planSource": "claude auth status --json",
-    "at": "2026-11-01T18:17:30Z",
+    "at": "2026-11-01T18:27:30Z",
     "windows": [
       {
         "kind": "five_hour",
-        "percentUsed": 28,
+        "percentUsed": 29,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T18:17:30Z",
+        "at": "2026-11-01T18:27:30Z",
         "resetsAt": "2026-11-01T20:50:00.000Z",
-        "readAt": "2026-11-01T18:14:03Z"
+        "readAt": "2026-11-01T18:26:28Z"
       },
       {
         "kind": "seven_day",
         "percentUsed": 87,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T18:17:30Z",
+        "at": "2026-11-01T18:27:30Z",
         "resetsAt": "2026-11-06T04:00:00.000Z",
-        "readAt": "2026-11-01T18:14:03Z"
+        "readAt": "2026-11-01T18:26:28Z"
       }
     ],
     "trend": [
