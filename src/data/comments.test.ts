@@ -144,38 +144,48 @@ function testVisibleStaysAndLaterLineSkipsTheDraft() {
 
 function testPublishedSongs() {
   const dir = join(root, 'content/songs');
-  const slugs = readdirSync(dir).filter((name) => {
-    try {
-      return readFileSync(join(dir, name, 'lyrics.json'));
-    } catch {
-      return false;
-    }
-  });
+  const slugs = readdirSync(dir)
+    .filter((name) => {
+      try {
+        return readFileSync(join(dir, name, 'lyrics.json'));
+      } catch {
+        return false;
+      }
+    })
+    .sort();
   assert.ok(slugs.length >= 1, 'no songs under content/songs');
   let drafts = 0;
   let visible = 0;
+  const rows: { slug: string; lines: number; sections: number; hidden: number }[] = [];
   for (const slug of slugs) {
     const lyrics = LyricsSchema.parse(JSON.parse(readFileSync(join(dir, slug, 'lyrics.json'), 'utf8')));
     const shown = hideDraftComments(lyrics);
     const timeline = buildTimeline(shown, 1e9);
+    let lines = 0;
+    let sections = 0;
+    let hidden = 0;
     shown.sections.forEach((section, si) => {
       const source = lyrics.sections[si];
       if (source.flags?.includes(DRAFT)) {
         drafts += 1;
+        hidden += 1;
         assert.equal('comment' in section, false, `${slug} ${section.id}: section draft comment survived load`);
         assert.ok(section.flags?.includes(DRAFT), `${slug} ${section.id}: the hidden mark was dropped`);
       } else {
         assert.equal(section.comment, source.comment, `${slug} ${section.id}: a visible section comment changed`);
+        if (source.comment) sections += 1;
       }
       if (section.kind !== 'vocal' || source.kind !== 'vocal') return;
       section.lines.forEach((line, li) => {
         const was = source.lines[li];
         if (was.flags?.includes(DRAFT)) {
           drafts += 1;
+          hidden += 1;
           assert.equal('comment' in line, false, `${slug} ${line.id}: draft comment survived load`);
           assert.ok(line.flags?.includes(DRAFT), `${slug} ${line.id}: the hidden mark was dropped`);
         } else {
           assert.equal(line.comment, was.comment, `${slug} ${line.id}: a visible comment changed`);
+          if (was.comment) lines += 1;
         }
       });
     });
@@ -195,10 +205,23 @@ function testPublishedSongs() {
         assert.equal(got?.text, cue.line.comment, `${slug} ${cue.line.id}: a visible comment did not reach commentFor`);
       }
     }
+    rows.push({ slug, lines, sections, hidden });
   }
+  const lineShown = rows.reduce((sum, row) => sum + row.lines, 0);
+  const sectionShown = rows.reduce((sum, row) => sum + row.sections, 0);
+  const hidden = rows.reduce((sum, row) => sum + row.hidden, 0);
+  assert.equal(drafts, hidden, 'a comment-draft flag was not counted as hidden');
+  assert.equal(
+    visible,
+    lineShown,
+    'a visible line comment did not reach commentFor, or the timeline count drifted from the file',
+  );
   assert.ok(drafts > 0, 'no comment-draft flag in content/songs: the sweep checked nothing');
   assert.ok(visible > 0, 'no visible comment survived');
-  console.log(`comments: ${slugs.length} songs, ${drafts} draft comments hidden, ${visible} visible comments kept`);
+  assert.ok(sectionShown > 0, 'no visible section comment was counted');
+  console.log('comments\tsong\tlines shown\tsections shown\thidden');
+  for (const row of rows) console.log(`comments\t${row.slug}\t${row.lines}\t${row.sections}\t${row.hidden}`);
+  console.log(`comments\ttotal\t${lineShown}\t${sectionShown}\t${hidden}`);
 }
 
 function testLoadGate() {
