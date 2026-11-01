@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T20:19:07Z",
+  "at": "2026-11-01T20:26:05Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,8 +10,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 16107,
-      "age": 16136,
+      "minutes": 16114,
+      "age": 16143,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -19,8 +19,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 16108,
-      "age": 16136,
+      "minutes": 16115,
+      "age": 16143,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -28,8 +28,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 16049,
-      "age": 16100,
+      "minutes": 16056,
+      "age": 16107,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -44,7 +44,7 @@
       "name": "phone-overlap",
       "state": "working",
       "minutes": 0,
-      "age": 32,
+      "age": 39,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/phone-overlap"
@@ -53,7 +53,7 @@
       "name": "studio-pass",
       "state": "working",
       "minutes": 0,
-      "age": 51,
+      "age": 58,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -61,8 +61,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 2050,
-      "age": 2064,
+      "minutes": 2057,
+      "age": 2071,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -70,8 +70,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2600,
-      "age": 2720,
+      "minutes": 2607,
+      "age": 2727,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -79,8 +79,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 16045,
-      "age": 16146,
+      "minutes": 16052,
+      "age": 16153,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -88,8 +88,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 13002,
-      "age": 13032,
+      "minutes": 13009,
+      "age": 13039,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -97,8 +97,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 357,
-      "age": 378,
+      "minutes": 364,
+      "age": 385,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -106,16 +106,19 @@
     {
       "name": "t37b",
       "state": "finished",
-      "minutes": 10,
-      "age": 24,
+      "minutes": 17,
+      "age": 31,
       "tokens": 4988948,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37b"
     },
     {
       "name": "translation-alive",
-      "state": "none",
+      "state": "working",
       "minutes": 0,
+      "age": 0,
+      "tokens": 0,
+      "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/translation-alive"
     }
   ],
@@ -199,12 +202,12 @@
     {
       "name": "pipeline",
       "title": "Add Noor: text, translation, commentary, timing (draft)",
-      "minutes": 13
+      "minutes": 19
     },
     {
       "name": "pipeline",
       "title": "Add Sami Yusuf - Existentia",
-      "minutes": 69
+      "minutes": 75
     }
   ],
   "hygiene": {
