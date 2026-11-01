@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T15:20:03Z",
+  "at": "2026-11-01T15:22:03Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,8 +10,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 15808,
-      "age": 15837,
+      "minutes": 15810,
+      "age": 15839,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -19,8 +19,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 15809,
-      "age": 15837,
+      "minutes": 15811,
+      "age": 15839,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -28,8 +28,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 15750,
-      "age": 15801,
+      "minutes": 15752,
+      "age": 15803,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -44,7 +44,7 @@
       "name": "studio-pass",
       "state": "working",
       "minutes": 0,
-      "age": 67,
+      "age": 69,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -52,8 +52,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 1751,
-      "age": 1765,
+      "minutes": 1753,
+      "age": 1767,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -61,8 +61,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2301,
-      "age": 2421,
+      "minutes": 2303,
+      "age": 2423,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -70,8 +70,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 15746,
-      "age": 15847,
+      "minutes": 15748,
+      "age": 15849,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -79,8 +79,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 12703,
-      "age": 12733,
+      "minutes": 12705,
+      "age": 12735,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -88,8 +88,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 58,
-      "age": 79,
+      "minutes": 60,
+      "age": 81,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -104,7 +104,7 @@
       "name": "t38-steady",
       "state": "working",
       "minutes": 0,
-      "age": 10,
+      "age": 12,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t38-steady"
@@ -112,8 +112,8 @@
     {
       "name": "t39-precheck",
       "state": "finished",
-      "minutes": 60,
-      "age": 79,
+      "minutes": 62,
+      "age": 81,
       "tokens": 5651269,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t39-precheck"
@@ -181,7 +181,7 @@
       "project": "living-lyrics",
       "reports_to": "owner",
       "state": "working",
-      "last_act_at": "2026-11-01T15:19:29.519Z"
+      "last_act_at": "2026-11-01T15:21:26.807Z"
     },
     {
       "name": "LL · Site",
@@ -193,7 +193,13 @@
       "last_act_at": "2026-11-01T15:10:22.140Z"
     }
   ],
-  "pipeline": [],
+  "pipeline": [
+    {
+      "name": "cleanup",
+      "title": "Board: bulk songs queued",
+      "minutes": 0
+    }
+  ],
   "hygiene": {
     "at": "2026-11-01T14:45:37Z",
     "fixed": [],
@@ -698,6 +704,18 @@
         "next": "В любом чате — карточка по слову «dashboard»; подробности — ops/README.md.",
         "date": "2026-10-23",
         "project": "AOS"
+      },
+      {
+        "id": "LL:bulk-songs",
+        "section": "now",
+        "status": "running",
+        "title": "LL · Массовое добавление: 31 песня из списка владельца (1.11)",
+        "what": "Владелец прислал список и просил не тратить лимит Claude. Песни идут ночной очередью по четыре одновременно, без чатов.",
+        "agent": "grok",
+        "who": "Ночная очередь, исполнитель — Grok, потом Codex; вливает LL · Main после ll-judge",
+        "date": "2026-11-01",
+        "now": "Поставлено в очередь: agentic-os-live/ops/queue/pending/ll-song-*. Итоги: ops/state/night-queue/results/. Каждая песня — отдельный PR.",
+        "project": "LL"
       },
       {
         "id": "LL:t38-player",
