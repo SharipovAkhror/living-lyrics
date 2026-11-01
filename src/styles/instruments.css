@@ -9,7 +9,7 @@
   position: relative;
   /* Plates are content, so a standard material, not glass; dense enough that the engraving
      keeps its contrast over any song background. */
-  --ist-plate: color-mix(in srgb, var(--bg-elevated) 86%, transparent);
+  --ist-plate: color-mix(in srgb, var(--bg-elevated) 46%, transparent);
   --ist-plate-strong: color-mix(in srgb, var(--bg-elevated) 94%, transparent);
   --ist-ink: color-mix(in srgb, var(--accent) 82%, var(--ink));
   pointer-events: none;
@@ -35,10 +35,7 @@
   background: var(--ist-plate);
   -webkit-backdrop-filter: blur(30px) saturate(160%);
   backdrop-filter: blur(30px) saturate(160%);
-  box-shadow:
-    0 12px 32px -14px rgba(20, 20, 40, 0.28),
-    0 2px 6px -2px rgba(20, 20, 40, 0.1),
-    inset 0 0 0 0.5px var(--glass-edge);
+  box-shadow: inset 0 0 0 0.5px var(--glass-edge);
   transform-origin: 50% 50%;
   will-change: opacity, transform;
 }
@@ -134,7 +131,7 @@
 }
 /* The shared ring was louder than the instrument. */
 .scene .ist-art .frame {
-  opacity: calc(var(--hatch, 1) * 0.12);
+  opacity: calc(var(--hatch, 1) * 0.05);
 }
 .ist-art .str {
   transform: translate(var(--str-x, 0), var(--str-y, 0));

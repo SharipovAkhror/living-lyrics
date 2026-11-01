@@ -711,6 +711,7 @@ function EngineAlerts({
     if (!floor) return;
     floor.classList.toggle('has-error', !!state.error);
     const root = floor.closest('.song');
+    root?.classList.toggle('has-playback-error', !!state.error);
     const top = root?.querySelector('.topbar');
     if (root instanceof HTMLElement && top instanceof HTMLElement) measureChrome(root, top, floor);
     if (!(root instanceof HTMLElement)) return;
@@ -728,6 +729,7 @@ function EngineAlerts({
     <>
       {state.error && (
         <div className="player-alert" role="alert">
+          <span className="player-alert-mark" aria-hidden="true">!</span>
           <p>{state.error}</p>
           <button
             type="button"
@@ -1475,7 +1477,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
               {loadError && (
                 <Status
                   className="load-error glass"
-                  icon="book.closed"
+                  icon={<span className="status-alert-mark" aria-hidden="true">!</span>}
                   live="alert"
                   action={
                     <button type="button" className="btn btn-capsule btn-tinted" onClick={() => setTextAttempt((n) => n + 1)}>
@@ -1578,6 +1580,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
                   data-tip="Не совпадает · M"
                 >
                   <PlayerIcon name="flag" size={20} />
+                  <span className="mark-name">Метка</span>
                 </button>
               </div>
             }

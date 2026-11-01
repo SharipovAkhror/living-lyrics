@@ -285,8 +285,10 @@
   color: color-mix(in srgb, var(--ink) 78%, transparent);
 }
 .fb-voice {
-  font-weight: 600;
-  color: color-mix(in srgb, var(--ink) 88%, transparent);
+  font-weight: 650;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--ink) 92%, transparent);
 }
 .fb-repeat,
 .fb-wait {
@@ -295,7 +297,8 @@
   background: color-mix(in srgb, var(--ink) 9%, transparent);
 }
 .fb-repeat {
-  color: color-mix(in srgb, var(--ink) 70%, transparent);
+  font-weight: 650;
+  color: color-mix(in srgb, var(--ink) 88%, transparent);
 }
 .fb-wait {
   position: absolute;
@@ -948,6 +951,26 @@
   border: 1px solid var(--alert-line);
   box-shadow: inset 0 0 0 1px var(--alert-line), 0 10px 28px -18px rgba(0, 0, 0, 0.45);
 }
+.player-alert-mark,
+.status-alert-mark {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--alert-fg);
+  color: #fff;
+  font: 700 0.85rem/1 var(--font-ui);
+}
+.song.has-playback-error .btn-ring { opacity: 0.38; }
+.song.has-playback-error .floor-retry {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: var(--r-pill);
+  background: var(--alert-fg);
+  color: #fff;
+}
 .player-alert p {
   flex: 1;
   min-width: 0;
@@ -1168,14 +1191,14 @@
   color: var(--label-2);
   font: 600 0.8125rem/1 var(--font-ui);
 }
+.mark-name { display: none; }
 @media (min-width: 720px) {
   .mark-btn {
     width: auto;
     padding: 0 10px 0 12px;
   }
-  .mark-kbd {
-    display: inline-flex;
-  }
+  .mark-kbd,
+  .mark-name { display: inline-flex; }
 }
 
 /* Confirmation stays in the player row, so it does not cover the line being sung. */
@@ -1289,6 +1312,13 @@
   border-radius: 0.5px;
   background: var(--scrub-tick);
   pointer-events: none;
+}
+.scrub-map {
+  top: -2px;
+  width: 2px;
+  height: 8px;
+  margin-left: -1px;
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
 }
 .scrub-seg {
   height: 5px;
@@ -1741,7 +1771,8 @@
   .player .transport .btn:nth-child(3) { order: 7; }
   .player .mark-bar { display: contents; }
   .player .mark-btn { order: 4; width: 44px; min-width: 44px; padding: 0; justify-content: center; }
-  .mark-kbd { display: none; }
+  .mark-kbd,
+  .mark-name { display: none; }
   .scene-stage {
     left: max(12px, var(--safe-l));
     width: calc(100vw - max(12px, var(--safe-l)) - max(12px, var(--safe-r)));
@@ -2342,6 +2373,7 @@ html.is-sheet-drag .sheet-grabber {
 /* Settings subtitles stay one line. «О песне» is outside .set-page and may wrap. */
 .set-page .row-detail {
   min-width: 0;
+  color: color-mix(in srgb, var(--label) 88%, transparent);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2354,7 +2386,7 @@ html.is-sheet-drag .sheet-grabber {
   flex: none;
 }
 .row-chevron {
-  color: var(--label-3);
+  color: var(--label-2);
   flex: none;
   display: block;
 }
@@ -4361,6 +4393,10 @@ html[data-sheet='1'] .song {
   [data-tip]:hover::before {
     opacity: 1;
     transition-delay: 500ms;
+  }
+  .transport [data-tip]::before {
+    bottom: auto;
+    top: calc(100% + 8px);
   }
 }
 

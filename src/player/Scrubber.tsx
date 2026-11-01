@@ -121,7 +121,10 @@ export function Scrubber({
   let lastMap = -1;
   const mapMarks = segments.filter((seg) => {
     const at = seg.start / span;
-    if (at < 0.008 || at - lastMap < 0.012) return false;
+    // Part boundaries, not a hairline on every phrase. A 1 px tick on each
+    // section read as noise and hid where the song actually changes.
+    const need = seg.kind === 'inst' ? 0.04 : 0.08;
+    if (at < 0.012 || at - lastMap < need) return false;
     lastMap = at;
     return true;
   });
@@ -185,11 +188,13 @@ export function Scrubber({
         }
       }
       if (!hovering) {
-        const text = formatTime(t) + '|' + formatTime(duration - t);
+        const left = Math.max(0, duration - t);
+        const remain = left < 0.5 ? formatTime(0) : `−${formatTime(left)}`;
+        const text = formatTime(t) + '|' + remain;
         if (text !== lastText) {
           lastText = text;
           if (cur.current) cur.current.textContent = formatTime(t);
-          if (rem.current) rem.current.textContent = `−${formatTime(Math.max(0, duration - t))}`;
+          if (rem.current) rem.current.textContent = remain;
           track.current?.setAttribute('aria-valuenow', String(Math.round(t)));
           track.current?.setAttribute('aria-valuetext', `${formatTime(t)} из ${formatTime(duration)}`);
         }
@@ -385,7 +390,7 @@ export function Scrubber({
       </div>
       <div className="scrub-meta">
         <span ref={rem} className="scrub-remain tabular">
-          −0:00
+          0:00
         </span>
       </div>
     </div>

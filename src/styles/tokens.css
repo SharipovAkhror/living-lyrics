@@ -413,10 +413,15 @@
   }
 }
 @media (prefers-contrast: more) {
-  :root {
+  :root,
+  :root[data-theme='light'],
+  :root[data-theme='dark'],
+  :root:not([data-theme='light']) {
     --glass-edge: var(--separator-opaque);
-    --ink-unsung: color-mix(in srgb, var(--ink) 55%, transparent);
-    --dim-op: 0.58;
-    --label-2: color-mix(in srgb, var(--label) 78%, transparent);
+    --ink-unsung: color-mix(in srgb, var(--ink) 88%, transparent);
+    --dim-op: 0.86;
+    --label-2: color-mix(in srgb, var(--label) 88%, transparent);
+    --label-3: color-mix(in srgb, var(--label) 72%, transparent);
   }
+  .field-wash { opacity: 0.4; }
 }
