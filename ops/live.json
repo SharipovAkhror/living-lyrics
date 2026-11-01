@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T02:53:24Z",
+  "at": "2026-11-01T02:59:24Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -11,8 +11,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 15061,
-      "age": 15091,
+      "minutes": 15067,
+      "age": 15097,
       "step": "Набор Phosphor собран, проверен на странице песни и запушен в grok/icons-a. В main не влит. ## 1. Готово, когда | Пункт | Статус | |---|---| | Полный набор на Phosphor, те же имена и API | выполнено | | Лицензия, версия и URL в docs/design/credits.md | выполнено | | Каждый знак API сопоставлен глифу базы | выполнено | | Тихий фирменный ход без потери ремесла | выполнено | | Старые наборы с ветки с",
       "tokens": 9490511,
       "model": "grok-4.7-build",
@@ -21,8 +21,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 15062,
-      "age": 15090,
+      "minutes": 15068,
+      "age": 15096,
       "step": "Push на телефон недоступен: в этой среде нет уведомлений на телефон. ## 1. Готово, когда - Полный набор на прежнем API, старые наборы сняты — выполнено. 21 имя в src/ui/icons.tsx. Удалены пути Phosphor и неиспользуемый src/icons/Icon.tsx. - Лицензия в docs/design/credits.md — выполнено. - Доски в work/icons-b/ — выполнено локально. Каталог work/ в .gitignore, на remote их нет. - validate, typechec",
       "tokens": 9850680,
       "model": "grok-4.7-build",
@@ -31,8 +31,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 15003,
-      "age": 15055,
+      "minutes": 15009,
+      "age": 15061,
       "step": "Шесть правок панели сделаны, доски пересняты, ветка запушена в grok/icons-c. В main ничего не сливал. ## 1. Готово, когда 1. Пуск по оптическому центру — выполнено. Сдвиг translate(1 0). Центр площади треугольника садится в 12,29 по сетке 24 (пауза — в 11,97). Плюс 1, а не 0,71: основание тяжелее площади, в круге 64 px плюс 1 читается серединой. При смене пуск и пауза расходятся на 0,32 единицы, н",
       "tokens": 13196979,
       "model": "grok-4.7-build",
@@ -48,8 +48,8 @@
     {
       "name": "studio-pass",
       "state": "finished",
-      "minutes": 32,
-      "age": 92,
+      "minutes": 38,
+      "age": 98,
       "step": "Ветка site/studio-pass-r22 запушена, предпросмотр на порту 4176 остановлен. Пункты 1–5 и док закрыты замерами. Прогон WebKit выполнен, но порог кадров Chromium на компьютере оба раза не пройден. ## 1. Что сделано 1. Сцена проигрыша, компьютер 1440×900, обе темы — выполнено. sceneCut в work/owner-check/new/probes.json: cuts: [], masked: false, колонка 868×618, просмотрено 24 прямоугольника. На врем",
       "tokens": 23235388,
       "model": "grok-4.7-build",
@@ -58,8 +58,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 1004,
-      "age": 1018,
+      "minutes": 1010,
+      "age": 1024,
       "step": "Вливать нечего. Персидское «اختر» уже совпадает с Ганджуром и Викитекой, двоения на стыках бледных строк нет, веток ci/probe и wip/sync-tools на origin нет. Коммитов нет, ветка не пушилась: она совпадает с origin/main (70372c27). ## 1. Что сделано Каждое «اختر» сверено с источником — выполнено. В lyrics.json арабской «أ» (U+0623) нет. Править было нечего, запись в review не добавлялась: открытого ",
       "tokens": 4653311,
       "model": "grok-4.7-build",
@@ -68,8 +68,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 1555,
-      "age": 1675,
+      "minutes": 1561,
+      "age": 1681,
       "step": "Круг T27 закрыт. Удерживаемый объект JavaScript, который объяснял бы мегабайты в минуту, снимок кучи не назвал. Растёт рабочий набор одного процесса рендерера; куча JS за час плоская. Код сцены не менялся. Ветка site/t27-memory запушена. ## 1. Готово, когда - Растущий объект назван, либо честно сказано, что назвать нельзя. Выполнено во второй формулировке. После принудительной сборки мусора в куче",
       "tokens": 13262986,
       "model": "grok-4.7-build",
@@ -78,8 +78,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 14999,
-      "age": 15101,
+      "minutes": 15005,
+      "age": 15107,
       "step": "Push-уведомления в этой среде нет. ## 1. Готово, когда 1. Гладкий контур — выполнено. Кривые выходят дугами и кубическими Безье. Посадка кубика на истинную кривую — 0,015 на сетке 24 (порог 0,02). Кольца «О песне», поиска и инструментов — дуги одного радиуса; внешний край стыкуется с гранью пера по касательной. Скругление рамки — круговая галтель, параллель — та же дуга. Прямой стержень остаётся м",
       "tokens": 29801018,
       "model": "grok-4.7-build",
@@ -88,8 +88,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 11956,
-      "age": 11987,
+      "minutes": 11962,
+      "age": 11993,
       "step": "Круг 1 выполнен и запушен в site/t35. Голос снят там, где стем и Gemini оба не слышат пения. Где свидетели расходятся не меньше 2 с, данные оставлены и записаны в review. ## 1. Готово, когда Таблица, пороги, число исправлений и «после правки» — выполнено. Файл docs/analysis/stage-marks.md. Порог — середина медиан вокального стема в спетых строках и в обычном проигрыше (формула work/review/t35/stem",
       "tokens": 6757832,
       "model": "grok-4.7-build",
@@ -98,8 +98,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 0,
-      "age": 43,
+      "minutes": 6,
+      "age": 49,
       "step": "Итог проверки пояснений применён и запушен в origin/site/t37-comments. Коммит e6ca043b. Оригинал, перевод, тайминг и canon.md не менялись: в lyrics.json отличаются только comment и flags, в song.json только review. ## 1. Готово, когда - npm run validate — выполнено. 0 ошибок, 127 предупреждений, код 0. - npm run typecheck — выполнено, код 0. - npx tsx src/data/comments.test.ts — выполнено. 5 песен",
       "tokens": 10005379,
       "model": "grok-4.7-build",
@@ -123,10 +123,8 @@
       "role": "aos-main",
       "project": "agentic-os-live",
       "reports_to": "owner",
-      "state": "working",
-      "last": "Список поручений влит в main: 94 строки, из них 42 сделано, 21 в работе, 15 предлагаю сделать, 16 предлагаю не делать. Итог будет в утренней сводке. Теперь жду окончания четвёртого круга «Пространства».",
-      "last_at": "2026-11-01T02:50:47.869Z",
-      "last_act_at": "2026-11-01T02:50:47.869Z"
+      "state": "waiting",
+      "waiting_for": "input needed"
     },
     {
       "name": "AOS · Ops",
@@ -184,14 +182,14 @@
       "project": "living-lyrics",
       "reports_to": "LL · Main",
       "state": "working",
-      "last": "Both Codex checks that are left (the T37 sample and the final studio look) have to wait. The Codex five-hour limit is at 90%, so codex_run.py refuses new runs, and neither check has started. T37 goes first once the limit resets. Grok is still applying the T37 fixes.",
-      "last_at": "2026-11-01T02:22:33.046Z",
-      "last_act_at": "2026-11-01T02:22:33.046Z"
+      "last": "The T37 fixes are pushed. 358 comments are shown and 89 hidden, and the two tr11 comments are hidden because their citation was never opened. The Codex limit resets at about 08:16, then the 40-line T37 sample runs, followed by the final studio look.",
+      "last_at": "2026-11-01T02:54:32.131Z",
+      "last_act_at": "2026-11-01T02:54:32.131Z"
     }
   ],
   "pipeline": [],
   "hygiene": {
-    "at": "2026-11-01T01:53:25Z",
+    "at": "2026-11-01T02:55:25Z",
     "fixed": [],
     "issues": [
       "ветка grok/icons-a не влита и не менялась 10 дн.",
@@ -216,7 +214,7 @@
     ]
   },
   "board": {
-    "updated": "2026-11-01T07:50+05:00",
+    "updated": "2026-11-01T07:57+05:00",
     "headline": "Утро: ответы владельца; AOS · Tech ставит мод и начинает круг 4 «Пространства»",
     "claude": "Claude только управляет: код, проверки и учёт делают Grok и agy; первым делом — дашборд.",
     "tasks": [
@@ -236,13 +234,13 @@
       {
         "id": "space-assembly",
         "section": "now",
-        "status": "running",
+        "status": "waiting",
         "agent": "grok",
         "title": "Пространство, сборка",
         "what": "Круг 4 из 4, последний, у Grok: круг 3 не прошёл глазами.",
-        "who": "Grok, run-mvx661ok-i9mpi6",
-        "now": "Круг 4 у Grok, run-mvx661ok-i9mpi6.",
-        "next": "Приёмка aos-judge, снимки и проверка в роли владельца, показ.",
+        "who": "AOS · Main",
+        "now": "Круг 4, последний, закончен (9c0f078, ветка design/space3-overview): стекло и пустой верх не решены, проверку не прошёл. Владельцу не показан.",
+        "next": "Утром честный разбор с владельцем: что не так и что предлагаю.",
         "date": "2026-11-01",
         "project": "AOS"
       },

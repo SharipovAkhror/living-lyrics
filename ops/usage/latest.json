@@ -1,12 +1,12 @@
 {
-  "updated": "2026-11-01T02:45:18Z",
+  "updated": "2026-11-01T02:55:18Z",
   "grok": {
-    "today": 366495607,
+    "today": 388657270,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-01T02:45:18Z",
-    "week": 1167459005,
+    "todayAt": "2026-11-01T02:55:18Z",
+    "week": 1189620668,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-01T02:45:18Z",
+    "weekAt": "2026-11-01T02:55:18Z",
     "todayByTask": {
       "ops-claude-spend": 20609250,
       "space3-card-a": 5995198,
@@ -40,19 +40,19 @@
       "night-night-tests-usage": 3315437,
       "night-night-tests-agents": 6586193,
       "tech-live-page": 17342313,
-      "t37-comments": 6198551,
+      "t37-comments": 16203930,
       "tech-lean-workers": 1896805,
-      "owner-requests": 7697989
+      "owner-requests": 19854273
     },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-01T02:45:18Z",
+    "todayByTaskAt": "2026-11-01T02:55:18Z",
     "plan": "SuperGrok Heavy",
     "planSource": "grok /usage",
-    "planAt": "2026-11-01T02:45:18Z",
+    "planAt": "2026-11-01T02:55:18Z",
     "weekly": {
       "percentUsed": 52,
       "source": "grok /usage",
-      "at": "2026-11-01T02:45:18Z",
+      "at": "2026-11-01T02:55:18Z",
       "timezoneLabeled": false,
       "resetsAt": "November 6, 21:08"
     }
@@ -61,34 +61,34 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-01T02:45:18Z",
+        "at": "2026-11-01T02:55:18Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 98.74,
-        "weeklyResetIn": "163h 19m",
-        "fiveHourResetIn": "19m"
+        "weeklyResetIn": "163h 9m",
+        "fiveHourResetIn": "9m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-01T02:45:18Z",
+        "at": "2026-11-01T02:55:18Z",
         "weeklyRemaining": 100,
         "fiveHourRemaining": 100
       }
     },
     "conversationsToday": 2,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-01T02:45:18Z",
+    "conversationsTodayAt": "2026-11-01T02:55:18Z",
     "runsToday": 2,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-01T02:45:18Z",
+    "runsTodayAt": "2026-11-01T02:55:18Z",
     "secondsToday": 274,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-01T02:45:18Z",
+    "secondsTodayAt": "2026-11-01T02:55:18Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
-    "at": "2026-11-01T02:45:18Z",
+    "at": "2026-11-01T02:55:18Z",
     "claudeGpt": {
       "source": "agy /usage",
-      "at": "2026-11-01T02:45:18Z",
+      "at": "2026-11-01T02:55:18Z",
       "weeklyRemaining": 100,
       "fiveHourRemaining": 100
     }
@@ -96,10 +96,10 @@
   "alerts": [
     {
       "kind": "no-progress",
-      "value": 23235388,
-      "task": "studio-pass",
-      "session": "7dfbb8fa-e2f2-4f72-b5c9-0ed46bca9592",
-      "at": "2026-11-01T02:45:18Z"
+      "value": 10005379,
+      "task": "t37-comments",
+      "session": "f9e5ced0-b6b9-4006-9d50-9eca9f629d53",
+      "at": "2026-11-01T02:55:18Z"
     }
   ],
   "value": {
@@ -114,23 +114,23 @@
   "claude": {
     "plan": "Claude Pro",
     "planSource": "claude auth status --json",
-    "at": "2026-11-01T02:45:18Z",
+    "at": "2026-11-01T02:55:18Z",
     "windows": [
       {
         "kind": "five_hour",
-        "percentUsed": 88,
+        "percentUsed": 92,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T02:45:18Z",
+        "at": "2026-11-01T02:55:18Z",
         "resetsAt": "2026-11-01T04:00:00.000Z",
-        "readAt": "2026-11-01T02:22:33Z"
+        "readAt": "2026-11-01T02:54:32Z"
       },
       {
         "kind": "seven_day",
-        "percentUsed": 68,
+        "percentUsed": 69,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T02:45:18Z",
+        "at": "2026-11-01T02:55:18Z",
         "resetsAt": "2026-11-06T04:00:00.000Z",
-        "readAt": "2026-11-01T02:22:33Z"
+        "readAt": "2026-11-01T02:54:32Z"
       }
     ]
   },
