@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T17:37:52Z",
+  "at": "2026-11-01T17:38:04Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -16,7 +16,7 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 15945,
+      "minutes": 15946,
       "age": 15975,
       "tokens": 9490511,
       "model": "grok-4.7-build",
@@ -25,7 +25,7 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 15946,
+      "minutes": 15947,
       "age": 15975,
       "tokens": 9850680,
       "model": "grok-4.7-build",
@@ -34,7 +34,7 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 15887,
+      "minutes": 15888,
       "age": 15939,
       "tokens": 13196979,
       "model": "grok-4.7-build",
@@ -50,7 +50,7 @@
       "name": "prove-witness",
       "state": "finished",
       "minutes": 9,
-      "age": 19,
+      "age": 20,
       "tokens": 2969138,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/prove-witness"
@@ -58,8 +58,8 @@
     {
       "name": "studio-pass",
       "state": "finished",
-      "minutes": 82,
-      "age": 204,
+      "minutes": 83,
+      "age": 205,
       "tokens": 54666236,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -67,7 +67,7 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 1888,
+      "minutes": 1889,
       "age": 1903,
       "tokens": 4653311,
       "model": "grok-4.7-build",
@@ -94,7 +94,7 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 12840,
+      "minutes": 12841,
       "age": 12871,
       "tokens": 6757832,
       "model": "grok-4.7-build",
@@ -150,9 +150,9 @@
       "role": "aos-main",
       "project": "agentic-os-live",
       "reports_to": "owner",
-      "state": "waiting",
-      "waiting_for": "input needed",
-      "last_act_at": "2026-11-01T16:47:18.629Z"
+      "state": "working",
+      "last_at": "2026-11-01T17:36:44.102Z",
+      "last_act_at": "2026-11-01T17:36:44.102Z"
     },
     {
       "name": "AOS · Ops",
@@ -213,12 +213,12 @@
     {
       "name": "pipeline",
       "title": "Add Sari Gelin: text, translation, commentary, timing (draft).",
-      "minutes": 25
+      "minutes": 27
     },
     {
       "name": "pipeline",
       "title": "Add Lovers: text, translation, commentary, timing (draft)",
-      "minutes": 71
+      "minutes": 73
     }
   ],
   "hygiene": {
