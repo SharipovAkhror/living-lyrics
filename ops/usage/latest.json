@@ -1,12 +1,12 @@
 {
-  "updated": "2026-11-01T18:17:30Z",
+  "updated": "2026-11-01T18:21:57Z",
   "grok": {
     "today": 737998130,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-01T18:17:30Z",
+    "todayAt": "2026-11-01T18:21:57Z",
     "week": 1454251607,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-01T18:17:30Z",
+    "weekAt": "2026-11-01T18:21:57Z",
     "todayByTask": {
       "ops-claude-spend": 20609250,
       "space3-card-a": 5995198,
@@ -64,10 +64,10 @@
       "night-ll-song-10-one-true-love": 5161142
     },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-01T18:17:30Z",
+    "todayByTaskAt": "2026-11-01T18:21:57Z",
     "plan": "SuperGrok Heavy",
-    "planSource": "grok /usage",
-    "planAt": "2026-11-01T18:17:30Z",
+    "planSource": "~/.grok/settings_cache.json",
+    "planAt": "2026-11-01T18:17:53Z",
     "weekly": {
       "percentUsed": 71,
       "source": "grok /usage",
@@ -80,10 +80,10 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-01T18:17:30Z",
+        "at": "2026-11-01T14:37:31Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "147h 47m"
+        "weeklyResetIn": "151h 27m"
       },
       "claude-gpt": {
         "source": "agy /usage",
@@ -96,13 +96,13 @@
     },
     "conversationsToday": 4,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-01T18:17:30Z",
+    "conversationsTodayAt": "2026-11-01T18:21:57Z",
     "runsToday": 4,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-01T18:17:30Z",
+    "runsTodayAt": "2026-11-01T18:21:57Z",
     "secondsToday": 2460,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-01T18:17:30Z",
+    "secondsTodayAt": "2026-11-01T18:21:57Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
     "at": "2026-11-01T18:17:30Z",
@@ -121,7 +121,7 @@
       "task": "",
       "session": "",
       "value": 71,
-      "at": "2026-11-01T18:17:30Z"
+      "at": "2026-11-01T18:21:57Z"
     }
   ],
   "value": {

@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T18:18:24Z",
+  "at": "2026-11-01T18:26:04Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -16,8 +16,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 15986,
-      "age": 16015,
+      "minutes": 15994,
+      "age": 16023,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -25,8 +25,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 15987,
-      "age": 16015,
+      "minutes": 15995,
+      "age": 16023,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -34,8 +34,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 15928,
-      "age": 15979,
+      "minutes": 15936,
+      "age": 15987,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -49,8 +49,8 @@
     {
       "name": "prove-witness",
       "state": "finished",
-      "minutes": 49,
-      "age": 60,
+      "minutes": 57,
+      "age": 68,
       "tokens": 2969138,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/prove-witness"
@@ -58,8 +58,8 @@
     {
       "name": "studio-pass",
       "state": "finished",
-      "minutes": 123,
-      "age": 245,
+      "minutes": 131,
+      "age": 253,
       "tokens": 54666236,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -67,8 +67,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 1929,
-      "age": 1943,
+      "minutes": 1937,
+      "age": 1951,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -76,8 +76,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2479,
-      "age": 2599,
+      "minutes": 2487,
+      "age": 2607,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -85,8 +85,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 15924,
-      "age": 16025,
+      "minutes": 15932,
+      "age": 16033,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -94,8 +94,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 12881,
-      "age": 12911,
+      "minutes": 12889,
+      "age": 12919,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -103,8 +103,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 236,
-      "age": 257,
+      "minutes": 244,
+      "age": 265,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -118,8 +118,8 @@
     {
       "name": "t38-steady",
       "state": "finished",
-      "minutes": 101,
-      "age": 140,
+      "minutes": 109,
+      "age": 148,
       "tokens": 13361130,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t38-steady"
@@ -127,8 +127,8 @@
     {
       "name": "t39-precheck",
       "state": "finished",
-      "minutes": 238,
-      "age": 257,
+      "minutes": 246,
+      "age": 265,
       "tokens": 5651269,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t39-precheck"
@@ -152,7 +152,7 @@
       "reports_to": "owner",
       "state": "working",
       "last_at": "2026-11-01T18:14:03.990Z",
-      "last_act_at": "2026-11-01T18:14:03.990Z"
+      "last_act_at": "2026-11-01T18:25:08.036Z"
     },
     {
       "name": "AOS · Ops",
@@ -209,13 +209,7 @@
       "last_act_at": "2026-11-01T17:35:19.351Z"
     }
   ],
-  "pipeline": [
-    {
-      "name": "pipeline",
-      "title": "Add Sari Gelin: text, translation, commentary, timing (draft).",
-      "minutes": 67
-    }
-  ],
+  "pipeline": [],
   "hygiene": {
     "at": "2026-11-01T17:51:39Z",
     "fixed": [],
