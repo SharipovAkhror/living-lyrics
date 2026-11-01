@@ -13,7 +13,7 @@ import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
 import { sceneProbeArmed } from './probe';
 import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, generousLine, retargetPhoneLines, sameSlots, type PhoneSlot } from './slots';
-import { GAP, WAIT_ROOM, blockHeight, blockState, clearBand, concealCut, compressStack, flowPosition, handoffBlend, instPresence, introLineDistance, keepInStage, layoutAt, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
+import { GAP, WAIT_ROOM, blockHeight, blockState, clearBand, concealCut, compressStack, flowPosition, handoffBlend, instPresence, introLineDistance, keepInStage, layoutAt, picturedPosition, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
 import { stepSpring, type SpringState } from '@/ui/spring';
 
 /** False in the Vercel production build, so `?ll-render-error=1` is compiled out. See vite.config.ts. */
@@ -500,7 +500,7 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       placedFeatures = featureEpoch.current;
       lastT = t;
       lastLive = liveKey;
-      const pos = flowPosition(plan, t);
+      const pos = picturedPosition(plan, t, timeline.cues);
       const list = windowAround(timeline, pos, entrance);
       const key = list.join(',');
       if (key !== lastKey) {

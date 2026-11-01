@@ -27,6 +27,19 @@ export function rosterPageAt(t: number, start: number, total: number, size = PHO
   return Math.floor(Math.max(0, t - start) / dwell) % pages;
 }
 
+/**
+ * The stage keeps the musical sentence. A sentence about missing proof
+ * («по секундам», «кадра этого конца») stays in the song details.
+ */
+export function readerNote(note: string | undefined): string {
+  if (!note) return '';
+  return note
+    .split(/(?<=\.)\s+/)
+    .filter((sentence) => !/по секундам|кадра этого|не разложен|не назван|не выделен/i.test(sentence))
+    .join(' ')
+    .trim();
+}
+
 function rosterWindow<T>(items: readonly T[], page: number, size: number): T[] {
   if (items.length <= size) return items.slice();
   const pages = Math.ceil(items.length / size);
@@ -127,6 +140,7 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   // The desk interlude is the picture. The column grows in CSS (.song.is-inst);
   // the drawing box then uses that room instead of the 0.9 lyric reserve.
   const spectacle = wide;
+  const note = readerNote(section.note);
   const fullH = spectacle
     ? Math.max(64, Math.round(room - 4))
     : shortStage
@@ -135,10 +149,10 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   const textH = spectacle
     ? 0
     : shortStage
-    ? section.note ? 52 : section.mode ? 36 : 28
+    ? note ? 52 : section.mode ? 36 : 28
     // The desk note is one line (about 20px). A 52px reserve shrank the six
     // drawings. 24px is the largest stack this 868 column can give them.
-    : section.note ? (tight ? 36 : wide ? 24 : 96) : section.mode ? (tight ? 28 : wide ? 40 : 64) : tight ? 20 : wide ? 28 : 44;
+    : note ? (tight ? 36 : wide ? 24 : 96) : section.mode ? (tight ? 28 : wide ? 40 : 64) : tight ? 20 : wide ? 28 : 44;
   // The stage column already ends before the margin card, and that column is
   // reserved for the whole song. sideCommentArtCap remains for a full-width
   // stage; applying it here would shrink a plate that is already clear.
@@ -288,10 +302,12 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     const flowP = opening ? Math.max(s.presence, 0.92) : s.presence;
     // Once the accent has moved, this plate leaves with it. Waiting for the
     // section's end kept the previous drawing up under the next name.
-    const ended = t >= section.end;
+    // The last roster is the closing frame. Ending it cleared the stage.
+    const finale = cue.idx === timeline.cues.length - 1 && keys.length > 0;
+    const ended = t >= section.end && !finale;
     const left = d < -0.5 ? clamp01((Math.abs(d) - 0.5) / 0.35) : 0;
     const gone = ended || left >= 1;
-    const p = gone ? 0 : instPresence(t, section.start, section.end, flowP);
+    const p = gone ? 0 : finale && t >= section.end ? 1 : instPresence(t, section.start, section.end, flowP);
     const fade = gone ? 0 : 1 - left;
     const z = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
     const transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
@@ -421,7 +437,7 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
             </p>
           )}
           {section.mode && <div className="t-footnote fb-inst-mode">{section.mode}</div>}
-          {section.note && <p className="t-callout fb-inst-note">{section.note}</p>}
+          {note && <p className="t-callout fb-inst-note">{note}</p>}
           {timed && <span ref={count} className="fb-inst-count t-footnote tabular" />}
         </div>
       </div>

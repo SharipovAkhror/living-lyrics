@@ -75,6 +75,23 @@ export function flowPosition(plan: FlowPlan, t: number): number {
   return i - 1 + easeInOut(clamp01((t - begins[i]) / moves[i]));
 }
 
+/**
+ * The picture the stage paints. A trailing passage with no instruments is not
+ * a picture: holding it made the last line dim and the stage empty. The accent
+ * stays on the previous cue. A seek still lands on this same number.
+ */
+export function picturedPosition(
+  plan: FlowPlan,
+  t: number,
+  cues: readonly { kind: string; section: { kind: string; instruments?: readonly string[] } }[],
+): number {
+  const pos = flowPosition(plan, t);
+  const last = cues[cues.length - 1];
+  if (!last || last.kind !== 'inst' || (last.section.instruments?.length ?? 0) > 0 || cues.length < 2) return pos;
+  const cap = cues.length - 2;
+  return pos > cap ? cap : pos;
+}
+
 /** Size of the nearest non-current line. The current line is the only large object; the ones after it step down. */
 export const SMALL = 0.58;
 /** Size once a line is two steps away. Still present, no longer a second verse. */
