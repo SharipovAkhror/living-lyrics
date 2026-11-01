@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T17:01:33Z",
+  "at": "2026-11-01T17:05:34Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -16,8 +16,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 15909,
-      "age": 15939,
+      "minutes": 15913,
+      "age": 15943,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -25,8 +25,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 15910,
-      "age": 15939,
+      "minutes": 15914,
+      "age": 15943,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -34,8 +34,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 15851,
-      "age": 15903,
+      "minutes": 15855,
+      "age": 15907,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -50,7 +50,7 @@
       "name": "prove-witness",
       "state": "working",
       "minutes": 0,
-      "age": 0,
+      "age": 4,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/prove-witness"
@@ -58,8 +58,8 @@
     {
       "name": "studio-pass",
       "state": "finished",
-      "minutes": 46,
-      "age": 168,
+      "minutes": 50,
+      "age": 172,
       "tokens": 54666236,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -67,8 +67,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 1852,
-      "age": 1867,
+      "minutes": 1856,
+      "age": 1871,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -76,8 +76,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2403,
-      "age": 2523,
+      "minutes": 2407,
+      "age": 2527,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -85,8 +85,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 15848,
-      "age": 15949,
+      "minutes": 15852,
+      "age": 15953,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -94,8 +94,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 12804,
-      "age": 12835,
+      "minutes": 12808,
+      "age": 12839,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -103,8 +103,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 160,
-      "age": 181,
+      "minutes": 164,
+      "age": 185,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -118,8 +118,8 @@
     {
       "name": "t38-steady",
       "state": "finished",
-      "minutes": 25,
-      "age": 64,
+      "minutes": 29,
+      "age": 68,
       "tokens": 13361130,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t38-steady"
@@ -127,19 +127,14 @@
     {
       "name": "t39-precheck",
       "state": "finished",
-      "minutes": 162,
-      "age": 181,
+      "minutes": 166,
+      "age": 185,
       "tokens": 5651269,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t39-precheck"
     }
   ],
-  "gemini": [
-    {
-      "slug": "",
-      "minutes": 1
-    }
-  ],
+  "gemini": [],
   "chats": [
     {
       "name": "AOS · Engineer",
@@ -201,8 +196,8 @@
       "project": "living-lyrics",
       "reports_to": "owner",
       "state": "idle",
-      "last_at": "2026-11-01T16:56:14.739Z",
-      "last_act_at": "2026-11-01T16:56:14.739Z"
+      "last_at": "2026-11-01T17:00:10.274Z",
+      "last_act_at": "2026-11-01T17:00:10.274Z"
     },
     {
       "name": "LL · Site",
@@ -210,19 +205,20 @@
       "project": "living-lyrics",
       "reports_to": "LL · Main",
       "state": "working",
-      "last_act_at": "2026-11-01T16:59:22.257Z"
+      "last_at": "2026-11-01T17:01:31.092Z",
+      "last_act_at": "2026-11-01T17:01:31.092Z"
     }
   ],
   "pipeline": [
     {
       "name": "pipeline",
       "title": "Add Healing: text, translation, commentary, timing (draft).",
-      "minutes": 22
+      "minutes": 26
     },
     {
       "name": "pipeline",
       "title": "Add Lovers: text, translation, commentary, timing (draft)",
-      "minutes": 35
+      "minutes": 39
     }
   ],
   "hygiene": {
