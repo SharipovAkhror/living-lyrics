@@ -26,6 +26,8 @@ declare const __SCENE_PROBE__: boolean | undefined;
  */
 /** Room for the one-line footnote between the current line and the next. */
 const FOOT_ROOM = 40;
+/** Card plus a pad above and below. The engraving has no sung line to sit under. */
+const INST_FOOT_ROOM = 88;
 
 function columnGap() {
   if (typeof window === 'undefined' || !isPhone()) return GAP;
@@ -710,7 +712,8 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         const stacked = compressStack(layoutAt(anchor, list, measures, centerY, 8, room, gap), held, compress, heightsAt(anchor));
         // After the compression: the settle entrance must not squeeze the footnote's room.
         // A function of the anchor, so a seek and a release place the same frame.
-        if (footMode && noted(held)) for (const [k, y] of stacked) if (k > held) stacked.set(k, y + FOOT_ROOM);
+        const footRoom = !footMode ? 0 : timeline.cues[held]?.kind === 'inst' ? INST_FOOT_ROOM : noted(held) ? FOOT_ROOM : 0;
+        if (footRoom) for (const [k, y] of stacked) if (k > held) stacked.set(k, y + footRoom);
         return keepInStage(stacked, held, heightsAt(anchor).get(held) ?? 0, liveH, pad);
       };
       const A = stackAt(a);
