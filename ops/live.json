@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T16:02:04Z",
+  "at": "2026-11-01T16:04:03Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,8 +10,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 15850,
-      "age": 15879,
+      "minutes": 15852,
+      "age": 15881,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -19,8 +19,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 15851,
-      "age": 15879,
+      "minutes": 15853,
+      "age": 15881,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -28,8 +28,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 15792,
-      "age": 15843,
+      "minutes": 15794,
+      "age": 15845,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -44,7 +44,7 @@
       "name": "studio-pass",
       "state": "working",
       "minutes": 0,
-      "age": 109,
+      "age": 111,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -52,8 +52,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 1793,
-      "age": 1807,
+      "minutes": 1795,
+      "age": 1809,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -61,8 +61,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2343,
-      "age": 2463,
+      "minutes": 2345,
+      "age": 2465,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -70,8 +70,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 15788,
-      "age": 15889,
+      "minutes": 15790,
+      "age": 15891,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -79,8 +79,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 12745,
-      "age": 12775,
+      "minutes": 12747,
+      "age": 12777,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -88,8 +88,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 100,
-      "age": 121,
+      "minutes": 102,
+      "age": 123,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -104,7 +104,7 @@
       "name": "t38-steady",
       "state": "working",
       "minutes": 0,
-      "age": 4,
+      "age": 6,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t38-steady"
@@ -112,8 +112,8 @@
     {
       "name": "t39-precheck",
       "state": "finished",
-      "minutes": 102,
-      "age": 121,
+      "minutes": 104,
+      "age": 123,
       "tokens": 5651269,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t39-precheck"
@@ -194,7 +194,13 @@
       "last_act_at": "2026-11-01T15:57:26.612Z"
     }
   ],
-  "pipeline": [],
+  "pipeline": [
+    {
+      "name": "pipeline",
+      "title": "Add Sami Yusuf - You and queue alignment",
+      "minutes": 1
+    }
+  ],
   "hygiene": {
     "at": "2026-11-01T15:47:39Z",
     "fixed": [],
