@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T15:08:12Z",
+  "at": "2026-11-01T15:10:03Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,8 +10,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 15796,
-      "age": 15825,
+      "minutes": 15798,
+      "age": 15827,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -19,8 +19,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 15797,
-      "age": 15825,
+      "minutes": 15799,
+      "age": 15827,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -28,8 +28,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 15738,
-      "age": 15789,
+      "minutes": 15740,
+      "age": 15791,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -44,7 +44,7 @@
       "name": "studio-pass",
       "state": "working",
       "minutes": 0,
-      "age": 55,
+      "age": 57,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -52,8 +52,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 1739,
-      "age": 1753,
+      "minutes": 1741,
+      "age": 1755,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -61,8 +61,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2289,
-      "age": 2409,
+      "minutes": 2291,
+      "age": 2411,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -70,8 +70,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 15734,
-      "age": 15835,
+      "minutes": 15736,
+      "age": 15837,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -79,8 +79,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 12691,
-      "age": 12721,
+      "minutes": 12693,
+      "age": 12723,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -88,8 +88,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 46,
-      "age": 67,
+      "minutes": 48,
+      "age": 69,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -101,10 +101,19 @@
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37b"
     },
     {
+      "name": "t38-steady",
+      "state": "working",
+      "minutes": 0,
+      "age": 0,
+      "tokens": 0,
+      "model": "",
+      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t38-steady"
+    },
+    {
       "name": "t39-precheck",
       "state": "finished",
-      "minutes": 48,
-      "age": 67,
+      "minutes": 50,
+      "age": 69,
       "tokens": 5651269,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t39-precheck"
@@ -171,9 +180,9 @@
       "role": "ll-main",
       "project": "living-lyrics",
       "reports_to": "owner",
-      "state": "idle",
-      "last_at": "2026-11-01T14:40:58.642Z",
-      "last_act_at": "2026-11-01T14:40:58.642Z"
+      "state": "working",
+      "last_at": "2026-11-01T15:09:13.217Z",
+      "last_act_at": "2026-11-01T15:09:13.217Z"
     },
     {
       "name": "LL · Site",
@@ -182,7 +191,7 @@
       "reports_to": "LL · Main",
       "state": "working",
       "last_at": "2026-11-01T14:39:02.765Z",
-      "last_act_at": "2026-11-01T14:39:02.765Z"
+      "last_act_at": "2026-11-01T15:09:17.808Z"
     }
   ],
   "pipeline": [],
