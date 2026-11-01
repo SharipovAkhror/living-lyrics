@@ -12,6 +12,16 @@ import { stageDrive } from './stageDrive';
 import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
 
+/** Same box as `.comment` at min-width 1100px: 20px from the right, width min(340, 50% − 396), then a 16px gap. */
+const SIDE_COMMENT = '(min-width: 1100px) and (min-height: 641px)';
+
+/** Widest centred engraving that stays clear of that card. The column itself does not move. */
+export function sideCommentArtCap(viewportW: number): number {
+  const card = Math.min(340, viewportW / 2 - 396);
+  const cardLeft = viewportW - 20 - card;
+  return 2 * (cardLeft - 16 - viewportW / 2);
+}
+
 interface Props {
   cue: InstCue;
   /** Phone slot that has left the window. The host and its engravings stay mounted. */
@@ -24,6 +34,8 @@ interface Props {
   stage: { w: number; h: number };
   /** Song-level audio features. Null until the file arrives, or when the song has none. */
   features: AudioFeatures | null;
+  /** Commentary is on for the whole song. The cap does not follow the current card, so the engraving does not jump when a note appears. */
+  showComment: boolean;
   register: (idx: number, fn: BlockUpdater | null, m?: Measure) => void;
   onPick: (idx: number) => void;
 }
@@ -54,7 +66,7 @@ function frameFor(members: CastMember[], features: AudioFeatures | null, t: numb
  * brightens and moves; the others stay dim until their entrance. Who plays, and when the voice returns, stays under the drawings.
  * A passage that is only voice or choir keeps that engraving and does not invent an orchestra.
  */
-function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion, stage, features, register, onPick }: Props) {
+function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion, stage, features, showComment, register, onPick }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const compact = useRef<HTMLDivElement>(null);
   const full = useRef<HTMLDivElement>(null);
@@ -84,8 +96,9 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   const textH = shortStage
     ? section.note ? 52 : section.mode ? 36 : 28
     : section.note ? (tight ? 36 : 96) : section.mode ? (tight ? 28 : 64) : tight ? 20 : 44;
+  const sideCard = showComment && typeof window !== 'undefined' && window.matchMedia(SIDE_COMMENT).matches;
   const stageSize = {
-    w: Math.max(200, Math.min(stage.w - (shortStage ? 16 : 24), 1040)),
+    w: Math.max(200, Math.min(stage.w - (shortStage ? 16 : 24), 1040, sideCard ? sideCommentArtCap(window.innerWidth) : 1040)),
     h: Math.max(64, Math.min(fullH - textH, room > 0 ? room : fullH)),
   };
   const compactH = useRef(56);

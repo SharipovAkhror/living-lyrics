@@ -262,13 +262,10 @@ export function loadFontLabels() {
 }
 
 function nudgeMeasure() {
-  const stage = document.querySelector('.scene-stage');
-  if (!(stage instanceof HTMLElement)) return;
-  const previous = stage.style.width;
-  stage.style.width = 'calc(100% - 0.5px)';
-  requestAnimationFrame(() => {
-    stage.style.width = previous;
-  });
+  // A one-frame width of calc(100% - 0.5px) used to wake the stage's
+  // ResizeObserver. That frame was a real 0.5px shift of the column.
+  if (typeof document === 'undefined') return;
+  document.dispatchEvent(new Event('living-lyrics:remeasure'));
 }
 
 /**

@@ -408,9 +408,10 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       (lyrics?.sections.some((s) => arabScript.test(s.comment ?? '')) ?? false),
   };
 
+  // comments-on reserves the note for the whole song. has-comment only means this cue has one.
   return (
     <div
-      className={`song${comment ? ' has-comment' : ''}${settings.commentOpen ? ' comment-open' : ''}`}
+      className={`song${settings.showComment ? ' comments-on' : ''}${comment ? ' has-comment' : ''}${settings.commentOpen ? ' comment-open' : ''}`}
       style={{ background: dark ? '#07060c' : (song.palette.field[2] ?? song.palette.field[0]) }}
     >
       <Field colors={song.palette.field} dark={dark} clock={timeline ? clock : undefined} t={0} still={!timeline} />
