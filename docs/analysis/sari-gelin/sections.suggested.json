@@ -1,0 +1,27 @@
+[
+  {
+    "kind": "instrumental",
+    "start": 0.0,
+    "end": 5.95
+  },
+  {
+    "kind": "vocal",
+    "start": 5.95,
+    "end": 82.6
+  },
+  {
+    "kind": "instrumental",
+    "start": 82.6,
+    "end": 85.9
+  },
+  {
+    "kind": "vocal",
+    "start": 85.9,
+    "end": 202.5
+  },
+  {
+    "kind": "instrumental",
+    "start": 202.5,
+    "end": 213.5
+  }
+]
