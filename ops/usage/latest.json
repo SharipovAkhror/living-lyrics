@@ -1,12 +1,12 @@
 {
-  "updated": "2026-11-01T22:18:29Z",
+  "updated": "2026-11-01T22:28:29Z",
   "grok": {
-    "today": 521338846,
+    "today": 529957056,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-01T22:18:29Z",
-    "week": 1966130612,
+    "todayAt": "2026-11-01T22:28:29Z",
+    "week": 1974748822,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-01T22:18:29Z",
+    "weekAt": "2026-11-01T22:28:29Z",
     "todayByTask": {
       "night-ll-song-04-muhabbatga-yaqinlar": 19760819,
       "night-ll-song-09-sari-gelin": 25213540,
@@ -39,17 +39,18 @@
       "night-ll-song-31-chant-percussion-ensemble": 15295823,
       "night-ll-song-28-hasan-bayar-kime-ne": 16307472,
       "night-ll-song-22-jaaneh-jaanaan": 19897915,
-      "phone-overlap": 39150936
+      "phone-overlap": 39150936,
+      "tech-run-notice": 8618210
     },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-01T22:18:29Z",
+    "todayByTaskAt": "2026-11-01T22:28:29Z",
     "plan": "SuperGrok Heavy",
     "planSource": "grok /usage",
-    "planAt": "2026-11-01T22:18:29Z",
+    "planAt": "2026-11-01T22:28:29Z",
     "weekly": {
       "percentUsed": 98,
       "source": "grok /usage",
-      "at": "2026-11-01T22:18:29Z",
+      "at": "2026-11-01T22:28:29Z",
       "timezoneLabeled": false,
       "resetsAt": "November 6, 21:08"
     }
@@ -58,37 +59,37 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-01T22:18:29Z",
+        "at": "2026-11-01T22:28:29Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "143h 46m"
+        "weeklyResetIn": "143h 36m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-01T22:18:29Z",
+        "at": "2026-11-01T22:28:29Z",
         "weeklyRemaining": 49.8,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "161h 57m"
+        "weeklyResetIn": "161h 47m"
       }
     },
     "conversationsToday": 1,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-01T22:18:29Z",
+    "conversationsTodayAt": "2026-11-01T22:28:29Z",
     "runsToday": 1,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-01T22:18:29Z",
+    "runsTodayAt": "2026-11-01T22:28:29Z",
     "secondsToday": 0,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-01T22:18:29Z",
+    "secondsTodayAt": "2026-11-01T22:28:29Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
-    "at": "2026-11-01T22:18:29Z",
+    "at": "2026-11-01T22:28:29Z",
     "claudeGpt": {
       "source": "agy /usage",
-      "at": "2026-11-01T22:18:29Z",
+      "at": "2026-11-01T22:28:29Z",
       "weeklyRemaining": 49.8,
       "fiveHourRemaining": 100,
-      "weeklyResetIn": "161h 57m"
+      "weeklyResetIn": "161h 47m"
     }
   },
   "alerts": [
@@ -97,21 +98,21 @@
       "value": 39150936,
       "task": "phone-overlap",
       "session": "46e97486-d2ae-4cf6-bf1a-8dd6144eac15",
-      "at": "2026-11-01T22:18:29Z"
+      "at": "2026-11-01T22:28:29Z"
     },
     {
       "kind": "no-progress",
       "value": 39150936,
       "task": "phone-overlap",
       "session": "46e97486-d2ae-4cf6-bf1a-8dd6144eac15",
-      "at": "2026-11-01T22:18:29Z"
+      "at": "2026-11-01T22:28:29Z"
     },
     {
       "kind": "weekly",
       "task": "",
       "session": "",
       "value": 98,
-      "at": "2026-11-01T22:18:29Z"
+      "at": "2026-11-01T22:28:29Z"
     }
   ],
   "value": {
@@ -126,23 +127,23 @@
   "claude": {
     "plan": "Claude Pro",
     "planSource": "claude auth status --json",
-    "at": "2026-11-01T22:18:29Z",
+    "at": "2026-11-01T22:28:29Z",
     "windows": [
       {
         "kind": "five_hour",
-        "percentUsed": 20,
+        "percentUsed": 27,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T22:18:29Z",
+        "at": "2026-11-01T22:28:29Z",
         "resetsAt": "2026-11-02T01:50:00.000Z",
-        "readAt": "2026-11-01T22:17:24Z"
+        "readAt": "2026-11-01T22:28:06Z"
       },
       {
         "kind": "seven_day",
-        "percentUsed": 93,
+        "percentUsed": 94,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T22:18:29Z",
+        "at": "2026-11-01T22:28:29Z",
         "resetsAt": "2026-11-06T04:00:00.000Z",
-        "readAt": "2026-11-01T22:17:24Z"
+        "readAt": "2026-11-01T22:28:06Z"
       }
     ],
     "trend": [
