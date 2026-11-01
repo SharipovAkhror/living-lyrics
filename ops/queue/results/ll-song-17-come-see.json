@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-17-come-see",
+  "status": "failed",
+  "branch": "night/ll-song-17-come-see",
+  "commit": "22e5c9f7451e1e976c812a3019a87373bee582eb",
+  "tokens": 17022076,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts come-see\n\n\n✗ come-see  (1 ошибок, 2 предупреждений)\n  ошибка  song.json: audio.high: нет шифра content/audio-enc/come-see/high.m4a.enc\n  внимание  transcript.json: нет docs/analysis/<slug>/transcript.json: порядок строк с голосом не сверен\n  внимание  cues.json: нет docs/analysis/<slug>/cues.json: время строк по официальным субтитрам (docs/methodology/04-text.md)\n\nИтого: 1 ошибок, 2 предупреждений.\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue\\logs\\ll-song-17-come-see.log",
+  "reason": "tokens",
+  "restarts": 0,
+  "pushed": false
+}
