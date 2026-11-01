@@ -180,14 +180,15 @@ interface Standing {
 }
 
 /**
- * Walk the sections in order. A short section keeps the plates already standing.
- * A long one takes its own roster even when it begins immediately: the old clock
- * skipped that whole section, so the intro badge stayed up under the next name.
- * A short section with no instruments keeps those plates too, instead of clearing
- * the stage. A key shared with the roster already
- * standing keeps its slot and is not entered again. A newcomer fills the first free slot.
- * An empty slot is then closed, so a plate that stood to the right of a hole can shift left:
- * the row has no spacers. A key that leaves is forgotten, so a later return is a new entrance.
+ * Walk the sections in order. A roster is not replaced until CAST_HOLD_S after the
+ * last replacement, so a section that begins inside that window keeps the plates
+ * already standing. A choir or a solo voice is the picture the header names, so it
+ * replaces at once. A short section with no instruments keeps those plates too,
+ * instead of clearing the stage. A key shared with the roster already standing
+ * keeps its slot and is not entered again. A newcomer fills the first free slot.
+ * An empty slot is then closed, so a plate that stood to the right of a hole can
+ * shift left: the row has no spacers. A key that leaves is forgotten, so a later
+ * return is a new entrance.
  */
 export function standingKeys(sections: CastSection[], limit: number): Standing {
   let keys: string[] = [];
@@ -198,9 +199,13 @@ export function standingKeys(sections: CastSection[], limit: number): Standing {
     const next = desiredKeys(section, limit);
     const same = keys.length === next.length && keys.every((key, i) => key === next[i]);
     const span = section.end - section.start;
-    const short = span < CAST_HOLD_S;
-    if (keys.length && next.length === 0 && short) continue;
-    if (keys.length && (same || (short && section.start - changedAt < CAST_HOLD_S))) continue;
+    // A choir or a solo voice is the picture the header names. Holding the
+    // previous badge under that name left two states on one screen.
+    // A short break with no instruments keeps the plates already standing.
+    if (!(keys.length && isVoicePassage(next))) {
+      if (keys.length && next.length === 0 && span < CAST_HOLD_S) continue;
+      if (keys.length && (same || section.start - changedAt < CAST_HOLD_S)) continue;
+    }
     const slots: (string | null)[] = keys.map((key) => (next.includes(key) ? key : null));
     for (const key of next) {
       if (keys.includes(key)) continue;
