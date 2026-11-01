@@ -10,14 +10,14 @@ export function Status({
   children,
   title,
   action,
-  icon = 'info.circle',
+  icon = 'book.closed',
   className = '',
   live,
 }: {
   children: ReactNode;
   title?: string;
   action?: ReactNode;
-  icon?: IconName;
+  icon?: IconName | ReactNode;
   className?: string;
   /** `alert` announces immediately. `status` is a polite update. */
   live?: 'alert' | 'status';
@@ -30,7 +30,7 @@ export function Status({
     >
       {glass ? <GlassLayers /> : null}
       <span className="status-mark" aria-hidden="true">
-        <Icon name={icon} size={20} />
+        {typeof icon === 'string' ? <Icon name={icon} size={20} /> : icon}
       </span>
       <div className="status-text">
         {title && <p className="status-title">{title}</p>}

@@ -462,8 +462,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
       scrubWas = scrubbingNow;
       const frameDt = frameAt ? Math.min(0.05, (now - frameAt) / 1000) : 0.016;
       frameAt = now;
-      // A scrub keeps the stage at full strength. The veil used to restart on
-      // every large step and, with the hide below, left the settled frame empty.
+      // A drag freezes the picture. Walking the next window, cloning a depart
+      // view, or placing the phone stage on every step missed a vsync (desktop
+      // scrub p95 33.3, phone Scene frames 53–73 ms). The release block above
+      // already cleared lastT, so the frame after the finger lifts paints once.
       if (scrubbingNow) {
         if (veil) {
           veil = null;
@@ -473,7 +475,9 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
             stageEl.style.transform = '';
           }
         }
-      } else if (motion !== 'off') {
+        return;
+      }
+      if (motion !== 'off') {
         const time = clock();
         const kind = kindAt(time);
         const jumped = Number.isFinite(veilClock) && Math.abs(time - veilClock) > 0.45 && kind !== veilKind;

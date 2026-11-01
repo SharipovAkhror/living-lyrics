@@ -6,6 +6,7 @@ import { fontClass } from '@/scene/fonts';
 import type { Settings } from '@/app/settings';
 import { showHarakatText } from '@/data/harakat';
 import { Status } from '@/components/Status';
+import { PlayerIcon } from '@/ui/playerIcons';
 import { TrText } from '@/scene/LineBlock';
 
 type TextRow =
@@ -84,7 +85,7 @@ export function TextSheet({
       <Sheet open={open} onClose={onClose} title="Весь текст" size="large">
         <Status
           className="sheet-wait"
-          icon={error ? 'book.closed' : 'list.bullet'}
+          icon={error ? 'book.closed' : <PlayerIcon name="text" size={20} />}
           live={error ? 'alert' : 'status'}
           action={
             error && onRetry ? (

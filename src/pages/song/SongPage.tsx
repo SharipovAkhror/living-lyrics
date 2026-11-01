@@ -26,6 +26,7 @@ import { fitNote } from '@/scene/noteFit';
 import { Field } from '@/scene/Field';
 import { LEAD, flowPosition, planFlow } from '@/scene/flow';
 import { Icon } from '@/ui/icons';
+import { PlayerIcon } from '@/ui/playerIcons';
 import { RichText } from '@/components/RichText';
 import { Status } from '@/components/Status';
 import { showHarakatText, stripHarakat } from '@/data/harakat';
@@ -543,7 +544,7 @@ function ExplainButton({
       data-tip="Пояснение · C"
       onClick={onToggle}
     >
-      <Icon name="book.closed" size={24} />
+      <PlayerIcon name="comment" size={24} />
       <span className="util-label">Пояснение</span>
     </button>
   );
@@ -694,6 +695,10 @@ function EngineAlerts({
   onOpenSettings: () => void;
 }) {
   const state = useEngineView(engine, alertKey);
+  const [pending, setPending] = useState(false);
+  useEffect(() => {
+    if (!state.error) setPending(false);
+  }, [state.error]);
   useLayoutEffect(() => {
     const floor = floorRef.current;
     if (!floor) return;
@@ -707,7 +712,15 @@ function EngineAlerts({
       {state.error && (
         <div className="player-alert" role="alert">
           <p>{state.error}</p>
-          <button type="button" className="floor-retry" onClick={onRetry}>
+          <button
+            type="button"
+            className={`floor-retry${pending ? ' is-pending' : ''}`}
+            aria-busy={pending}
+            onClick={() => {
+              setPending(true);
+              onRetry();
+            }}
+          >
             Повторить
           </button>
         </div>
@@ -1039,7 +1052,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
   }, []);
   // Until the engine has applied ?t=, paint that moment. Otherwise the first
   // phone frame is the intro and the geometry sample reads the wrong block.
-  // The scrubber writes this while a finger or a coast is on the rail.
+  // The scrubber writes this while a finger is on the rail.
   // Seeking on every move would notify the engine; the scene just reads the ref.
   const scrubAt = useRef<number | null>(null);
   const clock = useCallback(() => {
@@ -1454,7 +1467,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
       <header className="topbar lg-host" ref={topbarRef}>
         <GlassLayers />
         <a className="btn btn-circle btn-plain" href="/" onClick={linkHandler('/')} aria-label="К списку песен" data-tip="К списку песен">
-          <Icon name="chevron.left" size={22} />
+          <PlayerIcon name="back" size={22} />
         </a>
         <img
           ref={artRef}
@@ -1475,7 +1488,7 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
           </div>
         </div>
         <button className="btn btn-circle btn-plain" onClick={() => openSheet('info')} aria-label="О песне" data-tip="О песне">
-          <Icon name="info.circle" size={22} />
+          <PlayerIcon name="about" size={22} />
         </button>
       </header>
 
@@ -1537,19 +1550,21 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
                   aria-keyshortcuts="M"
                   data-tip="Не совпадает · M"
                 >
-                  <Icon name="flag" size={20} />
+                  <PlayerIcon name="flag" size={20} />
                 </button>
               </div>
             }
           />
         ) : (
           <div className="scrub scrub--hold" aria-hidden="true">
-            <div className="scrub-top" />
+            <div className="scrub-top">
+              <span className="scrub-now tabular">—:—</span>
+            </div>
             <div className="scrub-track">
               <div className="scrub-rail" />
             </div>
             <div className="scrub-meta">
-              <span className="scrub-remain"> </span>
+              <span className="scrub-remain tabular">—:—</span>
             </div>
           </div>
         )}
@@ -1568,48 +1583,52 @@ export function SongPage({ slug, dark, leaving = null }: { slug: string; dark: b
         <div className="player-row">
           <div className="transport">
             <button className="btn btn-plain btn-lg-hit" {...back} aria-label="Предыдущая строка (удерживайте — перемотка назад)" data-tip="Предыдущая строка · ←">
-              <Icon name="backward" size={28} />
+              <PlayerIcon name="line-prev" size={28} />
             </button>
             <PlayButton engine={engine} playRef={playRef} onToggle={togglePlay} />
             <button className="btn btn-plain btn-lg-hit" {...fwd} aria-label="Следующая строка (удерживайте — перемотка вперёд)" data-tip="Следующая строка · →">
-              <Icon name="forward" size={28} />
+              <PlayerIcon name="line-next" size={28} />
             </button>
           </div>
           <div className="utility" role="group" aria-label="Действия с песней">
-            <button className="util util--mark" aria-label="Перевод" aria-pressed={settings.showTranslation} aria-keyshortcuts="T" data-tip="Перевод · T" onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
-              <Icon name="character.bubble" size={24} />
-              <span className="util-label">Перевод</span>
-            </button>
-            <ExplainButton
-              store={ownerStore}
-              timeline={timeline}
-              showComment={settings.showComment}
-              commentOpen={settings.commentOpen}
-              shortLand={shortLand}
-              onToggle={toggleComment}
-              live={sheet === 'note'}
-            />
-            <button className={`util${sheet === 'text' ? ' is-live-task' : ''}`} aria-label="Весь текст" aria-pressed={sheet === 'text'} data-tip="Весь текст" onClick={(e) => openSheet('text', e.currentTarget)}>
-              <Icon name="list.bullet" size={24} />
-              <span className="util-label">Весь текст</span>
-            </button>
-            <button
-              className={`util${sheet === 'settings' ? ' is-live-task' : ''}`}
-              aria-label="Настройки"
-              aria-pressed={sheet === 'settings'}
-              data-tip="Настройки"
-              onPointerDown={(e) => {
-                // The press, not the click that follows it. A frame can be
-                // committed between the two, and on WebKit that frame was the
-                // one that arrived inside 100 ms — without the sheet.
-                if (e.button !== 0) return;
-                openSheet('settings', e.currentTarget);
-              }}
-              onClick={(e) => openSheet('settings', e.currentTarget)}
-            >
-              <Icon name="slider.horizontal.3" size={24} />
-              <span className="util-label">Настройки</span>
-            </button>
+            <div className="util-lead">
+              <button className="util util--mark" aria-label="Перевод" aria-pressed={settings.showTranslation} aria-keyshortcuts="T" data-tip="Перевод · T" onClick={() => setSettings({ showTranslation: !settings.showTranslation })}>
+                <PlayerIcon name="translate" size={24} />
+                <span className="util-label">Перевод</span>
+              </button>
+              <ExplainButton
+                store={ownerStore}
+                timeline={timeline}
+                showComment={settings.showComment}
+                commentOpen={settings.commentOpen}
+                shortLand={shortLand}
+                onToggle={toggleComment}
+                live={sheet === 'note'}
+              />
+            </div>
+            <div className="util-trail">
+              <button className={`util${sheet === 'text' ? ' is-live-task' : ''}`} aria-label="Весь текст" aria-pressed={sheet === 'text'} data-tip="Весь текст" onClick={(e) => openSheet('text', e.currentTarget)}>
+                <PlayerIcon name="text" size={24} />
+                <span className="util-label">Весь текст</span>
+              </button>
+              <button
+                className={`util${sheet === 'settings' ? ' is-live-task' : ''}`}
+                aria-label="Настройки"
+                aria-pressed={sheet === 'settings'}
+                data-tip="Настройки"
+                onPointerDown={(e) => {
+                  // The press, not the click that follows it. A frame can be
+                  // committed between the two, and on WebKit that frame was the
+                  // one that arrived inside 100 ms — without the sheet.
+                  if (e.button !== 0) return;
+                  openSheet('settings', e.currentTarget);
+                }}
+                onClick={(e) => openSheet('settings', e.currentTarget)}
+              >
+                <PlayerIcon name="settings" size={24} />
+                <span className="util-label">Настройки</span>
+              </button>
+            </div>
           </div>
         </div>
       </footer>

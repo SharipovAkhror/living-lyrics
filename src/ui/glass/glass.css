@@ -246,9 +246,9 @@ html[data-glass='lens'] .lg-host--note .lg-lens {
 /* Restrained glass: a dense tint, a blur, no refraction and no brightening. */
 html[data-glass='lens'] .topbar .lg-lens,
 html[data-glass='lens'] .lg-host--floor .lg-lens {
-  background: color-mix(in srgb, var(--bg-elevated) 62%, transparent);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-  backdrop-filter: blur(18px) saturate(150%);
+  background: color-mix(in srgb, var(--bg-elevated) 48%, transparent);
+  -webkit-backdrop-filter: url('#lg-refract') blur(18px) saturate(165%) brightness(1.04);
+  backdrop-filter: url('#lg-refract') blur(18px) saturate(165%) brightness(1.04);
 }
 html[data-glass='solid'] .lg-host--floor .lg-lens {
   background: var(--lg-solid);
@@ -276,9 +276,9 @@ html[data-glass='lens'] .sheet.glass.lg-host .lg-lens {
 /* Phone keeps a smaller blur so the dock does not spend the frame budget. */
 html[data-glass='rim'] .topbar .lg-lens,
 html[data-glass='rim'] .lg-host--floor .lg-lens {
-  background: color-mix(in srgb, var(--bg-elevated) 72%, transparent);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-  backdrop-filter: blur(12px) saturate(140%);
+  background: color-mix(in srgb, var(--bg-elevated) 62%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  backdrop-filter: blur(18px) saturate(165%);
 }
 /* The margin note is one fill. The lens radial and the accent wash were a second material. */
 html[data-glass='lens'] .comment.is-margin .lg-lens,
@@ -314,6 +314,19 @@ html[data-glass='lens'] .lib-nav .lg-lens {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
+/* A moving field under a live filter missed the frame. The thick fill is the
+   same material without the snapshot. It returns once the finger or the flight is gone. */
+.song.is-scrubbing .topbar .lg-lens,
+.song.is-scrubbing .lg-host--floor .lg-lens,
+.song.is-flying .topbar .lg-lens,
+.song.is-flying .lg-host--floor .lg-lens,
+.song.is-arriving .topbar .lg-lens,
+.song.is-arriving .lg-host--floor .lg-lens {
+  background: var(--lg-fill-thick);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 @media (prefers-contrast: more), (prefers-reduced-transparency: reduce) {
   .lg-lens {
     background: var(--lg-solid) !important;
