@@ -179,6 +179,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
                 el.style.transform = 'none';
                 el.style.filter = 'none';
                 el.style.opacity = '1';
+                // The wipe drops the backing store. The line's cached transform
+                // string often still matches, so the next placement would skip
+                // the write and leave every line at the top of the stage.
+                el.dataset.cleared = '1';
               }
               void stageEl.offsetWidth;
             }

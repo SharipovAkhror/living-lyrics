@@ -3,17 +3,24 @@ import { stripHarakat } from '@/data/harakat';
 
 const ARABIC_RUN = /([؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿][؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿\s‌‏،؛]*[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿])/g;
 
-/** Wraps Arabic-script runs so they get the Mushaf face and correct direction inside Russian prose. */
+/**
+ * Letters that Persian uses and the Mushaf face does not shape as one cluster.
+ * KFGQPC draws U+0622 (alef madda) in such a word as a dotted circle. The lyric
+ * line already uses Amiri for these, and that face draws the letter.
+ */
+const PERSIAN_LETTER = /[\u067E\u0686\u0698\u06AF\u06A9\u06CC]/;
+
+/** Wraps Arabic-script runs so they get a matching face and direction inside Russian prose. */
 function arabic(text: string, key: string): ReactNode[] {
-  return text.split(ARABIC_RUN).map((part, i) =>
-    i % 2 === 1 ? (
-      <bdi key={`${key}-${i}`} className="rt-ar f-mushaf" dir="rtl" lang="ar">
+  return text.split(ARABIC_RUN).map((part, i) => {
+    if (i % 2 !== 1) return <Fragment key={`${key}-${i}`}>{part}</Fragment>;
+    const persian = PERSIAN_LETTER.test(part);
+    return (
+      <bdi key={`${key}-${i}`} className={persian ? 'rt-ar f-persian' : 'rt-ar f-mushaf'} dir="rtl" lang={persian ? 'fa' : 'ar'}>
         {part}
       </bdi>
-    ) : (
-      <Fragment key={`${key}-${i}`}>{part}</Fragment>
-    ),
-  );
+    );
+  });
 }
 
 /** Minimal inline markup for commentary: **bold**, *italic*, paragraphs separated by blank lines. */
