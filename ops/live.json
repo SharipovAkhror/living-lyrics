@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T19:14:03Z",
+  "at": "2026-11-01T19:19:03Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -16,8 +16,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 16042,
-      "age": 16071,
+      "minutes": 16047,
+      "age": 16076,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -25,8 +25,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 16043,
-      "age": 16071,
+      "minutes": 16048,
+      "age": 16076,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -34,8 +34,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 15984,
-      "age": 16035,
+      "minutes": 15989,
+      "age": 16040,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -49,8 +49,8 @@
     {
       "name": "prove-witness",
       "state": "finished",
-      "minutes": 105,
-      "age": 116,
+      "minutes": 110,
+      "age": 121,
       "tokens": 2969138,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/prove-witness"
@@ -58,8 +58,8 @@
     {
       "name": "studio-pass",
       "state": "finished",
-      "minutes": 179,
-      "age": 301,
+      "minutes": 184,
+      "age": 306,
       "tokens": 54666236,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -67,8 +67,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 1985,
-      "age": 1999,
+      "minutes": 1990,
+      "age": 2004,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -76,8 +76,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2535,
-      "age": 2655,
+      "minutes": 2540,
+      "age": 2660,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -85,8 +85,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 15980,
-      "age": 16081,
+      "minutes": 15985,
+      "age": 16086,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -94,8 +94,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 12937,
-      "age": 12967,
+      "minutes": 12942,
+      "age": 12972,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -103,8 +103,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 292,
-      "age": 313,
+      "minutes": 297,
+      "age": 318,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -113,7 +113,7 @@
       "name": "t37b",
       "state": "working",
       "minutes": 0,
-      "age": 0,
+      "age": 5,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37b"
@@ -121,8 +121,8 @@
     {
       "name": "t38-steady",
       "state": "finished",
-      "minutes": 157,
-      "age": 196,
+      "minutes": 162,
+      "age": 201,
       "tokens": 13361130,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t38-steady"
@@ -130,8 +130,8 @@
     {
       "name": "t39-precheck",
       "state": "finished",
-      "minutes": 294,
-      "age": 313,
+      "minutes": 299,
+      "age": 318,
       "tokens": 5651269,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t39-precheck"
@@ -208,15 +208,20 @@
       "project": "living-lyrics",
       "reports_to": "LL · Main",
       "state": "working",
-      "last_at": "2026-11-01T17:35:19.351Z",
-      "last_act_at": "2026-11-01T17:35:19.351Z"
+      "last_at": "2026-11-01T19:13:48.258Z",
+      "last_act_at": "2026-11-01T19:13:48.258Z"
     }
   ],
   "pipeline": [
     {
       "name": "pipeline",
+      "title": "Add You Came To Me: text, translation, commentary, timing (draft)",
+      "minutes": 1
+    },
+    {
+      "name": "pipeline",
       "title": "Add Sami Yusuf - Existentia",
-      "minutes": 3
+      "minutes": 9
     }
   ],
   "hygiene": {
