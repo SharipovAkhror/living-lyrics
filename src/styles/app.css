@@ -1488,6 +1488,14 @@
   font-size: 1.24em;
   line-height: 1;
 }
+/* Links inside comment body. Colour inherits; thin underline only. */
+.comment-body .rt-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+}
 
 .hint {
   position: absolute;

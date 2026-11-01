@@ -29,6 +29,7 @@ import { Icon } from '@/ui/icons';
 import { PlayerIcon } from '@/ui/playerIcons';
 import { RichText } from '@/components/RichText';
 import { Status } from '@/components/Status';
+import { plainComment } from '@/data/commentText';
 import { showHarakatText, stripHarakat } from '@/data/harakat';
 import { stageFrame, type StageFrame } from '@/scene/columns';
 import { parseAudioFeatures, type AudioFeatures } from '@/instruments/animation';
@@ -121,7 +122,7 @@ function NoteCard({
   suppressed?: boolean;
 }) {
   const ref = useRef<HTMLElement>(null);
-  const preview = (showHarakat ? text : stripHarakat(text)).replace(/\*+/g, '').replace(/\s+/g, ' ').trim();
+  const preview = plainComment(showHarakat ? text : stripHarakat(text)).replace(/\s+/g, ' ').trim();
   useLayoutEffect(() => {
     const host = ref.current?.closest('.song');
     if (host instanceof HTMLElement) fitNote(host);
@@ -485,7 +486,7 @@ function FloorNote({
         <span className="comment-kicker">Пояснение</span>
         {!commentOpen && (
           <span className="comment-preview">
-            {(showHarakat ? floor.text : stripHarakat(floor.text)).replace(/\*+/g, '').replace(/\s+/g, ' ').trim()}
+            {plainComment(showHarakat ? floor.text : stripHarakat(floor.text)).replace(/\s+/g, ' ').trim()}
           </span>
         )}
         <Icon name="chevron.down" size={16} className="comment-chevron" />

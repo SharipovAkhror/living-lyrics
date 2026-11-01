@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Run: npx tsx src/data/comments.test.ts
  * A `comment-draft` comment never reaches the reader. The load gate drops the text
  * and keeps the flag; commentFor then refuses to inherit a neighbour.
@@ -8,6 +8,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hideDraftComments } from './comments';
+import { plainComment } from './commentText';
 import { LyricsSchema, type Flag, type Line, type Lyrics, type Section } from './schema';
 import { buildTimeline, commentFor, type Timeline } from './timeline';
 
@@ -142,6 +143,19 @@ function testVisibleStaysAndLaterLineSkipsTheDraft() {
   assert.equal(source.lines[1].comment, draft);
 }
 
+function testPlainComment() {
+  // Markdown link: visible text only, no URL.
+  assert.equal(plainComment('See [the source](https://example.com).'), 'See the source.');
+  // Bare URL with trailing dot: host only, dot stays outside.
+  assert.equal(plainComment('More: https://ganjoor.net/path.'), 'More: ganjoor.net.');
+  // Bold plus markdown link.
+  assert.equal(plainComment('**Bold** and [link](https://shazam.com/song/1).'), 'Bold and link.');
+  // Non-http scheme stays plain text.
+  assert.equal(plainComment('See ftp://example.com for details.'), 'See ftp://example.com for details.');
+  // Bare URL with trailing punctuation (semicolon).
+  assert.equal(plainComment('ref: https://vajehyab.com/path;'), 'ref: vajehyab.com;');
+}
+
 function testPublishedSongs() {
   const dir = join(root, 'content/songs');
   const slugs = readdirSync(dir)
@@ -233,6 +247,7 @@ testHiddenLine();
 testHiddenSection();
 testHiddenLineAfterVisibleDoesNotInherit();
 testVisibleStaysAndLaterLineSkipsTheDraft();
+testPlainComment();
 testPublishedSongs();
 testLoadGate();
 console.log('comments: ok');
