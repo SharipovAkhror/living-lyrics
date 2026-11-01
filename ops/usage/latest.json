@@ -1,12 +1,12 @@
 {
-  "updated": "2026-11-01T17:37:30Z",
+  "updated": "2026-11-01T17:47:30Z",
   "grok": {
-    "today": 705203935,
+    "today": 728866126,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-01T17:37:30Z",
-    "week": 1421457412,
+    "todayAt": "2026-11-01T17:47:30Z",
+    "week": 1445119603,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-01T17:37:30Z",
+    "weekAt": "2026-11-01T17:47:30Z",
     "todayByTask": {
       "ops-claude-spend": 20609250,
       "space3-card-a": 5995198,
@@ -59,17 +59,19 @@
       "night-ll-song-06-lifting-the-veil": 2535904,
       "night-ll-song-02-nasimi": 20442482,
       "night-ll-song-07-healing": 13894282,
-      "prove-witness": 10282413
+      "prove-witness": 10282413,
+      "night-ll-song-05-lovers": 18501049,
+      "night-ll-song-10-one-true-love": 5161142
     },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-01T17:37:30Z",
+    "todayByTaskAt": "2026-11-01T17:47:30Z",
     "plan": "SuperGrok Heavy",
     "planSource": "grok /usage",
-    "planAt": "2026-11-01T17:37:30Z",
+    "planAt": "2026-11-01T17:47:30Z",
     "weekly": {
       "percentUsed": 70,
       "source": "grok /usage",
-      "at": "2026-11-01T17:37:30Z",
+      "at": "2026-11-01T17:47:30Z",
       "timezoneLabeled": false,
       "resetsAt": "November 6, 21:08"
     }
@@ -78,39 +80,39 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-01T14:37:31Z",
+        "at": "2026-11-01T17:47:30Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "151h 27m"
+        "weeklyResetIn": "148h 17m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-01T17:17:31Z",
-        "weeklyRemaining": 50.54,
-        "fiveHourRemaining": 1.98,
-        "weeklyResetIn": "166h 58m",
-        "fiveHourResetIn": "3h 58m"
+        "at": "2026-11-01T17:47:30Z",
+        "weeklyRemaining": 50.76,
+        "fiveHourRemaining": 1.76,
+        "weeklyResetIn": "166h 28m",
+        "fiveHourResetIn": "3h 28m"
       }
     },
     "conversationsToday": 4,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-01T17:37:30Z",
+    "conversationsTodayAt": "2026-11-01T17:47:30Z",
     "runsToday": 4,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-01T17:37:30Z",
+    "runsTodayAt": "2026-11-01T17:47:30Z",
     "secondsToday": 2460,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-01T17:37:30Z",
+    "secondsTodayAt": "2026-11-01T17:47:30Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
-    "at": "2026-11-01T17:17:31Z",
+    "at": "2026-11-01T17:47:30Z",
     "claudeGpt": {
       "source": "agy /usage",
-      "at": "2026-11-01T17:17:31Z",
-      "weeklyRemaining": 50.54,
-      "fiveHourRemaining": 1.98,
-      "weeklyResetIn": "166h 58m",
-      "fiveHourResetIn": "3h 58m"
+      "at": "2026-11-01T17:47:30Z",
+      "weeklyRemaining": 50.76,
+      "fiveHourRemaining": 1.76,
+      "weeklyResetIn": "166h 28m",
+      "fiveHourResetIn": "3h 28m"
     }
   },
   "alerts": [
@@ -119,7 +121,7 @@
       "task": "",
       "session": "",
       "value": 70,
-      "at": "2026-11-01T17:37:30Z"
+      "at": "2026-11-01T17:47:30Z"
     }
   ],
   "value": {
@@ -134,13 +136,13 @@
   "claude": {
     "plan": "Claude Pro",
     "planSource": "claude auth status --json",
-    "at": "2026-11-01T17:37:30Z",
+    "at": "2026-11-01T17:47:30Z",
     "windows": [
       {
         "kind": "five_hour",
         "percentUsed": 26,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T17:37:30Z",
+        "at": "2026-11-01T17:47:30Z",
         "resetsAt": "2026-11-01T20:50:00.000Z",
         "readAt": "2026-11-01T17:36:44Z"
       },
@@ -148,7 +150,7 @@
         "kind": "seven_day",
         "percentUsed": 86,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T17:37:30Z",
+        "at": "2026-11-01T17:47:30Z",
         "resetsAt": "2026-11-06T04:00:00.000Z",
         "readAt": "2026-11-01T17:36:44Z"
       }
