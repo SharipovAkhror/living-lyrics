@@ -1,30 +1,30 @@
 {
-  "at": "2026-11-01T00:32:22Z",
+  "at": "2026-11-01T00:42:24Z",
   "unit": "Claude cost = API-price-weighted tokens, Opus-input units (see claude_review.py)",
   "calibration": {
-    "proWeek": 77758676.82,
-    "pro5h": 10224732.28,
+    "proWeek": 78033821.98,
+    "pro5h": 10662142.54,
     "source": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 62% / 100); pro5h = claude cost since 2026-10-31T23:00:00 / (five_hour 39% / 100)"
   },
   "claude": {
     "week": {
       "since": "2026-10-30T04:00:00",
-      "cost": 48210379.63,
-      "tokens": 265411594,
-      "calls": 2238,
+      "cost": 48380969.63,
+      "tokens": 266870309,
+      "calls": 2246,
       "pctOfWeek": 62.0,
       "byProject": {
         "agentic-os-live": {
-          "cost": 37947214.28,
-          "tokens": 214186479,
-          "calls": 1815,
-          "pct": 78.71
+          "cost": 38117804.28,
+          "tokens": 215645194,
+          "calls": 1823,
+          "pct": 78.79
         },
         "living-lyrics": {
           "cost": 10263165.35,
           "tokens": 51225115,
           "calls": 423,
-          "pct": 21.29
+          "pct": 21.21
         }
       },
       "byChat": {
@@ -33,7 +33,7 @@
           "cost": 52285.06,
           "tokens": 1050842,
           "pct": 0.11,
-          "tokensPct": 0.4,
+          "tokensPct": 0.39,
           "calls": 11,
           "sessions": 1
         },
@@ -50,8 +50,8 @@
           "project": "agentic-os-live",
           "cost": 1374358.65,
           "tokens": 5653787,
-          "pct": 2.85,
-          "tokensPct": 2.13,
+          "pct": 2.84,
+          "tokensPct": 2.12,
           "calls": 68,
           "sessions": 1
         },
@@ -59,8 +59,8 @@
           "project": "agentic-os-live",
           "cost": 7580167.57,
           "tokens": 43022552,
-          "pct": 15.72,
-          "tokensPct": 16.21,
+          "pct": 15.67,
+          "tokensPct": 16.12,
           "calls": 326,
           "sessions": 5
         },
@@ -68,8 +68,8 @@
           "project": "agentic-os-live",
           "cost": 1953856.67,
           "tokens": 11656141,
-          "pct": 4.05,
-          "tokensPct": 4.39,
+          "pct": 4.04,
+          "tokensPct": 4.37,
           "calls": 88,
           "sessions": 1
         },
@@ -77,8 +77,8 @@
           "project": "agentic-os-live",
           "cost": 5228923.09,
           "tokens": 25340492,
-          "pct": 10.85,
-          "tokensPct": 9.55,
+          "pct": 10.81,
+          "tokensPct": 9.5,
           "calls": 241,
           "sessions": 4
         },
@@ -86,8 +86,8 @@
           "project": "agentic-os-live",
           "cost": 1402231.56,
           "tokens": 6857560,
-          "pct": 2.91,
-          "tokensPct": 2.58,
+          "pct": 2.9,
+          "tokensPct": 2.57,
           "calls": 65,
           "sessions": 1
         },
@@ -95,26 +95,26 @@
           "project": "agentic-os-live",
           "cost": 1613927.24,
           "tokens": 6071337,
-          "pct": 3.35,
-          "tokensPct": 2.29,
+          "pct": 3.34,
+          "tokensPct": 2.28,
           "calls": 44,
           "sessions": 2
         },
         "AOS · Tech": {
           "project": "agentic-os-live",
-          "cost": 12700601.37,
-          "tokens": 76209839,
-          "pct": 26.34,
-          "tokensPct": 28.71,
-          "calls": 708,
+          "cost": 12871191.37,
+          "tokens": 77668554,
+          "pct": 26.6,
+          "tokensPct": 29.1,
+          "calls": 716,
           "sessions": 8
         },
         "AOS · Tech — старый, не писать": {
           "project": "agentic-os-live",
           "cost": 3665834.54,
           "tokens": 22368693,
-          "pct": 7.6,
-          "tokensPct": 8.43,
+          "pct": 7.58,
+          "tokensPct": 8.38,
           "calls": 192,
           "sessions": 2
         },
@@ -122,8 +122,8 @@
           "project": "agentic-os-live",
           "cost": 2279193.34,
           "tokens": 14012730,
-          "pct": 4.73,
-          "tokensPct": 5.28,
+          "pct": 4.71,
+          "tokensPct": 5.25,
           "calls": 53,
           "sessions": 1
         },
@@ -132,7 +132,7 @@
           "cost": 40514.29,
           "tokens": 1052063,
           "pct": 0.08,
-          "tokensPct": 0.4,
+          "tokensPct": 0.39,
           "calls": 10,
           "sessions": 1
         },
@@ -149,8 +149,8 @@
           "project": "living-lyrics",
           "cost": 2556085.9,
           "tokens": 8949774,
-          "pct": 5.3,
-          "tokensPct": 3.37,
+          "pct": 5.28,
+          "tokensPct": 3.35,
           "calls": 61,
           "sessions": 1
         },
@@ -158,8 +158,8 @@
           "project": "living-lyrics",
           "cost": 5472427.57,
           "tokens": 29574599,
-          "pct": 11.35,
-          "tokensPct": 11.14,
+          "pct": 11.31,
+          "tokensPct": 11.08,
           "calls": 253,
           "sessions": 5
         },
@@ -167,8 +167,8 @@
           "project": "living-lyrics",
           "cost": 2154163.23,
           "tokens": 12378910,
-          "pct": 4.47,
-          "tokensPct": 4.66,
+          "pct": 4.45,
+          "tokensPct": 4.64,
           "calls": 108,
           "sessions": 1
         },
@@ -187,8 +187,8 @@
           "project": "agentic-os-live",
           "cost": 7580167.57,
           "tokens": 43022552,
-          "pct": 15.72,
-          "tokensPct": 16.21,
+          "pct": 15.67,
+          "tokensPct": 16.12,
           "calls": 326,
           "sessions": 5
         },
@@ -196,8 +196,8 @@
           "project": "living-lyrics",
           "cost": 2556085.9,
           "tokens": 8949774,
-          "pct": 5.3,
-          "tokensPct": 3.37,
+          "pct": 5.28,
+          "tokensPct": 3.35,
           "calls": 61,
           "sessions": 1
         }
@@ -214,23 +214,23 @@
       }
     },
     "day": {
-      "since": "2026-10-31T00:32:22",
-      "cost": 28244062.08,
-      "tokens": 152890934,
-      "calls": 1335,
-      "pctOfWeek": 36.32,
+      "since": "2026-10-31T00:42:24",
+      "cost": 28396617.93,
+      "tokens": 154200779,
+      "calls": 1342,
+      "pctOfWeek": 36.39,
       "byProject": {
         "agentic-os-live": {
-          "cost": 21138740.26,
-          "tokens": 117838128,
-          "calls": 1041,
-          "pct": 74.84
+          "cost": 21309330.26,
+          "tokens": 119296843,
+          "calls": 1049,
+          "pct": 75.04
         },
         "living-lyrics": {
-          "cost": 7105321.82,
-          "tokens": 35052806,
-          "calls": 294,
-          "pct": 25.16
+          "cost": 7087287.67,
+          "tokens": 34903936,
+          "calls": 293,
+          "pct": 24.96
         }
       },
       "byChat": {
@@ -238,8 +238,8 @@
           "project": "agentic-os-live",
           "cost": 52285.06,
           "tokens": 1050842,
-          "pct": 0.19,
-          "tokensPct": 0.69,
+          "pct": 0.18,
+          "tokensPct": 0.68,
           "calls": 11,
           "sessions": 1
         },
@@ -256,8 +256,8 @@
           "project": "agentic-os-live",
           "cost": 1374358.65,
           "tokens": 5653787,
-          "pct": 4.87,
-          "tokensPct": 3.7,
+          "pct": 4.84,
+          "tokensPct": 3.67,
           "calls": 68,
           "sessions": 1
         },
@@ -265,8 +265,8 @@
           "project": "agentic-os-live",
           "cost": 3998895.9,
           "tokens": 22362204,
-          "pct": 14.16,
-          "tokensPct": 14.63,
+          "pct": 14.08,
+          "tokensPct": 14.5,
           "calls": 173,
           "sessions": 3
         },
@@ -274,8 +274,8 @@
           "project": "agentic-os-live",
           "cost": 1953856.67,
           "tokens": 11656141,
-          "pct": 6.92,
-          "tokensPct": 7.62,
+          "pct": 6.88,
+          "tokensPct": 7.56,
           "calls": 88,
           "sessions": 1
         },
@@ -283,8 +283,8 @@
           "project": "agentic-os-live",
           "cost": 1352418.4,
           "tokens": 5489381,
-          "pct": 4.79,
-          "tokensPct": 3.59,
+          "pct": 4.76,
+          "tokensPct": 3.56,
           "calls": 47,
           "sessions": 2
         },
@@ -292,8 +292,8 @@
           "project": "agentic-os-live",
           "cost": 1402231.56,
           "tokens": 6857560,
-          "pct": 4.96,
-          "tokensPct": 4.49,
+          "pct": 4.94,
+          "tokensPct": 4.45,
           "calls": 65,
           "sessions": 1
         },
@@ -301,26 +301,26 @@
           "project": "agentic-os-live",
           "cost": 710932.49,
           "tokens": 2460571,
-          "pct": 2.52,
-          "tokensPct": 1.61,
+          "pct": 2.5,
+          "tokensPct": 1.6,
           "calls": 24,
           "sessions": 1
         },
         "AOS · Tech": {
           "project": "agentic-os-live",
-          "cost": 6572606.09,
-          "tokens": 39048506,
-          "pct": 23.27,
-          "tokensPct": 25.54,
-          "calls": 364,
+          "cost": 6743196.09,
+          "tokens": 40507221,
+          "pct": 23.75,
+          "tokensPct": 26.27,
+          "calls": 372,
           "sessions": 4
         },
         "AOS · Tech — старый, не писать": {
           "project": "agentic-os-live",
           "cost": 3665834.54,
           "tokens": 22368693,
-          "pct": 12.98,
-          "tokensPct": 14.63,
+          "pct": 12.91,
+          "tokensPct": 14.51,
           "calls": 192,
           "sessions": 2
         },
@@ -337,26 +337,26 @@
           "project": "living-lyrics",
           "cost": 2058729.45,
           "tokens": 6867589,
-          "pct": 7.29,
-          "tokensPct": 4.49,
+          "pct": 7.25,
+          "tokensPct": 4.45,
           "calls": 44,
           "sessions": 1
         },
         "LL · Site": {
           "project": "living-lyrics",
-          "cost": 2811940.49,
-          "tokens": 15484475,
-          "pct": 9.96,
-          "tokensPct": 10.13,
-          "calls": 141,
+          "cost": 2793906.34,
+          "tokens": 15335605,
+          "pct": 9.84,
+          "tokensPct": 9.95,
+          "calls": 140,
           "sessions": 3
         },
         "LL · Site — старый, не писать": {
           "project": "living-lyrics",
           "cost": 2154163.23,
           "tokens": 12378910,
-          "pct": 7.63,
-          "tokensPct": 8.1,
+          "pct": 7.59,
+          "tokensPct": 8.03,
           "calls": 108,
           "sessions": 1
         },
@@ -375,8 +375,8 @@
           "project": "agentic-os-live",
           "cost": 3998895.9,
           "tokens": 22362204,
-          "pct": 14.16,
-          "tokensPct": 14.63,
+          "pct": 14.08,
+          "tokensPct": 14.5,
           "calls": 173,
           "sessions": 3
         },
@@ -384,8 +384,8 @@
           "project": "living-lyrics",
           "cost": 2058729.45,
           "tokens": 6867589,
-          "pct": 7.29,
-          "tokensPct": 4.49,
+          "pct": 7.25,
+          "tokensPct": 4.45,
           "calls": 44,
           "sessions": 1
         }
@@ -485,13 +485,13 @@
         "tech-usage-live": 9069377
       },
       "byProject": {
-        "agentic-os-live": 454219439,
+        "agentic-os-live": 446879744,
         "living-lyrics": 275966407,
-        "other": 181826373
+        "other": 189166068
       }
     },
     "day": {
-      "since": "2026-10-31T00:32:22",
+      "since": "2026-10-31T00:42:24",
       "tokens": 610650955,
       "pctUsed": 31.47,
       "byTask": {
@@ -548,9 +548,9 @@
         "tech-stop-wake": 3692682
       },
       "byProject": {
-        "agentic-os-live": 315275026,
+        "agentic-os-live": 307935331,
         "living-lyrics": 171710510,
-        "other": 123665419
+        "other": 131005114
       }
     }
   },
@@ -558,15 +558,15 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-01T00:25:18Z",
+        "at": "2026-11-01T00:35:18Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 98.74,
-        "weeklyResetIn": "165h 39m",
-        "fiveHourResetIn": "2h 39m"
+        "weeklyResetIn": "165h 29m",
+        "fiveHourResetIn": "2h 29m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-01T00:25:18Z",
+        "at": "2026-11-01T00:35:18Z",
         "weeklyRemaining": 100,
         "fiveHourRemaining": 100
       }
@@ -921,10 +921,10 @@
   "sources": {
     "claude.week": "python ops/usage/claude_review.py --since 2026-10-30T04:00:00 --by-chat",
     "claude.week.overhead": "python ops/usage/claude_cache.py --since 2026-10-30T04:00:00",
-    "claude.day": "python ops/usage/claude_review.py --since 2026-10-31T00:32:22 --by-chat",
+    "claude.day": "python ops/usage/claude_review.py --since 2026-10-31T00:42:24 --by-chat",
     "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 62% / 100); pro5h = claude cost since 2026-10-31T23:00:00 / (five_hour 39% / 100)",
     "grok.week": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T16:08:00 (grok.weekly.resetsAt minus 7d)",
-    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-10-31T00:32:22",
+    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-10-31T00:42:24",
     "agy.quota": "ops/usage/latest.json gemini.quota",
     "agy.runs": "ops/usage/ledger/*.jsonl kind=run"
   }
