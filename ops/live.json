@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T17:00:33Z",
+  "at": "2026-11-01T17:01:03Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -8,9 +8,15 @@
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/_artifacts"
     },
     {
+      "name": "_prove",
+      "state": "none",
+      "minutes": 0,
+      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/_prove"
+    },
+    {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 15908,
+      "minutes": 15909,
       "age": 15938,
       "tokens": 9490511,
       "model": "grok-4.7-build",
@@ -19,7 +25,7 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 15909,
+      "minutes": 15910,
       "age": 15938,
       "tokens": 9850680,
       "model": "grok-4.7-build",
@@ -28,7 +34,7 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 15850,
+      "minutes": 15851,
       "age": 15902,
       "tokens": 13196979,
       "model": "grok-4.7-build",
@@ -43,8 +49,8 @@
     {
       "name": "studio-pass",
       "state": "finished",
-      "minutes": 45,
-      "age": 167,
+      "minutes": 46,
+      "age": 168,
       "tokens": 54666236,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -52,7 +58,7 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 1851,
+      "minutes": 1852,
       "age": 1866,
       "tokens": 4653311,
       "model": "grok-4.7-build",
@@ -79,7 +85,7 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 12803,
+      "minutes": 12804,
       "age": 12834,
       "tokens": 6757832,
       "model": "grok-4.7-build",
