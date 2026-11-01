@@ -59,6 +59,44 @@ function queuePhoneWidths(job: () => void) {
 }
 
 /**
+ * A last flex row of one word, with two or more above it, pulls one word down.
+ * The row count stays the same. Authored breaks are left alone.
+ */
+function balanceOrphan(orig: HTMLElement) {
+  const wraps = [...orig.querySelectorAll<HTMLElement>(':scope > .w-wrap')].filter((el) => !el.hidden);
+  for (const wrap of wraps) {
+    const gap = wrap.querySelector<HTMLElement>('[data-balance]');
+    if (!gap) continue;
+    gap.classList.remove('w-br');
+    gap.classList.add('w-sp');
+    delete gap.dataset.balance;
+  }
+  const words = wraps
+    .map((wrap) => wrap.querySelector<HTMLElement>(':scope > .w'))
+    .filter((el): el is HTMLElement => !!el);
+  if (words.length < 4) return;
+  const rows: HTMLElement[][] = [];
+  for (const word of words) {
+    const top = word.offsetTop;
+    const row = rows[rows.length - 1];
+    if (!row || Math.abs(row[0].offsetTop - top) > 3) rows.push([word]);
+    else row.push(word);
+  }
+  if (rows.length < 2) return;
+  const last = rows[rows.length - 1];
+  const prev = rows[rows.length - 2];
+  if (last.length !== 1 || prev.length < 3) return;
+  const donor = prev[prev.length - 1];
+  const prevWrap = donor.parentElement?.previousElementSibling;
+  if (!(prevWrap instanceof HTMLElement)) return;
+  const gap = prevWrap.querySelector<HTMLElement>('.w-sp');
+  if (!gap || gap.hidden) return;
+  gap.classList.remove('w-sp');
+  gap.classList.add('w-br');
+  gap.dataset.balance = '1';
+}
+
+/**
  * The phone footnote is a fixed slot above the player. This only cuts the
  * text to that slot. Following the painted line covered the captions, then
  * jumped, and shrank the card to a fragment of the note.
@@ -361,6 +399,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
         if (widthGen.current !== gen || epochRef.current !== epoch) return;
         if (!orig.current || !root.current || !main.current) return;
         if (root.current.closest('.song')?.classList.contains('is-scrubbing')) return;
+        if (arab) balanceOrphan(orig.current);
         widths.current = words.current.map((w) => w?.offsetWidth ?? 0);
         const next = readBox();
         phoneMeasures.set(idx, next);
@@ -407,6 +446,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       }
       fitSig.current = sig;
     }
+    if (arab) balanceOrphan(el);
     widths.current = words.current.map((w) => w?.offsetWidth ?? 0);
     // The translation's share includes its top margin: total height minus the original's block.
     const mainH = main.current!.offsetHeight;

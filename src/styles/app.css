@@ -186,6 +186,23 @@
 .song > .field:not(.is-dark) .field-veil {
   opacity: 0.08;
 }
+@media (prefers-contrast: more) {
+  .song > .field,
+  .song > .field.is-dark {
+    background: var(--bg);
+  }
+  .song > .field .field-wash-1,
+  .song > .field .field-wash-2,
+  .song > .field .field-wash-3 {
+    opacity: 0.16;
+    filter: saturate(0.15);
+  }
+  .fb-repeat,
+  .fb--line:not(.is-current) .fb-orig {
+    color: var(--ink);
+    opacity: 1;
+  }
+}
 .field-star {
   position: absolute;
   border-radius: 50%;
@@ -199,7 +216,7 @@
   left: var(--col-left);
   top: calc(var(--chrome-top) + var(--banner-h, 0px));
   /* A clear band above the floor, so the last readable line does not sit on the dock. */
-  bottom: calc(var(--player-h) + 40px);
+  bottom: calc(var(--player-h) + 12px);
   /* An explicit width. A long line must not stretch this box over the margin note. */
   width: var(--stage-w);
   max-width: var(--stage-w);
@@ -342,13 +359,14 @@
   letter-spacing: -0.012em;
   font-weight: 600;
 }
-/* 1.9 keeps vowel signs apart without clipping. Overflow stays visible. */
+/* 1.62 keeps vowel signs clear. A taller line left one word alone with a wide gap. */
 .fb-orig.f-mushaf,
 .fb-orig.f-persian,
 .fb-orig.f-nastaliq {
   font-size: var(--lyric-arab);
-  line-height: 1.9;
-  padding-block: 0.08em;
+  line-height: 1.62;
+  padding-block: 0.04em;
+  row-gap: 0;
 }
 .w-wrap {
   display: contents;
@@ -382,6 +400,12 @@
   overflow: visible;
   color: var(--w-lit);
   opacity: calc(var(--dim-op) + (1 - var(--dim-op)) * var(--litf, 0));
+}
+.fb-orig.f-mushaf .w,
+.fb-orig.f-persian .w,
+.fb-orig.f-nastaliq .w {
+  padding-top: 0.06em;
+  padding-bottom: 0.1em;
 }
 /* The stressed word is the song colour on the original, so it stays linked
    to the same colour on the translation. Round 20's ink-only weight lost
@@ -619,57 +643,7 @@
   transform-origin: 50% 0;
   pointer-events: none;
 }
-.fb-inst-art {
-  flex: 1;
-  min-height: 0;
-  width: min(100%, 980px);
-  display: grid;
-  grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr));
-  gap: 12px;
-}
-.fb-inst-art.n2 {
-  --cols: 2;
-}
-.fb-inst-art.n3,
-.fb-inst-art.n4 {
-  --cols: 2;
-}
-.fb-inst-art.n3 > :first-child {
-  grid-column: span 2;
-}
-@media (min-width: 760px) {
-  .fb-inst-art.n3 {
-    --cols: 3;
-  }
-  .fb-inst-art.n3 > :first-child {
-    grid-column: auto;
-  }
-  .fb-inst-art.n4 {
-    --cols: 4;
-  }
-}
-.fb-inst-cell {
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 10px 10px 8px;
-  border-radius: var(--r-lg);
-  color: var(--ink-2);
-}
-.fb-inst-cell .eng {
-  flex: 1;
-  min-height: 0;
-}
-.fb-inst-name {
-  color: var(--label);
-  font-weight: 600;
-}
-.fb-inst-native {
-  font-weight: 400;
-  color: var(--label-2);
-}
+
 .fb-inst-text {
   display: flex;
   flex-direction: column;
@@ -677,9 +651,6 @@
   gap: 3px;
   max-width: 34em;
   color: var(--ink);
-}
-.fb-inst-who {
-  color: color-mix(in srgb, var(--ink) 75%, transparent);
 }
 .fb-inst-mode {
   color: var(--ink-2);
@@ -698,42 +669,6 @@
   color: color-mix(in srgb, var(--ink) 75%, transparent);
 }
 
-/* ----- Engravings ----- */
-.eng {
-  flex: 1;
-  height: 100%;
-}
-.eng {
-  width: 100%;
-  height: 100%;
-}
-.eng svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.eng .d {
-  stroke-dasharray: 1;
-  stroke-dashoffset: calc(1 - var(--draw, 1));
-}
-.eng .h {
-  opacity: var(--hatch, 1);
-}
-.eng .fillin {
-  opacity: calc(var(--hatch, 1) * 0.12);
-}
-.eng .str {
-  transform: translate(var(--str-x, 0), var(--str-y, 0));
-}
-.eng .skin {
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: scale(var(--skin, 1));
-}
-.eng .breath,
-.eng .breath-dot {
-  opacity: var(--breath-o, 0);
-}
 /* ----- Chrome: top bar, commentary, player ----- */
 .topbar {
   position: absolute;
@@ -818,13 +753,14 @@
 .floor-retry {
   flex: none;
   min-height: 44px;
-  padding: 0 2px;
+  padding: 0 16px;
   border: 0;
-  background: none;
-  color: inherit;
-  font: 600 0.8125rem / 1.2 var(--font-ui);
+  border-radius: var(--r-pill);
+  background: var(--alert-fg);
+  color: var(--alert-bg);
+  font: 600 0.9375rem / 1.2 var(--font-ui);
   text-decoration: none;
-  opacity: 0.9;
+  opacity: 1;
   cursor: pointer;
 }
 .floor-retry:active {
@@ -954,10 +890,16 @@
 .player-alert-mark,
 .status-alert-mark {
   flex: none;
-  color: var(--alert-fg);
-  font: 700 1.15rem/1 var(--font-ui);
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--alert-fg);
+  color: var(--bg);
+  font: 700 1rem/1 var(--font-ui);
 }
-.song.has-playback-error .btn-ring { opacity: 0.38; }
+.song.has-playback-error .btn-ring { opacity: 0.22; }
 .player-alert p {
   flex: 1;
   min-width: 0;
@@ -1290,7 +1232,8 @@
   pointer-events: none;
 }
 .scrub-map,
-.scrub-seg {
+.scrub-seg,
+.scrub-bound {
   position: absolute;
   top: 0;
   width: 1px;
@@ -1299,6 +1242,15 @@
   border-radius: 0.5px;
   background: var(--scrub-tick);
   pointer-events: none;
+}
+.scrub-map { opacity: 0.35; }
+.scrub-bound {
+  top: -3px;
+  width: 2px;
+  height: 12px;
+  margin-left: -1px;
+  background: var(--ink);
+  opacity: 0.78;
 }
 .scrub-seg {
   height: 5px;
@@ -2984,7 +2936,7 @@ html.is-sheet-drag .sheet-grabber {
   cursor: pointer;
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, white 40%, transparent),
-    0 10px 22px -12px color-mix(in srgb, var(--accent) 70%, black);
+    0 8px 16px -10px rgba(0, 0, 0, 0.45);
 }
 .lib-shelf {
   list-style: none;
@@ -3321,18 +3273,14 @@ html.is-sheet-drag .sheet-grabber {
 /* Phone portrait: header and floor are islands. The field stays in the margins. */
 @media (max-width: 699px) and (min-height: 521px),
   (max-width: 767px) and (min-height: 641px) {
-  .topbar.lg-host {
-    top: 0;
-    left: 0;
-    right: 0;
+  .song .topbar.lg-host {
+    top: max(8px, var(--safe-t));
+    left: max(10px, var(--safe-l));
+    right: max(10px, var(--safe-r));
     width: auto;
-    padding:
-      max(8px, var(--safe-t))
-      max(10px, var(--safe-r))
-      8px
-      max(8px, var(--safe-l));
-    border-radius: 0;
-    box-shadow: none;
+    padding: 8px 10px 8px 8px;
+    border-radius: 26px;
+    box-shadow: 0 12px 32px -20px rgba(0, 0, 0, 0.38);
   }
   .player.lg-host {
     left: max(10px, var(--safe-l));
@@ -3627,10 +3575,12 @@ html[data-sheet='1'] .song {
 
 /* SE: one header line. The note stays off the rail. Labels live in the floor rules below. */
 @media (max-width: 389px) {
-  .topbar.lg-host {
-    top: max(2px, env(safe-area-inset-top, 0px));
-    padding: 4px 6px;
-    border-radius: 16px;
+  .song .topbar.lg-host {
+    top: max(6px, env(safe-area-inset-top, 0px));
+    left: max(8px, env(safe-area-inset-left, 0px));
+    right: max(8px, env(safe-area-inset-right, 0px));
+    padding: 4px 8px;
+    border-radius: 22px;
   }
   .now-art {
     width: 32px;
@@ -4384,7 +4334,7 @@ html[data-sheet='1'] .song {
   }
   .transport [data-tip]::before {
     bottom: auto;
-    top: calc(100% + 8px);
+    top: calc(100% + 18px);
   }
 }
 

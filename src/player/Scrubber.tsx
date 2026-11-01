@@ -9,6 +9,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Cue, Timeline } from '@/data/timeline';
 import { lineText } from '@/data/timeline';
 import { formatTime } from '@/data/library';
+import { pictureTitle } from '@/scene/cast';
 import { stepSpring, type SpringState } from '@/ui/spring';
 
 /** Entry is already readable. Exit is the fast critical spring. */
@@ -54,21 +55,16 @@ function cueAt(cues: Cue[], t: number): Cue | null {
   return found;
 }
 
-function previewOf(cue: Cue | null): { part: string; line: string } {
+function previewOf(cue: Cue | null, earlier: Cue[] = []): { part: string; line: string } {
   if (!cue) return { part: '', line: '' };
   if (cue.kind === 'inst') {
-    const keys = cue.section.instruments;
-    const voiceOnly = keys.length > 0 && keys.every((k) => k === 'voice' || k === 'choir');
-    // «Проигрыш» on a choir, and «Хор» on an ensemble, were three names for one picture.
-    const line = voiceOnly
-      ? keys.includes('voice') && keys.includes('choir')
-        ? 'Голос и хор'
-        : keys.includes('choir')
-          ? 'Хор'
-          : 'Голос'
-      : cue.section.label === 'Проигрыш'
-        ? 'Проигрыш'
-        : '';
+    const picture = pictureTitle(
+      earlier.flatMap((c) => (c.kind === 'inst' ? [c.section] : [])),
+      cue.section,
+    );
+    // The held picture and the empty break label were two names for one frame.
+    if (picture) return { part: picture, line: '' };
+    const line = cue.section.label === 'Проигрыш' ? 'Проигрыш' : '';
     return { part: cue.section.label, line };
   }
   const words = lineText(cue.line).replace(/\s+/g, ' ').trim();
@@ -189,7 +185,8 @@ export function Scrubber({
       }
       if (!hovering) {
         const left = Math.max(0, duration - t);
-        const remain = left < 0.5 ? formatTime(0) : `−${formatTime(left)}`;
+        const shown = formatTime(left);
+        const remain = shown === formatTime(0) ? shown : `−${shown}`;
         const text = formatTime(t) + '|' + remain;
         if (text !== lastText) {
           lastText = text;
@@ -206,7 +203,11 @@ export function Scrubber({
       else bubble = stepSpring(bubble, open ? 1 : 0, dt, open ? BUBBLE : BUBBLE_OUT);
       if (open) {
         const cue = cueAt(timeline.cues, t);
-        const view = hovering ? { part: formatTime(t), line: cue?.section.label ?? '' } : previewOf(cue);
+        const earlier = timeline.cues.filter((c) => cue != null && c.start < cue.start);
+        const picture = cue?.kind === 'inst' ? pictureTitle(earlier.flatMap((c) => (c.kind === 'inst' ? [c.section] : [])), cue.section) : null;
+        const view = hovering
+          ? { part: formatTime(t), line: picture ?? cue?.section.label ?? '' }
+          : previewOf(cue, earlier);
         const key = view.part + '|' + view.line;
         if (key !== lastPreview) {
           lastPreview = key;
@@ -369,6 +370,13 @@ export function Scrubber({
             <span
               key={`map-${seg.id}`}
               className={`scrub-map${seg.kind === 'inst' ? ' is-inst' : ''}`}
+              style={{ left: `${(seg.start / span) * 100}%` }}
+            />
+          ))}
+          {partMarks.map((seg) => (
+            <span
+              key={`bound-${seg.id}`}
+              className={`scrub-bound${seg.kind === 'inst' ? ' is-inst' : ''}`}
               style={{ left: `${(seg.start / span) * 100}%` }}
             />
           ))}

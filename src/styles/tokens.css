@@ -401,7 +401,7 @@
   :root:not([data-theme='light']) {
     --glass-edge: var(--separator-opaque);
     --ink-unsung: color-mix(in srgb, var(--ink) 88%, transparent);
-    --dim-op: 0.86;
+    --dim-op: 1;
     --label-2: color-mix(in srgb, var(--label) 88%, transparent);
   }
 }
