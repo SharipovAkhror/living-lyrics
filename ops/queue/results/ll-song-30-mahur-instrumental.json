@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-30-mahur-instrumental",
+  "status": "pass",
+  "branch": "night/ll-song-30-mahur-instrumental",
+  "commit": "8b58131b2c115def29fb034f7939c2527339a919",
+  "tokens": 12876257,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts mahur-instrumental\n\n\n✓ mahur-instrumental  (0 ошибок, 1 предупреждений)\n  внимание  song.json: язык fa указан в languages, но строк на нём нет\n\nИтого: 0 ошибок, 1 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue-b\\logs\\ll-song-30-mahur-instrumental.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
