@@ -8,7 +8,7 @@ import { instrument } from '@/instruments/catalog';
 import { blockState, clamp01, entranceOpacity, instPresence, type Measure } from './flow';
 import { syncInstNote, type BlockUpdater } from './LineBlock';
 import { InstrumentStage, assignPerformers, type InstrumentStageHandle, type StagePose } from './InstrumentStage';
-import { castAt, castSignature, isVoicePassage, type CastMember } from './cast';
+import { castAt, castSignature, pictureTitle, type CastMember } from './cast';
 import { stageDrive } from './stageDrive';
 import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
@@ -78,14 +78,7 @@ interface Props {
   measureEpoch?: number;
 }
 
-function passageTitle(keys: string[]) {
-  if (!isVoicePassage(keys)) return null;
-  const voice = keys.includes('voice');
-  const choir = keys.includes('choir');
-  if (voice && choir) return 'Голос и хор';
-  if (choir) return 'Хор';
-  return 'Голос';
-}
+
 
 function frameFor(members: CastMember[], features: AudioFeatures | null, t: number, motion: MotionPref): StagePose {
   const heroes = members.filter((m) => m.place === 'hero');
@@ -116,7 +109,6 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   // Credit the player on the full section, then keep that name when the phone shows only the later entrance.
   // An empty list is applause: no ensemble plate and no invented performer.
   const credited = assignPerformers(keys, section.performers);
-  const title = passageTitle(keys) ?? (keys.length === 0 ? section.label : null);
   const nextVocal = timeline.cues.find((c) => c.kind === 'line' && c.start >= cue.end - 0.01);
   const [anim, setAnim] = useState({ progress: 0, presence: 0 });
   const animRef = useRef(anim);
@@ -163,6 +155,7 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   const compactH = useRef(56);
   // Sections that already stood. Shared plates keep their slot and skip the cascade.
   const earlier = timeline.cues.flatMap((c) => (c.kind === 'inst' && c.start < cue.start ? [c.section] : []));
+  const title = pictureTitle(earlier, section) ?? (keys.length === 0 ? section.label : null);
   const [cast, setCast] = useState<CastMember[]>(() => {
     const members = castAt(section, section.start, stageSize.w, motion, earlier);
     castSig.current = castSignature(members);

@@ -1,5 +1,6 @@
 import type { Cue } from '@/data/timeline';
 import type { Lyrics, Part, Song } from '@/data/schema';
+import { pictureTitle, type CastSection } from '@/scene/cast';
 
 /** The part that covers this sung line, if the song has a composition. */
 export function partForLine(song: Song, sectionId: string, lineId: string): Part | undefined {
@@ -26,11 +27,15 @@ export function partStart(part: Part, lyrics: Lyrics | null): number | null {
 }
 
 /** Quiet line under the song title: the part name while its words are current, otherwise the section label. */
-export function headerLine(song: Song, cue: Cue | null): string {
+export function headerLine(song: Song, cue: Cue | null, earlier: CastSection[] = []): string {
   if (!cue) return song.artist;
   if (cue.kind === 'line') {
     const part = partForLine(song, cue.section.id, cue.line.id);
     if (part) return part.title;
+  }
+  if (cue.kind === 'inst') {
+    const picture = pictureTitle(earlier, cue.section);
+    if (picture) return picture;
   }
   return cue.section.label;
 }

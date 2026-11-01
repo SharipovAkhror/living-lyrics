@@ -19,7 +19,10 @@ export function svgMotionVars(drive: InstrumentDrive, time: number): Record<stri
   const jingle = jingleShift(drive, time, 0) * 2.2;
   const bowPhase = (((time * (0.32 + drive.sustain * 0.7)) % 2) + 2) % 2;
   const tri = bowPhase < 1 ? bowPhase : 2 - bowPhase;
-  const bow = (tri * 2 - 1) * drive.sustain * 5;
+  // The triangle rides on sustain, so a song without features does not pulse.
+  // `along` is one crossing of the bow, from the entrance to 48s later.
+  const travel = drive.along == null ? 0 : (drive.along * 2 - 1) * 7;
+  const bow = (tri * 2 - 1) * drive.sustain * 5 + travel;
   return {
     '--draw': drive.draw.toFixed(4),
     '--hatch': drive.hatch.toFixed(3),
@@ -36,6 +39,7 @@ export function svgMotionVars(drive: InstrumentDrive, time: number): Record<stri
     '--breath-q': breathAt((4 * Math.PI) / 3).toFixed(3),
     '--jingle': `${jingle.toFixed(3)}px`,
     '--bow': `${bow.toFixed(2)}px`,
+    '--along': (drive.along ?? 0).toFixed(3),
     '--sway': `${(sway(drive).z * RAD).toFixed(3)}deg`,
     '--life': (drive.life ?? 1).toFixed(3),
     '--halo': (drive.halo ?? 0).toFixed(3),

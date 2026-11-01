@@ -340,7 +340,10 @@ function noteAt(timeline: Timeline | null, owner: number) {
 function PartExtra({ song, timeline, store }: { song: Song; timeline: Timeline | null; store: OwnerStore }) {
   const owner = useOwner(store);
   const cue = timeline && owner >= 0 ? timeline.cues[owner] : null;
-  const partLabel = headerLine(song, cue);
+  const earlier = timeline
+    ? timeline.cues.flatMap((c) => (c.kind === 'inst' && cue && c.start < cue.start ? [c.section] : []))
+    : [];
+  const partLabel = headerLine(song, cue, earlier);
   const partExtra = partLabel && partLabel !== song.artist && partLabel !== song.version.label ? partLabel : '';
   if (!partExtra) return null;
   return <span className="topbar-part"> · {partExtra}</span>;
@@ -800,9 +803,8 @@ function measureChrome(root: HTMLElement, top: HTMLElement, floor: HTMLElement) 
     if (box.height > 8) coverTop = Math.min(coverTop, box.top);
   }
   root.style.setProperty('--player-h', `${Math.max(0, rootBox.bottom - coverTop)}px`);
-  const banner = root.querySelector('.player-alert');
-  const bannerH = banner instanceof HTMLElement ? Math.ceil(banner.getBoundingClientRect().height) + 8 : 0;
-  root.style.setProperty('--banner-h', `${bannerH}px`);
+  // The alert overlays the top of the stage. Adding its height moved the sung line.
+  root.style.setProperty('--banner-h', '0px');
 }
 
 /** Where to put the playhead on open. A `?t=` link wins over the saved point. */

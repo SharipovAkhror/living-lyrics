@@ -58,6 +58,29 @@ export function isVoicePassage(keys: string[]) {
   return keys.length > 0 && keys.every(isVoiceKey);
 }
 
+/** Name of a voice picture. Null when the keys are not only voice and choir. */
+export function voicePictureTitle(keys: string[]): string | null {
+  if (!isVoicePassage(keys)) return null;
+  const voice = keys.includes('voice');
+  const choir = keys.includes('choir');
+  if (voice && choir) return 'Голос и хор';
+  if (choir) return 'Хор';
+  return 'Голос';
+}
+
+/**
+ * The picture actually standing. A short section with no instruments keeps the
+ * previous plates, so a header that reads the empty label («Проигрыш») would
+ * name a different state than the drawing.
+ */
+export function pictureTitle(earlier: CastSection[], section: CastSection): string | null {
+  const own = voicePictureTitle(section.instruments);
+  if (own) return own;
+  if (section.instruments.length > 0) return null;
+  if (section.end - section.start >= CAST_HOLD_S) return null;
+  return voicePictureTitle(standingKeys([...earlier, section], 8).keys);
+}
+
 interface Span {
   key: string;
   source: number;

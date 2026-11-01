@@ -65,6 +65,11 @@ export interface InstrumentDrive {
    * Zero when motion is off, including the system reduce-motion switch. Omitted means no impulse.
    */
   hit?: number;
+  /**
+   * 0 at the musical entrance, 1 after 48s, then held. A long interlude moves
+   * once along the song. It is not a cycle, and a seek writes the same value.
+   */
+  along?: number;
 }
 
 /**

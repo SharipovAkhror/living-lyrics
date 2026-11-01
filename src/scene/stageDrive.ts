@@ -23,6 +23,7 @@ export function stageDrive(
   const family = instrument(key)?.family ?? 'ансамбль';
   const life = plateLife(features, family, t, playAt, motion === 'off');
   const raw = driveAt(features, family, t, playAt);
+  const along = Number.isFinite(playAt) ? Math.min(1, Math.max(0, (t - playAt) / 48)) : 0;
   const still = {
     draw: 1,
     hatch: 1,
@@ -34,6 +35,7 @@ export function stageDrive(
     life: life.brightness,
     halo: life.halo,
     hit: 0,
+    along,
   };
   if (motion === 'off') return still;
   const amp = motion === 'calm' ? 0.45 : 1;
@@ -51,5 +53,6 @@ export function stageDrive(
     life: life.brightness,
     halo: life.halo,
     hit: life.hit * amp,
+    along,
   };
 }
