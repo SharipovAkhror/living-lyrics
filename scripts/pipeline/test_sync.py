@@ -2709,6 +2709,129 @@ def test_song_choice_is_per_song() -> None:
           'measure=' in prepare and "outputs.measure == 'yes'" in prove)
 
 
+def test_fresh_song_keeps_the_baseline() -> None:
+    """A run of only a new song must not fail the frozen songs' baseline.
+
+    Run 41217910624 measured for-true-lovers alone. The union path then
+    reported english-1 and the other frozen lines as lost, and prove put the
+    song back. The new song is measured on its own. Both gates pass and the
+    published bench files stay. A frozen song that loses a line, a line pass
+    over 5 %, a missing rule and a dead script still refuse.
+    """
+    import attack_chance as A
+
+    root = Path(__file__).resolve().parents[2]
+    bench = root / 'docs' / 'analysis' / 'bench' / 'attack-chance.json'
+    baseline = root / 'docs' / 'analysis' / 'bench' / 'baseline-155.json'
+    bench_before = bench.read_bytes()
+    baseline_before = baseline.read_bytes()
+    ids = A._published_ids()
+    published = json.loads(bench_before)
+    published_choice = published['chosen']
+
+    ok, detail = A.qa_file_gate(['for-true-lovers'])
+    check('a new-song file gate passes without the frozen lines',
+          ok and detail == 'файл не этой песни: база не тронута', detail)
+    real_proved = A.qa_proved_ids
+    A.qa_proved_ids = lambda slugs: ids[:-1]
+    try:
+        ok, detail = A.qa_file_gate(['karitas'])
+        mixed_ok, mixed_detail = A.qa_file_gate(['karitas', 'for-true-lovers'])
+    finally:
+        A.qa_proved_ids = real_proved
+    dropped = ids[-1]
+    check('a frozen song that lost a line still fails the file gate',
+          not ok and dropped in detail and 'потеряна строка файла' in detail, detail)
+    check('naming a frozen song still checks the whole file',
+          not mixed_ok and dropped in mixed_detail, mixed_detail)
+
+    calls: list[list[str]] = []
+
+    def fake_measure(slugs):
+        calls.append(list(slugs))
+        over = slugs == ['over-limit']
+        missing = slugs == ['no-rule']
+        return {
+            'songs': list(slugs),
+            'chosen': {
+                'name': 'unmeasured' if missing else 'line-0.25',
+                'within_limit': not over and not missing,
+                'baseline_kept': False,
+                'baseline_reason': 'базовая строка потеряна без прохода выше 5 %',
+                'baseline_lost': [{'id': 'english-1', 'chance': None}],
+                'chance': 0.2 if over else 0.04,
+                'line_share': 0.5,
+                'scopes': [{'song': slugs[0], 'lang': 'en', 'witnesses': 'one'}],
+                'line_fill': ['open-1'],
+            },
+            'phoneme': {'kept': False, 'search': None},
+        }
+
+    real_measure = A._measure_slugs
+    A._measure_slugs = fake_measure
+    try:
+        payload = A.build_payload(['for-true-lovers'])
+        over_payload = A.build_payload(['over-limit'])
+        missing_payload = A.build_payload(['no-rule'])
+        frozen_payload = A.build_payload(['karitas'])
+    finally:
+        A._measure_slugs = real_measure
+    check('a new song is measured on its own, not in the frozen union',
+          calls[0] == ['for-true-lovers'] and ['i-have-come-alive', 'karitas', 'one'] not in calls,
+          str(calls))
+    check('a frozen-only run is still measured as named',
+          calls[-1] == ['karitas'], str(calls))
+    chosen = payload['chosen']
+    check('the published rule stays on a new-song run',
+          chosen['name'] == published_choice['name']
+          and chosen.get('line_share') == published_choice.get('line_share')
+          and chosen.get('line_fill') == published_choice.get('line_fill')
+          and chosen.get('scopes') == published_choice.get('scopes'),
+          str(chosen.get('name')))
+    check('the new song does not inherit a lost frozen baseline',
+          chosen['baseline_kept'] is True and chosen['baseline_lost'] == []
+          and chosen['baseline_reason'] == 'удержано'
+          and chosen['baseline_n'] == 152
+          and payload['frozen']['kept'] is True and payload['frozen']['lost'] == [],
+          str(chosen.get('baseline_reason')))
+    check('the frozen songs stay in the bench song list',
+          payload['songs'] == ['i-have-come-alive', 'karitas', 'one', 'for-true-lovers']
+          and payload['measured_songs'] == ['for-true-lovers'],
+          str(payload['songs']))
+    own = payload['by_song']['for-true-lovers']
+    check('the new song keeps the share its own measurement chose',
+          own['k'] == 0.5 and own['line_limit'] == 0.05, str(own.get('k')))
+    ok, detail = A.commit_gate(payload, ['for-true-lovers'], 0)
+    check('a new-song run passes the bench gate', ok and '152' in detail, detail)
+    ok, detail = A.commit_gate(payload, ['for-true-lovers'], 2)
+    check('a dead script still does not commit',
+          not ok and detail == 'замер атак не выбрал правило', detail)
+    ok, detail = A.commit_gate(over_payload, ['over-limit'], 0)
+    check('a new song over 5 % is refused as its own rule',
+          not ok and 'не выбрал правило' in detail and '0.2' in detail
+          and 'база не удержана' not in detail
+          and over_payload['chosen']['baseline_kept'] is True, detail)
+    ok, detail = A.commit_gate(missing_payload, ['no-rule'], 0)
+    check('a new song with no rule is refused',
+          not ok and 'не выбрал правило' in detail and 'база не удержана' not in detail, detail)
+    ok, detail = A.commit_gate(frozen_payload, ['karitas'], 0)
+    check('a frozen song that lost a line is still refused',
+          not ok and 'база не удержана' in detail
+          and 'базовая строка потеряна' in detail
+          and frozen_payload['chosen']['baseline_kept'] is False, detail)
+    check('the published bench files were not rewritten',
+          bench.read_bytes() == bench_before and baseline.read_bytes() == baseline_before)
+    workflow = (root / '.github' / 'workflows' / 'pipeline.yml').read_text(encoding='utf-8')
+    prove = workflow.split('\n  prove:\n', 1)[1]
+    measure, commit = prove.split('Commit results and remove the job files', 1)
+    check('prove holds the bench when the new song passes',
+          'commit_bench=hold' in measure and '= "hold"' in commit and '!= "hold"' in commit)
+    check('hold puts only the published bench back',
+          'git checkout -- docs/analysis/bench' in commit
+          and 'git clean -fd -- docs/analysis/bench' in commit
+          and commit.index('git checkout -- content/songs docs/analysis') < commit.index('git add docs/analysis/bench'))
+
+
 def test_qa_report_is_uploaded() -> None:
     """A refused file gate must still leave qa-sync.json.
 
@@ -2794,6 +2917,7 @@ def main() -> int:
     test_bench_commit_gate()
     test_listen9_baseline()
     test_file_write_gate()
+    test_fresh_song_keeps_the_baseline()
     test_qa_report_is_uploaded()
     test_song_choice_is_per_song()
     test_run_job_commit_gate()

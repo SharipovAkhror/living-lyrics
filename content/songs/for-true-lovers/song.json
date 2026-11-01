@@ -1,0 +1,303 @@
+{
+  "$schema": "../../../docs/schema/song.schema.json",
+  "slug": "for-true-lovers",
+  "title": "For True Lovers",
+  "artist": "Sami Yusuf",
+  "featuring": [
+    "Nabyla Maan",
+    "Teyyar Bayramov"
+  ],
+  "performance": {
+    "event": "Beyond the Stars, Expo 2020 Dubai",
+    "venue": "Al Wasl Plaza",
+    "city": "Dubai",
+    "date": "2021-10"
+  },
+  "version": {
+    "kind": "live",
+    "label": "Концерт Beyond the Stars, Дубай 2021"
+  },
+  "languages": [
+    "en",
+    "tr",
+    "ar"
+  ],
+  "poets": [
+    {
+      "name": "Юнус Эмре",
+      "lang": "tr",
+      "era": "ум. 1328"
+    },
+    {
+      "name": "аль-Халладж",
+      "lang": "ar",
+      "era": "ум. 922"
+    }
+  ],
+  "duration": 537.05,
+  "palette": {
+    "accent": "#1A175C",
+    "accentDark": "#76749D",
+    "field": [
+      "#1A175C",
+      "#0F0E4F",
+      "#4B3B77",
+      "#794C76"
+    ]
+  },
+  "cover": {
+    "kind": "official",
+    "ext": "jpg",
+    "source": "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/5f/95/c9/5f95c97d-4faf-c205-fc34-4ce43094e111/cover.jpg/3000x3000bb.jpg",
+    "retrieved": "2026-11-01",
+    "releaseTitle": "For True Lovers (Live) - Single"
+  },
+  "audio": {
+    "status": "ready",
+    "high": "/audio/for-true-lovers/high.m4a",
+    "peaks": "/audio/for-true-lovers/peaks.json",
+    "gainDb": -4.1,
+    "provenance": {
+      "kind": "file",
+      "ref": "https://www.youtube.com/watch?v=6QN6qhOtRTI",
+      "retrieved": "2026-10-31",
+      "sha256": "b619b3c402050b0df1e06783435ccc5bfcb929de43461ff958847ff54326db49"
+    }
+  },
+  "timing": {
+    "status": "draft",
+    "notes": "qa_sync: критерий не пройден, статус оставлен draft. соло 8 из 105 (7,6 %), нужно не меньше 90 % в каждой группе, где она есть. Строка «текст не найден» в доказанные не входит. Причины: доказанных слов меньше доли строки 73, слово опровергнуто 12, выравниватель не справился 8, расходится с субтитрами 4. Отчёт: docs/analysis/for-true-lovers-qa.md. После отчёта добавлена hallaj-16b: транскрипт слышит это полустишие второй раз внутри той же реплики. Новая строка черновая, выравнивание не повторялось.",
+    "method": "mms-fa+whisperx"
+  },
+  "credits": [
+    {
+      "role": "Слова",
+      "name": "Юнус Эмре"
+    },
+    {
+      "role": "Арабские слова",
+      "name": "аль-Халладж"
+    },
+    {
+      "role": "Музыка и музыкальное руководство",
+      "name": "Сами Юсуф"
+    },
+    {
+      "role": "Вокал",
+      "name": "Сами Юсуф"
+    },
+    {
+      "role": "Вокал",
+      "name": "Тайяр Байрамов"
+    },
+    {
+      "role": "Вокал",
+      "name": "Набила Маан"
+    },
+    {
+      "role": "Най",
+      "name": "Eyüpcan Açıkpazu"
+    },
+    {
+      "role": "Кеманча",
+      "name": "Togrul Asadullayev"
+    },
+    {
+      "role": "Ударные",
+      "name": "Omer Avci"
+    },
+    {
+      "role": "Уд",
+      "name": "Selim Boyaci"
+    },
+    {
+      "role": "Канун",
+      "name": "Onur Cicin"
+    },
+    {
+      "role": "Балабан",
+      "name": "Shirzad Fataliyev"
+    },
+    {
+      "role": "Эрху",
+      "name": "Guo Gan"
+    },
+    {
+      "role": "Кеманча",
+      "name": "Fariz Huseynov"
+    },
+    {
+      "role": "Даф",
+      "name": "Mohammad Jaberi"
+    },
+    {
+      "role": "Танбур",
+      "name": "Seyed Ali Jaberi"
+    },
+    {
+      "role": "Ситар",
+      "name": "Asad Khan"
+    },
+    {
+      "role": "Классическая гитара, танбур",
+      "name": "Jon Lawton"
+    },
+    {
+      "role": "Кеманча",
+      "name": "Khalil Masimov"
+    },
+    {
+      "role": "Сантур",
+      "name": "Farshad Mohammadi"
+    },
+    {
+      "role": "Баглама",
+      "name": "Kutay Ozcan"
+    },
+    {
+      "role": "Кеманча",
+      "name": "Rufat Xalilov"
+    },
+    {
+      "role": "Дхолак",
+      "name": "Manoj Kumar Moothedath"
+    },
+    {
+      "role": "Табла",
+      "name": "Sudheesh Kakkur"
+    },
+    {
+      "role": "Хор",
+      "name": "Narmin Abdullayeva"
+    },
+    {
+      "role": "Хор",
+      "name": "Nigar Asgarova"
+    },
+    {
+      "role": "Хор",
+      "name": "Nancy Al Baltaji"
+    },
+    {
+      "role": "Хор",
+      "name": "Abdulrazzak Barma"
+    },
+    {
+      "role": "Хор",
+      "name": "Mahsati Jabbarova"
+    },
+    {
+      "role": "Хор",
+      "name": "Rufat Khalilov"
+    },
+    {
+      "role": "Хор",
+      "name": "Nazim Mahmudov"
+    },
+    {
+      "role": "Хор",
+      "name": "Karim Hodroj-Remmel"
+    },
+    {
+      "role": "Хор",
+      "name": "Abeer El Sayed"
+    },
+    {
+      "role": "Хор",
+      "name": "Ismayil Yunusov"
+    },
+    {
+      "role": "Музыкальный супервайзер",
+      "name": "Ruslan Salimov"
+    },
+    {
+      "role": "Сведение и мастеринг",
+      "name": "Vishnu Rajan"
+    }
+  ],
+  "parts": [
+    {
+      "id": "open",
+      "title": "Для истинных любящих",
+      "lang": "en",
+      "author": {
+        "name": "Юнус Эмре",
+        "years": "ум. 1328"
+      },
+      "work": {
+        "ru": "строки, напечатанные исполнителем"
+      },
+      "ref": "описание короткого ролика; переводчик не назван",
+      "url": "https://www.youtube.com/watch?v=kwegMuexLQg",
+      "note": "Начало записи поёт по-английски девять строк. Кто их перевёл, описание не называет.",
+      "sections": [
+        "open"
+      ]
+    },
+    {
+      "id": "yunus",
+      "title": "Газель «Это я»",
+      "lang": "tr",
+      "author": {
+        "name": "Юнус Эмре",
+        "years": "ум. 1328",
+        "original": "Yûnus Emre"
+      },
+      "work": {
+        "original": "Haber eylen ‘âşıklara",
+        "ru": "газель 177"
+      },
+      "ref": "Мустафа Татджы, Yûnus Emre Dîvânı, с. 140–141. Поётся не орфография издания.",
+      "url": "http://turuz.com/storage/Poem-Literature/Poem/2011/0320-Divani_Yunus_Emre_(Mustafa_Tatci).pdf",
+      "note": "Турецкие строки газели звучат несколько раз, современным письмом, и не всегда словами издания.",
+      "sections": [
+        "yunus-1",
+        "yunus-2",
+        "yunus-3",
+        "yunus-4",
+        "yunus-5"
+      ]
+    },
+    {
+      "id": "hallaj",
+      "title": "Я дивился тебе и себе",
+      "lang": "ar",
+      "author": {
+        "name": "аль-Халладж",
+        "years": "ум. 922",
+        "original": "الحلاج"
+      },
+      "work": {
+        "original": "عجبت منك ومني",
+        "ru": "Я дивился тебе и себе"
+      },
+      "ref": "aldiwan.net, poem67609, семь бейтов. Поются первый, второй, пятый, шестой и седьмой.",
+      "url": "https://www.aldiwan.net/poem67609.html",
+      "note": "Описание отдаёт арабские слова аль-Халладжа Набиле Маан. Эти строки — его стихотворение.",
+      "sections": [
+        "hallaj"
+      ]
+    },
+    {
+      "id": "din",
+      "title": "Любовь — моя вера",
+      "lang": "ar",
+      "work": {
+        "original": "الحب ديني لا أبغي به بدلا",
+        "ru": "Любовь — моя вера"
+      },
+      "ref": "Буквы — арабская дорожка ролика. Индекс adab.wiki oldid 412812 и aldiwan.net/poem100487 относят касыду к Ибн Хубайшу, описание ролика — к аль-Халладжу.",
+      "url": "https://www.youtube.com/watch?v=6QN6qhOtRTI",
+      "note": "Две арабские строки без турецкой пары. Автора описание и индекс называют по-разному, сторона не выбрана.",
+      "sections": [
+        "couplet"
+      ]
+    }
+  ],
+  "review": [
+    "Поёт ли Тайяр Байрамов отдельные слова на азербайджанском: описание называет мугам в голосе, а языки пения — турецкий, английский и арабский. Азербайджанской строки в дорожках нет.",
+    "Кто перевёл английские строки начала: официальные страницы называют Юнуса Эмре и переводчика не называют.",
+    "Бейт «любовь — моя вера»: adab.wiki oldid 412812 и aldiwan poem100487 относят касыду к Ибн Хубайшу, описание ролика называет аль-Халладжа и этих строк не приводит. Сторона не выбрана.",
+    "husn-1: مَلِكٌ или مُلْكٌ. aldiwan poem100487 печатает مَلكٌ без касры на лам, а английская пара строки говорит realm; на слух не проверено. В строке стоит مَلِكٌ."
+  ]
+}

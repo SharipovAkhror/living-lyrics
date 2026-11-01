@@ -1,0 +1,178 @@
+{
+  "slug": "for-true-lovers",
+  "present": [
+    {
+      "id": "baglama",
+      "name": "баглама",
+      "catalogKey": "baglama",
+      "reason": "титры и кадр",
+      "credited": true,
+      "stable": false,
+      "shots80": 2,
+      "shots85": 2,
+      "audio": false
+    },
+    {
+      "id": "daf",
+      "name": "даф",
+      "catalogKey": "daf",
+      "reason": "титры и кадр",
+      "credited": true,
+      "stable": false,
+      "shots80": 2,
+      "shots85": 1,
+      "audio": false
+    },
+    {
+      "id": "kamancheh",
+      "name": "кяманча",
+      "catalogKey": "kamancheh",
+      "reason": "устойчиво по видео",
+      "credited": false,
+      "stable": true,
+      "shots80": 5,
+      "shots85": 5,
+      "audio": false
+    }
+  ],
+  "check": [],
+  "missingEngraving": [],
+  "sections": [
+    {
+      "id": "intro",
+      "action": "write",
+      "label": "Вступление",
+      "identity": null,
+      "instruments": [
+        "baglama",
+        "daf"
+      ],
+      "entries": [
+        {
+          "key": "baglama",
+          "at": 16.0
+        },
+        {
+          "key": "daf",
+          "at": 28.0
+        }
+      ],
+      "performers": [
+        "Kutay Ozcan (баглама)",
+        "Mohammad Jaberi (даф)"
+      ],
+      "choirFrames": 0,
+      "soloFrames": 1
+    },
+    {
+      "id": "gap-1",
+      "action": "write",
+      "label": "Проигрыш",
+      "identity": null,
+      "instruments": [
+        "baglama"
+      ],
+      "entries": [
+        {
+          "key": "baglama",
+          "at": 69.0
+        }
+      ],
+      "performers": [
+        "Kutay Ozcan (баглама)"
+      ],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "gap-2",
+      "action": "unchanged",
+      "label": "Проигрыш",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 1,
+      "soloFrames": 0
+    },
+    {
+      "id": "gap-3",
+      "action": "write",
+      "label": "Проигрыш",
+      "identity": null,
+      "instruments": [
+        "kamancheh",
+        "daf"
+      ],
+      "entries": [
+        {
+          "key": "kamancheh",
+          "at": 267.0
+        },
+        {
+          "key": "daf",
+          "at": 272.0
+        }
+      ],
+      "performers": [
+        "Mohammad Jaberi (даф)"
+      ],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "gap-4",
+      "action": "unchanged",
+      "label": "Проигрыш",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 1
+    },
+    {
+      "id": "unsaid",
+      "action": "voice",
+      "label": "Голос",
+      "identity": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 2,
+      "soloFrames": 7
+    },
+    {
+      "id": "gap-5",
+      "action": "unchanged",
+      "label": "Проигрыш",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "outro",
+      "action": "unchanged",
+      "label": "Окончание",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    }
+  ]
+}
