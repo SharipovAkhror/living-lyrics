@@ -110,8 +110,17 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   // The desk column is 868. A 900 cutoff never saw it, so six plates kept the
   // short stack and read as icons. 840 is that column and not the 760 shelf.
   const wide = stage.w >= 840 && room > 480 && !shortStage && !tight;
-  const fullH = shortStage ? Math.round(room * 0.92) : Math.round(Math.min(tight ? room : room * (wide ? 0.9 : 0.72), wide ? 760 : 620));
-  const textH = shortStage
+  // The desk interlude is the picture. The column grows in CSS (.song.is-inst);
+  // the drawing box then uses that room instead of the 0.9 lyric reserve.
+  const spectacle = wide;
+  const fullH = spectacle
+    ? Math.max(64, Math.round(room - 4))
+    : shortStage
+      ? Math.round(room * 0.92)
+      : Math.round(Math.min(tight ? room : room * (wide ? 0.9 : 0.72), wide ? 760 : 620));
+  const textH = spectacle
+    ? 0
+    : shortStage
     ? section.note ? 52 : section.mode ? 36 : 28
     // The desk note is one line (about 20px). A 52px reserve shrank the six
     // drawings. 24px is the largest stack this 868 column can give them.
@@ -327,6 +336,7 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
             presences={shownHeroes.map((m) => m.presence)}
             mode={section.layout ?? 'auto'}
             fitRoster
+            spectacle={spectacle}
             wrapNames={!wide}
             progress={1}
             presence={anim.presence}

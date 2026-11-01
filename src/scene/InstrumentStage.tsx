@@ -35,6 +35,8 @@ export interface InstrumentStageProps {
   maxShown?: number;
   /** Draw the whole roster. The gallery leaves this off and keeps the width cap. */
   fitRoster?: boolean;
+  /** Desk interlude: same six plates, vertical padding pulled in so the drawings can reach 200px. */
+  spectacle?: boolean;
   /** Reserve one more caption line so a performer name can wrap. */
   wrapNames?: boolean;
   /** Cast presence 0…1 aligned with `keys`, for the first paint. Later frames come from `pose`. */
@@ -166,7 +168,7 @@ function applyPlate(el: HTMLElement, drive: InstrumentDrive, time: number, opaci
 }
 
 export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStageProps>(function InstrumentStage(
-  { keys, performers, mode, uniform = false, maxShown, fitRoster = false, wrapNames = false, presences, progress, presence, size, energy = 0, time, drives, echoes, preserve = false, className, onLayout },
+  { keys, performers, mode, uniform = false, maxShown, fitRoster = false, spectacle = false, wrapNames = false, presences, progress, presence, size, energy = 0, time, drives, echoes, preserve = false, className, onLayout },
   ref,
 ) {
   const list = keys.length ? keys : ['ensemble'];
@@ -186,9 +188,10 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
         uniform,
         maxShown,
         fitRoster,
+        spectacle,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [n, size.w, size.h, mode, list.join(), lines, uniform, maxShown, fitRoster],
+    [n, size.w, size.h, mode, list.join(), lines, uniform, maxShown, fitRoster, spectacle],
   );
   useEffect(() => onLayout?.(layout), [layout, onLayout]);
 

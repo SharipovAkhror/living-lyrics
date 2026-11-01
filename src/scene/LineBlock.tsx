@@ -69,7 +69,7 @@ export function syncNoteFoot(line: HTMLElement): void {
   const stageBox = stage.getBoundingClientRect();
   const lineBox = line.getBoundingClientRect();
   if (lineBox.height < 8) return;
-  const foot = `${(stage.offsetTop + (lineBox.bottom - stageBox.top) + 4).toFixed(1)}px`;
+  const foot = `${(stage.offsetTop + (lineBox.bottom - stageBox.top) + 16).toFixed(1)}px`;
   if (host.style.getPropertyValue('--note-foot') !== foot) host.style.setProperty('--note-foot', foot);
   fitNote(host);
 }
@@ -140,7 +140,7 @@ export function syncInstNote(inst: HTMLElement): void {
     ceiling,
     limit: playerTop - 4,
     maxTop,
-    pad: 8,
+    pad: 16,
   });
   if (top == null) return;
   instFootKey = key;

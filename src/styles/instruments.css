@@ -107,6 +107,14 @@
 .scene .ist-art {
   will-change: transform, filter;
 }
+/* Light field is the song's own violet. An accent-tinted stroke disappeared into it.
+   The ink is the text colour, and the contour is a hair thicker so a 1px line still reads. */
+:root[data-theme='light'] .scene .ist {
+  --ist-ink: var(--ink);
+}
+:root[data-theme='light'] .scene .ist-art .d {
+  stroke-width: 1.8;
+}
 .ist-art .str {
   transform: translate(var(--str-x, 0), var(--str-y, 0));
 }

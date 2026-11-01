@@ -165,7 +165,12 @@ export function LibraryPage() {
           title="Ничего не найдено"
           live="status"
           action={
-            <button type="button" className="btn btn-capsule btn-tinted" onClick={() => setQ('')}>
+            <button
+              type="button"
+              className="lib-empty-go"
+              style={tone(songs.find((song) => song.slug === remembered) ?? songs[0], dark)}
+              onClick={() => setQ('')}
+            >
               Очистить поиск
             </button>
           }

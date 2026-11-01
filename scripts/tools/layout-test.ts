@@ -208,6 +208,11 @@ const rosterDesk = layoutInstruments(6, { w: 800, h: 480 }, { fitRoster: true })
 if (rosterPhone.slots.length !== 6 || rosterDesk.slots.length !== 6 || rosterPhone.hidden.length || rosterDesk.hidden.length) {
   fail('fit roster', `phone ${rosterPhone.slots.length} desk ${rosterDesk.slots.length}`);
 }
+// Desk interlude, 1440×900 column after the picture takes the lyric reserve. Same six, drawing at least 200.
+const deskSpectacle = layoutInstruments(6, { w: 844, h: 552 }, { fitRoster: true, lines: 3, spectacle: true });
+if (deskSpectacle.slots.length !== 6 || deskSpectacle.hidden.length || deskSpectacle.minArt < 200) {
+  fail('desk spectacle', `shown ${deskSpectacle.slots.length} art ${deskSpectacle.minArt}`);
+}
 const asUniform = layoutInstruments(5, { w: 1440, h: 820 }, { uniform: true });
 if (asUniform.mode !== 'prominence' || asUniform.slots.length !== 4 || asUniform.slots.some((s) => s.kind === 'more')) {
   fail('uniform', `${asUniform.mode} shown ${asUniform.slots.length}`);

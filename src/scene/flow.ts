@@ -215,6 +215,41 @@ export function clearBand(
   return out;
 }
 
+/**
+ * A block the stage would cut is parked fully outside. The current block stays:
+ * the caller seats it. `mask` is the top fade; a line in that fade is cut too.
+ * Tall stages used to return the stack unchanged, and the next line left letter tops.
+ */
+export function concealCut(
+  tops: Map<number, number>,
+  pos: number,
+  heights: Map<number, number>,
+  stageH: number,
+  mask = 32,
+): Map<number, number> {
+  if (!(stageH > 0) || tops.size === 0) return tops;
+  let held = 0;
+  let best = Infinity;
+  for (const k of tops.keys()) {
+    const d = Math.abs(k - pos);
+    if (d < best) {
+      best = d;
+      held = k;
+    }
+  }
+  const out = new Map(tops);
+  for (const [k, y] of tops) {
+    if (k === held) continue;
+    const h = heights.get(k) ?? 0;
+    if (!(h > 1)) continue;
+    const bottom = y + h;
+    if (bottom <= 0.5 || y >= stageH - 0.5) continue;
+    if (y >= mask - 0.5 && bottom <= stageH + 0.5) continue;
+    out.set(k, y + h * 0.5 < stageH * 0.5 ? -h - 16 : stageH + 16);
+  }
+  return out;
+}
+
 /** Extra space above a block for the "next line in N s" hint. */
 export const WAIT_ROOM = 24;
 

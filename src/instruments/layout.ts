@@ -105,6 +105,11 @@ export interface LayoutOptions {
    * More than four plates use a grid; four or fewer stay a prominence row when it fits.
    */
   fitRoster?: boolean;
+  /**
+   * Desk interlude only. Same captions and the same set, with the plate's vertical
+   * padding pulled in so six drawings can reach 200px. Phone plates do not set this.
+   */
+  spectacle?: boolean;
 }
 
 /* ---------- Caption metrics (keep in sync with src/styles/instruments.css) ---------- */
@@ -146,23 +151,26 @@ interface Plate {
 }
 
 /** Biggest plate with the caption below the drawing that fits in a cell. */
-function plateBelow(cw: number, ch: number, aspect: number, lines: number, maxArt: number): Plate {
+function plateBelow(cw: number, ch: number, aspect: number, lines: number, maxArt: number, tight = false): Plate {
   for (const tier of TIERS) {
     const m = LABEL_METRICS[tier];
     const lh = labelHeight(tier, lines);
-    let ah = Math.min(ch - 2 * m.pad - m.gap - lh, (cw - 2 * m.pad) / aspect, maxArt / Math.max(1, aspect), maxArt);
+    // The desk interlude keeps the type size and spends the plate's air on the drawing.
+    const vPad = tight ? Math.min(m.pad, 4) : m.pad;
+    const vGap = tight ? Math.min(m.gap, 3) : m.gap;
+    let ah = Math.min(ch - 2 * vPad - vGap - lh, (cw - 2 * m.pad) / aspect, maxArt / Math.max(1, aspect), maxArt);
     ah = Math.max(0, ah);
     const aw = ah * aspect;
     const side = Math.min(aw, ah);
     if (side < TIER_MIN[tier] && tier !== 's') continue;
     const w = Math.min(cw, Math.max(aw + 2 * m.pad, m.minW + 2 * m.pad));
-    const h = ah + 2 * m.pad + m.gap + lh;
+    const h = ah + 2 * vPad + vGap + lh;
     return {
       w,
       h,
       side,
-      art: { x: (w - aw) / 2, y: m.pad, w: aw, h: ah },
-      label: { x: m.pad, y: m.pad + ah + m.gap, w: w - 2 * m.pad, h: lh, align: 'center', tier },
+      art: { x: (w - aw) / 2, y: vPad, w: aw, h: ah },
+      label: { x: m.pad, y: vPad + ah + vGap, w: w - 2 * m.pad, h: lh, align: 'center', tier },
     };
   }
   /* c8 ignore next */
@@ -227,6 +235,8 @@ interface Ctx {
   gap: number;
   /** Skip a column count whose cell is narrower than this, so a name can sit on the plate. */
   minCell?: number;
+  /** Desk interlude: shorter vertical padding, same caption metrics. */
+  tight?: boolean;
 }
 
 type Built = { slots: Slot[]; visibility: number };
@@ -468,7 +478,7 @@ function grid(c: Ctx, idx: number[], more: number): Built {
     const ch = (box.h - (rows - 1) * gap) / rows;
     if (cw <= 0 || ch <= 0) continue;
     if (c.minCell && cols > 1 && cw < c.minCell) continue;
-    const side = Math.min(...idx.map((i) => plateBelow(cw, ch, c.aspects[i], c.lines, c.maxArt).side));
+    const side = Math.min(...idx.map((i) => plateBelow(cw, ch, c.aspects[i], c.lines, c.maxArt, c.tight).side));
     const empty = cols * rows - cells;
     const score = side * (1 - 0.04 * empty) * (rows > 1 && empty >= cols ? 0.5 : 1);
     if (!best || score > best.score + 0.5) best = { cols, rows, side, score };
@@ -476,7 +486,7 @@ function grid(c: Ctx, idx: number[], more: number): Built {
   const { cols, rows, side } = best ?? { cols: cells, rows: 1, side: 0 };
   const cw = (box.w - (cols - 1) * gap) / cols;
   const ch = (box.h - (rows - 1) * gap) / rows;
-  const ps = idx.map((i) => plateBelow(cw, ch, c.aspects[i], c.lines, Math.min(c.maxArt, side * Math.max(1, c.aspects[i]))));
+  const ps = idx.map((i) => plateBelow(cw, ch, c.aspects[i], c.lines, Math.min(c.maxArt, side * Math.max(1, c.aspects[i])), c.tight));
   const pw = Math.max(...ps.map((p) => p.w));
   const ph = Math.max(...ps.map((p) => p.h));
   // Pack the plates (not the cells) and centre the block, so a grid of small plates stays together.
@@ -712,8 +722,9 @@ export function layoutInstruments(count: number, box: Size, opts: LayoutOptions 
     aspects: Array.from({ length: n }, (_, i) => opts.aspects?.[i] || 1),
     lines: opts.lines ?? 2,
     maxArt: opts.maxArt ?? 540,
-    gap: gapFor(box),
+    gap: opts.spectacle ? Math.min(8, gapFor(box)) : gapFor(box),
     minCell: opts.fitRoster ? 150 : undefined,
+    tight: opts.spectacle === true,
   };
   const threshold = opts.minArt ?? readableMin(c.box);
   const aspect = c.box.w / c.box.h;

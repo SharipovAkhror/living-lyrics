@@ -212,6 +212,20 @@
   -webkit-mask-image: linear-gradient(#0000, #000 32px);
   mask-image: linear-gradient(#0000, #000 32px);
 }
+/* The interlude is the spectacle. The lyric reserve (40px) and the top fade
+   gave the six drawings a 433px box and a 146px ceiling. For that picture only,
+   the column runs from the header to the dock and nothing is faded away. */
+@media (min-width: 1100px) and (min-height: 700px) {
+  .song.is-inst .scene-stage {
+    top: calc(var(--chrome-top) - 8px);
+    bottom: var(--player-h);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .song.is-inst .fb-inst-text {
+    display: none;
+  }
+}
 
 /* ----- Lyrics flow ----- */
 /* The two views share one box. A scrub fades the live view over a single departing clone. */
@@ -2956,17 +2970,21 @@ html.is-sheet-drag .sheet-grabber {
   color: var(--ink);
   font-weight: 600;
 }
-.lib-hero-go {
+.lib-hero-go,
+.lib-empty-go {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 44px;
   margin-top: 6px;
   padding: 0 18px;
+  border: 0;
   border-radius: var(--r-pill);
   background: var(--accent);
   color: var(--on-accent);
   font-size: var(--t-subhead);
   font-weight: 600;
+  cursor: pointer;
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, white 40%, transparent),
     0 10px 22px -12px color-mix(in srgb, var(--accent) 70%, black);
@@ -3541,16 +3559,17 @@ html:not([data-motion='off']) .btn-xl.is-live .play-glyph {
   .lib-hero-copy {
     max-width: 28rem;
   }
-  /* The card fills the row. A max-content card left an empty field beside Alive. */
+  /* The card is the cover, the title and the button, and nothing else.
+     A full-width card put the empty field inside Alive. */
   .lib-hero {
-    width: 100%;
-    max-width: none;
+    width: max-content;
+    max-width: 100%;
     margin-inline: 0;
-    align-self: stretch;
+    align-self: flex-start;
   }
   .lib-hero-copy {
-    flex: 1 1 auto;
-    max-width: none;
+    flex: 0 1 auto;
+    max-width: 28rem;
   }
   .lib-shelf {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 440px));
@@ -4102,28 +4121,31 @@ html[data-sheet='1'] .song {
     flex: none;
     flex-direction: row;
     align-items: center;
-    width: 100%;
-    max-width: none;
-    align-self: stretch;
+    width: max-content;
+    max-width: 100%;
+    align-self: flex-start;
     margin-top: 0;
-    gap: 40px;
-    padding: 24px;
+    gap: 20px;
+    padding: 16px;
   }
   .lib-hero-cover {
-    width: min(34%, 440px);
+    width: 200px;
     height: auto;
-    max-height: 36dvh;
+    max-height: none;
+    flex: none;
     aspect-ratio: 1;
   }
   .lib-hero-title {
-    font-size: clamp(2.5rem, 3vw, 3.5rem);
+    font-size: clamp(2rem, 2.4vw, 2.75rem);
   }
   .lib-hero-copy {
-    flex: 1 1 auto;
-    max-width: none;
+    flex: 0 1 auto;
+    max-width: 26rem;
+    padding-bottom: 0;
   }
   .lib-hero-go {
-    margin-inline-start: auto;
+    margin-inline-start: 0;
+    flex: none;
   }
   .lib-shelf {
     flex: 1 1 auto;
@@ -4175,16 +4197,17 @@ html[data-sheet='1'] .song {
   bottom: auto;
   display: flex;
   align-items: center;
-  height: 36px;
-  max-height: 36px;
+  height: auto;
+  min-height: 44px;
+  max-height: 52px;
   max-width: 600px;
   margin: 0 auto;
-  padding: 0;
+  padding: 8px 14px;
   overflow: hidden;
   border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
+  border-radius: 16px;
+  background: var(--bg-elevated);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 16%, transparent);
 }
 .note-line {
   display: flex;
@@ -4192,9 +4215,9 @@ html[data-sheet='1'] .song {
   align-items: baseline;
   gap: 6px;
   width: 100%;
-  min-height: 36px;
+  min-height: 0;
   margin: 0;
-  padding: 0 2px;
+  padding: 0;
   border: 0;
   background: none;
   color: var(--ink-2);
@@ -4304,6 +4327,10 @@ html[data-sheet='1'] .song {
     width: var(--stage-w, 920px);
     max-width: var(--stage-w, 920px);
   }
+  .song .player.lg-host {
+    background: transparent;
+    box-shadow: none;
+  }
   .player > .lg {
     inset: auto;
     left: 50%;
@@ -4312,11 +4339,16 @@ html[data-sheet='1'] .song {
     height: 100%;
     transform: translateX(-50%);
     border-radius: 28px;
+    box-shadow: var(--lg-shadow);
   }
   .player .player-row,
   .player .scrub {
     width: min(680px, 100%);
     margin-inline: auto;
+  }
+  .player .scrub {
+    box-sizing: border-box;
+    padding-inline: 28px;
   }
   .player .player-row {
     display: flex;

@@ -13,7 +13,7 @@ import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
 import { sceneProbeArmed } from './probe';
 import { PHONE_INST_SLOTS, PHONE_LINE_SLOTS, assignSlots, generousLine, retargetPhoneLines, sameSlots, type PhoneSlot } from './slots';
-import { GAP, WAIT_ROOM, blockHeight, blockState, clearBand, compressStack, flowPosition, instPresence, keepInStage, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
+import { GAP, WAIT_ROOM, blockHeight, blockState, clearBand, concealCut, compressStack, flowPosition, instPresence, keepInStage, layoutAt, lerp, planFlow, stackCompress, waitHint, windowAround, type Measure } from './flow';
 import { stepSpring, type SpringState } from '@/ui/spring';
 
 /** False in the Vercel production build, so `?ll-render-error=1` is compiled out. See vite.config.ts. */
@@ -535,6 +535,12 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         plate.current.style.height = `${glow.toFixed(1)}px`;
       }
       const t = clock();
+      // The desk column grows only while the picture is an instrumental. One write per change.
+      if (host) {
+        const ownerNow = Math.round(flowPosition(plan, t));
+        const instNow = ownerNow >= 0 && timeline.cues[ownerNow]?.kind === 'inst';
+        if (host.classList.contains('is-inst') !== instNow) host.classList.toggle('is-inst', instNow);
+      }
       // A paused clock used to restyle the stage anyway. WebKit kept that working set.
       // A new box still has to be placed: the first read can precede font load and
       // text-wrap balance, and the lyric would stay a line too high.
@@ -715,7 +721,15 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         blended.set(k, lerp(A.get(k) ?? 0, B.get(k) ?? 0, f));
         bandH.set(k, blockHeight(measures.get(k), k - pos));
       }
-      const placed = clearBand(blended, pos, bandH, liveH, liveTop, window.innerHeight, !roomyLandscape);
+      const placed = concealCut(clearBand(blended, pos, bandH, liveH, liveTop, window.innerHeight, !roomyLandscape), pos, bandH, liveH, 32);
+      // The engraving block is the whole column. Centring it at 0.42 left the top in the bar and the next line under the floor.
+      if (liveW >= 840 && liveH >= 480) {
+        const picture = Math.max(list[0] ?? 0, Math.min(list[list.length - 1] ?? 0, Math.round(pos)));
+        if (timeline.cues[picture]?.kind === 'inst') {
+          const h = bandH.get(picture) ?? 0;
+          if (h > 0 && h <= liveH) placed.set(picture, Math.max(0, (liveH - h) / 2));
+        }
+      }
       for (const k of list) {
         const b = blocks.current.get(k);
         if (!b) continue;
