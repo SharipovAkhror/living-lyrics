@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T01:20:52Z",
+  "at": "2026-11-01T01:21:52Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -11,8 +11,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 14969,
-      "age": 14998,
+      "minutes": 14970,
+      "age": 14999,
       "step": "Набор Phosphor собран, проверен на странице песни и запушен в grok/icons-a. В main не влит. ## 1. Готово, когда | Пункт | Статус | |---|---| | Полный набор на Phosphor, те же имена и API | выполнено | | Лицензия, версия и URL в docs/design/credits.md | выполнено | | Каждый знак API сопоставлен глифу базы | выполнено | | Тихий фирменный ход без потери ремесла | выполнено | | Старые наборы с ветки с",
       "tokens": 9490511,
       "model": "grok-4.7-build",
@@ -21,8 +21,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 14970,
-      "age": 14998,
+      "minutes": 14971,
+      "age": 14999,
       "step": "Push на телефон недоступен: в этой среде нет уведомлений на телефон. ## 1. Готово, когда - Полный набор на прежнем API, старые наборы сняты — выполнено. 21 имя в src/ui/icons.tsx. Удалены пути Phosphor и неиспользуемый src/icons/Icon.tsx. - Лицензия в docs/design/credits.md — выполнено. - Доски в work/icons-b/ — выполнено локально. Каталог work/ в .gitignore, на remote их нет. - validate, typechec",
       "tokens": 9850680,
       "model": "grok-4.7-build",
@@ -31,8 +31,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 14910,
-      "age": 14962,
+      "minutes": 14911,
+      "age": 14963,
       "step": "Шесть правок панели сделаны, доски пересняты, ветка запушена в grok/icons-c. В main ничего не сливал. ## 1. Готово, когда 1. Пуск по оптическому центру — выполнено. Сдвиг translate(1 0). Центр площади треугольника садится в 12,29 по сетке 24 (пауза — в 11,97). Плюс 1, а не 0,71: основание тяжелее площади, в круге 64 px плюс 1 читается серединой. При смене пуск и пауза расходятся на 0,32 единицы, н",
       "tokens": 13196979,
       "model": "grok-4.7-build",
@@ -49,7 +49,7 @@
       "name": "studio-pass",
       "state": "working",
       "minutes": 0,
-      "age": 0,
+      "age": 1,
       "step": "",
       "tokens": 0,
       "model": "",
@@ -58,8 +58,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 912,
-      "age": 926,
+      "minutes": 913,
+      "age": 927,
       "step": "Вливать нечего. Персидское «اختر» уже совпадает с Ганджуром и Викитекой, двоения на стыках бледных строк нет, веток ci/probe и wip/sync-tools на origin нет. Коммитов нет, ветка не пушилась: она совпадает с origin/main (70372c27). ## 1. Что сделано Каждое «اختر» сверено с источником — выполнено. В lyrics.json арабской «أ» (U+0623) нет. Править было нечего, запись в review не добавлялась: открытого ",
       "tokens": 4653311,
       "model": "grok-4.7-build",
@@ -68,8 +68,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 1462,
-      "age": 1582,
+      "minutes": 1463,
+      "age": 1583,
       "step": "Круг T27 закрыт. Удерживаемый объект JavaScript, который объяснял бы мегабайты в минуту, снимок кучи не назвал. Растёт рабочий набор одного процесса рендерера; куча JS за час плоская. Код сцены не менялся. Ветка site/t27-memory запушена. ## 1. Готово, когда - Растущий объект назван, либо честно сказано, что назвать нельзя. Выполнено во второй формулировке. После принудительной сборки мусора в куче",
       "tokens": 13262986,
       "model": "grok-4.7-build",
@@ -78,8 +78,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 14907,
-      "age": 15008,
+      "minutes": 14908,
+      "age": 15009,
       "step": "Push-уведомления в этой среде нет. ## 1. Готово, когда 1. Гладкий контур — выполнено. Кривые выходят дугами и кубическими Безье. Посадка кубика на истинную кривую — 0,015 на сетке 24 (порог 0,02). Кольца «О песне», поиска и инструментов — дуги одного радиуса; внешний край стыкуется с гранью пера по касательной. Скругление рамки — круговая галтель, параллель — та же дуга. Прямой стержень остаётся м",
       "tokens": 29801018,
       "model": "grok-4.7-build",
@@ -88,8 +88,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 11864,
-      "age": 11894,
+      "minutes": 11865,
+      "age": 11895,
       "step": "Круг 1 выполнен и запушен в site/t35. Голос снят там, где стем и Gemini оба не слышат пения. Где свидетели расходятся не меньше 2 с, данные оставлены и записаны в review. ## 1. Готово, когда Таблица, пороги, число исправлений и «после правки» — выполнено. Файл docs/analysis/stage-marks.md. Порог — середина медиан вокального стема в спетых строках и в обычном проигрыше (формула work/review/t35/stem",
       "tokens": 6757832,
       "model": "grok-4.7-build",
@@ -99,8 +99,8 @@
       "name": "t37-comments",
       "state": "working",
       "minutes": 0,
-      "age": 0,
-      "step": "Сначала прочитаю правила проекта, статус и код, который показывает пояснения, чтобы скрывать непроверенные тексты в одном месте на загрузке.",
+      "age": 1,
+      "step": "Задача указывает на docs/tasks/README.md и AGENTS.md как на источники команд. Новый тест нужно добавить в списки команд в docs/tasks/README.md и AGENTS.md. Историческая дата остаётся без изменений. Проверю JSON-схему: флаг comment-draft должен разрешаться для секций, а не только для строк. Правило «флаг только вместе с вопросом в review» нужно распространить на секции. Также поищу файл задачи t37 ",
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -113,10 +113,10 @@
       "role": "aos-engineer",
       "project": "agentic-os-live",
       "reports_to": "AOS · Main",
-      "state": "idle",
-      "last": "I've decided and sent the executor choice to AOS · Tech, which will update the docs and pass it to AOS · Main: - Small code edits: Codex. - Main and hard code: Grok while it lasts, then Codex. - Design and translation judgement: Codex, checked by a sonnet reviewer on the first two runs because it's untested. I'm idle until AOS · Tech says the runner is live.",
-      "last_at": "2026-10-31T22:11:40.689Z",
-      "last_act_at": "2026-10-31T22:11:40.689Z"
+      "state": "working",
+      "last": "Fixes 1, 2 and 4 are approved and with AOS · Tech, to build in that order after the night runner. I also asked AOS · Ops to correct the week size in the rotation script and to explain one startup figure that could reopen the threshold. I'm idle until AOS · Tech says the runner is live.",
+      "last_at": "2026-11-01T01:20:37.292Z",
+      "last_act_at": "2026-11-01T01:21:20.311Z"
     },
     {
       "name": "AOS · Main",
@@ -134,7 +134,9 @@
       "project": "agentic-os-live",
       "reports_to": "AOS · Main",
       "state": "working",
-      "last_act_at": "2026-11-01T01:19:16.400Z"
+      "last": "Это уведомление не содержит нового вердикта: повторной проверки пункта 4 пока не вижу. Жду её и только потом пишу AOS · Main.",
+      "last_at": "2026-11-01T01:20:18.078Z",
+      "last_act_at": "2026-11-01T01:21:20.279Z"
     },
     {
       "name": "AOS · PC",
@@ -152,9 +154,9 @@
       "project": "agentic-os-live",
       "reports_to": "AOS · Main",
       "state": "working",
-      "last": "В STATUS.md есть решение владельца: страница открыта по ссылке. Grok работает над вторым кругом: возраст у чисел в шапке, прокрутка вбок на телефоне и список скрытых данных с тем, что нужно для публикации каждого.",
-      "last_at": "2026-11-01T01:18:23.489Z",
-      "last_act_at": "2026-11-01T01:18:23.489Z"
+      "last": "Решения AOS · Engineer приняты в очередь: сначала отключение коннекторов у фоновых чатов, затем навыков, затем note.py. Начну после ночной очереди и страницы, а если чат сменится раньше, запишу их в сдачу дел. Команду для доски Codex уже делает: когда решение пришло, она была запущена.",
+      "last_at": "2026-11-01T01:20:38.768Z",
+      "last_act_at": "2026-11-01T01:21:17.760Z"
     },
     {
       "name": "LL · Business",
@@ -182,9 +184,9 @@
       "project": "living-lyrics",
       "reports_to": "LL · Main",
       "state": "working",
-      "last": "Starting on T37: main is merged in and the gates pass. I also confirmed that comment-draft lines still render today. Next I'm setting up the Codex batches and briefing Grok.",
-      "last_at": "2026-11-01T01:18:39.911Z",
-      "last_act_at": "2026-11-01T01:18:46.773Z"
+      "last": "Three jobs are running in the background: - T37 hide fix: Grok is making unconfirmed comments invisible to viewers. - T37 comment check: Codex is checking every comment in batches of up to 60 rows, one song at a time. - Studio: Grok is on the final round. I'll report to LL · Main when there's a result.",
+      "last_at": "2026-11-01T01:21:14.298Z",
+      "last_act_at": "2026-11-01T01:21:14.298Z"
     }
   ],
   "pipeline": [],
