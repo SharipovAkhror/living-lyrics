@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T20:15:05Z",
+  "at": "2026-11-01T20:17:06Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,8 +10,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 16103,
-      "age": 16132,
+      "minutes": 16105,
+      "age": 16134,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -19,8 +19,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 16104,
-      "age": 16132,
+      "minutes": 16106,
+      "age": 16134,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -28,8 +28,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 16045,
-      "age": 16096,
+      "minutes": 16047,
+      "age": 16098,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -41,16 +41,10 @@
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/ll-business"
     },
     {
-      "name": "no-night-deploys",
-      "state": "none",
-      "minutes": 0,
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/no-night-deploys"
-    },
-    {
       "name": "phone-overlap",
       "state": "working",
       "minutes": 0,
-      "age": 28,
+      "age": 30,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/phone-overlap"
@@ -59,7 +53,7 @@
       "name": "studio-pass",
       "state": "working",
       "minutes": 0,
-      "age": 47,
+      "age": 49,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -67,8 +61,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 2046,
-      "age": 2060,
+      "minutes": 2048,
+      "age": 2062,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -76,8 +70,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2596,
-      "age": 2716,
+      "minutes": 2598,
+      "age": 2718,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -85,8 +79,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 16041,
-      "age": 16142,
+      "minutes": 16043,
+      "age": 16144,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -94,8 +88,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 12998,
-      "age": 13028,
+      "minutes": 13000,
+      "age": 13030,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -103,8 +97,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 353,
-      "age": 374,
+      "minutes": 355,
+      "age": 376,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -112,8 +106,8 @@
     {
       "name": "t37b",
       "state": "finished",
-      "minutes": 6,
-      "age": 20,
+      "minutes": 8,
+      "age": 22,
       "tokens": 4988948,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37b"
@@ -186,9 +180,9 @@
       "role": "ll-main",
       "project": "living-lyrics",
       "reports_to": "owner",
-      "state": "idle",
+      "state": "working",
       "last_at": "2026-11-01T20:12:35.595Z",
-      "last_act_at": "2026-11-01T20:12:35.595Z"
+      "last_act_at": "2026-11-01T20:16:24.456Z"
     },
     {
       "name": "LL · Site",
@@ -196,20 +190,25 @@
       "project": "living-lyrics",
       "reports_to": "LL · Main",
       "state": "working",
-      "last_at": "2026-11-01T20:14:14.094Z",
-      "last_act_at": "2026-11-01T20:14:15.939Z"
+      "last_at": "2026-11-01T20:16:02.156Z",
+      "last_act_at": "2026-11-01T20:16:02.156Z"
     }
   ],
   "pipeline": [
     {
+      "name": "cleanup",
+      "title": "Merge pull request #39 from SharipovAkhror/site/no-night-deploys",
+      "minutes": 0
+    },
+    {
       "name": "pipeline",
       "title": "Add Noor: text, translation, commentary, timing (draft)",
-      "minutes": 9
+      "minutes": 11
     },
     {
       "name": "pipeline",
       "title": "Add Sami Yusuf - Existentia",
-      "minutes": 65
+      "minutes": 67
     }
   ],
   "hygiene": {
