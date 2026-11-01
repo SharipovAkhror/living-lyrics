@@ -1,12 +1,12 @@
 {
-  "updated": "2026-11-01T21:18:29Z",
+  "updated": "2026-11-01T21:28:30Z",
   "grok": {
-    "today": 321442967,
+    "today": 396368490,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-01T21:18:29Z",
-    "week": 1766234733,
+    "todayAt": "2026-11-01T21:28:30Z",
+    "week": 1841160256,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-01T21:18:29Z",
+    "weekAt": "2026-11-01T21:28:30Z",
     "todayByTask": {
       "night-ll-song-04-muhabbatga-yaqinlar": 19760819,
       "night-ll-song-09-sari-gelin": 25213540,
@@ -31,17 +31,19 @@
       "night-ll-cues-08-you-came-to-me": 4557853,
       "night-ll-cues-12-the-dawn": 3592402,
       "night-ll-cues-14-the-creator": 3395745,
-      "night-ll-song-18-go-encore": 14367002
+      "night-ll-song-18-go-encore": 14367002,
+      "night-ll-song-20-i-only-knew": 14062099,
+      "studio-pass": 60863424
     },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-01T21:18:29Z",
+    "todayByTaskAt": "2026-11-01T21:28:30Z",
     "plan": "SuperGrok Heavy",
     "planSource": "grok /usage",
-    "planAt": "2026-11-01T21:18:29Z",
+    "planAt": "2026-11-01T21:28:30Z",
     "weekly": {
-      "percentUsed": 92,
+      "percentUsed": 93,
       "source": "grok /usage",
-      "at": "2026-11-01T21:18:29Z",
+      "at": "2026-11-01T21:28:30Z",
       "timezoneLabeled": false,
       "resetsAt": "November 6, 21:08"
     }
@@ -66,13 +68,13 @@
     },
     "conversationsToday": 1,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-01T21:18:29Z",
+    "conversationsTodayAt": "2026-11-01T21:28:30Z",
     "runsToday": 1,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-01T21:18:29Z",
+    "runsTodayAt": "2026-11-01T21:28:30Z",
     "secondsToday": 0,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-01T21:18:29Z",
+    "secondsTodayAt": "2026-11-01T21:28:30Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
     "at": "2026-11-01T21:08:30Z",
@@ -87,11 +89,25 @@
   },
   "alerts": [
     {
+      "kind": "tokens",
+      "value": 60863424,
+      "task": "studio-pass",
+      "session": "9cbb5dd2-71f3-440c-9b44-0408cf0cfbfa",
+      "at": "2026-11-01T21:28:30Z"
+    },
+    {
+      "kind": "no-progress",
+      "value": 60863424,
+      "task": "studio-pass",
+      "session": "9cbb5dd2-71f3-440c-9b44-0408cf0cfbfa",
+      "at": "2026-11-01T21:28:30Z"
+    },
+    {
       "kind": "weekly",
       "task": "",
       "session": "",
-      "value": 92,
-      "at": "2026-11-01T21:18:29Z"
+      "value": 93,
+      "at": "2026-11-01T21:28:30Z"
     }
   ],
   "value": {
@@ -106,23 +122,23 @@
   "claude": {
     "plan": "Claude Pro",
     "planSource": "claude auth status --json",
-    "at": "2026-11-01T21:18:29Z",
+    "at": "2026-11-01T21:28:30Z",
     "windows": [
       {
         "kind": "five_hour",
-        "percentUsed": 3,
+        "percentUsed": 6,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T21:18:29Z",
+        "at": "2026-11-01T21:28:30Z",
         "resetsAt": "2026-11-02T01:50:00.000Z",
-        "readAt": "2026-11-01T21:17:58Z"
+        "readAt": "2026-11-01T21:20:30Z"
       },
       {
         "kind": "seven_day",
-        "percentUsed": 91,
+        "percentUsed": 92,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-01T21:18:29Z",
+        "at": "2026-11-01T21:28:30Z",
         "resetsAt": "2026-11-06T04:00:00.000Z",
-        "readAt": "2026-11-01T21:17:58Z"
+        "readAt": "2026-11-01T21:20:30Z"
       }
     ],
     "trend": [
