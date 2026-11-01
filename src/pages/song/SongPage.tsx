@@ -803,8 +803,7 @@ function measureChrome(root: HTMLElement, top: HTMLElement, floor: HTMLElement) 
     if (box.height > 8) coverTop = Math.min(coverTop, box.top);
   }
   root.style.setProperty('--player-h', `${Math.max(0, rootBox.bottom - coverTop)}px`);
-  // The alert overlays the top of the stage. Adding its height moved the sung line.
-  root.style.setProperty('--banner-h', '0px');
+  // Do not set --banner-h. The alert overlays the stage; a reserved height moved the sung line.
 }
 
 /** Where to put the playhead on open. A `?t=` link wins over the saved point. */

@@ -187,18 +187,23 @@
   opacity: 0.08;
 }
 @media (prefers-contrast: more) {
-  .song > .field,
-  .song > .field.is-dark {
+  .song > .field.is-dark,
+  .song > .field:not(.is-dark) {
     background: var(--bg);
   }
   .song > .field .field-wash-1,
   .song > .field .field-wash-2,
-  .song > .field .field-wash-3 {
-    opacity: 0.16;
-    filter: saturate(0.15);
+  .song > .field .field-wash-3,
+  .song > .field .field-veil {
+    opacity: 0.08;
+    filter: saturate(0.1);
   }
-  .fb-repeat,
-  .fb--line:not(.is-current) .fb-orig {
+  .song .fb-repeat,
+  .fb--line:not(.is-current) .fb-orig,
+  .fb--line:not(.is-current) .fb-orig .w,
+  .fb--line:not(.is-current) .fb-tr,
+  .fb--line:not(.is-current) .fb-translit,
+  .fb--line:not(.is-current) .fb-alt {
     color: var(--ink);
     opacity: 1;
   }
@@ -757,7 +762,7 @@
   border: 0;
   border-radius: var(--r-pill);
   background: var(--alert-fg);
-  color: var(--alert-bg);
+  color: var(--bg);
   font: 600 0.9375rem / 1.2 var(--font-ui);
   text-decoration: none;
   opacity: 1;
@@ -3638,8 +3643,9 @@ html[data-sheet='1'] .song {
   }
 }
 
-/* Under 400 px the title stays one line. The concert line and the section stay,
-   wrapping to two lines. 13 px is the floor. SE (320) hides them below. */
+/* Under 400 px the title stays one line. The artist and the section share one
+   line, so a long part name does not grow the header and shift the stage.
+   The concert line may wrap. 13 px is the floor. SE (320) hides it below. */
 @media (max-width: 399px) {
   .topbar-title {
     display: flex;
@@ -3669,8 +3675,9 @@ html[data-sheet='1'] .song {
   .song.is-big-type .topbar-who {
     display: block;
     -webkit-line-clamp: unset;
-    white-space: normal;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 0.8125rem;
   }
 }
@@ -3872,7 +3879,7 @@ html[data-sheet='1'] .song {
   }
   .player-alert .floor-retry {
     min-height: 32px;
-    padding: 0 4px;
+    padding: 0 12px;
   }
 }
 
@@ -4333,8 +4340,13 @@ html[data-sheet='1'] .song {
     transition-delay: 500ms;
   }
   .transport [data-tip]::before {
-    bottom: auto;
-    top: calc(100% + 18px);
+    /* The control sits under the time row. Beside it the tip covers the
+       skip buttons; just above it the tip covers the rail. Lift it clear. */
+    left: 50%;
+    right: auto;
+    top: auto;
+    bottom: calc(100% + 64px);
+    transform: translateX(-50%);
   }
 }
 
