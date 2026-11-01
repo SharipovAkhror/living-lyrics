@@ -1,10 +1,10 @@
 {
-  "at": "2026-11-01T00:42:24Z",
+  "at": "2026-11-01T00:52:27Z",
   "unit": "Claude cost = API-price-weighted tokens, Opus-input units (see claude_review.py)",
   "calibration": {
     "proWeek": 78033821.98,
-    "pro5h": 10662142.54,
-    "source": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 62% / 100); pro5h = claude cost since 2026-10-31T23:00:00 / (five_hour 39% / 100)"
+    "pro5h": 10395588.97,
+    "source": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 62% / 100); pro5h = claude cost since 2026-10-31T23:00:00 / (five_hour 40% / 100)"
   },
   "claude": {
     "week": {
@@ -214,7 +214,7 @@
       }
     },
     "day": {
-      "since": "2026-10-31T00:42:24",
+      "since": "2026-10-31T00:52:27",
       "cost": 28396617.93,
       "tokens": 154200779,
       "calls": 1342,
@@ -405,7 +405,7 @@
   "grok": {
     "week": {
       "since": "2026-10-30T16:08:00",
-      "tokens": 912012219,
+      "tokens": 923336669,
       "pctUsed": 47,
       "byTask": {
         "bench-r5": 6638672,
@@ -448,7 +448,7 @@
         "space3-lines-l2": 5717868,
         "space3-lines-l3": 6841990,
         "space3-motion": 4788805,
-        "space3-overview": 14192950,
+        "space3-overview": 25517400,
         "space3-tokens": 10283767,
         "studio-pass": 180403171,
         "t10-small": 4653311,
@@ -485,15 +485,15 @@
         "tech-usage-live": 9069377
       },
       "byProject": {
-        "agentic-os-live": 446879744,
+        "agentic-os-live": 458204194,
         "living-lyrics": 275966407,
         "other": 189166068
       }
     },
     "day": {
-      "since": "2026-10-31T00:42:24",
-      "tokens": 610650955,
-      "pctUsed": 31.47,
+      "since": "2026-10-31T00:52:27",
+      "tokens": 621975405,
+      "pctUsed": 31.66,
       "byTask": {
         "bench-r6": 49084870,
         "brain-apple-music": 5948124,
@@ -527,7 +527,7 @@
         "space3-lines-l2": 5717868,
         "space3-lines-l3": 6841990,
         "space3-motion": 4788805,
-        "space3-overview": 14192950,
+        "space3-overview": 25517400,
         "space3-tokens": 10283767,
         "studio-pass": 145353875,
         "t10-small": 4653311,
@@ -548,7 +548,7 @@
         "tech-stop-wake": 3692682
       },
       "byProject": {
-        "agentic-os-live": 307935331,
+        "agentic-os-live": 319259781,
         "living-lyrics": 171710510,
         "other": 131005114
       }
@@ -558,15 +558,15 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-01T00:35:18Z",
+        "at": "2026-11-01T00:45:18Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 98.74,
-        "weeklyResetIn": "165h 29m",
-        "fiveHourResetIn": "2h 29m"
+        "weeklyResetIn": "165h 19m",
+        "fiveHourResetIn": "2h 19m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-01T00:35:18Z",
+        "at": "2026-11-01T00:45:18Z",
         "weeklyRemaining": 100,
         "fiveHourRemaining": 100
       }
@@ -921,10 +921,10 @@
   "sources": {
     "claude.week": "python ops/usage/claude_review.py --since 2026-10-30T04:00:00 --by-chat",
     "claude.week.overhead": "python ops/usage/claude_cache.py --since 2026-10-30T04:00:00",
-    "claude.day": "python ops/usage/claude_review.py --since 2026-10-31T00:42:24 --by-chat",
-    "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 62% / 100); pro5h = claude cost since 2026-10-31T23:00:00 / (five_hour 39% / 100)",
+    "claude.day": "python ops/usage/claude_review.py --since 2026-10-31T00:52:27 --by-chat",
+    "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 62% / 100); pro5h = claude cost since 2026-10-31T23:00:00 / (five_hour 40% / 100)",
     "grok.week": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T16:08:00 (grok.weekly.resetsAt minus 7d)",
-    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-10-31T00:42:24",
+    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-10-31T00:52:27",
     "agy.quota": "ops/usage/latest.json gemini.quota",
     "agy.runs": "ops/usage/ledger/*.jsonl kind=run"
   }
