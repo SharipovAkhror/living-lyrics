@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-10-one-true-love",
+  "status": "pass",
+  "branch": "night/ll-song-10-one-true-love",
+  "commit": "320c22fb77cc04c7ca6614f00dc37d89f1551940",
+  "tokens": 5161142,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts one-true-love\n\n\nИтого: 0 ошибок, 0 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue\\logs\\ll-song-10-one-true-love.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
