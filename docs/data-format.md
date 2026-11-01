@@ -83,6 +83,8 @@
 | `fx?` | не используется (наследие прежней сцены); новые строки его не заполняют |
 | `flags?` | `text-unverified`, `timing-draft`, `translation-draft`, `comment-draft`, `attribution-unverified` |
 
+Флаг `comment-draft` на строке или секции значит, что зритель это пояснение не видит: текст снимается при загрузке, и такая строка не берёт пояснение соседней.
+
 ## peaks.json
 
 ```json
