@@ -457,6 +457,10 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
         lastT = Number.NaN;
         lastPaintMs = 0;
         stageDirty.current = true;
+        // The desk column grows on this landing. The engravings wait until that
+        // box has stopped changing; mounting them in the same layout was a run
+        // of long frames. The flag is read once by the block that appears now.
+        if (!isPhone() && host) host.dataset.settle = 'scrub';
         requestAnimationFrame(() => setLayoutEpoch((n) => n + 1));
       }
       scrubWas = scrubbingNow;

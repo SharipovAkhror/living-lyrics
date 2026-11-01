@@ -243,12 +243,15 @@ html[data-glass='lens'] .lg-host--note .lg-lens {
   background: radial-gradient(130% 120% at 50% 40%, var(--lg-fill) 46%, transparent 78%);
 }
 
-/* Restrained glass: a dense tint, a blur, no refraction and no brightening. */
+/* Desktop dock: blur, saturate, and a little brightness. The static displacement
+   map is not on this filter. Chromium paints only a few levels of difference
+   through it, WebKit paints none, and attaching it on the seek frame was a
+   50–67 ms gap. The map stays in the SVG for the measurement, unused. */
 html[data-glass='lens'] .topbar .lg-lens,
 html[data-glass='lens'] .lg-host--floor .lg-lens {
   background: color-mix(in srgb, var(--bg-elevated) 48%, transparent);
-  -webkit-backdrop-filter: url('#lg-refract') blur(18px) saturate(165%) brightness(1.04);
-  backdrop-filter: url('#lg-refract') blur(18px) saturate(165%) brightness(1.04);
+  -webkit-backdrop-filter: blur(18px) saturate(165%) brightness(1.04);
+  backdrop-filter: blur(18px) saturate(165%) brightness(1.04);
 }
 html[data-glass='solid'] .lg-host--floor .lg-lens {
   background: var(--lg-solid);
@@ -314,8 +317,9 @@ html[data-glass='lens'] .lib-nav .lg-lens {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
-/* A moving field under a live filter missed the frame. The thick fill is the
-   same material without the snapshot. It returns once the finger or the flight is gone. */
+/* Meant to drop the filter while a finger or a flight is moving. The dock
+   rule above is more specific, so the header and the floor keep their blur.
+   Measured on the preview: the computed filter stays the dock value. */
 .song.is-scrubbing .lg-lens,
 .song.is-flying .lg-lens,
 .song.is-arriving .lg-lens {

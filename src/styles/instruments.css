@@ -68,9 +68,9 @@
 .ist-art {
   position: absolute;
   color: var(--ist-ink);
-  /* Brightness only. A zero-blur drop-shadow would stamp a second copy of the line, so the
-     halo is written as an inline filter when it is actually on (applyPlate). */
-  filter: brightness(var(--life, 1));
+  /* No resting filter. brightness(1) still rasterised the whole plate, and the
+     first paint of a large engraving was a 50 ms frame. applyPlate writes a
+     filter only when the line actually breathes or a halo is on. */
 }
 .ist-art svg {
   display: block;
@@ -105,7 +105,6 @@
    Life is a brightness filter. The halo and the hit flash are drop-shadows in the song colour.
    The hit also scales the drawing, at most to 1.04. Only transform, opacity and filter move. */
 .scene .ist-art {
-  will-change: transform, filter;
   /* The song field is the same violet as an accent-tinted stroke. The text ink
      stays readable on that field in both themes; the theme attribute is not required. */
   color: var(--ink);

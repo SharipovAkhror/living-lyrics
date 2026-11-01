@@ -126,6 +126,8 @@ function artFilter(drive: InstrumentDrive) {
   const halo = drive.halo ?? 0;
   const flash = drive.hit ?? 0;
   const brightness = `brightness(${life.toFixed(3)})`;
+  // brightness(1) is a no-op that still allocates a filtered layer. Skip it.
+  if (Math.abs(life - 1) < 0.004 && halo < 0.004 && flash < 0.004) return 'none';
   // The glow arm drops the halo. Brightness stays, so the engraving still breathes.
   if (bisect('glow') || (halo < 0.004 && flash < 0.004)) return brightness;
   const glow = `drop-shadow(0 0 ${(halo * 18).toFixed(2)}px var(--accent))`;

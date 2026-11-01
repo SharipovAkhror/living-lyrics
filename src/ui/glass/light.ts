@@ -2,8 +2,8 @@
  * One light for every glass surface.
  *
  * Desktop (fine pointer, wide window): the specular angle follows the pointer,
- * coalesced to one animation frame, and the SVG displacement filter is allowed.
- * The filter definition itself never changes.
+ * coalesced to one animation frame. The dock does not use the displacement map:
+ * it blurs, saturates, and brightens. The map stays defined and unused.
  *
  * Phone and reduced transparency: no pointer tracking, no displacement. A tap
  * may set the light once. The phone header and floor blur and saturate only.

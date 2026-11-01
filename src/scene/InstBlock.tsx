@@ -1,4 +1,5 @@
 import { memo, useLayoutEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import type { InstCue, Timeline } from '@/data/timeline';
 import type { AudioFeatures } from '@/instruments/animation';
 import type { LineEntrance, MotionPref } from '@/app/settings';
@@ -143,13 +144,15 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   const [rosterPage, setRosterPage] = useState(0);
   const rosterPageRef = useRef(0);
   const shownHeroes = phoneRoster ? rosterWindow(heroes, rosterPage, PHONE_ROSTER) : heroes;
-  // The engravings are the long commit. The label paints first; the plates follow
-  // on the next frame, after the song page has laid out.
-  const [platesOn, setPlatesOn] = useState(() => !isPhone() || !!document.querySelector('.song.is-scrubbing'));
+  // The engravings are the long commit. The label paints first.
+  // Phone: the plates follow on the next frame, or on this one while a finger
+  // is down so a scrub does not land on an empty break.
+  // Desktop: mounting the drawings in the seek frame missed several vsyncs
+  // (preview scrub p95 33.3). The same drawing mounted once the page was idle
+  // did not. Wait out the flight and a few quiet frames, then mount once.
+  const [platesOn, setPlatesOn] = useState(() => isPhone() && !!document.querySelector('.song.is-scrubbing'));
   useLayoutEffect(() => {
-    if (platesOn) return;
-    // A scrub has to show the engraving on this frame. Playback still waits
-    // one frame so the opening flight can paint the label first.
+    if (!isPhone() || platesOn) return;
     if (root.current?.closest('.song')?.classList.contains('is-scrubbing')) {
       setPlatesOn(true);
       return;
@@ -157,6 +160,54 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     const id = requestAnimationFrame(() => setPlatesOn(true));
     return () => cancelAnimationFrame(id);
   }, [platesOn]);
+  const sizeNow = useRef(stage);
+  sizeNow.current = stage;
+  // A scrub landing sets this before the block mounts. Later size changes must
+  // not restart the wait: the box is still the one the landing just grew.
+  const scrubSettle = useRef(false);
+  useLayoutEffect(() => {
+    if (isPhone() || platesOn) return;
+    const song = root.current?.closest('.song');
+    if (song instanceof HTMLElement && song.dataset.settle === 'scrub') scrubSettle.current = true;
+    let raf = 0;
+    let quiet = 0;
+    let ticks = 0;
+    let lastW = -1;
+    let lastH = -1;
+    const tick = () => {
+      const host = root.current?.closest('.song');
+      const busy =
+        !!host?.classList.contains('is-flying') ||
+        !!host?.classList.contains('is-arriving') ||
+        !!host?.classList.contains('is-scrubbing');
+      const w = sizeNow.current.w;
+      const h = sizeNow.current.h;
+      const changed = lastW >= 0 && (Math.abs(w - lastW) >= 0.5 || Math.abs(h - lastH) >= 0.5);
+      lastW = w;
+      lastH = h;
+      if (busy || w <= 0) {
+        quiet = 0;
+        ticks = 0;
+      } else {
+        ticks += 1;
+        quiet = changed ? 0 : quiet + 1;
+      }
+      // After a scrub the column has just grown. Mounting across the next
+      // few paints was a run of 33 ms frames. Wait until the box is still,
+      // then commit the drawings in one flush so the paint does not spread.
+      // A flight only waits two still frames.
+      const need = scrubSettle.current ? 8 : 2;
+      if (!busy && w > 0 && (quiet >= need || ticks >= 24)) {
+        if (host instanceof HTMLElement && host.dataset.settle === 'scrub') delete host.dataset.settle;
+        if (scrubSettle.current) flushSync(() => setPlatesOn(true));
+        else setPlatesOn(true);
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [platesOn, cue.idx]);
 
   useLayoutEffect(() => {
     if (parked) {
