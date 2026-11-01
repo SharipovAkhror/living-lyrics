@@ -4,13 +4,34 @@ import type { AudioFeatures } from '@/instruments/animation';
 import type { LineEntrance, MotionPref } from '@/app/settings';
 import { formatTime } from '@/data/library';
 import { instrument } from '@/instruments/catalog';
-import { blockState, clamp01, entranceOpacity, type Measure } from './flow';
-import type { BlockUpdater } from './LineBlock';
+import { blockState, clamp01, entranceOpacity, instPresence, type Measure } from './flow';
+import { syncInstNote, type BlockUpdater } from './LineBlock';
 import { InstrumentStage, assignPerformers, type InstrumentStageHandle, type StagePose } from './InstrumentStage';
 import { castAt, castSignature, isVoicePassage, type CastMember } from './cast';
 import { stageDrive } from './stageDrive';
 import { bisect } from '@/app/bisect';
 import { isPhone } from '@/ui/phone';
+
+/** Compact height already read. A phone scrub reuses it and does not lay out. */
+const instCompact = new Map<number, number>();
+
+/** Plates a phone can show at once. The rest rotate; they are not a different set. */
+const PHONE_ROSTER = 4;
+const ROSTER_DWELL = 4;
+
+/** Page of a phone roster. A pure function of time, so a seek repeats the frame. */
+export function rosterPageAt(t: number, start: number, total: number, size = PHONE_ROSTER, dwell = ROSTER_DWELL): number {
+  if (total <= size || size < 1 || dwell <= 0) return 0;
+  const pages = Math.ceil(total / size);
+  return Math.floor(Math.max(0, t - start) / dwell) % pages;
+}
+
+function rosterWindow<T>(items: readonly T[], page: number, size: number): T[] {
+  if (items.length <= size) return items.slice();
+  const pages = Math.ceil(items.length / size);
+  const at = (page % pages) * size;
+  return items.slice(at).concat(items.slice(0, at)).slice(0, size);
+}
 
 interface Props {
   cue: InstCue;
@@ -26,6 +47,8 @@ interface Props {
   features: AudioFeatures | null;
   register: (idx: number, fn: BlockUpdater | null, m?: Measure) => void;
   onPick: (idx: number) => void;
+  /** Bumps once when a scrub ends, so a passage that used a cached box is read again. */
+  measureEpoch?: number;
 }
 
 function passageTitle(keys: string[]) {
@@ -54,7 +77,7 @@ function frameFor(members: CastMember[], features: AudioFeatures | null, t: numb
  * brightens and moves; the others stay dim until their entrance. Who plays, and when the voice returns, stays under the drawings.
  * A passage that is only voice or choir keeps that engraving and does not invent an orchestra.
  */
-function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion, stage, features, register, onPick }: Props) {
+function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion, stage, features, register, onPick, measureEpoch = 0 }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const compact = useRef<HTMLDivElement>(null);
   const full = useRef<HTMLDivElement>(null);
@@ -72,6 +95,10 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   const animRef = useRef(anim);
   const castSig = useRef('');
   const frameRef = useRef<StagePose | null>(null);
+  // The last pose may belong to the magnet time under the finger. The release
+  // clock is the raw seek, and a block that has already faded skips pose, so
+  // its engraving stayed at full opacity inside the chip.
+  const plateLit = useRef(false);
   const painted = useRef({ z: '', transform: '', opacity: '', vis: '', height: '', compact: '', fullO: '', fullS: '' });
 
   // A short wide screen (the car) gives the drawings the height and keeps the note short.
@@ -80,10 +107,24 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   const room = Math.max(0, stage.h);
   const shortStage = room > 0 && room <= 420 && stage.w >= 640;
   const tight = room > 0 && room < 300 && !shortStage;
-  const fullH = shortStage ? Math.round(room * 0.92) : Math.round(Math.min(tight ? room : room * 0.72, 620));
-  const textH = shortStage
+  // The desk column is 868. A 900 cutoff never saw it, so six plates kept the
+  // short stack and read as icons. 840 is that column and not the 760 shelf.
+  const wide = stage.w >= 840 && room > 480 && !shortStage && !tight;
+  // The desk interlude is the picture. The column grows in CSS (.song.is-inst);
+  // the drawing box then uses that room instead of the 0.9 lyric reserve.
+  const spectacle = wide;
+  const fullH = spectacle
+    ? Math.max(64, Math.round(room - 4))
+    : shortStage
+      ? Math.round(room * 0.92)
+      : Math.round(Math.min(tight ? room : room * (wide ? 0.9 : 0.72), wide ? 760 : 620));
+  const textH = spectacle
+    ? 0
+    : shortStage
     ? section.note ? 52 : section.mode ? 36 : 28
-    : section.note ? (tight ? 36 : 96) : section.mode ? (tight ? 28 : 64) : tight ? 20 : 44;
+    // The desk note is one line (about 20px). A 52px reserve shrank the six
+    // drawings. 24px is the largest stack this 868 column can give them.
+    : section.note ? (tight ? 36 : wide ? 24 : 96) : section.mode ? (tight ? 28 : wide ? 40 : 64) : tight ? 20 : wide ? 28 : 44;
   const stageSize = {
     w: Math.max(200, Math.min(stage.w - (shortStage ? 16 : 24), 1040)),
     h: Math.max(64, Math.min(fullH - textH, room > 0 ? room : fullH)),
@@ -91,9 +132,31 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   const compactH = useRef(56);
   // Sections that already stood. Shared plates keep their slot and skip the cascade.
   const earlier = timeline.cues.flatMap((c) => (c.kind === 'inst' && c.start < cue.start ? [c.section] : []));
-  const [cast, setCast] = useState<CastMember[]>(() => castAt(section, section.start, stageSize.w, motion, earlier));
+  const [cast, setCast] = useState<CastMember[]>(() => {
+    const members = castAt(section, section.start, stageSize.w, motion, earlier);
+    castSig.current = castSignature(members);
+    return members;
+  });
   const heroes = cast.filter((m) => m.place === 'hero');
   const echoes = cast.filter((m) => m.place === 'echo');
+  const phoneRoster = isPhone() && heroes.length > PHONE_ROSTER;
+  const [rosterPage, setRosterPage] = useState(0);
+  const rosterPageRef = useRef(0);
+  const shownHeroes = phoneRoster ? rosterWindow(heroes, rosterPage, PHONE_ROSTER) : heroes;
+  // The engravings are the long commit. The label paints first; the plates follow
+  // on the next frame, after the song page has laid out.
+  const [platesOn, setPlatesOn] = useState(() => !isPhone() || !!document.querySelector('.song.is-scrubbing'));
+  useLayoutEffect(() => {
+    if (platesOn) return;
+    // A scrub has to show the engraving on this frame. Playback still waits
+    // one frame so the opening flight can paint the label first.
+    if (root.current?.closest('.song')?.classList.contains('is-scrubbing')) {
+      setPlatesOn(true);
+      return;
+    }
+    const id = requestAnimationFrame(() => setPlatesOn(true));
+    return () => cancelAnimationFrame(id);
+  }, [platesOn]);
 
   useLayoutEffect(() => {
     if (parked) {
@@ -109,7 +172,17 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     }
     if (root.current) root.current.style.pointerEvents = '';
     if (!compact.current) return;
-    compactH.current = compact.current.offsetHeight;
+    // measureEpoch forces a fresh read after the finger lifts. During the drag
+    // the box is the last one we measured, so the frame does not lay out.
+    const scrubbing = isPhone() && !!root.current?.closest('.song')?.classList.contains('is-scrubbing');
+    if (scrubbing) {
+      const known = instCompact.get(cue.idx);
+      if (known != null) compactH.current = known;
+    } else {
+      compactH.current = compact.current.offsetHeight;
+      instCompact.set(cue.idx, compactH.current);
+    }
+    void measureEpoch;
     register(cue.idx, call, { main: 0, sub: 0, compact: compactH.current, full: fullH });
   });
 
@@ -118,7 +191,11 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
   useLayoutEffect(() => {
     if (!isPhone()) return;
     const members = castAt(section, section.start, stageSize.w, motion, earlier);
-    castSig.current = castSignature(members);
+    const sig = castSignature(members);
+    // The mount already built this roster. A second setState in the same commit
+    // was a long frame on the way in from the library.
+    if (sig === castSig.current) return;
+    castSig.current = sig;
     setCast(members);
     // The roster inputs are current when the cue changes. Listing them would refit every frame.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -138,12 +215,19 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     const r = root.current;
     if (!r || bisect('placement')) return;
     const s = blockState(d);
-    const p = s.presence;
+    // At t = 0 the title card still shares the stage, so this block's distance is not 0.
+    // The opening roster is already playing: keep the full engraving, not the empty cascade.
+    const opening = earlier.length === 0 && t >= section.start && t < section.end && d < 1.05;
+    const flowP = opening ? Math.max(s.presence, 0.92) : s.presence;
+    // A passage that has started is the picture. One that has ended is gone:
+    // the flow move straddles the shared boundary and used to draw both captions.
+    const ended = t >= section.end;
+    const p = instPresence(t, section.start, section.end, flowP);
     const z = String(20 - Math.min(18, Math.round(Math.abs(d) * 4)));
     const transform = `translate3d(0, ${top.toFixed(1)}px, 0)`;
-    const opacity = entranceOpacity(d, entrance, s.opacity).toFixed(3);
-    const vis = s.opacity < 0.01 ? 'hidden' : 'visible';
-    const grown = compactH.current + (fullH - compactH.current) * p;
+    const opacity = (ended ? 0 : entranceOpacity(d, entrance, s.opacity)).toFixed(3);
+    const vis = ended || s.opacity < 0.01 ? 'hidden' : 'visible';
+    const grown = ended ? 0 : compactH.current + (fullH - compactH.current) * p;
     const height = `${grown.toFixed(1)}px`;
     const box = painted.current;
     if (box.z !== z) {
@@ -154,11 +238,11 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
       box.transform = transform;
       r.style.transform = transform;
     }
-    if (box.opacity !== opacity) {
+    if (box.opacity !== opacity || r.style.opacity !== opacity) {
       box.opacity = opacity;
       r.style.opacity = opacity;
     }
-    if (box.vis !== vis) {
+    if (box.vis !== vis || r.style.visibility !== vis) {
       box.vis = vis;
       r.style.visibility = vis;
     }
@@ -167,14 +251,16 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
       r.style.height = height;
     }
     if (compact.current) {
-      const compactO = (1 - clamp01(p * 2.5)).toFixed(3);
+      // One caption at a time. The old crossfade kept the chip and the note
+      // both above 0.05 while the box was still growing.
+      const compactO = ended || p >= 0.5 ? '0' : '1';
       if (box.compact !== compactO) {
         box.compact = compactO;
         compact.current.style.opacity = compactO;
       }
     }
     if (full.current) {
-      const fullO = clamp01(p * 1.6 - 0.4).toFixed(3);
+      const fullO = ended || p < 0.5 ? '0' : '1';
       const fullS = `scale(${(0.94 + 0.06 * p).toFixed(4)})`;
       if (box.fullO !== fullO) {
         box.fullO = fullO;
@@ -189,22 +275,42 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
     const sig = castSignature(members);
     const frame = frameFor(members, features, t, motion);
     frameRef.current = frame;
+    const scrubbingNow = isPhone() && !!r.closest('.song')?.classList.contains('is-scrubbing');
+    // Desktop included: a presence commit during a drag was a doubled frame.
+    const finger = !!r.closest('.song')?.classList.contains('is-scrubbing');
     if (!bisect('instruments')) {
-      if (!bisect('react') && sig !== castSig.current) {
+      // A scrub already moves the plate through this updater. A React commit
+      // on every presence step was the long frame (the phone scrub budget).
+      if (!finger && !bisect('react') && sig !== castSig.current) {
         castSig.current = sig;
         setCast(members);
-      } else if (p > 0.02) {
-        stageRef.current?.pose(frame);
       }
+      if (isPhone()) {
+        const heroCount = members.filter((m) => m.place === 'hero').length;
+        const nextPage = rosterPageAt(t, section.start, heroCount);
+        if (nextPage !== rosterPageRef.current) {
+          rosterPageRef.current = nextPage;
+          setRosterPage(nextPage);
+        }
+      }
+      // The figure opacity is this frame's presence. Skipping the pose while
+      // the finger moved left the engraving at the section-start value, which
+      // is 0, so an instrumental passage drew only its chip. A block that was
+      // lit and then fell quiet still needs one pose: otherwise the plates
+      // keep the opacity and the halo from the moment under the finger.
+      if (p > 0.02 || scrubbingNow || plateLit.current) stageRef.current?.pose({ ...frame, block: p });
+      plateLit.current = p > 0.02;
     }
     const steps = 50;
     const q = (v: number) => Math.round(v * steps) / steps;
     const next = { progress: q(motion === 'off' ? 1 : clamp01((t - (cue.start - 0.3)) / 2.6)), presence: q(p) };
     const cur = animRef.current;
-    if (!bisect('react') && (next.presence !== cur.presence || next.progress !== cur.progress)) {
+    if (!finger && !bisect('react') && (next.presence !== cur.presence || next.progress !== cur.progress)) {
       animRef.current = next;
       setAnim(next);
     }
+    // The footnote is not part of the block height: stage geometry stays put.
+    if (!ended && Math.abs(d) < 0.5 && p >= 0.5 && !scrubbingNow) syncInstNote(r);
     if (count.current && p > 0.01 && timed) {
       const left = (nextVocal?.start ?? cue.end) - t;
       const txt = nextVocal ? `Голос через ${formatTime(Math.max(0, left))}` : `До конца ${formatTime(Math.max(0, cue.end - t))}`;
@@ -221,14 +327,17 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
         {title ? '' : ` ${names.join(' · ')}`}
       </div>
       <div ref={full} className="fb-inst-full" style={{ height: fullH }}>
-        {(heroes.length > 0 && !bisect('instruments') && (isPhone() || anim.presence > 0.02)) && (
+        {(platesOn && heroes.length > 0 && !bisect('instruments') && (isPhone() || anim.presence > 0.02)) && (
           <InstrumentStage
             ref={stageRef}
-            keys={heroes.map((m) => m.key)}
+            keys={shownHeroes.map((m) => m.key)}
             echoes={echoes.map((m) => ({ key: m.key }))}
-            performers={heroes.map((m) => (m.source >= 0 ? credited[m.source] ?? '' : ''))}
-            presences={heroes.map((m) => m.presence)}
+            performers={shownHeroes.map((m) => (m.source >= 0 ? credited[m.source] ?? '' : ''))}
+            presences={shownHeroes.map((m) => m.presence)}
             mode={section.layout ?? 'auto'}
+            fitRoster
+            spectacle={spectacle}
+            wrapNames={!wide}
             progress={1}
             presence={anim.presence}
             energy={0}
@@ -236,6 +345,11 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
           />
         )}
         <div className="fb-inst-text">
+          {phoneRoster && (
+            <p className="fb-inst-roster t-footnote">
+              {shownHeroes.length} из {heroes.length} · остальные по ходу
+            </p>
+          )}
           {section.mode && <div className="t-footnote fb-inst-mode">{section.mode}</div>}
           {section.note && <p className="t-callout fb-inst-note">{section.note}</p>}
           {timed && <span ref={count} className="fb-inst-count t-footnote tabular" />}

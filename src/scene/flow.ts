@@ -59,21 +59,39 @@ export function flowPosition(plan: FlowPlan, t: number): number {
   return i - 1 + easeInOut(clamp01((t - begins[i]) / moves[i]));
 }
 
-/** Size of a non-current line relative to the current one. */
-export const SMALL = 0.62;
+/** Size of the nearest non-current line. The current line is the only large object; the ones after it step down. */
+export const SMALL = 0.58;
+/** Size once a line is two steps away. Still present, no longer a second verse. */
+const FAR = 0.44;
+
+/**
+ * How much of an instrumental passage is the picture.
+ * Before `start` the flow eases it in. Once the passage has started it is fully
+ * on stage, and once it has ended it leaves. A move that straddles `start`
+ * used to freeze both captions on the shared boundary.
+ */
+export function instPresence(t: number, start: number, end: number, flow: number): number {
+  if (t >= end) return 0;
+  if (t >= start) return 1;
+  return flow;
+}
 
 /** Visual state of a block at distance d from the current position (d = index − position). */
 export function blockState(d: number) {
   const a = Math.abs(d);
-  const scale = a >= 1 ? SMALL : 1 - (1 - SMALL) * a;
+  // One size for the line in the light. The next line is clearly smaller, and the one after that steps down again.
+  const scale = a >= 2 ? FAR : a >= 1 ? lerp(SMALL, FAR, a - 1) : 1 - (1 - SMALL) * a;
+  // The current line stays at full ink. Everything else recedes, including the line that just left.
   let opacity: number;
-  if (d >= 0) opacity = d <= 1 ? 1 : d <= 3 ? 1 - 0.3 * (d - 1) : Math.max(0, 0.4 - 0.4 * (d - 3));
-  else opacity = a <= 1 ? 1 - 0.6 * a : Math.max(0, 0.4 - 0.4 * (a - 1));
-  const blur = d < -0.3 ? Math.min(2, (a - 0.3) * 2) : d > 1.3 ? Math.min(1.2, (d - 1.3) * 1.2) : 0;
-  /** Translation: full for the current line, readable for the next one, gone for the rest. */
-  const sub = d >= 0 ? (d <= 1 ? 1 - 0.4 * d : Math.max(0, 0.6 * (2 - d))) : clamp01(1 + d * 1.6);
+  if (a <= 0.2) opacity = 1;
+  else if (a <= 1) opacity = lerp(1, 0.36, (a - 0.2) / 0.8);
+  else if (a <= 2.5) opacity = lerp(0.36, 0.16, (a - 1) / 1.5);
+  else opacity = 0.14;
+  const blur = a < 1.15 ? 0 : d < 0 ? Math.min(1.6, (a - 1.15) * 1.4) : Math.min(1, (a - 1.15) * 0.8);
+  // The translation belongs to the current line only. By the next line it is gone, so the column is not pairs of equal blocks.
+  const sub = a <= 0.2 ? 1 : a <= 0.9 ? lerp(1, 0, (a - 0.2) / 0.7) : 0;
   /** Share of the translation's height the layout reserves (it fades inside that room). */
-  const subRoom = d >= 0 ? clamp01(2 - d) : clamp01(1 + d);
+  const subRoom = a <= 0.35 ? 1 : a <= 1.05 ? lerp(1, 0, (a - 0.35) / 0.7) : 0;
   /** Instrument blocks: 1 = full stage, 0 = the compact "next" chip. */
   const presence = clamp01(1 - a);
   return { scale, opacity, blur, sub, subRoom, presence };
@@ -89,7 +107,8 @@ export interface Measure {
   full?: number;
 }
 
-export const GAP = 26;
+/** Space between clusters. The translation sits inside its line, so this gap is the verse break. */
+export const GAP = 44;
 
 export function blockHeight(m: Measure | undefined, d: number) {
   const s = blockState(d);
@@ -102,7 +121,7 @@ export function blockHeight(m: Measure | undefined, d: number) {
  * Tops of the blocks when `anchor` is exactly current: the current block's centre sits at
  * `centerY` (but never above `minTop`); the others stack below and above it.
  */
-export function layoutAt(anchor: number, indices: number[], m: Map<number, Measure>, centerY: number, minTop: number, room: (k: number) => number = () => 0) {
+export function layoutAt(anchor: number, indices: number[], m: Map<number, Measure>, centerY: number, minTop: number, room: (k: number) => number = () => 0, gap = GAP) {
   const tops = new Map<number, number>();
   if (!indices.length) return tops;
   const first = indices[0];
@@ -110,9 +129,125 @@ export function layoutAt(anchor: number, indices: number[], m: Map<number, Measu
   const cur = Math.max(first, Math.min(last, anchor));
   const h = (k: number) => blockHeight(m.get(k), k - anchor);
   tops.set(cur, Math.max(minTop, centerY - h(cur) / 2));
-  for (let k = cur + 1; k <= last; k++) tops.set(k, tops.get(k - 1)! + h(k - 1) + GAP + room(k));
-  for (let k = cur - 1; k >= first; k--) tops.set(k, tops.get(k + 1)! - GAP - room(k + 1) - h(k));
+  for (let k = cur + 1; k <= last; k++) tops.set(k, tops.get(k - 1)! + h(k - 1) + gap + room(k));
+  for (let k = cur - 1; k >= first; k--) tops.set(k, tops.get(k + 1)! - gap - room(k + 1) - h(k));
   return tops;
+}
+
+/**
+ * Pull a stack up so the anchor block ends inside the stage.
+ * A line centred in a box that runs under the dock was cut by the floor.
+ * The top of the anchor never goes above 8 px. Returns the same map when it already fits.
+ */
+export function keepInStage(tops: Map<number, number>, anchor: number, height: number, stageH: number, pad = 16): Map<number, number> {
+  const top = tops.get(anchor);
+  if (top == null || !(stageH > 0) || !(height > 0)) return tops;
+  const overflow = top + height - (stageH - pad);
+  if (overflow <= 0) return tops;
+  const shift = Math.min(overflow, Math.max(0, top - 8));
+  if (shift <= 0) return tops;
+  const out = new Map<number, number>();
+  for (const [k, y] of tops) out.set(k, y - shift);
+  return out;
+}
+
+/**
+ * On a short stage the verse gap parks the previous compact block (a section
+ * kicker) above the stage, where the status pill sits. Seat that neighbour
+ * back inside when the anchor can move down, and park any block that still
+ * crosses the pill or the floor note off the viewport. Tall stages are unchanged.
+ */
+export function clearBand(
+  tops: Map<number, number>,
+  pos: number,
+  heights: Map<number, number>,
+  stageH: number,
+  stageTop: number,
+  viewH: number,
+  parkOverflow = true,
+): Map<number, number> {
+  if (!(stageH > 0) || stageH >= 280 || tops.size === 0) return tops;
+  const out = new Map(tops);
+  let held = 0;
+  let best = Infinity;
+  for (const k of out.keys()) {
+    const d = Math.abs(k - pos);
+    if (d < best) {
+      best = d;
+      held = k;
+    }
+  }
+  const heldH = heights.get(held) ?? 0;
+  let heldTop = out.get(held) ?? 0;
+  const floor = stageH - 12;
+  let above: number | null = null;
+  for (const k of out.keys()) {
+    if (k < held && (above == null || k > above)) above = k;
+  }
+  if (above != null) {
+    const aboveH = heights.get(above) ?? 0;
+    const aboveTop = out.get(above) ?? 0;
+    // Only a compact neighbour (the section kicker). A full line stays on the stack.
+    if (aboveTop < 0 && aboveH > 0 && aboveH <= 72) {
+      const gap = 8;
+      const wantHeld = 8 + aboveH + gap;
+      const delta = wantHeld - heldTop;
+      if (delta <= 0) out.set(above, heldTop - gap - aboveH);
+      else if (heldTop + delta + heldH <= floor) {
+        for (const [k, y] of out) {
+          if (k === above) out.set(k, 8);
+          else if (y >= heldTop - 0.5) out.set(k, y + delta);
+        }
+        heldTop += delta;
+      } else out.set(above, -stageTop - aboveH - 8);
+    }
+  }
+  const belowAt = viewH - stageTop + 8;
+  for (const [k, y] of [...out]) {
+    if (k === held) continue;
+    const h = heights.get(k) ?? 0;
+    const top = out.get(k) ?? y;
+    // The floor note starts about 40 px under the stage. A block past that band covers it.
+    // A wide landscape phone opts out: that band is the lower half, and the next line belongs there.
+    if (parkOverflow && top > heldTop && top + h > stageH + 32) out.set(k, belowAt);
+    else if (top < -6) out.set(k, -stageTop - h - 8);
+  }
+  return out;
+}
+
+/**
+ * A block the stage would cut is parked fully outside. The current block stays:
+ * the caller seats it. `mask` is the top fade; a line in that fade is cut too.
+ * Tall stages used to return the stack unchanged, and the next line left letter tops.
+ */
+export function concealCut(
+  tops: Map<number, number>,
+  pos: number,
+  heights: Map<number, number>,
+  stageH: number,
+  mask = 32,
+): Map<number, number> {
+  if (!(stageH > 0) || tops.size === 0) return tops;
+  let held = 0;
+  let best = Infinity;
+  for (const k of tops.keys()) {
+    const d = Math.abs(k - pos);
+    if (d < best) {
+      best = d;
+      held = k;
+    }
+  }
+  const out = new Map(tops);
+  for (const [k, y] of tops) {
+    if (k === held) continue;
+    const h = heights.get(k) ?? 0;
+    if (!(h > 1)) continue;
+    const bottom = y + h;
+    if (bottom <= 0.5 || y >= stageH - 0.5) continue;
+    if (y >= mask - 0.5 && bottom <= stageH + 0.5) continue;
+    out.set(k, y + h * 0.5 < stageH * 0.5 ? -h - 16 : stageH + 16);
+  }
+  return out;
 }
 
 /** Extra space above a block for the "next line in N s" hint. */
@@ -211,14 +346,14 @@ export function scriptShift(d: number, rtl: boolean, stageW: number, motionOff: 
 export function entranceOpacity(d: number, entrance: LineEntrance, flowOpacity: number): number {
   if (entrance === 'flow') return flowOpacity;
   const a = Math.abs(d);
-  // Settle: the current line is the light. Neighbours stay faint so they do not compete with it.
+  // Settle is the default. The current line is the light; the next one is already quiet, and none of them vanish.
   if (entrance === 'settle') {
-    if (a <= 0.35) return 1;
-    if (a <= 0.75) return lerp(1, 0.1, (a - 0.35) / 0.4);
-    return Math.max(0, 0.1 * (1 - (a - 0.75) / 0.65));
+    if (a <= 0.2) return 1;
+    if (a <= 1) return lerp(1, 0.36, (a - 0.2) / 0.8);
+    return Math.max(0.18, 0.36 - 0.08 * (a - 1));
   }
-  // Script: the line travelling in from the writing side stays readable until it arrives.
+  // Script: the line travelling in from the writing side is readable, then drops to the same quiet neighbour.
   if (a <= 0.35) return 1;
-  if (a <= 1.05) return 0.5 + 0.5 * (1 - (a - 0.35) / 0.7);
-  return Math.max(0, 0.28 * (1 - (a - 1.05) / 0.9));
+  if (a <= 1.05) return lerp(1, 0.4, (a - 0.35) / 0.7);
+  return Math.max(0.22, 0.4 - 0.08 * (a - 1.05));
 }

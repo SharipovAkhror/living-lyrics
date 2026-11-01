@@ -1,8 +1,21 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from './icons';
-import { PHONE_SPRING, SPRING, springSettled, stepSpring, type SpringState } from './spring';
-import { isPhone } from './phone';
+import { GlassLayers } from './glass/Glass';
+import { SHEET_GLASS_MS, SHEET_SHELL_MS } from '@/scene/cover';
+import { SHEET_CLOSE, SHEET_OPEN, springSettled, stepSpring, type SpringState } from './spring';
+
+const PC_FORM = '(min-width: 1100px)';
+
+function subscribeForm(onChange: () => void) {
+  const mq = window.matchMedia(PC_FORM);
+  mq.addEventListener('change', onChange);
+  return () => mq.removeEventListener('change', onChange);
+}
+
+function pcFormNow() {
+  return window.matchMedia(PC_FORM).matches;
+}
 
 function motionOff() {
   if (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
@@ -11,8 +24,51 @@ function motionOff() {
 
 function clearSheetChrome() {
   delete document.documentElement.dataset.sheet;
+  delete document.documentElement.dataset.cover;
   document.documentElement.classList.remove('is-sheet-drag');
   document.documentElement.style.removeProperty('--sheet-p');
+  document.querySelectorAll<HTMLElement>('.song').forEach((node) => {
+    node.style.transform = '';
+  });
+  document.getElementById('ll-sheet-flat')?.remove();
+}
+
+/** While the page is scaling, live blur resamples every frame. Thick fills until the sheet has gone. */
+function flattenSheetFilters() {
+  if (document.getElementById('ll-sheet-flat')) return;
+  const style = document.createElement('style');
+  style.id = 'll-sheet-flat';
+  style.textContent = 'html[data-sheet="1"],html[data-sheet="1"] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}';
+  document.head.append(style);
+}
+
+/** The translate already painted on the sheet, in CSS px. The next spring step is not on the element yet. */
+function paintedY(el: HTMLElement): number {
+  const m = /translate3d\(\s*0(?:px)?\s*,\s*(-?[\d.]+)px/.exec(el.style.transform);
+  return m ? Number(m[1]) : 0;
+}
+
+/**
+ * Translate that keeps the sheet top 16 px under the fading note card.
+ * Null when the card is not fading. The first paint uses it, so the bottom
+ * edge is already drawn while the card is still on its way out (D22).
+ */
+function parkBelowCard(el: HTMLElement): number | null {
+  if (document.documentElement.dataset.noteFade !== '1') return null;
+  const card = document.querySelector('.note-card');
+  if (!(card instanceof HTMLElement)) return null;
+  const cardBox = card.getBoundingClientRect();
+  if (cardBox.height < 8) return null;
+  // The rest pose is translate 110%. paintedY only reads a px offset, so a
+  // percent transform would be measured as the visual top and the park would
+  // come out negative, throwing the sheet over the card.
+  const prev = el.style.transform;
+  const px = /translate3d\(\s*0(?:px)?\s*,\s*-?[\d.]+px/.test(prev);
+  if (!px) el.style.transform = 'translate3d(0, 0px, 0)';
+  const layoutTop = el.getBoundingClientRect().top - (px ? paintedY(el) : 0);
+  if (!px) el.style.transform = prev;
+  const minY = cardBox.bottom + 16 - layoutTop;
+  return Number.isFinite(minY) ? minY : null;
 }
 
 /* ---------- Sheet: glass panel, spring in, drag down to dismiss ---------- */
@@ -25,6 +81,7 @@ export function Sheet({
   size = 'medium',
   onBack,
   backLabel,
+  plain = false,
 }: {
   open: boolean;
   onClose: () => void;
@@ -33,12 +90,15 @@ export function Sheet({
   size?: 'medium' | 'large';
   onBack?: () => void;
   backLabel?: string;
+  /** First frame of an opening sheet: the shell only, no glass layers. */
+  plain?: boolean;
 }) {
   const [render, setRender] = useState(open);
   const [shown, setShown] = useState(false);
   const panel = useRef<HTMLDivElement>(null);
   const backdrop = useRef<HTMLDivElement>(null);
   const body = useRef<HTMLDivElement>(null);
+  const height = useRef(1);
   const state = useRef<SpringState>({ x: 900, v: 0 });
   const target = useRef(0);
   const raf = useRef(0);
@@ -53,24 +113,111 @@ export function Sheet({
     pointer: number;
   } | null>(null);
   const titleId = useId();
+  const form = useSyncExternalStore(subscribeForm, pcFormNow, () => false);
+  const formRef = useRef(form);
+  formRef.current = form;
+  const plainRef = useRef(plain);
+  plainRef.current = plain;
   openRef.current = open;
+  // Last painted top of the shell, so the row commit can put the top back.
+  const shellTop = useRef<number | null>(null);
+  // Layout top without the spring's translate. Later frames add the travel
+  // instead of measuring the sheet while it moves.
+  const shellBase = useRef<number | null>(null);
+  const songScale = useRef('');
+  const lockedTop = useRef<number | null>(null);
+  const openedAt = useRef(0);
+  const glassTimer = useRef(0);
+  const prevHeight = useRef(0);
+  const rowHeld = useRef(false);
+
+  const remember = () => {
+    const el = panel.current;
+    if (el) height.current = Math.max(1, el.offsetHeight);
+  };
 
   const paint = (y: number) => {
     const el = panel.current;
     if (!el) return;
-    const travel = Math.max(0, y);
+    // A PC form is centred by CSS. It does not ride the phone spring or scale the page.
+    if (formRef.current) {
+      el.style.removeProperty('transform');
+      if (backdrop.current) backdrop.current.style.opacity = plainRef.current ? '0' : openRef.current ? '1' : '0';
+      const song = document.querySelector('.song');
+      if (song instanceof HTMLElement) song.style.transform = '';
+      document.documentElement.style.removeProperty('--sheet-p');
+      if (!openRef.current) delete document.documentElement.dataset.sheet;
+      return;
+    }
+    // Negative y is the upward rubber-band. The scrim follows only the downward travel.
+    const travel = y;
     el.style.transform = `translate3d(0, ${travel.toFixed(2)}px, 0)`;
-    const h = el.offsetHeight || 1;
-    const p = Math.max(0, Math.min(1, 1 - travel / h));
-    if (backdrop.current) backdrop.current.style.opacity = p.toFixed(3);
+    // The shell frame is a flat fill. Blur, shadow and the glass layers come
+    // with the rows; they are what made the first cast frame late.
+    if (plainRef.current) {
+      el.dataset.shell = '1';
+      el.style.background = 'var(--sheet-fallback)';
+      el.style.boxShadow = 'none';
+      el.style.backdropFilter = 'none';
+      el.style.setProperty('-webkit-backdrop-filter', 'none');
+    } else if (el.dataset.shell) {
+      delete el.dataset.shell;
+      el.style.removeProperty('background');
+      el.style.removeProperty('box-shadow');
+      el.style.removeProperty('backdrop-filter');
+      el.style.removeProperty('-webkit-backdrop-filter');
+    }
+    const p = Math.max(0, Math.min(1, 1 - Math.max(0, travel) / height.current));
+    // The scrim is a full-viewport blend. It waits until the shell's frame has
+    // been painted; darkening the song on the tap frame was the slow paint.
+    if (backdrop.current) backdrop.current.style.opacity = plainRef.current ? '0' : p.toFixed(3);
     const root = document.documentElement;
-    // On a phone the page under the sheet does not scale, so this variable would only
-    // restyle the whole stage on the frame the sheet opens.
-    if (!isPhone()) root.style.setProperty('--sheet-p', p.toFixed(3));
-    // Stay covered for the whole open, including the first frame where the sheet is still off-screen.
-    // Clearing here used to wake the sky under the blur while the sheet was travelling.
-    if (openRef.current || p > 0.02) root.dataset.sheet = '1';
-    else delete root.dataset.sheet;
+    // The scale is an inline transform on the song. A root custom property
+    // inherits, so writing it every frame restyled the whole page.
+    const song = document.querySelector('.song');
+    if (!plainRef.current && song instanceof HTMLElement) {
+      const next = p <= 0.02 ? '' : `scale(${(1 - 0.08 * p).toFixed(4)})`;
+      if (songScale.current !== next) {
+        songScale.current = next;
+        song.style.transform = next;
+      }
+      if (p > 0.02) {
+        if (root.style.getPropertyValue('--sheet-p') !== '1') root.style.setProperty('--sheet-p', '1');
+      } else root.style.removeProperty('--sheet-p');
+    } else if (!(song instanceof HTMLElement)) {
+      root.style.setProperty('--sheet-p', p.toFixed(3));
+    }
+    // The page scale waits until the frame after the shell is drawn. On the tap
+    // frame it pushed WebKit's first paint past 100 ms. Once the cover is on,
+    // it stays until the sheet has left: clearing it mid-flight woke the sky.
+    if (!openRef.current && p <= 0.02) delete root.dataset.sheet;
+    // Refraction waits until the spring has arrived. Toggling it mid-flight resamples every frame.
+    // The lens is armed after the row entrance, not on this frame. A filter
+    // while the rows still move resamples the page on every desktop frame.
+    const moving = !(openRef.current && travel >= 0 && travel < 0.8);
+    if (moving && el.classList.contains('is-settled')) el.classList.remove('is-settled');
+  };
+
+  const clearGlassTimer = () => {
+    if (glassTimer.current) window.clearTimeout(glassTimer.current);
+    glassTimer.current = 0;
+  };
+
+  const armGlass = () => {
+    clearGlassTimer();
+    const el = panel.current;
+    if (!el || !openRef.current) return;
+    if (motionOff()) {
+      el.classList.add('is-settled');
+      return;
+    }
+    const wait = Math.max(0, SHEET_GLASS_MS - (performance.now() - openedAt.current));
+    glassTimer.current = window.setTimeout(() => {
+      glassTimer.current = 0;
+      const node = panel.current;
+      if (!node || !openRef.current || state.current.x > 0.8) return;
+      node.classList.add('is-settled');
+    }, wait);
   };
 
   const stop = () => {
@@ -83,18 +230,45 @@ export function Sheet({
     let last = performance.now();
     const tick = (now: number) => {
       if (drag.current?.active) return;
-      const dt = Math.min(0.032, (now - last) / 1000);
+      const elNow = panel.current;
+      // The shell's top before the rows exist. Measured once; the spring's
+      // own translate updates it. A read on every frame laid the song out again.
+      if (elNow && plainRef.current) {
+        if (shellBase.current == null) shellBase.current = elNow.getBoundingClientRect().top - state.current.x;
+        shellTop.current = shellBase.current + state.current.x;
+      } else shellBase.current = null;
+      // Rows fade in over the next frames. The growth was already pinned.
+      // Opacity does not move the box, so the spring just holds (D33).
+      if (elNow && elNow.dataset.rowLock === '1' && lockedTop.current != null) {
+        state.current.v = 0;
+        last = now;
+        paint(state.current.x);
+        raf.current = requestAnimationFrame(tick);
+        return;
+      }
+      // The closed form is exact, so a slow WebKit frame may take its whole gap.
+      // Capping at 32 ms made the sheet wait out the cast instead of the spring.
+      const dt = Math.min(0.1, (now - last) / 1000);
       last = now;
-      state.current = stepSpring(state.current, target.current, dt, isPhone() ? PHONE_SPRING : SPRING);
+      const spec = target.current > 1 ? SHEET_CLOSE : SHEET_OPEN;
+      state.current = stepSpring(state.current, target.current, dt, spec);
+      // The note fades on its own clock. The sheet may already be on screen
+      // below the card; its top stays there until the fade ends (D22).
+      const el = panel.current;
+      if (el && target.current <= 1 && openRef.current) {
+        const minY = parkBelowCard(el);
+        if (minY != null && state.current.x < minY) state.current = { x: minY, v: 0 };
+      }
       paint(state.current.x);
       if (springSettled(state.current, target.current)) {
         state.current = { x: target.current, v: 0 };
         paint(target.current);
         if (!openRef.current && target.current > 1) {
+          clearGlassTimer();
           setShown(false);
           setRender(false);
           clearSheetChrome();
-        }
+        } else if (openRef.current) armGlass();
         return;
       }
       raf.current = requestAnimationFrame(tick);
@@ -104,67 +278,87 @@ export function Sheet({
 
   useEffect(() => {
     if (!open) return;
-    document.documentElement.dataset.sheet = '1';
     setRender(true);
+    const id = window.setTimeout(() => {
+      document.documentElement.dataset.sheet = '1';
+      flattenSheetFilters();
+    }, SHEET_SHELL_MS);
+    return () => window.clearTimeout(id);
   }, [open]);
 
-  // A phone sheet is in place before the first paint. The stiff spring was one
-  // long frame per step, so the title arrived late and the scroller dropped frames.
   useLayoutEffect(() => {
-    if (!isPhone() || motionOff()) return;
-    if (!open) {
-      if (render) {
-        setShown(false);
-        setRender(false);
-        clearSheetChrome();
-      }
-      return;
-    }
-    document.documentElement.dataset.sheet = '1';
-    if (!render) {
-      setRender(true);
-      return;
-    }
-    if (!panel.current) return;
-    stop();
-    state.current = { x: 0, v: 0 };
-    paint(0);
-    setShown(true);
-  }, [open, render]);
-
-  useEffect(() => {
-    if (isPhone() && !motionOff()) return;
     if (!render || !panel.current) return;
     const el = panel.current;
-    const away = () => el.offsetHeight + 48;
+    remember();
+    // Phone sheets are a dense fill. The lens still blurred the song behind it,
+    // and that sample was on the tap frame.
+    if (document.documentElement.dataset.phone === '1') {
+      const lens = el.querySelector('.lg-lens');
+      if (lens instanceof HTMLElement) {
+        lens.style.backdropFilter = 'none';
+        lens.style.setProperty('-webkit-backdrop-filter', 'none');
+      }
+    }
+    const away = () => height.current + 48;
+    const ro = new ResizeObserver(() => remember());
+    ro.observe(el);
     if (motionOff()) {
       stop();
       state.current = { x: 0, v: 0 };
       paint(0);
-      if (open) setShown(true);
-      else {
+      if (open) {
+        if (!shown) openedAt.current = performance.now();
+        setShown(true);
+        armGlass();
+      } else {
+        clearGlassTimer();
         setShown(false);
         const timer = window.setTimeout(() => {
           setRender(false);
           clearSheetChrome();
         }, 200);
-        return () => window.clearTimeout(timer);
+        return () => {
+          window.clearTimeout(timer);
+          ro.disconnect();
+          clearGlassTimer();
+        };
       }
-      return;
+      return () => {
+        ro.disconnect();
+        clearGlassTimer();
+      };
     }
     if (open) {
       if (!shown) {
-        const from = away();
+        openedAt.current = performance.now();
+        clearGlassTimer();
+        el.classList.remove('is-settled');
+        // CSS parks the sheet at 110%. Painting here, before the browser frame,
+        // puts the bottom edge on that first frame instead of springing up to it.
+        const awayFrom = away();
+        const parked = height.current > 80 ? parkBelowCard(el) : null;
+        let from = parked != null && parked >= 0 && parked < awayFrom ? parked : awayFrom;
+        // Rows arrive after SHEET_SHELL_MS, so this shell is short and `away`
+        // would park it entirely past the bottom edge. The tap's first paint
+        // has to cross the player band (D28). A 48 px strip stays on screen.
+        const onScreen = Math.max(0, height.current - 48);
+        if (from > onScreen) from = onScreen;
         state.current = { x: from, v: 0 };
         paint(from);
       }
       target.current = 0;
       setShown(true);
     } else {
+      clearGlassTimer();
+      el.classList.remove('is-settled');
       target.current = away();
     }
     loop();
-    return () => stop();
+    return () => {
+      ro.disconnect();
+      stop();
+      clearGlassTimer();
+    };
     // `shown` is intentionally read once per open, not a dependency: including it restarts the spring.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, render]);
@@ -183,11 +377,51 @@ export function Sheet({
     };
   }, [open, onClose]);
 
-  useEffect(() => () => clearSheetChrome(), []);
+  useEffect(() => () => {
+    clearGlassTimer();
+    clearSheetChrome();
+  }, []);
+
+  // The shell is short and anchored to the bottom. Rows grow it upward on the
+  // same translate, so the commit itself can cross the note. The spring only
+  // parks on the next frame. Hold the top under the card before paint (D5, D22).
+  // The same commit pins the top to the shell's last frame, so the rows do not
+  // move the edge (D33). The fade that follows holds it from the spring tick.
+  useLayoutEffect(() => {
+    const el = panel.current;
+    if (!el || !openRef.current) {
+      rowHeld.current = false;
+      prevHeight.current = 0;
+      lockedTop.current = null;
+      return;
+    }
+    const beforeH = prevHeight.current;
+    const beforeTop = shellTop.current;
+    remember();
+    const minY = parkBelowCard(el);
+    if (minY != null && state.current.x < minY) {
+      state.current = { x: minY, v: 0 };
+      paint(minY);
+    }
+    const grew = !rowHeld.current && beforeH > 40 && el.offsetHeight - beforeH > 8 && !!el.querySelector('.row');
+    if (grew) {
+      if (beforeTop != null) {
+        const dy = el.getBoundingClientRect().top - beforeTop;
+        if (Math.abs(dy) > 0.5) {
+          state.current = { x: state.current.x - dy, v: 0 };
+          paint(state.current.x);
+        }
+      }
+      rowHeld.current = true;
+      lockedTop.current = el.getBoundingClientRect().top;
+    }
+    prevHeight.current = el.offsetHeight;
+  });
 
   if (!render) return null;
 
   const onDown = (e: ReactPointerEvent) => {
+    if (formRef.current) return;
     const t = e.target as HTMLElement;
     if (t.closest('button, a, input, textarea, select, label, [role="switch"], [role="radio"]')) return;
     const scroller = body.current;
@@ -233,7 +467,10 @@ export function Sheet({
     d.v = (e.clientY - d.lastY) / dt;
     d.lastY = e.clientY;
     d.lastT = now;
-    const y = Math.max(0, e.clientY - d.y0);
+    const raw = e.clientY - d.y0;
+    const h = height.current;
+    // Down follows the finger, then resists past the sheet height. Up only stretches a little.
+    const y = raw < 0 ? raw * 0.28 : raw < h ? raw : h + (raw - h) * 0.32;
     state.current = { x: y, v: d.v * 1000 };
     paint(y);
   };
@@ -261,7 +498,7 @@ export function Sheet({
       <div ref={backdrop} className="sheet-backdrop" onClick={onClose} />
       <div
         ref={panel}
-        className={`sheet glass sheet--${size}`}
+        className={`sheet glass lg-host lg-host--sheet sheet--${size}${form ? ' sheet--form' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -271,8 +508,9 @@ export function Sheet({
         onPointerUp={onUp}
         onPointerCancel={onUp}
       >
+        {plain ? null : <GlassLayers />}
         <div className="sheet-head">
-          <div className="sheet-grabber" />
+          {form ? null : <div className="sheet-grabber" />}
           <div className="sheet-titlebar">
             {onBack ? (
               <button type="button" className="btn btn-plain sheet-back" onClick={onBack}>
@@ -285,8 +523,8 @@ export function Sheet({
             <h2 id={titleId} key={title} className="sheet-title t-headline">
               {title}
             </h2>
-            <button type="button" className="btn btn-circle sheet-close" onClick={onClose} aria-label="Закрыть">
-              <Icon name="xmark" size={16} />
+            <button type="button" className="sheet-done" onClick={onClose}>
+              Готово
             </button>
           </div>
         </div>
@@ -334,7 +572,11 @@ export function Row({
         {detail && <span className="row-detail t-footnote">{detail}</span>}
       </span>
       {children && <span className="row-accessory">{children}</span>}
-      {chevron && <Icon name="chevron.right" size={16} className="row-chevron" />}
+      {chevron && (
+        <svg className="row-chevron" width="7" height="12" viewBox="0 0 7 12" fill="none" aria-hidden="true">
+          <path d="M1 1L6 6L1 11" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
     </>
   );
   return onClick ? (

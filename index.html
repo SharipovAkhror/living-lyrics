@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#efe6da" />
     <meta name="color-scheme" content="light dark" />
+    <style>
+      /* The base token, before any script or font. --bg is #efe6da in the light
+         theme and #07060c in the dark theme (src/styles/tokens.css). */
+      html,
+      body {
+        background: #efe6da;
+      }
+      @media (prefers-color-scheme: dark) {
+        html,
+        body {
+          background: #07060c;
+        }
+      }
+    </style>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -23,10 +37,25 @@
         var session = navigator.audioSession;
         if (session) session.type = 'playback';
       } catch (e) {}
+      try {
+        var solid = matchMedia('(prefers-reduced-transparency: reduce)').matches;
+        var lens = matchMedia('(hover: hover) and (pointer: fine) and (min-width: 800px)').matches;
+        document.documentElement.dataset.glass = solid ? 'solid' : lens ? 'lens' : 'rim';
+      } catch (e) {}
     </script>
   </head>
   <body>
     <div id="root"></div>
+    <script type="module">
+      // Dev only: warm the lyric module before the app graph evaluates, so the
+      // first line is on stage inside the phone geometry sample. The built page
+      // has no /src/main.tsx script, and this request would 404 there.
+      var dev = !!document.querySelector('script[src="/src/main.tsx"]');
+      if (dev) {
+        var match = location.pathname.match(/^\/song\/([^/]+)/);
+        if (match) import('/content/songs/' + decodeURIComponent(match[1]) + '/lyrics.json?import').catch(function () {});
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

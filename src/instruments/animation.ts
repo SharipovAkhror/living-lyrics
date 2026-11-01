@@ -86,10 +86,13 @@ export const FAMILY_DRIVE: Record<InstrumentInfo['family'], { pulse: FeatureTrac
   ансамбль: { pulse: 'onset', sustain: 'loud' },
 };
 
-/** Brightness before the musical entrance. */
-export const LIFE_DIM = 0.35;
-/** Brightness after the entrance while this family's stem is silent. */
-export const LIFE_REST = 0.6;
+/**
+ * Ink before the musical entrance. The same bone white as a resting plate:
+ * a dim filter read as a flat grey silhouette. The halo is the sounding cue.
+ */
+export const LIFE_DIM = 1;
+/** Ink after the entrance while this family's stem is silent. Same as the waiting ink. */
+export const LIFE_REST = 1;
 /** How far a hit may scale the drawing: 1 + this. */
 export const HIT_SCALE = 0.04;
 
@@ -160,8 +163,8 @@ export interface PlateLife {
 
 /**
  * Brightness and halo for one plate. `playAt` is the musical entrance (`entries`), not the
- * moment the plate was placed. Before it the plate is dim and still. After it, brightness
- * rests near 0.60 and rises to 1 with the stem. `motionOff` keeps the brightness and drops the hit.
+ * moment the plate was placed. The ink stays bone white on either side of that entrance.
+ * After it, the halo rises with the stem. `motionOff` keeps the ink and drops the hit.
  */
 export function plateLife(
   f: AudioFeatures | null,

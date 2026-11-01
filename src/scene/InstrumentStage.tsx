@@ -33,6 +33,12 @@ export interface InstrumentStageProps {
   uniform?: boolean;
   /** At most this many plates. What does not fit is left out. */
   maxShown?: number;
+  /** Draw the whole roster. The gallery leaves this off and keeps the width cap. */
+  fitRoster?: boolean;
+  /** Desk interlude: same six plates, vertical padding pulled in so the drawings can reach 200px. */
+  spectacle?: boolean;
+  /** Reserve one more caption line so a performer name can wrap. */
+  wrapNames?: boolean;
   /** Cast presence 0…1 aligned with `keys`, for the first paint. Later frames come from `pose`. */
   presences?: number[];
   /** Draw-in progress 0…1 (contours, then hatching), a pure function of time. */
@@ -68,6 +74,12 @@ export interface StagePose {
   plates?: number[];
   /** Aligned with `echoes`. */
   echoes?: { drive: InstrumentDrive; presence: number }[];
+  /**
+   * Flow presence of the whole block (1 − |index − position|).
+   * The React prop lags: a phone slot keeps the presence it had at the
+   * section start, and a scrub does not commit. The pose uses this instead.
+   */
+  block?: number;
 }
 
 export interface InstrumentStageHandle {
@@ -156,7 +168,7 @@ function applyPlate(el: HTMLElement, drive: InstrumentDrive, time: number, opaci
 }
 
 export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStageProps>(function InstrumentStage(
-  { keys, performers, mode, uniform = false, maxShown, presences, progress, presence, size, energy = 0, time, drives, echoes, preserve = false, className, onLayout },
+  { keys, performers, mode, uniform = false, maxShown, fitRoster = false, spectacle = false, wrapNames = false, presences, progress, presence, size, energy = 0, time, drives, echoes, preserve = false, className, onLayout },
   ref,
 ) {
   const list = keys.length ? keys : ['ensemble'];
@@ -165,7 +177,7 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   const infos = list.map((k) => instrument(k));
   const players = useMemo(() => assignPerformers(list, performers), [list.join(), performers?.join()]); // eslint-disable-line react-hooks/exhaustive-deps
-  const lines = 1 + (infos.some((i) => i?.native) ? 1 : 0) + (players.some(Boolean) ? 1 : 0);
+  const lines = 1 + (infos.some((i) => i?.native) ? 1 : 0) + (players.some(Boolean) ? 1 : 0) + (wrapNames ? 1 : 0);
 
   const layout = useMemo(
     () =>
@@ -175,9 +187,11 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
         lines,
         uniform,
         maxShown,
+        fitRoster,
+        spectacle,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [n, size.w, size.h, mode, list.join(), lines, uniform, maxShown],
+    [n, size.w, size.h, mode, list.join(), lines, uniform, maxShown, fitRoster, spectacle],
   );
   useEffect(() => onLayout?.(layout), [layout, onLayout]);
 
@@ -357,10 +371,34 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
     const frame = poseRef.current;
     const host = hostRef.current;
     if (!frame || !host) return;
+    // The React style is the section-start presence. A commit after this pose
+    // would put the plate back at 0, so the layout effect writes the opacity
+    // again even when the motion variables have not changed.
+    const blockP = frame.block ?? presenceRef.current;
+    const plateOpacity = (el: HTMLElement) => {
+      const echoAt = el.dataset.echo;
+      if (echoAt != null) {
+        const item = frame.echoes?.[Number(echoAt)];
+        return item ? blockP * item.presence : 0;
+      }
+      // Phone art lives in a shadow root, so the figure carries the index.
+      const raw = el.dataset.plate ?? el.querySelector<HTMLElement>('.ist-art')?.dataset.slot;
+      const index = raw == null ? Number.NaN : Number(raw);
+      if (!Number.isFinite(index)) return null;
+      const slotOpacity = Number(el.dataset.opacity ?? '1');
+      const castP = frame.plates?.[index] ?? 1;
+      return blockP * castP * (Number.isFinite(slotOpacity) ? slotOpacity : 1);
+    };
+    host.querySelectorAll<HTMLElement>(':scope > .ist-plate').forEach((el) => {
+      const opacity = plateOpacity(el);
+      if (opacity == null) return;
+      const text = opacity.toFixed(3);
+      if (el.style.opacity !== text) el.style.opacity = text;
+      el.toggleAttribute('aria-hidden', opacity < 0.02);
+    });
     const sig = poseSignature(frame);
     if (sig === paintedRef.current) return;
     paintedRef.current = sig;
-    const blockP = presenceRef.current;
     host.querySelectorAll<HTMLElement>(':scope > .ist-plate').forEach((el) => {
       const echoAt = el.dataset.echo;
       if (echoAt != null) {
@@ -369,8 +407,8 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
         applyPlate(el, item.drive, frame.time, blockP * item.presence);
         return;
       }
-      const art = el.querySelector<HTMLElement>('.ist-art');
-      const index = Number(art?.dataset.slot);
+      const raw = el.dataset.plate ?? el.querySelector<HTMLElement>('.ist-art')?.dataset.slot;
+      const index = raw == null ? Number.NaN : Number(raw);
       const drive = frame.drives?.[index];
       if (!drive || !Number.isFinite(index)) return;
       const slotOpacity = Number(el.dataset.opacity ?? '1');
@@ -567,7 +605,7 @@ function Plate({
   } as CSSProperties;
   const { label, art } = slot;
   return (
-    <figure className={`ist-plate ist-plate--${slot.role} ist-t-${label.tier}`} style={style} data-opacity={slot.opacity ?? 1} aria-hidden={hidden || undefined}>
+    <figure className={`ist-plate ist-plate--${slot.role} ist-t-${label.tier}`} style={style} data-plate={slot.index} data-opacity={slot.opacity ?? 1} aria-hidden={hidden || undefined}>
       <Art
         svg={svg}
         suffix={idSuffix}
@@ -595,8 +633,19 @@ function Plate({
  * Rasterizing into a canvas was measured and reverted: the copy still climbed,
  * and the drawing went soft.
  */
+/** The static engraving rules of instruments.css, for the phone's shadow roots. Pose rules stay out. */
+const SHADOW_ART_CSS =
+  '.ist-art .h{opacity:var(--hatch,1)}.ist-art .fillin{opacity:calc(var(--hatch,1)*.12)}.ist-art .frame{opacity:calc(var(--hatch,1)*.3)}';
+
 function keepArt(mount: HTMLElement, key: string, svg: string) {
   const root = mount.shadowRoot ?? mount.attachShadow({ mode: 'open' });
+  // The page stylesheet does not reach a shadow root. Without these rules the
+  // fill-in plate painted at full ink and the qanun read as a flat white slab.
+  if (!root.querySelector('style')) {
+    const style = document.createElement('style');
+    style.textContent = SHADOW_ART_CSS;
+    root.appendChild(style);
+  }
   let node = root.querySelector<HTMLElement>(`[data-instrument="${key.replace(/"/g, '')}"]`);
   if (!node) {
     node = document.createElement('div');

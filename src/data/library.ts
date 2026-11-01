@@ -23,11 +23,35 @@ export function getSong(slug: string): Song | undefined {
   return songs.find((s) => s.slug === slug);
 }
 
-export async function loadLyrics(slug: string): Promise<Lyrics> {
-  const loader = lyricsModules[`/content/songs/${slug}/lyrics.json`];
-  if (!loader) throw new Error(`No lyrics for ${slug}`);
-  const raw = await loader();
-  return LyricsSchema.parse(raw);
+const lyricsPending = new Map<string, Promise<Lyrics>>();
+const lyricsReady = new Map<string, Lyrics>();
+
+/** Already parsed text, if a warm-up finished before the page rendered. */
+export function peekLyrics(slug: string): Lyrics | null {
+  return lyricsReady.get(slug) ?? null;
+}
+
+export function loadLyrics(slug: string): Promise<Lyrics> {
+  const ready = lyricsReady.get(slug);
+  if (ready) return Promise.resolve(ready);
+  const pending = lyricsPending.get(slug);
+  if (pending) return pending;
+  const job = (async () => {
+    const loader = lyricsModules[`/content/songs/${slug}/lyrics.json`];
+    if (!loader) throw new Error(`No lyrics for ${slug}`);
+    const raw = await loader();
+    const lyrics = LyricsSchema.parse(raw);
+    lyricsReady.set(slug, lyrics);
+    return lyrics;
+  })();
+  lyricsPending.set(slug, job);
+  return job;
+}
+
+// The song route needs the text before the page's effects. Start it as this module evaluates.
+if (typeof location !== 'undefined') {
+  const early = location.pathname.match(/^\/song\/([^/]+)/)?.[1];
+  if (early) void loadLyrics(decodeURIComponent(early));
 }
 
 export async function loadPeaks(url: string): Promise<Peaks | null> {

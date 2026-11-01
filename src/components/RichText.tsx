@@ -2,18 +2,20 @@ import { Fragment, type ReactNode } from 'react';
 import { stripHarakat } from '@/data/harakat';
 
 const ARABIC_RUN = /([؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿][؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿\s‌‏،؛]*[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿])/g;
+/** Letters the Quran face does not shape as Persian: peh, tcheh, jeh, gaf, keheh, heh-yeh, ae, farsi yeh. */
+const PERSIAN_LETTER = /[\u067E\u0686\u0698\u06AF\u06A9\u06C0\u06D5\u06CC]/;
 
-/** Wraps Arabic-script runs so they get the Mushaf face and correct direction inside Russian prose. */
+/** Wraps Arabic-script runs so they get the right face and direction inside Russian prose. */
 function arabic(text: string, key: string): ReactNode[] {
-  return text.split(ARABIC_RUN).map((part, i) =>
-    i % 2 === 1 ? (
-      <bdi key={`${key}-${i}`} className="rt-ar f-mushaf" dir="rtl" lang="ar">
+  return text.split(ARABIC_RUN).map((part, i) => {
+    if (i % 2 !== 1) return <Fragment key={`${key}-${i}`}>{part}</Fragment>;
+    const persian = PERSIAN_LETTER.test(part);
+    return (
+      <bdi key={`${key}-${i}`} className={`rt-ar ${persian ? 'f-persian' : 'f-mushaf'}`} dir="rtl" lang={persian ? 'fa' : 'ar'}>
         {part}
       </bdi>
-    ) : (
-      <Fragment key={`${key}-${i}`}>{part}</Fragment>
-    ),
-  );
+    );
+  });
 }
 
 /** Minimal inline markup for commentary: **bold**, *italic*, paragraphs separated by blank lines. */

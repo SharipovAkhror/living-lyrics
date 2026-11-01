@@ -45,7 +45,7 @@ a {
 }
 
 :focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--accent) 70%, transparent);
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -67,17 +67,17 @@ a {
 }
 
 /* ---------- Type styles (HIG text styles) ---------- */
-.t-large-title { font-family: var(--font-display); font-size: var(--t-large-title); font-weight: 700; line-height: 41px; letter-spacing: 0.4px; }
-.t-title1 { font-family: var(--font-display); font-size: var(--t-title1); font-weight: 700; line-height: 34px; letter-spacing: 0.38px; }
-.t-title2 { font-family: var(--font-display); font-size: var(--t-title2); font-weight: 700; line-height: 28px; letter-spacing: -0.26px; }
-.t-title3 { font-family: var(--font-display); font-size: var(--t-title3); font-weight: 600; line-height: 25px; letter-spacing: -0.45px; }
-.t-headline { font-size: var(--t-headline); font-weight: 600; line-height: 22px; letter-spacing: -0.43px; }
-.t-body { font-size: var(--t-body); line-height: 22px; letter-spacing: -0.43px; }
-.t-callout { font-size: var(--t-callout); line-height: 21px; letter-spacing: -0.31px; }
-.t-subhead { font-size: var(--t-subhead); line-height: 20px; letter-spacing: -0.23px; }
-.t-footnote { font-size: var(--t-footnote); line-height: 18px; letter-spacing: -0.08px; }
-.t-caption1 { font-size: var(--t-caption1); line-height: 18px; letter-spacing: 0; }
-.t-caption2 { font-size: var(--t-caption2); line-height: 18px; letter-spacing: 0.06px; }
+.t-large-title { font-family: var(--font-display); font-size: var(--t-large-title); font-weight: 700; line-height: 1.2; letter-spacing: 0.012em; }
+.t-title1 { font-family: var(--font-display); font-size: var(--t-title1); font-weight: 700; line-height: 1.21; letter-spacing: 0.014em; }
+.t-title2 { font-family: var(--font-display); font-size: var(--t-title2); font-weight: 700; line-height: 1.27; letter-spacing: -0.012em; }
+.t-title3 { font-family: var(--font-display); font-size: var(--t-title3); font-weight: 600; line-height: 1.25; letter-spacing: -0.022em; }
+.t-headline { font-size: var(--t-headline); font-weight: 600; line-height: 1.29; letter-spacing: -0.025em; }
+.t-body { font-size: var(--t-body); line-height: 1.29; letter-spacing: -0.025em; }
+.t-callout { font-size: var(--t-callout); line-height: 1.31; letter-spacing: -0.02em; }
+.t-subhead { font-size: var(--t-subhead); line-height: 1.33; letter-spacing: -0.015em; }
+.t-footnote { font-size: var(--t-footnote); line-height: 1.38; letter-spacing: -0.006em; }
+.t-caption1 { font-size: var(--t-caption1); line-height: 1.38; letter-spacing: 0; }
+.t-caption2 { font-size: var(--t-caption2); line-height: 1.38; letter-spacing: 0.004em; }
 .secondary { color: var(--label-2); }
 .tertiary { color: var(--label-3); }
 
@@ -216,13 +216,6 @@ a {
   opacity: 0.72;
 }
 
-/* Kept for any older call site. The song uses .btn-ring. */
-.btn-prominent {
-  border: 1.5px solid var(--accent);
-  color: var(--accent);
-  background: transparent;
-}
-
 /* Capsule text button */
 .btn-capsule {
   height: var(--btn-md);
@@ -233,8 +226,8 @@ a {
   letter-spacing: -0.23px;
 }
 .btn-capsule.btn-sm {
-  height: 32px;
-  min-height: 32px;
+  height: var(--hit);
+  min-height: var(--hit);
   padding: 0 var(--sp-3);
   font-size: var(--t-footnote);
 }
@@ -265,6 +258,13 @@ a {
 
 /* ---------- Reduce Motion: fades only, no travel and no spring. ---------- */
 @media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: var(--dur-fade);
+    --dur-2: var(--dur-fade);
+    --dur-3: var(--dur-fade);
+    --dur-4: var(--dur-fade);
+    --ease-spring: cubic-bezier(0.2, 0, 0, 1);
+  }
   *,
   *::before,
   *::after {
@@ -280,7 +280,63 @@ a {
   .tl-row,
   .group {
     transition-property: opacity !important;
-    transition-duration: 200ms !important;
+    transition-duration: var(--dur-fade) !important;
     animation: none !important;
   }
+  .btn:active:not(:disabled),
+  .util:active,
+  .lib-tile:active,
+  .lib-tile:hover,
+  .lib-tile:hover .lib-tile-cover,
+  .lib-hero:active,
+  .lib-hero:hover,
+  .lib-hero:hover .lib-hero-cover,
+  .lib-row:active,
+  .lib-row:hover,
+  .lib-row:hover .lib-row-cover,
+  .mark-btn:active,
+  .row--button:active {
+    transform: none;
+  }
+}
+/* The in-app "Без анимации" switch. The media query above does not see it. */
+html[data-motion='off'] {
+  --dur-1: var(--dur-fade);
+  --dur-2: var(--dur-fade);
+  --dur-3: var(--dur-fade);
+  --dur-4: var(--dur-fade);
+  --ease-spring: cubic-bezier(0.2, 0, 0, 1);
+}
+html[data-motion='off'] *,
+html[data-motion='off'] *::before,
+html[data-motion='off'] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+}
+html[data-motion='off'] .sheet-root,
+html[data-motion='off'] .sheet-backdrop,
+html[data-motion='off'] .set-page,
+html[data-motion='off'] .comment-body,
+html[data-motion='off'] .sky-leave,
+html[data-motion='off'] .tl-row,
+html[data-motion='off'] .group {
+  transition-property: opacity !important;
+  transition-duration: var(--dur-fade) !important;
+  animation: none !important;
+}
+html[data-motion='off'] .btn:active:not(:disabled),
+html[data-motion='off'] .util:active,
+html[data-motion='off'] .lib-tile:active,
+html[data-motion='off'] .lib-tile:hover,
+html[data-motion='off'] .lib-tile:hover .lib-tile-cover,
+html[data-motion='off'] .lib-hero:active,
+html[data-motion='off'] .lib-hero:hover,
+html[data-motion='off'] .lib-hero:hover .lib-hero-cover,
+html[data-motion='off'] .lib-row:active,
+html[data-motion='off'] .lib-row:hover,
+html[data-motion='off'] .lib-row:hover .lib-row-cover,
+html[data-motion='off'] .mark-btn:active,
+html[data-motion='off'] .row--button:active {
+  transform: none;
 }

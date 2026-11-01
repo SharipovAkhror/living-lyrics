@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { flushSync } from 'react-dom';
+import { sharedTransition } from './flight';
 
 export type Route =
   | { name: 'library' }
@@ -33,11 +34,23 @@ export function navigate(to: string, opts: { replace?: boolean } = {}) {
     window.scrollTo(0, 0);
     listeners.forEach((l) => l());
   };
-  const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const off = document.documentElement.dataset.motion === 'off';
-  const start = (document as Document & { startViewTransition?: (cb: () => void) => void }).startViewTransition;
-  if (!reduced && !off && typeof start === 'function') {
-    start.call(document, () => flushSync(apply));
+  const start = (
+    document as Document & {
+      startViewTransition?: (cb: () => void) => { finished?: Promise<void> };
+    }
+  ).startViewTransition;
+  // WebKit paints a black root snapshot when the filtered page is captured.
+  // The cover flies on its own image instead, on every browser.
+  const webkit = /AppleWebKit/.test(navigator.userAgent) && !/Chrome|Chromium|Edg\//.test(navigator.userAgent);
+  if (!webkit && sharedTransition() && typeof start === 'function') {
+    const root = document.documentElement;
+    // The snapshot of live filters is one long frame. Capture the flat fill, then restore.
+    root.dataset.vt = 'flat';
+    const transition = start.call(document, () => flushSync(apply));
+    const restore = () => {
+      if (root.dataset.vt === 'flat') delete root.dataset.vt;
+    };
+    transition?.finished?.then(restore, restore) ?? restore();
     return;
   }
   apply();

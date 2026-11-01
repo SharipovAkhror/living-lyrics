@@ -21,7 +21,7 @@ const args = process.argv.slice(2);
 const url = flag(args, '--url', 'http://127.0.0.1:5173');
 const writePath = flag(args, '--write', '');
 const expectPath = flag(args, '--expect', 'scripts/perf/stage-geometry.json');
-const songs = flag(args, '--songs', 'karitas,one,i-have-come-alive').split(',');
+const songs = flag(args, '--songs', 'karitas,one,i-have-come-alive,alive').split(',');
 const schemes = ['dark', 'light'];
 
 const shots = {
@@ -101,6 +101,20 @@ async function openAt(page, song, t) {
   const target = `${url.replace(/\/$/, '')}/song/${song}?t=${t}`;
   await page.goto(target, { waitUntil: 'commit', timeout: 45000 });
   await page.waitForFunction(() => performance.now() >= 300);
+  // A lyric line clamped to the top at 0.3 s is the load, not the layout.
+  // Instrumental blocks sit on minTop by design and are not asked to centre.
+  await page.waitForFunction(() => {
+    const stage = document.querySelector('.scene-stage');
+    const cur = document.querySelector('.fb--line.is-current') || document.querySelector('.fb--inst');
+    if (!stage || !cur) return false;
+    const s = stage.getBoundingClientRect();
+    const c = cur.getBoundingClientRect();
+    if (c.height < 8 || s.height < 8) return false;
+    const top = c.y - s.y;
+    if (cur.classList.contains('fb--inst')) return true;
+    const centre = s.height * 0.36 - c.height / 2;
+    return Math.abs(top - centre) < 6;
+  }, { timeout: 4000 }).catch(() => {});
 }
 
 async function seek(page) {

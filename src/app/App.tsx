@@ -2,6 +2,8 @@ import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import { useRoute } from './router';
 import { effectiveMotion, useSettings } from './settings';
 import { useAppliedTheme } from './theme';
+import { GlassFilter } from '@/ui/glass/GlassFilter';
+import { mountGlassLight } from '@/ui/glass/light';
 import './fontCatalog';
 import { getSong } from '@/data/library';
 import { LibraryPage } from '@/pages/LibraryPage';
@@ -14,7 +16,7 @@ const InstrumentsPage = lazy(() => import('@/pages/InstrumentsPage'));
 function RouteFallback({ title, detail }: { title: string; detail: string }) {
   return (
     <div className="empty">
-      <p className="t-title3">{title}</p>
+      <p className="empty-title">{title}</p>
       <p className="t-body secondary">{detail}</p>
     </div>
   );
@@ -52,6 +54,10 @@ export function App() {
     document.documentElement.dataset.motion = effectiveMotion(settings);
   }, [settings]);
 
+  useEffect(() => {
+    mountGlassLight();
+  }, []);
+
   let page: ReactNode;
   switch (route.name) {
     case 'library':
@@ -77,7 +83,8 @@ export function App() {
     default:
       page = (
         <div className="empty">
-          <p className="t-title3">Страница не найдена</p>
+          <p className="empty-title">Страница не найдена</p>
+          <p className="t-body secondary">Такого адреса на сайте нет.</p>
           <a className="btn btn-capsule btn-tinted" href="/">
             К списку песен
           </a>
@@ -85,5 +92,10 @@ export function App() {
       );
   }
 
-  return page;
+  return (
+    <>
+      <GlassFilter />
+      {page}
+    </>
+  );
 }

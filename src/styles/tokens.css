@@ -1,5 +1,5 @@
 /*
- * Design tokens. Soft glass over the song's own colour.
+ * Design tokens. Liquid glass over the song's own colour.
  * Panels are translucent, corners are 12 / 20 / 28 or fully round, and
  * motion uses one spring (see src/ui/spring.ts). Nothing in the interface
  * is smaller than 13 px. The song accent arrives at runtime as
@@ -50,25 +50,28 @@
   --font-persian-lh: 1.75;
   --font-nastaliq: 'Noto Nastaliq Urdu', 'KFGQPC Hafs', serif;
 
-  /* Dynamic Type, iOS "Large" (default) sizes in px = pt */
-  --t-large-title: 34px;
-  --t-title1: 28px;
-  --t-title2: 22px;
-  --t-title3: 20px;
-  --t-headline: 17px;
-  --t-body: 17px;
-  --t-callout: 16px;
-  --t-subhead: 15px;
-  --t-footnote: 13px;
-  --t-caption1: 13px;
-  --t-caption2: 13px;
-  /* Sung line on an 852 px-tall phone. Other screens scale with the height.
-     Registered so viewport units compute to a length. An unregistered max()
-     stays a token and font-size falls back to the body size. */
-  --lyric-latin: max(13px, calc(33 * 100dvh / 852));
-  --lyric-arab: max(13px, calc(40 * 100dvh / 852));
-  --lyric-tr: max(13px, calc(20 * 100dvh / 852));
-  --lyric-note: max(13px, calc(17 * 100dvh / 852));
+  /* Dynamic Type. rem so a 200% root font scales the interface. 1rem = 16px at default. */
+  --t-large-title: 2.125rem;
+  --t-title1: 1.75rem;
+  --t-title2: 1.375rem;
+  --t-title3: 1.25rem;
+  --t-headline: 1.0625rem;
+  --t-body: 1.0625rem;
+  --t-callout: 1rem;
+  --t-subhead: 0.9375rem;
+  --t-footnote: 0.8125rem;
+  --t-caption1: 0.8125rem;
+  --t-caption2: 0.8125rem;
+  /* Library title. Serif, weight 600. 3.5rem from 800 px wide. */
+  --t-display: 2.5rem;
+  /* Sung line on an 852 px-tall phone: 33 / 40 / 17. The desktop scale is a
+     separate block below. The middle term is a number times 100dvh. A rem
+     there is a length times a length, the property is invalid, and font-size
+     stays at the registered initial value on every window. */
+  --lyric-latin: clamp(0.8125rem, calc(33 * 100dvh / 852), 3.25rem);
+  --lyric-arab: clamp(0.8125rem, calc(40 * 100dvh / 852), 3.75rem);
+  --lyric-tr: clamp(0.8125rem, calc(17 * 100dvh / 852), 1.375rem);
+  --lyric-note: clamp(0.8125rem, calc(1.0625rem * 100dvh / 852), 1.5rem);
 
   /* Thick sheet. 80 % white still left the player labels readable, so the light
      fill is an opaque mix: 92 % white and 8 % of the song's darkest field stop. */
@@ -88,12 +91,12 @@
   --sp-10: 40px;
   --gutter: 16px;
 
-  /* Hit targets and control sizes */
-  --hit: 44px;
-  --btn-sm: 36px;
-  --btn-md: 44px;
-  --btn-lg: 56px;
-  --btn-xl: 64px;
+  /* Hit targets. They stay at least 44px and grow with the root font, up to a modest cap. */
+  --hit: max(44px, 2.25rem);
+  --btn-sm: max(36px, 2rem);
+  --btn-md: var(--hit);
+  --btn-lg: max(56px, 3rem);
+  --btn-xl: max(64px, 3.5rem);
 
   /* 12 small, 20 cards, 28 sheets, pill for buttons. No sharp corners. */
   --r-xs: 12px;
@@ -104,14 +107,19 @@
   --r-2xl: 28px;
   --r-pill: 999px;
 
-  /* The same spring as src/ui/spring.ts, squeezed into 420 ms. */
+  /* The same spring as src/ui/spring.ts: stiffness 900, damping 46, mass 1, about 320 ms. */
+  --spring-stiffness: 900;
+  --spring-damping: 46;
+  --spring-mass: 1;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-spring: linear(0, 0.0988 5.6%, 0.2945 11.1%, 0.5049 16.7%, 0.6833 22.2%, 0.8242 27.8%, 0.9212 33.3%, 0.981 38.9%, 1.013 44.4%, 1.0263 50%, 1.0285 55.6%, 1.025 61.1%, 1.0191 66.7%, 1.0132 72.2%, 1.0081 77.8%, 1.0044 83.3%, 1.0019 88.9%, 1.0003 94.4%, 1);
+  --ease-spring: linear(0, 0.21 8.3%, 0.549 16.7%, 0.806 25%, 0.948 33.3%, 1.009 41.7%, 1.023 50%, 1.019 58.3%, 1.011 66.7%, 1.005 75%, 1.001 83.3%, 1 91.7%, 1);
   --dur-1: 160ms;
-  --dur-2: 280ms;
-  --dur-3: 420ms;
+  --dur-2: 240ms;
+  --dur-3: 320ms;
   --dur-4: 520ms;
+  /* What "no animation" keeps: a soft fade, no travel. */
+  --dur-fade: 200ms;
 
   /* ===== Light appearance: dawn paper ===== */
   --bg: #efe6da;
@@ -136,28 +144,62 @@
   /* Stage text (lyrics) */
   --ink: #1a140f;
   --ink-sung: var(--ink);
-  /* Unsung words stay readable ahead of time (the reader must be able to read the whole line). */
-  --ink-unsung: rgba(26, 20, 15, 0.42);
-  /* Opacity of words not yet sung (and of lines ahead). */
-  --dim-op: 0.42;
+  /* Unsung words stay readable ahead of time. Light ink is a dark brown, not a washed grey. */
+  --ink-unsung: rgba(38, 22, 28, 0.78);
+  /* Opacity of words not yet sung (and of lines ahead). Light keeps them readable; blur does the rest. */
+  --dim-op: 0.72;
   /* The light behind the current line is a wash, not a plate. */
   --plate-tint: transparent;
   --ink-ghost: rgba(26, 20, 15, 0.1);
+  /* Quiet ink, two steps. They follow --ink, so the dark theme does not repeat them. */
+  --ink-2: color-mix(in srgb, var(--ink) 72%, transparent);
+  --ink-3: color-mix(in srgb, var(--ink) 56%, transparent);
 
   /* Light glass: white 62 % over the field. Fallback is denser, for no blur. */
-  --glass-bg: rgba(255, 255, 255, 0.62);
-  --glass-tint: rgba(255, 255, 255, 0.62);
-  --glass-tint-strong: rgba(255, 255, 255, 0.78);
+  --glass-bg: rgba(255, 255, 255, 0.48);
+  --glass-tint: rgba(255, 255, 255, 0.48);
+  --glass-tint-strong: rgba(255, 255, 255, 0.62);
   --glass-fallback: rgba(255, 252, 248, 0.9);
   --glass-blur: 28px;
-  --glass-saturate: 170%;
+  --glass-saturate: 190%;
   --glass-rim: inset 0 1px 0 rgba(255, 255, 255, 0.85);
   --glass-rim-low: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
   --glass-edge: rgba(255, 255, 255, 0.45);
   --glass-shadow: 0 24px 64px -28px rgba(26, 20, 15, 0.28);
+  /* Liquid glass. One lens, a song tint, a specular wash, a lit rim. */
+  --lg-blur: 28px;
+  --lg-sat: 190%;
+  --lg-fill: color-mix(in srgb, #fff 42%, transparent);
+  --lg-fill-card: color-mix(in srgb, #fff 40%, transparent);
+  --lg-fill-note: color-mix(in srgb, #fffaf6 46%, transparent);
+  --lg-fill-thick: color-mix(in srgb, #fffaf6 94%, var(--song-field, #c9b8a4));
+  --lg-tint: color-mix(in srgb, var(--accent) 18%, transparent);
+  --lg-spec: rgba(255, 255, 255, 0.86);
+  --lg-hi: rgba(255, 255, 255, 0.92);
+  --lg-lo: rgba(0, 0, 0, 0.06);
+  --lg-hair: rgba(255, 255, 255, 0.38);
+  --lg-solid: var(--bg-elevated);
+  --lg-shadow: 0 18px 44px -22px rgba(26, 20, 15, 0.4), 0 1px 2px rgba(26, 20, 15, 0.06);
+  --lg-x: 18%;
+  --lg-y: 0%;
+  --lg-angle: 200deg;
+  /* Phone floor. Dense enough that a line under it is not a second line of type. */
+  --dock-bg: rgba(255, 252, 248, 0.9);
+  /* The phone floor sits on top of the verse. A translucent mix still ghosts 36 px type. */
+  --dock-solid: color-mix(in srgb, #fffaf6 97%, var(--song-field, #c9b8a4));
+  --dock-line: rgba(26, 20, 15, 0.08);
+  /* Deep carmine on the light field. The old coral failed the blush glass. */
+  --alert-fg: #9f2323;
+  --alert-bg: rgba(159, 35, 35, 0.12);
+  --alert-line: rgba(159, 35, 35, 0.15);
   --material-thick: rgba(255, 252, 248, 0.9);
   --material-regular: rgba(255, 255, 255, 0.72);
   --material-thin: rgba(255, 255, 255, 0.55);
+  --scrub-bed: #e4dcd2;
+  --scrub-fill: #1a140f;
+  --scrub-tick: #8a8178;
+  --scrub-knob: #1a140f;
+  --scrub-ring: #f7f1ea;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -182,6 +224,7 @@
     --on-accent: #0b0b0d;
     --ink: #f6f0e6;
     --ink-unsung: rgba(246, 240, 230, 0.42);
+    --dim-op: 0.42;
     --plate-tint: transparent;
     --ink-ghost: rgba(246, 240, 230, 0.1);
     --glass-bg: rgba(255, 255, 255, 0.1);
@@ -194,6 +237,23 @@
     --glass-rim-low: inset 0 -1px 0 rgba(255, 255, 255, 0.05);
     --glass-edge: rgba(255, 255, 255, 0.16);
     --glass-shadow: 0 28px 70px -24px rgba(0, 0, 0, 0.5);
+    --lg-fill: color-mix(in srgb, #0c0b10 38%, transparent);
+    --lg-fill-card: color-mix(in srgb, #14121a 55%, transparent);
+    --lg-fill-note: color-mix(in srgb, #100e14 55%, transparent);
+    --lg-fill-thick: color-mix(in srgb, #100e14 94%, var(--song-field, #221820));
+    --lg-tint: color-mix(in srgb, var(--accent) 36%, transparent);
+    --lg-spec: rgba(255, 255, 255, 0.72);
+    --lg-hi: rgba(255, 255, 255, 0.7);
+    --lg-lo: rgba(0, 0, 0, 0.38);
+    --lg-hair: rgba(255, 255, 255, 0.22);
+    --lg-solid: var(--bg-elevated);
+    --lg-shadow: 0 22px 48px -18px rgba(0, 0, 0, 0.62), 0 1px 2px rgba(0, 0, 0, 0.4);
+    --dock-bg: rgba(16, 14, 20, 0.88);
+    --dock-solid: color-mix(in srgb, #100e14 96%, var(--song-field, #221820));
+    --dock-line: rgba(255, 255, 255, 0.08);
+    --alert-fg: #f87171;
+    --alert-bg: rgba(239, 68, 68, 0.16);
+    --alert-line: rgba(248, 113, 113, 0.28);
     --material-thick: rgba(14, 12, 18, 0.88);
     --material-regular: rgba(20, 16, 24, 0.8);
     --material-thin: rgba(255, 255, 255, 0.12);
@@ -202,6 +262,11 @@
     --sheet-fallback: color-mix(in srgb, var(--song-field, #221820) 88%, #07060c);
     --sheet-blur: 40px;
     --sheet-saturate: 160%;
+    --scrub-bed: #3a342e;
+    --scrub-fill: #f6f0e6;
+    --scrub-tick: #a39a90;
+    --scrub-knob: #f6f0e6;
+    --scrub-ring: #2a2622;
   }
 }
 
@@ -226,6 +291,7 @@
   --on-accent: #0b0b0d;
   --ink: #f6f0e6;
   --ink-unsung: rgba(246, 240, 230, 0.42);
+  --dim-op: 0.42;
   --plate-tint: transparent;
   --ink-ghost: rgba(246, 240, 230, 0.1);
   --glass-bg: rgba(255, 255, 255, 0.1);
@@ -238,6 +304,23 @@
   --glass-rim-low: inset 0 -1px 0 rgba(255, 255, 255, 0.05);
   --glass-edge: rgba(255, 255, 255, 0.16);
   --glass-shadow: 0 28px 70px -24px rgba(0, 0, 0, 0.5);
+  --lg-fill: color-mix(in srgb, #0c0b10 38%, transparent);
+  --lg-fill-card: color-mix(in srgb, #14121a 55%, transparent);
+  --lg-fill-note: color-mix(in srgb, #100e14 55%, transparent);
+  --lg-fill-thick: color-mix(in srgb, #100e14 94%, var(--song-field, #221820));
+  --lg-tint: color-mix(in srgb, var(--accent) 36%, transparent);
+  --lg-spec: rgba(255, 255, 255, 0.72);
+  --lg-hi: rgba(255, 255, 255, 0.7);
+  --lg-lo: rgba(0, 0, 0, 0.38);
+  --lg-hair: rgba(255, 255, 255, 0.22);
+  --lg-solid: var(--bg-elevated);
+  --lg-shadow: 0 22px 48px -18px rgba(0, 0, 0, 0.62), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --dock-bg: rgba(16, 14, 20, 0.88);
+  --dock-solid: color-mix(in srgb, #100e14 96%, var(--song-field, #221820));
+  --dock-line: rgba(255, 255, 255, 0.08);
+  --alert-fg: #f87171;
+  --alert-bg: rgba(239, 68, 68, 0.16);
+  --alert-line: rgba(248, 113, 113, 0.28);
   --material-thick: rgba(14, 12, 18, 0.88);
   --material-regular: rgba(20, 16, 24, 0.8);
   --material-thin: rgba(255, 255, 255, 0.12);
@@ -245,6 +328,11 @@
   --sheet-fallback: color-mix(in srgb, var(--song-field, #221820) 88%, #07060c);
   --sheet-blur: 40px;
   --sheet-saturate: 160%;
+  --scrub-bed: #3a342e;
+  --scrub-fill: #f6f0e6;
+  --scrub-tick: #a39a90;
+  --scrub-knob: #f6f0e6;
+  --scrub-ring: #2a2622;
 }
 
 /* Accessibility: Reduce Transparency → frosted, nearly opaque surfaces. Increase Contrast → stronger edges. */
@@ -260,17 +348,74 @@
     --plate-tint: var(--bg-elevated);
     --sheet-fill: var(--bg-elevated);
     --sheet-fallback: var(--bg-elevated);
+    --lg-fill: var(--bg-elevated);
+    --lg-fill-card: var(--bg-elevated);
+    --lg-fill-note: var(--bg-elevated);
+    --lg-fill-thick: var(--bg-elevated);
+    --lg-tint: transparent;
+    --lg-solid: var(--bg-elevated);
   }
 }
 
 /* Short and wide (car, low landscape). Type is not a fraction of the height:
    at 480 px that fraction was 18 px for the line and 13 px for the translation. */
-@media (min-width: 700px) and (max-height: 640px) {
+@media (min-width: 768px) {
   :root {
-    --lyric-latin: 30px;
-    --lyric-arab: 36px;
-    --lyric-tr: 18px;
-    --lyric-note: 16px;
+    --t-display: 3.5rem;
+  }
+}
+/* Wide windows step the type. A vw term inside a registered length does not resolve. */
+@media (min-width: 1100px) and (min-height: 641px) {
+  :root {
+    --lyric-latin: 3.125rem;
+    --lyric-arab: 3.625rem;
+    --lyric-tr: 1.25rem;
+    --lyric-note: 1.0625rem;
+  }
+}
+@media (min-width: 1440px) and (min-height: 641px) {
+  :root {
+    --lyric-latin: 3.375rem;
+    --lyric-arab: 3.875rem;
+    --lyric-tr: 1.3125rem;
+  }
+}
+@media (min-width: 1680px) and (min-height: 641px) {
+  :root {
+    --lyric-latin: 3.5rem;
+    --lyric-arab: 4rem;
+    --lyric-tr: 1.375rem;
+  }
+}
+@media (min-width: 1920px) and (min-height: 641px) {
+  :root {
+    --lyric-latin: 3.75rem;
+    --lyric-arab: 4.25rem;
+    --lyric-tr: 1.4375rem;
+  }
+}
+@media (min-width: 2560px) and (min-height: 641px) {
+  :root {
+    --lyric-latin: 4rem;
+    --lyric-arab: 4.5rem;
+    --lyric-tr: 1.5rem;
+  }
+}
+@media (min-width: 3000px) and (min-height: 641px) {
+  :root {
+    --lyric-latin: 4.25rem;
+    --lyric-arab: 4.75rem;
+    --lyric-tr: 1.625rem;
+  }
+}
+@media (min-width: 700px) and (max-height: 640px),
+  (max-width: 699px) and (max-height: 520px) and (orientation: landscape) {
+  :root {
+    --t-display: 2.5rem;
+    --lyric-latin: clamp(1.125rem, 1.875rem, 2.5rem);
+    --lyric-arab: clamp(1.25rem, 2.25rem, 3rem);
+    --lyric-tr: clamp(0.8125rem, 1.125rem, 1.5rem);
+    --lyric-note: 1rem;
   }
 }
 @media (prefers-contrast: more) {

@@ -1,27 +1,72 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type MouseEvent } from 'react';
 import { coverExt, coverUrl } from '@/data/covers';
 import { songs, LANG_NAMES } from '@/data/library';
 import type { Song } from '@/data/schema';
 import { prefetchLyrics } from '@/app/prefetch';
-import { linkHandler } from '@/app/router';
-import { useSettings } from '@/app/settings';
+import { linkHandler, navigate } from '@/app/router';
+import { rememberedSong } from '@/app/continue';
+import { getSettings, useSettings } from '@/app/settings';
+import { enableSongFonts, loadSelectedFonts } from '@/app/fontCatalog';
 import { useAppliedTheme } from '@/app/theme';
 import { Icon } from '@/ui/icons';
+import { Glass, GlassLayers } from '@/ui/glass/Glass';
+import { armLibraryExit, armMorph, exitDecoded, motionBlocked, warmCover } from '@/app/morph';
 import { Field } from '@/scene/Field';
+import { Status } from '@/components/Status';
+import { KeysHelp } from '@/ui/KeysHelp';
 
 function statusOf(song: Song) {
   if (song.audio.status === 'missing') return { text: 'Без аудио', tone: 'muted' as const };
   return null;
 }
 
+function langsOf(song: Song) {
+  return song.languages.map((code) => LANG_NAMES[code] ?? code).join(' · ');
+}
+
+/** The flyer is born on the click. The route changes on the next frame, so one cover is already in the air. */
+function openSong(event: MouseEvent<HTMLAnchorElement>, slug: string) {
+  if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  event.preventDefault();
+  const to = `/song/${slug}`;
+  if (motionBlocked()) {
+    navigate(to);
+    return;
+  }
+  const card = event.currentTarget;
+  // The verse faces are on before the song commits, so the first line measure
+  // is already in the right font and does not render the stage a second time.
+  enableSongFonts();
+  // Copies on the click, route on the next frame. Doing both in one turn
+  // spilled the song commit across an extra phone frame.
+  armLibraryExit(card);
+  armMorph(card);
+  void exitDecoded().then(() => requestAnimationFrame(() => navigate(to)));
+}
+
 export function LibraryPage() {
   const dark = useAppliedTheme(useSettings().theme);
   const [q, setQ] = useState('');
+  const [remembered, setRemembered] = useState<string | null>(null);
+  const [help, setHelp] = useState(false);
   const wash = useMemo(() => {
     const colors = songs.flatMap((s) => s.palette.field).filter((c): c is string => !!c);
     return [0, 1, 2, 3].map((i) => colors[i % Math.max(colors.length, 1)] ?? '#3a2a22');
   }, []);
   const clock = useRef(() => performance.now() / 1000).current;
+  // A living sky under every frosted card repaints the phone each tick. The shelf keeps one frame.
+  const stillSky = useSyncExternalStore(
+    (onChange) => {
+      const query = window.matchMedia('(max-width: 799px), (pointer: coarse)');
+      query.addEventListener('change', onChange);
+      return () => query.removeEventListener('change', onChange);
+    },
+    () => window.matchMedia('(max-width: 799px), (pointer: coarse)').matches,
+    () => true,
+  );
+  useEffect(() => {
+    setRemembered(rememberedSong());
+  }, []);
   const list = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return songs;
@@ -31,23 +76,65 @@ export function LibraryPage() {
         .some((v) => v!.toLowerCase().includes(s)),
     );
   }, [q]);
+  const searching = q.trim().length > 0;
+  const featured = searching ? null : (list.find((song) => song.slug === remembered) ?? list[0] ?? null);
+  const shelf = featured ? list.filter((song) => song.slug !== featured.slug) : list;
+  // The hero is the song a tap opens. Parsed text is ready, so the song page
+  // does not render twice while the cover is in the air.
+  useEffect(() => {
+    void loadSelectedFonts(getSettings());
+    if (featured) prefetchLyrics(featured.slug);
+  }, [featured]);
+
+  // Arrows move among the cards. Space stays with the focused link. ? opens the key list.
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const active = document.activeElement;
+      const typing = active instanceof HTMLElement && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
+      if (event.code === 'Escape') {
+        if (!help) return;
+        setHelp(false);
+        event.preventDefault();
+        return;
+      }
+      if (typing || help) return;
+      if ((event.code === 'Slash' && event.shiftKey) || event.key === '?') {
+        setHelp(true);
+        event.preventDefault();
+        return;
+      }
+      if (event.code !== 'ArrowDown' && event.code !== 'ArrowUp' && event.code !== 'ArrowLeft' && event.code !== 'ArrowRight') return;
+      const links = [...document.querySelectorAll<HTMLElement>('a.lib-hero, a.lib-row')];
+      if (!links.length) return;
+      const index = links.indexOf(active as HTMLElement);
+      const dir = event.code === 'ArrowDown' || event.code === 'ArrowRight' ? 1 : -1;
+      const next = links[Math.max(0, Math.min(links.length - 1, index < 0 ? 0 : index + dir))];
+      next?.focus();
+      event.preventDefault();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [help]);
 
   return (
     <div className="library">
-      <Field colors={wash} dark={dark} clock={clock} />
+      <Field colors={wash} dark={dark} clock={stillSky ? undefined : clock} still={stillSky} t={12} />
       <header className="lib-head">
         <div className="lib-titlebar">
-          <h1 className="t-large-title">Песни</h1>
-          <div className="lib-actions">
-            <a className="btn btn-circle btn-quiet" href="/instruments" onClick={linkHandler('/instruments')} aria-label="Инструменты: галерея гравюр">
+          <h1 className="lib-title">Песни</h1>
+          <nav className="lib-actions" aria-label="Разделы">
+            <Glass as="a" variant="chip" className="lib-nav" href="/instruments" onClick={linkHandler('/instruments')} aria-label="Инструменты: галерея гравюр">
               <Icon name="square.grid.2x2" size={20} />
-            </a>
-            <a className="btn btn-circle btn-quiet" href="/method" onClick={linkHandler('/method')} aria-label="Методология">
+              <span className="lib-nav-label">Инструменты</span>
+            </Glass>
+            <Glass as="a" variant="chip" className="lib-nav" href="/method" onClick={linkHandler('/method')} aria-label="Методология">
               <Icon name="book.pages" size={20} />
-            </a>
-          </div>
+              <span className="lib-nav-label">Методология</span>
+            </Glass>
+          </nav>
         </div>
-        <label className="search">
+        <Glass as="label" variant="chip" className="search">
           <Icon name="magnifyingglass" size={20} className="search-icon" />
           <input
             type="search"
@@ -57,26 +144,47 @@ export function LibraryPage() {
             onChange={(e) => setQ(e.target.value)}
             aria-label="Поиск"
           />
-        </label>
+        </Glass>
       </header>
 
-      <ul className="lib-list">
-        {list.map((song) => (
-          <li key={song.slug}>
-            <SongTile song={song} />
-          </li>
-        ))}
-      </ul>
-      {list.length === 0 && <p className="lib-empty t-body secondary">Ничего не найдено.</p>}
-      <footer className="lib-foot t-footnote tertiary">
-        Тексты, переводы и пояснения — {songs.length} {plural(songs.length, 'песня', 'песни', 'песен')}. Как добавить новую — в разделе «Методология».
-      </footer>
+      {featured && <Hero song={featured} continued={featured.slug === remembered} dark={dark} />}
+
+      {shelf.length > 0 && (
+        <ul className="lib-shelf">
+          {shelf.map((song) => (
+            <li key={song.slug}>
+              <ShelfRow song={song} continued={song.slug === remembered} dark={dark} />
+            </li>
+          ))}
+        </ul>
+      )}
+      {list.length === 0 && (
+        <Status
+          className="lib-empty status--stack glass"
+          icon="magnifyingglass"
+          title="Ничего не найдено"
+          live="status"
+          action={
+            <button
+              type="button"
+              className="lib-empty-go"
+              style={tone(songs.find((song) => song.slug === remembered) ?? songs[0], dark)}
+              onClick={() => setQ('')}
+            >
+              Очистить поиск
+            </button>
+          }
+        >
+          По этому запросу песен нет.
+        </Status>
+      )}
+      <KeysHelp open={help} onClose={() => setHelp(false)} />
     </div>
   );
 }
 
 /** Lyrics for a visible or pointed-at song, so the tap does not wait on that chunk. */
-function SongTile({ song }: { song: Song }) {
+function useWarm(slug: string) {
   const ref = useRef<HTMLAnchorElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -87,7 +195,7 @@ function SongTile({ song }: { song: Song }) {
         if (done || !entries.some((e) => e.isIntersecting)) return;
         done = true;
         io.disconnect();
-        const run = () => prefetchLyrics(song.slug);
+        const run = () => prefetchLyrics(slug);
         const host = window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number };
         if (typeof host.requestIdleCallback === 'function') host.requestIdleCallback(run, { timeout: 1200 });
         else window.setTimeout(run, 280);
@@ -96,42 +204,101 @@ function SongTile({ song }: { song: Song }) {
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [song.slug]);
+  }, [slug]);
+  return { ref, warm: () => prefetchLyrics(slug) };
+}
 
-  const st = statusOf(song);
+function tone(song: Song, dark: boolean): CSSProperties {
+  return {
+    '--glow': song.palette.field[0],
+    '--accent': dark ? song.palette.accentDark : song.palette.accent,
+  } as CSSProperties;
+}
+
+function Cover({
+  song,
+  className,
+  sizes,
+  poster = true,
+}: {
+  song: Song;
+  className: string;
+  sizes: string;
+  poster?: boolean;
+}) {
   const ext = coverExt(song);
-  const warm = () => prefetchLyrics(song.slug);
+  return (
+    <img
+      {...(poster ? { 'data-poster': '' } : {})}
+      className={className}
+      src={coverUrl(song.slug, 512, ext)}
+      srcSet={`${coverUrl(song.slug, 512, ext)} 512w, ${coverUrl(song.slug, 1024, ext)} 1024w`}
+      sizes={sizes}
+      alt=""
+      onLoad={poster ? (e) => warmCover(e.currentTarget.currentSrc) : undefined}
+    />
+  );
+}
+
+function Hero({ song, continued, dark }: { song: Song; continued: boolean; dark: boolean }) {
+  const { ref, warm } = useWarm(song.slug);
+  const st = statusOf(song);
   return (
     <a
       ref={ref}
-      className="lib-tile"
+      className="lib-hero lg-host lg-host--card"
       href={`/song/${song.slug}`}
-      onClick={linkHandler(`/song/${song.slug}`)}
+      onClick={(e) => openSong(e, song.slug)}
       onPointerEnter={warm}
-      onPointerDown={warm}
+      onPointerDown={() => warm()}
       onFocus={warm}
+      aria-label={`${song.title}. ${song.version.label}. ${song.artist}`}
+      style={tone(song, dark)}
     >
-      <img
-        className="lib-tile-cover"
-        src={coverUrl(song.slug, 512, ext)}
-        srcSet={`${coverUrl(song.slug, 512, ext)} 512w, ${coverUrl(song.slug, 1024, ext)} 1024w`}
-        sizes="(min-width: 1100px) 240px, (min-width: 700px) 30vw, 46vw"
-        alt=""
-      />
-      <span className="lib-tile-cap">
-        <span className="lib-tile-title">{song.title}</span>
-        <span className="lib-tile-version">{song.version.label}</span>
-        <span className="lib-tile-artist">{song.artist}</span>
+      <GlassLayers />
+      <span className="lib-hero-bleed" aria-hidden="true">
+        <Cover song={song} className="lib-hero-bleed-img" sizes="640px" poster={false} />
+      </span>
+      <Cover song={song} className="lib-hero-cover" sizes="(min-width: 800px) 380px, 92vw" />
+      <span className="lib-hero-copy">
+        <span className="lib-hero-title">
+          {song.title}
+        </span>
+        <span className="lib-hero-version">{song.version.label}</span>
+        <span className="lib-hero-artist">{song.artist}</span>
+        <span className="lib-hero-langs">{langsOf(song)}</span>
+        <span className="lib-hero-go">{continued ? 'Продолжить' : 'Слушать'}</span>
       </span>
       {st && <span className={`chip chip--${st.tone} t-caption1`}>{st.text}</span>}
     </a>
   );
 }
 
-function plural(n: number, one: string, few: string, many: string) {
-  const m10 = n % 10;
-  const m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
-  return many;
+function ShelfRow({ song, continued, dark }: { song: Song; continued: boolean; dark: boolean }) {
+  const { ref, warm } = useWarm(song.slug);
+  const st = statusOf(song);
+  return (
+    <a
+      ref={ref}
+      className="lib-row lg-host lg-host--card"
+      href={`/song/${song.slug}`}
+      onClick={(e) => openSong(e, song.slug)}
+      onPointerEnter={warm}
+      onPointerDown={() => warm()}
+      onFocus={warm}
+      aria-label={`${song.title}. ${song.version.label}. ${song.artist}`}
+      style={tone(song, dark)}
+    >
+      <GlassLayers />
+      <Cover song={song} className="lib-row-cover" sizes="96px" />
+      <span className="lib-row-copy">
+        <span className="lib-row-lead">
+          {song.title}
+        </span>
+        <span className="lib-row-version">{song.version.label}</span>
+        <span className="lib-row-artist">{continued ? `Продолжить · ${song.artist}` : song.artist}</span>
+      </span>
+      {st && <span className={`chip chip--${st.tone} t-caption1`}>{st.text}</span>}
+    </a>
+  );
 }
