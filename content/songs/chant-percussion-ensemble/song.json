@@ -1,0 +1,76 @@
+{
+  "$schema": "../../../docs/schema/song.schema.json",
+  "slug": "chant-percussion-ensemble",
+  "title": "Chant & Percussion & Ensemble (Live)",
+  "artist": "Sami Yusuf",
+  "release": {
+    "album": "Live at the Katara Amphitheatre",
+    "year": 2015,
+    "label": "Andante Records"
+  },
+  "performance": {
+    "event": "Live at the Katara Amphitheatre",
+    "venue": "Katara Amphitheatre",
+    "city": "Doha"
+  },
+  "version": {
+    "kind": "live",
+    "label": "Концерт Live at the Katara Amphitheatre, Doha 2012"
+  },
+  "languages": [
+    "ar"
+  ],
+  "credits": [
+    {
+      "role": "composer",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "arranger",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "writer",
+      "name": "Sami Yusuf"
+    }
+  ],
+  "duration": 277.0,
+  "palette": {
+    "accent": "#746753",
+    "accentDark": "#E7D8B6",
+    "field": [
+      "#5D4B48",
+      "#84736D",
+      "#C8C6C2",
+      "#EBC996"
+    ]
+  },
+  "audio": {
+    "status": "ready",
+    "high": "/audio/chant-percussion-ensemble/high.m4a",
+    "peaks": "/audio/chant-percussion-ensemble/peaks.json",
+    "gainDb": -3.2,
+    "provenance": {
+      "kind": "file",
+      "ref": "дорожка YouTube 140 официального видео https://www.youtube.com/watch?v=lITcVCA6DOw",
+      "retrieved": "2026-11-02",
+      "codec": "aac lc 128k 44.1kHz stereo",
+      "sha256": "f22682a87bf50452f0ef54d1b5dd39208c9a861083d61b55e489434d5eccd9e9"
+    }
+  },
+  "timing": {
+    "status": "draft",
+    "method": "none",
+    "notes": "Границы секций взяты из карты энергии вокального стема. Слов по секундам нет. Выравнивание не запускалось: у официального ролика нет субтитров и нет строк на экране."
+  },
+  "review": [
+    "официальные субтитры: пусто",
+    "Свободный проход по вокальному стему назвал язык ar с вероятностью 0.502. Код в карточке стоит ar. Издания букв этой дорожки нет, строки не заведены.",
+    "Страница альбома называет дорожку Chant and Percussion Ensemble и стиха не печатает. Пока нет официального текста, вокальные участки остаются секциями голоса без строк.",
+    "Сайты текстов песен в эталон не брались. Сходство отдельных формул с другой записью исполнителя в строку не переносилось.",
+    "Поле parts не заполнено: вокальных строк нет, и источник не назвал произведение этой дорожки.",
+    "Инструменты и имена музыкантов страница альбома, описание ролика и карточка Qobuz не называют.",
+    "День вечера на странице альбома не назван, только December 2012. В performance.date день не записан. Город на странице написан Doha.",
+    "Тайм-коды черновые. Опоры реплик нет, задание выравнивания не создавалось. Заливка слов выключена, пока timing.status равен draft."
+  ]
+}
