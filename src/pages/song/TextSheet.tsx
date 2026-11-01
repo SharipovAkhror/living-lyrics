@@ -6,6 +6,7 @@ import { instrument } from '@/instruments/catalog';
 import { fontClass } from '@/scene/fonts';
 import type { Settings } from '@/app/settings';
 import { showHarakatText } from '@/data/harakat';
+import { isPhone } from '@/ui/phone';
 
 export function TextSheet({
   open,
@@ -36,6 +37,12 @@ export function TextSheet({
     }, 60);
     return () => clearTimeout(to);
   }, [open, timeline]);
+
+  // Closed, this sheet still mapped every cue. The lyric frame reports the
+  // sung line through flushSync, so that map ran inside Scene.loop: 724 ms of
+  // 1113 ms over 6 s at Chromium's 6× CPU, on this row builder. A phone sheet
+  // unmounts as soon as it closes, so a closed sheet has nothing to paint.
+  if (!open && isPhone()) return null;
 
   if (!timeline) {
     return (
