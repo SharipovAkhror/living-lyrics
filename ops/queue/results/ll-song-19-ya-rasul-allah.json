@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-19-ya-rasul-allah",
+  "status": "failed",
+  "branch": "night/ll-song-19-ya-rasul-allah",
+  "commit": "8b58131b2c115def29fb034f7939c2527339a919",
+  "tokens": 15647138,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts ya-rasul-allah\n\n\n✗ ya-rasul-allah  (1 ошибок, 3 предупреждений)\n  ошибка  song.json: audio.high: нет шифра content/audio-enc/ya-rasul-allah/high.m4a.enc\n  внимание  transcript.json: нет docs/analysis/<slug>/transcript.json: порядок строк с голосом не сверен\n  внимание  cues.json: нет docs/analysis/<slug>/cues.json: время строк по официальным субтитрам (docs/methodology/04-text.md)\n  внимание  translation: нет docs/analysis/translation/ya-rasul-allah.md (docs/methodology/06-translation.md)\n\nИтого: 1 ошибок, 3 предупреждений.\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue\\logs\\ll-song-19-ya-rasul-allah.log",
+  "reason": "tokens",
+  "restarts": 0,
+  "pushed": false
+}
