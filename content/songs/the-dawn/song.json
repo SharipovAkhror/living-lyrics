@@ -1,0 +1,90 @@
+{
+  "$schema": "../../../docs/schema/song.schema.json",
+  "slug": "the-dawn",
+  "title": "The Dawn",
+  "artist": "Sami Yusuf",
+  "version": {
+    "kind": "live",
+    "label": "Концерт The Sufi Route, New Delhi 2019"
+  },
+  "release": {
+    "album": "Live in New Delhi",
+    "year": 2019,
+    "label": "Andante Records"
+  },
+  "performance": {
+    "event": "The Sufi Route",
+    "city": "New Delhi",
+    "date": "2019-02-09"
+  },
+  "languages": [
+    "en"
+  ],
+  "duration": 212.63,
+  "palette": {
+    "accent": "#601F25",
+    "accentDark": "#BB8B5E",
+    "field": [
+      "#12130C",
+      "#601F25",
+      "#181748",
+      "#BB8B5E"
+    ]
+  },
+  "cover": {
+    "kind": "official",
+    "ext": "jpg",
+    "source": "https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/ee/53/95/ee53959c-527d-51f0-a1c0-cc1cd44854ed/cover.jpg/1400x1400bb.jpg",
+    "retrieved": "2026-11-02",
+    "releaseTitle": "Live in New Delhi - EP"
+  },
+  "audio": {
+    "status": "ready",
+    "high": "/audio/the-dawn/high.m4a",
+    "peaks": "/audio/the-dawn/peaks.json",
+    "gainDb": -0.9,
+    "provenance": {
+      "kind": "file",
+      "ref": "https://www.youtube.com/watch?v=MZZgoKhzdnA",
+      "retrieved": "2026-11-02",
+      "codec": "aac 127k 44.1kHz stereo",
+      "sha256": "7b2fea2b4b63e9c052ef70514ed191481a2ff6148c2f0b23cc2852ad33156a9c"
+    }
+  },
+  "timing": {
+    "status": "draft",
+    "method": "none"
+  },
+  "credits": [
+    {
+      "role": "Композитор, аранжировка и исполнение",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "Сведение и мастеринг",
+      "name": "Vishnu Rajan"
+    },
+    {
+      "role": "Монтаж видео",
+      "name": "Omar Al-Balushi"
+    },
+    {
+      "role": "Издание",
+      "name": "Andante Records"
+    },
+    {
+      "role": "Администрирование прав",
+      "name": "Fairwood Music (UK) Ltd"
+    }
+  ],
+  "review": [
+    "Город в источниках написан New Delhi. Русского написания на странице ролика и на странице выпуска нет, в подписи оставлено New Delhi.",
+    "Спетый язык не назван. Теги ролика включают Instrumental, короткий ролик лейбла с тем же вечером помечен instrumental. Английский как спетый язык не подтверждён. Код en оставлен: схема требует хотя бы один код, а строк нет.",
+    "официальные субтитры: пусто. Файл официальных субтитров не получен; попытка сообщила об отсутствии субтитров и предупредила об отсутствии JavaScript runtime.",
+    "Время слов не доказано: нет источника реплик. Субтитров нет, текста песни на кадрах нет. Задание выравнивания не ставилось.",
+    "Проход реплик: yt-dlp второй раз не запускался. На 162 кадрах текста песни нет, на 0 с только знак The Sufi Route. cues.json не написан, секунды из окон голоса не ставились. Пословная заливка выключена.",
+    "Окна, где вокальный стем громче, и кадр человека у микрофона около 203 с не стали строкой и не получили ключ voice: букв в источниках нет, распознавание речи пустое.",
+    "Инструменты не названы. Просмотр видео по стадии 9 делает Claude · Lead через agy, этот проход его не вызывал. В секции ensemble и attribution-unverified.",
+    "Строки маршрута «структура», «текст», «перевод» и «пояснения» без вокальной строки не закрываются. Код под это не менялся."
+  ]
+}
