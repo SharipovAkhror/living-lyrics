@@ -67,7 +67,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
   const wordPool = useRef(PHONE_WORD_POOL);
   const filterRef = useRef('');
   // Last strings actually written. WebKit grows its working set on a repeated write even when the pixels match.
-  const painted = useRef({ transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '' });
+  const painted = useRef({ transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '', height: '' });
 
   const { line } = cue;
   const fClass = fontClass(line, settings);
@@ -81,7 +81,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
 
   // A slot is reused for the next line. Drop the previous line's layers before the fit.
   useLayoutEffect(() => {
-    painted.current = { transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '' };
+    painted.current = { transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '', height: '' };
     filterRef.current = '';
     if (orig.current) {
       orig.current.style.opacity = '';
@@ -109,7 +109,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
         r.style.pointerEvents = 'none';
         r.style.zIndex = '0';
       }
-      painted.current = { transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '' };
+      painted.current = { transform: '', opacity: '', z: '', vis: '', sub: '', wait: '', lit: '', cur: '', height: '' };
       return;
     }
     if (root.current) root.current.style.pointerEvents = '';
@@ -146,7 +146,10 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       }
       const readBox = (): Measure => {
         const mainH = main.current!.offsetHeight;
-        return { main: mainH, sub: subs.current ? r.offsetHeight - mainH : 0 };
+        // The phone clips the root to the reserved height. scrollHeight still
+        // includes the translation, so the measure does not follow that clip.
+        const content = r.scrollHeight;
+        return { main: mainH, sub: subs.current ? Math.max(0, content - mainH) : 0 };
       };
       widths.current = words.current.map((w) => w?.offsetWidth ?? 0);
       const m = readBox();
@@ -202,12 +205,16 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
     const transform = phone && bisect('layer')
       ? `translate(${x.toFixed(1)}px, ${top.toFixed(1)}px) scale(${s.scale.toFixed(3)})`
       : `translate3d(${x.toFixed(1)}px, ${top.toFixed(1)}px, 0) scale(${s.scale.toFixed(phone ? 3 : 4)})`;
-    if (painted.current.transform !== transform) {
+    // Scene drops the layer (transform none, opacity 1) before a slot rewrite.
+    // The cached string can still match, which left the lines stacked.
+    const cleared = r.dataset.cleared === '1';
+    if (cleared) delete r.dataset.cleared;
+    if (cleared || painted.current.transform !== transform) {
       painted.current.transform = transform;
       r.style.transform = transform;
     }
     const opacity = entranceOpacity(d, entrance, s.opacity).toFixed(phone ? 2 : 3);
-    if (painted.current.opacity !== opacity) {
+    if (cleared || painted.current.opacity !== opacity) {
       painted.current.opacity = opacity;
       r.style.opacity = opacity;
     }
@@ -215,7 +222,7 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
     // The line already fades by opacity, which is what the phone keeps.
     const blurOn = !phone && entrance === 'flow' && !still && motion === 'full' && s.blur > 0.05;
     const nextFilter = blurOn ? `blur(${s.blur.toFixed(2)}px)` : '';
-    if (filterRef.current !== nextFilter) {
+    if (cleared || filterRef.current !== nextFilter) {
       filterRef.current = nextFilter;
       r.style.filter = nextFilter;
     }
@@ -234,6 +241,21 @@ function LineBlockImpl({ cue, parked = false, wordSync, settings, entrance, moti
       if (painted.current.sub !== sub) {
         painted.current.sub = sub;
         subs.current.style.opacity = sub;
+      }
+    }
+    // Layout reserves only part of the translation while it fades. The box
+    // itself stays full, so the fading line used to cover the next one by a
+    // few pixels. Clip the phone host to the reserved height. scrollHeight
+    // above still reports the whole translation, so the measure does not shrink.
+    if (phone && main.current) {
+      const mainH = main.current.offsetHeight;
+      const subH = Math.max(0, r.scrollHeight - mainH);
+      const clip = s.subRoom < 0.999;
+      const hpx = clip ? `${Math.floor(mainH + subH * s.subRoom)}px` : '';
+      if (cleared || painted.current.height !== hpx) {
+        painted.current.height = hpx;
+        r.style.height = hpx;
+        r.style.overflow = clip ? 'hidden' : '';
       }
     }
 

@@ -608,7 +608,10 @@ function keepArt(mount: HTMLElement, key: string, svg: string) {
   }
   for (const child of root.querySelectorAll<HTMLElement>('.ist-art')) {
     const on = child.dataset.instrument === key;
-    const vis = on ? 'visible' : 'hidden';
+    // `visible` would paint through a parked host: a visibility:hidden
+    // ancestor does not hide a descendant that sets visibility:visible,
+    // including one in this shadow root. `inherit` follows the host.
+    const vis = on ? 'inherit' : 'hidden';
     if (child.style.visibility !== vis) child.style.visibility = vis;
   }
 }

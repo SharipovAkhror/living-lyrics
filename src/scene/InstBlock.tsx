@@ -114,6 +114,7 @@ function InstBlockImpl({ cue, parked = false, timeline, timed, entrance, motion,
       const r = root.current;
       if (r) {
         r.style.visibility = 'hidden';
+        r.style.opacity = '0';
         r.style.pointerEvents = 'none';
         r.style.zIndex = '0';
       }

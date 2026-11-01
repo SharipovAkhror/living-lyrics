@@ -41,6 +41,11 @@
   .ist-art-mount {
     position: absolute;
   }
+  /* The full engraving is position:absolute and taller than the box reserved
+     while it is arriving. Clip it to that box so it does not cover the line. */
+  .fb--inst {
+    overflow: hidden;
+  }
   .ist-art-mount > .ist-art {
     position: absolute;
     inset: 0;
@@ -104,6 +109,10 @@ html[data-phone='1'] .ist-chip {
 
 html[data-phone='1'] .ist-art-mount {
   position: absolute;
+}
+
+html[data-phone='1'] .fb--inst {
+  overflow: hidden;
 }
 
 html[data-phone='1'] .ist-art-mount > .ist-art {
