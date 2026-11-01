@@ -1,10 +1,10 @@
 {
-  "at": "2026-11-01T02:22:51Z",
+  "at": "2026-11-01T02:32:53Z",
   "unit": "Claude cost = API-price-weighted tokens, Opus-input units (see claude_review.py)",
   "calibration": {
     "proWeek": 78712743.01,
-    "pro5h": 10691874.95,
-    "source": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 68% / 100); pro5h = claude cost since 2026-10-31T23:00:00 / (five_hour 87% / 100)"
+    "pro5h": 10570376.38,
+    "source": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 68% / 100); pro5h = claude cost since 2026-10-31T23:00:00 / (five_hour 88% / 100)"
   },
   "claude": {
     "week": {
@@ -241,7 +241,7 @@
       }
     },
     "day": {
-      "since": "2026-10-31T02:22:51",
+      "since": "2026-10-31T02:32:53",
       "cost": 32329300.27,
       "tokens": 176992299,
       "calls": 1547,
@@ -459,8 +459,8 @@
   "grok": {
     "week": {
       "since": "2026-10-30T16:08:00",
-      "tokens": 957840439,
-      "pctUsed": 50,
+      "tokens": 981075827,
+      "pctUsed": 51,
       "byTask": {
         "bench-r5": 6638672,
         "bench-r6": 49084870,
@@ -505,7 +505,7 @@
         "space3-motion": 4788805,
         "space3-overview": 35329331,
         "space3-tokens": 10283767,
-        "studio-pass": 180403171,
+        "studio-pass": 203638559,
         "t10-small": 4653311,
         "t11-route": 5417173,
         "t27-memory": 13262986,
@@ -542,14 +542,14 @@
       },
       "byProject": {
         "agentic-os-live": 465900163,
-        "living-lyrics": 282164958,
+        "living-lyrics": 305400346,
         "other": 209775318
       }
     },
     "day": {
-      "since": "2026-10-31T02:22:51",
-      "tokens": 643216189,
-      "pctUsed": 33.58,
+      "since": "2026-10-31T02:32:53",
+      "tokens": 666451577,
+      "pctUsed": 34.64,
       "byTask": {
         "bench-r6": 49084870,
         "brain-apple-music": 5948124,
@@ -586,7 +586,7 @@
         "space3-motion": 4788805,
         "space3-overview": 35329331,
         "space3-tokens": 10283767,
-        "studio-pass": 145353875,
+        "studio-pass": 168589263,
         "t10-small": 4653311,
         "t11-route": 5417173,
         "t35-r2": 11402426,
@@ -606,7 +606,7 @@
       },
       "byProject": {
         "agentic-os-live": 326955750,
-        "living-lyrics": 164646075,
+        "living-lyrics": 187881463,
         "other": 151614364
       }
     }
@@ -615,15 +615,15 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-10-31T23:25:18Z",
+        "at": "2026-11-01T02:25:18Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 98.74,
-        "weeklyResetIn": "166h 39m",
-        "fiveHourResetIn": "3h 39m"
+        "weeklyResetIn": "163h 39m",
+        "fiveHourResetIn": "39m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-10-31T23:25:18Z",
+        "at": "2026-11-01T02:25:18Z",
         "weeklyRemaining": 100,
         "fiveHourRemaining": 100
       }
@@ -948,10 +948,10 @@
   "sources": {
     "claude.week": "python ops/usage/claude_review.py --since 2026-10-30T04:00:00 --by-chat",
     "claude.week.overhead": "python ops/usage/claude_cache.py --since 2026-10-30T04:00:00",
-    "claude.day": "python ops/usage/claude_review.py --since 2026-10-31T02:22:51 --by-chat",
-    "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 68% / 100); pro5h = claude cost since 2026-10-31T23:00:00 / (five_hour 87% / 100)",
+    "claude.day": "python ops/usage/claude_review.py --since 2026-10-31T02:32:53 --by-chat",
+    "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 68% / 100); pro5h = claude cost since 2026-10-31T23:00:00 / (five_hour 88% / 100)",
     "grok.week": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T16:08:00 (grok.weekly.resetsAt minus 7d)",
-    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-10-31T02:22:51",
+    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-10-31T02:32:53",
     "agy.quota": "ops/usage/latest.json gemini.quota",
     "agy.runs": "ops/usage/ledger/*.jsonl kind=run"
   }
