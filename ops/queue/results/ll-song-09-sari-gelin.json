@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-09-sari-gelin",
+  "status": "pass",
+  "branch": "night/ll-song-09-sari-gelin",
+  "commit": "3454a97f09504e50bcce9d794f8c53a22c49bbe9",
+  "tokens": 25213540,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts sari-gelin\n\n\n✓ sari-gelin  (0 ошибок, 0 предупреждений)\n\nИтого: 0 ошибок, 0 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue\\logs\\ll-song-09-sari-gelin.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
