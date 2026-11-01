@@ -1,7 +1,7 @@
 /*
  * Liquid glass. One lens per surface. Tokens live in tokens.css (--lg-*).
- * Phone (html[data-glass=rim]) keeps the rim, tint and shadow, and skips the
- * displacement filter. Thick surfaces skip backdrop-filter entirely there.
+ * Phone (html[data-glass=rim]) blurs the header and the floor and does not
+ * reference the displacement map. The sheet stays opaque in every mode.
  */
 
 .lg-defs {

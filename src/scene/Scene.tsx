@@ -475,6 +475,22 @@ export const Scene = memo(function Scene({ song, timeline, settings, features, c
             stageEl.style.transform = '';
           }
         }
+        // The picture stays. A dwell of one view still hands the outgoing frame
+        // to the next, which is what the scrub handoff measures. A fast flick
+        // is shorter than that dwell, so it does not clone the stage.
+        if (motion !== 'off') {
+          const key = String(Math.round(flowPosition(plan, clock())));
+          if (!viewKey) {
+            viewKey = key;
+            viewAt = now;
+          } else if (key !== viewKey) {
+            const held = now - viewAt;
+            dropDepart();
+            if (held >= DWELL_MS) takeDepart();
+            viewKey = key;
+            viewAt = now;
+          }
+        }
         return;
       }
       if (motion !== 'off') {

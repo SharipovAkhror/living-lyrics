@@ -6,8 +6,8 @@
  * The filter definition itself never changes.
  *
  * Phone and reduced transparency: no pointer tracking, no displacement. A tap
- * may set the light once. Thick surfaces (floor, sheet) do not use a backdrop
- * filter at all; the rim, tint and shadow carry the look.
+ * may set the light once. The phone header and floor blur and saturate only.
+ * Reduced transparency and the settings sheet stay opaque.
  */
 
 type Mode = 'solid' | 'rim' | 'lens';
