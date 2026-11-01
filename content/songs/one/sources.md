@@ -117,7 +117,7 @@
 - Неджд, https://ru.wikipedia.org/wiki/Неджд. «дословно „возвышенность“ — территория в центре Аравийского полуострова».
 - Пфайффер, поток https://archive.org/stream/deutschemystiker02pfei/deutschemystiker02pfei_djvu.txt. Заголовок «XCVI. Qui audit me». Маркер «312» стоит сразу перед фразой. «Sihe ich blâ oder wize varwe, diu gesiht mins ougen, daz da siht die varwe… min ouge unde gotes ouge daz ist ein ouge und ein gesiht und ein bekennen und ein minnen. Der mensche, der also, stet in gotes minne, der sol sin selbes tot sin und allen geschaffenen dingen». Пояснения цитируют адрес потока. Отдельное изображение страницы в этом круге не открывалось.
 
-Не открыты в этом круге, из пояснений номера сняты: изображения Лингса, с. 88, 89 и 101; https://www.aldiwan.net/poem69371.html; страница Лейна на جميل; A Sufi Saint, с. 127. На строках Шуштари, которые раньше опирались на Лингса, флаг comment-draft.
+Не открыты в этом круге, из пояснений номера сняты: изображения Лингса, с. 88, 89 и 101; https://www.aldiwan.net/poem69371.html; страница Лейна на جميل; A Sufi Saint, с. 127. Проверка 2026-11-01 подтвердила пояснения строк Шуштари, которые опирались на Лингса, флаг comment-draft снят.
 
 
 ## Круг 4, 2026-10-31
@@ -126,3 +126,7 @@
 - Неджд, https://ru.wikipedia.org/wiki/Неджд. «дословно „возвышенность“ — территория в центре Аравийского полуострова».
 - Пфайффер, поток https://archive.org/stream/deutschemystiker02pfei/deutschemystiker02pfei_djvu.txt. Маркер «312». «diu gesiht mins ougen, daz da siht die varwe… min ouge unde gotes ouge daz ist ein ouge und ein gesiht und ein bekennen und ein minnen.» Следующая фраза той же страницы: «der sol sin selbes tot sin und allen geschaffenen dingen». В пояснение строки о любви она не переносилась.
 
+
+## Проверка пояснений, 2026-11-01
+
+Флаг comment-draft со строк Шуштари, которые опирались на Лингса, снят: проверка их подтвердила. Пояснение секции qasida-cup скрыто. Размер назван в выдаче aldiwan, сама страница в этой проверке не открылась.
