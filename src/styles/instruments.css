@@ -60,6 +60,19 @@
 .ist--fan .ist-plate--main {
   background: var(--ist-plate-strong);
 }
+/* The song is one canvas. A filled plate read as a purple tile behind the engraving.
+   The gallery keeps its material. */
+.scene .ist-plate,
+.scene .ist-plate--inset,
+.scene .ist-plate--card,
+.scene .ist--fan .ist-plate--main {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+  /* One crossing after the entrance. Pause holds the clock, so this holds too. */
+  translate: calc(var(--along, 0) * 10px) 0;
+}
 
 /* Engraving */
 .ist-art {
@@ -85,14 +98,6 @@
 .ist-art .fillin {
   opacity: calc(var(--hatch, 1) * 0.12);
 }
-/* The faint medallion ring only on large plates; on small ones it is noise */
-.ist-art .frame {
-  opacity: calc(var(--hatch, 1) * 0.3);
-}
-.ist-t-m .ist-art .frame,
-.ist-t-s .ist-art .frame {
-  display: none;
-}
 /* Small plates: lines would thin out below a pixel; a hairline halo keeps them legible */
 .ist-t-s .ist-art svg {
   filter: drop-shadow(0 0 0.35px currentColor);
@@ -109,24 +114,25 @@
 .scene .ist-art .d {
   stroke-width: 2.6;
 }
+/* Hatch stays thinner than its spacing, or neighbouring strokes merge into a bar. */
 .scene .ist-art .h {
-  stroke-width: 1.4;
+  stroke-width: 0.8;
 }
-/* Phone size: the same hairline disappeared into the field. */
+/* Phone size: the contour hairline disappeared into the field. Hatch stays open. */
 @media (max-width: 699px) {
   .scene .ist-art .d { stroke-width: 3.3; }
-  .scene .ist-art .h { stroke-width: 1.7; }
+  .scene .ist-art .h { stroke-width: 1.05; }
 }
-/* Light field: the full dark ink sat dirty on the violet. Hatch steps back. */
+/* Light field: warm ink on a paper body, so the drawing sits off the violet. */
 :root[data-theme='light'] .scene .ist-art {
-  color: color-mix(in srgb, var(--ink) 82%, #4a3428);
+  color: #1c1612;
 }
 :root[data-theme='light'] .scene .ist-art .h {
-  opacity: 0.5;
+  opacity: 0.78;
 }
-/* The shared ring was louder than the instrument. */
-.scene .ist-art .frame {
-  opacity: calc(var(--hatch, 1) * 0.05);
+:root[data-theme='light'] .scene .ist-art .fillin {
+  fill: #f7f1e6;
+  opacity: calc(var(--hatch, 1) * 0.92);
 }
 .ist-art .str {
   transform: translate(var(--str-x, 0), var(--str-y, 0));
@@ -184,6 +190,13 @@
 }
 .ist-label--start {
   justify-content: center;
+}
+.ist-sub {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .ist-name {
   color: var(--label);

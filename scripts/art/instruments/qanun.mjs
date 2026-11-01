@@ -19,14 +19,14 @@ export default function qanun() {
 
   // Case thickness
   a.path(front, 'd', 1.2);
-  a.add(fillHatch({ shape: front, box: { x: 26, y: 290, w: 350, h: 18 }, angle: 0, spacing: 1.6, width: 0.5 }));
+  a.add(fillHatch({ shape: front, box: { x: 26, y: 290, w: 350, h: 18 }, angle: 0, spacing: 3.6, width: 0.46 }));
   a.path(side, 'd', 1.1);
-  a.add(fillHatch({ shape: side, box: { x: 348, y: 148, w: 28, h: 160 }, angle: 80, spacing: 1.5, width: 0.45 }));
+  a.add(fillHatch({ shape: side, box: { x: 348, y: 148, w: 28, h: 160 }, angle: 80, spacing: 3.4, width: 0.42 }));
 
   // Soundboard
   a.fillin(top);
   a.path(top, 'd', 1.6);
-  a.add(shade({ shape: top, box: { x: 26, y: 146, w: 350, h: 150 }, angle: 20, spacing: 2.8, width: 0.4, light: P(-40, -30) }));
+  a.add(shade({ shape: top, box: { x: 26, y: 146, w: 350, h: 150 }, angle: 20, spacing: 5.2, width: 0.36, light: P(-40, -30) }));
   // Inlaid border
   const inset = (p, q, t) => lerpP(p, q, t);
   const bL = inset(nearL, farR, 0.025);
@@ -69,7 +69,7 @@ export default function qanun() {
   const brF2 = P(brF.x - 5, brF.y);
   const bridge = poly([lerpP(brN, brF, -0.01), lerpP(brF, brN, -0.01), lerpP(brF2, brN2, -0.01), lerpP(brN2, brF2, -0.01)]);
   a.path(bridge, 'd', 1);
-  a.add(fillHatch({ shape: bridge, box: { x: 300, y: 140, w: 60, h: 170 }, angle: 80, spacing: 1.2, width: 0.45 }));
+  a.add(fillHatch({ shape: bridge, box: { x: 300, y: 140, w: 60, h: 170 }, angle: 80, spacing: 3.4, width: 0.42 }));
 
   // Rosettes on the wooden board
   a.add(rosette(200, 214, 16, 8, { width: 0.8 }));
@@ -81,7 +81,7 @@ export default function qanun() {
   const pbF = lerpP(farL, farR, 0.12);
   a.path(line(pbN, pbF), 'd', 0.9);
   const strip = poly([nearL, pbN, pbF, farL]);
-  a.add(fillHatch({ shape: strip, box: { x: 26, y: 148, w: 160, h: 148 }, angle: 60, spacing: 1.8, width: 0.42 }));
+  a.add(fillHatch({ shape: strip, box: { x: 26, y: 148, w: 160, h: 148 }, angle: 60, spacing: 3.8, width: 0.4 }));
   let pegs = '';
   let mandals = '';
   const courses = 26;

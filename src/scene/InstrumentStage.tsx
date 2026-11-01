@@ -173,7 +173,9 @@ export const InstrumentStage = forwardRef<InstrumentStageHandle, InstrumentStage
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   const infos = list.map((k) => instrument(k));
   const players = useMemo(() => assignPerformers(list, performers), [list.join(), performers?.join()]); // eslint-disable-line react-hooks/exhaustive-deps
-  const lines = 1 + (infos.some((i) => i?.native) ? 1 : 0) + (players.some(Boolean) ? 1 : 0) + (wrapNames ? 1 : 0);
+  // Name on one line, native script and player together on the next.
+  // A third line made a tight column and shifted the neighbour's baseline.
+  const lines = (infos.some((i) => i?.native) || players.some(Boolean) ? 2 : 1) + (wrapNames ? 0 : 0);
 
   const layout = useMemo(
     () =>
@@ -613,12 +615,17 @@ function Plate({
       />
       <figcaption className={`ist-label ist-label--${label.align}`} style={{ left: label.x, top: label.y, width: label.w, height: label.h }}>
         <span className="ist-name">{name}</span>
-        {native ? (
-          <span className="ist-native" dir="auto">
-            {native}
+        {native || performer ? (
+          <span className="ist-sub">
+            {native ? (
+              <span className="ist-native" dir="auto">
+                {native}
+              </span>
+            ) : null}
+            {native && performer ? <span className="ist-sep"> · </span> : null}
+            {performer ? <span className="ist-perf">{performer}</span> : null}
           </span>
         ) : null}
-        {performer ? <span className="ist-perf">{performer}</span> : null}
       </figcaption>
     </figure>
   );
@@ -631,9 +638,21 @@ function Plate({
  * Rasterizing into a canvas was measured and reverted: the copy still climbed,
  * and the drawing went soft.
  */
-/** The static engraving rules of instruments.css, for the phone's shadow roots. Pose rules stay out. */
-const SHADOW_ART_CSS =
-  '.ist-art .h{opacity:var(--hatch,1)}.ist-art .fillin{opacity:calc(var(--hatch,1)*.12)}.ist-art .frame{opacity:calc(var(--hatch,1)*.3)}';
+/**
+ * Engraving ink for the phone shadow root. The page sheet does not reach it.
+ * Light theme paints a paper body; dark keeps the fill faint so it is not a slab.
+ * Pose rules stay on the page: they do not apply inside the shadow.
+ */
+const SHADOW_ART_CSS = [
+  '.ist-art{color:var(--ink)}',
+  '.ist-art .d{stroke-width:3.1}',
+  '.ist-art .h{opacity:var(--hatch,1);stroke-width:.95}',
+  '.ist-art .fillin{opacity:calc(var(--hatch,1)*.12)}',
+  '.ist-art .part-bow{transform:translate(var(--bow,0),0)}',
+  ':host-context([data-theme="light"]) .ist-art{color:#1c1612}',
+  ':host-context([data-theme="light"]) .ist-art .h{opacity:calc(var(--hatch,1)*.78)}',
+  ':host-context([data-theme="light"]) .ist-art .fillin{fill:#f7f1e6;opacity:calc(var(--hatch,1)*.92)}',
+].join('');
 
 function keepArt(mount: HTMLElement, key: string, svg: string) {
   const root = mount.shadowRoot ?? mount.attachShadow({ mode: 'open' });

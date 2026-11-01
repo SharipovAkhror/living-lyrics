@@ -35,7 +35,7 @@ export default function sitar() {
   const tumba = circle(gourd.x, gourd.y, gR);
   a.begin();
   a.path(bowl, 'd', 1.05);
-  a.add(shade({ shape: bowl, box: { x: gourd.x - gR - 8, y: gourd.y - gR - 6, w: gR * 2 + 28, h: gR * 2 + 16 }, angle: 55, spacing: 1.7, width: 0.45, light: P(-10, -8) }));
+  a.add(shade({ shape: bowl, box: { x: gourd.x - gR - 8, y: gourd.y - gR - 6, w: gR * 2 + 28, h: gR * 2 + 16 }, angle: 55, spacing: 4.2, width: 0.42, light: P(-10, -8) }));
   a.hidden(tumba);
 
   // Neck and pegbox, hidden where the soundboard covers the joint.
@@ -44,9 +44,9 @@ export default function sitar() {
   const head = `M${cx - nw * 0.78} ${neckTop}L${cx - nw * 0.7} ${headTop + 8}Q${cx - 4} ${headTop - 2} ${cx + 2} ${headTop + 4}Q${cx + nw * 0.5} ${headTop + 10} ${cx + nw * 0.55} ${neckTop - 2}L${cx + nw * 0.78} ${neckTop}`;
   a.begin();
   a.path(neck, 'd', 1.25);
-  a.add(shade({ shape: neck, box: { x: cx - nw - 4, y: neckTop - 2, w: nw * 2 + 8, h: neckJoin - neckTop + 8 }, angle: 90, spacing: 1.6, width: 0.4, light: P(-4, 0) }));
+  a.add(shade({ shape: neck, box: { x: cx - nw - 4, y: neckTop - 2, w: nw * 2 + 8, h: neckJoin - neckTop + 8 }, angle: 90, spacing: 3.6, width: 0.38, light: P(-4, 0) }));
   a.path(head, 'd', 1.15);
-  a.add(fillHatch({ shape: `${head}Z`, box: { x: cx - nw - 2, y: headTop - 4, w: nw * 2 + 8, h: neckTop - headTop + 6 }, angle: 70, spacing: 1.8, width: 0.36 }));
+  a.add(fillHatch({ shape: `${head}Z`, box: { x: cx - nw - 2, y: headTop - 4, w: nw * 2 + 8, h: neckTop - headTop + 6 }, angle: 70, spacing: 3.6, width: 0.36 }));
   a.hidden(tumba);
 
   // Soundboard (tabli) set into the gourd, with a plain border. Not a copy of one painted tumba.
@@ -55,7 +55,7 @@ export default function sitar() {
   a.path(tumba, 'd', 1.5);
   a.path(tabli, 'd', 1.15);
   a.path(circle(gourd.x, gourd.y + 2, gR - 11), 'd', 0.45);
-  a.add(shade({ shape: tumba, box: { x: gourd.x - gR - 2, y: gourd.y - gR - 2, w: gR * 2 + 6, h: gR * 2 + 6 }, angle: 40, spacing: 2.4, width: 0.36, light: P(-16, -14) }));
+  a.add(shade({ shape: tumba, box: { x: gourd.x - gR - 2, y: gourd.y - gR - 2, w: gR * 2 + 6, h: gR * 2 + 6 }, angle: 40, spacing: 4.8, width: 0.34, light: P(-16, -14) }));
 
   // Main pegs: five on the side of the pegbox, two on the face just under the nut.
   let pegs = '';
@@ -115,7 +115,7 @@ export default function sitar() {
   const by = gourd.y + 4;
   const jaw = `M${cx - 16} ${by}L${cx + 16} ${by}L${cx + 14} ${by + 5}L${cx - 14} ${by + 5}Z`;
   a.path(jaw, 'd', 0.95);
-  a.add(fillHatch({ shape: jaw, box: { x: cx - 18, y: by - 1, w: 36, h: 8 }, angle: 0, spacing: 1.2, width: 0.4 }));
+  a.add(fillHatch({ shape: jaw, box: { x: cx - 18, y: by - 1, w: 36, h: 8 }, angle: 0, spacing: 3.2, width: 0.38 }));
   a.path(line(P(cx - 13, by + 1.2), P(cx + 13, by + 1.2)), 'd', 0.55);
   const tailY = gourd.y + gR - 10;
   a.path(circle(cx, tailY, 2.4), 'd', 0.7);

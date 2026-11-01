@@ -34,20 +34,20 @@ export function longNeckLute(o) {
   a.add(`<g transform="rotate(${o.tilt ?? 32} 200 205)">`);
   // Back of the bowl beyond the soundboard
   a.path(back, 'd', 1.1);
-  a.add(shade({ shape: back, box: { x: cx - w - 10, y: bodyTop - 10, w: 2 * w + 30, h: o.bodyH + 30 }, angle: 60, spacing: 1.6, width: 0.5, light: P(-6, -4) }));
+  a.add(shade({ shape: back, box: { x: cx - w - 10, y: bodyTop - 10, w: 2 * w + 30, h: o.bodyH + 30 }, angle: 60, spacing: 4.2, width: 0.48, light: P(-6, -4) }));
   // Soundboard
   a.fillin(body);
   a.path(body, 'd', 1.5);
-  a.add(shade({ shape: body, box: { x: cx - w - 4, y: bodyTop - 4, w: 2 * w + 8, h: o.bodyH + 8 }, angle: 45, spacing: 2.6, width: 0.4, light: P(-w * 0.35, -o.bodyH * 0.25) }));
-  // Staves hinted on the soundboard (tanbur/bağlama are carved, the lines read as wood grain)
+  a.add(shade({ shape: body, box: { x: cx - w - 4, y: bodyTop - 4, w: 2 * w + 8, h: o.bodyH + 8 }, angle: 45, spacing: 5.0, width: 0.36, light: P(-w * 0.35, -o.bodyH * 0.25) }));
+  // A few stave lines, not a barcode. Tanbur and bağlama are carved; the lines read as wood.
   let grain = '';
-  for (let x = cx - w + 6; x < cx + w; x += 6) grain += line(P(x, bodyTop), P(x + 1, bottom));
+  for (let x = cx - w + 10; x < cx + w - 4; x += 18) grain += line(P(x, bodyTop), P(x + 1.5, bottom));
   a.add(`<g clip-path="url(#${o.key}-bodyclip)"><path class="h" d="${grain}" stroke-width="0.2" opacity=".7"/></g>`);
   a.defs += `<clipPath id="${o.key}-bodyclip"><path d="${body}"/></clipPath>`;
 
   // Neck with tied frets
   a.path(`${neck}`, 'd', 1.3);
-  a.add(shade({ shape: `${neck}Z`, box: { x: cx - nw - 2, y: nut - 2, w: o.neckW + 4, h: bodyTop - nut + 8 }, angle: 90, spacing: 1.5, width: 0.45, light: P(-3, 0) }));
+  a.add(shade({ shape: `${neck}Z`, box: { x: cx - nw - 2, y: nut - 2, w: o.neckW + 4, h: bodyTop - nut + 8 }, angle: 90, spacing: 3.6, width: 0.42, light: P(-3, 0) }));
   let frets = '';
   const scale = bodyTop + o.bodyH * 0.72 - nut; // nut → bridge distance
   for (let i = 1; i <= o.frets; i++) {
@@ -63,7 +63,7 @@ export function longNeckLute(o) {
   const headTop = nut - o.headH;
   const head = `M${cx - nw * 0.82} ${nut}L${cx - nw * 0.75} ${headTop + 6}Q${cx} ${headTop - 4} ${cx + nw * 0.75} ${headTop + 6}L${cx + nw * 0.82} ${nut}`;
   a.path(head, 'd', 1.2);
-  a.add(fillHatch({ shape: `${head}Z`, box: { x: cx - nw - 2, y: headTop - 6, w: o.neckW + 4, h: o.headH + 8 }, angle: 75, spacing: 1.7, width: 0.42 }));
+  a.add(fillHatch({ shape: `${head}Z`, box: { x: cx - nw - 2, y: headTop - 6, w: o.neckW + 4, h: o.headH + 8 }, angle: 75, spacing: 3.8, width: 0.4 }));
   let pegs = '';
   const pegList = o.pegs; // [{side:-1|1, y}]
   for (const p of pegList) {
@@ -79,7 +79,7 @@ export function longNeckLute(o) {
   if (o.guard) {
     const g = `M${cx - w * 0.45} ${bodyTop + o.bodyH * 0.5}Q${cx} ${bodyTop + o.bodyH * 0.44} ${cx + w * 0.45} ${bodyTop + o.bodyH * 0.5}L${cx + w * 0.38} ${bodyTop + o.bodyH * 0.64}Q${cx} ${bodyTop + o.bodyH * 0.6} ${cx - w * 0.38} ${bodyTop + o.bodyH * 0.64}Z`;
     a.path(g, 'd', 0.8);
-    a.add(fillHatch({ shape: g, box: { x: cx - w * 0.5, y: bodyTop + o.bodyH * 0.42, w: w, h: o.bodyH * 0.25 }, angle: 30, spacing: 2.2, width: 0.4 }));
+    a.add(fillHatch({ shape: g, box: { x: cx - w * 0.5, y: bodyTop + o.bodyH * 0.42, w: w, h: o.bodyH * 0.25 }, angle: 30, spacing: 4.0, width: 0.38 }));
   }
 
   // Bridge and tailpiece

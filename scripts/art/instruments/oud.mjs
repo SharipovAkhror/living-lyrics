@@ -17,7 +17,7 @@ export default function oud({ framed = true, transform = 'rotate(-24 200 205)' }
 
   // Bowl seen past the soundboard edge: dense engraved crescent.
   a.path(bowl, 'd', 1.2);
-  a.add(shade({ shape: bowl, box: { x: 100, y: 130, w: 210, h: 235 }, angle: 60, spacing: 1.7, width: 0.55, light: P(-7, -5) }));
+  a.add(shade({ shape: bowl, box: { x: 100, y: 130, w: 210, h: 235 }, angle: 60, spacing: 4.2, width: 0.5, light: P(-7, -5) }));
   // Staves hinted on the bowl crescent.
   let staves = '';
   for (let i = 1; i < 7; i++) {
@@ -35,14 +35,14 @@ export default function oud({ framed = true, transform = 'rotate(-24 200 205)' }
   const grainClip = gid('clip');
   a.defs += `<clipPath id="${grainClip}"><path d="${inner}"/></clipPath>`;
   let grain = '';
-  for (let x = 108; x < 296; x += 5.5) grain += line(P(x, 130), P(x + 1.5, 360));
+  for (let x = 118; x < 290; x += 16) grain += line(P(x, 130), P(x + 2, 360));
   a.add(`<g clip-path="url(#${grainClip})"><path class="h" d="${grain}" stroke-width="0.22" opacity="0.7"/></g>`);
-  a.add(shade({ shape: inner, box, angle: 50, spacing: 2.6, width: 0.42, light: P(-26, -22) }));
+  a.add(shade({ shape: inner, box, angle: 50, spacing: 5.2, width: 0.38, light: P(-26, -22) }));
 
   // Fingerboard (ebony) running onto the soundboard
   const fb = `M189 62L211 62L215 150Q215 178 200 180Q185 178 185 150Z`;
   a.path(fb, 'd', 1.2);
-  a.add(fillHatch({ shape: fb, box: { x: 180, y: 58, w: 40, h: 126 }, angle: 80, spacing: 1.5, width: 0.5 }));
+  a.add(fillHatch({ shape: fb, box: { x: 180, y: 58, w: 40, h: 126 }, angle: 80, spacing: 3.4, width: 0.48 }));
   // Neck sides
   a.path(`M185 138L187 62M215 138L213 62`, 'd', 1.2);
   // Nut
@@ -51,7 +51,7 @@ export default function oud({ framed = true, transform = 'rotate(-24 200 205)' }
   // Pegbox bent back, with six pegs a side
   const pegbox = `M188 59L193 14Q200 8 207 14L212 59`;
   a.path(pegbox, 'd', 1.3);
-  a.add(fillHatch({ shape: `${pegbox}Z`, box: { x: 186, y: 8, w: 28, h: 52 }, angle: 70, spacing: 1.9, width: 0.45 }));
+  a.add(fillHatch({ shape: `${pegbox}Z`, box: { x: 186, y: 8, w: 28, h: 52 }, angle: 70, spacing: 3.6, width: 0.42 }));
   // Pegs: tapered shafts with pear-shaped heads, angled slightly back
   let pegs = '';
   const peg = (x, y, dir) => {
@@ -74,12 +74,12 @@ export default function oud({ framed = true, transform = 'rotate(-24 200 205)' }
   // Pickguard (darker wood) between rosette and bridge
   const guard = `M200 258C226 258 238 272 236 288C234 302 218 308 200 308C182 308 166 302 164 288C162 272 174 258 200 258Z`;
   a.path(guard, 'd', 1);
-  a.add(fillHatch({ shape: guard, box: { x: 160, y: 254, w: 80, h: 58 }, angle: 35, spacing: 1.6, width: 0.45, cross: true }));
+  a.add(fillHatch({ shape: guard, box: { x: 160, y: 254, w: 80, h: 58 }, angle: 35, spacing: 3.8, width: 0.42, cross: true }));
 
   // Bridge with string ties
   const bridge = `M166 318Q200 313 234 318L234 326Q200 321 166 326Z`;
   a.path(bridge, 'd', 1.1);
-  a.add(fillHatch({ shape: bridge, box: { x: 164, y: 312, w: 72, h: 16 }, angle: 0, spacing: 1.4, width: 0.4 }));
+  a.add(fillHatch({ shape: bridge, box: { x: 164, y: 312, w: 72, h: 16 }, angle: 0, spacing: 3.2, width: 0.4 }));
 
   // Strings: five double courses and a single bass, bridge to nut, then into the pegbox
   const xsB = [176, 179.5, 186, 189.5, 196, 199.5, 206, 209.5, 216, 219.5, 225];

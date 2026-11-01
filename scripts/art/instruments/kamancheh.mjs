@@ -96,13 +96,15 @@ export default function kamancheh() {
   });
   a.add('</g>');
 
-  // The bow: a slightly arched stick with loosely tensioned hair, lying across
+  // The bow lies across the instrument. The group travels once with --bow.
   const b0 = P(50, 244);
   const b1 = P(352, 126);
   const stick = `M${b0.x} ${b0.y}Q${f((b0.x + b1.x) / 2 - 10)} ${f((b0.y + b1.y) / 2 - 26)} ${b1.x} ${b1.y}`;
+  a.add('<g class="part-bow">');
   a.path(stick, 'd', 1.3);
   a.path(`M${b0.x + 6} ${b0.y + 2}Q${f((b0.x + b1.x) / 2 + 2)} ${f((b0.y + b1.y) / 2 + 3)} ${b1.x - 2} ${b1.y + 5}`, 'str', 0.6);
   a.path(ellipse(b0.x + 2, b0.y + 1, 7, 4.5, -26) + `M${b1.x} ${b1.y}L${b1.x - 2} ${b1.y + 5}`, 'd', 0.9);
-  a.add(fillHatch({ shape: ellipse(b0.x + 2, b0.y + 1, 7, 4.5, -26), box: { x: b0.x - 8, y: b0.y - 8, w: 20, h: 18 }, angle: 60, spacing: 1.2, width: 0.4 }));
+  a.add(fillHatch({ shape: ellipse(b0.x + 2, b0.y + 1, 7, 4.5, -26), box: { x: b0.x - 8, y: b0.y - 8, w: 20, h: 18 }, angle: 60, spacing: 3.2, width: 0.4 }));
+  a.add('</g>');
   return a.done('Кяманча');
 }

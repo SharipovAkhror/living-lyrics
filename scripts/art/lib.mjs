@@ -156,17 +156,12 @@ export function dots(pts, every = 6, r = 0.9) {
   return d;
 }
 
-/** Faint circular medallion shared by all illustrations: hairline rings and a 16-point star border. */
-export function medallion(cx = 200, cy = 200, r = 186) {
-  let d = circle(cx, cy, r) + circle(cx, cy, r - 5);
-  let t = '';
-  for (let i = 0; i < 96; i++) {
-    const a = (i / 96) * Math.PI * 2;
-    const p1 = P(cx + (r - 5) * Math.cos(a), cy + (r - 5) * Math.sin(a));
-    const p2 = P(cx + (r - (i % 2 ? 8 : 11)) * Math.cos(a), cy + (r - (i % 2 ? 8 : 11)) * Math.sin(a));
-    t += line(p1, p2);
-  }
-  return `<g class="frame" opacity="0.32"><path class="d" pathLength="1" d="${d}" stroke-width="0.6"/><path class="h" d="${t}" stroke-width="0.45"/></g>`;
+/**
+ * Shared tick-ring. Owner check 23: the circle and its ticks competed with the instrument
+ * on every plate, including the gallery. Call sites stay; nothing is drawn.
+ */
+export function medallion(_cx = 200, _cy = 200, _r = 186) {
+  return '';
 }
 
 export function svgDoc(title, defs, body) {
