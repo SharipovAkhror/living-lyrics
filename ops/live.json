@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T22:09:13Z",
+  "at": "2026-11-01T22:11:03Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,8 +10,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 16217,
-      "age": 16246,
+      "minutes": 16219,
+      "age": 16248,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -19,8 +19,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 16218,
-      "age": 16246,
+      "minutes": 16220,
+      "age": 16248,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -28,8 +28,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 16159,
-      "age": 16210,
+      "minutes": 16161,
+      "age": 16212,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -44,7 +44,7 @@
       "name": "phone-overlap",
       "state": "working",
       "minutes": 0,
-      "age": 142,
+      "age": 144,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/phone-overlap"
@@ -58,8 +58,8 @@
     {
       "name": "studio-pass",
       "state": "working",
-      "minutes": 2,
-      "age": 39,
+      "minutes": 0,
+      "age": 41,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -67,8 +67,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 2160,
-      "age": 2174,
+      "minutes": 2162,
+      "age": 2176,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -76,8 +76,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2710,
-      "age": 2830,
+      "minutes": 2712,
+      "age": 2832,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -85,8 +85,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 16155,
-      "age": 16256,
+      "minutes": 16157,
+      "age": 16258,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -94,8 +94,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 13112,
-      "age": 13142,
+      "minutes": 13114,
+      "age": 13144,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -103,8 +103,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 467,
-      "age": 488,
+      "minutes": 469,
+      "age": 490,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -112,8 +112,8 @@
     {
       "name": "translation-alive",
       "state": "finished",
-      "minutes": 52,
-      "age": 78,
+      "minutes": 54,
+      "age": 80,
       "tokens": 7090137,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/translation-alive"
@@ -136,7 +136,8 @@
       "project": "agentic-os-live",
       "reports_to": "owner",
       "state": "working",
-      "last_act_at": "2026-11-01T22:08:27.829Z"
+      "last_at": "2026-11-01T22:08:34.081Z",
+      "last_act_at": "2026-11-01T22:08:34.081Z"
     },
     {
       "name": "AOS · Ops",
@@ -197,17 +198,12 @@
     {
       "name": "pipeline",
       "title": "Add Mevlana Celaleddin: text, translation, commentary, timing (draft)",
-      "minutes": 22
-    },
-    {
-      "name": "pipeline",
-      "title": "Add I Only Knew Love: text, translation, commentary, timing (draft)",
-      "minutes": 48
+      "minutes": 24
     },
     {
       "name": "pipeline",
       "title": "Add We Love Life: text, translation, commentary, timing (draft)",
-      "minutes": 71
+      "minutes": 73
     }
   ],
   "hygiene": {
