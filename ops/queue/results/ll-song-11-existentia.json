@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-11-existentia",
+  "status": "pass",
+  "branch": "night/ll-song-11-existentia",
+  "commit": "6a85f48b4dc19a91d832f43e90cbbdadedec4f54",
+  "tokens": 16383229,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts existentia\n\n\n✓ existentia  (0 ошибок, 1 предупреждений)\n  внимание  v-fa-a › fa-1-1: слово «چُو» выходит за границы секции\n\nИтого: 0 ошибок, 1 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue\\logs\\ll-song-11-existentia.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
