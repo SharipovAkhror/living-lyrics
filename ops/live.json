@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T10:37:32Z",
+  "at": "2026-11-01T10:38:01Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -11,7 +11,7 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 15525,
+      "minutes": 15526,
       "age": 15555,
       "step": "Набор Phosphor собран, проверен на странице песни и запушен в grok/icons-a. В main не влит. ## 1. Готово, когда | Пункт | Статус | |---|---| | Полный набор на Phosphor, те же имена и API | выполнено | | Лицензия, версия и URL в docs/design/credits.md | выполнено | | Каждый знак API сопоставлен глифу базы | выполнено | | Тихий фирменный ход без потери ремесла | выполнено | | Старые наборы с ветки с",
       "tokens": 9490511,
@@ -21,7 +21,7 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 15526,
+      "minutes": 15527,
       "age": 15555,
       "step": "Push на телефон недоступен: в этой среде нет уведомлений на телефон. ## 1. Готово, когда - Полный набор на прежнем API, старые наборы сняты — выполнено. 21 имя в src/ui/icons.tsx. Удалены пути Phosphor и неиспользуемый src/icons/Icon.tsx. - Лицензия в docs/design/credits.md — выполнено. - Доски в work/icons-b/ — выполнено локально. Каталог work/ в .gitignore, на remote их нет. - validate, typechec",
       "tokens": 9850680,
@@ -31,7 +31,7 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 15467,
+      "minutes": 15468,
       "age": 15519,
       "step": "Шесть правок панели сделаны, доски пересняты, ветка запушена в grok/icons-c. В main ничего не сливал. ## 1. Готово, когда 1. Пуск по оптическому центру — выполнено. Сдвиг translate(1 0). Центр площади треугольника садится в 12,29 по сетке 24 (пауза — в 11,97). Плюс 1, а не 0,71: основание тяжелее площади, в круге 64 px плюс 1 читается серединой. При смене пуск и пауза расходятся на 0,32 единицы, н",
       "tokens": 13196979,
@@ -49,7 +49,7 @@
       "name": "studio-pass",
       "state": "finished",
       "minutes": 496,
-      "age": 556,
+      "age": 557,
       "step": "Ветка site/studio-pass-r22 запушена, предпросмотр на порту 4176 остановлен. Пункты 1–5 и док закрыты замерами. Прогон WebKit выполнен, но порог кадров Chromium на компьютере оба раза не пройден. ## 1. Что сделано 1. Сцена проигрыша, компьютер 1440×900, обе темы — выполнено. sceneCut в work/owner-check/new/probes.json: cuts: [], masked: false, колонка 868×618, просмотрено 24 прямоугольника. На врем",
       "tokens": 23235388,
       "model": "grok-4.7-build",
@@ -58,7 +58,7 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 1468,
+      "minutes": 1469,
       "age": 1483,
       "step": "Вливать нечего. Персидское «اختر» уже совпадает с Ганджуром и Викитекой, двоения на стыках бледных строк нет, веток ci/probe и wip/sync-tools на origin нет. Коммитов нет, ветка не пушилась: она совпадает с origin/main (70372c27). ## 1. Что сделано Каждое «اختر» сверено с источником — выполнено. В lyrics.json арабской «أ» (U+0623) нет. Править было нечего, запись в review не добавлялась: открытого ",
       "tokens": 4653311,
@@ -88,7 +88,7 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 12420,
+      "minutes": 12421,
       "age": 12451,
       "step": "Круг 1 выполнен и запушен в site/t35. Голос снят там, где стем и Gemini оба не слышат пения. Где свидетели расходятся не меньше 2 с, данные оставлены и записаны в review. ## 1. Готово, когда Таблица, пороги, число исправлений и «после правки» — выполнено. Файл docs/analysis/stage-marks.md. Порог — середина медиан вокального стема в спетых строках и в обычном проигрыше (формула work/review/t35/stem",
       "tokens": 6757832,
@@ -98,7 +98,7 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 464,
+      "minutes": 465,
       "age": 507,
       "step": "Итог проверки пояснений применён и запушен в origin/site/t37-comments. Коммит e6ca043b. Оригинал, перевод, тайминг и canon.md не менялись: в lyrics.json отличаются только comment и flags, в song.json только review. ## 1. Готово, когда - npm run validate — выполнено. 0 ошибок, 127 предупреждений, код 0. - npm run typecheck — выполнено, код 0. - npx tsx src/data/comments.test.ts — выполнено. 5 песен",
       "tokens": 10005379,
@@ -107,6 +107,103 @@
     }
   ],
   "gemini": [],
+  "chats": [
+    {
+      "name": "AOS · Engineer",
+      "role": "aos-engineer",
+      "project": "agentic-os-live",
+      "reports_to": "AOS · Main",
+      "state": "none"
+    },
+    {
+      "name": "AOS · Main",
+      "role": "aos-main",
+      "project": "agentic-os-live",
+      "reports_to": "owner",
+      "state": "idle"
+    },
+    {
+      "name": "AOS · Ops",
+      "role": "aos-ops",
+      "project": "agentic-os-live",
+      "reports_to": "AOS · Main",
+      "state": "none"
+    },
+    {
+      "name": "AOS · PC",
+      "role": "aos-pc",
+      "project": "agentic-os-live",
+      "reports_to": "AOS · Main",
+      "state": "idle",
+      "last": "Оба плана готовы и переданы AOS · Main. На компьютере я ничего не менял. Вопросы к вам задаст Main или я здесь, если вы зайдёте в этот чат. Wi-Fi - Сбои: 31.10 с 14:00 до 23:46 было 89 сбоев и 23 переподключения, все на сети HOME 2 FLOR. - Сейчас: в 23:46 Станция перешла на сеть HOME, и с тех пор сбоев нет. Данных пока всего около 25 минут, причина не доказана. - Что хуже всего: при обрыве чат 2,5",
+      "last_at": "2026-10-31T19:12:46.898Z",
+      "last_act_at": "2026-10-31T19:12:46.898Z"
+    },
+    {
+      "name": "AOS · Tech",
+      "role": "aos-tech",
+      "project": "agentic-os-live",
+      "reports_to": "AOS · Main",
+      "state": "none"
+    },
+    {
+      "name": "LL · Business",
+      "role": "ll-business",
+      "project": "living-lyrics",
+      "reports_to": "LL · Main",
+      "state": "idle",
+      "last": "Принял: agy из этого чата не запускаю, пока главный чат не разрешит. Я ничего не запускал.",
+      "last_at": "2026-10-31T21:48:46.547Z",
+      "last_act_at": "2026-10-31T21:48:46.547Z"
+    },
+    {
+      "name": "LL · Main",
+      "role": "ll-main",
+      "project": "living-lyrics",
+      "reports_to": "owner",
+      "state": "idle",
+      "last_act_at": "2026-11-01T10:37:29.889Z"
+    },
+    {
+      "name": "LL · Site",
+      "role": "ll-site",
+      "project": "living-lyrics",
+      "reports_to": "LL · Main",
+      "state": "idle",
+      "last": "T37 is on hold until LL · Main chooses. The 40-line sample failed twice with 3 wrong against a limit of 2, so I stopped under the two-passes rule and sent it three options, recommending one rewording pass and then a final sample. There's no PR, ll-judge run or preview check yet. The branch is pushed with the failed lines hidden, and the visible-comment count (335 versus the test's 306) still needs",
+      "last_at": "2026-11-01T03:29:21.028Z",
+      "last_act_at": "2026-11-01T03:29:21.028Z"
+    }
+  ],
+  "pipeline": [],
+  "hygiene": {
+    "at": "2026-11-01T10:37:40Z",
+    "fixed": [
+      "удалена влитая локальная ветка site/t11-route",
+      "удалена влитая локальная ветка site/t35-r2"
+    ],
+    "issues": [
+      "ветка grok/icons-a не влита и не менялась 10 дн.",
+      "ветка grok/icons-b не влита и не менялась 10 дн.",
+      "ветка grok/icons-c не влита и не менялась 10 дн.",
+      "ветка grok/t28-icons не влита и не менялась 10 дн.",
+      "ветка grok/t33-off не влита и не менялась 10 дн.",
+      "ветка ll-tech/panel не влита и не менялась 11 дн.",
+      "ветка site/studio-pass не влита и не менялась 7 дн.",
+      "ветка site/studio-pass-r21 не влита и не менялась 7 дн.",
+      "ветка tech/split-trim не влита и не менялась 8 дн.",
+      "рабочая копия чата listen9 влита и стоит больше суток — её уберёт сам чат или `claude rm`",
+      "рабочая копия чата ll-ops-w43 влита и стоит больше суток — её уберёт сам чат или `claude rm`",
+      "рабочая копия чата ll-tech-merge влита и стоит больше суток — её уберёт сам чат или `claude rm`",
+      "рабочая копия чата tech-ll-subagents влита и стоит больше суток — её уберёт сам чат или `claude rm`",
+      "рабочая копия чата tech-t46-s1-ll влита и стоит больше суток — её уберёт сам чат или `claude rm`",
+      "в папке t28-icons несохранённая работа, последняя запись 10 дн. назад",
+      "доска «i have come alive, соло» = (85, 118, 125), таблица T1 = (81, 118, 125)",
+      "доска «karitas, соло» = (36, 53, 61), таблица T1 = (34, 53, 61)",
+      "карточка t36 — done, а первая строка T36-iphone-crash-resume.md без «сделано»",
+      "ссылка на несуществующее: docs/process/audio-key.md → .github/workflows/rekey-audio.yml"
+    ]
+  },
   "signal": null,
   "board": {
     "updated": "2026-11-01T07:57+05:00",
