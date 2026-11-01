@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-28-hasan-bayar-kime-ne",
+  "status": "pass",
+  "branch": "night/ll-song-28-hasan-bayar-kime-ne",
+  "commit": "8b58131b2c115def29fb034f7939c2527339a919",
+  "tokens": 16307472,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts hasan-bayar-kime-ne\n\n\n✓ hasan-bayar-kime-ne  (0 ошибок, 2 предупреждений)\n  внимание  cues.json: нет docs/analysis/<slug>/cues.json: время строк по официальным субтитрам (docs/methodology/04-text.md)\n  внимание  translation: нет docs/analysis/translation/hasan-bayar-kime-ne.md (docs/methodology/06-translation.md)\n\nИтого: 0 ошибок, 2 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue-b\\logs\\ll-song-28-hasan-bayar-kime-ne.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
