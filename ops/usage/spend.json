@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T02:32:53Z",
+  "at": "2026-11-01T02:42:56Z",
   "unit": "Claude cost = API-price-weighted tokens, Opus-input units (see claude_review.py)",
   "calibration": {
     "proWeek": 78712743.01,
@@ -241,7 +241,7 @@
       }
     },
     "day": {
-      "since": "2026-10-31T02:32:53",
+      "since": "2026-10-31T02:42:56",
       "cost": 32329300.27,
       "tokens": 176992299,
       "calls": 1547,
@@ -459,7 +459,7 @@
   "grok": {
     "week": {
       "since": "2026-10-30T16:08:00",
-      "tokens": 981075827,
+      "tokens": 981566393,
       "pctUsed": 51,
       "byTask": {
         "bench-r5": 6638672,
@@ -490,7 +490,7 @@
         "ops-rotcost": 8819764,
         "ops-terms": 5786115,
         "ops-w44": 2263314,
-        "owner-requests": 7207423,
+        "owner-requests": 7697989,
         "song-new": 39019838,
         "space3-card-a": 6014152,
         "space3-card-b": 6232613,
@@ -541,15 +541,15 @@
         "tech-usage-live": 9069377
       },
       "byProject": {
-        "agentic-os-live": 465900163,
+        "agentic-os-live": 466390729,
         "living-lyrics": 305400346,
         "other": 209775318
       }
     },
     "day": {
-      "since": "2026-10-31T02:32:53",
-      "tokens": 666451577,
-      "pctUsed": 34.64,
+      "since": "2026-10-31T02:42:56",
+      "tokens": 666942143,
+      "pctUsed": 34.65,
       "byTask": {
         "bench-r6": 49084870,
         "brain-apple-music": 5948124,
@@ -571,7 +571,7 @@
         "night-night-tests-usage": 3315437,
         "night-p1": 55073,
         "ops-claude-spend": 20609250,
-        "owner-requests": 7207423,
+        "owner-requests": 7697989,
         "song-new": 39019838,
         "space3-card-a": 6014152,
         "space3-card-b": 6232613,
@@ -605,7 +605,7 @@
         "tech-stop-wake": 3692682
       },
       "byProject": {
-        "agentic-os-live": 326955750,
+        "agentic-os-live": 327446316,
         "living-lyrics": 187881463,
         "other": 151614364
       }
@@ -615,15 +615,15 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-01T02:25:18Z",
+        "at": "2026-11-01T02:35:18Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 98.74,
-        "weeklyResetIn": "163h 39m",
-        "fiveHourResetIn": "39m"
+        "weeklyResetIn": "163h 29m",
+        "fiveHourResetIn": "29m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-01T02:25:18Z",
+        "at": "2026-11-01T02:35:18Z",
         "weeklyRemaining": 100,
         "fiveHourRemaining": 100
       }
@@ -948,10 +948,10 @@
   "sources": {
     "claude.week": "python ops/usage/claude_review.py --since 2026-10-30T04:00:00 --by-chat",
     "claude.week.overhead": "python ops/usage/claude_cache.py --since 2026-10-30T04:00:00",
-    "claude.day": "python ops/usage/claude_review.py --since 2026-10-31T02:32:53 --by-chat",
+    "claude.day": "python ops/usage/claude_review.py --since 2026-10-31T02:42:56 --by-chat",
     "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 68% / 100); pro5h = claude cost since 2026-10-31T23:00:00 / (five_hour 88% / 100)",
     "grok.week": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T16:08:00 (grok.weekly.resetsAt minus 7d)",
-    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-10-31T02:32:53",
+    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-10-31T02:42:56",
     "agy.quota": "ops/usage/latest.json gemini.quota",
     "agy.runs": "ops/usage/ledger/*.jsonl kind=run"
   }
