@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-20-i-only-knew",
+  "status": "pass",
+  "branch": "night/ll-song-20-i-only-knew",
+  "commit": "57ec5932290e7ae689fd0683f71db1214595d56d",
+  "tokens": 14062099,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts i-only-knew\n\n\n✓ i-only-knew  (0 ошибок, 1 предупреждений)\n  внимание  transcript.json: нет docs/analysis/<slug>/transcript.json: порядок строк с голосом не сверен\n\nИтого: 0 ошибок, 1 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue\\logs\\ll-song-20-i-only-knew.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
