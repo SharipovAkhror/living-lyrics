@@ -1,12 +1,12 @@
 {
-  "updated": "2026-11-01T20:58:30Z",
+  "updated": "2026-11-01T21:01:01Z",
   "grok": {
     "today": 271948356,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-01T20:58:30Z",
+    "todayAt": "2026-11-01T21:01:01Z",
     "week": 1716740122,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-01T20:58:30Z",
+    "weekAt": "2026-11-01T21:01:01Z",
     "todayByTask": {
       "night-ll-song-04-muhabbatga-yaqinlar": 19760819,
       "night-ll-song-09-sari-gelin": 25213540,
@@ -28,10 +28,10 @@
       "translation-alive": 7484155
     },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-01T20:58:30Z",
+    "todayByTaskAt": "2026-11-01T21:01:01Z",
     "plan": "SuperGrok Heavy",
-    "planSource": "grok /usage",
-    "planAt": "2026-11-01T20:58:30Z",
+    "planSource": "~/.grok/settings_cache.json",
+    "planAt": "2026-11-01T20:58:37Z",
     "weekly": {
       "percentUsed": 88,
       "source": "grok /usage",
@@ -60,13 +60,13 @@
     },
     "conversationsToday": 1,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-01T20:58:30Z",
+    "conversationsTodayAt": "2026-11-01T21:01:01Z",
     "runsToday": 1,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-01T20:58:30Z",
+    "runsTodayAt": "2026-11-01T21:01:01Z",
     "secondsToday": 0,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-01T20:58:30Z",
+    "secondsTodayAt": "2026-11-01T21:01:01Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
     "at": "2026-11-01T20:38:29Z",
@@ -85,7 +85,7 @@
       "task": "",
       "session": "",
       "value": 88,
-      "at": "2026-11-01T20:58:30Z"
+      "at": "2026-11-01T21:01:01Z"
     }
   ],
   "value": {

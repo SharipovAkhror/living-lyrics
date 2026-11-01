@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-01T20:59:03Z",
+  "at": "2026-11-01T21:05:03Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,8 +10,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 16147,
-      "age": 16176,
+      "minutes": 16153,
+      "age": 16182,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -19,8 +19,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 16148,
-      "age": 16176,
+      "minutes": 16154,
+      "age": 16182,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -28,8 +28,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 16089,
-      "age": 16140,
+      "minutes": 16095,
+      "age": 16146,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -43,8 +43,8 @@
     {
       "name": "phone-overlap",
       "state": "working",
-      "minutes": 2,
-      "age": 72,
+      "minutes": 0,
+      "age": 78,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/phone-overlap"
@@ -53,7 +53,7 @@
       "name": "studio-pass",
       "state": "working",
       "minutes": 0,
-      "age": 91,
+      "age": 97,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -61,8 +61,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 2090,
-      "age": 2104,
+      "minutes": 2096,
+      "age": 2110,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -70,8 +70,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 2640,
-      "age": 2760,
+      "minutes": 2646,
+      "age": 2766,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -79,8 +79,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 16085,
-      "age": 16186,
+      "minutes": 16091,
+      "age": 16192,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -88,8 +88,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 13042,
-      "age": 13072,
+      "minutes": 13048,
+      "age": 13078,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -97,8 +97,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 397,
-      "age": 418,
+      "minutes": 403,
+      "age": 424,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -106,8 +106,8 @@
     {
       "name": "t37b",
       "state": "finished",
-      "minutes": 50,
-      "age": 63,
+      "minutes": 56,
+      "age": 69,
       "tokens": 4988948,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37b"
@@ -115,8 +115,8 @@
     {
       "name": "translation-alive",
       "state": "working",
-      "minutes": 2,
-      "age": 8,
+      "minutes": 0,
+      "age": 14,
       "tokens": 0,
       "model": "",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/translation-alive"
@@ -200,8 +200,13 @@
   "pipeline": [
     {
       "name": "pipeline",
-      "title": "Add We Love Life: text, translation, commentary, timing (draft)",
+      "title": "you: cue the lyric panel and queue align",
       "minutes": 1
+    },
+    {
+      "name": "pipeline",
+      "title": "Add We Love Life: text, translation, commentary, timing (draft)",
+      "minutes": 7
     }
   ],
   "hygiene": {
