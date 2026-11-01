@@ -1,0 +1,177 @@
+{
+  "$schema": "../../../docs/schema/song.schema.json",
+  "slug": "the-creator",
+  "title": "The Creator",
+  "artist": "Sami Yusuf",
+  "version": {
+    "kind": "studio",
+    "label": "Студийная, Spiritique Collection 2015"
+  },
+  "languages": [
+    "ar",
+    "en"
+  ],
+  "poets": [
+    {
+      "name": "Sami Yusuf"
+    }
+  ],
+  "release": {
+    "year": 2015,
+    "label": "Andante Records",
+    "album": "Spiritique Collection"
+  },
+  "credits": [
+    {
+      "role": "композитор",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "аранжировщик",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "слова",
+      "name": "Sami Yusuf"
+    }
+  ],
+  "duration": 413.45,
+  "palette": {
+    "accent": "#3A5BA0",
+    "accentDark": "#8FB2FF",
+    "field": [
+      "#3A5BA0",
+      "#7C4DBA",
+      "#2A8C8C"
+    ]
+  },
+  "audio": {
+    "status": "ready",
+    "high": "/audio/the-creator/high.m4a",
+    "peaks": "/audio/the-creator/peaks.json",
+    "gainDb": -2.6,
+    "provenance": {
+      "kind": "file",
+      "ref": "source.m4a",
+      "sha256": "e93eaf70a136c38f066484fe8229af8050f851a9a47f248f75ba47ac78a8989d"
+    }
+  },
+  "timing": {
+    "status": "draft",
+    "method": "none",
+    "notes": "Официальных субтитров и текста на экране нет, задание выравнивания не запускалось. Повторная сверка 2026-11-02: 13 кадров одного хэша, букв песни нет. cues.json нет, prove не запускался. Черновые окна строк нужны только для скорости чтения: это не измеренные слова. Пословная заливка выключена. Доказано строк: 0 из 52."
+  },
+  "review": [
+    "официальные субтитры: пусто",
+    "обратный перевод: ждёт Gemini",
+    "Палитра в заготовке — заглушка. Замените её цветами обложки, когда обложка будет. До этого цвета по настроению не подбирайте.",
+    "Арабское письмо с огласовками не открыто. Строки ar оставлены латиницей страницы Awakening. Огласовки не выдуманы.",
+    "shahada-1: после первой формулы есть пауза, дополнительные повторы не доказаны. Оставлена одна строка.",
+    "en-plants: внутри строки долгий неразобранный промежуток, дополнительные повторы не доказаны.",
+    "en-trustees: страница даёт trustees. Черновик порядка слышит другое слово. Буквы оставлены со страницы.",
+    "ar-awwal: в промежутке перед ar-mutlaq эта строка отдельно не разобрана. Стоит в опубликованном порядке, окно поделено черновиком, число повторов не установлено.",
+    "ar-akhir: то же окно, что у ar-awwal. Строка страницы поставлена второй, деление не измерено.",
+    "ar-mutlaq: страница кончает строку на hudud. Черновик порядка даёт другой исход. Буквы со страницы.",
+    "ar-hayah: начало строки Rabbun wahibul черновик порядка не подтверждает. Буквы со страницы.",
+    "ar-tuba: первое слово Tuba черновик порядка не подтверждает. Буквы со страницы.",
+    "shahada-3: внутри окна несколько обрывков той же формулы. Отдельные повторы не доказаны, оставлена одна строка.",
+    "en-day: на странице нет слова us. Черновик порядка его вставляет. Буквы со страницы.",
+    "en-sight: на странице нет of между sense и sight. Буквы со страницы.",
+    "en-plight: на странице нет us после saved. Буквы со страницы.",
+    "en-earth-1: долгое окно, черновик порядка разбирает только конец про небо. Строка страницы поставлена одна, повторы внутри окна не доказаны.",
+    "en-mountains-1: на странице нет of. Черновик порядка его вставляет. Буквы со страницы.",
+    "en-mountains-2: то же разночтение, что у en-mountains-1.",
+    "en-daynight-2: первое слово строки разобрано слабо. Буквы со страницы Lord of the day and the night.",
+    "jalla-1: последний слог страницы оставлен как ‘oulah. Огласованного арабского издания нет, другая огласовка в строку не переносилась.",
+    "voice-tail: после shahada-4 голос ещё звучит до инструментального конца, отдельных строк нет.",
+    "Страница слов — альбом Al Mu'allim, 10 июля 2003. Звук — ролик Spiritique Collection 2015. Совпадение с роликом 2004 года не проверялось.",
+    "Обложка в public/covers не собрана. Цвета палитры не подбирались.",
+    "Время слов не доказано: источника реплик нет. Повторная сверка кадров не нашла букв песни. cues.json не писался, задание выравнивания не запускалось, prove не запускался."
+  ],
+  "parts": [
+    {
+      "id": "arabic",
+      "title": "Арабские строки",
+      "lang": "ar",
+      "author": {
+        "name": "Sami Yusuf"
+      },
+      "work": {
+        "original": "The Creator"
+      },
+      "ref": "Al Mu'allim, трек The Creator, страница Awakening, 10 июля 2003",
+      "url": "https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+      "note": "Арабские формулы латиницей со страницы Awakening, в записи Spiritique Collection 2015.",
+      "lines": [
+        "shahada-1",
+        "jalla-1",
+        "siwah-1",
+        "shahada-2",
+        "ar-awwal",
+        "ar-akhir",
+        "ar-mutlaq",
+        "ar-wajib",
+        "ar-hayah",
+        "ar-mujrir",
+        "ar-fadhat",
+        "ar-tuba",
+        "jalla-2",
+        "siwah-2",
+        "shahada-3",
+        "jalla-3",
+        "siwah-3",
+        "jalla-4",
+        "siwah-4",
+        "jalla-5",
+        "siwah-5",
+        "jalla-6",
+        "siwah-6",
+        "jalla-7",
+        "siwah-7",
+        "jalla-8",
+        "siwah-8",
+        "shahada-4"
+      ]
+    },
+    {
+      "id": "english",
+      "title": "Английские строки",
+      "lang": "en",
+      "author": {
+        "name": "Sami Yusuf"
+      },
+      "work": {
+        "original": "The Creator"
+      },
+      "ref": "Al Mu'allim, трек The Creator, страница Awakening, 10 июля 2003",
+      "url": "https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+      "note": "Английские строки той же страницы, между арабскими формулами.",
+      "lines": [
+        "en-plants",
+        "en-birds",
+        "en-seas",
+        "en-bounties",
+        "en-trustees",
+        "en-decrees",
+        "en-mercy",
+        "en-hearts",
+        "en-day",
+        "en-sight",
+        "en-sun",
+        "en-moon",
+        "en-plight",
+        "en-light",
+        "en-path",
+        "en-might",
+        "en-earth-1",
+        "en-mountains-1",
+        "en-earth-2",
+        "en-mountains-2",
+        "en-daynight-1",
+        "en-joy-1",
+        "en-daynight-2",
+        "en-joy-2"
+      ]
+    }
+  ]
+}
