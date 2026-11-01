@@ -199,6 +199,13 @@ jobs:
                             'prove': [j['slug'] for j in prove_jobs]}, ensure_ascii=False, indent=1))
           EOF
 
+      # prove_slugs only. The run job never reaches prove and is not checked.
+      - name: Refuse prove without cues
+        if: steps.jobs.outputs.prove_slugs != ''
+        env:
+          PROVE_SLUGS: ${{ steps.jobs.outputs.prove_slugs }}
+        run: python3 scripts/pipeline/require_cues.py $PROVE_SLUGS
+
   run:
     needs: prepare
     if: needs.prepare.outputs.align_count == '0' && needs.prepare.outputs.count != '0' && needs.prepare.outputs.reuse_run == ''
