@@ -196,9 +196,7 @@
   --material-regular: rgba(255, 255, 255, 0.72);
   --material-thin: rgba(255, 255, 255, 0.55);
   --scrub-bed: #e4dcd2;
-  --scrub-fill: #1a140f;
   --scrub-tick: #8a8178;
-  --scrub-knob: #1a140f;
   --scrub-ring: #f7f1ea;
 }
 
@@ -263,9 +261,7 @@
     --sheet-blur: 40px;
     --sheet-saturate: 160%;
     --scrub-bed: #3a342e;
-    --scrub-fill: #f6f0e6;
     --scrub-tick: #a39a90;
-    --scrub-knob: #f6f0e6;
     --scrub-ring: #2a2622;
   }
 }
@@ -329,9 +325,7 @@
   --sheet-blur: 40px;
   --sheet-saturate: 160%;
   --scrub-bed: #3a342e;
-  --scrub-fill: #f6f0e6;
   --scrub-tick: #a39a90;
-  --scrub-knob: #f6f0e6;
   --scrub-ring: #2a2622;
 }
 

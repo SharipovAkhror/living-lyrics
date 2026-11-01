@@ -316,12 +316,9 @@ html[data-glass='lens'] .lib-nav .lg-lens {
 }
 /* A moving field under a live filter missed the frame. The thick fill is the
    same material without the snapshot. It returns once the finger or the flight is gone. */
-.song.is-scrubbing .topbar .lg-lens,
-.song.is-scrubbing .lg-host--floor .lg-lens,
-.song.is-flying .topbar .lg-lens,
-.song.is-flying .lg-host--floor .lg-lens,
-.song.is-arriving .topbar .lg-lens,
-.song.is-arriving .lg-host--floor .lg-lens {
+.song.is-scrubbing .lg-lens,
+.song.is-flying .lg-lens,
+.song.is-arriving .lg-lens {
   background: var(--lg-fill-thick);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
