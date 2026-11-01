@@ -210,6 +210,18 @@ export function lineCommentGap(line: { id?: string; comment?: string; flags?: st
   return null;
 }
 
+/**
+ * A `comment-draft` flag on a section needs a review question that names the section id.
+ * Same rule as a line: the flag alone is not ready. The question must name this id,
+ * not only a line inside the section.
+ */
+export function sectionCommentGap(section: { id?: string; flags?: string[] }, review: string[] = []): string | null {
+  const flagged = section.flags?.includes('comment-draft') ?? false;
+  if (!flagged) return null;
+  if (section.id && !review.some((item) => mentionsLineId(section.id!, item))) return 'флаг comment-draft без вопроса в review';
+  return null;
+}
+
 function commentSelfTest() {
   if (commentSentences('Одно предложение без точки') !== 1) return 'одно предложение без точки сосчитано неверно';
   if (commentSentences('Первое. Второе со с. 184.') !== 2) return 'страница «с.» разбила предложение';
@@ -229,6 +241,11 @@ function commentSelfTest() {
   if (flagged) return `флаг с вопросом отвергнут: ${flagged}`;
   const orphan = lineCommentGap({ id: 'b1q1-01', comment: bare, flags: ['comment-draft'] }, ['Другой вопрос.']);
   if (orphan !== 'флаг comment-draft без вопроса в review') return `сирота флага: ${orphan}`;
+  const sectionOk = sectionCommentGap({ id: 'shushtari-1', flags: ['comment-draft'] }, ['Вопрос по shushtari-1.']);
+  if (sectionOk) return `флаг секции с вопросом отвергнут: ${sectionOk}`;
+  const sectionOrphan = sectionCommentGap({ id: 'shushtari-1', flags: ['comment-draft'] }, ['Вопрос по shushtari-1-1.']);
+  if (sectionOrphan !== 'флаг comment-draft без вопроса в review') return `сирота флага секции: ${sectionOrphan}`;
+  if (sectionCommentGap({ id: 'shushtari-1' }, [])) return 'секция без флага отвергнута';
   return '';
 }
 
@@ -362,6 +379,8 @@ function check(slug: string): Issue[] {
       const marks = editorialMarkers(s.comment);
       if (marks.length) warn(where, `в пояснении редакторская пометка (${marks.join(', ')}): её место — canon.md, раздел «Расхождения и вопросы», song.json → review или sources.md`);
     }
+    const sectionGap = sectionCommentGap(s, song.review ?? []);
+    if (sectionGap) warn(where, `${sectionGap} (docs/methodology/07-comment.md)`);
 
     // entries: catalogue keys, and the entrance sits inside the section (accompaniment on a vocal
     // section uses the same field). Order is appearance order; an unsorted list is a warning.
