@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-04-muhabbatga-yaqinlar",
+  "status": "pass",
+  "branch": "night/ll-song-04-muhabbatga-yaqinlar",
+  "commit": "28c2d8dd83a3d1c32a7814faea78dceaa15b93d0",
+  "tokens": 19760819,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts muhabbatga-yaqinlar\n\n\n✓ muhabbatga-yaqinlar  (0 ошибок, 1 предупреждений)\n  внимание  song.json: язык uz указан в languages, но строк на нём нет\n\nИтого: 0 ошибок, 1 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue\\logs\\ll-song-04-muhabbatga-yaqinlar.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
