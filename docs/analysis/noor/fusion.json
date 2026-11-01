@@ -1,0 +1,146 @@
+{
+  "slug": "noor",
+  "intervals": [
+    {
+      "id": "tabla",
+      "name": "табла",
+      "catalogKey": "tabla",
+      "start": 98.5,
+      "end": 101.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 18.5,
+      "end": 21.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.75,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 228.5,
+      "end": 231.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 278.5,
+      "end": 281.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    }
+  ],
+  "accepted": [
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 18.5,
+      "end": 21.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.75,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 228.5,
+      "end": 231.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.85,
+      "who": "",
+      "audioAlone": false
+    },
+    {
+      "id": "voice",
+      "name": "голос",
+      "catalogKey": "voice",
+      "start": 278.5,
+      "end": 281.5,
+      "decision": "accept",
+      "review": "",
+      "sources": [
+        "vision",
+        "credits"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.8,
+      "who": "",
+      "audioAlone": false
+    }
+  ],
+  "check": [
+    {
+      "id": "tabla",
+      "name": "табла",
+      "catalogKey": "tabla",
+      "start": 98.5,
+      "end": 101.5,
+      "decision": "check",
+      "review": "",
+      "sources": [
+        "vision"
+      ],
+      "audioConfidence": 0.0,
+      "visionConfidence": 0.9,
+      "who": "",
+      "audioAlone": false
+    }
+  ],
+  "visionHigh": 0.85,
+  "visionCalibrated": false,
+  "audioAloneAccepted": []
+}

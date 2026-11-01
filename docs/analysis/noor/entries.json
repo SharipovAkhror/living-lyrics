@@ -1,0 +1,84 @@
+{
+  "slug": "noor",
+  "present": [],
+  "check": [],
+  "missingEngraving": [],
+  "sections": [
+    {
+      "id": "intro",
+      "action": "unchanged",
+      "label": "Вступление",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "bridge-a",
+      "action": "unchanged",
+      "label": "Проигрыш",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "bridge-b",
+      "action": "unchanged",
+      "label": "Проигрыш",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "voice-1",
+      "action": "voice",
+      "label": "Голос",
+      "identity": "voice",
+      "instruments": [
+        "voice"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "bridge-c",
+      "action": "unchanged",
+      "label": "Проигрыш",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    },
+    {
+      "id": "applause",
+      "action": "unchanged",
+      "label": "Аплодисменты",
+      "identity": null,
+      "instruments": [],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    }
+  ]
+}

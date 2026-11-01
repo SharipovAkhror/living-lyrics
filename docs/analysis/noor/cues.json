@@ -1,0 +1,282 @@
+[
+  {
+    "line": "salawat-1",
+    "cue": 1,
+    "lang": "ar",
+    "start": 17.718,
+    "end": 21.956
+  },
+  {
+    "line": "wujud-1",
+    "cue": 2,
+    "lang": "ar",
+    "start": 21.956,
+    "end": 30.0
+  },
+  {
+    "line": "salawat-2",
+    "cue": 3,
+    "lang": "ar",
+    "start": 34.56,
+    "end": 38.858
+  },
+  {
+    "line": "wujud-2",
+    "cue": 4,
+    "lang": "ar",
+    "start": 38.858,
+    "end": 46.775
+  },
+  {
+    "line": "shams-1",
+    "cue": 5,
+    "lang": "ar",
+    "start": 55.513,
+    "end": 59.697
+  },
+  {
+    "line": "fawq-1",
+    "cue": 6,
+    "lang": "ar",
+    "start": 59.697,
+    "end": 67.883
+  },
+  {
+    "line": "iksir-1",
+    "cue": 7,
+    "lang": "ar",
+    "start": 72.245,
+    "end": 76.312
+  },
+  {
+    "line": "misbah-1",
+    "cue": 8,
+    "lang": "ar",
+    "start": 76.312,
+    "end": 84.841
+  },
+  {
+    "line": "nur-1",
+    "cue": 9,
+    "lang": "ar",
+    "start": 126.844,
+    "end": 135.68
+  },
+  {
+    "line": "shams-2",
+    "cue": 10,
+    "lang": "ar",
+    "start": 135.68,
+    "end": 139.76
+  },
+  {
+    "line": "fawq-2",
+    "cue": 11,
+    "lang": "ar",
+    "start": 139.76,
+    "end": 148.001
+  },
+  {
+    "line": "iksir-2",
+    "cue": 12,
+    "lang": "ar",
+    "start": 152.585,
+    "end": 156.654
+  },
+  {
+    "line": "misbah-2",
+    "cue": 13,
+    "lang": "ar",
+    "start": 156.654,
+    "end": 164.727
+  },
+  {
+    "line": "nur-2",
+    "cue": 14,
+    "lang": "ar",
+    "start": 173.04,
+    "end": 177.08
+  },
+  {
+    "line": "ala-1",
+    "cue": 15,
+    "lang": "ar",
+    "start": 177.08,
+    "end": 187.72
+  },
+  {
+    "line": "nur-3",
+    "cue": 16,
+    "lang": "ar",
+    "start": 187.72,
+    "end": 191.761
+  },
+  {
+    "line": "ala-2",
+    "cue": 17,
+    "lang": "ar",
+    "start": 191.761,
+    "end": 201.0
+  },
+  {
+    "line": "allah-1",
+    "cue": 18,
+    "lang": "ar",
+    "start": 201.0,
+    "end": 222.73
+  },
+  {
+    "line": "ilahi-1",
+    "cue": 19,
+    "lang": "ar",
+    "start": 223.56,
+    "end": 231.824
+  },
+  {
+    "line": "hali-1",
+    "cue": 20,
+    "lang": "ar",
+    "start": 231.824,
+    "end": 235.95
+  },
+  {
+    "line": "talam-1",
+    "cue": 21,
+    "lang": "ar",
+    "start": 235.95,
+    "end": 240.0
+  },
+  {
+    "line": "kayfa-1",
+    "cue": 22,
+    "lang": "ar",
+    "start": 240.0,
+    "end": 242.207
+  },
+  {
+    "line": "malik-1",
+    "cue": 23,
+    "lang": "ar",
+    "start": 242.207,
+    "end": 244.207
+  },
+  {
+    "line": "hali-2",
+    "cue": 24,
+    "lang": "ar",
+    "start": 244.207,
+    "end": 248.132
+  },
+  {
+    "line": "ilahi-wa-1",
+    "cue": 25,
+    "lang": "ar",
+    "start": 248.132,
+    "end": 252.256
+  },
+  {
+    "line": "hali-3",
+    "cue": 26,
+    "lang": "ar",
+    "start": 252.256,
+    "end": 256.341
+  },
+  {
+    "line": "ilahi-2",
+    "cue": 27,
+    "lang": "ar",
+    "start": 256.341,
+    "end": 258.361
+  },
+  {
+    "line": "salat-1",
+    "cue": 28,
+    "lang": "ar",
+    "start": 258.361,
+    "end": 260.327
+  },
+  {
+    "line": "salam-1",
+    "cue": 29,
+    "lang": "ar",
+    "start": 260.327,
+    "end": 262.327
+  },
+  {
+    "line": "habib-1",
+    "cue": 30,
+    "lang": "ar",
+    "start": 262.327,
+    "end": 264.21
+  },
+  {
+    "line": "shafi-1",
+    "cue": 31,
+    "lang": "ar",
+    "start": 264.21,
+    "end": 266.338
+  },
+  {
+    "line": "tabib-1",
+    "cue": 32,
+    "lang": "ar",
+    "start": 266.338,
+    "end": 268.338
+  },
+  {
+    "line": "khayr-1",
+    "cue": 33,
+    "lang": "ar",
+    "start": 268.338,
+    "end": 276.592
+  },
+  {
+    "line": "salawat-3",
+    "cue": 34,
+    "lang": "ar",
+    "start": 276.592,
+    "end": 280.44
+  },
+  {
+    "line": "wujud-3",
+    "cue": 35,
+    "lang": "ar",
+    "start": 280.44,
+    "end": 288.256
+  },
+  {
+    "line": "salawat-4",
+    "cue": 36,
+    "lang": "ar",
+    "start": 292.475,
+    "end": 296.646
+  },
+  {
+    "line": "wujud-4",
+    "cue": 37,
+    "lang": "ar",
+    "start": 296.646,
+    "end": 304.08
+  },
+  {
+    "line": "nur-4",
+    "cue": 38,
+    "lang": "ar",
+    "start": 304.08,
+    "end": 312.04
+  },
+  {
+    "line": "nur-5",
+    "cue": 39,
+    "lang": "ar",
+    "start": 315.891,
+    "end": 320.08
+  },
+  {
+    "line": "nur-6",
+    "cue": 40,
+    "lang": "ar",
+    "start": 324.09,
+    "end": 365.808
+  }
+]
