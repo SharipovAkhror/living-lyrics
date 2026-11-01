@@ -1,0 +1,29 @@
+{
+  "video_type": "lyric_video",
+  "frames": [
+    {
+      "time_s": 0,
+      "visible": true,
+      "players": [],
+      "note": "lyric video, still portrait left, title YOU / THE CENTRE / SAMI YUSUF right, no lyric line yet, no instrument"
+    },
+    {
+      "time_s": 8,
+      "visible": true,
+      "players": [],
+      "note": "same still portrait and titles, one lyric line under the artist name, no one playing an instrument"
+    },
+    {
+      "time_s": 100,
+      "visible": true,
+      "players": [],
+      "note": "same frame, lyric line has changed, portrait does not move, no instrument"
+    },
+    {
+      "time_s": 190,
+      "visible": true,
+      "players": [],
+      "note": "same lyric-video layout through the end, no performer with an instrument"
+    }
+  ]
+}

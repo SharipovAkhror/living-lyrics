@@ -1,0 +1,21 @@
+{
+  "slug": "you",
+  "present": [],
+  "check": [],
+  "missingEngraving": [],
+  "sections": [
+    {
+      "id": "intro",
+      "action": "unchanged",
+      "label": "Вступление",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    }
+  ]
+}

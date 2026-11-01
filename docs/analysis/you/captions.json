@@ -1,0 +1,498 @@
+{
+  "video_type": "lyric_video",
+  "video_type_note": "Still portrait on the left, title YOU / THE CENTRE / SAMI YUSUF on the right, one changing lyric line under the name. The spiral of tiny type on the portrait is decoration, not the sung line.",
+  "captions": [
+    {
+      "first_s": 4.5,
+      "last_s": 8.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "I am what I am",
+      "confidence": "high"
+    },
+    {
+      "first_s": 8.0,
+      "last_s": 12.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Because You made",
+      "confidence": "high"
+    },
+    {
+      "first_s": 12.0,
+      "last_s": 15.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "I have what I have",
+      "confidence": "high"
+    },
+    {
+      "first_s": 15.5,
+      "last_s": 19.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Because You gave",
+      "confidence": "high"
+    },
+    {
+      "first_s": 19.5,
+      "last_s": 23.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My love is strong",
+      "confidence": "high"
+    },
+    {
+      "first_s": 23.0,
+      "last_s": 25.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Because You",
+      "confidence": "high"
+    },
+    {
+      "first_s": 25.5,
+      "last_s": 29.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Are the One I call Creator",
+      "confidence": "high"
+    },
+    {
+      "first_s": 29.5,
+      "last_s": 33.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My Alpha and Omega",
+      "confidence": "high"
+    },
+    {
+      "first_s": 33.0,
+      "last_s": 37.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My Protector and my Maker",
+      "confidence": "high"
+    },
+    {
+      "first_s": 37.5,
+      "last_s": 40.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Because of You",
+      "confidence": "high"
+    },
+    {
+      "first_s": 40.5,
+      "last_s": 44.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "In weakness I am braver",
+      "confidence": "high"
+    },
+    {
+      "first_s": 44.0,
+      "last_s": 48.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My Defender and my Saviour",
+      "confidence": "high"
+    },
+    {
+      "first_s": 48.0,
+      "last_s": 52.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My Giver and my Taker",
+      "confidence": "high"
+    },
+    {
+      "first_s": 52.5,
+      "last_s": 56.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "I see what I see",
+      "confidence": "high"
+    },
+    {
+      "first_s": 56.5,
+      "last_s": 59.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Because You shine",
+      "confidence": "high"
+    },
+    {
+      "first_s": 59.5,
+      "last_s": 63.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "I know what I know",
+      "confidence": "high"
+    },
+    {
+      "first_s": 63.5,
+      "last_s": 67.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Because You show",
+      "confidence": "high"
+    },
+    {
+      "first_s": 67.0,
+      "last_s": 71.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My love is strong",
+      "confidence": "high"
+    },
+    {
+      "first_s": 71.0,
+      "last_s": 73.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Because You",
+      "confidence": "high"
+    },
+    {
+      "first_s": 73.5,
+      "last_s": 77.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Are the One I call Creator",
+      "confidence": "high"
+    },
+    {
+      "first_s": 77.5,
+      "last_s": 81.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My Alpha and Omega",
+      "confidence": "high"
+    },
+    {
+      "first_s": 81.0,
+      "last_s": 85.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My Protector and my Maker",
+      "confidence": "high"
+    },
+    {
+      "first_s": 85.5,
+      "last_s": 88.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Because of You",
+      "confidence": "high"
+    },
+    {
+      "first_s": 88.5,
+      "last_s": 92.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "In weakness I am braver",
+      "confidence": "high"
+    },
+    {
+      "first_s": 92.0,
+      "last_s": 95.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My Defender and my Saviour",
+      "confidence": "high"
+    },
+    {
+      "first_s": 95.5,
+      "last_s": 100.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My Giver and my Taker",
+      "confidence": "high"
+    },
+    {
+      "first_s": 100.0,
+      "last_s": 103.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Abiding in silence",
+      "confidence": "high"
+    },
+    {
+      "first_s": 103.0,
+      "last_s": 107.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "With patience and guidance",
+      "confidence": "high"
+    },
+    {
+      "first_s": 107.0,
+      "last_s": 110.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Aware when I need You",
+      "confidence": "high"
+    },
+    {
+      "first_s": 110.5,
+      "last_s": 114.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "The light when I seek You",
+      "confidence": "high"
+    },
+    {
+      "first_s": 114.5,
+      "last_s": 118.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Justice, forgiveness",
+      "confidence": "medium",
+      "unreadable_parts": "знак между словами на 360p то точка, то запятая; взята запятая последнего резкого кадра"
+    },
+    {
+      "first_s": 118.0,
+      "last_s": 122.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "The strength in my weakness",
+      "confidence": "high"
+    },
+    {
+      "first_s": 122.0,
+      "last_s": 125.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "And my love",
+      "confidence": "high"
+    },
+    {
+      "first_s": 125.5,
+      "last_s": 126.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Is strong",
+      "confidence": "high"
+    },
+    {
+      "first_s": 126.5,
+      "last_s": 129.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Because You",
+      "confidence": "high"
+    },
+    {
+      "first_s": 129.5,
+      "last_s": 133.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Are the One I call Creator",
+      "confidence": "high"
+    },
+    {
+      "first_s": 133.0,
+      "last_s": 137.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My Alpha and Omega",
+      "confidence": "high"
+    },
+    {
+      "first_s": 137.0,
+      "last_s": 141.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My Protector and my Maker",
+      "confidence": "high"
+    },
+    {
+      "first_s": 141.5,
+      "last_s": 144.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Because of You",
+      "confidence": "high"
+    },
+    {
+      "first_s": 144.0,
+      "last_s": 148.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "In weakness I am braver",
+      "confidence": "high"
+    },
+    {
+      "first_s": 148.0,
+      "last_s": 151.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My Defender and my Saviour",
+      "confidence": "high"
+    },
+    {
+      "first_s": 151.5,
+      "last_s": 156.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "My Giver and my Taker",
+      "confidence": "high"
+    },
+    {
+      "first_s": 156.5,
+      "last_s": 159.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Because You. Lover. Taker",
+      "confidence": "medium",
+      "unreadable_parts": "знаки между тремя словами на 360p близки к точке; хвост запятой не виден"
+    },
+    {
+      "first_s": 159.5,
+      "last_s": 161.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Guider. Saviour",
+      "confidence": "medium",
+      "unreadable_parts": "знак между именами на 360p то точка, то запятая; взята точка последнего резкого кадра"
+    },
+    {
+      "first_s": 161.0,
+      "last_s": 163.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Endless, Greatest",
+      "confidence": "medium",
+      "unreadable_parts": "знак между именами на 360p то точка, то запятая; взята запятая последнего резкого кадра"
+    },
+    {
+      "first_s": 163.0,
+      "last_s": 165.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Timeless, Patient",
+      "confidence": "medium",
+      "unreadable_parts": "знак между именами на 360p то точка, то запятая; взята запятая последнего резкого кадра"
+    },
+    {
+      "first_s": 165.0,
+      "last_s": 168.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Bringer of the life You gave us",
+      "confidence": "high"
+    },
+    {
+      "first_s": 168.5,
+      "last_s": 173.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Patron of the world You made us",
+      "confidence": "high"
+    },
+    {
+      "first_s": 173.0,
+      "last_s": 176.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "You are Grateful, my Receiver",
+      "confidence": "medium",
+      "unreadable_parts": "после Grateful знак на 360p то точка, то запятая; взята запятая последнего резкого кадра"
+    },
+    {
+      "first_s": 176.5,
+      "last_s": 180.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "You are Watchful, the Perceiver",
+      "confidence": "high"
+    },
+    {
+      "first_s": 180.5,
+      "last_s": 184.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "You are Mercy, my Forgiver",
+      "confidence": "high"
+    },
+    {
+      "first_s": 184.0,
+      "last_s": 186.5,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "You restore me, my Healer",
+      "confidence": "high"
+    },
+    {
+      "first_s": 186.5,
+      "last_s": 190.0,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Because You are",
+      "confidence": "high"
+    },
+    {
+      "first_s": 190.0,
+      "last_s": 196.88,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "original",
+      "text": "Because You",
+      "confidence": "high"
+    }
+  ]
+}
