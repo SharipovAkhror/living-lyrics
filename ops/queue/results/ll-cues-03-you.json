@@ -1,0 +1,12 @@
+{
+  "id": "ll-cues-03-you",
+  "status": "failed",
+  "branch": "night/ll-cues-03-you",
+  "commit": "918496dbfe7d170ba5f1845f58aebec9f45eaf9a",
+  "tokens": 9952845,
+  "check_output_tail": "",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue-b\\logs\\ll-cues-03-you.log",
+  "reason": "died",
+  "restarts": 1,
+  "pushed": false
+}
