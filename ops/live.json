@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-02T20:11:34Z",
+  "at": "2026-11-02T20:11:43Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -221,7 +221,16 @@
       "ссылка на несуществующее: docs/process/audio-key.md → .github/workflows/rekey-audio.yml"
     ]
   },
-  "signal": null,
+  "signal": {
+    "line": "Лимит Claude на неделю: 98 %. Сбросьте лимит, когда он дойдёт до конца.",
+    "events": [
+      {
+        "id": "limit:claude:seven_day",
+        "kind": "limit",
+        "text": "Лимит Claude на неделю: 98 %. Сбросьте лимит, когда он дойдёт до конца."
+      }
+    ]
+  },
   "board": {
     "updated": "2026-11-01T16:01+05:00",
     "headline": "Утро: ответы владельца; AOS · Tech ставит мод и начинает круг 4 «Пространства»",
