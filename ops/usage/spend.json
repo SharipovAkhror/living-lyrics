@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-02T19:43:52Z",
+  "at": "2026-11-02T19:53:55Z",
   "unit": "Claude cost = API-price-weighted tokens, Opus-input units (see claude_review.py)",
   "calibration": {
     "proWeek": 80125161.27,
@@ -241,23 +241,23 @@
       }
     },
     "day": {
-      "since": "2026-11-01T19:43:52",
-      "cost": 7546528.31,
-      "tokens": 45040734,
-      "calls": 383,
-      "pctOfWeek": 9.42,
+      "since": "2026-11-01T19:53:55",
+      "cost": 6991140.26,
+      "tokens": 41840597,
+      "calls": 361,
+      "pctOfWeek": 8.73,
       "byProject": {
         "agentic-os-live": {
           "cost": 3545349.67,
           "tokens": 19793784,
           "calls": 166,
-          "pct": 46.98
+          "pct": 50.71
         },
         "living-lyrics": {
-          "cost": 4001178.64,
-          "tokens": 25246950,
-          "calls": 217,
-          "pct": 53.02
+          "cost": 3445790.59,
+          "tokens": 22046813,
+          "calls": 195,
+          "pct": 49.29
         }
       },
       "byChat": {
@@ -265,8 +265,8 @@
           "project": "agentic-os-live",
           "cost": 2329974.53,
           "tokens": 13587848,
-          "pct": 30.87,
-          "tokensPct": 30.17,
+          "pct": 33.33,
+          "tokensPct": 32.48,
           "calls": 122,
           "sessions": 1
         },
@@ -274,8 +274,8 @@
           "project": "agentic-os-live",
           "cost": 432695.65,
           "tokens": 2005158,
-          "pct": 5.73,
-          "tokensPct": 4.45,
+          "pct": 6.19,
+          "tokensPct": 4.79,
           "calls": 13,
           "sessions": 1
         },
@@ -283,36 +283,36 @@
           "project": "agentic-os-live",
           "cost": 782679.49,
           "tokens": 4200778,
-          "pct": 10.37,
-          "tokensPct": 9.33,
+          "pct": 11.2,
+          "tokensPct": 10.04,
           "calls": 31,
           "sessions": 1
         },
         "LL · Main": {
           "project": "living-lyrics",
-          "cost": 1018403.3,
-          "tokens": 5629483,
-          "pct": 13.49,
-          "tokensPct": 12.5,
-          "calls": 42,
+          "cost": 784317.85,
+          "tokens": 4643944,
+          "pct": 11.22,
+          "tokensPct": 11.1,
+          "calls": 33,
           "sessions": 1
         },
         "LL · Site": {
           "project": "living-lyrics",
           "cost": 679312.07,
           "tokens": 4525990,
-          "pct": 9.0,
-          "tokensPct": 10.05,
+          "pct": 9.72,
+          "tokensPct": 10.82,
           "calls": 56,
           "sessions": 1
         },
         "LL · Site — старый, не писать": {
           "project": "living-lyrics",
-          "cost": 2303463.27,
-          "tokens": 15091477,
-          "pct": 30.52,
-          "tokensPct": 33.51,
-          "calls": 119,
+          "cost": 1982160.67,
+          "tokens": 12876879,
+          "pct": 28.35,
+          "tokensPct": 30.78,
+          "calls": 106,
           "sessions": 2
         }
       },
@@ -321,25 +321,25 @@
           "project": "agentic-os-live",
           "cost": 2329974.53,
           "tokens": 13587848,
-          "pct": 30.87,
-          "tokensPct": 30.17,
+          "pct": 33.33,
+          "tokensPct": 32.48,
           "calls": 122,
           "sessions": 1
         },
         "LL · Main": {
           "project": "living-lyrics",
-          "cost": 1018403.3,
-          "tokens": 5629483,
-          "pct": 13.49,
-          "tokensPct": 12.5,
-          "calls": 42,
+          "cost": 784317.85,
+          "tokens": 4643944,
+          "pct": 11.22,
+          "tokensPct": 11.1,
+          "calls": 33,
           "sessions": 1
         }
       },
       "overhead": {
         "sessionStarts": {
-          "cost": 419113.75,
-          "calls": 6
+          "cost": 329453.75,
+          "calls": 5
         },
         "idleWakes": {
           "cost": 422883.75,
@@ -493,8 +493,8 @@
       }
     },
     "day": {
-      "since": "2026-11-01T19:43:52",
-      "tokens": 566313206,
+      "since": "2026-11-01T19:53:55",
+      "tokens": 515953919,
       "pctUsed": null,
       "byTask": {
         "night-ll-cues-03-you": 9952845,
@@ -504,8 +504,6 @@
         "night-ll-cues-12-the-dawn": 3592402,
         "night-ll-cues-14-the-creator": 3395745,
         "night-ll-song-11-existentia": 16383229,
-        "night-ll-song-13-no-word-is": 16886511,
-        "night-ll-song-14-the-creator": 17038108,
         "night-ll-song-15-noor": 19109358,
         "night-ll-song-16-ilahana": 15510146,
         "night-ll-song-17-come-see": 17022076,
@@ -524,16 +522,16 @@
         "night-ll-song-30-mahur-instrumental": 12876257,
         "night-ll-song-31-chant-percussion-ensemble": 15295823,
         "phone-overlap": 39150936,
-        "space-live": 29282611,
+        "space-live": 22599003,
         "studio-pass": 100852095,
-        "t37b": 14740008,
+        "t37b": 4988948,
         "tech-run-notice": 8618210,
         "translation-alive": 14574292
       },
       "byProject": {
-        "agentic-os-live": 29282611,
-        "living-lyrics": 513672377,
-        "other": 23358218
+        "agentic-os-live": 22599003,
+        "living-lyrics": 479747758,
+        "other": 13607158
       }
     }
   },
@@ -870,10 +868,10 @@
   "sources": {
     "claude.week": "python ops/usage/claude_review.py --since 2026-10-30T04:00:00 --by-chat",
     "claude.week.overhead": "python ops/usage/claude_cache.py --since 2026-10-30T04:00:00",
-    "claude.day": "python ops/usage/claude_review.py --since 2026-11-01T19:43:52 --by-chat",
+    "claude.day": "python ops/usage/claude_review.py --since 2026-11-01T19:53:55 --by-chat",
     "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 97% / 100); pro5h carried forward from the previous spend.json",
     "grok.week": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T16:08:00 (grok.weekly.resetsAt minus 7d)",
-    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-11-01T19:43:52",
+    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-11-01T19:53:55",
     "agy.quota": "ops/usage/latest.json gemini.quota",
     "agy.runs": "ops/usage/ledger/*.jsonl kind=run"
   }
