@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-02T20:34:07Z",
+  "at": "2026-11-02T20:44:10Z",
   "unit": "Claude cost = API-price-weighted tokens, Opus-input units (see claude_review.py)",
   "calibration": {
     "proWeek": 79755666.41,
@@ -241,7 +241,7 @@
       }
     },
     "day": {
-      "since": "2026-11-01T20:34:07",
+      "since": "2026-11-01T20:44:10",
       "cost": 5729378.06,
       "tokens": 31441281,
       "calls": 271,
@@ -493,8 +493,8 @@
       }
     },
     "day": {
-      "since": "2026-11-01T20:34:07",
-      "tokens": 491855613,
+      "since": "2026-11-01T20:44:10",
+      "tokens": 461602913,
       "pctUsed": null,
       "byTask": {
         "night-ll-cues-03-you": 9952845,
@@ -503,7 +503,6 @@
         "night-ll-cues-08-you-came-to-me": 4557853,
         "night-ll-cues-12-the-dawn": 3592402,
         "night-ll-cues-14-the-creator": 3395745,
-        "night-ll-song-11-existentia": 16383229,
         "night-ll-song-16-ilahana": 15510146,
         "night-ll-song-17-come-see": 17022076,
         "night-ll-song-18-go-encore": 14367002,
@@ -513,7 +512,6 @@
         "night-ll-song-22-jaaneh-jaanaan": 19897915,
         "night-ll-song-23-we-love-life": 16490049,
         "night-ll-song-24-eterna": 17361371,
-        "night-ll-song-25-youtube-3skbvhq": 13869471,
         "night-ll-song-26-sherali-tark": 11322492,
         "night-ll-song-27-hasan-bayar-menem": 17433489,
         "night-ll-song-28-hasan-bayar-kime-ne": 16307472,
@@ -528,7 +526,7 @@
       },
       "byProject": {
         "agentic-os-live": 22599003,
-        "living-lyrics": 460638400,
+        "living-lyrics": 430385700,
         "other": 8618210
       }
     }
@@ -537,17 +535,17 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-02T20:11:01Z",
+        "at": "2026-11-02T20:41:02Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "121h 53m"
+        "weeklyResetIn": "121h 23m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-02T20:11:01Z",
+        "at": "2026-11-02T20:41:02Z",
         "weeklyRemaining": 49.8,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "140h 5m"
+        "weeklyResetIn": "139h 35m"
       }
     },
     "runs": {
@@ -852,10 +850,10 @@
   "sources": {
     "claude.week": "python ops/usage/claude_review.py --since 2026-10-30T04:00:00 --by-chat",
     "claude.week.overhead": "python ops/usage/claude_cache.py --since 2026-10-30T04:00:00",
-    "claude.day": "python ops/usage/claude_review.py --since 2026-11-01T20:34:07 --by-chat",
+    "claude.day": "python ops/usage/claude_review.py --since 2026-11-01T20:44:10 --by-chat",
     "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 98% / 100); pro5h = claude cost since 2026-11-02T18:40:00 / (five_hour 3% / 100)",
     "grok.week": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T16:08:00 (grok.weekly.resetsAt minus 7d)",
-    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-11-01T20:34:07",
+    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-11-01T20:44:10",
     "agy.quota": "ops/usage/latest.json gemini.quota",
     "agy.runs": "ops/usage/ledger/*.jsonl kind=run"
   }
