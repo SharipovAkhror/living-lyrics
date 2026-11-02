@@ -1,59 +1,22 @@
 {
-  "updated": "2026-11-02T18:41:01Z",
+  "updated": "2026-11-02T19:01:01Z",
   "grok": {
-    "today": 643126624,
+    "today": 0,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-02T18:41:01Z",
+    "todayAt": "2026-11-02T19:01:01Z",
     "week": 1999161729,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-02T18:41:01Z",
-    "todayByTask": {
-      "night-ll-song-04-muhabbatga-yaqinlar": 19760819,
-      "night-ll-song-09-sari-gelin": 25213540,
-      "night-ll-song-08-you-came-to-me": 20209729,
-      "night-ll-song-12-the-dawn": 11629330,
-      "space-live": 29282611,
-      "t37b": 14740008,
-      "night-ll-song-13-no-word-is": 16886511,
-      "night-ll-song-14-the-creator": 17038108,
-      "night-ll-song-15-noor": 19109358,
-      "night-ll-song-11-existentia": 16383229,
-      "night-ll-song-17-come-see": 17022076,
-      "night-ll-song-25-youtube-3skbvhq": 13869471,
-      "night-ll-song-26-sherali-tark": 11322492,
-      "night-ll-cues-04-muhabbatga-yaqinlar": 3311013,
-      "night-ll-song-23-we-love-life": 16490049,
-      "night-ll-song-24-eterna": 17361371,
-      "night-ll-song-27-hasan-bayar-menem": 17433489,
-      "translation-alive": 14574292,
-      "night-ll-cues-03-you": 9952845,
-      "night-ll-cues-07-healing": 6538627,
-      "night-ll-cues-08-you-came-to-me": 4557853,
-      "night-ll-cues-12-the-dawn": 3592402,
-      "night-ll-cues-14-the-creator": 3395745,
-      "night-ll-song-18-go-encore": 14367002,
-      "night-ll-song-20-i-only-knew": 14062099,
-      "studio-pass": 100852095,
-      "night-ll-song-21-veritas": 14667823,
-      "night-ll-song-30-mahur-instrumental": 12876257,
-      "night-ll-song-31-chant-percussion-ensemble": 15295823,
-      "night-ll-song-28-hasan-bayar-kime-ne": 16307472,
-      "night-ll-song-22-jaaneh-jaanaan": 19897915,
-      "phone-overlap": 39150936,
-      "tech-run-notice": 8618210,
-      "night-ll-song-29-hasan-bayar-mevlana": 26198740,
-      "night-ll-song-16-ilahana": 15510146,
-      "night-ll-song-19-ya-rasul-allah": 15647138
-    },
+    "weekAt": "2026-11-02T19:01:01Z",
+    "todayByTask": {},
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-02T18:41:01Z",
+    "todayByTaskAt": "2026-11-02T19:01:01Z",
     "plan": "SuperGrok Heavy",
     "planSource": "grok /usage",
-    "planAt": "2026-11-02T18:41:01Z",
+    "planAt": "2026-11-02T19:01:01Z",
     "weekly": {
       "percentUsed": 0,
       "source": "grok /usage",
-      "at": "2026-11-02T18:41:01Z",
+      "at": "2026-11-02T19:01:01Z",
       "timezoneLabeled": false,
       "resetsAt": "November 6, 21:08"
     }
@@ -62,37 +25,37 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-02T18:41:01Z",
+        "at": "2026-11-02T19:01:01Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "123h 23m"
+        "weeklyResetIn": "123h 3m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-02T18:41:01Z",
+        "at": "2026-11-02T19:01:01Z",
         "weeklyRemaining": 49.8,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "141h 35m"
+        "weeklyResetIn": "141h 15m"
       }
     },
-    "conversationsToday": 1,
+    "conversationsToday": 0,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-02T18:41:01Z",
-    "runsToday": 1,
+    "conversationsTodayAt": "2026-11-02T19:01:01Z",
+    "runsToday": 0,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-02T18:41:01Z",
+    "runsTodayAt": "2026-11-02T19:01:01Z",
     "secondsToday": 0,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-02T18:41:01Z",
+    "secondsTodayAt": "2026-11-02T19:01:01Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
-    "at": "2026-11-02T18:41:01Z",
+    "at": "2026-11-02T19:01:01Z",
     "claudeGpt": {
       "source": "agy /usage",
-      "at": "2026-11-02T18:41:01Z",
+      "at": "2026-11-02T19:01:01Z",
       "weeklyRemaining": 49.8,
       "fiveHourRemaining": 100,
-      "weeklyResetIn": "141h 35m"
+      "weeklyResetIn": "141h 15m"
     }
   },
   "alerts": [],
@@ -108,21 +71,21 @@
   "claude": {
     "plan": "Claude Pro",
     "planSource": "claude auth status --json",
-    "at": "2026-11-02T18:41:01Z",
+    "at": "2026-11-02T19:01:01Z",
     "windows": [
       {
         "kind": "five_hour",
-        "percentUsed": 4,
+        "percentUsed": 0,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-02T18:41:01Z",
-        "resetsAt": "2026-11-02T15:40:00.000Z",
-        "readAt": "2026-11-02T13:27:35Z"
+        "at": "2026-11-02T19:01:01Z",
+        "resetsAt": "2026-11-02T23:40:00.000Z",
+        "readAt": "2026-11-01T01:21:21Z"
       },
       {
         "kind": "seven_day",
         "percentUsed": 97,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-02T18:41:01Z",
+        "at": "2026-11-02T19:01:01Z",
         "resetsAt": "2026-11-06T04:00:00.000Z",
         "readAt": "2026-11-02T13:27:35Z"
       }
@@ -561,6 +524,11 @@
       {
         "at": "2026-11-02T18:40:21Z",
         "five_hour": 4,
+        "seven_day": 97
+      },
+      {
+        "at": "2026-11-02T19:01:01Z",
+        "five_hour": 0,
         "seven_day": 97
       }
     ]
