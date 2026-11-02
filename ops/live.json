@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-02T10:40:19Z",
+  "at": "2026-11-02T10:40:49Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,8 +10,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 16968,
-      "age": 16997,
+      "minutes": 16969,
+      "age": 16998,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -19,8 +19,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 16969,
-      "age": 16997,
+      "minutes": 16970,
+      "age": 16998,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -29,7 +29,7 @@
       "name": "icons-c",
       "state": "finished",
       "minutes": 16910,
-      "age": 16961,
+      "age": 16962,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -44,7 +44,7 @@
       "name": "phone-overlap",
       "state": "finished",
       "minutes": 743,
-      "age": 893,
+      "age": 894,
       "tokens": 39150936,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/phone-overlap"
@@ -58,8 +58,8 @@
     {
       "name": "studio-pass",
       "state": "finished",
-      "minutes": 677,
-      "age": 790,
+      "minutes": 678,
+      "age": 791,
       "tokens": 39988671,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -67,8 +67,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 2911,
-      "age": 2925,
+      "minutes": 2912,
+      "age": 2926,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -76,7 +76,7 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 3461,
+      "minutes": 3462,
       "age": 3582,
       "tokens": 13262986,
       "model": "grok-4.7-build",
@@ -85,7 +85,7 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 16906,
+      "minutes": 16907,
       "age": 17008,
       "tokens": 29801018,
       "model": "grok-4.7-build",
@@ -94,7 +94,7 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 13863,
+      "minutes": 13864,
       "age": 13894,
       "tokens": 6757832,
       "model": "grok-4.7-build",
@@ -103,8 +103,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 1218,
-      "age": 1239,
+      "minutes": 1219,
+      "age": 1240,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -112,7 +112,7 @@
     {
       "name": "translation-alive",
       "state": "finished",
-      "minutes": 803,
+      "minutes": 804,
       "age": 829,
       "tokens": 7090137,
       "model": "grok-4.7-build",
@@ -120,6 +120,106 @@
     }
   ],
   "gemini": [],
+  "chats": [
+    {
+      "name": "AOS · Engineer",
+      "role": "aos-engineer",
+      "project": "agentic-os-live",
+      "reports_to": "AOS · Main",
+      "state": "idle",
+      "last_at": "2026-11-01T01:21:21.907Z",
+      "last_act_at": "2026-11-01T01:21:21.907Z"
+    },
+    {
+      "name": "AOS · Main",
+      "role": "aos-main",
+      "project": "agentic-os-live",
+      "reports_to": "owner",
+      "state": "idle",
+      "last_at": "2026-11-01T23:23:55.730Z",
+      "last_act_at": "2026-11-01T23:23:55.730Z"
+    },
+    {
+      "name": "AOS · Ops",
+      "role": "aos-ops",
+      "project": "agentic-os-live",
+      "reports_to": "AOS · Main",
+      "state": "working",
+      "last_at": "2026-11-01T23:26:54.489Z",
+      "last_act_at": "2026-11-01T23:26:54.489Z"
+    },
+    {
+      "name": "AOS · PC",
+      "role": "aos-pc",
+      "project": "agentic-os-live",
+      "reports_to": "AOS · Main",
+      "state": "idle",
+      "last_at": "2026-11-01T10:54:53.215Z",
+      "last_act_at": "2026-11-01T10:54:53.215Z"
+    },
+    {
+      "name": "AOS · Tech",
+      "role": "aos-tech",
+      "project": "agentic-os-live",
+      "reports_to": "AOS · Main",
+      "state": "idle",
+      "last_at": "2026-11-01T23:20:32.372Z",
+      "last_act_at": "2026-11-01T23:20:32.372Z"
+    },
+    {
+      "name": "LL · Business",
+      "role": "ll-business",
+      "project": "living-lyrics",
+      "reports_to": "LL · Main",
+      "state": "idle",
+      "last_at": "2026-10-31T21:48:46.547Z",
+      "last_act_at": "2026-10-31T21:48:46.547Z"
+    },
+    {
+      "name": "LL · Main",
+      "role": "ll-main",
+      "project": "living-lyrics",
+      "reports_to": "owner",
+      "state": "idle",
+      "last_at": "2026-11-01T23:20:16.705Z",
+      "last_act_at": "2026-11-01T23:20:16.705Z"
+    },
+    {
+      "name": "LL · Site",
+      "role": "ll-site",
+      "project": "living-lyrics",
+      "reports_to": "LL · Main",
+      "state": "working",
+      "last_at": "2026-11-01T23:18:05.705Z",
+      "last_act_at": "2026-11-01T23:18:05.705Z"
+    }
+  ],
+  "pipeline": [],
+  "hygiene": {
+    "at": "2026-11-02T10:22:44Z",
+    "fixed": [],
+    "issues": [
+      "ветка grok/icons-a не влита и не менялась 11 дн.",
+      "ветка grok/icons-b не влита и не менялась 11 дн.",
+      "ветка grok/icons-c не влита и не менялась 11 дн.",
+      "ветка grok/t28-icons не влита и не менялась 11 дн.",
+      "ветка grok/t33-off не влита и не менялась 11 дн.",
+      "ветка ll-tech/panel не влита и не менялась 12 дн.",
+      "ветка site/studio-pass не влита и не менялась 8 дн.",
+      "ветка site/studio-pass-r21 не влита и не менялась 8 дн.",
+      "ветка tech/split-trim не влита и не менялась 9 дн.",
+      "рабочая копия чата listen9 влита и стоит больше суток — её уберёт сам чат или `claude rm`",
+      "рабочая копия чата ll-ops-w43 влита и стоит больше суток — её уберёт сам чат или `claude rm`",
+      "рабочая копия чата ll-tech-merge влита и стоит больше суток — её уберёт сам чат или `claude rm`",
+      "рабочая копия чата tech-ll-subagents влита и стоит больше суток — её уберёт сам чат или `claude rm`",
+      "рабочая копия чата tech-t46-s1-ll влита и стоит больше суток — её уберёт сам чат или `claude rm`",
+      "в папке t28-icons несохранённая работа, последняя запись 11 дн. назад",
+      "доска «i have come alive, соло» = (85, 118, 125), таблица T1 = (81, 118, 125)",
+      "доска «karitas, соло» = (36, 53, 61), таблица T1 = (34, 53, 61)",
+      "карточка t36 — done, а первая строка T36-iphone-crash-resume.md без «сделано»",
+      "ссылка на несуществующее: docs/process/audio-key.md → .github/workflows/rekey-audio.yml"
+    ]
+  },
   "signal": null,
   "board": {
     "updated": "2026-11-01T16:01+05:00",
