@@ -1,12 +1,12 @@
 {
-  "updated": "2026-11-02T11:40:16Z",
+  "updated": "2026-11-02T11:50:16Z",
   "grok": {
     "today": 643126624,
     "todaySource": "grok usage",
-    "todayAt": "2026-11-02T11:40:16Z",
+    "todayAt": "2026-11-02T11:50:16Z",
     "week": 2058745258,
     "weekSource": "grok usage",
-    "weekAt": "2026-11-02T11:40:16Z",
+    "weekAt": "2026-11-02T11:50:16Z",
     "todayByTask": {
       "night-ll-song-04-muhabbatga-yaqinlar": 19760819,
       "night-ll-song-09-sari-gelin": 25213540,
@@ -46,14 +46,14 @@
       "night-ll-song-19-ya-rasul-allah": 15647138
     },
     "todayByTaskSource": "grok usage",
-    "todayByTaskAt": "2026-11-02T11:40:16Z",
+    "todayByTaskAt": "2026-11-02T11:50:16Z",
     "plan": "SuperGrok Heavy",
     "planSource": "grok /usage",
-    "planAt": "2026-11-02T11:40:16Z",
+    "planAt": "2026-11-02T11:50:16Z",
     "weekly": {
       "percentUsed": 100,
       "source": "grok /usage",
-      "at": "2026-11-02T11:40:16Z",
+      "at": "2026-11-02T11:50:16Z",
       "timezoneLabeled": false,
       "resetsAt": "November 6, 21:08"
     }
@@ -62,37 +62,37 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-02T11:40:16Z",
+        "at": "2026-11-02T11:50:16Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "130h 24m"
+        "weeklyResetIn": "130h 14m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-02T11:40:16Z",
+        "at": "2026-11-02T11:50:16Z",
         "weeklyRemaining": 49.8,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "148h 35m"
+        "weeklyResetIn": "148h 25m"
       }
     },
     "conversationsToday": 1,
     "conversationsTodaySource": "C:\\Users\\User\\.gemini\\antigravity-cli\\conversations",
-    "conversationsTodayAt": "2026-11-02T11:40:16Z",
+    "conversationsTodayAt": "2026-11-02T11:50:16Z",
     "runsToday": 1,
     "runsTodaySource": "agy -p",
-    "runsTodayAt": "2026-11-02T11:40:16Z",
+    "runsTodayAt": "2026-11-02T11:50:16Z",
     "secondsToday": 0,
     "secondsTodaySource": "agy -p",
-    "secondsTodayAt": "2026-11-02T11:40:16Z",
+    "secondsTodayAt": "2026-11-02T11:50:16Z",
     "plan": "Google AI Pro",
     "planSource": "agy /usage",
-    "at": "2026-11-02T11:40:16Z",
+    "at": "2026-11-02T11:50:16Z",
     "claudeGpt": {
       "source": "agy /usage",
-      "at": "2026-11-02T11:40:16Z",
+      "at": "2026-11-02T11:50:16Z",
       "weeklyRemaining": 49.8,
       "fiveHourRemaining": 100,
-      "weeklyResetIn": "148h 35m"
+      "weeklyResetIn": "148h 25m"
     }
   },
   "alerts": [
@@ -101,7 +101,7 @@
       "task": "",
       "session": "",
       "value": 100,
-      "at": "2026-11-02T11:40:16Z"
+      "at": "2026-11-02T11:50:16Z"
     }
   ],
   "value": {
@@ -116,13 +116,13 @@
   "claude": {
     "plan": "Claude Pro",
     "planSource": "claude auth status --json",
-    "at": "2026-11-02T11:40:16Z",
+    "at": "2026-11-02T11:50:16Z",
     "windows": [
       {
         "kind": "five_hour",
         "percentUsed": 0,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-02T11:40:16Z",
+        "at": "2026-11-02T11:50:16Z",
         "resetsAt": "2026-11-02T15:40:00.000Z",
         "readAt": "2026-11-01T01:21:21Z"
       },
@@ -130,7 +130,7 @@
         "kind": "seven_day",
         "percentUsed": 97,
         "source": "Claude Code runtime (rateLimits, via the Dashboard mod)",
-        "at": "2026-11-02T11:40:16Z",
+        "at": "2026-11-02T11:50:16Z",
         "resetsAt": "2026-11-06T04:00:00.000Z",
         "readAt": "2026-11-01T23:26:54Z"
       }
