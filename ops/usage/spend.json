@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-02T16:02:45Z",
+  "at": "2026-11-02T16:12:49Z",
   "unit": "Claude cost = API-price-weighted tokens, Opus-input units (see claude_review.py)",
   "calibration": {
     "proWeek": 80125161.27,
@@ -241,7 +241,7 @@
       }
     },
     "day": {
-      "since": "2026-11-01T16:02:45",
+      "since": "2026-11-01T16:12:49",
       "cost": 11693783.53,
       "tokens": 69402591,
       "calls": 582,
@@ -370,7 +370,7 @@
     "week": {
       "since": "2026-10-30T16:08:00",
       "tokens": 1999161729,
-      "pctUsed": 100,
+      "pctUsed": 0,
       "byTask": {
         "bench-r5": 6638672,
         "bench-r6": 49084870,
@@ -511,9 +511,9 @@
       }
     },
     "day": {
-      "since": "2026-11-01T16:02:45",
-      "tokens": 827588917,
-      "pctUsed": 41.4,
+      "since": "2026-11-01T16:12:49",
+      "tokens": 802851290,
+      "pctUsed": null,
       "byTask": {
         "night-ll-cues-03-you": 9952845,
         "night-ll-cues-04-muhabbatga-yaqinlar": 3311013,
@@ -522,10 +522,8 @@
         "night-ll-cues-12-the-dawn": 3592402,
         "night-ll-cues-14-the-creator": 3395745,
         "night-ll-song-02-nasimi": 20442482,
-        "night-ll-song-03-you": 22201723,
         "night-ll-song-04-muhabbatga-yaqinlar": 19760819,
         "night-ll-song-05-lovers": 18501049,
-        "night-ll-song-06-lifting-the-veil": 2535904,
         "night-ll-song-07-healing": 13894282,
         "night-ll-song-08-you-came-to-me": 20209729,
         "night-ll-song-09-sari-gelin": 25213540,
@@ -563,7 +561,7 @@
       },
       "byProject": {
         "agentic-os-live": 52698543,
-        "living-lyrics": 727888613,
+        "living-lyrics": 703150986,
         "other": 47001761
       }
     }
@@ -572,17 +570,17 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-02T16:00:21Z",
+        "at": "2026-11-02T16:10:21Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "126h 4m"
+        "weeklyResetIn": "125h 54m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-02T16:00:21Z",
+        "at": "2026-11-02T16:10:21Z",
         "weeklyRemaining": 49.8,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "144h 15m"
+        "weeklyResetIn": "144h 5m"
       }
     },
     "runs": {
@@ -931,10 +929,10 @@
   "sources": {
     "claude.week": "python ops/usage/claude_review.py --since 2026-10-30T04:00:00 --by-chat",
     "claude.week.overhead": "python ops/usage/claude_cache.py --since 2026-10-30T04:00:00",
-    "claude.day": "python ops/usage/claude_review.py --since 2026-11-01T16:02:45 --by-chat",
+    "claude.day": "python ops/usage/claude_review.py --since 2026-11-01T16:12:49 --by-chat",
     "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 97% / 100); pro5h carried forward from the previous spend.json",
     "grok.week": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T16:08:00 (grok.weekly.resetsAt minus 7d)",
-    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-11-01T16:02:45",
+    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-11-01T16:12:49",
     "agy.quota": "ops/usage/latest.json gemini.quota",
     "agy.runs": "ops/usage/ledger/*.jsonl kind=run"
   }
