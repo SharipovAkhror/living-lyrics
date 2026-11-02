@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-02T11:51:25Z",
+  "at": "2026-11-02T12:01:33Z",
   "unit": "Claude cost = API-price-weighted tokens, Opus-input units (see claude_review.py)",
   "calibration": {
     "proWeek": 79811686.47,
@@ -241,7 +241,7 @@
       }
     },
     "day": {
-      "since": "2026-11-01T11:51:25",
+      "since": "2026-11-01T12:01:33",
       "cost": 19416211.01,
       "tokens": 118926468,
       "calls": 1036,
@@ -520,9 +520,9 @@
       }
     },
     "day": {
-      "since": "2026-11-01T11:51:25",
-      "tokens": 927374416,
-      "pctUsed": 46.39,
+      "since": "2026-11-01T12:01:33",
+      "tokens": 923440259,
+      "pctUsed": 46.19,
       "byTask": {
         "codex-summary": 13056339,
         "foreman-audit": 5495429,
@@ -567,7 +567,6 @@
         "phone-overlap": 39150936,
         "prove-witness": 10282413,
         "space-live": 29282611,
-        "space3-overview": 3934157,
         "space4-craft": 51926206,
         "studio-pass": 155518331,
         "t37-comments": 6377944,
@@ -580,7 +579,7 @@
         "translation-alive": 14574292
       },
       "byProject": {
-        "agentic-os-live": 116863051,
+        "agentic-os-live": 112928894,
         "living-lyrics": 746620974,
         "other": 63890391
       }
@@ -590,17 +589,17 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-02T11:50:16Z",
+        "at": "2026-11-02T12:00:22Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "130h 14m"
+        "weeklyResetIn": "130h 4m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-02T11:50:16Z",
+        "at": "2026-11-02T12:00:22Z",
         "weeklyRemaining": 49.8,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "148h 25m"
+        "weeklyResetIn": "148h 15m"
       }
     },
     "runs": {
@@ -949,10 +948,10 @@
   "sources": {
     "claude.week": "python ops/usage/claude_review.py --since 2026-10-30T04:00:00 --by-chat",
     "claude.week.overhead": "python ops/usage/claude_cache.py --since 2026-10-30T04:00:00",
-    "claude.day": "python ops/usage/claude_review.py --since 2026-11-01T11:51:25 --by-chat",
+    "claude.day": "python ops/usage/claude_review.py --since 2026-11-01T12:01:33 --by-chat",
     "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 97% / 100); pro5h carried forward from the previous spend.json",
     "grok.week": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T16:08:00 (grok.weekly.resetsAt minus 7d)",
-    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-11-01T11:51:25",
+    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-11-01T12:01:33",
     "agy.quota": "ops/usage/latest.json gemini.quota",
     "agy.runs": "ops/usage/ledger/*.jsonl kind=run"
   }
