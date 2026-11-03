@@ -438,3 +438,8 @@
 {"ts": "2026-11-03T18:13:37Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "gemini", "weeklyRemaining": 99.64, "weeklyResetIn": "99h 51m", "fiveHourRemaining": 100}
 {"ts": "2026-11-03T18:13:37Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "claude-gpt", "weeklyRemaining": 49.8, "weeklyResetIn": "118h 2m", "fiveHourRemaining": 100}
 {"ts": "2026-11-03T18:54:29Z", "agent": "claude", "kind": "quota", "window": "five_hour", "percentUsed": 0, "resetsAt": "2026-11-03T23:40:00.000Z", "readAt": "2026-11-01T01:21:21Z"}
+{"ts": "2026-11-03T19:24:31Z", "agent": "gemini", "kind": "quota", "plan": "", "group": "gemini", "weeklyRemaining": 99.64, "weeklyResetIn": "98h 40m", "fiveHourRemaining": 100}
+{"ts": "2026-11-03T19:24:31Z", "agent": "gemini", "kind": "quota", "plan": "", "group": "claude-gpt", "weeklyRemaining": 49.8, "weeklyResetIn": "116h 51m", "fiveHourRemaining": 100}
+{"ts": "2026-11-03T19:54:29Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "gemini", "weeklyRemaining": 99.64, "weeklyResetIn": "98h 10m", "fiveHourRemaining": 100}
+{"ts": "2026-11-03T19:54:29Z", "agent": "gemini", "kind": "quota", "plan": "Google AI Pro", "group": "claude-gpt", "weeklyRemaining": 49.8, "weeklyResetIn": "116h 21m", "fiveHourRemaining": 100}
+{"ts": "2026-11-03T20:14:29Z", "agent": "claude", "kind": "quota", "window": "five_hour", "percentUsed": 0, "resetsAt": "2026-11-03T23:40:00.000Z", "readAt": "2026-11-02T20:10:44Z"}

@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-03T20:02:17Z",
+  "at": "2026-11-03T20:12:20Z",
   "unit": "Claude cost = API-price-weighted tokens, Opus-input units (see claude_review.py)",
   "calibration": {
     "proWeek": 79755666.41,
@@ -241,54 +241,18 @@
       }
     },
     "day": {
-      "since": "2026-11-02T20:02:17",
-      "cost": 439146.65,
-      "tokens": 920353,
-      "calls": 6,
-      "pctOfWeek": 0.55,
-      "byProject": {
-        "living-lyrics": {
-          "cost": 439146.65,
-          "tokens": 920353,
-          "calls": 6,
-          "pct": 100.0
-        }
-      },
-      "byChat": {
-        "LL · Main": {
-          "project": "living-lyrics",
-          "cost": 171320.9,
-          "tokens": 164484,
-          "pct": 39.01,
-          "tokensPct": 17.87,
-          "calls": 1,
-          "sessions": 1
-        },
-        "LL · Site": {
-          "project": "living-lyrics",
-          "cost": 267825.75,
-          "tokens": 755869,
-          "pct": 60.99,
-          "tokensPct": 82.13,
-          "calls": 5,
-          "sessions": 1
-        }
-      },
-      "manager": {
-        "LL · Main": {
-          "project": "living-lyrics",
-          "cost": 171320.9,
-          "tokens": 164484,
-          "pct": 39.01,
-          "tokensPct": 17.87,
-          "calls": 1,
-          "sessions": 1
-        }
-      },
+      "since": "2026-11-02T20:12:20",
+      "cost": 0.0,
+      "tokens": 0,
+      "calls": 0,
+      "pctOfWeek": 0.0,
+      "byProject": {},
+      "byChat": {},
+      "manager": {},
       "overhead": {
         "sessionStarts": {
-          "cost": 342495.0,
-          "calls": 2
+          "cost": 0.0,
+          "calls": 0
         },
         "idleWakes": {
           "cost": 0.0,
@@ -442,7 +406,7 @@
       }
     },
     "day": {
-      "since": "2026-11-02T20:02:17",
+      "since": "2026-11-02T20:12:20",
       "tokens": 0,
       "pctUsed": null,
       "byTask": {},
@@ -768,10 +732,10 @@
   "sources": {
     "claude.week": "python ops/usage/claude_review.py --since 2026-10-30T04:00:00 --by-chat",
     "claude.week.overhead": "python ops/usage/claude_cache.py --since 2026-10-30T04:00:00",
-    "claude.day": "python ops/usage/claude_review.py --since 2026-11-02T20:02:17 --by-chat",
+    "claude.day": "python ops/usage/claude_review.py --since 2026-11-02T20:12:20 --by-chat",
     "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 98% / 100); pro5h carried forward from the previous spend.json",
     "grok.week": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T16:08:00 (grok.weekly.resetsAt minus 7d)",
-    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-11-02T20:02:17",
+    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-11-02T20:12:20",
     "agy.quota": "ops/usage/latest.json gemini.quota",
     "agy.runs": "ops/usage/ledger/*.jsonl kind=run"
   }
