@@ -433,3 +433,5 @@
 {"ts": "2026-11-03T04:21:44Z", "agent": "claude", "kind": "quota", "window": "five_hour", "percentUsed": 0, "resetsAt": "2026-11-03T07:40:00.000Z", "readAt": "2026-11-02T20:10:44Z"}
 {"ts": "2026-11-03T10:53:33Z", "agent": "claude", "kind": "quota", "window": "five_hour", "percentUsed": 0, "resetsAt": "2026-11-03T15:40:00.000Z", "readAt": "2026-11-01T01:21:21Z"}
 {"ts": "2026-11-03T12:13:37Z", "agent": "claude", "kind": "quota", "window": "five_hour", "percentUsed": 0, "resetsAt": "2026-11-03T15:40:00.000Z", "readAt": "2026-11-02T20:10:44Z"}
+{"ts": "2026-11-03T17:43:37Z", "agent": "gemini", "kind": "quota", "plan": "", "group": "gemini", "weeklyRemaining": 99.64, "weeklyResetIn": "100h 21m", "fiveHourRemaining": 100}
+{"ts": "2026-11-03T17:43:37Z", "agent": "gemini", "kind": "quota", "plan": "", "group": "claude-gpt", "weeklyRemaining": 49.8, "weeklyResetIn": "118h 32m", "fiveHourRemaining": 100}
