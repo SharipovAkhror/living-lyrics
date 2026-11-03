@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-03T04:02:39Z",
+  "at": "2026-11-03T04:12:17Z",
   "grok": [
     {
       "name": "_artifacts",
@@ -10,8 +10,8 @@
     {
       "name": "icons-a",
       "state": "finished",
-      "minutes": 18010,
-      "age": 18039,
+      "minutes": 18020,
+      "age": 18049,
       "tokens": 9490511,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
@@ -19,8 +19,8 @@
     {
       "name": "icons-b",
       "state": "finished",
-      "minutes": 18011,
-      "age": 18039,
+      "minutes": 18021,
+      "age": 18049,
       "tokens": 9850680,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
@@ -28,8 +28,8 @@
     {
       "name": "icons-c",
       "state": "finished",
-      "minutes": 17952,
-      "age": 18003,
+      "minutes": 17962,
+      "age": 18013,
       "tokens": 13196979,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
@@ -43,8 +43,8 @@
     {
       "name": "phone-overlap",
       "state": "finished",
-      "minutes": 1785,
-      "age": 1935,
+      "minutes": 1795,
+      "age": 1945,
       "tokens": 39150936,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/phone-overlap"
@@ -58,8 +58,8 @@
     {
       "name": "studio-pass",
       "state": "finished",
-      "minutes": 1719,
-      "age": 1832,
+      "minutes": 1729,
+      "age": 1842,
       "tokens": 39988671,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
@@ -67,8 +67,8 @@
     {
       "name": "t10-small",
       "state": "finished",
-      "minutes": 3953,
-      "age": 3967,
+      "minutes": 3963,
+      "age": 3977,
       "tokens": 4653311,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
@@ -76,8 +76,8 @@
     {
       "name": "t27-memory",
       "state": "finished",
-      "minutes": 4503,
-      "age": 4624,
+      "minutes": 4513,
+      "age": 4634,
       "tokens": 13262986,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
@@ -85,8 +85,8 @@
     {
       "name": "t28-icons",
       "state": "finished",
-      "minutes": 17948,
-      "age": 18050,
+      "minutes": 17958,
+      "age": 18060,
       "tokens": 29801018,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
@@ -94,8 +94,8 @@
     {
       "name": "t35",
       "state": "finished",
-      "minutes": 14905,
-      "age": 14936,
+      "minutes": 14915,
+      "age": 14946,
       "tokens": 6757832,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
@@ -103,8 +103,8 @@
     {
       "name": "t37-comments",
       "state": "finished",
-      "minutes": 2260,
-      "age": 2281,
+      "minutes": 2270,
+      "age": 2291,
       "tokens": 6377944,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
@@ -112,8 +112,8 @@
     {
       "name": "translation-alive",
       "state": "finished",
-      "minutes": 1845,
-      "age": 1871,
+      "minutes": 1855,
+      "age": 1881,
       "tokens": 7090137,
       "model": "grok-4.7-build",
       "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/translation-alive"
@@ -180,18 +180,14 @@
       "role": "ll-main",
       "project": "living-lyrics",
       "reports_to": "owner",
-      "state": "idle",
-      "last_at": "2026-11-02T20:10:44.345Z",
-      "last_act_at": "2026-11-02T20:10:44.345Z"
+      "state": "none"
     },
     {
       "name": "LL · Site",
       "role": "ll-site",
       "project": "living-lyrics",
       "reports_to": "LL · Main",
-      "state": "idle",
-      "last_at": "2026-11-02T20:10:42.467Z",
-      "last_act_at": "2026-11-02T20:10:42.467Z"
+      "state": "none"
     }
   ],
   "pipeline": [],
