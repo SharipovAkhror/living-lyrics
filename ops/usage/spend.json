@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-04T15:29:15Z",
+  "at": "2026-11-04T15:39:18Z",
   "unit": "Claude cost = API-price-weighted tokens, Opus-input units (see claude_review.py)",
   "calibration": {
     "proWeek": 79755666.41,
@@ -241,7 +241,7 @@
       }
     },
     "day": {
-      "since": "2026-11-03T15:29:15",
+      "since": "2026-11-03T15:39:18",
       "cost": 0.0,
       "tokens": 0,
       "calls": 0,
@@ -406,7 +406,7 @@
       }
     },
     "day": {
-      "since": "2026-11-03T15:29:15",
+      "since": "2026-11-03T15:39:18",
       "tokens": 0,
       "pctUsed": null,
       "byTask": {},
@@ -417,17 +417,17 @@
     "quota": {
       "gemini": {
         "source": "agy /usage",
-        "at": "2026-11-04T15:26:18Z",
+        "at": "2026-11-04T15:36:18Z",
         "weeklyRemaining": 99.64,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "78h 38m"
+        "weeklyResetIn": "78h 28m"
       },
       "claude-gpt": {
         "source": "agy /usage",
-        "at": "2026-11-04T15:26:18Z",
+        "at": "2026-11-04T15:36:18Z",
         "weeklyRemaining": 49.8,
         "fiveHourRemaining": 100,
-        "weeklyResetIn": "96h 49m"
+        "weeklyResetIn": "96h 39m"
       }
     },
     "runs": {
@@ -732,10 +732,10 @@
   "sources": {
     "claude.week": "python ops/usage/claude_review.py --since 2026-10-30T04:00:00 --by-chat",
     "claude.week.overhead": "python ops/usage/claude_cache.py --since 2026-10-30T04:00:00",
-    "claude.day": "python ops/usage/claude_review.py --since 2026-11-03T15:29:15 --by-chat",
+    "claude.day": "python ops/usage/claude_review.py --since 2026-11-03T15:39:18 --by-chat",
     "calibration": "proWeek = claude cost since 2026-10-30T04:00:00 / (seven_day 98% / 100); pro5h carried forward from the previous spend.json",
     "grok.week": "ops/usage/ledger/*.jsonl kind=session since 2026-10-30T16:08:00 (grok.weekly.resetsAt minus 7d)",
-    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-11-03T15:29:15",
+    "grok.day": "ops/usage/ledger/*.jsonl kind=session since 2026-11-03T15:39:18",
     "agy.quota": "ops/usage/latest.json gemini.quota",
     "agy.runs": "ops/usage/ledger/*.jsonl kind=run"
   }
