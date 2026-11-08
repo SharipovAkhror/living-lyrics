@@ -1,0 +1,61 @@
+{
+  "$schema": "../../../docs/schema/lyrics.schema.json",
+  "sections": [
+    {
+      "id": "intro",
+      "kind": "instrumental",
+      "start": 0,
+      "end": 8.25,
+      "label": "Вступление",
+      "instruments": ["ensemble"],
+      "mode": "махур",
+      "flags": ["timing-draft", "attribution-unverified"],
+      "note": "Тихое начало до плотного ритма. Какой инструмент ведёт вступление, описание не называет.",
+      "comment": "Сами Юсуф сочинил, аранжировал и исполнил эту инструментальную пьесу. Описание называет её лад Dastgāh: Māhūr, и то же имя стоит в названии пьесы. Написана она для танбура и ансамбля. В том же абзаце сказано, что пьеса держит суть хорасанского звучания, особенно звучания провинции Lorestan, своим упругим ритмом и духовным подъёмом, и что соло в ней ослепительные. Сила этой музыки, по тем же словам, поражает слушателя отголоском божественного величия. https://www.youtube.com/watch?v=KOxO1Uw_L4A"
+    },
+    {
+      "id": "body",
+      "kind": "instrumental",
+      "start": 8.25,
+      "end": 109.2,
+      "label": "Пьеса",
+      "instruments": ["ensemble"],
+      "mode": "махур",
+      "flags": ["timing-draft", "attribution-unverified"],
+      "note": "Основная часть. Описание называет танбур и ансамбль и не раскладывает их по минутам."
+    },
+    {
+      "id": "rhythm",
+      "kind": "instrumental",
+      "start": 109.2,
+      "end": 158.8,
+      "label": "Ритм",
+      "instruments": ["ensemble"],
+      "mode": "махур",
+      "flags": ["timing-draft", "attribution-unverified"],
+      "note": "Ритм на первом плане, мелодия отходит. Имя инструмента этого куска описание не даёт."
+    },
+    {
+      "id": "solo",
+      "kind": "instrumental",
+      "start": 158.8,
+      "end": 169.8,
+      "label": "Линия",
+      "instruments": ["ensemble"],
+      "mode": "махур",
+      "flags": ["timing-draft", "attribution-unverified"],
+      "note": "Короткий отрезок, где одна линия громче остальных. Описание говорит, что в пьесе есть соло, и не говорит, этот ли это отрезок и какой инструмент."
+    },
+    {
+      "id": "close",
+      "kind": "instrumental",
+      "start": 169.8,
+      "end": 183.09,
+      "label": "Конец",
+      "instruments": ["ensemble"],
+      "mode": "махур",
+      "flags": ["timing-draft", "attribution-unverified"],
+      "note": "Завершение пьесы. Что звучит в конце, описание не называет."
+    }
+  ]
+}

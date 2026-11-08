@@ -1,0 +1,78 @@
+{
+  "$schema": "../../../docs/schema/song.schema.json",
+  "slug": "mahur-instrumental",
+  "title": "Māhūr Instrumental",
+  "artist": "Sami Yusuf",
+  "performance": {
+    "event": "Live at the Dubai Opera",
+    "venue": "Dubai Opera",
+    "city": "Dubai",
+    "date": "2016-12-16"
+  },
+  "release": {
+    "album": "Live at the Dubai Opera",
+    "year": 2017,
+    "label": "Andante Records"
+  },
+  "version": {
+    "kind": "live",
+    "label": "Концерт Live at the Dubai Opera, Dubai 2016"
+  },
+  "languages": [
+    "fa"
+  ],
+  "duration": 183.09,
+  "palette": {
+    "accent": "#897054",
+    "accentDark": "#8C7B6E",
+    "field": [
+      "#120D0B",
+      "#3C342E",
+      "#64473B",
+      "#897054"
+    ]
+  },
+  "audio": {
+    "status": "ready",
+    "high": "/audio/mahur-instrumental/high.m4a",
+    "peaks": "/audio/mahur-instrumental/peaks.json",
+    "gainDb": -2.3,
+    "provenance": {
+      "kind": "file",
+      "ref": "https://www.youtube.com/watch?v=KOxO1Uw_L4A",
+      "retrieved": "2026-11-02",
+      "sha256": "c8ec844ce5901263f469382b8f7029405dd562cfd55d84f334eddc44fa69251b"
+    }
+  },
+  "timing": {
+    "status": "draft",
+    "method": "none",
+    "notes": "Границы секций — черновик sections.py по вокальному стему htdemucs, сверенный с уровнями стемов. Спетых строк нет, выравнивание слов не запускалось. Пословная заливка выключена."
+  },
+  "credits": [
+    {
+      "role": "Сочинение",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "Аранжировка",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "Исполнение",
+      "name": "Sami Yusuf"
+    }
+  ],
+  "review": [
+    "Слов в записи нет: описание ролика и страница артиста называют пьесу instrumental. Поле languages требует один код, а кода «без языка» в списке нет. fa здесь не спетый язык, а язык названия лада (Dastgāh: Māhūr). Карточка «О песне» из-за этого может показать «персидский». Пустое languages без правки схемы не проходит.",
+    "Цвета палитры сняты с обложки альбома Live at the Dubai Opera (Apple Music, artwork Music122/v4/6b/83/96). Квадраты public/covers в этот коммит не входили: каталог вне разрешённых путей задачи.",
+    "Альбомная дорожка Live at the Dubai Opera короче этого ролика: Apple Music 2:58, Tidal 2:57, ролик https://www.youtube.com/watch?v=KOxO1Uw_L4A на странице 3:03. Секунды альбома к этому файлу не подходят. В автовыгрузке альбома (https://www.youtube.com/watch?v=7IM8NxKDTck) есть поле Lyricist: Sami Yusuf; текста из него не брал.",
+    "Состав вечера в описании ролика не разложен по этой пьесе. Точечные кадры того же ролика просмотрены (1, 6, 70, 130, 164, 176 и 181 с). vision.json не писался: команду просмотра печатает song-status для Claude · Lead, этот заход им не является. Уверенность кадров не измерялась, поэтому ключи каталога не ставились: в секциях ensemble и флаг attribution-unverified. На кадре около 70 с человек в красной рубашке играет на круглой длинношейной лютне. На кадре около 130 с другой человек играет на короткой торцевой дудке, слева виден гриф длинношейной лютни. Одного плана на инструмент мало.",
+    "На кадре 164 с человек в красном не держит инструмент: руки подняты, рядом расписной барабан-бокал. Это окно 158,8–169,8 с, где вокальный стем громче остальных. Слов на экране нет, строку пения не ставил. Описание пьесы по-прежнему называет её инструментальной.",
+    "В начале ролика на экране карточка: Māhūr Instrumental; Composed & Arranged by Sami Yusuf; Dastgāh: Māhūr; Live at the Dubai Opera; Sponsored by Spiritique Foundation; Copyright of Andante Records. В конце карточка альбома без стиха. Каллиграфия на заднике не разобрана и в текст не перенесена. Spiritique Foundation в credits не входил: на карточке спонсор не назван музыкантом.",
+    "Город в источниках написан Dubai. В подписи версии он не переведён.",
+    "Строка «структура» в song-status требует вокальную строку. Спетых строк нет, поэтому строка не становится «да». Код не менялся. Границы секций всё равно перенесены из sections.py.",
+    "Whisper base по вокальному стему с фильтром голоса не нашёл речи. Без фильтра на 158,8–169,8 с выдал английскую галлюцинацию. В текст она не вошла.",
+    "официальные субтитры: пусто"
+  ]
+}
