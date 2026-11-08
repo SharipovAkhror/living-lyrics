@@ -1,0 +1,126 @@
+{
+  "$schema": "../../../docs/schema/song.schema.json",
+  "slug": "come-see",
+  "title": "Come See",
+  "artist": "Sami Yusuf",
+  "version": {
+    "kind": "live",
+    "label": "Концерт Fes Festival of World Sacred Music, Fes 2019"
+  },
+  "titleOriginal": "Ben Yürürüm Yane Yane",
+  "languages": [
+    "tr",
+    "en"
+  ],
+  "poets": [
+    {
+      "name": "Юнус Эмре",
+      "lang": "tr",
+      "era": "XIII век"
+    }
+  ],
+  "performance": {
+    "event": "Fes Festival of World Sacred Music",
+    "city": "Fes",
+    "date": "2019"
+  },
+  "duration": 423.07,
+  "palette": {
+    "accent": "#3A5BA0",
+    "accentDark": "#8FB2FF",
+    "field": [
+      "#3A5BA0",
+      "#7C4DBA",
+      "#2A8C8C"
+    ]
+  },
+  "featuring": [
+    "Mostafa El Lachkar",
+    "Ismail Boujia",
+    "Elouafi Mohammed",
+    "Hamza Idrissi",
+    "Mohammed El Alami",
+    "Abderrazak Idrissi"
+  ],
+  "credits": [
+    { "role": "слова", "name": "Yunus Emre" },
+    { "role": "английский перевод", "name": "T J Winter" },
+    { "role": "музыка", "name": "Traditional" },
+    { "role": "аранжировка", "name": "Sami Yusuf" },
+    { "role": "вокал", "name": "Sami Yusuf" },
+    { "role": "daf, bendir, вокал", "name": "Seyyed Mohammad Jaberi" },
+    { "role": "bendir, tef, kudum, вокал", "name": "Ömer Avci" },
+    { "role": "qanun", "name": "Onur Cicin" },
+    { "role": "oud", "name": "Sezgin Yaman" },
+    { "role": "kemanche", "name": "Emre Kayacan" },
+    { "role": "ney", "name": "Hasan Kirkisoglu" },
+    { "role": "santoor", "name": "Mahyar Toreihi" },
+    { "role": "bağlama", "name": "Hüseyin Can Pala" },
+    { "role": "сведение и мастеринг", "name": "Vishnu Rajan" },
+    { "role": "запись", "name": "Sachin Savio" }
+  ],
+  "audio": {
+    "status": "ready",
+    "high": "/audio/come-see/high.m4a",
+    "peaks": "/audio/come-see/peaks.json",
+    "gainDb": -2.2,
+    "provenance": {
+      "kind": "file",
+      "ref": "source.m4a",
+      "sha256": "fa3c7b48a590400b73dcda8d610d8e96b008fdd75e7e8ad8914c11b740f194ec"
+    }
+  },
+  "timing": {
+    "status": "draft",
+    "method": "none",
+    "notes": "Границы фраз — черновик распознавания вокала, не выравнивание. Внутри строки слова разложены равномерно. Пословной заливки нет: официальных субтитров и спетых строк на экране нет."
+  },
+  "parts": [
+    {
+      "id": "winter",
+      "title": "Английский перевод",
+      "lang": "en",
+      "author": {
+        "name": "Юнус Эмре",
+        "original": "Yunus Emre"
+      },
+      "work": {
+        "original": "Ben Yürürüm Yane Yane",
+        "ru": "Приди и взгляни",
+        "lang": "tr"
+      },
+      "url": "https://www.youtube.com/watch?v=rX2cGrPLqIM",
+      "note": "Английские строки — перевод T J Winter, он же Abdulhakim Murad; буклет этой записи не открыт.",
+      "sections": ["en-a", "en-b"]
+    },
+    {
+      "id": "yunus",
+      "title": "Стихотворение Юнуса Эмре",
+      "lang": "tr",
+      "author": {
+        "name": "Юнус Эмре",
+        "original": "Yunus Emre"
+      },
+      "work": {
+        "original": "Ben yürürem yana yana",
+        "ru": "Иду, сгорая",
+        "lang": "tr"
+      },
+      "url": "https://tr.wikisource.org/wiki/Sayfa:Halk_Edebiyatı_Antolojisi.pdf/176?oldid=137715",
+      "note": "В записи разобраны первая строка и рефрен антологии Эргуна, не все шесть строф.",
+      "sections": ["tr-close"]
+    }
+  ],
+  "review": [
+    "Палитра в заготовке — заглушка. Замените её цветами обложки, когда обложка будет. До этого цвета по настроению не подбирайте.",
+    "Город в подписи записан как Fes: в открытых источниках он только латиницей, внутри названия фестиваля. Русского написания города страница не даёт.",
+    "официальные субтитры: пусто",
+    "Спетых строк на экране нет: в кадре только справка в начале. Задание выравнивания не ставилось. timing not proven: no cue source.",
+    "Страница издания https://samiyusufofficial.com/discography/live-at-the-fes-festival-of-world-sacred-music/ и samiyusuf.art/music/come-see в этом проходе не открылись. Английские буквы взяты из описания ролика института Юнуса Эмре, не из буклета этой записи.",
+    "Зал фестиваля источники не называют.",
+    "обратный перевод: ждёт Gemini",
+    "text-unverified: en-see-1, en-see-2, en-see-3, en-see-4, en-see-5, en-see-6 — удвоенное come see есть в черновике голоса и нет в печати перевода.",
+    "text-unverified: tr-walk-1, tr-see-1 — буквы Эргуна, спетое написание yane и возможное удвоение beni буклетом не закрыты.",
+    "Не разобраны на строки промежутки около 63–80 с, 111–141 с, 237–249 с, 283–298 с, 340–357 с и 378–412 с. Гостевые голоса из описания в эти промежутки не расписаны."
+  ]
+}

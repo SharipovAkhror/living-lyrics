@@ -1,0 +1,1258 @@
+{
+  "$schema": "../../../docs/schema/lyrics.schema.json",
+  "sections": [
+    {
+      "id": "intro",
+      "kind": "instrumental",
+      "start": 0,
+      "end": 33.1,
+      "label": "Вступление",
+      "instruments": [
+        "daf",
+        "bendir"
+      ],
+      "performers": [
+        "Seyyed Mohammad Jaberi (daf, bendir)",
+        "Ömer Avci (bendir, kudum)"
+      ],
+      "mode": "Segah",
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
+      ],
+      "note": "До пения слышны рамочный барабан и пара котлов. Описание ролика называет даф, бендир и кудум. Кудума в каталоге нет, а какой из двух барабанов даф, кадр не разделяет."
+    },
+    {
+      "id": "en-a",
+      "kind": "vocal",
+      "start": 33.1,
+      "end": 141.1,
+      "label": "Ходьба и три притчи",
+      "voice": "Sami Yusuf",
+      "flags": [
+        "timing-draft"
+      ],
+      "lines": [
+        {
+          "id": "en-walk-1",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "I",
+              "s": 33.1,
+              "e": 34.4
+            },
+            {
+              "w": "am",
+              "s": 34.4,
+              "e": 35.7
+            },
+            {
+              "w": "walking,",
+              "s": 35.7,
+              "e": 37.0
+            },
+            {
+              "w": "burning,",
+              "s": 37.0,
+              "e": 38.3
+            },
+            {
+              "w": "burning,",
+              "s": 38.3,
+              "e": 39.6
+            }
+          ],
+          "tr": {
+            "ru": "Я иду и сгораю, и снова сгораю."
+          },
+          "comment": "Говорящий идёт и при этом горит: так открывается английский перевод Тимоти Уинтера, он же Abdulhakim Murad. Турецкая строка того же места у Эргуна, с. 166, — «Ben yürürem yana yana». Английское burning стоит на месте этого повтора. https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-walk-2",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Love",
+              "s": 39.7,
+              "e": 40.76
+            },
+            {
+              "w": "has",
+              "s": 40.76,
+              "e": 41.81
+            },
+            {
+              "w": "stained",
+              "s": 41.81,
+              "e": 42.87
+            },
+            {
+              "w": "my",
+              "s": 42.87,
+              "e": 43.93
+            },
+            {
+              "w": "heart",
+              "s": 43.93,
+              "e": 44.99
+            },
+            {
+              "w": "with",
+              "s": 44.99,
+              "e": 46.04
+            },
+            {
+              "w": "yearning,",
+              "s": 46.04,
+              "e": 47.1
+            }
+          ],
+          "tr": {
+            "ru": "Любовь окрасила моё сердце томлением."
+          },
+          "comment": "Любовь окрасила сердце томлением. Так стоит в английском переводе Abdulhakim Murad. Другое чтение того же места у Эргуна, с. 166: «Aşk boyadı beni kana». https://tr.wikisource.org/wiki/Sayfa:Halk_Edebiyatı_Antolojisi.pdf/176?oldid=137715",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-walk-3",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Neither",
+              "s": 47.67,
+              "e": 49.55
+            },
+            {
+              "w": "crazy",
+              "s": 49.55,
+              "e": 51.44
+            },
+            {
+              "w": "nor",
+              "s": 51.44,
+              "e": 53.32
+            },
+            {
+              "w": "discerning",
+              "s": 53.32,
+              "e": 55.2
+            }
+          ],
+          "tr": {
+            "ru": "Ни безумный я, ни прозорливый."
+          },
+          "comment": "Говорящий не находит себя ни среди безумных, ни среди тех, кто умеет различать. Так стоит в английском переводе. У Эргуна то же место напечатано «Ne âkilem ne divane», с. 166. https://tr.wikisource.org/wiki/Sayfa:Halk_Edebiyatı_Antolojisi.pdf/176?oldid=137715",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-see-1",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Come",
+              "s": 55.4,
+              "e": 56.18
+            },
+            {
+              "w": "see,",
+              "s": 56.18,
+              "e": 56.96
+            },
+            {
+              "w": "come",
+              "s": 56.96,
+              "e": 57.74
+            },
+            {
+              "w": "see,",
+              "s": 57.74,
+              "e": 58.52
+            },
+            {
+              "w": "what",
+              "s": 58.52,
+              "e": 59.3
+            },
+            {
+              "w": "love",
+              "s": 59.3,
+              "e": 60.08,
+              "em": true
+            },
+            {
+              "w": "has",
+              "s": 60.08,
+              "e": 60.86
+            },
+            {
+              "w": "done",
+              "s": 60.86,
+              "e": 61.64
+            },
+            {
+              "w": "to",
+              "s": 61.64,
+              "e": 62.42
+            },
+            {
+              "w": "me.",
+              "s": 62.42,
+              "e": 63.2
+            }
+          ],
+          "tr": {
+            "ru": "Приди и взгляни, приди и взгляни, что **любовь** сделала со мной."
+          },
+          "comment": "Припев зовёт посмотреть, что любовь сделала с говорящим: так кончается каждая строфа английского перевода Abdulhakim Murad. В печати института припев один раз, «Come, see, what love has done to me». Второй «come see» в этой строке печатью не подтверждён. https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "en-wind-1",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "One",
+              "s": 80.05,
+              "e": 81.04
+            },
+            {
+              "w": "day",
+              "s": 81.04,
+              "e": 82.04
+            },
+            {
+              "w": "like",
+              "s": 82.04,
+              "e": 83.03
+            },
+            {
+              "w": "the",
+              "s": 83.03,
+              "e": 84.02
+            },
+            {
+              "w": "winds",
+              "s": 84.02,
+              "e": 85.01
+            },
+            {
+              "w": "I'm",
+              "s": 85.01,
+              "e": 86.01
+            },
+            {
+              "w": "blowing,",
+              "s": 86.01,
+              "e": 87.0
+            }
+          ],
+          "tr": {
+            "ru": "В иной день я вею, как веют ветры."
+          },
+          "comment": "Говорящий веет, как веют ветры: так у Уинтера, «One day like the winds I'm blowing». У Эргуна, с. 167, то же место начинается «Gâh eserim yeller gibi». https://tr.wikisource.org/wiki/Sayfa:Halk_Edebiyatı_Antolojisi.pdf/177?oldid=137973",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-wind-2",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "One",
+              "s": 87.0,
+              "e": 88.29
+            },
+            {
+              "w": "day",
+              "s": 88.29,
+              "e": 89.57
+            },
+            {
+              "w": "like",
+              "s": 89.57,
+              "e": 90.86
+            },
+            {
+              "w": "the",
+              "s": 90.86,
+              "e": 92.14
+            },
+            {
+              "w": "roads",
+              "s": 92.14,
+              "e": 93.43
+            },
+            {
+              "w": "I'm",
+              "s": 93.43,
+              "e": 94.71
+            },
+            {
+              "w": "going,",
+              "s": 94.71,
+              "e": 96.0
+            }
+          ],
+          "tr": {
+            "ru": "В иной день я иду, как идут дороги."
+          },
+          "comment": "Говорящий идёт, как идут дороги: так у Уинтера, «One day like the roads I'm going». У Эргуна, с. 167, другое чтение того же места: «Gâh tozarım yollar gibi». https://tr.wikisource.org/wiki/Sayfa:Halk_Edebiyatı_Antolojisi.pdf/177?oldid=137973",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-wind-3",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "One",
+              "s": 96.0,
+              "e": 97.0
+            },
+            {
+              "w": "day",
+              "s": 97.0,
+              "e": 98.0
+            },
+            {
+              "w": "like",
+              "s": 98.0,
+              "e": 99.0
+            },
+            {
+              "w": "the",
+              "s": 99.0,
+              "e": 100.0
+            },
+            {
+              "w": "floods",
+              "s": 100.0,
+              "e": 101.0
+            },
+            {
+              "w": "I'm",
+              "s": 101.0,
+              "e": 102.0
+            },
+            {
+              "w": "flowing.",
+              "s": 102.0,
+              "e": 103.0
+            }
+          ],
+          "tr": {
+            "ru": "В иной день я теку, как текут потоки."
+          },
+          "comment": "Говорящий течёт, как поток: так у Уинтера, «One day like the floods I'm flowing». У Эргуна, с. 167, напечатано «Gâh çağlarım seller gibi». В тексте института того же места глагол другой: «akarım». https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-see-2",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Come",
+              "s": 103.0,
+              "e": 103.8
+            },
+            {
+              "w": "see,",
+              "s": 103.8,
+              "e": 104.6
+            },
+            {
+              "w": "come",
+              "s": 104.6,
+              "e": 105.4
+            },
+            {
+              "w": "see,",
+              "s": 105.4,
+              "e": 106.2
+            },
+            {
+              "w": "what",
+              "s": 106.2,
+              "e": 107.0
+            },
+            {
+              "w": "love",
+              "s": 107.0,
+              "e": 107.8
+            },
+            {
+              "w": "has",
+              "s": 107.8,
+              "e": 108.6
+            },
+            {
+              "w": "done",
+              "s": 108.6,
+              "e": 109.4
+            },
+            {
+              "w": "to",
+              "s": 109.4,
+              "e": 110.2
+            },
+            {
+              "w": "me.",
+              "s": 110.2,
+              "e": 111.0
+            }
+          ],
+          "tr": {
+            "ru": "Приди и взгляни, приди и взгляни, что любовь сделала со мной."
+          },
+          "comment": "Припев зовёт посмотреть, что любовь сделала с говорящим: так кончается каждая строфа английского перевода Abdulhakim Murad. В печати института припев один раз, «Come, see, what love has done to me». Второй «come see» в этой строке печатью не подтверждён. https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "break",
+      "kind": "instrumental",
+      "start": 141.1,
+      "end": 158.05,
+      "label": "Проигрыш",
+      "instruments": [
+        "oud",
+        "qanun",
+        "baglama",
+        "daf"
+      ],
+      "performers": [
+        "Sezgin Yaman (oud)",
+        "Onur Cicin (qanun)",
+        "Hüseyin Can Pala (bağlama)"
+      ],
+      "flags": [
+        "timing-draft"
+      ],
+      "note": "Короткий проигрыш ансамбля перед следующей просьбой. На кадре около этого места видны уд, канун, баглама и рамочный барабан."
+    },
+    {
+      "id": "en-b",
+      "kind": "vocal",
+      "start": 158.05,
+      "end": 297.95,
+      "label": "Просьба, Меджнун, имя",
+      "voice": "Sami Yusuf",
+      "flags": [
+        "timing-draft"
+      ],
+      "lines": [
+        {
+          "id": "en-hand-1",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Take",
+              "s": 158.27,
+              "e": 159.23
+            },
+            {
+              "w": "my",
+              "s": 159.23,
+              "e": 160.18
+            },
+            {
+              "w": "hand",
+              "s": 160.18,
+              "e": 161.14
+            },
+            {
+              "w": "and",
+              "s": 161.14,
+              "e": 162.09
+            },
+            {
+              "w": "keep",
+              "s": 162.09,
+              "e": 163.05
+            },
+            {
+              "w": "me",
+              "s": 163.05,
+              "e": 164.0
+            },
+            {
+              "w": "staying",
+              "s": 164.0,
+              "e": 164.96
+            }
+          ],
+          "tr": {
+            "ru": "Возьми меня за руку и не отпускай."
+          },
+          "comment": "Просьба взять за руку и удержать. Так по-английски у Уинтера: «Take my hand and keep me staying». Другое чтение — турецкая строка в описании института: «Ya elim al kaldır beni». Эргун этой строки не печатает. https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-hand-2",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Take",
+              "s": 164.96,
+              "e": 166.45
+            },
+            {
+              "w": "me",
+              "s": 166.45,
+              "e": 167.94
+            },
+            {
+              "w": "else,",
+              "s": 167.94,
+              "e": 169.43
+            },
+            {
+              "w": "to",
+              "s": 169.43,
+              "e": 170.92
+            },
+            {
+              "w": "You",
+              "s": 170.92,
+              "e": 172.41
+            },
+            {
+              "w": "conveying,",
+              "s": 172.41,
+              "e": 173.9
+            }
+          ],
+          "tr": {
+            "ru": "А иначе возьми меня и донеси к Тебе."
+          },
+          "comment": "Если удержать нельзя, пусть его донесут к Тебе. «You» у Уинтера написано с большой буквы. Турецкая строка института того же места: «ya vaslına erdir beni». У Эргуна этой строки нет. https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-hand-3",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "No",
+              "s": 173.9,
+              "e": 174.9
+            },
+            {
+              "w": "more",
+              "s": 174.9,
+              "e": 175.9
+            },
+            {
+              "w": "tears,",
+              "s": 175.9,
+              "e": 176.9
+            },
+            {
+              "w": "for",
+              "s": 176.9,
+              "e": 177.9
+            },
+            {
+              "w": "laughs",
+              "s": 177.9,
+              "e": 178.9
+            },
+            {
+              "w": "I'm",
+              "s": 178.9,
+              "e": 179.9
+            },
+            {
+              "w": "praying.",
+              "s": 179.9,
+              "e": 180.9
+            }
+          ],
+          "tr": {
+            "ru": "Довольно слёз: я молю о смехе."
+          },
+          "comment": "После просьбы удержать или донести он просит смеха вместо слёз. Так у Уинтера: «No more tears, for laughs I'm praying». У института турецкая строка того же места — «Çok ağladım güldür beni». Эргун этого стиха не даёт. https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-see-3",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Come",
+              "s": 180.9,
+              "e": 181.71
+            },
+            {
+              "w": "see,",
+              "s": 181.71,
+              "e": 182.52
+            },
+            {
+              "w": "come",
+              "s": 182.52,
+              "e": 183.33
+            },
+            {
+              "w": "see,",
+              "s": 183.33,
+              "e": 184.14
+            },
+            {
+              "w": "what",
+              "s": 184.14,
+              "e": 184.95
+            },
+            {
+              "w": "love",
+              "s": 184.95,
+              "e": 185.76
+            },
+            {
+              "w": "has",
+              "s": 185.76,
+              "e": 186.57
+            },
+            {
+              "w": "done",
+              "s": 186.57,
+              "e": 187.38
+            },
+            {
+              "w": "to",
+              "s": 187.38,
+              "e": 188.19
+            },
+            {
+              "w": "me.",
+              "s": 188.19,
+              "e": 189.0
+            }
+          ],
+          "tr": {
+            "ru": "Приди и взгляни, приди и взгляни, что любовь сделала со мной."
+          },
+          "comment": "Припев зовёт посмотреть, что любовь сделала с говорящим: так кончается каждая строфа английского перевода Abdulhakim Murad. В печати института припев один раз, «Come, see, what love has done to me». Второй «come see» в этой строке печатью не подтверждён. https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "en-see-4",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Come",
+              "s": 189.0,
+              "e": 189.5
+            },
+            {
+              "w": "see,",
+              "s": 189.5,
+              "e": 190.0
+            },
+            {
+              "w": "come",
+              "s": 190.0,
+              "e": 190.5
+            },
+            {
+              "w": "see,",
+              "s": 190.5,
+              "e": 191.0
+            },
+            {
+              "w": "what",
+              "s": 191.0,
+              "e": 191.5
+            },
+            {
+              "w": "love",
+              "s": 191.5,
+              "e": 192.0
+            },
+            {
+              "w": "has",
+              "s": 192.0,
+              "e": 192.5
+            },
+            {
+              "w": "done",
+              "s": 192.5,
+              "e": 193.0
+            },
+            {
+              "w": "to",
+              "s": 193.0,
+              "e": 193.5
+            },
+            {
+              "w": "me.",
+              "s": 193.5,
+              "e": 194.0
+            }
+          ],
+          "tr": {
+            "ru": "Приди и взгляни, приди и взгляни, что любовь сделала со мной."
+          },
+          "comment": "Припев зовёт посмотреть, что любовь сделала с говорящим: так кончается каждая строфа английского перевода Abdulhakim Murad. В печати института припев один раз, «Come, see, what love has done to me». Второй «come see» в этой строке печатью не подтверждён. https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "en-majn-1",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Walking",
+              "s": 194.2,
+              "e": 196.17
+            },
+            {
+              "w": "round",
+              "s": 196.17,
+              "e": 198.14
+            },
+            {
+              "w": "with",
+              "s": 198.14,
+              "e": 200.11
+            },
+            {
+              "w": "Majnun's",
+              "s": 200.11,
+              "e": 202.08
+            },
+            {
+              "w": "madness,",
+              "s": 202.08,
+              "e": 204.05
+            }
+          ],
+          "tr": {
+            "ru": "Брожу кругами, и безумие Меджнуна со мной."
+          },
+          "comment": "Говорящий ходит и носит с собой безумие Меджнуна. Так читается английская строка Уинтера, «Walking round with Majnun's madness». В описании института турецкая строка того же места — «Mecnun oluban yürürüm». У Эргуна этой строфы нет. https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-majn-2",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Seeing",
+              "s": 205.0,
+              "e": 206.83
+            },
+            {
+              "w": "Her",
+              "s": 206.83,
+              "e": 208.67
+            },
+            {
+              "w": "in",
+              "s": 208.67,
+              "e": 210.5
+            },
+            {
+              "w": "dreams",
+              "s": 210.5,
+              "e": 212.33
+            },
+            {
+              "w": "my",
+              "s": 212.33,
+              "e": 214.17
+            },
+            {
+              "w": "gladness,",
+              "s": 214.17,
+              "e": 216.0
+            }
+          ],
+          "tr": {
+            "ru": "Вся моя радость в том, что во сне я вижу Её."
+          },
+          "comment": "Радость этой строки — видеть Её во сне. Так у Уинтера, и «Her» написано с большой буквы. У института рядом напечатано «ol yâri düşte görürüm». Эргун этой строки не даёт. https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-majn-3",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Waking",
+              "s": 216.0,
+              "e": 218.38
+            },
+            {
+              "w": "up",
+              "s": 218.38,
+              "e": 220.75
+            },
+            {
+              "w": "again",
+              "s": 220.75,
+              "e": 223.13
+            },
+            {
+              "w": "in",
+              "s": 223.13,
+              "e": 225.5
+            },
+            {
+              "w": "sadness.",
+              "s": 225.5,
+              "e": 227.88
+            }
+          ],
+          "tr": {
+            "ru": "Я просыпаюсь снова и снова остаюсь в печали."
+          },
+          "comment": "Сон кончается, и радость предыдущей строки сменяется печалью пробуждения. Так у Уинтера: «Waking up again in sadness». У института: «Uyanıp melûl olurum». Эргун этой строки не печатает. https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-see-5",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Come",
+              "s": 227.88,
+              "e": 228.79
+            },
+            {
+              "w": "see,",
+              "s": 228.79,
+              "e": 229.7
+            },
+            {
+              "w": "come",
+              "s": 229.7,
+              "e": 230.62
+            },
+            {
+              "w": "see,",
+              "s": 230.62,
+              "e": 231.53
+            },
+            {
+              "w": "what",
+              "s": 231.53,
+              "e": 232.44
+            },
+            {
+              "w": "love",
+              "s": 232.44,
+              "e": 233.35
+            },
+            {
+              "w": "has",
+              "s": 233.35,
+              "e": 234.26
+            },
+            {
+              "w": "done",
+              "s": 234.26,
+              "e": 235.18
+            },
+            {
+              "w": "to",
+              "s": 235.18,
+              "e": 236.09
+            },
+            {
+              "w": "me.",
+              "s": 236.09,
+              "e": 237.0
+            }
+          ],
+          "tr": {
+            "ru": "Приди и взгляни, приди и взгляни, что любовь сделала со мной."
+          },
+          "comment": "Припев зовёт посмотреть, что любовь сделала с говорящим: так кончается каждая строфа английского перевода Abdulhakim Murad. В печати института припев один раз, «Come, see, what love has done to me». Второй «come see» в этой строке печатью не подтверждён. https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "en-yunus-1",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "I",
+              "s": 249.0,
+              "e": 250.33
+            },
+            {
+              "w": "am",
+              "s": 250.33,
+              "e": 251.67
+            },
+            {
+              "w": "Yunus,",
+              "s": 251.67,
+              "e": 253.0
+            },
+            {
+              "w": "poor",
+              "s": 253.0,
+              "e": 254.33
+            },
+            {
+              "w": "and",
+              "s": 254.33,
+              "e": 255.67
+            },
+            {
+              "w": "stricken,",
+              "s": 255.67,
+              "e": 257.0
+            }
+          ],
+          "tr": {
+            "ru": "Я Юнус, бедный и бедою сражён."
+          },
+          "comment": "Говорящий называет себя: Юнус, бедный и сражённый. Так у Уинтера, «I am Yunus, poor and stricken». У Эргуна, с. 167, имя набрано прописными в строке «Ben Yunus-i biçareyim». У института: «Miskin Yunus bîçâreyim». https://tr.wikisource.org/wiki/Sayfa:Halk_Edebiyatı_Antolojisi.pdf/177?oldid=137973",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-yunus-2",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "From",
+              "s": 257.0,
+              "e": 258.5
+            },
+            {
+              "w": "my",
+              "s": 258.5,
+              "e": 260.0
+            },
+            {
+              "w": "exile",
+              "s": 260.0,
+              "e": 261.5
+            },
+            {
+              "w": "my",
+              "s": 261.5,
+              "e": 263.0
+            },
+            {
+              "w": "steps",
+              "s": 263.0,
+              "e": 264.5
+            },
+            {
+              "w": "quicken,",
+              "s": 264.5,
+              "e": 266.0
+            }
+          ],
+          "tr": {
+            "ru": "Из изгнания мой шаг всё быстрее."
+          },
+          "comment": "Шаг быстрее оттого, что он в изгнании: так у Уинтера, «From my exile my steps quicken». Другое чтение у Эргуна, с. 167: «Aşk elinden avareyim». У института: «Dost elinden âvâreyim». https://tr.wikisource.org/wiki/Sayfa:Halk_Edebiyatı_Antolojisi.pdf/177?oldid=137973",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-yunus-3",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Head",
+              "s": 266.0,
+              "e": 267.0
+            },
+            {
+              "w": "to",
+              "s": 267.0,
+              "e": 268.0
+            },
+            {
+              "w": "toe",
+              "s": 268.0,
+              "e": 269.0
+            },
+            {
+              "w": "I",
+              "s": 269.0,
+              "e": 270.0
+            },
+            {
+              "w": "hurt",
+              "s": 270.0,
+              "e": 271.0
+            },
+            {
+              "w": "and",
+              "s": 271.0,
+              "e": 272.0
+            },
+            {
+              "w": "sicken.",
+              "s": 272.0,
+              "e": 273.0
+            }
+          ],
+          "tr": {
+            "ru": "С головы до пят мне больно, и болезнь берёт."
+          },
+          "comment": "Боль от головы до пят, и к ней болезнь. Так у Уинтера: «Head to toe I hurt and sicken». У Эргуна, с. 167, то же место напечатано «Baştan ayağa yareyim». https://tr.wikisource.org/wiki/Sayfa:Halk_Edebiyatı_Antolojisi.pdf/177?oldid=137973",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-see-6",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Come",
+              "s": 273.0,
+              "e": 273.95
+            },
+            {
+              "w": "see,",
+              "s": 273.95,
+              "e": 274.9
+            },
+            {
+              "w": "come",
+              "s": 274.9,
+              "e": 275.85
+            },
+            {
+              "w": "see,",
+              "s": 275.85,
+              "e": 276.8
+            },
+            {
+              "w": "what",
+              "s": 276.8,
+              "e": 277.75
+            },
+            {
+              "w": "love",
+              "s": 277.75,
+              "e": 278.7
+            },
+            {
+              "w": "has",
+              "s": 278.7,
+              "e": 279.65
+            },
+            {
+              "w": "done",
+              "s": 279.65,
+              "e": 280.6
+            },
+            {
+              "w": "to",
+              "s": 280.6,
+              "e": 281.55
+            },
+            {
+              "w": "me.",
+              "s": 281.55,
+              "e": 282.5
+            }
+          ],
+          "tr": {
+            "ru": "Приди и взгляни, приди и взгляни, что любовь сделала со мной."
+          },
+          "comment": "Припев зовёт посмотреть, что любовь сделала с говорящим: так кончается каждая строфа английского перевода Abdulhakim Murad. В печати института припев один раз, «Come, see, what love has done to me». Второй «come see» в этой строке печатью не подтверждён. https://www.youtube.com/watch?v=rX2cGrPLqIM",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ney",
+      "kind": "instrumental",
+      "start": 297.95,
+      "end": 314.55,
+      "label": "Най и кяманча",
+      "instruments": [
+        "ney",
+        "kamancheh"
+      ],
+      "performers": [
+        "Hasan Kirkisoglu (ney)",
+        "Emre Kayacan (kemanche)"
+      ],
+      "mode": "Segah",
+      "flags": [
+        "timing-draft"
+      ],
+      "note": "После английских строф най и кяманча ведут проигрыш. Имена игроков взяты из описания ролика, где названы эти инструменты."
+    },
+    {
+      "id": "tr-close",
+      "kind": "vocal",
+      "start": 314.55,
+      "end": 412.1,
+      "label": "Турецкое начало",
+      "voice": "Sami Yusuf",
+      "flags": [
+        "timing-draft"
+      ],
+      "lines": [
+        {
+          "id": "tr-walk-1",
+          "lang": "tr",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Ben",
+              "s": 328.7,
+              "e": 331.48
+            },
+            {
+              "w": "yürürem",
+              "s": 331.48,
+              "e": 334.25
+            },
+            {
+              "w": "yana",
+              "s": 334.25,
+              "e": 337.02
+            },
+            {
+              "w": "yana",
+              "s": 337.02,
+              "e": 339.8
+            }
+          ],
+          "tr": {
+            "ru": "Иду я, сгорая и сгорая."
+          },
+          "comment": "Турецкая строка возвращает ту же ходьбу, которой открылся английский перевод: говорящий идёт и сгорает. У Эргуна на с. 166 написано «Ben yürürem yana yana». В названии ролика то же место дано как «Yane Yane». https://tr.wikisource.org/wiki/Sayfa:Halk_Edebiyatı_Antolojisi.pdf/176?oldid=137715",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "tr-see-1",
+          "lang": "tr",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Gel",
+              "s": 357.3,
+              "e": 361.36
+            },
+            {
+              "w": "gör",
+              "s": 361.36,
+              "e": 365.42
+            },
+            {
+              "w": "beni",
+              "s": 365.42,
+              "e": 369.48
+            },
+            {
+              "w": "aşk",
+              "s": 369.48,
+              "e": 373.54
+            },
+            {
+              "w": "neyledi",
+              "s": 373.54,
+              "e": 377.6
+            }
+          ],
+          "tr": {
+            "ru": "Приди, взгляни на меня, что любовь со мной сделала."
+          },
+          "comment": "Рефрен зовёт прийти и взглянуть на говорящего: у Эргуна «Gel gör beni aşk neyledi», с. 166. Английский перевод того же места — «Come, see, what love has done to me», без второго «beni». https://tr.wikisource.org/wiki/Sayfa:Halk_Edebiyatı_Antolojisi.pdf/176?oldid=137715",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "coda",
+      "kind": "instrumental",
+      "start": 412.1,
+      "end": 423.07,
+      "label": "Кода",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "attribution-unverified",
+        "timing-draft"
+      ],
+      "note": "Запись гаснет общим звучанием ансамбля. Кто ведёт последние секунды, кадр не выделяет."
+    }
+  ]
+}

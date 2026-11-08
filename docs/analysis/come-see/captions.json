@@ -1,0 +1,15 @@
+{
+  "video_type": "concert",
+  "video_type_note": "Концерт. Спетых строк на экране нет. Справка в левом нижнем углу видна в 0 с и в 8,8 с и уже отсутствует в 15,2 с.",
+  "captions": [
+    {
+      "first_s": 0,
+      "last_s": 15.2,
+      "script": "Latin",
+      "language_guess": "en",
+      "role": "credit",
+      "text": "Come See. Music: Traditional. Words by: Yunus Emre. Makam: Segah. Additional Composition and Arrangement by Sami Yusuf. Live at the Fes Festival of World Sacred Music. Copyright of Andante Records.",
+      "confidence": "high"
+    }
+  ]
+}
