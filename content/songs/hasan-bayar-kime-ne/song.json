@@ -1,0 +1,154 @@
+{
+  "$schema": "../../../docs/schema/song.schema.json",
+  "slug": "hasan-bayar-kime-ne",
+  "title": "Kime Ne",
+  "artist": "Hasan Bayar",
+  "release": {
+    "year": 2023,
+    "album": "Kime Ne"
+  },
+  "version": {
+    "kind": "single",
+    "label": "Сингл Kime Ne, 2023"
+  },
+  "languages": [
+    "tr"
+  ],
+  "duration": 191.05,
+  "palette": {
+    "accent": "#EFC324",
+    "accentDark": "#F8E7A2",
+    "field": [
+      "#121212",
+      "#EFC324",
+      "#E6E6E6",
+      "#737373"
+    ]
+  },
+  "audio": {
+    "status": "ready",
+    "high": "/audio/hasan-bayar-kime-ne/high.m4a",
+    "peaks": "/audio/hasan-bayar-kime-ne/peaks.json",
+    "gainDb": -7.2,
+    "provenance": {
+      "kind": "file",
+      "ref": "https://www.youtube.com/watch?v=DqcDknKODe4",
+      "retrieved": "2026-11-02",
+      "sha256": "3683f9da728358b4d242177e96dd31fba34380547cf52f55d8327325fbb6e8ee"
+    }
+  },
+  "timing": {
+    "status": "draft",
+    "method": "none",
+    "notes": "Черновик карты порядка, не измерение. Пословная заливка выключена: официальных субтитров и построчного текста на кадре нет."
+  },
+  "review": [
+    "официальные субтитры: пусто",
+    "обратный перевод: ждёт Gemini",
+    "timing not proven: no cue source. На кадрах нет построчного текста, только название и подпись «SÖZ YORUM HASAN BAYAR». Реплики для выравнивания не собраны, пословная заливка выключена. Секунды слов — черновая карта порядка, не измерение.",
+    "Два разных сингла Spotify с одним названием: Graf Dijital Müzik, 2023, и Güncel Paylaşımlar TV, 2025. Какой мастер звучит в ролике канала, страница ролика не пишет, поэтому лейбл в карточку не поставлен.",
+    "Файл ролика 191,05 с, страница ролика пишет 3:11. Страница сингла Spotify пишет 3 мин 10 с и долей секунды не даёт.",
+    "Описание ролика и страницы Spotify автора не называют. На кадре написано «SÖZ YORUM HASAN BAYAR»: слова и исполнение. Музыку кадр не называет.",
+    "Буквы описания и черновик распознавания расходятся в строках helal-1, han-2, durust-1 и delil-1. В строке оставлены буквы описания, строки помечены text-unverified.",
+    "Статьи şikak в Güncel Türkçe Sözlük нет. Перевод «разлада» в sikak-1 держится параллелью со строкой о ссоре, не словарной статьёй.",
+    "Пояснение скрыто: отдельной открытой статьи мало или её нет. Строки: dunya-1, kime-1, yorul-1, yollar-1, sikak-1, kalp-1, yorul-2, yollar-2, korkmaz-1, kime-2, yorul-3, yollar-3.",
+    "Карта секций предлагала инструментальные 0–0,6 с. Первое слово начинается около 0,08 с, поэтому отдельного вступления нет. Паузы короче 4 с оставлены внутри пения.",
+    "Скорость перевода посчитана по черновым границам строк, не по выравниванию.",
+    "Палитра снята с картинки этого ролика: чёрное поле, белый кадр, жёлтая подпись около #EFC324. Обложки двух синглов Spotify другие, и страница ролика не пишет, какой это мастер.",
+    "Каталог инструментов по видео ждёт просмотра маршрута: этот проход agy не вызывает. На просмотренных кадрах инструментов нет.",
+    "Досье перевода лежит в docs/analysis/hasan-bayar-kime-ne/translation.md. Путь docs/analysis/translation/ в список файлов этой задачи не входит."
+  ],
+  "poets": [
+    {
+      "name": "Hasan Bayar",
+      "lang": "tr"
+    }
+  ],
+  "credits": [
+    {
+      "role": "Слова",
+      "name": "Hasan Bayar"
+    },
+    {
+      "role": "Вокал",
+      "name": "Hasan Bayar"
+    }
+  ],
+  "parts": [
+    {
+      "id": "kime-ne",
+      "title": "Кому какое дело",
+      "lang": "tr",
+      "author": {
+        "name": "Hasan Bayar"
+      },
+      "work": {
+        "original": "Kime Ne",
+        "ru": "Кому какое дело",
+        "lang": "tr"
+      },
+      "url": "https://www.youtube.com/watch?v=DqcDknKODe4",
+      "note": "На всю запись поётся одно стихотворение. На кадре ролика подписаны слова и исполнение: Hasan Bayar.",
+      "lines": [
+        "yurek-1",
+        "divane-1",
+        "akil-1",
+        "deli-1",
+        "helal-1",
+        "haram-1",
+        "dunya-1",
+        "haktan-1",
+        "kelam-1",
+        "onur-1",
+        "sade-1",
+        "kul-1",
+        "kime-1",
+        "yurek-2",
+        "divane-2",
+        "akil-2",
+        "deli-2",
+        "gonul-1",
+        "yorul-1",
+        "yollar-1",
+        "han-1",
+        "memnun-1",
+        "munafik-1",
+        "kavga-1",
+        "sikak-1",
+        "ibadet-1",
+        "kalp-1",
+        "gunah-1",
+        "bilki-1",
+        "yurek-3",
+        "divane-3",
+        "akil-3",
+        "deli-3",
+        "gonul-2",
+        "yorul-2",
+        "yollar-2",
+        "han-2",
+        "durust-1",
+        "ucuz-1",
+        "boyun-1",
+        "korkmaz-1",
+        "korku-1",
+        "olmayan-1",
+        "delil-1",
+        "cesur-1",
+        "kime-2",
+        "yurek-4",
+        "divane-4",
+        "akil-4",
+        "deli-4",
+        "gonul-3",
+        "yorul-3",
+        "yollar-3",
+        "han-3",
+        "yurek-5",
+        "divane-5",
+        "akil-5",
+        "deli-5"
+      ]
+    }
+  ]
+}
