@@ -1,0 +1,1249 @@
+{
+  "$schema": "../../../docs/schema/lyrics.schema.json",
+  "sections": [
+    {
+      "id": "p-1",
+      "start": 0.0,
+      "end": 6.1,
+      "label": "Проигрыш",
+      "kind": "instrumental",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На странице альбома в этой вещи названы симфоническое звучание и гитара Antonio Rey. Какой инструмент ведёт этот кусок, страница по минутам не раскладывает.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "g-1",
+      "start": 6.1,
+      "end": 39.8,
+      "label": "Голос",
+      "kind": "instrumental",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "p-2",
+      "start": 39.8,
+      "end": 55.8,
+      "label": "Проигрыш",
+      "kind": "instrumental",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На странице альбома в этой вещи названы симфоническое звучание и гитара Antonio Rey. Какой инструмент ведёт этот кусок, страница по минутам не раскладывает.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "g-2",
+      "start": 55.8,
+      "end": 60.2,
+      "label": "Голос",
+      "kind": "instrumental",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "p-3",
+      "start": 60.2,
+      "end": 73.4,
+      "label": "Проигрыш",
+      "kind": "instrumental",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На странице альбома в этой вещи названы симфоническое звучание и гитара Antonio Rey. Какой инструмент ведёт этот кусок, страница по минутам не раскладывает.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "g-3",
+      "start": 73.4,
+      "end": 78.35,
+      "label": "Голос",
+      "kind": "instrumental",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "p-4",
+      "start": 78.35,
+      "end": 96.5,
+      "label": "Проигрыш",
+      "kind": "instrumental",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На странице альбома в этой вещи названы симфоническое звучание и гитара Antonio Rey. Какой инструмент ведёт этот кусок, страница по минутам не раскладывает.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "v-1",
+      "start": 96.5,
+      "end": 173.833,
+      "label": "Пение",
+      "kind": "vocal",
+      "flags": [
+        "timing-draft"
+      ],
+      "lines": [
+        {
+          "id": "juan-1",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Entrado",
+              "s": 96.5,
+              "e": 98.073
+            },
+            {
+              "w": "la",
+              "s": 98.073,
+              "e": 98.597
+            },
+            {
+              "w": "esposa",
+              "s": 98.597,
+              "e": 100.17
+            },
+            {
+              "w": "la",
+              "s": 100.17,
+              "e": 100.694
+            },
+            {
+              "w": "esposa",
+              "s": 100.694,
+              "e": 102.266
+            }
+          ],
+          "tr": {
+            "ru": "Вошла невеста, невеста"
+          },
+          "comment": "Жених в «Духовной песни» говорит, что невеста вошла: в песне 27 это его речь, не её. В изданиях первая строка — «Entrado se ha la esposa», без повтора; в записи «se ha» нет, а «la esposa» сказано дважды. https://es.wikisource.org/wiki/Cántico_espiritual",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "juan-2",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "en",
+              "s": 102.266,
+              "e": 103.423
+            },
+            {
+              "w": "el",
+              "s": 103.423,
+              "e": 104.58
+            },
+            {
+              "w": "huerto",
+              "s": 104.58,
+              "e": 106.894
+            },
+            {
+              "w": "deseado",
+              "s": 106.894,
+              "e": 110.366
+            }
+          ],
+          "tr": {
+            "ru": "в желанный сад,"
+          },
+          "comment": "Желанный сад — вторая строка той же песни 27, и говорит её по-прежнему жених. В изданиях перед «huerto» стоит «ameno», «приятный»; в записи этого слова нет. https://es.wikisource.org/wiki/Cántico_espiritual",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "juan-3",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "y",
+              "s": 114.1,
+              "e": 114.529
+            },
+            {
+              "w": "a",
+              "s": 114.529,
+              "e": 114.958
+            },
+            {
+              "w": "su",
+              "s": 114.958,
+              "e": 115.387
+            },
+            {
+              "w": "sabor",
+              "s": 115.387,
+              "e": 116.245
+            },
+            {
+              "w": "reposa",
+              "s": 116.245,
+              "e": 117.533
+            }
+          ],
+          "tr": {
+            "ru": "и покоится всласть,"
+          },
+          "comment": "«A su sabor» значит всласть, по своему вкусу: невеста отдыхает, и это третья строка песни. Слова этой строки в изданиях и в записи совпадают, в отличие от соседних. https://es.wikisource.org/wiki/Cántico_espiritual",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "juan-4",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "sobre",
+              "s": 117.533,
+              "e": 119.048
+            },
+            {
+              "w": "los",
+              "s": 119.048,
+              "e": 119.806
+            },
+            {
+              "w": "dulces",
+              "s": 119.806,
+              "e": 121.321
+            },
+            {
+              "w": "brazos",
+              "s": 121.321,
+              "e": 122.836
+            },
+            {
+              "w": "del",
+              "s": 122.836,
+              "e": 123.594
+            },
+            {
+              "w": "Amada",
+              "s": 123.594,
+              "e": 125.866,
+              "em": true
+            }
+          ],
+          "tr": {
+            "ru": "на сладких руках **Амады**."
+          },
+          "comment": "В изданиях перед этими руками есть отдельная строка «el cuello reclinado», «склонив шею», и руки принадлежат Amado. В записи шея не названа, а руки — del Amada: страница альбома зовёт Amada возлюбленной, к которой приходит любящий. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "hayy-1",
+          "lang": "ar",
+          "script": "Arab",
+          "words": [
+            {
+              "w": "يَا",
+              "s": 125.866,
+              "e": 127.55
+            },
+            {
+              "w": "حَيُّ",
+              "s": 127.55,
+              "e": 129.233
+            }
+          ],
+          "tr": {
+            "ru": "О Живой."
+          },
+          "comment": "Страница альбома называет этот возглас суфийским: Ya Hayy, Ya Hayy, и переводит его «O Living One», о Живой. Кто сложил возглас, страница не пишет. Арабские буквы строки — يَا حَيُّ. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ],
+          "translit": "Йа хайй"
+        },
+        {
+          "id": "par-1",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Amado",
+              "s": 129.233,
+              "e": 130.661
+            },
+            {
+              "w": "con",
+              "s": 130.661,
+              "e": 131.137
+            },
+            {
+              "w": "Amada",
+              "s": 131.137,
+              "e": 132.566
+            }
+          ],
+          "tr": {
+            "ru": "Возлюбленный с возлюбленной"
+          },
+          "comment": "Amado и Amada — мужская и женская формы слова «возлюбленный». В песне 27 издание кончает строку словом Amado; здесь оба слова стоят рядом. Страница альбома называет Amada той, в чьи руки любящий отдаётся. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "hayy-2",
+          "lang": "ar",
+          "script": "Arab",
+          "words": [
+            {
+              "w": "يَا",
+              "s": 132.566,
+              "e": 133.816
+            },
+            {
+              "w": "حَيُّ",
+              "s": 133.816,
+              "e": 135.066
+            }
+          ],
+          "tr": {
+            "ru": "О Живой."
+          },
+          "comment": "Страница альбома называет этот возглас суфийским: Ya Hayy, Ya Hayy, и переводит его «O Living One», о Живой. Кто сложил возглас, страница не пишет. Арабские буквы строки — يَا حَيُّ. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ],
+          "translit": "Йа хайй"
+        },
+        {
+          "id": "par-2",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Amado",
+              "s": 135.066,
+              "e": 136.281
+            },
+            {
+              "w": "con",
+              "s": 136.281,
+              "e": 136.686
+            },
+            {
+              "w": "Amada",
+              "s": 136.686,
+              "e": 137.9
+            }
+          ],
+          "tr": {
+            "ru": "Возлюбленный с возлюбленной"
+          },
+          "comment": "Amado и Amada — мужская и женская формы слова «возлюбленный». В песне 27 издание кончает строку словом Amado; здесь оба слова стоят рядом. Страница альбома называет Amada той, в чьи руки любящий отдаётся. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "hayy-3",
+          "lang": "ar",
+          "script": "Arab",
+          "words": [
+            {
+              "w": "يَا",
+              "s": 137.9,
+              "e": 140.95
+            },
+            {
+              "w": "حَيُّ",
+              "s": 140.95,
+              "e": 144.0
+            }
+          ],
+          "tr": {
+            "ru": "О Живой."
+          },
+          "comment": "Страница альбома называет этот возглас суфийским: Ya Hayy, Ya Hayy, и переводит его «O Living One», о Живой. Кто сложил возглас, страница не пишет. Арабские буквы строки — يَا حَيُّ. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ],
+          "translit": "Йа хайй"
+        },
+        {
+          "id": "par-3",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Amado",
+              "s": 144.0,
+              "e": 146.943
+            },
+            {
+              "w": "con",
+              "s": 146.943,
+              "e": 147.924
+            },
+            {
+              "w": "Amada",
+              "s": 147.924,
+              "e": 150.866
+            }
+          ],
+          "tr": {
+            "ru": "Возлюбленный с возлюбленной"
+          },
+          "comment": "Amado и Amada — мужская и женская формы слова «возлюбленный». В песне 27 издание кончает строку словом Amado; здесь оба слова стоят рядом. Страница альбома называет Amada той, в чьи руки любящий отдаётся. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "hayy-4",
+          "lang": "ar",
+          "script": "Arab",
+          "words": [
+            {
+              "w": "يَا",
+              "s": 150.866,
+              "e": 152.95
+            },
+            {
+              "w": "حَيُّ",
+              "s": 152.95,
+              "e": 155.033
+            }
+          ],
+          "tr": {
+            "ru": "О Живой."
+          },
+          "comment": "Страница альбома называет этот возглас суфийским: Ya Hayy, Ya Hayy, и переводит его «O Living One», о Живой. Кто сложил возглас, страница не пишет. Арабские буквы строки — يَا حَيُّ. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ],
+          "translit": "Йа хайй"
+        },
+        {
+          "id": "par-4",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Amado",
+              "s": 155.033,
+              "e": 163.09
+            },
+            {
+              "w": "con",
+              "s": 163.09,
+              "e": 165.776
+            },
+            {
+              "w": "Amada",
+              "s": 165.776,
+              "e": 173.833
+            }
+          ],
+          "tr": {
+            "ru": "Возлюбленный с возлюбленной"
+          },
+          "comment": "Amado и Amada — мужская и женская формы слова «возлюбленный». В песне 27 издание кончает строку словом Amado; здесь оба слова стоят рядом. Страница альбома называет Amada той, в чьи руки любящий отдаётся. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "g-4",
+      "start": 173.833,
+      "end": 241.15,
+      "label": "Голос",
+      "kind": "instrumental",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "p-5",
+      "start": 241.15,
+      "end": 250.266,
+      "label": "Проигрыш",
+      "kind": "instrumental",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На странице альбома в этой вещи названы симфоническое звучание и гитара Antonio Rey. Какой инструмент ведёт этот кусок, страница по минутам не раскладывает.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "v-2",
+      "start": 250.266,
+      "end": 318.3,
+      "label": "Пение",
+      "kind": "vocal",
+      "flags": [
+        "timing-draft"
+      ],
+      "lines": [
+        {
+          "id": "ocean-1",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Ahógate",
+              "s": 250.266,
+              "e": 251.709
+            },
+            {
+              "w": "en",
+              "s": 251.709,
+              "e": 252.07
+            },
+            {
+              "w": "el",
+              "s": 252.07,
+              "e": 252.431
+            },
+            {
+              "w": "océano",
+              "s": 252.431,
+              "e": 253.513
+            },
+            {
+              "w": "sin",
+              "s": 253.513,
+              "e": 253.874
+            },
+            {
+              "w": "orilla",
+              "s": 253.874,
+              "e": 254.956,
+              "em": true
+            },
+            {
+              "w": "sin",
+              "s": 254.956,
+              "e": 255.317
+            },
+            {
+              "w": "orilla",
+              "s": 255.317,
+              "e": 256.4
+            }
+          ],
+          "tr": {
+            "ru": "Утони в океане без **берега**, без берега"
+          },
+          "comment": "«Утони» — приказ войти в океан, у которого нет берега. Чтение страницы альбома: «sin orilla» — отголосок образа Ибн Араби, «ocean without shore». Чтение короткого ролика: испанские строки этим образом вдохновлены. Это не цитата арабского стиха. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "ocean-2",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "En",
+              "s": 256.4,
+              "e": 257.362
+            },
+            {
+              "w": "el",
+              "s": 257.362,
+              "e": 258.324
+            },
+            {
+              "w": "océano",
+              "s": 258.324,
+              "e": 261.211
+            },
+            {
+              "w": "el",
+              "s": 261.211,
+              "e": 262.173
+            },
+            {
+              "w": "océano",
+              "s": 262.173,
+              "e": 265.06
+            },
+            {
+              "w": "océano",
+              "s": 265.06,
+              "e": 267.947
+            },
+            {
+              "w": "de",
+              "s": 267.947,
+              "e": 268.909
+            },
+            {
+              "w": "amor",
+              "s": 268.909,
+              "e": 270.833
+            }
+          ],
+          "tr": {
+            "ru": "В океане, в океане, океане любви."
+          },
+          "comment": "Трижды назван океан, и в конце он — океан любви. Берег в этой строке не назван: о нём говорят соседние строки. Страница альбома связывает конец песни с образом моря без берега, не с дословной цитатой. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "hayy-5",
+          "lang": "ar",
+          "script": "Arab",
+          "words": [
+            {
+              "w": "يَا",
+              "s": 270.833,
+              "e": 272.283
+            },
+            {
+              "w": "حَيُّ",
+              "s": 272.283,
+              "e": 273.733
+            }
+          ],
+          "tr": {
+            "ru": "О Живой."
+          },
+          "comment": "Страница альбома называет этот возглас суфийским: Ya Hayy, Ya Hayy, и переводит его «O Living One», о Живой. Кто сложил возглас, страница не пишет. Арабские буквы строки — يَا حَيُّ. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ],
+          "translit": "Йа хайй"
+        },
+        {
+          "id": "par-5",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Amado",
+              "s": 273.733,
+              "e": 277.462
+            },
+            {
+              "w": "con",
+              "s": 277.462,
+              "e": 278.705
+            },
+            {
+              "w": "Amada",
+              "s": 278.705,
+              "e": 282.433
+            }
+          ],
+          "tr": {
+            "ru": "Возлюбленный с возлюбленной"
+          },
+          "comment": "Amado и Amada — мужская и женская формы слова «возлюбленный». В песне 27 издание кончает строку словом Amado; здесь оба слова стоят рядом. Страница альбома называет Amada той, в чьи руки любящий отдаётся. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "hayy-6",
+          "lang": "ar",
+          "script": "Arab",
+          "words": [
+            {
+              "w": "يَا",
+              "s": 282.433,
+              "e": 284.033
+            },
+            {
+              "w": "حَيُّ",
+              "s": 284.033,
+              "e": 285.633
+            }
+          ],
+          "tr": {
+            "ru": "О Живой."
+          },
+          "comment": "Страница альбома называет этот возглас суфийским: Ya Hayy, Ya Hayy, и переводит его «O Living One», о Живой. Кто сложил возглас, страница не пишет. Арабские буквы строки — يَا حَيُّ. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ],
+          "translit": "Йа хайй"
+        },
+        {
+          "id": "par-6",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Amado",
+              "s": 285.633,
+              "e": 289.576
+            },
+            {
+              "w": "con",
+              "s": 289.576,
+              "e": 290.89
+            },
+            {
+              "w": "Amada",
+              "s": 290.89,
+              "e": 294.833
+            }
+          ],
+          "tr": {
+            "ru": "Возлюбленный с возлюбленной"
+          },
+          "comment": "Amado и Amada — мужская и женская формы слова «возлюбленный». В песне 27 издание кончает строку словом Amado; здесь оба слова стоят рядом. Страница альбома называет Amada той, в чьи руки любящий отдаётся. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "hayy-7",
+          "lang": "ar",
+          "script": "Arab",
+          "words": [
+            {
+              "w": "يَا",
+              "s": 294.833,
+              "e": 306.5
+            },
+            {
+              "w": "حَيُّ",
+              "s": 306.5,
+              "e": 318.166
+            }
+          ],
+          "tr": {
+            "ru": "О Живой."
+          },
+          "comment": "Страница альбома называет этот возглас суфийским: Ya Hayy, Ya Hayy, и переводит его «O Living One», о Живой. Кто сложил возглас, страница не пишет. Арабские буквы строки — يَا حَيُّ. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ],
+          "translit": "Йа хайй"
+        }
+      ]
+    },
+    {
+      "id": "p-6",
+      "start": 318.3,
+      "end": 328.05,
+      "label": "Проигрыш",
+      "kind": "instrumental",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На странице альбома в этой вещи названы симфоническое звучание и гитара Antonio Rey. Какой инструмент ведёт этот кусок, страница по минутам не раскладывает.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "g-5",
+      "start": 328.05,
+      "end": 334.1,
+      "label": "Голос",
+      "kind": "instrumental",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "p-7",
+      "start": 334.1,
+      "end": 338.45,
+      "label": "Проигрыш",
+      "kind": "instrumental",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На странице альбома в этой вещи названы симфоническое звучание и гитара Antonio Rey. Какой инструмент ведёт этот кусок, страница по минутам не раскладывает.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "g-6",
+      "start": 338.45,
+      "end": 351.15,
+      "label": "Голос",
+      "kind": "instrumental",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "p-8",
+      "start": 351.15,
+      "end": 360.95,
+      "label": "Проигрыш",
+      "kind": "instrumental",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На странице альбома в этой вещи названы симфоническое звучание и гитара Antonio Rey. Какой инструмент ведёт этот кусок, страница по минутам не раскладывает.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "g-7",
+      "start": 360.95,
+      "end": 363.35,
+      "label": "Голос",
+      "kind": "instrumental",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "p-9",
+      "start": 363.35,
+      "end": 417.6,
+      "label": "Проигрыш",
+      "kind": "instrumental",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На странице альбома в этой вещи названы симфоническое звучание и гитара Antonio Rey. Какой инструмент ведёт этот кусок, страница по минутам не раскладывает.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "g-8",
+      "start": 417.6,
+      "end": 436.6,
+      "label": "Голос",
+      "kind": "instrumental",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "v-3",
+      "start": 436.6,
+      "end": 467.1,
+      "label": "Возглас",
+      "kind": "vocal",
+      "flags": [
+        "timing-draft"
+      ],
+      "lines": [
+        {
+          "id": "hayy-8",
+          "lang": "ar",
+          "script": "Arab",
+          "words": [
+            {
+              "w": "يَا",
+              "s": 436.6,
+              "e": 451.85
+            },
+            {
+              "w": "حَيُّ",
+              "s": 451.85,
+              "e": 467.1
+            }
+          ],
+          "tr": {
+            "ru": "О Живой."
+          },
+          "comment": "Страница альбома называет этот возглас суфийским: Ya Hayy, Ya Hayy, и переводит его «O Living One», о Живой. Кто сложил возглас, страница не пишет. Арабские буквы строки — يَا حَيُّ. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ],
+          "translit": "Йа хайй"
+        }
+      ]
+    },
+    {
+      "id": "g-9",
+      "start": 467.1,
+      "end": 468.4,
+      "label": "Голос",
+      "kind": "instrumental",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "p-10",
+      "start": 468.4,
+      "end": 476.2,
+      "label": "Проигрыш",
+      "kind": "instrumental",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На странице альбома в этой вещи названы симфоническое звучание и гитара Antonio Rey. Какой инструмент ведёт этот кусок, страница по минутам не раскладывает.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "g-10",
+      "start": 476.2,
+      "end": 476.7,
+      "label": "Голос",
+      "kind": "instrumental",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "p-11",
+      "start": 476.7,
+      "end": 485.85,
+      "label": "Проигрыш",
+      "kind": "instrumental",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На странице альбома в этой вещи названы симфоническое звучание и гитара Antonio Rey. Какой инструмент ведёт этот кусок, страница по минутам не раскладывает.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "g-11",
+      "start": 485.85,
+      "end": 489.233,
+      "label": "Голос",
+      "kind": "instrumental",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "v-4",
+      "start": 489.233,
+      "end": 515.133,
+      "label": "Океан",
+      "kind": "vocal",
+      "flags": [
+        "timing-draft"
+      ],
+      "lines": [
+        {
+          "id": "ocean-3",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "El",
+              "s": 489.233,
+              "e": 490.416
+            },
+            {
+              "w": "océano",
+              "s": 490.416,
+              "e": 493.966
+            },
+            {
+              "w": "sin",
+              "s": 493.966,
+              "e": 495.149
+            },
+            {
+              "w": "orilla",
+              "s": 495.149,
+              "e": 498.7
+            }
+          ],
+          "tr": {
+            "ru": "Океан без берега"
+          },
+          "comment": "Прямо назван океан без берега. Чтение страницы альбома: последние строки шепчут «sin orilla», и это отголосок «ocean without shore» Ибн Араби. Чтение короткого ролика: строки этим образом вдохновлены, не процитированы. https://www.youtube.com/watch?v=o_3tO7Urlhg",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "ocean-4",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "sin",
+              "s": 498.7,
+              "e": 499.139
+            },
+            {
+              "w": "orilla",
+              "s": 499.139,
+              "e": 500.456
+            },
+            {
+              "w": "sin",
+              "s": 500.456,
+              "e": 500.895
+            },
+            {
+              "w": "orilla",
+              "s": 500.895,
+              "e": 502.212
+            },
+            {
+              "w": "sin",
+              "s": 502.212,
+              "e": 502.651
+            },
+            {
+              "w": "orilla",
+              "s": 502.651,
+              "e": 503.966
+            }
+          ],
+          "tr": {
+            "ru": "без берега, без берега, без берега"
+          },
+          "comment": "Повтор «без берега», без нового слова. Чтение то же, что у строки про океан: страница альбома называет это отголоском образа Ибн Араби, а короткий ролик — вдохновением этим образом. https://www.youtube.com/watch?v=o_3tO7Urlhg",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "ocean-5",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "sin",
+              "s": 506.5,
+              "e": 507.219
+            },
+            {
+              "w": "orilla",
+              "s": 507.219,
+              "e": 509.377
+            },
+            {
+              "w": "sin",
+              "s": 509.377,
+              "e": 510.096
+            },
+            {
+              "w": "orilla",
+              "s": 510.096,
+              "e": 512.254
+            },
+            {
+              "w": "sin",
+              "s": 512.254,
+              "e": 512.973
+            },
+            {
+              "w": "orilla",
+              "s": 512.973,
+              "e": 515.133
+            }
+          ],
+          "tr": {
+            "ru": "без берега, без берега, без берега"
+          },
+          "comment": "Повтор «без берега», без нового слова. Чтение то же, что у строки про океан: страница альбома называет это отголоском образа Ибн Араби, а короткий ролик — вдохновением этим образом. https://www.youtube.com/watch?v=o_3tO7Urlhg",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p-12",
+      "start": 515.133,
+      "end": 518.6,
+      "label": "Проигрыш",
+      "kind": "instrumental",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На странице альбома в этой вещи названы симфоническое звучание и гитара Antonio Rey. Какой инструмент ведёт этот кусок, страница по минутам не раскладывает.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "v-5",
+      "start": 518.6,
+      "end": 531.9,
+      "label": "Возлюбленная",
+      "kind": "vocal",
+      "flags": [
+        "timing-draft"
+      ],
+      "lines": [
+        {
+          "id": "par-7",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Amado",
+              "s": 518.6,
+              "e": 520.757
+            },
+            {
+              "w": "con",
+              "s": 520.757,
+              "e": 521.476
+            },
+            {
+              "w": "Amada",
+              "s": 521.476,
+              "e": 523.633
+            }
+          ],
+          "tr": {
+            "ru": "Возлюбленный с возлюбленной"
+          },
+          "comment": "Amado и Amada — мужская и женская формы слова «возлюбленный». В песне 27 издание кончает строку словом Amado; здесь оба слова стоят рядом. Страница альбома называет Amada той, в чьи руки любящий отдаётся. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "amada-1",
+          "lang": "es",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Amada",
+              "s": 523.633,
+              "e": 531.9
+            }
+          ],
+          "tr": {
+            "ru": "Возлюбленная"
+          },
+          "comment": "Одно слово названия, без новой фразы. Страница альбома говорит, что Amada — возлюбленная, в чьи руки приходит любящий, и отдельного автора этой строки не называет. https://samiyusuf.art/music/ecstasy-album",
+          "flags": [
+            "text-unverified",
+            "timing-draft"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p-13",
+      "start": 531.9,
+      "end": 560.07,
+      "label": "Проигрыш",
+      "kind": "instrumental",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На странице альбома в этой вещи названы симфоническое звучание и гитара Antonio Rey. Какой инструмент ведёт этот кусок, страница по минутам не раскладывает.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    }
+  ]
+}

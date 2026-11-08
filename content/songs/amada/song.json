@@ -1,0 +1,164 @@
+{
+  "$schema": "../../../docs/schema/song.schema.json",
+  "slug": "amada",
+  "title": "Amada",
+  "artist": "Sami Yusuf",
+  "featuring": [
+    "Antonio Rey",
+    "Israel Moro"
+  ],
+  "release": {
+    "album": "Ecstasy",
+    "year": 2026,
+    "label": "Andante Records"
+  },
+  "version": {
+    "kind": "studio",
+    "label": "Студийная, Ecstasy 2026"
+  },
+  "languages": [
+    "es",
+    "ar"
+  ],
+  "poets": [
+    {
+      "name": "San Juan de la Cruz",
+      "lang": "es",
+      "era": "1542–1591"
+    }
+  ],
+  "duration": 560.07,
+  "palette": {
+    "accent": "#3A5BA0",
+    "accentDark": "#8FB2FF",
+    "field": [
+      "#3A5BA0",
+      "#7C4DBA",
+      "#2A8C8C"
+    ]
+  },
+  "audio": {
+    "status": "ready",
+    "high": "/audio/amada/high.m4a",
+    "peaks": "/audio/amada/peaks.json",
+    "gainDb": -0.4,
+    "provenance": {
+      "kind": "file",
+      "ref": "source.m4a",
+      "sha256": "dbb3dec502b4cd23394c00f9658f18c81471cd64fc17630e8ac4d791bf347e1d"
+    }
+  },
+  "timing": {
+    "status": "draft",
+    "method": "none",
+    "notes": "время строк по официальным субтитрам видео; слова — черновые"
+  },
+  "credits": [
+    {
+      "role": "Композитор",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "Вокал",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "Вокал",
+      "name": "Israel Moro"
+    },
+    {
+      "role": "Гитара",
+      "name": "Antonio Rey"
+    },
+    {
+      "role": "Слова",
+      "name": "San Juan de la Cruz"
+    }
+  ],
+  "review": [
+    "Подпись версии взята со страницы альбома Ecstasy (2026). Описание ролика пишет «Andante Records 2025». Какой год ставить в подпись, если это не один и тот же год, остаётся открытым.",
+    "Палитра в заготовке — заглушка. Замените её цветами обложки, когда обложка будет. До этого цвета по настроению не подбирайте.",
+    "На канале исполнителя есть второй официальный ролик, концерт «Amada (Between Two Seas)», Стамбул 2025. В эту карточку он не входит.",
+    "Магазин Qobuz называет авторами текста ещё Katherine OBrien и Abu al-Hasan al-Shushtari. Страница исполнителя их не называет.",
+    "Испанские буквы записи списаны с поисковой выдачи Transcript [en-GB] страницы ролика: файл этой дорожки единственная попытка субтитров не сохранила. У испанских строк флаг text-unverified.",
+    "Огласовка يَا حَيُّ взята с арабской дорожки. Дамма на конце в транскрипции не передана: страница пишет Ya Hayy. Слухом это не сверено.",
+    "Длительность файла 560,07 с. На площадке у трека встречалось 9:16. В карточке оставлено измерение файла.",
+    "Комментарий зрителя под роликом предполагает голос Homayoun Shajarian. Описание ролика и страница альбома этого имени не дают.",
+    "Скан страницы Сильверио не открыт: сверено распознавание archive.org. Том 4 тех же Obras начинает песнь иначе, «Entrádose ha», и нумерует её 28.",
+    "обратный перевод: ждёт Gemini",
+    "Просмотр видео ждёт Claude · Lead: agy в этом проходе не вызывался."
+  ],
+  "parts": [
+    {
+      "id": "juan",
+      "title": "Песнь 27",
+      "lang": "es",
+      "author": {
+        "name": "San Juan de la Cruz",
+        "years": "1542–1591"
+      },
+      "work": {
+        "original": "Cántico espiritual",
+        "ru": "Духовная песнь",
+        "lang": "es"
+      },
+      "ref": "песнь 27, говорит Esposo",
+      "url": "https://es.wikisource.org/wiki/Cántico_espiritual",
+      "note": "В записи строка короче издания: нет «se ha», «ameno» и «el cuello reclinado», а «Amado» спето как «Amada».",
+      "lines": [
+        "juan-1",
+        "juan-2",
+        "juan-3",
+        "juan-4"
+      ]
+    },
+    {
+      "id": "hayy",
+      "title": "Возглас",
+      "lang": "ar",
+      "url": "https://samiyusuf.art/music/ecstasy-album",
+      "note": "Страница альбома переводит Ya Hayy как «O Living One» и автора возгласа не называет.",
+      "lines": [
+        "hayy-1",
+        "hayy-2",
+        "hayy-3",
+        "hayy-4",
+        "hayy-5",
+        "hayy-6",
+        "hayy-7",
+        "hayy-8"
+      ]
+    },
+    {
+      "id": "pair",
+      "title": "Возлюбленный с возлюбленной",
+      "lang": "es",
+      "url": "https://www.youtube.com/watch?v=GwZf7lz4nko",
+      "note": "Страница альбома автора этих строк не называет. Amada там — возлюбленная, в чьи руки приходит любящий.",
+      "lines": [
+        "par-1",
+        "par-2",
+        "par-3",
+        "par-4",
+        "par-5",
+        "par-6",
+        "par-7",
+        "amada-1"
+      ]
+    },
+    {
+      "id": "ocean",
+      "title": "Океан без берега",
+      "lang": "es",
+      "url": "https://samiyusuf.art/music/ecstasy-album",
+      "note": "Чтение страницы альбома: отголосок образа Ибн Араби. Чтение короткого ролика: строки этим образом вдохновлены.",
+      "lines": [
+        "ocean-1",
+        "ocean-2",
+        "ocean-3",
+        "ocean-4",
+        "ocean-5"
+      ]
+    }
+  ]
+}

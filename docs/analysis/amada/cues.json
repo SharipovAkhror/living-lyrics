@@ -1,0 +1,177 @@
+[
+  {
+    "line": "juan-1",
+    "cue": 1,
+    "lang": "es",
+    "start": 96.5,
+    "end": 102.266
+  },
+  {
+    "line": "juan-2",
+    "cue": 2,
+    "lang": "es",
+    "start": 102.266,
+    "end": 110.366
+  },
+  {
+    "line": "juan-3",
+    "cue": 3,
+    "lang": "es",
+    "start": 114.1,
+    "end": 117.533
+  },
+  {
+    "line": "juan-4",
+    "cue": 4,
+    "lang": "es",
+    "start": 117.533,
+    "end": 125.866
+  },
+  {
+    "line": "hayy-1",
+    "cue": 5,
+    "lang": "ar",
+    "start": 125.866,
+    "end": 129.233
+  },
+  {
+    "line": "par-1",
+    "cue": 6,
+    "lang": "es",
+    "start": 129.233,
+    "end": 132.566
+  },
+  {
+    "line": "hayy-2",
+    "cue": 7,
+    "lang": "ar",
+    "start": 132.566,
+    "end": 135.066
+  },
+  {
+    "line": "par-2",
+    "cue": 8,
+    "lang": "es",
+    "start": 135.066,
+    "end": 137.9
+  },
+  {
+    "line": "hayy-3",
+    "cue": 9,
+    "lang": "ar",
+    "start": 137.9,
+    "end": 144.0
+  },
+  {
+    "line": "par-3",
+    "cue": 10,
+    "lang": "es",
+    "start": 144.0,
+    "end": 150.866
+  },
+  {
+    "line": "hayy-4",
+    "cue": 11,
+    "lang": "ar",
+    "start": 150.866,
+    "end": 155.033
+  },
+  {
+    "line": "par-4",
+    "cue": 12,
+    "lang": "es",
+    "start": 155.033,
+    "end": 173.833
+  },
+  {
+    "line": "ocean-1",
+    "cue": 13,
+    "lang": "es",
+    "start": 250.266,
+    "end": 256.4
+  },
+  {
+    "line": "ocean-2",
+    "cue": 14,
+    "lang": "es",
+    "start": 256.4,
+    "end": 270.833
+  },
+  {
+    "line": "hayy-5",
+    "cue": 15,
+    "lang": "ar",
+    "start": 270.833,
+    "end": 273.733
+  },
+  {
+    "line": "par-5",
+    "cue": 16,
+    "lang": "es",
+    "start": 273.733,
+    "end": 282.433
+  },
+  {
+    "line": "hayy-6",
+    "cue": 17,
+    "lang": "ar",
+    "start": 282.433,
+    "end": 285.633
+  },
+  {
+    "line": "par-6",
+    "cue": 18,
+    "lang": "es",
+    "start": 285.633,
+    "end": 294.833
+  },
+  {
+    "line": "hayy-7",
+    "cue": 19,
+    "lang": "ar",
+    "start": 294.833,
+    "end": 318.166
+  },
+  {
+    "line": "hayy-8",
+    "cue": 20,
+    "lang": "ar",
+    "start": 436.6,
+    "end": 467.1
+  },
+  {
+    "line": "ocean-3",
+    "cue": 21,
+    "lang": "es",
+    "start": 489.233,
+    "end": 498.7
+  },
+  {
+    "line": "ocean-4",
+    "cue": 22,
+    "lang": "es",
+    "start": 498.7,
+    "end": 503.966
+  },
+  {
+    "line": "ocean-5",
+    "cue": 23,
+    "lang": "es",
+    "start": 506.5,
+    "end": 515.133
+  },
+  {
+    "line": "par-7",
+    "cue": 24,
+    "lang": "es",
+    "start": 518.6,
+    "end": 523.633
+  },
+  {
+    "line": "amada-1",
+    "cue": 25,
+    "lang": "es",
+    "start": 523.633,
+    "end": 531.9
+  }
+]
