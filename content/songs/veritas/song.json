@@ -1,0 +1,79 @@
+{
+  "$schema": "../../../docs/schema/song.schema.json",
+  "slug": "veritas",
+  "title": "Veritas",
+  "artist": "Sami Yusuf",
+  "featuring": [
+    "Cappella Amsterdam",
+    "Amsterdam Andalusian Orchestra"
+  ],
+  "release": {
+    "album": "ONE: When Paths Meet",
+    "year": 2023
+  },
+  "performance": {
+    "event": "Holland Festival",
+    "venue": "Het Concertgebouw",
+    "city": "Amsterdam",
+    "date": "2022-06-06"
+  },
+  "version": {
+    "kind": "live",
+    "label": "Концерт When Paths Meet, Амстердам 2022"
+  },
+  "languages": [
+    "la"
+  ],
+  "credits": [
+    {
+      "role": "Композитор",
+      "name": "Sami Yusuf"
+    },
+    {
+      "role": "Хор",
+      "name": "Cappella Amsterdam"
+    },
+    {
+      "role": "Оркестр",
+      "name": "Amsterdam Andalusian Orchestra"
+    }
+  ],
+  "duration": 696.06,
+  "palette": {
+    "accent": "#72274E",
+    "accentDark": "#E7A3C4",
+    "field": [
+      "#72274E",
+      "#9C2A20",
+      "#3F1F2C",
+      "#D5633F"
+    ]
+  },
+  "audio": {
+    "status": "ready",
+    "high": "/audio/veritas/high.m4a",
+    "peaks": "/audio/veritas/peaks.json",
+    "gainDb": -0.2,
+    "provenance": {
+      "kind": "file",
+      "ref": "дорожка YouTube 140 официального видео https://www.youtube.com/watch?v=smqMb52G8WA",
+      "retrieved": "2026-11-02",
+      "codec": "aac 127 kbit/s 44.1 kHz stereo",
+      "sha256": "c78b5dce4163f36c7f5e4f8ac020ff5b42b0257faf7febe9eb5e5e014edc7949"
+    }
+  },
+  "timing": {
+    "status": "draft",
+    "method": "none"
+  },
+  "review": [
+    "Полный список спетых слов не подтверждён. Страница сочинения и описание ролика цитируют только Veritas. Карточка альбома 11:11 и сайт текстов в эталон не взяты.",
+    "Число повторов Veritas страница не даёт: в предложении слово стоит дважды как возглас, это не счёт исполнений. Отдельные строки повторов не собраны, parts пуст.",
+    "Потоковая длина альбома 11:11 и ролик 11:36 расходятся больше чем на секунду. Тайм-коды и текст берутся только с ролика smqMb52G8WA.",
+    "официальные субтитры: пусто",
+    "Титров строк на экране нет: ролик — концерт. Реплики для выравнивания не из чего собрать, задание конвейера не ставилось. Время слов не доказано.",
+    "Кто поёт каждый отрезок и кто солирует в проигрышах, страница Veritas не называет.",
+    "Граница вокализа вступления на странице не размечена. Лад дашти на отрезок choir-1 не поставлен.",
+    "Распознавание вокала не дало порядка строк: с фильтром голоса список пуст, без фильтра — чужие фразы и одно Sanctus. В строки не перенесено."
+  ]
+}

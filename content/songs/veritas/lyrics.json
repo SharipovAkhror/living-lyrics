@@ -1,0 +1,216 @@
+{
+  "$schema": "../../../docs/schema/lyrics.schema.json",
+  "sections": [
+    {
+      "id": "intro",
+      "kind": "instrumental",
+      "start": 0,
+      "end": 7.6,
+      "label": "Вступление",
+      "instruments": ["ensemble"],
+      "note": "Короткий зачин до первого голоса. Оркестр на странице сочинения — Amsterdam Andalusian Orchestra; кто играет эти секунды, не назван.",
+      "flags": ["timing-draft", "attribution-unverified"]
+    },
+    {
+      "id": "choir-1",
+      "kind": "instrumental",
+      "start": 7.6,
+      "end": 199.15,
+      "label": "Голос",
+      "instruments": ["voice", "choir"],
+      "note": "Страница сочинения описывает вступление как вокализ: фразировка вдохновлена дарамадом аваза дашти, ладом внутри дастгяха шур. Где этот вокализ кончается, страница не говорит, поэтому лад на отрезок не поставлен. https://samiyusuf.art/music/veritas",
+      "flags": ["timing-draft", "attribution-unverified", "text-unverified"]
+    },
+    {
+      "id": "break-1",
+      "kind": "instrumental",
+      "start": 199.15,
+      "end": 205.25,
+      "label": "Проигрыш",
+      "instruments": ["ensemble"],
+      "note": "Короткий промежуток без голоса. Солиста этого места страница не называет.",
+      "flags": ["timing-draft", "attribution-unverified"]
+    },
+    {
+      "id": "choir-2",
+      "kind": "instrumental",
+      "start": 205.25,
+      "end": 315.2,
+      "label": "Хор",
+      "instruments": ["choir"],
+      "flags": ["timing-draft", "attribution-unverified", "text-unverified"]
+    },
+    {
+      "id": "break-2",
+      "kind": "instrumental",
+      "start": 315.2,
+      "end": 345.35,
+      "label": "Проигрыш",
+      "instruments": ["ensemble"],
+      "note": "Промежуток без голоса. Солиста этого места страница не называет.",
+      "flags": ["timing-draft", "attribution-unverified"]
+    },
+    {
+      "id": "choir-3",
+      "kind": "instrumental",
+      "start": 345.35,
+      "end": 352.3,
+      "label": "Хор",
+      "instruments": ["choir"],
+      "flags": ["timing-draft", "attribution-unverified", "text-unverified"]
+    },
+    {
+      "id": "break-3",
+      "kind": "instrumental",
+      "start": 352.3,
+      "end": 356.85,
+      "label": "Проигрыш",
+      "instruments": ["ensemble"],
+      "note": "Короткий промежуток без голоса. Солиста этого места страница не называет.",
+      "flags": ["timing-draft", "attribution-unverified"]
+    },
+    {
+      "id": "choir-4",
+      "kind": "instrumental",
+      "start": 356.85,
+      "end": 379.4,
+      "label": "Хор",
+      "instruments": ["choir"],
+      "flags": ["timing-draft", "attribution-unverified", "text-unverified"]
+    },
+    {
+      "id": "break-4",
+      "kind": "instrumental",
+      "start": 379.4,
+      "end": 397.9,
+      "label": "Проигрыш",
+      "instruments": ["ensemble"],
+      "note": "Промежуток без голоса. Солиста этого места страница не называет.",
+      "flags": ["timing-draft", "attribution-unverified"]
+    },
+    {
+      "id": "voice-1",
+      "kind": "instrumental",
+      "start": 397.9,
+      "end": 399.5,
+      "label": "Голос",
+      "instruments": ["voice"],
+      "flags": ["timing-draft", "attribution-unverified", "text-unverified"]
+    },
+    {
+      "id": "break-5",
+      "kind": "instrumental",
+      "start": 399.5,
+      "end": 403.55,
+      "label": "Проигрыш",
+      "instruments": ["ensemble"],
+      "note": "Короткий промежуток без голоса. Солиста этого места страница не называет.",
+      "flags": ["timing-draft", "attribution-unverified"]
+    },
+    {
+      "id": "voice-2",
+      "kind": "instrumental",
+      "start": 403.55,
+      "end": 403.9,
+      "label": "Голос",
+      "instruments": ["voice"],
+      "flags": ["timing-draft", "attribution-unverified", "text-unverified"]
+    },
+    {
+      "id": "break-6",
+      "kind": "instrumental",
+      "start": 403.9,
+      "end": 462.3,
+      "label": "Проигрыш",
+      "instruments": ["ensemble"],
+      "note": "Длинный промежуток без голоса. Солиста этого места страница не называет.",
+      "flags": ["timing-draft", "attribution-unverified"]
+    },
+    {
+      "id": "choir-5",
+      "kind": "instrumental",
+      "start": 462.3,
+      "end": 501.7,
+      "label": "Хор",
+      "instruments": ["choir"],
+      "flags": ["timing-draft", "attribution-unverified", "text-unverified"]
+    },
+    {
+      "id": "break-7",
+      "kind": "instrumental",
+      "start": 501.7,
+      "end": 522.1,
+      "label": "Проигрыш",
+      "instruments": ["ensemble"],
+      "note": "Промежуток без голоса. Солиста этого места страница не называет.",
+      "flags": ["timing-draft", "attribution-unverified"]
+    },
+    {
+      "id": "voice-3",
+      "kind": "instrumental",
+      "start": 522.1,
+      "end": 522.8,
+      "label": "Голос",
+      "instruments": ["voice"],
+      "flags": ["timing-draft", "attribution-unverified", "text-unverified"]
+    },
+    {
+      "id": "break-8",
+      "kind": "instrumental",
+      "start": 522.8,
+      "end": 533.25,
+      "label": "Проигрыш",
+      "instruments": ["ensemble"],
+      "note": "Промежуток без голоса. Солиста этого места страница не называет.",
+      "flags": ["timing-draft", "attribution-unverified"]
+    },
+    {
+      "id": "choir-6",
+      "kind": "instrumental",
+      "start": 533.25,
+      "end": 544.4,
+      "label": "Хор",
+      "instruments": ["choir"],
+      "flags": ["timing-draft", "attribution-unverified", "text-unverified"]
+    },
+    {
+      "id": "break-9",
+      "kind": "instrumental",
+      "start": 544.4,
+      "end": 550.9,
+      "label": "Проигрыш",
+      "instruments": ["ensemble"],
+      "note": "Короткий промежуток без голоса. Солиста этого места страница не называет.",
+      "flags": ["timing-draft", "attribution-unverified"]
+    },
+    {
+      "id": "choir-7",
+      "kind": "instrumental",
+      "start": 550.9,
+      "end": 665.3,
+      "label": "Хор",
+      "instruments": ["choir"],
+      "flags": ["timing-draft", "attribution-unverified", "text-unverified"]
+    },
+    {
+      "id": "break-10",
+      "kind": "instrumental",
+      "start": 665.3,
+      "end": 675.9,
+      "label": "Проигрыш",
+      "instruments": ["ensemble"],
+      "note": "Промежуток без голоса перед последним голосом. Солиста этого места страница не называет.",
+      "flags": ["timing-draft", "attribution-unverified"]
+    },
+    {
+      "id": "choir-8",
+      "kind": "instrumental",
+      "start": 675.9,
+      "end": 696.06,
+      "label": "Хор",
+      "instruments": ["choir"],
+      "note": "К концу сочинения страница относит возглас Veritas, по её глоссе — истина, и говорит, что вокалисты на нём настаивают. Когда именно он входит, страница не размечает. https://samiyusuf.art/music/veritas",
+      "flags": ["timing-draft", "attribution-unverified", "text-unverified"]
+    }
+  ]
+}
