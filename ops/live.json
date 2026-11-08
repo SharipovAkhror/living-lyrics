@@ -1,230 +1,9 @@
 {
-  "at": "2026-11-08T00:50:29Z",
-  "grok": [
-    {
-      "name": "_artifacts",
-      "state": "none",
-      "minutes": 0,
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/_artifacts"
-    },
-    {
-      "name": "icons-a",
-      "state": "finished",
-      "minutes": 25018,
-      "age": 25048,
-      "tokens": 9490511,
-      "model": "grok-4.7-build",
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-a"
-    },
-    {
-      "name": "icons-b",
-      "state": "finished",
-      "minutes": 25019,
-      "age": 25048,
-      "tokens": 9850680,
-      "model": "grok-4.7-build",
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-b"
-    },
-    {
-      "name": "icons-c",
-      "state": "finished",
-      "minutes": 24960,
-      "age": 25012,
-      "tokens": 13196979,
-      "model": "grok-4.7-build",
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/icons-c"
-    },
-    {
-      "name": "ll-business",
-      "state": "none",
-      "minutes": 0,
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/ll-business"
-    },
-    {
-      "name": "phone-overlap",
-      "state": "finished",
-      "minutes": 8793,
-      "age": 8943,
-      "tokens": 39150936,
-      "model": "grok-4.7-build",
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/phone-overlap"
-    },
-    {
-      "name": "site-handoff",
-      "state": "none",
-      "minutes": 0,
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/site-handoff"
-    },
-    {
-      "name": "studio-pass",
-      "state": "finished",
-      "minutes": 8727,
-      "age": 8840,
-      "tokens": 39988671,
-      "model": "grok-4.7-build",
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/studio-pass"
-    },
-    {
-      "name": "t10-small",
-      "state": "finished",
-      "minutes": 10961,
-      "age": 10975,
-      "tokens": 4653311,
-      "model": "grok-4.7-build",
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t10-small"
-    },
-    {
-      "name": "t27-memory",
-      "state": "finished",
-      "minutes": 11512,
-      "age": 11632,
-      "tokens": 13262986,
-      "model": "grok-4.7-build",
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t27-memory"
-    },
-    {
-      "name": "t28-icons",
-      "state": "finished",
-      "minutes": 24957,
-      "age": 25058,
-      "tokens": 29801018,
-      "model": "grok-4.7-build",
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t28-icons"
-    },
-    {
-      "name": "t35",
-      "state": "finished",
-      "minutes": 21913,
-      "age": 21944,
-      "tokens": 6757832,
-      "model": "grok-4.7-build",
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t35"
-    },
-    {
-      "name": "t37-comments",
-      "state": "finished",
-      "minutes": 9269,
-      "age": 9289,
-      "tokens": 6377944,
-      "model": "grok-4.7-build",
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/t37-comments"
-    },
-    {
-      "name": "translation-alive",
-      "state": "finished",
-      "minutes": 8853,
-      "age": 8879,
-      "tokens": 7090137,
-      "model": "grok-4.7-build",
-      "folder": "C:/Users/User/Documents/GitHub/living-lyrics-wt/translation-alive"
-    }
-  ],
+  "at": "2026-11-08T05:34:39Z",
   "gemini": [],
-  "chats": [
-    {
-      "name": "AOS · Engineer",
-      "role": "aos-engineer",
-      "project": "agentic-os-live",
-      "reports_to": "AOS · Main",
-      "state": "idle",
-      "last_at": "2026-11-01T01:21:21.907Z",
-      "last_act_at": "2026-11-01T01:21:21.907Z"
-    },
-    {
-      "name": "AOS · Main",
-      "role": "aos-main",
-      "project": "agentic-os-live",
-      "reports_to": "owner",
-      "state": "working",
-      "last_at": "2026-11-08T00:37:09.676Z",
-      "last_act_at": "2026-11-08T00:49:53.976Z"
-    },
-    {
-      "name": "AOS · Ops",
-      "role": "aos-ops",
-      "project": "agentic-os-live",
-      "reports_to": "AOS · Main",
-      "state": "idle",
-      "last_at": "2026-11-08T00:26:28.622Z",
-      "last_act_at": "2026-11-08T00:26:28.622Z"
-    },
-    {
-      "name": "AOS · PC",
-      "role": "aos-pc",
-      "project": "agentic-os-live",
-      "reports_to": "AOS · Main",
-      "state": "idle",
-      "last_at": "2026-11-01T10:54:53.215Z",
-      "last_act_at": "2026-11-01T10:54:53.215Z"
-    },
-    {
-      "name": "AOS · Tech",
-      "role": "aos-tech",
-      "project": "agentic-os-live",
-      "reports_to": "AOS · Main",
-      "state": "idle",
-      "last_at": "2026-11-08T00:27:00.194Z",
-      "last_act_at": "2026-11-08T00:27:00.194Z"
-    },
-    {
-      "name": "LL · Business",
-      "role": "ll-business",
-      "project": "living-lyrics",
-      "reports_to": "LL · Main",
-      "state": "idle",
-      "last_at": "2026-11-08T00:25:27.026Z",
-      "last_act_at": "2026-11-08T00:25:27.026Z"
-    },
-    {
-      "name": "LL · Main",
-      "role": "ll-main",
-      "project": "living-lyrics",
-      "reports_to": "owner",
-      "state": "idle",
-      "last_at": "2026-11-08T00:25:22.199Z",
-      "last_act_at": "2026-11-08T00:25:22.199Z"
-    },
-    {
-      "name": "LL · Site",
-      "role": "ll-site",
-      "project": "living-lyrics",
-      "reports_to": "LL · Main",
-      "state": "idle",
-      "last_at": "2026-11-08T00:25:21.104Z",
-      "last_act_at": "2026-11-08T00:25:21.104Z"
-    }
-  ],
-  "pipeline": [],
-  "hygiene": {
-    "at": "2026-11-08T00:16:08Z",
-    "fixed": [],
-    "issues": [
-      "ветка grok/icons-a не влита и не менялась 17 дн.",
-      "ветка grok/icons-b не влита и не менялась 17 дн.",
-      "ветка grok/icons-c не влита и не менялась 17 дн.",
-      "ветка grok/t28-icons не влита и не менялась 17 дн.",
-      "ветка grok/t33-off не влита и не менялась 17 дн.",
-      "ветка ll-tech/panel не влита и не менялась 18 дн.",
-      "ветка site/studio-pass не влита и не менялась 14 дн.",
-      "ветка site/studio-pass-r21 не влита и не менялась 14 дн.",
-      "ветка tech/split-trim не влита и не менялась 15 дн.",
-      "рабочая копия чата listen9 влита и стоит больше суток — её уберёт сам чат или `claude rm`",
-      "рабочая копия чата ll-main-notes влита и стоит больше суток — её уберёт сам чат или `claude rm`",
-      "рабочая копия чата ll-ops-w43 влита и стоит больше суток — её уберёт сам чат или `claude rm`",
-      "рабочая копия чата ll-tech-merge влита и стоит больше суток — её уберёт сам чат или `claude rm`",
-      "рабочая копия чата tech-ll-subagents влита и стоит больше суток — её уберёт сам чат или `claude rm`",
-      "рабочая копия чата tech-t46-s1-ll влита и стоит больше суток — её уберёт сам чат или `claude rm`",
-      "в папке t28-icons несохранённая работа, последняя запись 17 дн. назад",
-      "доска «i have come alive, соло» = (85, 118, 125), таблица T1 = (81, 118, 125)",
-      "доска «karitas, соло» = (36, 53, 61), таблица T1 = (34, 53, 61)",
-      "карточка t36 — done, а первая строка T36-iphone-crash-resume.md без «сделано»",
-      "ссылка на несуществующее: docs/process/audio-key.md → .github/workflows/rekey-audio.yml"
-    ]
-  },
-  "signal": null,
   "board": {
-    "updated": "2026-11-01T16:01+05:00",
-    "headline": "Утро: ответы владельца; AOS · Tech ставит мод и начинает круг 4 «Пространства»",
+    "updated": "2026-11-08T07:16+05:00",
+    "headline": "Один репозиторий agentic-os; остатки LL и очередь песен сохранены на GitHub",
     "claude": "Claude только управляет: код, проверки и учёт делают Grok и agy; первым делом — дашборд.",
     "tasks": [
       {
@@ -274,8 +53,8 @@
         "title": "Dashboard 24/7 без LLM, по возможности без Станции",
         "what": "Главная задача владельца. Сначала починить публикацию: данные на ветке live не обновлялись с 23.10.",
         "who": "AOS · Tech",
-        "now": "Главная задача владельца. Сначала починить публикацию: данные на ветке live не обновлялись с 23.10.",
-        "next": "Отчёт docs/research/dashboard-always-on.md: что нужно и какая частота реальна.",
+        "now": "T1 принят и выложен: сайт сам собирает данные доски без Станции. Codex делает T2 — страницу с вкладками «Исполнители» и «Задачи»",
+        "next": "T3: данные Станции и push о вехах; T4: убрать мод",
         "date": "2026-11-01",
         "project": "AOS"
       },
@@ -477,7 +256,7 @@
       {
         "id": "q6-repos",
         "section": "later",
-        "status": "waiting",
+        "status": "done",
         "agent": "claude",
         "title": "Очередь 6: два репозитория",
         "what": "Сравнить agentic-os-live и personal-agentic-os; решает владелец.",
@@ -485,6 +264,7 @@
         "now": "Ждёт «начать» владельца.",
         "next": "—",
         "date": "2026-10-31",
+        "state": "waiting",
         "project": "AOS"
       },
       {
@@ -1269,13 +1049,22 @@
     ],
     "llUpdated": "2026-11-01T00:00:00Z"
   },
-  "queue": {
-    "open": 58,
-    "overdue": 32,
-    "unmapped": 11
+  "signal": {
+    "line": "Чаты проекта LL не работают. На Станции откройте приложение Claude и напишите /recover (поднять чаты).",
+    "events": [
+      {
+        "id": "project_down:LL",
+        "kind": "project_down",
+        "text": "Чаты проекта LL не работают. На Станции откройте приложение Claude и напишите /recover (поднять чаты)."
+      }
+    ]
   },
-  "failed": [],
+  "queue": {
+    "open": 59,
+    "overdue": 30,
+    "unmapped": 12
+  },
   "keep": {
-    "at": "2026-10-23T15:53:23Z"
+    "at": "2026-11-08T00:45:56Z"
   }
 }
