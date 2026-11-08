@@ -1,0 +1,203 @@
+{
+  "url": "http://127.0.0.1:4185",
+  "slug": "karitas",
+  "minutes": 60,
+  "canonical": true,
+  "plan": {
+    "canonical": true,
+    "settings": [
+      [
+        1,
+        10
+      ],
+      [
+        26,
+        35
+      ]
+    ],
+    "seeks": [
+      7,
+      14,
+      21,
+      28,
+      35,
+      42,
+      49,
+      56
+    ],
+    "reloads": [
+      30,
+      55
+    ]
+  },
+  "clock": "stand-in",
+  "audio": "ffmpeg not on PATH; generated silent WAV, 8 kHz 8-bit mono, 977.05s, served at the song m4a URL",
+  "entry": "index-GSgj3Gn2.js",
+  "webkitPid": null,
+  "previewPid": 20904,
+  "samples": 60,
+  "crashed": false,
+  "hourError": null,
+  "pageErrors": [],
+  "reloads": [
+    {
+      "minute": 30,
+      "pass": true,
+      "expected": 601.5,
+      "got": 601.5,
+      "delta": 0,
+      "checks": {
+        "sameSong": true,
+        "position": true,
+        "paused": true,
+        "offerVisible": true
+      },
+      "offer": "Продолжить с 10:01"
+    },
+    {
+      "minute": 55,
+      "pass": true,
+      "expected": 620.5,
+      "got": 620.6,
+      "delta": 0,
+      "checks": {
+        "sameSong": true,
+        "position": true,
+        "paused": true,
+        "offerVisible": true
+      },
+      "offer": "Продолжить с 10:20"
+    }
+  ],
+  "kills": [
+    {
+      "case": "kill-1",
+      "pass": true,
+      "target": 791,
+      "expected": 793,
+      "got": 793,
+      "delta": 0,
+      "checks": {
+        "sameSong": true,
+        "position": true,
+        "paused": true,
+        "offerVisible": true
+      },
+      "offer": "Продолжить с 13:12",
+      "error": null
+    },
+    {
+      "case": "kill-2",
+      "pass": true,
+      "target": 407,
+      "expected": 409.4,
+      "got": 408,
+      "delta": -1.4,
+      "checks": {
+        "sameSong": true,
+        "position": true,
+        "paused": true,
+        "offerVisible": true
+      },
+      "offer": "Продолжить с 6:48",
+      "error": null
+    },
+    {
+      "case": "kill-3",
+      "pass": true,
+      "target": 291,
+      "expected": 290.3,
+      "got": 290.2,
+      "delta": -0.2,
+      "checks": {
+        "sameSong": true,
+        "position": true,
+        "paused": true,
+        "offerVisible": true
+      },
+      "offer": "Продолжить с 4:50",
+      "error": null
+    }
+  ],
+  "replays": [
+    {
+      "kind": "wrap",
+      "from": 970.2,
+      "to": 35,
+      "wallMs": 1495438
+    },
+    {
+      "kind": "wrap",
+      "from": 973.5,
+      "to": 1,
+      "wallMs": 2460009
+    }
+  ],
+  "slopeWindow": "10-end",
+  "workingSetSlopeMbPerMin": 6.615981900452489,
+  "webProcessSlopeMbPerMin": 6.314487782805431,
+  "uncoveredWorkingSetSlopeMbPerMin": 6.4280122285999495,
+  "nodeSlopePerMin": -1.3667873303167422,
+  "nodeRise": -32,
+  "memLeak": true,
+  "nodesLeak": false,
+  "first": {
+    "minute": 1,
+    "tMin": 1,
+    "wallMin": 1.005,
+    "at": "2026-10-30T21:28:28.690Z",
+    "position": 59.4,
+    "clock": "0:00",
+    "paused": false,
+    "href": "/song/karitas",
+    "sheet": true,
+    "workingSetMb": 208.45,
+    "workingSetBytes": 218574848,
+    "webProcessMb": 129.46,
+    "webProcessBytes": 135745536,
+    "processes": 4,
+    "processNames": "WebKitNetworkProcess.exe=1,WebKitGPUProcess.exe=1,Playwright.exe=1,WebKitWebProcess.exe=1",
+    "jsHeapMb": null,
+    "jsHeapBytes": null,
+    "nodes": 311,
+    "listeners": 366,
+    "blur": 2,
+    "canvases": 0,
+    "phone": "1",
+    "playerAlert": "Не удалось загрузить запись.Повторить",
+    "events": [],
+    "reload": null,
+    "pageErrors": 0,
+    "pageErrorTexts": []
+  },
+  "last": {
+    "minute": 60,
+    "tMin": 60,
+    "wallMin": 60.005,
+    "at": "2026-10-30T22:27:28.673Z",
+    "position": 323.3,
+    "clock": "5:23",
+    "paused": false,
+    "href": "/song/karitas",
+    "sheet": false,
+    "workingSetMb": 635.92,
+    "workingSetBytes": 666812416,
+    "webProcessMb": 525.94,
+    "webProcessBytes": 551485440,
+    "processes": 4,
+    "processNames": "WebKitNetworkProcess.exe=1,WebKitGPUProcess.exe=1,Playwright.exe=1,WebKitWebProcess.exe=1",
+    "jsHeapMb": null,
+    "jsHeapBytes": null,
+    "nodes": 794,
+    "listeners": 209,
+    "blur": 2,
+    "canvases": 0,
+    "phone": "1",
+    "playerAlert": "Не удалось загрузить запись.Повторить",
+    "events": [],
+    "reload": null,
+    "pageErrors": 0,
+    "pageErrorTexts": []
+  },
+  "pass": true
+}

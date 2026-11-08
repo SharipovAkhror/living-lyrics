@@ -1,0 +1,12 @@
+You are a senior product designer (ex-Linear / Stripe / Vercel). Review a status panel with a hard bar. Open and look at these three screenshots (same page, real data):
+- work/design-review/p2-dark.png (400 px wide, dark theme)
+- work/design-review/p2-light.png (400 px wide, light theme)
+- work/design-review/p2-wide.png (520 px wide, dark)
+
+Context: a one-person studio's live dashboard, shown in a narrow side panel beside a chat on desktop and on the phone. The owner reads it in ten seconds to know: what waits on him, plan limits of three AI subscriptions (Claude, Gemini, Grok) with reset times and a 7-day trend, which tasks are in work and by whom and for how long, what each chat said last, and word-sync progress per song vs a 90 % goal with change since yesterday. The owner's brief: compact, informative, information-first, no "AI slop" (no gradients, glow, rounded cards, emoji-like pills), studio quality; one accent colour, tabular numbers, hairline rules. All text is Russian by design.
+
+Do NOT invent problems you cannot see. Answer in English in this exact format:
+SCORE: <0-100>
+TOP ISSUES (most severe first, max 8): each "- [area] problem → concrete fix (CSS/layout terms)"
+KEEP: what works, one line
+Score 90+ only if you'd ship it as-is at a top product studio.

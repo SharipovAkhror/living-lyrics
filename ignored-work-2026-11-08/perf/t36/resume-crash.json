@@ -1,0 +1,130 @@
+{
+  "url": "http://127.0.0.1:4183",
+  "audio": "ffmpeg not on PATH; generated silent WAV, 8 kHz 8-bit mono, 977s, served at the song m4a URL",
+  "tolerance": 2,
+  "cases": [
+    {
+      "case": "seek-then-kill",
+      "pass": true,
+      "beforeKill": {
+        "clock": "0:03",
+        "audioTime": 87.57080539052312,
+        "paused": false,
+        "mediaError": 0,
+        "storedT": 87.6
+      },
+      "afterReopen": {
+        "href": "/song/karitas",
+        "clock": "1:27",
+        "audioTime": 87.56780539052312,
+        "paused": true,
+        "offer": "Продолжить с 1:27",
+        "storedAtBootT": 87.6
+      },
+      "expected": 87.6,
+      "got": 87.6,
+      "checks": {
+        "sameSong": true,
+        "position": true,
+        "paused": true,
+        "offerVisible": true
+      }
+    },
+    {
+      "case": "wait-then-kill",
+      "pass": true,
+      "beforeKill": {
+        "clock": "1:31",
+        "audioTime": 91.08480539052312,
+        "paused": false,
+        "mediaError": 0,
+        "storedT": 90.1
+      },
+      "afterReopen": {
+        "href": "/song/karitas",
+        "clock": "1:30",
+        "audioTime": 90.13480539052311,
+        "paused": true,
+        "offer": "Продолжить с 1:30",
+        "storedAtBootT": 90.1
+      },
+      "expected": 91.1,
+      "got": 90.1,
+      "checks": {
+        "sameSong": true,
+        "position": true,
+        "paused": true,
+        "offerVisible": true
+      }
+    },
+    {
+      "case": "idb-stall",
+      "pass": true,
+      "beforeKill": {
+        "clock": "1:31",
+        "audioTime": 91.08180539052312,
+        "paused": false,
+        "mediaError": 0,
+        "storedT": 90.1
+      },
+      "afterReopen": {
+        "href": "/song/karitas",
+        "clock": "1:30",
+        "audioTime": 90.12180539052312,
+        "paused": true,
+        "offer": "Продолжить с 1:30",
+        "storedAtBootT": 90.1
+      },
+      "expected": 91.1,
+      "got": 90.1,
+      "checks": {
+        "sameSong": true,
+        "position": true,
+        "paused": true,
+        "offerVisible": true
+      }
+    },
+    {
+      "case": "render-error",
+      "pass": true,
+      "beforeThrow": {
+        "clock": "1:28",
+        "audioTime": 88.11780539052312,
+        "paused": true
+      },
+      "after": {
+        "clock": "1:28",
+        "audioTime": 88.11780539052312,
+        "diag": "31.10.2026, 03:56 — ll-render-error Скопировать",
+        "storedError": "{\"message\":\"ll-render-error\",\"time\":1793400984887,\"slug\":\"karitas\",\"stack\":\"@index-GSgj3Gn2.js:68:50949\"}",
+        "pageErrors": []
+      },
+      "expected": 88.1,
+      "got": 88.1,
+      "checks": {
+        "recovered": true,
+        "position": true,
+        "errorVisible": true,
+        "copyVisible": true
+      }
+    },
+    {
+      "case": "bad-storage",
+      "pass": true,
+      "expected": 0,
+      "after": {
+        "clock": "0:00",
+        "audioTime": 0,
+        "offer": null,
+        "pageErrors": []
+      },
+      "got": 0,
+      "checks": {
+        "noCrash": true,
+        "position": true,
+        "noOffer": true
+      }
+    }
+  ],
+  "pass": true
+}
