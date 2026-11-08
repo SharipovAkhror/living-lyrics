@@ -1,0 +1,527 @@
+[
+  {
+    "line": "en-01",
+    "cue": 1,
+    "lang": "en",
+    "start": 14.892,
+    "end": 15.892
+  },
+  {
+    "line": "en-02",
+    "cue": 2,
+    "lang": "en",
+    "start": 42.205,
+    "end": 44.525
+  },
+  {
+    "line": "en-03",
+    "cue": 3,
+    "lang": "en",
+    "start": 44.924,
+    "end": 46.049
+  },
+  {
+    "line": "en-04",
+    "cue": 4,
+    "lang": "en",
+    "start": 46.291,
+    "end": 48.885
+  },
+  {
+    "line": "en-05",
+    "cue": 5,
+    "lang": "en",
+    "start": 49.322,
+    "end": 50.322
+  },
+  {
+    "line": "en-06",
+    "cue": 6,
+    "lang": "en",
+    "start": 50.931,
+    "end": 53.103
+  },
+  {
+    "line": "en-07",
+    "cue": 7,
+    "lang": "en",
+    "start": 53.745,
+    "end": 54.636
+  },
+  {
+    "line": "en-08",
+    "cue": 8,
+    "lang": "en",
+    "start": 54.916,
+    "end": 57.456
+  },
+  {
+    "line": "en-09",
+    "cue": 9,
+    "lang": "en",
+    "start": 58.026,
+    "end": 59.111
+  },
+  {
+    "line": "en-10",
+    "cue": 10,
+    "lang": "en",
+    "start": 59.346,
+    "end": 60.346
+  },
+  {
+    "line": "en-11",
+    "cue": 11,
+    "lang": "en",
+    "start": 60.439,
+    "end": 62.742
+  },
+  {
+    "line": "en-12",
+    "cue": 12,
+    "lang": "en",
+    "start": 65.139,
+    "end": 68.24
+  },
+  {
+    "line": "en-13",
+    "cue": 13,
+    "lang": "en",
+    "start": 69.202,
+    "end": 71.533
+  },
+  {
+    "line": "en-14",
+    "cue": 14,
+    "lang": "en",
+    "start": 73.714,
+    "end": 76.379
+  },
+  {
+    "line": "en-15",
+    "cue": 15,
+    "lang": "en",
+    "start": 76.982,
+    "end": 80.881
+  },
+  {
+    "line": "en-16",
+    "cue": 16,
+    "lang": "en",
+    "start": 81.262,
+    "end": 85.301
+  },
+  {
+    "line": "en-17",
+    "cue": 17,
+    "lang": "en",
+    "start": 86.306,
+    "end": 88.021
+  },
+  {
+    "line": "en-18",
+    "cue": 18,
+    "lang": "en",
+    "start": 88.346,
+    "end": 90.171
+  },
+  {
+    "line": "en-19",
+    "cue": 19,
+    "lang": "en",
+    "start": 90.229,
+    "end": 91.62
+  },
+  {
+    "line": "en-20",
+    "cue": 20,
+    "lang": "en",
+    "start": 92.568,
+    "end": 94.426
+  },
+  {
+    "line": "en-21",
+    "cue": 21,
+    "lang": "en",
+    "start": 94.62,
+    "end": 96.526
+  },
+  {
+    "line": "en-22",
+    "cue": 22,
+    "lang": "en",
+    "start": 96.558,
+    "end": 97.534
+  },
+  {
+    "line": "en-23",
+    "cue": 23,
+    "lang": "en",
+    "start": 98.091,
+    "end": 100.427
+  },
+  {
+    "line": "en-24",
+    "cue": 24,
+    "lang": "en",
+    "start": 100.794,
+    "end": 101.958
+  },
+  {
+    "line": "en-25",
+    "cue": 25,
+    "lang": "en",
+    "start": 102.067,
+    "end": 103.88
+  },
+  {
+    "line": "en-26",
+    "cue": 26,
+    "lang": "en",
+    "start": 105.044,
+    "end": 105.787
+  },
+  {
+    "line": "en-27",
+    "cue": 27,
+    "lang": "en",
+    "start": 106.567,
+    "end": 108.685
+  },
+  {
+    "line": "en-28",
+    "cue": 28,
+    "lang": "en",
+    "start": 109.232,
+    "end": 110.38
+  },
+  {
+    "line": "en-29",
+    "cue": 29,
+    "lang": "en",
+    "start": 110.567,
+    "end": 112.763
+  },
+  {
+    "line": "en-30",
+    "cue": 30,
+    "lang": "en",
+    "start": 113.474,
+    "end": 114.474
+  },
+  {
+    "line": "en-31",
+    "cue": 31,
+    "lang": "en",
+    "start": 114.762,
+    "end": 116.016
+  },
+  {
+    "line": "en-32",
+    "cue": 32,
+    "lang": "en",
+    "start": 116.106,
+    "end": 118.103
+  },
+  {
+    "line": "en-33",
+    "cue": 33,
+    "lang": "en",
+    "start": 120.654,
+    "end": 123.558
+  },
+  {
+    "line": "en-34",
+    "cue": 34,
+    "lang": "en",
+    "start": 124.549,
+    "end": 127.189
+  },
+  {
+    "line": "en-35",
+    "cue": 35,
+    "lang": "en",
+    "start": 129.024,
+    "end": 131.988
+  },
+  {
+    "line": "en-36",
+    "cue": 36,
+    "lang": "en",
+    "start": 132.269,
+    "end": 135.945
+  },
+  {
+    "line": "en-37",
+    "cue": 37,
+    "lang": "en",
+    "start": 136.496,
+    "end": 140.563
+  },
+  {
+    "line": "en-38",
+    "cue": 38,
+    "lang": "en",
+    "start": 141.504,
+    "end": 143.17
+  },
+  {
+    "line": "en-39",
+    "cue": 39,
+    "lang": "en",
+    "start": 143.557,
+    "end": 145.284
+  },
+  {
+    "line": "en-40",
+    "cue": 40,
+    "lang": "en",
+    "start": 145.391,
+    "end": 146.835
+  },
+  {
+    "line": "en-41",
+    "cue": 41,
+    "lang": "en",
+    "start": 147.747,
+    "end": 149.556
+  },
+  {
+    "line": "en-42",
+    "cue": 42,
+    "lang": "en",
+    "start": 149.815,
+    "end": 151.58
+  },
+  {
+    "line": "en-43",
+    "cue": 43,
+    "lang": "en",
+    "start": 151.649,
+    "end": 152.58
+  },
+  {
+    "line": "en-44",
+    "cue": 44,
+    "lang": "en",
+    "start": 153.243,
+    "end": 155.52
+  },
+  {
+    "line": "en-45",
+    "cue": 45,
+    "lang": "en",
+    "start": 155.897,
+    "end": 157.116
+  },
+  {
+    "line": "en-46",
+    "cue": 46,
+    "lang": "en",
+    "start": 157.188,
+    "end": 159.724
+  },
+  {
+    "line": "en-47",
+    "cue": 47,
+    "lang": "en",
+    "start": 160.11,
+    "end": 161.235
+  },
+  {
+    "line": "en-48",
+    "cue": 48,
+    "lang": "en",
+    "start": 161.676,
+    "end": 163.684
+  },
+  {
+    "line": "en-49",
+    "cue": 49,
+    "lang": "en",
+    "start": 164.308,
+    "end": 165.061
+  },
+  {
+    "line": "en-50",
+    "cue": 50,
+    "lang": "en",
+    "start": 165.613,
+    "end": 168.197
+  },
+  {
+    "line": "en-51",
+    "cue": 51,
+    "lang": "en",
+    "start": 168.478,
+    "end": 169.483
+  },
+  {
+    "line": "en-52",
+    "cue": 52,
+    "lang": "en",
+    "start": 169.537,
+    "end": 170.868
+  },
+  {
+    "line": "en-53",
+    "cue": 53,
+    "lang": "en",
+    "start": 170.906,
+    "end": 171.966
+  },
+  {
+    "line": "en-54",
+    "cue": 54,
+    "lang": "en",
+    "start": 172.251,
+    "end": 173.916
+  },
+  {
+    "line": "en-55",
+    "cue": 55,
+    "lang": "en",
+    "start": 174.332,
+    "end": 176.722
+  },
+  {
+    "line": "en-56",
+    "cue": 56,
+    "lang": "en",
+    "start": 176.902,
+    "end": 178.191
+  },
+  {
+    "line": "en-57",
+    "cue": 57,
+    "lang": "en",
+    "start": 178.411,
+    "end": 180.185
+  },
+  {
+    "line": "en-58",
+    "cue": 58,
+    "lang": "en",
+    "start": 180.709,
+    "end": 183.295
+  },
+  {
+    "line": "en-59",
+    "cue": 59,
+    "lang": "en",
+    "start": 183.388,
+    "end": 185.06
+  },
+  {
+    "line": "en-60",
+    "cue": 60,
+    "lang": "en",
+    "start": 185.513,
+    "end": 189.251
+  },
+  {
+    "line": "en-61",
+    "cue": 61,
+    "lang": "en",
+    "start": 189.701,
+    "end": 190.531
+  },
+  {
+    "line": "en-62",
+    "cue": 62,
+    "lang": "en",
+    "start": 191.185,
+    "end": 193.302
+  },
+  {
+    "line": "en-63",
+    "cue": 63,
+    "lang": "en",
+    "start": 193.833,
+    "end": 194.642
+  },
+  {
+    "line": "en-64",
+    "cue": 64,
+    "lang": "en",
+    "start": 195.16,
+    "end": 197.372
+  },
+  {
+    "line": "en-65",
+    "cue": 65,
+    "lang": "en",
+    "start": 198.047,
+    "end": 199.015
+  },
+  {
+    "line": "en-66",
+    "cue": 66,
+    "lang": "en",
+    "start": 199.291,
+    "end": 200.095
+  },
+  {
+    "line": "en-67",
+    "cue": 67,
+    "lang": "en",
+    "start": 404.237,
+    "end": 405.784
+  },
+  {
+    "line": "en-68",
+    "cue": 68,
+    "lang": "en",
+    "start": 406.874,
+    "end": 407.714
+  },
+  {
+    "line": "en-69",
+    "cue": 69,
+    "lang": "en",
+    "start": 408.44,
+    "end": 411.268
+  },
+  {
+    "line": "en-70",
+    "cue": 70,
+    "lang": "en",
+    "start": 411.482,
+    "end": 412.834
+  },
+  {
+    "line": "en-71",
+    "cue": 71,
+    "lang": "en",
+    "start": 413.142,
+    "end": 415.33
+  },
+  {
+    "line": "en-72",
+    "cue": 72,
+    "lang": "en",
+    "start": 415.723,
+    "end": 416.801
+  },
+  {
+    "line": "en-73",
+    "cue": 73,
+    "lang": "en",
+    "start": 417.082,
+    "end": 419.406
+  },
+  {
+    "line": "en-74",
+    "cue": 74,
+    "lang": "en",
+    "start": 419.953,
+    "end": 420.91
+  },
+  {
+    "line": "en-75",
+    "cue": 75,
+    "lang": "en",
+    "start": 421.23,
+    "end": 423.432
+  }
+]
