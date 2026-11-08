@@ -1,0 +1,163 @@
+[
+  {
+    "line": "ad-1",
+    "cue": 1,
+    "lang": "tr",
+    "start": 3.375,
+    "end": 5.05
+  },
+  {
+    "line": "isa-1",
+    "cue": 2,
+    "lang": "tr",
+    "start": 10.25,
+    "end": 17.125
+  },
+  {
+    "line": "kitap-1",
+    "cue": 3,
+    "lang": "tr",
+    "start": 17.125,
+    "end": 24.0
+  },
+  {
+    "line": "melek-1",
+    "cue": 4,
+    "lang": "tr",
+    "start": 24.0,
+    "end": 30.75
+  },
+  {
+    "line": "dunya-1",
+    "cue": 5,
+    "lang": "tr",
+    "start": 30.75,
+    "end": 37.625
+  },
+  {
+    "line": "alem-1",
+    "cue": 6,
+    "lang": "tr",
+    "start": 37.625,
+    "end": 44.5
+  },
+  {
+    "line": "cihan-1",
+    "cue": 7,
+    "lang": "tr",
+    "start": 44.5,
+    "end": 51.25
+  },
+  {
+    "line": "omer-1",
+    "cue": 8,
+    "lang": "tr",
+    "start": 54.875,
+    "end": 61.875
+  },
+  {
+    "line": "haydar-1",
+    "cue": 9,
+    "lang": "tr",
+    "start": 61.875,
+    "end": 68.625
+  },
+  {
+    "line": "melek-2",
+    "cue": 10,
+    "lang": "tr",
+    "start": 68.625,
+    "end": 75.375
+  },
+  {
+    "line": "dunya-2",
+    "cue": 11,
+    "lang": "tr",
+    "start": 75.375,
+    "end": 82.25
+  },
+  {
+    "line": "alem-2",
+    "cue": 12,
+    "lang": "tr",
+    "start": 82.25,
+    "end": 89.125
+  },
+  {
+    "line": "cihan-2",
+    "cue": 13,
+    "lang": "tr",
+    "start": 89.125,
+    "end": 95.75
+  },
+  {
+    "line": "halk-1",
+    "cue": 14,
+    "lang": "tr",
+    "start": 99.375,
+    "end": 106.125
+  },
+  {
+    "line": "hanedan-1",
+    "cue": 15,
+    "lang": "tr",
+    "start": 106.125,
+    "end": 113.0
+  },
+  {
+    "line": "melek-3",
+    "cue": 16,
+    "lang": "tr",
+    "start": 113.0,
+    "end": 119.75
+  },
+  {
+    "line": "dunya-3",
+    "cue": 17,
+    "lang": "tr",
+    "start": 119.75,
+    "end": 126.75
+  },
+  {
+    "line": "alem-3",
+    "cue": 18,
+    "lang": "tr",
+    "start": 126.75,
+    "end": 133.625
+  },
+  {
+    "line": "cihan-3",
+    "cue": 19,
+    "lang": "tr",
+    "start": 133.625,
+    "end": 140.3
+  },
+  {
+    "line": "sevda-1",
+    "cue": 20,
+    "lang": "tr",
+    "start": 144.0,
+    "end": 150.875
+  },
+  {
+    "line": "dervis-1",
+    "cue": 21,
+    "lang": "tr",
+    "start": 150.875,
+    "end": 157.75
+  },
+  {
+    "line": "melek-4",
+    "cue": 22,
+    "lang": "tr",
+    "start": 157.75,
+    "end": 164.5
+  },
+  {
+    "line": "dunya-4",
+    "cue": 23,
+    "lang": "tr",
+    "start": 164.5,
+    "end": 168.0
+  }
+]
