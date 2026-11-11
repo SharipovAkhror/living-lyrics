@@ -1,0 +1,135 @@
+{
+  "video_type": "lyric_video",
+  "video_type_note": "Кадры сема в деревянном зале. Турецкие строки вписаны слева сверху, по четыре на карточку. Инструменты по картинке не назывались.",
+  "captions": [
+    {
+      "first_s": 0.0,
+      "last_s": 0.6,
+      "script": "Latin",
+      "language_guess": "tr",
+      "role": "title",
+      "text": "Mevlana",
+      "confidence": "medium"
+    },
+    {
+      "first_s": 0.6,
+      "last_s": 9.96,
+      "script": "Latin",
+      "language_guess": "tr",
+      "role": "original",
+      "text": "Mevlana ya mevlana\nCelaleddin mevlana\nLutfeyle al deryana\nHudavendigarım",
+      "confidence": "high",
+      "unreadable_parts": "Правый край закрывает танцующий."
+    },
+    {
+      "first_s": 10.6,
+      "last_s": 21.48,
+      "script": "Latin",
+      "language_guess": "tr",
+      "role": "original",
+      "text": "Mevlana ya mevlana\nCelaleddin mevlana\nLutfeyle al deryana\nHudavendigarım",
+      "confidence": "high",
+      "unreadable_parts": "Правый край закрывает танцующий."
+    },
+    {
+      "first_s": 22.28,
+      "last_s": 31.8,
+      "script": "Latin",
+      "language_guess": "tr",
+      "role": "original",
+      "text": "Kalpten kalbe akar zem zem\nÇaya aşk koyarlar dem dem\nALLAH aşkıyla yanar\nPervane gönüller her dem",
+      "confidence": "high",
+      "unreadable_parts": "Правый край закрывает танцующий."
+    },
+    {
+      "first_s": 32.88,
+      "last_s": 42.6,
+      "script": "Latin",
+      "language_guess": "tr",
+      "role": "original",
+      "text": "Kalpten kalbe akar zem zem\nÇaya aşk koyarlar dem dem\nALLAH aşkıyla yanar\nPervane gönüller her dem",
+      "confidence": "high",
+      "unreadable_parts": "Правый край закрывает танцующий."
+    },
+    {
+      "first_s": 43.4,
+      "last_s": 53.44,
+      "script": "Latin",
+      "language_guess": "tr",
+      "role": "original",
+      "text": "Mevlana ya mevlana\nCelaleddin mevlana\nLutfeyle al deryana\nHudavendigarım",
+      "confidence": "high",
+      "unreadable_parts": "На кадре начала видны первые слова. Полная карточка того же припева прочитана на соседних повторах. Правый край закрывает танцующий."
+    },
+    {
+      "first_s": 54.04,
+      "last_s": 64.4,
+      "script": "Latin",
+      "language_guess": "tr",
+      "role": "original",
+      "text": "Mevlana ya mevlana\nCelaleddin mevlana\nLutfeyle al deryana\nHudavendigarım",
+      "confidence": "high",
+      "unreadable_parts": "Правый край закрывает танцующий."
+    },
+    {
+      "first_s": 86.04,
+      "last_s": 95.64,
+      "script": "Latin",
+      "language_guess": "tr",
+      "role": "original",
+      "text": "Gönülden gönüle ALLAH\nKöprüsünü sermiş ALLAH\nHak için sevenleri\nYakmaz ateşte inşallah",
+      "confidence": "high",
+      "unreadable_parts": "Конец inşallah на прочитанном кадре закрыт."
+    },
+    {
+      "first_s": 96.52,
+      "last_s": 106.56,
+      "script": "Latin",
+      "language_guess": "tr",
+      "role": "original",
+      "text": "Mesnevi hu der hu ALLAH\nDöner durur ALLAH ALLAH\nGönül kanatlanıyor\nAşka gelince maşallah",
+      "confidence": "high",
+      "unreadable_parts": "Конец maşallah на прочитанном кадре закрыт танцующим и обрезом сохранённого кадра."
+    },
+    {
+      "first_s": 107.44,
+      "last_s": 116.56,
+      "script": "Latin",
+      "language_guess": "tr",
+      "role": "original",
+      "text": "Mevlana ya mevlana\nCelaleddin mevlana\nLutfeyle al deryana\nHudavendigarım",
+      "confidence": "high",
+      "unreadable_parts": "Правый край закрывает танцующий."
+    },
+    {
+      "first_s": 117.64,
+      "last_s": 127.12,
+      "script": "Latin",
+      "language_guess": "tr",
+      "role": "original",
+      "text": "Mevlana ya mevlana\nCelaleddin mevlana\nLutfeyle al deryana\nHudavendigarım",
+      "confidence": "high",
+      "unreadable_parts": "Правый край закрывает танцующий."
+    },
+    {
+      "first_s": 128.4,
+      "last_s": 137.88,
+      "script": "Latin",
+      "language_guess": "tr",
+      "role": "original",
+      "text": "Mevlana ya mevlana\nCelaleddin mevlana\nLutfeyle al deryana\nHudavendigarım",
+      "confidence": "high",
+      "unreadable_parts": "Правый край закрывает танцующий. На этом кадре deryana дочитано."
+    },
+    {
+      "first_s": 139.4,
+      "last_s": 148.88,
+      "script": "Latin",
+      "language_guess": "tr",
+      "role": "original",
+      "text": "Mevlana ya mevlana\nCelaleddin mevlana\nLutfeyle al deryana\nHudavendigarım",
+      "confidence": "high",
+      "unreadable_parts": "Правый край закрывает танцующий."
+    }
+  ]
+}

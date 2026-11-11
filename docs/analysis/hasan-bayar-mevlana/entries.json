@@ -1,0 +1,21 @@
+{
+  "slug": "hasan-bayar-mevlana",
+  "present": [],
+  "check": [],
+  "missingEngraving": [],
+  "sections": [
+    {
+      "id": "break",
+      "action": "unchanged",
+      "label": "Проигрыш",
+      "identity": null,
+      "instruments": [
+        "ensemble"
+      ],
+      "entries": [],
+      "performers": [],
+      "choirFrames": 0,
+      "soloFrames": 0
+    }
+  ]
+}

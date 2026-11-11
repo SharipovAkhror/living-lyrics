@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-29-hasan-bayar-mevlana",
+  "status": "pass",
+  "branch": "night/ll-song-29-hasan-bayar-mevlana",
+  "commit": "466bcdf4f1af2c9f9e68d6fed3794e4552cc5b73",
+  "tokens": 26198740,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts hasan-bayar-mevlana\n\n\n✓ hasan-bayar-mevlana  (0 ошибок, 0 предупреждений)\n\nИтого: 0 ошибок, 0 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue-b\\logs\\ll-song-29-hasan-bayar-mevlana.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
