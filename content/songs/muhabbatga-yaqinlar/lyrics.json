@@ -1,0 +1,585 @@
+{
+  "$schema": "../../../docs/schema/lyrics.schema.json",
+  "sections": [
+    {
+      "id": "i1",
+      "kind": "instrumental",
+      "start": 0.0,
+      "end": 10.1,
+      "label": "Вступление",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v1",
+      "kind": "instrumental",
+      "start": 10.1,
+      "end": 23.95,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i2",
+      "kind": "instrumental",
+      "start": 23.95,
+      "end": 31.1,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v2",
+      "kind": "instrumental",
+      "start": 31.1,
+      "end": 43.2,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i3",
+      "kind": "instrumental",
+      "start": 43.2,
+      "end": 54.95,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v3",
+      "kind": "instrumental",
+      "start": 54.95,
+      "end": 60.05,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i4",
+      "kind": "instrumental",
+      "start": 60.05,
+      "end": 66.8,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v4",
+      "kind": "instrumental",
+      "start": 66.8,
+      "end": 74.0,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i5",
+      "kind": "instrumental",
+      "start": 74.0,
+      "end": 78.75,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v5",
+      "kind": "instrumental",
+      "start": 78.75,
+      "end": 89.65,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i6",
+      "kind": "instrumental",
+      "start": 89.65,
+      "end": 96.5,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v6",
+      "kind": "instrumental",
+      "start": 96.5,
+      "end": 123.3,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i7",
+      "kind": "instrumental",
+      "start": 123.3,
+      "end": 134.55,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v7",
+      "kind": "instrumental",
+      "start": 134.55,
+      "end": 141.95,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i8",
+      "kind": "instrumental",
+      "start": 141.95,
+      "end": 146.4,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v8",
+      "kind": "instrumental",
+      "start": 146.4,
+      "end": 151.3,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i9",
+      "kind": "instrumental",
+      "start": 151.3,
+      "end": 157.95,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v9",
+      "kind": "instrumental",
+      "start": 157.95,
+      "end": 188.45,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i10",
+      "kind": "instrumental",
+      "start": 188.45,
+      "end": 194.25,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v10",
+      "kind": "instrumental",
+      "start": 194.25,
+      "end": 195.85,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i11",
+      "kind": "instrumental",
+      "start": 195.85,
+      "end": 213.75,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v11",
+      "kind": "instrumental",
+      "start": 213.75,
+      "end": 230.6,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i12",
+      "kind": "instrumental",
+      "start": 230.6,
+      "end": 237.3,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v12",
+      "kind": "instrumental",
+      "start": 237.3,
+      "end": 254.1,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i13",
+      "kind": "instrumental",
+      "start": 254.1,
+      "end": 260.75,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v13",
+      "kind": "instrumental",
+      "start": 260.75,
+      "end": 303.5,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i14",
+      "kind": "instrumental",
+      "start": 303.5,
+      "end": 316.3,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v14",
+      "kind": "instrumental",
+      "start": 316.3,
+      "end": 325.1,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i15",
+      "kind": "instrumental",
+      "start": 325.1,
+      "end": 344.45,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v15",
+      "kind": "instrumental",
+      "start": 344.45,
+      "end": 361.75,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i16",
+      "kind": "instrumental",
+      "start": 361.75,
+      "end": 367.9,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v16",
+      "kind": "instrumental",
+      "start": 367.9,
+      "end": 409.0,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i17",
+      "kind": "instrumental",
+      "start": 409.0,
+      "end": 413.35,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v17",
+      "kind": "instrumental",
+      "start": 413.35,
+      "end": 424.8,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i18",
+      "kind": "instrumental",
+      "start": 424.8,
+      "end": 431.0,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v18",
+      "kind": "instrumental",
+      "start": 431.0,
+      "end": 474.1,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i19",
+      "kind": "instrumental",
+      "start": 474.1,
+      "end": 480.0,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v19",
+      "kind": "instrumental",
+      "start": 480.0,
+      "end": 488.0,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "i20",
+      "kind": "instrumental",
+      "start": 488.0,
+      "end": 494.15,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ],
+      "note": "Исполнители инструментальных партий в описании ролика не указаны."
+    },
+    {
+      "id": "v20",
+      "kind": "instrumental",
+      "start": 494.15,
+      "end": 565.03,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    }
+  ]
+}
