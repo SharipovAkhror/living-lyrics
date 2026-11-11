@@ -1,0 +1,12 @@
+{
+  "id": "ll-cues-12-the-dawn",
+  "status": "pass",
+  "branch": "night/ll-cues-12-the-dawn",
+  "commit": "e1c82e7e290155469f1f3d30f638ae1bf29a3ac0",
+  "tokens": 3592402,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts the-dawn\n\n\n✓ the-dawn  (0 ошибок, 2 предупреждений)\n  внимание  song.json: audio.high: /audio/the-dawn/high.m4a есть только в зашифрованном виде — нужен AUDIO_KEY (npm run dev / build расшифруют)\n  внимание  song.json: язык en указан в languages, но строк на нём нет\n\nИтого: 0 ошибок, 2 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue-b\\logs\\ll-cues-12-the-dawn.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
