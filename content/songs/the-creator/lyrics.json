@@ -1,0 +1,2032 @@
+{
+  "$schema": "../../../docs/schema/lyrics.schema.json",
+  "sections": [
+    {
+      "id": "intro",
+      "kind": "instrumental",
+      "start": 0,
+      "end": 2.22,
+      "label": "Вступление",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "Короткое вступление до первых спетых слов. Кто играет, страница релиза не называет.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "sing",
+      "kind": "vocal",
+      "start": 2.22,
+      "end": 374.89,
+      "label": "Пение",
+      "lines": [
+        {
+          "id": "shahada-1",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "La",
+              "s": 2.22,
+              "e": 2.84
+            },
+            {
+              "w": "ilaha",
+              "s": 2.84,
+              "e": 3.46
+            },
+            {
+              "w": "illa",
+              "s": 3.46,
+              "e": 4.08
+            },
+            {
+              "w": "Allah",
+              "s": 4.08,
+              "e": 4.7
+            }
+          ],
+          "tr": {
+            "ru": "Нет бога, кроме Аллаха"
+          },
+          "comment": "Строка — свидетельство: нет бога, кроме Аллаха. Скобка на странице Awakening читает то же место так: «There is no god but Allah», имя Аллах в скобке оставлено именем. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-plants",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "He",
+              "s": 11.76,
+              "e": 15.542
+            },
+            {
+              "w": "created",
+              "s": 15.542,
+              "e": 19.323
+            },
+            {
+              "w": "the",
+              "s": 19.323,
+              "e": 23.105
+            },
+            {
+              "w": "plants",
+              "s": 23.105,
+              "e": 26.887
+            },
+            {
+              "w": "and",
+              "s": 26.887,
+              "e": 30.668
+            },
+            {
+              "w": "trees",
+              "s": 30.668,
+              "e": 34.45
+            }
+          ],
+          "tr": {
+            "ru": "Он создал растения и деревья"
+          },
+          "comment": "Перечень творения начинается с растений и деревьев: их создал Он. Страница печатает оба предмета отдельной строкой, и перевод не сводит их к одному слову «зелень». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-birds",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "He",
+              "s": 35.71,
+              "e": 36.193
+            },
+            {
+              "w": "created",
+              "s": 36.193,
+              "e": 36.677
+            },
+            {
+              "w": "the",
+              "s": 36.677,
+              "e": 37.16
+            },
+            {
+              "w": "birds",
+              "s": 37.16,
+              "e": 37.643
+            },
+            {
+              "w": "and",
+              "s": 37.643,
+              "e": 38.127
+            },
+            {
+              "w": "bees",
+              "s": 38.127,
+              "e": 38.61
+            }
+          ],
+          "tr": {
+            "ru": "Он создал птиц и пчёл"
+          },
+          "comment": "Та же цепочка называет птиц и пчёл, тоже как созданное Им. На странице это отдельная строка после растений, поэтому в переводе остаются оба существа. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-seas",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "He",
+              "s": 39.71,
+              "e": 40.26
+            },
+            {
+              "w": "created",
+              "s": 40.26,
+              "e": 40.81
+            },
+            {
+              "w": "the",
+              "s": 40.81,
+              "e": 41.36
+            },
+            {
+              "w": "oceans",
+              "s": 41.36,
+              "e": 41.91
+            },
+            {
+              "w": "and",
+              "s": 41.91,
+              "e": 42.46
+            },
+            {
+              "w": "seas",
+              "s": 42.46,
+              "e": 43.01
+            }
+          ],
+          "tr": {
+            "ru": "Он создал океаны и моря"
+          },
+          "comment": "Перечень доходит до океанов и морей, и страница печатает оба слова. Перевод не заменяет их одной «водой»: на странице это два предмета одной строки. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-bounties",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Some",
+              "s": 44.64,
+              "e": 45.25
+            },
+            {
+              "w": "of",
+              "s": 45.25,
+              "e": 45.86
+            },
+            {
+              "w": "His",
+              "s": 45.86,
+              "e": 46.47
+            },
+            {
+              "w": "many",
+              "s": 46.47,
+              "e": 47.08
+            },
+            {
+              "w": "bounties",
+              "s": 47.08,
+              "e": 47.69
+            }
+          ],
+          "tr": {
+            "ru": "Лишь часть Его многих щедрот"
+          },
+          "comment": "После перечня строка сужает сказанное: это лишь часть Его многих щедрот. Страница пишет «His many bounties», и перевод оставляет и «Его», и «многих», не сводя дары к списку имущества. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-trustees",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "He",
+              "s": 47.69,
+              "e": 48.663
+            },
+            {
+              "w": "made",
+              "s": 48.663,
+              "e": 49.637
+            },
+            {
+              "w": "us",
+              "s": 49.637,
+              "e": 50.61
+            },
+            {
+              "w": "on",
+              "s": 50.61,
+              "e": 51.583
+            },
+            {
+              "w": "earth",
+              "s": 51.583,
+              "e": 52.557
+            },
+            {
+              "w": "trustees",
+              "s": 52.557,
+              "e": 53.53
+            }
+          ],
+          "tr": {
+            "ru": "Он сделал нас на земле хранителями"
+          },
+          "comment": "Строка говорит, что людей поставили на земле хранителями вверенного. Слово страницы — «trustees», не хозяева; следующая строка той же страницы сразу связывает это с Его велениями. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "en-decrees",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "To",
+              "s": 53.65,
+              "e": 54.526
+            },
+            {
+              "w": "obey",
+              "s": 54.526,
+              "e": 55.402
+            },
+            {
+              "w": "all",
+              "s": 55.402,
+              "e": 56.278
+            },
+            {
+              "w": "His",
+              "s": 56.278,
+              "e": 57.154
+            },
+            {
+              "w": "decrees",
+              "s": 57.154,
+              "e": 58.03
+            }
+          ],
+          "tr": {
+            "ru": "Чтобы слушаться всех Его велений"
+          },
+          "comment": "Здесь названа цель поручения: слушаться всех Его велений. Страница печатает «all His decrees», и перевод держит и «всех», и веления, не заменяя их советом. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-mercy",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Oh",
+              "s": 59.31,
+              "e": 59.918
+            },
+            {
+              "w": "Allah",
+              "s": 59.918,
+              "e": 60.526
+            },
+            {
+              "w": "have",
+              "s": 60.526,
+              "e": 61.134
+            },
+            {
+              "w": "mercy",
+              "s": 61.134,
+              "e": 61.742
+            },
+            {
+              "w": "please,",
+              "s": 61.742,
+              "e": 62.35
+            }
+          ],
+          "tr": {
+            "ru": "О Аллах, помилуй, просим"
+          },
+          "comment": "Это обращение к Аллаху с просьбой о милости. На странице строка кончается словом «please», поэтому в переводе рядом с «помилуй» стоит «просим», а не сухой отчёт. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-hearts",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Clean",
+              "s": 62.67,
+              "e": 63.386
+            },
+            {
+              "w": "away",
+              "s": 63.386,
+              "e": 64.102
+            },
+            {
+              "w": "our",
+              "s": 64.102,
+              "e": 64.818
+            },
+            {
+              "w": "hearts’",
+              "s": 64.818,
+              "e": 65.534
+            },
+            {
+              "w": "disease",
+              "s": 65.534,
+              "e": 66.25
+            }
+          ],
+          "tr": {
+            "ru": "Сними болезнь с наших сердец"
+          },
+          "comment": "Просьба продолжается: убрать болезнь, которая при сердцах. На странице апостроф в «hearts’ disease» относит болезнь к сердцам, и перевод говорит «с наших сердец». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "jalla-1",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Jalla",
+              "s": 68.39,
+              "e": 69.68
+            },
+            {
+              "w": "Allahu",
+              "s": 69.68,
+              "e": 70.97
+            },
+            {
+              "w": "fi",
+              "s": 70.97,
+              "e": 72.26
+            },
+            {
+              "w": "‘oulah",
+              "s": 72.26,
+              "e": 73.55
+            }
+          ],
+          "tr": {
+            "ru": "Аллах превознесён в Его высоте"
+          },
+          "comment": "Строка превозносит Аллаха в Его высоте. Скобка страницы читает место так: «Glorified is Allah in His loftiness», и перевод держит превознесение и высоту, а не общую похвалу. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "siwah-1",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Ma",
+              "s": 73.55,
+              "e": 77.15
+            },
+            {
+              "w": "lana",
+              "s": 77.15,
+              "e": 80.75
+            },
+            {
+              "w": "rabbun",
+              "s": 80.75,
+              "e": 84.35
+            },
+            {
+              "w": "siwah",
+              "s": 84.35,
+              "e": 87.95
+            }
+          ],
+          "tr": {
+            "ru": "Нет у нас господа, кроме Него"
+          },
+          "comment": "Смысл строки: нет у нас господа, кроме Него. Скобка страницы говорит это прямо: «We have no lord but He», и перевод оставляет и «у нас», и «кроме Него». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "shahada-2",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "La",
+              "s": 89.79,
+              "e": 90.495
+            },
+            {
+              "w": "ilaha",
+              "s": 90.495,
+              "e": 91.2
+            },
+            {
+              "w": "illa",
+              "s": 91.2,
+              "e": 91.905
+            },
+            {
+              "w": "Allah",
+              "s": 91.905,
+              "e": 92.61
+            }
+          ],
+          "tr": {
+            "ru": "Нет бога, кроме Аллаха"
+          },
+          "comment": "Строка — свидетельство: нет бога, кроме Аллаха. Скобка на странице Awakening читает то же место так: «There is no god but Allah», имя Аллах в скобке оставлено именем. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "ar-awwal",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Awwalun",
+              "s": 93.65,
+              "e": 100.962
+            },
+            {
+              "w": "qablal",
+              "s": 100.962,
+              "e": 108.273
+            },
+            {
+              "w": "wujud",
+              "s": 108.273,
+              "e": 115.585
+            }
+          ],
+          "tr": {
+            "ru": "Первый, прежде бытия"
+          },
+          "comment": "Строка называет Его первым, прежде бытия. Скобка страницы: «He is the First before existence». «Бытие» здесь — слово existence с этой скобки, не отдельная книга. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "ar-akhir",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Akhirun",
+              "s": 115.585,
+              "e": 122.897
+            },
+            {
+              "w": "Ba’dal",
+              "s": 122.897,
+              "e": 130.208
+            },
+            {
+              "w": "khulud",
+              "s": 130.208,
+              "e": 137.52
+            }
+          ],
+          "tr": {
+            "ru": "Последний, после вечности"
+          },
+          "comment": "Строка называет Его последним. Скобка страницы читает место так: «He is the Last after eternity», и перевод следует этому чтению: «после вечности». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "ar-mutlaq",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Mutlaqun",
+              "s": 137.52,
+              "e": 139.347
+            },
+            {
+              "w": "‘anil",
+              "s": 139.347,
+              "e": 141.173
+            },
+            {
+              "w": "hudud",
+              "s": 141.173,
+              "e": 143.0
+            }
+          ],
+          "tr": {
+            "ru": "Он абсолютен и выше границ"
+          },
+          "comment": "Строка говорит, что Он абсолютен и выше границ. Скобка страницы даёт оба слова сразу: «Absolute is He above any limits», и перевод держит и абсолютность, и границы. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "ar-wajib",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Wajibun",
+              "s": 144.72,
+              "e": 145.573
+            },
+            {
+              "w": "lahus",
+              "s": 145.573,
+              "e": 146.427
+            },
+            {
+              "w": "sujud",
+              "s": 146.427,
+              "e": 147.28
+            }
+          ],
+          "tr": {
+            "ru": "Земной поклон Ему обязателен"
+          },
+          "comment": "Строка говорит, что земной поклон Ему обязателен, а не что обязанность лежит на Нём. Скобка страницы: «Obligatory it is to prostrate to Him». «Земной поклон» здесь — prostrate с той скобки. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "ar-hayah",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Rabbun",
+              "s": 152.04,
+              "e": 152.58
+            },
+            {
+              "w": "wahibul",
+              "s": 152.58,
+              "e": 153.12
+            },
+            {
+              "w": "hayah",
+              "s": 153.12,
+              "e": 153.66
+            }
+          ],
+          "tr": {
+            "ru": "Господь, дарующий жизнь"
+          },
+          "comment": "Строка называет Господа тем, кто даёт жизнь. Скобка страницы: «The Lord who bestows life». Кому именно дана жизнь, страница не пишет, и перевод этого не добавляет. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "ar-mujrir",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Mujrir",
+              "s": 153.66,
+              "e": 154.707
+            },
+            {
+              "w": "rihi",
+              "s": 154.707,
+              "e": 155.755
+            },
+            {
+              "w": "wal",
+              "s": 155.755,
+              "e": 156.803
+            },
+            {
+              "w": "miyah",
+              "s": 156.803,
+              "e": 157.85
+            }
+          ],
+          "tr": {
+            "ru": "Он вздымает ветер и воду"
+          },
+          "comment": "Строка о ветре и воде, которые Он приводит в движение. Скобка страницы: «He makes the wind and water surge». Латинское написание страницы — «Mujrir», буквы оставлены как напечатано. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "ar-fadhat",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Fadhat",
+              "s": 159.71,
+              "e": 161.143
+            },
+            {
+              "w": "binnada",
+              "s": 161.143,
+              "e": 162.577
+            },
+            {
+              "w": "yadah",
+              "s": 162.577,
+              "e": 164.01
+            }
+          ],
+          "tr": {
+            "ru": "Щедрость переполняет Его руки"
+          },
+          "comment": "На странице у этой строки два чтения, и они не говорят одно и то же. Латинская строка говорит о руках, переполненных щедростью. Английская скобка передаёт место иначе: «His blessings are overflowing», без образа рук. Перевод следует латинской строке и оставляет руки. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "ar-tuba",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Tuba",
+              "s": 164.01,
+              "e": 165.363
+            },
+            {
+              "w": "lilladhi",
+              "s": 165.363,
+              "e": 166.717
+            },
+            {
+              "w": "hadah",
+              "s": 166.717,
+              "e": 168.07
+            }
+          ],
+          "tr": {
+            "ru": "Удачлив тот, кого Он ведёт"
+          },
+          "comment": "На странице два чтения, и время в них разное. Английская скобка — «Successful is he whom He guides», и перевод следует ей: удачлив тот, кого Он ведёт. Латинская строка «Tuba lilladhi hadah» в другом чтении звучит как «благо тому, кого Он наставил», это прошедшее время. Это чтение самой строки, не отдельная книга. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "jalla-2",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Jalla",
+              "s": 170.73,
+              "e": 171.415
+            },
+            {
+              "w": "Allahu",
+              "s": 171.415,
+              "e": 172.1
+            },
+            {
+              "w": "fi",
+              "s": 172.1,
+              "e": 172.785
+            },
+            {
+              "w": "‘oulah",
+              "s": 172.785,
+              "e": 173.47
+            }
+          ],
+          "tr": {
+            "ru": "Аллах превознесён в Его высоте"
+          },
+          "comment": "Строка превозносит Аллаха в Его высоте. Скобка страницы читает место так: «Glorified is Allah in His loftiness», и перевод держит превознесение и высоту, а не общую похвалу. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "siwah-2",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Ma",
+              "s": 173.47,
+              "e": 174.175
+            },
+            {
+              "w": "lana",
+              "s": 174.175,
+              "e": 174.88
+            },
+            {
+              "w": "rabbun",
+              "s": 174.88,
+              "e": 175.585
+            },
+            {
+              "w": "siwah",
+              "s": 175.585,
+              "e": 176.29
+            }
+          ],
+          "tr": {
+            "ru": "Нет у нас господа, кроме Него"
+          },
+          "comment": "Смысл строки: нет у нас господа, кроме Него. Скобка страницы говорит это прямо: «We have no lord but He», и перевод оставляет и «у нас», и «кроме Него». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "shahada-3",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "La",
+              "s": 189.99,
+              "e": 196.032
+            },
+            {
+              "w": "ilaha",
+              "s": 196.032,
+              "e": 202.075
+            },
+            {
+              "w": "illa",
+              "s": 202.075,
+              "e": 208.118
+            },
+            {
+              "w": "Allah",
+              "s": 208.118,
+              "e": 214.16
+            }
+          ],
+          "tr": {
+            "ru": "Нет бога, кроме Аллаха"
+          },
+          "comment": "Строка — свидетельство: нет бога, кроме Аллаха. Скобка на странице Awakening читает то же место так: «There is no god but Allah», имя Аллах в скобке оставлено именем. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-day",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "He",
+              "s": 220.02,
+              "e": 220.393
+            },
+            {
+              "w": "gave",
+              "s": 220.393,
+              "e": 220.767
+            },
+            {
+              "w": "the",
+              "s": 220.767,
+              "e": 221.14
+            },
+            {
+              "w": "day",
+              "s": 221.14,
+              "e": 221.513
+            },
+            {
+              "w": "and",
+              "s": 221.513,
+              "e": 221.887
+            },
+            {
+              "w": "night",
+              "s": 221.887,
+              "e": 222.26
+            }
+          ],
+          "tr": {
+            "ru": "Он дал день и ночь"
+          },
+          "comment": "Строка говорит, что Он дал день и ночь. На странице нет слова «us»: напечатано «He gave the day and night», и перевод не добавляет «нам». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "en-sight",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "He",
+              "s": 222.26,
+              "e": 222.973
+            },
+            {
+              "w": "gave",
+              "s": 222.973,
+              "e": 223.687
+            },
+            {
+              "w": "us",
+              "s": 223.687,
+              "e": 224.4
+            },
+            {
+              "w": "our",
+              "s": 224.4,
+              "e": 225.113
+            },
+            {
+              "w": "sense",
+              "s": 225.113,
+              "e": 225.827
+            },
+            {
+              "w": "sight",
+              "s": 225.827,
+              "e": 226.54
+            }
+          ],
+          "tr": {
+            "ru": "Он дал нам зрение"
+          },
+          "comment": "Строка говорит, что Он дал нам зрение. Страница печатает «our sense sight» без «of» между sense и sight, и перевод не вставляет предлог, которого в строке нет. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "en-sun",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "He",
+              "s": 227.62,
+              "e": 228.22
+            },
+            {
+              "w": "created",
+              "s": 228.22,
+              "e": 228.82
+            },
+            {
+              "w": "the",
+              "s": 228.82,
+              "e": 229.42
+            },
+            {
+              "w": "sun",
+              "s": 229.42,
+              "e": 230.02
+            },
+            {
+              "w": "so",
+              "s": 230.02,
+              "e": 230.62
+            },
+            {
+              "w": "bright",
+              "s": 230.62,
+              "e": 231.22
+            }
+          ],
+          "tr": {
+            "ru": "Он создал яркое солнце"
+          },
+          "comment": "Строка ставит солнце среди созданного и называет его ярким. Страница пишет «so bright» при солнце, и перевод оставляет яркость при нём, а не отдельной похвалой. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-moon",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "And",
+              "s": 232.42,
+              "e": 232.863
+            },
+            {
+              "w": "the",
+              "s": 232.863,
+              "e": 233.306
+            },
+            {
+              "w": "moon",
+              "s": 233.306,
+              "e": 233.749
+            },
+            {
+              "w": "so",
+              "s": 233.749,
+              "e": 234.191
+            },
+            {
+              "w": "pure",
+              "s": 234.191,
+              "e": 234.634
+            },
+            {
+              "w": "and",
+              "s": 234.634,
+              "e": 235.077
+            },
+            {
+              "w": "white",
+              "s": 235.077,
+              "e": 235.52
+            }
+          ],
+          "tr": {
+            "ru": "И луну, чистую и белую"
+          },
+          "comment": "Строка продолжает ту же пару: луна чистая и белая. На странице порядок «pure and white», чистота раньше белизны, и перевод этот порядок держит. «And» в начале связывает луну с солнцем. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-plight",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "He",
+              "s": 237.46,
+              "e": 238.256
+            },
+            {
+              "w": "saved",
+              "s": 238.256,
+              "e": 239.052
+            },
+            {
+              "w": "from",
+              "s": 239.052,
+              "e": 239.848
+            },
+            {
+              "w": "our",
+              "s": 239.848,
+              "e": 240.644
+            },
+            {
+              "w": "plight",
+              "s": 240.644,
+              "e": 241.44
+            }
+          ],
+          "tr": {
+            "ru": "Он спас от нашей беды"
+          },
+          "comment": "Строка говорит, что Он спас от нашей беды. На странице нет «us» после saved: «He saved from our plight». Беда названа нашей, и перевод не вставляет «нас» после «спас». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "en-light",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "He",
+              "s": 242.46,
+              "e": 243.047
+            },
+            {
+              "w": "led",
+              "s": 243.047,
+              "e": 243.633
+            },
+            {
+              "w": "us",
+              "s": 243.633,
+              "e": 244.22
+            },
+            {
+              "w": "towards",
+              "s": 244.22,
+              "e": 244.807
+            },
+            {
+              "w": "the",
+              "s": 244.807,
+              "e": 245.393
+            },
+            {
+              "w": "light",
+              "s": 245.393,
+              "e": 245.98
+            }
+          ],
+          "tr": {
+            "ru": "Он вёл нас к свету"
+          },
+          "comment": "Строка говорит, что Он вёл нас к свету. На странице стоит «towards the light»: это направление, не прибытие, и перевод говорит «к свету». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-path",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "He",
+              "s": 245.98,
+              "e": 246.551
+            },
+            {
+              "w": "led",
+              "s": 246.551,
+              "e": 247.123
+            },
+            {
+              "w": "us",
+              "s": 247.123,
+              "e": 247.694
+            },
+            {
+              "w": "to",
+              "s": 247.694,
+              "e": 248.266
+            },
+            {
+              "w": "the",
+              "s": 248.266,
+              "e": 248.837
+            },
+            {
+              "w": "straight",
+              "s": 248.837,
+              "e": 249.409
+            },
+            {
+              "w": "path",
+              "s": 249.409,
+              "e": 249.98
+            }
+          ],
+          "tr": {
+            "ru": "Он привёл нас к прямому пути"
+          },
+          "comment": "Строка говорит, что Он привёл нас к прямому пути. На странице «He led us to the straight path»: «to» здесь — прибытие к пути, не движение по нему и не «towards», как в строке про свет. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-might",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Through",
+              "s": 250.58,
+              "e": 251.397
+            },
+            {
+              "w": "his",
+              "s": 251.397,
+              "e": 252.213
+            },
+            {
+              "w": "mercy",
+              "s": 252.213,
+              "e": 253.03
+            },
+            {
+              "w": "and",
+              "s": 253.03,
+              "e": 253.847
+            },
+            {
+              "w": "his",
+              "s": 253.847,
+              "e": 254.663
+            },
+            {
+              "w": "might",
+              "s": 254.663,
+              "e": 255.48
+            }
+          ],
+          "tr": {
+            "ru": "Его милостью и мощью"
+          },
+          "comment": "Строка называет, чем Он вёл: милостью и мощью. На странице оба «his» со строчной: «Through his mercy and his might». Перевод не добавляет третьего свойства. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "jalla-3",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Jalla",
+              "s": 258.52,
+              "e": 259.22
+            },
+            {
+              "w": "Allahu",
+              "s": 259.22,
+              "e": 259.92
+            },
+            {
+              "w": "fi",
+              "s": 259.92,
+              "e": 260.62
+            },
+            {
+              "w": "‘oulah",
+              "s": 260.62,
+              "e": 261.32
+            }
+          ],
+          "tr": {
+            "ru": "Аллах превознесён в Его высоте"
+          },
+          "comment": "Строка превозносит Аллаха в Его высоте. Скобка страницы читает место так: «Glorified is Allah in His loftiness», и перевод держит превознесение и высоту, а не общую похвалу. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "siwah-3",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Ma",
+              "s": 261.32,
+              "e": 262.025
+            },
+            {
+              "w": "lana",
+              "s": 262.025,
+              "e": 262.73
+            },
+            {
+              "w": "rabbun",
+              "s": 262.73,
+              "e": 263.435
+            },
+            {
+              "w": "siwah",
+              "s": 263.435,
+              "e": 264.14
+            }
+          ],
+          "tr": {
+            "ru": "Нет у нас господа, кроме Него"
+          },
+          "comment": "Смысл строки: нет у нас господа, кроме Него. Скобка страницы говорит это прямо: «We have no lord but He», и перевод оставляет и «у нас», и «кроме Него». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "jalla-4",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Jalla",
+              "s": 264.14,
+              "e": 264.87
+            },
+            {
+              "w": "Allahu",
+              "s": 264.87,
+              "e": 265.6
+            },
+            {
+              "w": "fi",
+              "s": 265.6,
+              "e": 266.33
+            },
+            {
+              "w": "‘oulah",
+              "s": 266.33,
+              "e": 267.06
+            }
+          ],
+          "tr": {
+            "ru": "Аллах превознесён в Его высоте"
+          },
+          "comment": "Строка превозносит Аллаха в Его высоте. Скобка страницы читает место так: «Glorified is Allah in His loftiness», и перевод держит превознесение и высоту, а не общую похвалу. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "siwah-4",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Ma",
+              "s": 267.06,
+              "e": 267.775
+            },
+            {
+              "w": "lana",
+              "s": 267.775,
+              "e": 268.49
+            },
+            {
+              "w": "rabbun",
+              "s": 268.49,
+              "e": 269.205
+            },
+            {
+              "w": "siwah",
+              "s": 269.205,
+              "e": 269.92
+            }
+          ],
+          "tr": {
+            "ru": "Нет у нас господа, кроме Него"
+          },
+          "comment": "Смысл строки: нет у нас господа, кроме Него. Скобка страницы говорит это прямо: «We have no lord but He», и перевод оставляет и «у нас», и «кроме Него». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "jalla-5",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Jalla",
+              "s": 269.92,
+              "e": 270.595
+            },
+            {
+              "w": "Allahu",
+              "s": 270.595,
+              "e": 271.27
+            },
+            {
+              "w": "fi",
+              "s": 271.27,
+              "e": 271.945
+            },
+            {
+              "w": "‘oulah",
+              "s": 271.945,
+              "e": 272.62
+            }
+          ],
+          "tr": {
+            "ru": "Аллах превознесён в Его высоте"
+          },
+          "comment": "Строка превозносит Аллаха в Его высоте. Скобка страницы читает место так: «Glorified is Allah in His loftiness», и перевод держит превознесение и высоту, а не общую похвалу. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "siwah-5",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Ma",
+              "s": 272.62,
+              "e": 273.375
+            },
+            {
+              "w": "lana",
+              "s": 273.375,
+              "e": 274.13
+            },
+            {
+              "w": "rabbun",
+              "s": 274.13,
+              "e": 274.885
+            },
+            {
+              "w": "siwah",
+              "s": 274.885,
+              "e": 275.64
+            }
+          ],
+          "tr": {
+            "ru": "Нет у нас господа, кроме Него"
+          },
+          "comment": "Смысл строки: нет у нас господа, кроме Него. Скобка страницы говорит это прямо: «We have no lord but He», и перевод оставляет и «у нас», и «кроме Него». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-earth-1",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Lord",
+              "s": 279.92,
+              "e": 285.967
+            },
+            {
+              "w": "of",
+              "s": 285.967,
+              "e": 292.014
+            },
+            {
+              "w": "the",
+              "s": 292.014,
+              "e": 298.061
+            },
+            {
+              "w": "earth",
+              "s": 298.061,
+              "e": 304.109
+            },
+            {
+              "w": "and",
+              "s": 304.109,
+              "e": 310.156
+            },
+            {
+              "w": "the",
+              "s": 310.156,
+              "e": 316.203
+            },
+            {
+              "w": "sky",
+              "s": 316.203,
+              "e": 322.25
+            }
+          ],
+          "tr": {
+            "ru": "Господь земли и неба"
+          },
+          "comment": "Строка называет господина земли и неба. Страница печатает «Lord of the earth and the sky», с «of», и перевод оставляет оба места, землю и небо. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "en-mountains-1",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Lord",
+              "s": 322.25,
+              "e": 323.158
+            },
+            {
+              "w": "the",
+              "s": 323.158,
+              "e": 324.066
+            },
+            {
+              "w": "mountains",
+              "s": 324.066,
+              "e": 324.974
+            },
+            {
+              "w": "so",
+              "s": 324.974,
+              "e": 325.882
+            },
+            {
+              "w": "high",
+              "s": 325.882,
+              "e": 326.79
+            }
+          ],
+          "tr": {
+            "ru": "Господь высоких гор"
+          },
+          "comment": "Строка называет господина высоких гор. На странице здесь нет «of»: «Lord the mountains so high». Высота относится к горам, и перевод не вставляет предлог, которого в строке нет. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "en-earth-2",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Lord",
+              "s": 326.79,
+              "e": 327.373
+            },
+            {
+              "w": "of",
+              "s": 327.373,
+              "e": 327.956
+            },
+            {
+              "w": "the",
+              "s": 327.956,
+              "e": 328.539
+            },
+            {
+              "w": "earth",
+              "s": 328.539,
+              "e": 329.121
+            },
+            {
+              "w": "and",
+              "s": 329.121,
+              "e": 329.704
+            },
+            {
+              "w": "the",
+              "s": 329.704,
+              "e": 330.287
+            },
+            {
+              "w": "sky",
+              "s": 330.287,
+              "e": 330.87
+            }
+          ],
+          "tr": {
+            "ru": "Господь земли и неба"
+          },
+          "comment": "Строка называет господина земли и неба. Страница печатает «Lord of the earth and the sky», с «of», и перевод оставляет оба места, землю и небо. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-mountains-2",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Lord",
+              "s": 330.87,
+              "e": 331.774
+            },
+            {
+              "w": "the",
+              "s": 331.774,
+              "e": 332.678
+            },
+            {
+              "w": "mountains",
+              "s": 332.678,
+              "e": 333.582
+            },
+            {
+              "w": "so",
+              "s": 333.582,
+              "e": 334.486
+            },
+            {
+              "w": "high",
+              "s": 334.486,
+              "e": 335.39
+            }
+          ],
+          "tr": {
+            "ru": "Господь высоких гор"
+          },
+          "comment": "Строка называет господина высоких гор. На странице здесь нет «of»: «Lord the mountains so high». Высота относится к горам, и перевод не вставляет предлог, которого в строке нет. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "en-daynight-1",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Lord",
+              "s": 335.39,
+              "e": 335.967
+            },
+            {
+              "w": "of",
+              "s": 335.967,
+              "e": 336.544
+            },
+            {
+              "w": "the",
+              "s": 336.544,
+              "e": 337.121
+            },
+            {
+              "w": "day",
+              "s": 337.121,
+              "e": 337.699
+            },
+            {
+              "w": "and",
+              "s": 337.699,
+              "e": 338.276
+            },
+            {
+              "w": "the",
+              "s": 338.276,
+              "e": 338.853
+            },
+            {
+              "w": "night",
+              "s": 338.853,
+              "e": 339.43
+            }
+          ],
+          "tr": {
+            "ru": "Господь дня и ночи"
+          },
+          "comment": "Строка собирает день и ночь как то, над чем Господь. Страница: «Lord of the day and the night». Перевод короче по словам, оба времени на месте. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-joy-1",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Lord",
+              "s": 339.43,
+              "e": 339.95
+            },
+            {
+              "w": "of",
+              "s": 339.95,
+              "e": 340.47
+            },
+            {
+              "w": "joy",
+              "s": 340.47,
+              "e": 340.99
+            },
+            {
+              "w": "and",
+              "s": 340.99,
+              "e": 341.51
+            },
+            {
+              "w": "delight",
+              "s": 341.51,
+              "e": 342.03
+            }
+          ],
+          "tr": {
+            "ru": "Господь радости и отрады"
+          },
+          "comment": "Строка называет радость и отраду двумя словами. Страница: «Lord of joy and delight». Перевод не склеивает их в одну «радость», потому что на странице это пара. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "en-daynight-2",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Lord",
+              "s": 342.03,
+              "e": 342.884
+            },
+            {
+              "w": "of",
+              "s": 342.884,
+              "e": 343.739
+            },
+            {
+              "w": "the",
+              "s": 343.739,
+              "e": 344.593
+            },
+            {
+              "w": "day",
+              "s": 344.593,
+              "e": 345.447
+            },
+            {
+              "w": "and",
+              "s": 345.447,
+              "e": 346.301
+            },
+            {
+              "w": "the",
+              "s": 346.301,
+              "e": 347.156
+            },
+            {
+              "w": "night",
+              "s": 347.156,
+              "e": 348.01
+            }
+          ],
+          "tr": {
+            "ru": "Господь дня и ночи"
+          },
+          "comment": "Строка собирает день и ночь как то, над чем Господь. Страница: «Lord of the day and the night». Перевод короче по словам, оба времени на месте. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft",
+            "text-unverified"
+          ]
+        },
+        {
+          "id": "en-joy-2",
+          "lang": "en",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Lord",
+              "s": 348.01,
+              "e": 348.738
+            },
+            {
+              "w": "of",
+              "s": 348.738,
+              "e": 349.466
+            },
+            {
+              "w": "joy",
+              "s": 349.466,
+              "e": 350.194
+            },
+            {
+              "w": "and",
+              "s": 350.194,
+              "e": 350.922
+            },
+            {
+              "w": "delight",
+              "s": 350.922,
+              "e": 351.65
+            }
+          ],
+          "tr": {
+            "ru": "Господь радости и отрады"
+          },
+          "comment": "Строка называет радость и отраду двумя словами. Страница: «Lord of joy and delight». Перевод не склеивает их в одну «радость», потому что на странице это пара. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "jalla-6",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Jalla",
+              "s": 353.85,
+              "e": 354.455
+            },
+            {
+              "w": "Allahu",
+              "s": 354.455,
+              "e": 355.06
+            },
+            {
+              "w": "fi",
+              "s": 355.06,
+              "e": 355.665
+            },
+            {
+              "w": "‘oulah",
+              "s": 355.665,
+              "e": 356.27
+            }
+          ],
+          "tr": {
+            "ru": "Аллах превознесён в Его высоте"
+          },
+          "comment": "Строка превозносит Аллаха в Его высоте. Скобка страницы читает место так: «Glorified is Allah in His loftiness», и перевод держит превознесение и высоту, а не общую похвалу. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "siwah-6",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Ma",
+              "s": 356.27,
+              "e": 356.975
+            },
+            {
+              "w": "lana",
+              "s": 356.975,
+              "e": 357.68
+            },
+            {
+              "w": "rabbun",
+              "s": 357.68,
+              "e": 358.385
+            },
+            {
+              "w": "siwah",
+              "s": 358.385,
+              "e": 359.09
+            }
+          ],
+          "tr": {
+            "ru": "Нет у нас господа, кроме Него"
+          },
+          "comment": "Смысл строки: нет у нас господа, кроме Него. Скобка страницы говорит это прямо: «We have no lord but He», и перевод оставляет и «у нас», и «кроме Него». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "jalla-7",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Jalla",
+              "s": 359.09,
+              "e": 359.845
+            },
+            {
+              "w": "Allahu",
+              "s": 359.845,
+              "e": 360.6
+            },
+            {
+              "w": "fi",
+              "s": 360.6,
+              "e": 361.355
+            },
+            {
+              "w": "‘oulah",
+              "s": 361.355,
+              "e": 362.11
+            }
+          ],
+          "tr": {
+            "ru": "Аллах превознесён в Его высоте"
+          },
+          "comment": "Строка превозносит Аллаха в Его высоте. Скобка страницы читает место так: «Glorified is Allah in His loftiness», и перевод держит превознесение и высоту, а не общую похвалу. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "siwah-7",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Ma",
+              "s": 362.11,
+              "e": 362.815
+            },
+            {
+              "w": "lana",
+              "s": 362.815,
+              "e": 363.52
+            },
+            {
+              "w": "rabbun",
+              "s": 363.52,
+              "e": 364.225
+            },
+            {
+              "w": "siwah",
+              "s": 364.225,
+              "e": 364.93
+            }
+          ],
+          "tr": {
+            "ru": "Нет у нас господа, кроме Него"
+          },
+          "comment": "Смысл строки: нет у нас господа, кроме Него. Скобка страницы говорит это прямо: «We have no lord but He», и перевод оставляет и «у нас», и «кроме Него». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "jalla-8",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Jalla",
+              "s": 364.93,
+              "e": 365.625
+            },
+            {
+              "w": "Allahu",
+              "s": 365.625,
+              "e": 366.32
+            },
+            {
+              "w": "fi",
+              "s": 366.32,
+              "e": 367.015
+            },
+            {
+              "w": "‘oulah",
+              "s": 367.015,
+              "e": 367.71
+            }
+          ],
+          "tr": {
+            "ru": "Аллах превознесён в Его высоте"
+          },
+          "comment": "Строка превозносит Аллаха в Его высоте. Скобка страницы читает место так: «Glorified is Allah in His loftiness», и перевод держит превознесение и высоту, а не общую похвалу. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "siwah-8",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "Ma",
+              "s": 367.71,
+              "e": 368.44
+            },
+            {
+              "w": "lana",
+              "s": 368.44,
+              "e": 369.17
+            },
+            {
+              "w": "rabbun",
+              "s": 369.17,
+              "e": 369.9
+            },
+            {
+              "w": "siwah",
+              "s": 369.9,
+              "e": 370.63
+            }
+          ],
+          "tr": {
+            "ru": "Нет у нас господа, кроме Него"
+          },
+          "comment": "Смысл строки: нет у нас господа, кроме Него. Скобка страницы говорит это прямо: «We have no lord but He», и перевод оставляет и «у нас», и «кроме Него». https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        },
+        {
+          "id": "shahada-4",
+          "lang": "ar",
+          "script": "Latn",
+          "words": [
+            {
+              "w": "La",
+              "s": 370.63,
+              "e": 371.695
+            },
+            {
+              "w": "ilaha",
+              "s": 371.695,
+              "e": 372.76
+            },
+            {
+              "w": "illa",
+              "s": 372.76,
+              "e": 373.825
+            },
+            {
+              "w": "Allah",
+              "s": 373.825,
+              "e": 374.89
+            }
+          ],
+          "tr": {
+            "ru": "Нет бога, кроме Аллаха"
+          },
+          "comment": "Строка — свидетельство: нет бога, кроме Аллаха. Скобка на странице Awakening читает то же место так: «There is no god but Allah», имя Аллах в скобке оставлено именем. https://awakeningrecordsmusic.bandcamp.com/track/the-creator",
+          "flags": [
+            "timing-draft"
+          ]
+        }
+      ],
+      "flags": [
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "voice-tail",
+      "kind": "instrumental",
+      "start": 374.89,
+      "end": 404.35,
+      "label": "Голос",
+      "instruments": [
+        "voice"
+      ],
+      "flags": [
+        "text-unverified",
+        "timing-draft"
+      ]
+    },
+    {
+      "id": "outro",
+      "kind": "instrumental",
+      "start": 404.35,
+      "end": 413.45,
+      "label": "Окончание",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "После голоса остаётся короткий инструментальный конец. Имена играющих страница релиза не называет.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    }
+  ]
+}
