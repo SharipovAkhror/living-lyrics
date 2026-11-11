@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-12-the-dawn",
+  "status": "pass",
+  "branch": "night/ll-song-12-the-dawn",
+  "commit": "2aaa1aaa45834dbfcc47d117d1ee19e308b5d5f9",
+  "tokens": 11629330,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts the-dawn\n\n\n✓ the-dawn  (0 ошибок, 1 предупреждений)\n  внимание  song.json: язык en указан в languages, но строк на нём нет\n\nИтого: 0 ошибок, 1 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue\\logs\\ll-song-12-the-dawn.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
