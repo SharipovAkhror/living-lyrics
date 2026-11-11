@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-06-lifting-the-veil",
+  "status": "pass",
+  "branch": "night/ll-song-06-lifting-the-veil",
+  "commit": "6551d3023f91d982a5d4e1ee06b199029c4aa723",
+  "tokens": 2535904,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts lifting-the-veil\n\n\nИтого: 0 ошибок, 0 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue\\logs\\ll-song-06-lifting-the-veil.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
