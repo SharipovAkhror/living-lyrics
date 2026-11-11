@@ -1,0 +1,180 @@
+{
+  "$schema": "../../../docs/schema/lyrics.schema.json",
+  "sections": [
+    {
+      "id": "intro",
+      "kind": "instrumental",
+      "start": 0,
+      "end": 18.8,
+      "label": "Вступление",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На этом отрезке карта записи не ведёт голос. Состав ансамбля страница альбома не называет.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "voice-1",
+      "kind": "instrumental",
+      "start": 18.8,
+      "end": 146.35,
+      "label": "Голос",
+      "instruments": [
+        "voice",
+        "ensemble"
+      ],
+      "note": "Голос на этом отрезке взят с карты записи, не из разбора слов. Состав ансамбля страница альбома не называет.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified",
+        "text-unverified"
+      ]
+    },
+    {
+      "id": "break-1",
+      "kind": "instrumental",
+      "start": 146.35,
+      "end": 158.4,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На этом отрезке карта записи не ведёт голос. Состав ансамбля страница альбома не называет.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "voice-2",
+      "kind": "instrumental",
+      "start": 158.4,
+      "end": 180.65,
+      "label": "Голос",
+      "instruments": [
+        "voice",
+        "ensemble"
+      ],
+      "note": "Голос на этом отрезке взят с карты записи, не из разбора слов. Состав ансамбля страница альбома не называет.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified",
+        "text-unverified"
+      ]
+    },
+    {
+      "id": "break-2",
+      "kind": "instrumental",
+      "start": 180.65,
+      "end": 187.8,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На этом отрезке карта записи не ведёт голос. Состав ансамбля страница альбома не называет.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "voice-3",
+      "kind": "instrumental",
+      "start": 187.8,
+      "end": 188.5,
+      "label": "Голос",
+      "instruments": [
+        "voice",
+        "ensemble"
+      ],
+      "note": "Голос на этом отрезке взят с карты записи, не из разбора слов. Состав ансамбля страница альбома не называет.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified",
+        "text-unverified"
+      ]
+    },
+    {
+      "id": "break-3",
+      "kind": "instrumental",
+      "start": 188.5,
+      "end": 196.5,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На этом отрезке карта записи не ведёт голос. Состав ансамбля страница альбома не называет.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "voice-4",
+      "kind": "instrumental",
+      "start": 196.5,
+      "end": 204,
+      "label": "Голос",
+      "instruments": [
+        "voice",
+        "ensemble"
+      ],
+      "note": "Голос на этом отрезке взят с карты записи, не из разбора слов. Состав ансамбля страница альбома не называет.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified",
+        "text-unverified"
+      ]
+    },
+    {
+      "id": "break-4",
+      "kind": "instrumental",
+      "start": 204,
+      "end": 216.75,
+      "label": "Проигрыш",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На этом отрезке карта записи не ведёт голос. Состав ансамбля страница альбома не называет.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    },
+    {
+      "id": "voice-5",
+      "kind": "instrumental",
+      "start": 216.75,
+      "end": 270.7,
+      "label": "Голос",
+      "instruments": [
+        "voice",
+        "ensemble"
+      ],
+      "note": "Голос на этом отрезке взят с карты записи, не из разбора слов. Состав ансамбля страница альбома не называет.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified",
+        "text-unverified"
+      ]
+    },
+    {
+      "id": "coda",
+      "kind": "instrumental",
+      "start": 270.7,
+      "end": 277,
+      "label": "Кода",
+      "instruments": [
+        "ensemble"
+      ],
+      "note": "На этом отрезке карта записи не ведёт голос. Состав ансамбля страница альбома не называет.",
+      "flags": [
+        "timing-draft",
+        "attribution-unverified"
+      ]
+    }
+  ]
+}

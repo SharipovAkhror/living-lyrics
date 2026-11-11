@@ -1,0 +1,12 @@
+{
+  "id": "ll-song-31-chant-percussion-ensemble",
+  "status": "pass",
+  "branch": "night/ll-song-31-chant-percussion-ensemble",
+  "commit": "fa86aa5c626d6e8d01709bc31240d3c903673098",
+  "tokens": 15295823,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts chant-percussion-ensemble\n\n\n✓ chant-percussion-ensemble  (0 ошибок, 1 предупреждений)\n  внимание  song.json: язык ar указан в languages, но строк на нём нет\n\nИтого: 0 ошибок, 1 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue-b\\logs\\ll-song-31-chant-percussion-ensemble.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
