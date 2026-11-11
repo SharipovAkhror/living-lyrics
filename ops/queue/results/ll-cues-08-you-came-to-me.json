@@ -1,0 +1,12 @@
+{
+  "id": "ll-cues-08-you-came-to-me",
+  "status": "pass",
+  "branch": "night/ll-cues-08-you-came-to-me",
+  "commit": "742923125a313771238756147a715a9858cdb648",
+  "tokens": 4557853,
+  "check_output_tail": "\n> living-lyrics@0.1.0 validate\n> tsx scripts/tools/validate.ts you-came-to-me\n\n\n✓ you-came-to-me  (0 ошибок, 10 предупреждений)\n  внимание  song.json: audio.high: /audio/you-came-to-me/high.m4a есть только в зашифрованном виде — нужен AUDIO_KEY (npm run dev / build расшифруют)\n  внимание  lead › sa-01: язык ar обычно пишется арабской графикой, а script = Latn\n  внимание  lead › sb-01: язык ar обычно пишется арабской графикой, а script = Latn\n  внимание  lead › sb-02: язык ar обычно пишется арабской графикой, а script = Latn\n  внимание  lead › sc-01: язык ar обычно пишется арабской графикой, а script = Latn\n  внимание  lead › sc-02: язык ar обычно пишется арабской графикой, а script = Latn\n  внимание  lead › sc-03: язык ar обычно пишется арабской графикой, а script = Latn\n  внимание  lead › sc-04: язык ar обычно пишется арабской графикой, а script = Latn\n  внимание  transcript.json: нет docs/analysis/<slug>/transcript.json: порядок строк с голосом не сверен\n  внимание  cues.json: нет docs/analysis/<slug>/cues.json: время строк по официальным субтитрам (docs/methodology/04-text.md)\n\nИтого: 0 ошибок, 10 предупреждений.\n\n> living-lyrics@0.1.0 typecheck\n> tsc --noEmit -p .\n\n",
+  "log_path": "C:\\Users\\User\\Documents\\GitHub\\agentic-os-live\\ops\\state\\night-queue-b\\logs\\ll-cues-08-you-came-to-me.log",
+  "reason": "",
+  "restarts": 0,
+  "pushed": false
+}
